@@ -4,6 +4,13 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Certified Infinite Descent Criteria</title>
+  <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Certified Infinite Descent Criteria in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>SAT is Not Solvable in Constant Time</title>
   <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
   <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>

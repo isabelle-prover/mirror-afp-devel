@@ -7,8 +7,9 @@ session Encodability_Process_Calculi = HOL +
   theories
     Relations
     ProcessCalculi
-    SimulationRelations
     Encodings
+    SimulationRelations
+    SimulationRelationsOnEncodedLabels
     SourceTargetRelation
     SuccessSensitiveness
     DivergenceReflection

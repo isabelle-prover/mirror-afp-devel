@@ -1714,6 +1714,37 @@ lemma eq_loops_full_part_circlepath:
   unfolding circlepath_def
   by (rule eq_loops_part_circlepath[where n = 1]) (simp_all add: assms)
 
+lemma eqloops_reversepath_cong:
+  assumes "eq_loops p q"
+  shows   "eq_loops (reversepath p) (reversepath q)"
+proof -
+  obtain c where pq:
+     "pathstart p = pathfinish p" "pathstart q = pathfinish q" "path q" "eq_paths p (shiftpath' c q)"
+    using assms unfolding eq_loops_def by blast
+
+  have "eq_paths (reversepath p) (shiftpath' (1-frac c) (reversepath q))"
+  proof -
+    have "eq_paths (reversepath p) (reversepath (shiftpath' c q))"
+      by (intro eq_paths_reverse pq)
+    also have "shiftpath' c q = shiftpath' (frac c) q"
+      by (simp add: shiftpath'_frac)
+    also have *: "eq_paths (reversepath (shiftpath' (frac c) q)) (reversepath (shiftpath (frac c) q))"
+      by (rule eq_paths_sym, intro eq_paths_reverse eq_paths_shiftpath_shiftpath')
+         (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
+    also have "eq_paths \<dots> (shiftpath (1 - frac c) (reversepath q))"
+    proof (rule eq_paths_refl')
+      show "reversepath (shiftpath (frac c) q) x = shiftpath (1 - frac c) (reversepath q) x" 
+        if "x \<in> {0..1}" for x
+        using that pq by (subst shiftpath_reversepath_loop) auto
+    qed (use * in blast)
+    also have "eq_paths \<dots> (shiftpath' (1 - frac c) (reversepath q))"
+      by (intro eq_paths_shiftpath_shiftpath') (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
+    finally show ?thesis .
+  qed
+  thus ?thesis
+    using pq unfolding eq_loops_def by auto
+qed
+
 
 subsection \<open>Notation\<close>
 
@@ -1729,39 +1760,8 @@ notation eq_loops (infix "\<equiv>\<^sub>\<circle>" 60)
 notation is_subpath (infix "\<le>\<^sub>p" 60)
 
 (*FIXME: maybe the notation should be available in the whole file?*)
-lemma eqloops_reversepath_cong:
-  assumes "p \<equiv>\<^sub>\<circle> q"
-  shows   "reversepath p \<equiv>\<^sub>\<circle> reversepath q"
-proof -
-  obtain c where pq:
-     "pathstart p = pathfinish p" "pathstart q = pathfinish q" "path q" "p \<equiv>\<^sub>p shiftpath' c q"
-    using assms unfolding eq_loops_def by blast
-
-  have "reversepath p \<equiv>\<^sub>p shiftpath' (1-frac c) (reversepath q)"
-  proof -
-    have "reversepath p \<equiv>\<^sub>p reversepath (shiftpath' c q)"
-      by (intro eq_paths_reverse pq)
-    also have "shiftpath' c q = shiftpath' (frac c) q"
-      by (simp add: shiftpath'_frac)
-    also have *: "reversepath (shiftpath' (frac c) q) \<equiv>\<^sub>p reversepath (shiftpath (frac c) q)"
-      by (rule eq_paths_sym, intro eq_paths_reverse eq_paths_shiftpath_shiftpath')
-         (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
-    also have "\<dots> \<equiv>\<^sub>p shiftpath (1 - frac c) (reversepath q)"
-    proof (rule eq_paths_refl')
-      show "reversepath (shiftpath (frac c) q) x = shiftpath (1 - frac c) (reversepath q) x" 
-        if "x \<in> {0..1}" for x
-        using that pq by (subst shiftpath_reversepath_loop) auto
-    qed (use * in blast)
-    also have "\<dots> \<equiv>\<^sub>p shiftpath' (1 - frac c) (reversepath q)"
-      by (intro eq_paths_shiftpath_shiftpath') (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
-    finally show ?thesis .
-  qed
-  thus ?thesis
-    using pq unfolding eq_loops_def by auto
-qed
 
 end
-
 
 unbundle path_rel_notation
 

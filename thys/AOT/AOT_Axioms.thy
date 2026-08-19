@@ -114,7 +114,7 @@ AOT_axiom "qml-act:2": \<open>\<box>\<phi> \<equiv> \<^bold>\<A>\<box>\<phi>\<cl
 
 AOT_axiom descriptions: \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
 proof (rule AOT_model_axiomI)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>x = \<^bold>\<iota>x(\<phi>{x}) \<equiv> \<forall>z(\<^bold>\<A>\<phi>{z} \<equiv> z = x)\<close>
       by (induct; simp add: AOT_sem_equiv AOT_sem_forall AOT_sem_act AOT_sem_eq)
          (metis (no_types, opaque_lifting) AOT_sem_desc_denotes AOT_sem_desc_prop
@@ -199,7 +199,7 @@ AOT_axiom nocoder: \<open>O!x \<rightarrow> \<not>\<exists>F x[F]\<close>
 
 AOT_axiom "A-objects": \<open>\<exists>x (A!x & \<forall>F(x[F] \<equiv> \<phi>{F}))\<close>
 proof(rule AOT_model_axiomI)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_obtain \<kappa> where \<open>\<kappa>\<down> & \<box>\<not>E!\<kappa> & \<forall>F (\<kappa>[F] \<equiv> \<phi>{F})\<close>
       using AOT_sem_A_objects[of _ \<phi>]
       by (auto simp: AOT_sem_imp AOT_sem_box AOT_sem_forall AOT_sem_exists

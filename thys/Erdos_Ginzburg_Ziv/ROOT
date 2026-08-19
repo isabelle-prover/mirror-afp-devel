@@ -1,10 +1,9 @@
 chapter AFP
 
 session Erdos_Ginzburg_Ziv = "HOL-Number_Theory" +
-  options [document = pdf, timeout = 300]
+  options [timeout = 300]
   theories
     Erdos_Ginzburg_Ziv_Outline
   document_files
     "root.tex"
     "root.bib"
-

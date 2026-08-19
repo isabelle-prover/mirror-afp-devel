@@ -28,6 +28,33 @@ abbreviation Lang_auto :: "('s, 't) auto \<Rightarrow> 't list set" where
   "Lang_auto M \<equiv> Lang_lts (lts M) (start M) (finals M)"
 
 
+definition empty_auto :: "(unit,'a)auto" where
+"empty_auto = \<lparr> auto.lts = {}, start = (), finals = {}\<rparr>"
+
+definition eps_auto :: "(unit,'a)auto" where
+"eps_auto = \<lparr> auto.lts = {}, start = (), finals = {()}\<rparr>"
+
+definition one_of_lts :: "'l set \<Rightarrow> (bool, 'l)lts" where
+"one_of_lts C = (\<Union> c\<in>C. {(False, c, True)})"
+
+definition one_of_auto :: "'l set \<Rightarrow> (bool, 'l)auto" where
+"one_of_auto C = \<lparr> auto.lts = one_of_lts C, start = False, finals = {True} \<rparr>"
+
+lemma steps_lts_one_of_lts: "steps_lts (one_of_lts C) w True = (if w=[] then {True} else {})"
+using Steps_lts_path by(force simp:neq_Nil_conv image_def Steps_lts_Cons one_of_lts_def)
+
+lemma one_of_lts_False: "(one_of_lts C `` {False}) `` {a} = (if a\<in>C then {True} else {})"
+by(auto simp: image_def one_of_lts_def)
+
+lemma True_in_steps_one_of_ltsD: "True \<in> steps_lts (one_of_lts C) w False \<Longrightarrow> \<exists>c \<in> C. w = [c]"
+  apply(cases w)
+  apply (simp add: one_of_lts_def)
+  apply (simp add: steps_lts_one_of_lts Steps_lts_Cons one_of_lts_False Steps_lts_noState split: if_splits)
+  done
+
+lemma Lang_auto_one_of_auto: "Lang_auto (one_of_auto C) = (\<lambda>c. [c]) ` C"
+  by(auto simp: one_of_auto_def  Steps_lts_Cons one_of_lts_False dest: True_in_steps_one_of_ltsD)
+
 subsection \<open>Sequential Composition of Automata\<close>
 
 text \<open>We will later provide concrete example of automata accepting specific languages.

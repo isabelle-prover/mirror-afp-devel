@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Correctness and Complexity of BMSSP in Isabelle/HOL - Archive of Formal Proofs</title>
+    <meta name="description" content="Correctness and Complexity of BMSSP in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="Correctness and Complexity of BMSSP in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="Correctness and Complexity of BMSSP in Isabelle/HOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/BMSSP_Correctness.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>orrectness and <span class='first'>C</span>omplexity of <span class='first'>B</span><span class='first'>M</span><span class='first'>S</span><span class='first'>S</span><span class='first'>P</span> in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">June 12, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This development formalizes the bounded multi-source shortest path
+(BMSSP) algorithm underlying the deterministic directed single-source
+shortest path algorithm of Duan, Mao, Mao, Shu, and Yin [2]. It
+proves three explicit claims. First, the executable bmssp_distances
+computes the exact reachable shortest-distance map for well-formed
+f
+inite natural weighted digraphs. Second, a separate costed BMSSP
+recurrence satisfies the O(mlog2/3 n) bound under the abstract In
+sert/BatchPrepend/Pull operation-cost interface. Third, the bucketed
+partition operations realize the primitive costs required by that interface.
+The formalization does not state a single generated-code machine-step
+theorem for the executable. The entry also exports executable SML
+and includes a checked worked shortest-path example whose evaluated
+output is [(0,0),(1,3),(2,5),(3,8),(4,6)]</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Codex with gpt 5.5 on xhigh was used to help with proof engineering
+
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms/graph/">Computer science/Algorithms/Graph</a></li>
+      </ul>
+      <h3>Session BMSSP_Correctness</h3>
+      <ul>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Correctness.html">BMSSP_Correctness</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Algorithm_Correctness.html">BMSSP_Algorithm_Correctness</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Shortest_Path_Lemmas.html">BMSSP_Shortest_Path_Lemmas</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Base_Case.html">BMSSP_Base_Case</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Partition_Interface.html">BMSSP_Partition_Interface</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Bucketed_Partition_Internal.html">BMSSP_Bucketed_Partition_Internal</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Bucketed_Partition.html">BMSSP_Bucketed_Partition</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Code_Export.html">BMSSP_Code_Export</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Executable_Base_Case.html">BMSSP_Executable_Base_Case</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Unique_Shortest_Tree.html">BMSSP_Unique_Shortest_Tree</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Find_Pivots_Core.html">BMSSP_Find_Pivots_Core</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Find_Pivots.html">BMSSP_Find_Pivots</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Pull_Minimum.html">BMSSP_Pull_Minimum</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Partition_Pull_Bridge.html">BMSSP_Partition_Pull_Bridge</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Initialization.html">BMSSP_Initialization</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Concrete_Step.html">BMSSP_Concrete_Step</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Concrete_Top_Level.html">BMSSP_Concrete_Top_Level</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Recursive.html">BMSSP_Recursive</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Operational_Pull.html">BMSSP_Operational_Pull</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Complexity.html">BMSSP_Complexity</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Range_Costed.html">BMSSP_Range_Costed</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Exact_Range_Costed.html">BMSSP_Exact_Range_Costed</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Direct_Insert_Costed.html">BMSSP_Direct_Insert_Costed</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Strict_Tie_Breaking.html">BMSSP_Strict_Tie_Breaking</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Partition_Data_Structure.html">BMSSP_Partition_Data_Structure</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Exact_Concrete_Cost.html">BMSSP_Exact_Concrete_Cost</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Top_Level_Bounds.html">BMSSP_Top_Level_Bounds</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Executable_Refinement_Internal.html">BMSSP_Executable_Refinement_Internal</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Executable_Refinement.html">BMSSP_Executable_Refinement</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Executable_Headline.html">BMSSP_Executable_Headline</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Runtime_Instance.html">BMSSP_Runtime_Instance</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Bucketed_Cost_Bridge.html">BMSSP_Bucketed_Cost_Bridge</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Path_Family.html">BMSSP_Path_Family</a></li>
+          <li><a href="../thys/BMSSP_Correctness/BMSSP_Bucketed_Runtime.html">BMSSP_Bucketed_Runtime</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/BMSSP_Correctness/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/BMSSP_Correctness/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/BMSSP_Correctness/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">BMSSP_Correctness-AFP</p>
+        <pre id="copy-text">@article{BMSSP_Correctness-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Correctness and Complexity of BMSSP in Isabelle/HOL},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/BMSSP_Correctness.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-BMSSP_Correctness-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

@@ -1,0 +1,14 @@
+chapter AFP
+
+session Height_Balanced_Tree_Bounds (AFP) = Linear_Recurrences +
+  options [timeout = 300]
+  sessions
+    "HOL-Library"
+    "HOL-Real_Asymp"
+    Lambert_W
+  theories
+    HBT_Bounds
+  document_files
+    "root.tex"
+    "root.bib"
+

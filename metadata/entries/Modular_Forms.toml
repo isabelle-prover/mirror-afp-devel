@@ -1,0 +1,59 @@
+title = "Modular Forms"
+date = 2026-07-04
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry provides the definition and proofs of basic properties of modular forms and modular functions. These are holomorphic or meromorphic functions in the complex upper half plane that satisfy certain symmetries with respect to the modular group $\\text{SL}_2(\\mathbb{Z})$ or a subgroup thereof. They are a cornerstone of modern number theory and an essential ingredient in the proof of Fermat's Last Theorem.</p>
+<p>Most of the work focuses on level 1 modular forms/functions (i.e. the
+full modular group rather than a proper subgroup). Some notable results include:</p>
+<ul>
+<li>Infrastructure to reason about $q$-expansions of periodic functions.</li>
+<li>The valence formula for level 1 meromorphic forms, giving the number of zeros and poles (including both the special cases of modular forms and modular functions).</li>
+<li>Basic level 1 modular forms such as Eisenstein series $E_k$ and the modular discriminant $\\Delta$.</li>
+<li>The Ramanujan $\\tau$ function and the identity $\\Delta = (2\\pi)^{12}\\eta^24$ relating the modular discriminant to the Dedekind $\\eta$ function.</li>
+<li>Properties of Klein's $J$ invariant, including bijectivity, non-conformality, covering properties, and that the level 1 modular functions are exactly the rational functions of $J$.</li>
+<li>The graded ring structure of the space of modular forms $\\mathcal M_k$, including its dimension and explicit bases in terms of $E_4$, $E_6$, and $\\Delta$.</li>
+<li>Zagier's theory of level 1 quasimodular forms, including the structure theorem in terms of $E_2$, $E_4$, and $E_6$.</li>
+<li>The Serre derivative operator.</li>
+</ul>
+<p>A number of applications are also provided:</p>
+<ul>
+<li>Ramanujan-type identities for the divisor $\\sigma$ functions (using the Serre derivative and the structure theorem for $\\mathcal M_k$), e.g.
+  \\[20 \\sigma_3(n) = (24 n - 4) \\sigma_1(n) + 48\\sum_{i=1}^{n-1} \\sigma_1(i) \\sigma_1(n-i)\\]</li>
+<li>The Eisenstein inversion theorem, relating elliptic curves to lattices (using the properties of Klein's $J$ invariant).</li>
+<li>A short proof of Picard's Little Theorem using the fact that $J$ is a covering map.</li>
+</ul>
+<p>
+The proofs and definitions mostly follow Apostol's
+<a href=\"https://doi.org/10.1007/978-1-4612-0999-7\"><em>Modular Functions and Dirichlet Series in Number Theory</em></a>.</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[authors.bordg]
+email = "bordg_email"
+
+[authors.paulson]
+email = "paulson_email"
+
+[authors.li]
+email = "li_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

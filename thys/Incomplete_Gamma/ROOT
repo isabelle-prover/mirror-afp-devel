@@ -1,0 +1,11 @@
+chapter AFP
+
+session Incomplete_Gamma (AFP) = Generalized_Hypergeometric_Series +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories  
+    Incomplete_Gamma
+  document_files
+    "root.tex"
+    "root.bib"

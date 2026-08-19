@@ -1,0 +1,42 @@
+title = "Generalised Hypergeometric Series"
+date = 2026-07-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides a formalisation of the generalized hypergeometric series ${}_p F_{q}$, both as a formal power series and as a function in a Banach space. It is defined, for parameters $\\textbf{a}=(a_1,\\ldots,a_p)$ and $\\textbf{b}=(b_1,\\ldots,b_q)$ with $b_i\\notin\\mathbb{Z}_{{\\leq}0}$ as the exponential power series
+\\[F(\\mathbf{a}; \\mathbf{b}; z) = 
+    \\sum_{n\\geq 0} \\frac{{a_1}^{\\overline{n}} \\cdots {a_p}^{\\overline{n}}}
+                        {{b_1}^{\\overline{n}} \\cdots {b_q}^{\\overline{n}}}\\kern2pt \\frac{z^n}{n!}\\]
+where ${a}^{\\overline{n}} = a(a+1)\\ldots(a+n-1)$ is the Pochhammer symbol.</p>
+<p>Basic properties of ${}_p F_{q}$ are proven (uniform convergence, continuity, holomorphicity),
+as well as some important properties for specific instances, such as:</p>
+<ul>
+<li>representations of various trigonometric and hyperbolic functions in terms of ${}_0 F_{1}$ and ${}_2 F_{1}$</li>
+<li>the contiguous identities for ${}_2 F_{1}$ and ${}_1 F_{1}$</li>
+<li>the transformation identity ${}_1 F_1(a;b;z) = e^z {}_1 F_1(b-a;b;-z)$ for Kummer's confluent hypergeometric function</li>
+<li> the fact that ${}_1 F_1$ is a solution of the ODE $a W(x) - (b - x) W'(x) - x W''(x) = 0$</li>
+<li> the fact that the error function can be expressed in terms of ${}_1 F_1$ as $\\text{erf}(z) = \\frac{2}{\\sqrt{\\pi}} z {}_1 F_{1}(\\frac{1}{2};\\frac{3}{2};-z^2)$</li>
+</ul>
+<p>A regularised variant of ${}_p F_{q}$ that is also defined if $b_i\\in\\mathbb{Z}_{{\\leq}\\,0}$ is also provided.</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

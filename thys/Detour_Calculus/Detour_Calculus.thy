@@ -3,46 +3,6 @@ theory Detour_Calculus
   imports "HOL-Complex_Analysis.Complex_Analysis" "Path_Automation.Path_Automation" Detour_Prerequisites
 begin
 
-(* TODO Move *)
-lemma shiftpath_reversepath_loop:
-  assumes "x \<in> {0..1}" "pathstart p = pathfinish p"
-  shows   "shiftpath c (reversepath p) x = reversepath (shiftpath (1-c) p) x"
-  using assms
-  by (auto simp: shiftpath_def reversepath_def algebra_simps pathstart_def pathfinish_def)
-
-(* TODO Move *)
-lemma eqloops_reversepath_cong:
-  assumes "p \<equiv>\<^sub>\<circle> q"
-  shows   "reversepath p \<equiv>\<^sub>\<circle> reversepath q"
-proof -
-  obtain c where pq:
-     "pathstart p = pathfinish p" "pathstart q = pathfinish q" "path q" "p \<equiv>\<^sub>p shiftpath' c q"
-    using assms unfolding eq_loops_def by blast
-
-  have "reversepath p \<equiv>\<^sub>p shiftpath' (1-frac c) (reversepath q)"
-  proof -
-    have "reversepath p \<equiv>\<^sub>p reversepath (shiftpath' c q)"
-      by (intro eq_paths_reverse pq)
-    also have "shiftpath' c q = shiftpath' (frac c) q"
-      by (simp add: shiftpath'_frac)
-    also have *: "reversepath (shiftpath' (frac c) q) \<equiv>\<^sub>p reversepath (shiftpath (frac c) q)"
-      by (rule eq_paths_sym, intro eq_paths_reverse eq_paths_shiftpath_shiftpath')
-         (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
-    also have "\<dots> \<equiv>\<^sub>p shiftpath (1 - frac c) (reversepath q)"
-    proof (rule eq_paths_refl')
-      show "reversepath (shiftpath (frac c) q) x = shiftpath (1 - frac c) (reversepath q) x" 
-        if "x \<in> {0..1}" for x
-        using that pq by (subst shiftpath_reversepath_loop) auto
-    qed (use * in blast)
-    also have "\<dots> \<equiv>\<^sub>p shiftpath' (1 - frac c) (reversepath q)"
-      by (intro eq_paths_shiftpath_shiftpath') (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
-    finally show ?thesis .
-  qed
-  thus ?thesis
-    using pq unfolding eq_loops_def by auto
-qed
-
-
 subsection \<open>Local deformations of a path\<close>
 
 locale detour_rel_aux_locale =

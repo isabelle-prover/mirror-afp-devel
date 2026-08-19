@@ -4,11 +4,39 @@
     <title>Ruy Jose Guerra Barretto de Queiroz</title>
     <link>https://isa-afp.org/authors/queiroz/</link>
     <description>AFP entries of Ruy Jose Guerra Barretto de Queiroz</description><item>
+  <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
+  <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Checking Equality-Saturation Merge and Extraction Certificates in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>The Chevalley-Warning Theorem</title>
+  <link>https://isa-afp.org/entries/Chevalley_Warning.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Chevalley-Warning Theorem in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Correctness and Complexity of BMSSP in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/BMSSP_Correctness.html</link>
+  <pubDate>Fri, 12 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Correctness and Complexity of BMSSP in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+</item>
+<item>
   <title>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method</title>
   <link>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
   <description>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method in the AFP</description>
     <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Freiman&#39;s 3k - 4 Theorem</title>
+  <link>https://isa-afp.org/entries/Freiman_3k_4.html</link>
+  <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Freiman&#39;s 3k - 4 Theorem in the AFP</description>
     <category>Mathematics/Combinatorics</category>
 </item>
 <item>

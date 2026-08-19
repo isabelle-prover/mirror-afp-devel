@@ -873,7 +873,7 @@ locale Confl = Params map_fm params_fm is_param
     params_fm :: \<open>'fm \<Rightarrow> 'x set\<close> and
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> 'fm list \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<crossmark>\<close> 50)
-  assumes confl_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<crossmark> qs \<Longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<crossmark> map (map_fm f) qs\<close>
+  assumes confl_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<crossmark> qs \<Longrightarrow> is_subst f \<Longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<crossmark> map (map_fm f) qs\<close>
 begin
 
 inductive cond where
@@ -923,7 +923,7 @@ next
     fix S ps qs q
 
     assume \<open>S \<in> mk_alt_consistency C\<close>
-    then obtain f where f: \<open>map_fm f ` S \<in> C\<close>
+    then obtain f where f: \<open>is_subst f\<close> \<open>map_fm f ` S \<in> C\<close>
       unfolding mk_alt_consistency_def by blast
 
     let ?C = \<open>mk_alt_consistency C\<close>
@@ -935,7 +935,7 @@ next
 
     assume \<open>ps \<leadsto>\<^sub>\<crossmark> qs\<close>
     then have \<open>map (map_fm f) ps \<leadsto>\<^sub>\<crossmark> (map (map_fm f) qs)\<close>
-      using confl_map by blast
+      using confl_map f(1) by blast
     then have \<open>\<forall>q \<in> set  (map (map_fm f) qs). q \<notin> ?S\<close>
       using conflC f * by blast
     then have \<open>\<forall>q \<in> set qs. map_fm f q \<notin> ?S\<close>
@@ -1014,7 +1014,7 @@ locale Alpha = Params map_fm params_fm is_param
     params_fm :: \<open>'fm \<Rightarrow> 'x set\<close> and
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> 'fm list \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<alpha>\<close> 50)
-  assumes alpha_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<alpha> qs \<longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<alpha> map (map_fm f) qs\<close>
+  assumes alpha_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<alpha> qs \<Longrightarrow> is_subst f \<Longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<alpha> map (map_fm f) qs\<close>
 begin
 
 inductive cond where
@@ -1073,7 +1073,7 @@ next
 
     assume \<open>ps \<leadsto>\<^sub>\<alpha> qs\<close>
     then have \<open>map (map_fm f) ps \<leadsto>\<^sub>\<alpha> (map (map_fm f) qs)\<close>
-      using alpha_map by blast
+      using alpha_map f(1) by blast
     then have \<open>set (map (map_fm f) qs) \<union> ?S \<in> C\<close>
       using alphaC * f by blast
     then show \<open>set qs \<union> S \<in> ?C\<close>
@@ -1171,7 +1171,7 @@ locale Beta = Params map_fm params_fm is_param
     params_fm :: \<open>'fm \<Rightarrow> 'x set\<close> and
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> 'fm list \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<beta>\<close> 50)
-  assumes beta_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<beta> qs \<longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<beta> map (map_fm f) qs\<close>
+  assumes beta_map: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<beta> qs \<Longrightarrow> is_subst f \<Longrightarrow> map (map_fm f) ps \<leadsto>\<^sub>\<beta> map (map_fm f) qs\<close>
 begin
 
 inductive cond where
@@ -1230,7 +1230,7 @@ next
 
     assume \<open>ps \<leadsto>\<^sub>\<beta> qs\<close>
     then have \<open>map (map_fm f) ps \<leadsto>\<^sub>\<beta> (map (map_fm f) qs)\<close>
-      using beta_map by blast
+      using beta_map f(1) by blast
     then have \<open>\<exists>q \<in> set (map (map_fm f) qs). {q} \<union> ?S \<in> C\<close>
       using betaC * f by blast
     then show \<open>\<exists>q \<in> set qs. insert q S \<in> ?C\<close>
@@ -1347,11 +1347,11 @@ locale Gamma = Params map_fm params_fm is_param
     params_fm :: \<open>'fm \<Rightarrow> 'x set\<close> and
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> ('fm set \<Rightarrow> 'tm set) \<times> ('tm \<Rightarrow> 'fm list) \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<gamma>\<close> 50)
-  assumes gamma_map: \<open>\<And>ps F qs f. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> (\<exists>G rs. map (map_fm f) ps \<leadsto>\<^sub>\<gamma> (G, rs) \<and>
+  assumes gamma_map: \<open>\<And>ps F qs f. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> is_subst f \<Longrightarrow> (\<exists>G rs. map (map_fm f) ps \<leadsto>\<^sub>\<gamma> (G, rs) \<and>
       (\<forall>S. map_tm f ` F S \<subseteq> G (map_fm f ` S)) \<and>
       (\<forall>t. map (map_fm f) (qs t) = rs (map_tm f t)))\<close>
-    and gamma_mono: \<open>\<And>ps F qs S S'. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> F S \<subseteq> F S'\<close>
-    and gamma_fin: \<open>\<And>ps F qs t A. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> t \<in> F A \<Longrightarrow> \<exists>B \<subseteq> A. finite B \<and> t \<in> F B\<close>
+    and gamma_mono: \<open>\<And>ps F qs S S'. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> is_subst f \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> F S \<subseteq> F S'\<close>
+    and gamma_fin: \<open>\<And>ps F qs t A. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> is_subst f \<Longrightarrow> t \<in> F A \<Longrightarrow> \<exists>B \<subseteq> A. finite B \<and> t \<in> F B\<close>
 begin
 
 inductive cond where
@@ -1417,7 +1417,7 @@ next
       \<open>map (map_fm f) ps \<leadsto>\<^sub>\<gamma> (G, rs)\<close>
       \<open>\<forall>S. map_tm f ` F S \<subseteq> G (map_fm f ` S)\<close>
       \<open>\<forall>t. map (map_fm f) (qs t) = rs (map_tm f t)\<close>
-      using gamma_map ** by meson
+      using gamma_map ** f(1) by meson
     then have \<open>set (rs (map_tm f t)) \<union> ?S \<in> C\<close>
       using gammaC f * t by blast
     then have \<open>set (map (map_fm f) (qs t)) \<union> ?S \<in> C\<close>
@@ -1452,7 +1452,7 @@ next
         using 1 2 by (meson Diff_subset_conv equalityD2 finite_Diff)
 
       obtain B where B: \<open>B \<subseteq> S\<close> \<open>finite B\<close> \<open>t \<in> F B\<close>
-        using ** t gamma_fin by meson
+        using ** t gamma_fin by (meson is_subst_id)
 
       let ?S = \<open>set ps \<union> A \<union> B\<close>
 
@@ -1533,7 +1533,7 @@ locale Gamma_UNIV = Params map_fm params_fm is_param
     params_fm :: \<open>'fm \<Rightarrow> 'x set\<close> and
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> ('tm \<Rightarrow> 'fm list) \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<gamma>''\<close> 50)
-  assumes gamma_map_UNIV: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<gamma>' qs \<Longrightarrow> \<exists>rs. map (map_fm f) ps \<leadsto>\<^sub>\<gamma>' rs \<and>
+  assumes gamma_map_UNIV: \<open>\<And>ps qs f. ps \<leadsto>\<^sub>\<gamma>' qs \<Longrightarrow> is_subst f \<Longrightarrow> \<exists>rs. map (map_fm f) ps \<leadsto>\<^sub>\<gamma>' rs \<and>
       (\<forall>t. map (map_fm f) (qs t) = rs (map_tm f t))\<close>
 begin
 
@@ -1546,6 +1546,7 @@ sublocale Gamma_UNIV \<subseteq> Gamma map_tm map_fm params_fm is_param classify
 proof
   show \<open>\<And>ps F qs f.
        (case (F, qs) of (F, qs) \<Rightarrow> F = (\<lambda>_. UNIV) \<and> ps \<leadsto>\<^sub>\<gamma>' qs) \<Longrightarrow>
+       is_subst f \<Longrightarrow>
        \<exists>G rs.
           (case (G, rs) of (F, qs) \<Rightarrow> F = (\<lambda>_. UNIV) \<and> map (map_fm f) ps \<leadsto>\<^sub>\<gamma>' qs) \<and>
           (\<forall>S. map_tm f ` F S \<subseteq> G (map_fm f ` S)) \<and> (\<forall>t. map (map_fm f) (qs t) = rs (map_tm f t))\<close>
@@ -1745,7 +1746,7 @@ locale Modal = Params map_fm params_fm is_param
     is_param :: \<open>'x \<Rightarrow> bool\<close> +
   fixes classify :: \<open>'fm list \<Rightarrow> ('fm set \<Rightarrow> 'fm set) \<times> 'fm list \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<box>\<close> 50)
     and hint :: \<open>'fm set \<Rightarrow> bool\<close>
-  assumes modal_map: \<open>\<And>ps F qs f. ps \<leadsto>\<^sub>\<box> (F, qs) \<Longrightarrow> \<exists>G. map (map_fm f) ps \<leadsto>\<^sub>\<box> (G, map (map_fm f) qs) \<and>
+  assumes modal_map: \<open>\<And>ps F qs f. ps \<leadsto>\<^sub>\<box> (F, qs) \<Longrightarrow> is_subst f \<Longrightarrow> \<exists>G. map (map_fm f) ps \<leadsto>\<^sub>\<box> (G, map (map_fm f) qs) \<and>
       (\<forall>S. map_fm f ` F S \<subseteq> G (map_fm f ` S))\<close>
     and modal_mono: \<open>\<And>ps F qs S S'. ps \<leadsto>\<^sub>\<box> (F, qs) \<Longrightarrow> S \<subseteq> S' \<Longrightarrow> F S \<subseteq> F S'\<close>
     and modal_fin: \<open>\<And>ps F qs S A. ps \<leadsto>\<^sub>\<box> (F, qs) \<Longrightarrow> finite A \<Longrightarrow> A \<subseteq> F S \<Longrightarrow> \<exists>S' \<subseteq> S. finite S' \<and> A \<subseteq> F S'\<close>
@@ -1813,7 +1814,7 @@ next
     obtain G where G:
       \<open>map (map_fm f) ps \<leadsto>\<^sub>\<box> (G, map (map_fm f) qs)\<close>
       \<open>\<forall>S. map_fm f ` F S \<subseteq> G (map_fm f ` S)\<close>
-      using modal_map ** by meson
+      using modal_map ** f(1) by meson
     then have \<open>set (map (map_fm f) qs) \<union> G ?S \<in> C\<close>
       using modalC f * by blast
     then have \<open>set (map (map_fm f) qs) \<union> map_fm f ` F S \<in> C\<close>

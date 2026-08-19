@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Wei De Leong</title>
+    <link>https://isa-afp.org/authors/leong/</link>
+    <description>AFP entries of Wei De Leong</description><item>
+  <title>Formalization of 3-independence of simple tabulation hashing</title>
+  <link>https://isa-afp.org/entries/Tabulation_Hashing.html</link>
+  <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of 3-independence of simple tabulation hashing in the AFP</description>
+    <category>Computer science/Algorithms/Randomized</category>
+</item>
+
+  </channel>
+</rss>

@@ -59,6 +59,12 @@ definition isNt :: "('n, 't) sym \<Rightarrow> bool" where
 fun destTm :: "('n, 't) sym  \<Rightarrow> 't" where 
 \<open>destTm (Tm a) = a\<close>
 
+lemma inj_Tm: "inj Tm"
+by (simp add: inj_def)
+
+lemma inj_Nt: "inj Nt"
+by (simp add: inj_def)
+
 lemma isNt_simps[simp,code]:
   \<open>isNt (Nt A) = True\<close>
   \<open>isNt (Tm a) = False\<close> 
@@ -125,9 +131,6 @@ definition Rhss :: "('n \<times> 'a) set \<Rightarrow> 'n \<Rightarrow> 'a set" 
 
 lemma Rhss_code[code]: "Rhss P A = snd ` {Aw \<in> P. fst Aw = A}"
 by(auto simp add: Rhss_def image_iff)
-
-lemma inj_Nt: "inj Nt"
-by (simp add: inj_def)
 
 lemma map_Tm_inject_iff[simp]: "map Tm xs = map Tm ys \<longleftrightarrow> xs = ys"
 by (metis sym.inject(2) list.inj_map_strong)
@@ -410,6 +413,15 @@ lemma derives_Nts_syms_subset:
   "P \<turnstile> u \<Rightarrow>* v \<Longrightarrow> Nts_syms v \<subseteq> Nts_syms u \<union> Rhs_Nts P"
   by (auto simp: rtranclp_power dest!: deriven_Nts_syms_subset)
 
+lemma derive_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow> \<beta> \<Longrightarrow> Nts_syms \<beta> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<alpha> \<subseteq> Nts P"
+ apply(frule derive_Nts_syms_subset) 
+by (auto simp: derive.simps Nts_Lhss_Rhs_Nts intro: in_LhssI)
+
+lemma derives_Nts_iff: "P \<turnstile> \<alpha> \<Rightarrow>* \<beta> \<Longrightarrow> Nts_syms \<alpha> \<subseteq> Nts P \<longleftrightarrow> Nts_syms \<beta> \<subseteq> Nts P"
+apply(induction rule: rtranclp.induct)
+ apply simp
+by (meson derive.intros derive_Nts_iff)
+
 lemma derive_Tms_syms_subset:
   "P \<turnstile> u \<Rightarrow> v \<Longrightarrow> Tms_syms v \<subseteq> Tms_syms u \<union> Tms P"
 by(auto simp: Tms_def derive_iff)
@@ -443,6 +455,12 @@ lemma deriven_from_empty[simp]:
 lemma derives_from_empty[simp]:
   "\<G> \<turnstile> [] \<Rightarrow>* w \<longleftrightarrow> w = []"
   by (auto elim: converse_rtranclpE)
+
+lemma derive_map_TmD:
+  assumes "P \<turnstile> \<alpha> \<Rightarrow> map Tm w"
+  obtains u v X x where 
+    "\<alpha> = map Tm u @ Nt X # map Tm x" "P \<turnstile> [Nt X] \<Rightarrow> map Tm v" "w = u @ v @ x"
+using assms by(auto simp add: derive.simps append_eq_iffs)
 
 lemma derives_rule:
   assumes 2: "(A,w) \<in> R" and 1: "R \<turnstile> x \<Rightarrow>* y @ Nt A # z" and 3: "R \<turnstile> y@w@z \<Rightarrow>* v"
@@ -1216,6 +1234,54 @@ abbreviation derivern ("(2_ \<turnstile>/ (_ \<Rightarrow>r'(_')/ _))" [50, 0, 0
 "P \<turnstile> u \<Rightarrow>r(n) v \<equiv> ((deriver P) ^^ n) u v"
 
 
+lemma derivers_induct[consumes 1, case_names base step]:
+  assumes "P \<turnstile> xs \<Rightarrow>r* ys"
+  and "Q xs"
+  and "\<And>u A v \<alpha>. \<lbrakk> P \<turnstile> xs \<Rightarrow>r* u @ Nt A # map Tm v; Q (u @ Nt A # map Tm v); (A,\<alpha>) \<in> P \<rbrakk> 
+      \<Longrightarrow> Q (u @ \<alpha> @ map Tm v)"
+  shows "Q ys"
+using assms
+proof (induction rule: rtranclp_induct)
+  case base
+  from this(1) show ?case .
+next
+  case (step y z)
+  from deriver.cases[OF step(2)] step(1,3-) show ?case by metis
+qed
+
+lemma converse_derivers_induct[consumes 1, case_names base step]:
+  assumes "P \<turnstile> xs \<Rightarrow>r* ys"
+  and "Q ys"
+  and "\<And>A \<alpha> u v. \<lbrakk>(A, \<alpha>) \<in> P; P \<turnstile> u @ \<alpha> @ map Tm v \<Rightarrow>r* ys; Q (u @ \<alpha> @ map Tm v)\<rbrakk> 
+    \<Longrightarrow> Q (u @ Nt A # map Tm v)"
+shows "Q xs"
+  using assms proof (induction rule: converse_rtranclp_induct)
+  case base
+  from this(1) show ?case .
+next
+  case (step y z)
+  from deriver.cases[OF step(1)] step(2-) show ?case by metis
+qed
+
+lemma derivern_induct[consumes 1, case_names 0 Suc]:
+  assumes "P \<turnstile> xs \<Rightarrow>r(n) ys"
+  and "Q 0 xs"
+  and "\<And>n u A v w. \<lbrakk> P \<turnstile> xs \<Rightarrow>r(n) u @ Nt A#map Tm v; Q n (u @ Nt A#map Tm v); (A,w) \<in> P \<rbrakk> 
+    \<Longrightarrow> Q (Suc n) (u @ w @ map Tm v)"
+  shows "Q n ys"
+using assms(1) proof (induction n arbitrary: ys)
+  case 0
+  thus ?case using assms(2) by auto
+next
+  case (Suc n)
+  from relpowp_Suc_E[OF Suc.prems]
+  obtain xs' where n: "P \<turnstile> xs \<Rightarrow>r(n) xs'" and 1: "P \<turnstile> xs' \<Rightarrow>r ys" by auto
+  from deriver.cases[OF 1] obtain u A v w where "xs' = u @ Nt A # map Tm v" "(A,w) \<in> P" "ys = u @ w @ map Tm v"
+    by metis
+  with Suc.IH[OF n] assms(3) n
+  show ?case by blast
+qed
+
 lemma derivel_iff: "R \<turnstile> u \<Rightarrow>l v \<longleftrightarrow>
  (\<exists> (A,w) \<in> R. \<exists>u1 u2. u = map Tm u1 @ Nt A # u2 \<and> v = map Tm u1 @ w @ u2)"
   by (auto simp: derivel.simps)
@@ -1591,6 +1657,11 @@ lemma derivern_append_map_Tm:
   "P \<turnstile> u @ map Tm w \<Rightarrow>r(n) v \<longleftrightarrow> (\<exists>x. v = x @ map Tm w \<and> P \<turnstile> u \<Rightarrow>r(n) x)"
   by (fastforce simp: derivern_iff_rev_deriveln rev_map deriveln_map_Tm_append rev_eq_append_conv)
 
+lemma app_derivers_app_map_Tm:
+  "\<lbrakk> P \<turnstile> \<alpha> \<Rightarrow>r* \<alpha>';  P \<turnstile> \<beta> \<Rightarrow>r* map Tm v \<rbrakk> \<Longrightarrow> P \<turnstile> \<alpha> @ \<beta> \<Rightarrow>r* \<alpha>' @ map Tm v"
+  using derivern_append_map_Tm rtranclp_power derivern_prepend 
+  by (metis (no_types, lifting) rtranclp_power rtranclp_trans)
+
 lemma deriver_snoc_Nt:
   "P \<turnstile> u @ [Nt A] \<Rightarrow>r v \<longleftrightarrow> (\<exists>w. (A,w) \<in> P \<and> v = u @ w)"
   by (force simp: deriver_iff_rev_derivel derivel_Nt_Cons rev_eq_append_conv)
@@ -1647,6 +1718,14 @@ proof-
     using decomp1 decomp_tms by auto
   then show ?thesis by blast
 qed
+
+lemma Nt_map_Tm_eq_Nt_map_TmD:
+  "\<alpha> @ Nt A # map Tm u = \<alpha>' @ Nt A' # map Tm u' \<Longrightarrow> \<alpha>=\<alpha>' \<and> A=A' \<and> u=u'"
+by(auto simp: append_eq_iffs)
+
+lemma Nt_map_Tm_eq_Nt_map_Tm_iff[simp]:
+  "\<alpha> @ Nt A # map Tm u = \<alpha>' @ Nt A' # map Tm u' \<longleftrightarrow> \<alpha>=\<alpha>' \<and> A=A' \<and> u=u'"
+by(auto simp: append_eq_iffs)
 
 subsection \<open>Pumping\<close>
 

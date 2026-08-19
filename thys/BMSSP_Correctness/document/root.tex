@@ -1,0 +1,364 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{microtype}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+\usepackage{booktabs}
+\usepackage{tabularx}
+\usepackage{seqsplit}
+
+\newcolumntype{Y}{>{\raggedright\arraybackslash}X}
+% \thy / \thm / \cmd render Isabelle identifiers in typewriter and allow
+% line breaks at every underscore.  The url package's \path command
+% already supports this and handles the literal underscore character
+% without needing math-mode escaping.  When invoked inside math mode
+% we wrap in \mbox{} so \path's verbatim-like catcode changes do not
+% corrupt the surrounding math context.
+\newcommand{\bmsspidpath}[1]{\path{#1}}
+\newcommand{\bmsspid}[1]{\ifmmode\mbox{\bmsspidpath{#1}}\else\bmsspidpath{#1}\fi}
+\newcommand{\thy}[1]{\bmsspid{#1}}
+\newcommand{\thm}[1]{\bmsspid{#1}}
+\newcommand{\cmd}[1]{\bmsspid{#1}}
+\emergencystretch=3em
+
+\isabellestyle{it}
+% Isabelle's italic document style renders underscores as hyphens in
+% generated proof text.  Make those separators breakable so long theorem
+% and rule names do not run past the page edge.
+\def\isacharunderscore{\discretionary{-}{}{-}}
+\def\isacharunderscorekeyword{\discretionary{-}{}{-}}
+
+\begin{document}
+
+\title{Correctness and Complexity of BMSSP in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes the bounded multi-source shortest path (BMSSP)
+subproblem underlying the deterministic directed single-source shortest path
+algorithm of Duan, Mao, Mao, Shu, and Yin~\cite{DuanMaoMaoShuYin2025}.
+It proves three explicit claims.  First, the executable
+\texttt{bmssp\_distances} computes the exact reachable shortest-distance map
+for well-formed finite natural weighted digraphs; this executable instantiates
+the bucketed work-list with block size one, so it is a verified Dijkstra-style
+instantiation of the bucketed partition, proved directly against the
+shortest-path semantics rather than by refining the recursive cost relation.
+Second, a separate costed BMSSP recurrence---a recursive inductive relation, not
+runnable code---satisfies the \(O(m \log^{2/3} n)\) bound under the abstract
+Insert/BatchPrepend/Pull operation-cost interface; a cost bridge shows the
+concrete bucketed operation costs fill the recurrence's cost slots at the
+logarithmic schedule scales, so the bound holds with the bucketed costs rather
+than free parameters, and a non-conditional runtime theorem charges those
+bucketed costs inside the recurrence under exactly the standing hypotheses of
+the abstract headline.  Third, the bucketed partition operations realize the
+primitive costs required by that interface.  The runtime locale is shown
+non-vacuous not only at one fixed graph but across a size-indexed family of
+directed paths of every size.  The formalization does not state a single
+generated-code machine-step theorem for the executable, and the executable and
+the asymptotic analysis are separate checked artifacts that share the partition
+primitives.  The entry also exports executable SML and includes a checked worked
+shortest-path example whose evaluated output is
+\([(0,0),(1,3),(2,5),(3,8),(4,6)]\).
+
+AI assistance was used for proof engineering. The final definitions,
+statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\section{Background}
+
+The single-source shortest path problem asks for the distance from one source
+vertex to every reachable vertex of a directed graph with non-negative edge
+weights.  Dijkstra's algorithm~\cite{Dijkstra1959} is the classical starting
+point: it maintains tentative labels and repeatedly settles a vertex of
+minimum tentative distance.  With Fibonacci heaps, Fredman and
+Tarjan~\cite{FredmanTarjan1987} obtained the well-known
+\(O(m+n\log n)\) implementation for graphs with \(n\) vertices and \(m\)
+edges.  For sparse directed graphs this bound became the standard deterministic
+barrier: the logarithmic sorting-like term is paid by the priority-queue
+discipline that extracts vertices one by one.
+
+Duan, Mao, Mao, Shu, and Yin~\cite{DuanMaoMaoShuYin2025} break this barrier
+by changing the recursive unit of work.  Their algorithm is not simply
+Dijkstra with a faster heap.  The central object is BMSSP, a bounded
+multi-source shortest path subproblem.  A BMSSP call starts from a set of
+already relevant sources and an upper bound \(B\).  It only has to complete
+vertices whose shortest distances fall below the bound and whose shortest
+paths pass through the current source set.  Recursive calls therefore work on
+ranges of distances rather than on one global queue of all unsettled vertices.
+
+The formalization follows that structure.  At the correctness level, the
+algorithm is expressed in terms of finite directed graphs, simple walks,
+shortest-path distances, and BMSSP pre/postconditions.  At the cost level, the
+recursive proof is parameterized by an abstract partition interface with
+Insert, BatchPrepend, and Pull operations.  The runtime theorem is proved once
+against that interface and the paper's logarithmic schedule.  The concrete
+bucketed data structure is then shown to realize the interface with the
+critical operation bounds.  This cost statement is separate from the
+functional-correctness theorem for the exported executable.
+
+The essential improvement is the ratio inside the logarithm.  A sorted-list
+or ordinary balanced-tree representation searches among all \(N\) live
+entries and naturally gives a \(\log N\) term.  The paper's partition
+structure searches among bucket boundaries, so Insert pays
+\(O(\max(1,\log(N/M)))\), where \(M\) is the block-size parameter.  With the
+schedule used by the recursive BMSSP analysis, this distinction is exactly
+what preserves the \(O(m \log^{2/3} n)\) headline.
+
+\section{Roadmap of the Formalization}
+
+The formal development is organized by proof layer.  The table below gives one
+or two primary entry points for each layer and the checked surface that a
+reader should look for there; supporting theories appear nearby in the session
+order.
+
+\begin{center}
+\small
+\begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth}
+  >{\raggedright\arraybackslash}p{0.28\textwidth}Y@{}}
+\toprule
+\textbf{Layer} & \textbf{Start here} & \textbf{Checked surface} \\
+\midrule
+\textbf{Semantic target} &
+\thy{BMSSP_Correctness} &
+Finite weighted digraphs, shortest-path distances, BMSSP pre/postconditions,
+and root-call correctness for ordinary SSSP. \\
+\addlinespace
+\textbf{Recursive BMSSP} &
+\thy{BMSSP_Algorithm_Correctness};
+\thy{BMSSP_Recursive} &
+Correctness of FindPivots, base cases, partition-loop traces, recursive calls,
+and final assembly of completed vertices. \\
+\addlinespace
+\textbf{Partition interface} &
+\thy{BMSSP_Partition_Interface};
+\thy{BMSSP_Partition_Pull_Bridge} &
+Abstract Insert, BatchPrepend, and Pull contracts, with the algebraic cost
+predicates used by the recurrence proof. \\
+\addlinespace
+\textbf{Cost recurrence} &
+\thy{BMSSP_Top_Level_Bounds} &
+The logarithmic parameter schedule and the cost-model theorem
+\thm{bmssp_runtime_bigo_target}. \\
+\addlinespace
+\textbf{Bucketed data structure} &
+\thy{BMSSP_Bucketed_Partition} &
+Concrete bucketed operations satisfying
+\thm{bp_insert_cost_bound}, \thm{bp_batch_prepend_cost_bound},
+\thm{bp_pull_cost_bound}, and the interface facts
+\thm{bp_realises_partition_insert_cost_bound},
+\thm{bp_realises_partition_batch_cost_bound}, and
+\thm{bp_realises_partition_pull_cost_bound}. \\
+\addlinespace
+\textbf{Executable artifact} &
+\thy{BMSSP_Executable_Headline} &
+The executable \texttt{bmssp\_distances}, the checked example
+\thm{example_bmssp_correct}, and the headline theorem
+\thm{bmssp_correct_strong}. \\
+\addlinespace
+\textbf{Cost bridge} &
+\thy{BMSSP_Bucketed_Cost_Bridge} &
+Connects the bucketed operation costs to the recurrence cost slots at the
+logarithmic schedule scales; capstone
+\thm{bucketed_refined_cost_bigo_sssp_time_target}. \\
+\addlinespace
+\textbf{Runtime family} &
+\thy{BMSSP_Path_Family} &
+A directed-path runtime instance of every size; the bound
+\thm{path_family_runtime_bigo_target} with edge count
+\thm{path_family_edge_count} growing without bound. \\
+\addlinespace
+\textbf{Non-conditional runtime} &
+\thy{BMSSP_Bucketed_Runtime} &
+The hypothesis-free \thm{bmssp_bucketed_runtime_bigo_target}: the bucketed
+operation costs charged inside the recurrence yield
+\(O(m \log^{2/3} n)\), via the decoupled amortised bound
+\thm{finite_initial_label_decoupled_amortized}. \\
+\bottomrule
+\end{tabularx}
+\end{center}
+
+Several additional theories separate the mathematical layers used below:
+shortest-path semantics, abstract BMSSP correctness, costed recurrences,
+partition-interface costs, bucketed primitive operations, executable code, and
+the final executable wrapper.  The cost-model theorems and the executable
+correctness theorem are deliberately separate claims.
+
+\section{Assumptions and Scope}
+
+The entry proves three related, but not identical, layers.
+
+First, the semantic BMSSP development starts from finite weighted digraphs,
+simple walks, shortest-path distances, and a bounded BMSSP pre/postcondition.
+The recursive correctness proof is organized through FindPivots, partition
+loop obligations, complete sources, and bounded distance ranges.
+
+Second, the asymptotic development is a cost-model proof.  It solves the
+costed BMSSP recurrence under the abstract Insert/BatchPrepend/Pull interface,
+uses the logarithmic parameter schedule from the paper, and proves the
+\thm{bmssp_runtime_bigo_target} theorem in the corresponding runtime locale.
+This is not stated as a machine-step bound for generated SML.
+
+Third, the executable development proves functional correctness for the
+exported finite natural-weight graph representation.  The public theorem
+\thm{bmssp_correct_strong} applies to every \(G\) satisfying
+\thm{nat_graph_well_formed}\,\(G\) and every source
+\(\text{src} \in \thm{nat_graph_vertices}\,G\).  It does not assume unique
+shortest paths.  The well-formedness predicate is a representation-side
+condition: the directed edge list is duplicate-free and the total natural edge
+weight is below the executable sentinel \thm{bmssp_infinity}.
+
+\section{The Headline Theorems}
+
+The primary executable correctness statement is
+
+\begin{center}
+\thm{bmssp_correct_strong} \quad in \quad \thy{BMSSP_Executable_Headline}.
+\end{center}
+
+The theorem fixes a finite directed graph \(G\) of natural-numbered vertices
+with non-negative natural edge weights and a source vertex \(\text{src}\).
+The statement is
+
+\begin{quote}
+For every \(G\) with \thm{nat_graph_well_formed}\,\(G\) and every
+\(\text{src}\) in \thm{nat_graph_vertices}\,\(G\):
+\begin{itemize}
+\item the keys of \(\text{bmssp\_distances}\,G\,\text{src}\) are distinct;
+\item the key set is exactly the set of vertices reachable from \(\text{src}\);
+\item every pair \((v, d)\) returned by \(\text{bmssp\_distances}\,G\,\text{src}\)
+      satisfies \(d = \text{nat\_graph\_dist}\,G\,\text{src}\,v\)
+      after coercion to real numbers.
+\end{itemize}
+\end{quote}
+
+Thus the executable theorem is not conditional on a unique-shortest-path or
+tie-breaking assumption.  Its displayed hypotheses are the finite
+natural-graph representation condition and the source-membership condition.
+
+The runtime and bucketed-interface statements are separate public claims.
+\thm{bmssp_runtime_bigo_target} is the cost-model theorem for the abstract
+BMSSP recurrence and logarithmic parameter schedule.  Its closed
+assumption-free form is stated inside the runtime locale; interpreting that
+locale supplies the reduced positive instance, reachability, and bounded
+outdegree hypotheses.  To certify that this locale is inhabited rather than
+vacuous, the theory \thy{BMSSP_Runtime_Instance} interprets it on a concrete
+unit-weight directed path \(0 \to 1 \to 2 \to 3\): it discharges unique
+shortest walks (from the verified simple-walk enumerator), positive weights,
+full reachability, and bounded outdegree, and thereby obtains
+\thm{path_runtime_bigo_target}, the same logarithmic running-time bound as a
+closed, assumption-free statement for an explicit non-trivial graph.  The
+corollaries
+\thm{bp_realises_partition_insert_cost_bound},
+\thm{bp_realises_partition_batch_cost_bound}, and
+\thm{bp_realises_partition_pull_cost_bound} show that the bucketed Insert,
+BatchPrepend, and Pull operations realize the abstract primitive-cost
+predicates used by that recurrence.  The more concrete theorems
+\thm{bp_insert_cost_bound}, \thm{bp_batch_prepend_cost_bound}, and
+\thm{bp_pull_cost_bound} expose the amortised budgets for the bucketed
+implementation itself.
+
+The session build checks all of these claims.  The executable smoke test
+\thm{example_bmssp_correct} also executes the generated code equations on a
+worked five-vertex example with
+\(\text{bmssp\_distances}\,\text{example\_graph}\,0 =
+  [(0,0),(1,3),(2,5),(3,8),(4,6)]\), proved by \texttt{by eval} inside the
+session build itself.
+
+\section{The Bucketed Partition Data Structure}
+
+The partition data structure is the main concrete contribution of the
+executable layer.  It stores tentative labels as key/value pairs grouped into
+buckets.  Each bucket contains an unsorted list of at most \(M\) entries in
+the regular state, and the bucket markers form a monotone directory of lower
+bounds.  The directory, rather than the full set of entries, is the object
+searched by Insert.  If \(N\) entries have been inserted since the last Pull,
+there are only on the order of \(N/M\) buckets, which gives the
+\(\log(N/M)\) search term.
+
+The formal model separates several invariants.  The ordinary invariant states
+that bucket sizes are within the block-size bound, markers are sorted, markers
+are lower bounds for their bucket entries, keys are distinct, and the
+functional value memory agrees with the entries stored in buckets.  The
+ordered invariant additionally states that adjacent bucket boundaries separate
+the value ranges.  The lazy invariant relaxes the size side condition: a
+bucket may temporarily grow up to the lazy threshold before a split is forced.
+
+The amortised analysis is deliberately close to the paper's intuition.  A
+lazy Insert searches the bucket directory, inserts into one bucket, and only
+splits when the bucket has accumulated enough excess entries.  The potential
+function records overflow beyond \(M\) together with a small slack term for
+the number of buckets.  The proofs use a scaled credit invariant, so the
+actual cost of a split is paid by the overflow accumulated by previous
+insertions.  After the split the potential drops, and the amortised Insert
+cost is the directory-search charge plus a constant amount of update work.
+
+BatchPrepend receives a list of new candidates that belong before the
+currently exposed range.  The concrete operation rebuckets that batch and
+prepends the resulting buckets in one operation, which is why its accounting
+is per item rather than a repeated ordinary Insert cost.  Pull removes a first
+bucket when the first-bucket side conditions hold, and its scanned work is
+bounded by the block size.  The theorem names reflect these three conclusions:
+\thm{bp_insert_cost_bound}, \thm{bp_batch_prepend_cost_bound},
+and \thm{bp_pull_cost_bound}.
+
+The session also contains a baseline sorted-list partition model used by the
+exact recurrence and abstraction proofs.  Sorted lists refine the same abstract
+contracts, but they search on \(N\) entries and therefore do not supply the
+paper's \(N/M\) ratio.  The bucketed structure is the implementation connected
+to the active partition-interface realization facts.
+
+\section{Executable Export and Worked Example}
+
+The final theory gives a concrete executable surface.  Vertices and edge
+weights are natural numbers, graphs are finite edge lists, and the work-list
+used by the executable loop is the bucketed partition from
+\thy{BMSSP_Bucketed_Partition}.  The entry point
+\thm{bmssp_distances} computes a finite association list of distances for
+the example graph.
+
+The executable entry point is a finite natural-weight instantiation using the
+bucketed work-list.  Its functional correctness is proved independently
+against the shortest-path semantics.  The asymptotic result applies to the
+costed BMSSP model and bucketed operation interface; the two layers share the
+same partition primitives but are distinct artifacts.  The executable layer
+uses a finite upper sentinel for natural labels; the abstract correctness
+layer uses the \texttt{bound = Fin real | Infinity} datatype.
+
+The example has source \(0\) and five vertices.  The hand-computed distances
+are:
+\[
+  d(0)=0,\quad d(1)=3,\quad d(2)=5,\quad d(3)=8,\quad d(4)=6.
+\]
+The Isabelle theorem
+\[
+  \thm{example_bmssp_correct}
+\]
+states that the executable function returns exactly this association list.
+Its proof is \texttt{by eval}.  Thus the bundled Poly/ML evaluator executes
+the generated code equations during the build; if the executable algorithm or
+the expected map is wrong, the theory does not check.
+
+The same theory contains a \texttt{value} command for human inspection and an
+\cmd{export_code} command that emits SML module \texttt{BMSSP}.  The session
+ROOT file includes an export directive so the generated code can be
+materialized as \texttt{generated/BMSSP.ML}.
+
+\section{Checked Source}
+
+The remainder of this document is the checked Isabelle source.  Definitions,
+theorem statements, proof scripts, and document text are all processed by the
+same session build.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

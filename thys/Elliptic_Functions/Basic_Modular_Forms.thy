@@ -73,9 +73,37 @@ lemma (in complex_lattice) invariant_g2_eq_Eisenstein_G:
   "invariant_g2 = 60 * Eisenstein_G 4 (\<omega>2 / \<omega>1) / \<omega>1 ^ 4"
   unfolding invariant_g2_def eisenstein_series_eq_Eisenstein_G by simp
 
+lemma Eisenstein_G4_conv_theta:
+  assumes z: "Im z > 0"
+  shows   "Eisenstein_G 4 z = pi ^ 4 / 90 * (\<theta>\<^sub>0\<^sub>0(0 ; z) ^ 8 + \<theta>\<^sub>1\<^sub>0(0 ; z) ^ 8 + \<theta>\<^sub>0\<^sub>1(0 ; z) ^ 8)"
+proof -
+  interpret std_complex_lattice z
+    by unfold_locales (use z in auto)
+  have "Eisenstein_G 4 z = invariant_g2 / 60"
+    using invariant_g2_eq_Eisenstein_G by simp
+  also have "\<dots> = pi ^ 4 / 90 * (\<theta>\<^sub>0\<^sub>0(0 ; z) ^ 8 + \<theta>\<^sub>1\<^sub>0(0 ; z) ^ 8 + \<theta>\<^sub>0\<^sub>1(0 ; z) ^ 8)" 
+    by (simp add: invariant_g2_conv_theta theta_00_def theta_01_def theta_10_def)
+  finally show ?thesis .
+qed
+
 lemma (in complex_lattice) invariant_g3_eq_Eisenstein_G:
   "invariant_g3 = 140 * Eisenstein_G 6 (\<omega>2 / \<omega>1) / \<omega>1 ^ 6"
   unfolding invariant_g3_def eisenstein_series_eq_Eisenstein_G by simp
+
+lemma Eisenstein_G6_conv_theta:
+  assumes z: "Im z > 0"
+  shows   "Eisenstein_G 6 z = pi ^ 6 / 945 * ((\<theta>\<^sub>0\<^sub>1(0;z) ^ 4 - \<theta>\<^sub>1\<^sub>0(0;z) ^ 4) *
+             ((\<theta>\<^sub>0\<^sub>0(0;z) ^ 4 + \<theta>\<^sub>0\<^sub>1(0;z) ^ 4) * (\<theta>\<^sub>0\<^sub>0(0;z) ^ 4 + \<theta>\<^sub>1\<^sub>0(0;z) ^ 4)))"
+proof -
+  interpret std_complex_lattice z
+    by unfold_locales (use z in auto)
+  have "Eisenstein_G 6 z = invariant_g3 / 140"
+    using invariant_g3_eq_Eisenstein_G by simp
+  also have "\<dots> = pi ^ 6 / 945 * ((\<theta>\<^sub>0\<^sub>1(0;z) ^ 4 - \<theta>\<^sub>1\<^sub>0(0;z) ^ 4) *
+                    ((\<theta>\<^sub>0\<^sub>0(0;z) ^ 4 + \<theta>\<^sub>0\<^sub>1(0;z) ^ 4) * (\<theta>\<^sub>0\<^sub>0(0;z) ^ 4 + \<theta>\<^sub>1\<^sub>0(0;z) ^ 4)))" 
+    by (simp add: invariant_g3_conv_theta theta_00_def theta_01_def theta_10_def)
+  finally show ?thesis .
+qed
 
 lemma Eisenstein_G_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> Eisenstein_G k z = 0"
   by (simp add: Eisenstein_G_def)
@@ -1312,6 +1340,19 @@ lemma (in complex_lattice) discr_eq_modular_discr: "discr = modular_discr (\<ome
   unfolding discr_def modular_discr_def invariant_g2_def invariant_g3_def
             eisenstein_series_eq_Eisenstein_G
   by (simp add: field_simps)
+
+lemma modular_discr_conv_theta:
+  assumes z: "Im z > 0"
+  shows   "modular_discr z = 16 * pi ^ 12 * (\<theta>\<^sub>0\<^sub>0(0;z) * \<theta>\<^sub>0\<^sub>1(0;z) * \<theta>\<^sub>1\<^sub>0(0;z)) ^ 8"
+proof -
+  interpret std_complex_lattice z
+    by unfold_locales (use z in auto)
+  have "modular_discr z = discr"
+    by (simp add: discr_eq_modular_discr)
+  also have "\<dots> = 16 * pi ^ 12 * (\<theta>\<^sub>0\<^sub>0(0 ; z) * \<theta>\<^sub>0\<^sub>1(0 ; z) * \<theta>\<^sub>1\<^sub>0(0 ; z)) ^ 8"
+    by (simp add: discr_conv_theta theta_00_def theta_01_def theta_10_def)
+  finally show ?thesis .
+qed
 
 lemma modular_discr_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> modular_discr z = 0"
   by (simp add: modular_discr_def)

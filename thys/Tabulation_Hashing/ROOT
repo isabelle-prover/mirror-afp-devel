@@ -1,0 +1,16 @@
+chapter AFP
+
+session Tabulation_Hashing (AFP) = Universal_Hash_Families +
+  options [timeout = 300]
+  sessions
+    Fixed_Length_Vector
+  theories
+    "Xor"
+    "Simple_Tabulation_Hashing"
+  theories [document = false]
+    "Dependent_Product"
+    "Vec_Extras"
+    "Examples"
+  document_files
+    "root.bib"
+    "root.tex"

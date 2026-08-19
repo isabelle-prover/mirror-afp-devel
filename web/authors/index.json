@@ -503,14 +503,14 @@
  },
  {
   "emails": [
-   "eyJ1c2VyIjpbImFzZnIiXSwiaG9zdCI6WyJkaSIsImt1IiwiZGsiXX0="
+   "eyJ1c2VyIjpbImFuZHJvIiwiZnJvbSJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19"
   ],
   "homepages": [
-   "https://astahfrom.github.io/"
+   "https://asta.boserup.eu/"
   ],
   "id": "from",
   "link": "../authors/from/",
-  "name": "Asta Halkjær From"
+  "name": "Asta Halkjær Boserup"
  },
  {
   "emails": [
@@ -1030,6 +1030,14 @@
  },
  {
   "emails": [],
+  "homepages": [],
+  "id": "giusto",
+  "link": "../authors/giusto/",
+  "name": "Cinzia Di Giusto",
+  "orcid": "0000-0003-1563-6581"
+ },
+ {
+  "emails": [],
   "homepages": [
    "http://www21.in.tum.de/~ballarin/"
   ],
@@ -1546,6 +1554,15 @@
   "id": "ausaf",
   "link": "../authors/ausaf/",
   "name": "Fahad Ausaf"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbImZlaWVyNTMwIl0sImhvc3QiOlsiaWNsb3VkIiwiY29tIl19"
+  ],
+  "homepages": [],
+  "id": "lyu",
+  "link": "../authors/lyu/",
+  "name": "Feier Lyu"
  },
  {
   "emails": [
@@ -2516,8 +2533,7 @@
  },
  {
   "emails": [
-   "eyJ1c2VyIjpbImpvbmp1bGlhbjIzIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0=",
-   "eyJ1c2VyIjpbImpqaHVlcnRheW11bml2ZTEiXSwiaG9zdCI6WyJzaGVmZmllbGQiLCJhYyIsInVrIl19"
+   "eyJ1c2VyIjpbImpvbmp1bGlhbjIzIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0="
   ],
   "homepages": [],
   "id": "munive",
@@ -2790,12 +2806,13 @@
  },
  {
   "emails": [
-   "eyJ1c2VyIjpbImtpcnN0aW4iLCJwZXRlcnMiXSwiaG9zdCI6WyJ0dS1iZXJsaW4iLCJkZSJdfQ=="
+   "eyJ1c2VyIjpbImtpcnN0aW4iLCJwZXRlcnMiXSwiaG9zdCI6WyJ1bmktYSIsImRlIl19"
   ],
   "homepages": [],
   "id": "peters",
   "link": "../authors/peters/",
-  "name": "Kirstin Peters"
+  "name": "Kirstin Peters",
+  "orcid": "0000-0002-4281-0074"
  },
  {
   "emails": [],
@@ -2955,6 +2972,16 @@
   "name": "Lina Ye"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbImNsaXJvbiJdLCJob3N0IjpbImJndSIsImFjIiwiaWwiXX0="
+  ],
+  "homepages": [],
+  "id": "cohenl",
+  "link": "../authors/cohenl/",
+  "name": "Liron Cohen",
+  "orcid": "0000-0002-6608-3000"
+ },
+ {
   "emails": [],
   "homepages": [],
   "id": "barthel",
@@ -3012,6 +3039,16 @@
   "link": "../authors/montanari/",
   "name": "Luisa Montanari",
   "orcid": "0000-0002-5270-0290"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbImx1a2FzIiwiYmFydGwiXSwiaG9zdCI6WyJ1bmktYSIsImRlIl19"
+  ],
+  "homepages": [],
+  "id": "bartl",
+  "link": "../authors/bartl/",
+  "name": "Lukas Bartl",
+  "orcid": "0009-0000-2439-5025"
  },
  {
   "emails": [
@@ -4096,6 +4133,16 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbInJldWJlbiIsInJvd2UiXSwiaG9zdCI6WyJyaHVsIiwiYWMiLCJ1ayJdfQ=="
+  ],
+  "homepages": [],
+  "id": "rowe",
+  "link": "../authors/rowe/",
+  "name": "Reuben Rowe",
+  "orcid": "0000-0002-4271-9078"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbImdheSJdLCJob3N0IjpbIm1haXMiLCJpbmZvcm1hdGlrIiwidHUtZGFybXN0YWR0IiwiZGUiXX0="
   ],
   "homepages": [],
@@ -4611,7 +4658,8 @@
   ],
   "id": "holub",
   "link": "../authors/holub/",
-  "name": "Štěpán Holub"
+  "name": "Štěpán Holub",
+  "orcid": "0000-0002-6169-5139"
  },
  {
   "emails": [
@@ -4912,6 +4960,16 @@
   "orcid": "0000-0003-0730-515X"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbInRvYmlhcyIsInJvdGhtYW5uIl0sImhvc3QiOlsidHVtIiwiZGUiXX0="
+  ],
+  "homepages": [],
+  "id": "rothmann",
+  "link": "../authors/rothmann/",
+  "name": "Tobias Rothmann",
+  "orcid": "0009-0000-2343-5793"
+ },
+ {
   "emails": [],
   "homepages": [
    "https://people.eng.unimelb.edu.au/tobym/"
@@ -5073,6 +5131,15 @@
   "id": "guttmann",
   "link": "../authors/guttmann/",
   "name": "Walter Guttmann"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIjB4bGVvbmd3ZWlkZSJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19"
+  ],
+  "homepages": [],
+  "id": "leong",
+  "link": "../authors/leong/",
+  "name": "Wei De Leong"
  },
  {
   "emails": [
@@ -5283,5 +5350,15 @@
   "id": "fan",
   "link": "../authors/fan/",
   "name": "Zixuan Fan"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbInp1emFuYSJdLCJob3N0IjpbImNzIiwiY2FzIiwiY3oiXX0="
+  ],
+  "homepages": [],
+  "id": "hanikova",
+  "link": "../authors/hanikova/",
+  "name": "Zuzana Haniková",
+  "orcid": "0000-0003-3252-4370"
  }
 ]

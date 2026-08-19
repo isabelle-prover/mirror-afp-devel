@@ -1,42 +1,40 @@
+(* Kirstin Peters, TU Berlin, 2015 concerning the reduction semantics and
+   Kirstin Peters, University of Augsburg, 2026 for the labelled semantics *)
+
 theory SourceTargetRelation
-  imports Encodings SimulationRelations
+  imports Encodings SimulationRelations SimulationRelationsOnEncodedLabels
 begin
 
 section \<open>Relation between Source and Target Terms\<close>
 
 subsection \<open>Relations Induced by the Encoding Function\<close>
 
-text \<open>We map encodability criteria on conditions of relations between source and target terms.
-        The encoding function itself induces such relations. To analyse the preservation of source
-        term behaviours we use relations that contain the pairs (S, enc S) for all source terms S.
-\<close>
+text \<open>We map encodability criteria on conditions of relations between source and target terms. The
+      encoding function itself induces such relations. To analyse the preservation of source term
+      behaviours we use relations that contain the pairs (S, enc S) for all source terms S.\<close>
 
-inductive_set (in encoding) indRelR
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
+inductive_set (in encodingFunction) indRelR
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
   encR: "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelR"
 
-abbreviation (in encoding) indRelRinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>R Q \<equiv> (P, Q) \<in> indRelR"
 
-inductive_set (in encoding) indRelRPO
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRPO" |
-  source: "(SourceTerm S, SourceTerm S) \<in> indRelRPO" |
-  target: "(TargetTerm T, TargetTerm T) \<in> indRelRPO" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelRPO; (Q, R) \<in> indRelRPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelRPO"
+inductive_set (in encodingFunction) indRelRPO
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRPO"
+| source: "(SourceTerm S, SourceTerm S) \<in> indRelRPO"
+| target: "(TargetTerm T, TargetTerm T) \<in> indRelRPO"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelRPO; (Q, R) \<in> indRelRPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelRPO"
 
-abbreviation (in encoding) indRelRPOinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R _\<close> [75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R Q \<equiv> (P, Q) \<in> indRelRPO"
 
-lemma (in encoding) indRelRPO_refl:
+lemma (in encodingFunction) indRelRPO_refl:
   shows "refl indRelRPO"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R P"
@@ -53,7 +51,7 @@ proof auto
   qed
 qed
 
-lemma (in encoding) indRelRPO_is_preorder:
+lemma (in encodingFunction) indRelRPO_is_preorder:
   shows "preorder indRelRPO"
   unfolding preorder_on_def
 proof (intro conjI)
@@ -73,7 +71,7 @@ next
   qed
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelR:
+lemma (in encodingFunction) refl_trans_closure_of_indRelR:
   shows "indRelRPO = indRelR\<^sup>*"
 proof auto
   fix P Q
@@ -82,7 +80,7 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelR\<^sup>*"
-        using indRelR.encR[of S]
+      using indRelR.encR[of S]
       by simp
   next
     case (source S)
@@ -104,8 +102,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R Q"
   proof induct
     show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R P"
-        using indRelRPO_refl
-        unfolding refl_on_def
+      using indRelRPO_refl
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -118,12 +116,12 @@ next
   qed
 qed
 
-text \<open>The relation indRelR is the smallest relation that relates all source terms and their
-        literal translations. Thus there exists a relation that relates source terms and their
-        literal translations and satisfies some predicate on its pairs iff the predicate holds for
-        the pairs of indRelR.\<close>
+text \<open>The relation indRelR is the smallest relation that relates all source terms and their literal
+      translations. Thus there exists a relation that relates source terms and their literal
+      translations and satisfies some predicate on its pairs iff the predicate holds for the pairs
+      of indRelR.\<close>
 
-lemma (in encoding) indRelR_impl_exists_source_target_relation:
+lemma (in encodingFunction) indRelR_impl_exists_source_target_relation:
   fixes PredA :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set \<Rightarrow> bool"
     and PredB :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "PredA indRelR \<Longrightarrow> \<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> PredA Rel"
@@ -139,7 +137,7 @@ proof -
     by blast
 qed
 
-lemma (in encoding) source_target_relation_impl_indRelR:
+lemma (in encodingFunction) source_target_relation_impl_indRelR:
   fixes Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
     and Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes encRRel: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
@@ -154,19 +152,19 @@ proof clarify
     by simp
 qed
 
-lemma (in encoding) indRelR_iff_exists_source_target_relation:
+lemma (in encodingFunction) indRelR_iff_exists_source_target_relation:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>(P, Q) \<in> indRelR. Pred (P, Q))
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)))"
-      using indRelR_impl_exists_source_target_relation(2)[where PredB="Pred"]
-            source_target_relation_impl_indRelR[where Pred="Pred"]
-    by blast
+  using indRelR_impl_exists_source_target_relation(2)[where PredB="Pred"]
+        source_target_relation_impl_indRelR[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) indRelR_modulo_pred_impl_indRelRPO_modulo_pred:
+lemma (in encodingFunction) indRelR_modulo_pred_impl_indRelRPO_modulo_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes reflCond:  "\<forall>P. Pred (P, P)"
       and transCond: "\<forall>P Q R. Pred (P, Q) \<and> Pred (Q, R) \<longrightarrow> Pred (P, R)"
-  shows "(\<forall>(P, Q) \<in> indRelR. Pred (P, Q)) = (\<forall>(P, Q) \<in> indRelRPO. Pred (P, Q))"
+    shows "(\<forall>(P, Q) \<in> indRelR. Pred (P, Q)) = (\<forall>(P, Q) \<in> indRelRPO. Pred (P, Q))"
 proof auto
   fix P Q
   assume A: "\<forall>x \<in> indRelR. Pred x"
@@ -199,7 +197,7 @@ next
     by (auto simp add: indRelRPO.encR indRelR.simps)
 qed
 
-lemma (in encoding) indRelRPO_iff_exists_source_target_relation:
+lemma (in encodingFunction) indRelRPO_iff_exists_source_target_relation:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>(P, Q) \<in> indRelRPO. Pred (P, Q)) = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
          \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)) \<and> preorder Rel)"
@@ -207,7 +205,7 @@ proof (rule iffI)
   have "\<forall>S. SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R TargetTerm (\<lbrakk>S\<rbrakk>)"
     by (simp add: indRelRPO.encR)
   moreover have "preorder indRelRPO"
-      using indRelRPO_is_preorder
+    using indRelRPO_is_preorder
     by blast
   moreover assume "\<forall>(P, Q) \<in> indRelRPO. Pred (P, Q)"
   ultimately show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
@@ -231,18 +229,18 @@ next
     next
       case (source S)
       from A3 show "(SourceTerm S, SourceTerm S) \<in> Rel"
-          unfolding preorder_on_def refl_on_def
+        unfolding preorder_on_def refl_on_def
         by simp
     next
       case (target T)
       from A3 show "(TargetTerm T, TargetTerm T) \<in> Rel"
-          unfolding preorder_on_def refl_on_def
+        unfolding preorder_on_def refl_on_def
         by simp
     next
       case (trans P Q R)
       assume "(P, Q) \<in> Rel" and "(Q, R) \<in> Rel"
       with A3 show "(P, R) \<in> Rel"
-          unfolding preorder_on_def trans_def
+        unfolding preorder_on_def trans_def
         by blast
     qed
     with A2 show "Pred (P, Q)"
@@ -250,103 +248,101 @@ next
   qed
 qed
 
-text \<open>An encoding preserves, reflects, or respects a predicate iff indRelR preserves, reflects,
-        or respects this predicate.\<close>
+text \<open>An encoding preserves, reflects, or respects a predicate iff indRelR preserves, reflects, or
+      respects this predicate.\<close>
 
-lemma (in encoding) enc_satisfies_pred_impl_indRelR_satisfies_pred:
+lemma (in encodingFunction) enc_satisfies_pred_impl_indRelR_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes encCond: "\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))"
   shows "\<forall>(P, Q) \<in> indRelR. Pred (P, Q)"
-    by (auto simp add: encCond indRelR.simps)
+  by (auto simp add: encCond indRelR.simps)
 
-lemma (in encoding) indRelR_satisfies_pred_impl_enc_satisfies_pred:
+lemma (in encodingFunction) indRelR_satisfies_pred_impl_enc_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes relCond: "\<forall>(P, Q) \<in> indRelR. Pred (P, Q)"
   shows "\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))"
-      using relCond indRelR.encR
-    by simp
+  using relCond indRelR.encR
+  by simp
 
-lemma (in encoding) enc_satisfies_pred_iff_indRelR_satisfies_pred:
+lemma (in encodingFunction) enc_satisfies_pred_iff_indRelR_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))) = (\<forall>(P, Q) \<in> indRelR. Pred (P, Q))"
-      using enc_satisfies_pred_impl_indRelR_satisfies_pred[where Pred="Pred"]
-            indRelR_satisfies_pred_impl_enc_satisfies_pred[where Pred="Pred"]
-    by blast
+  using enc_satisfies_pred_impl_indRelR_satisfies_pred[where Pred="Pred"]
+        indRelR_satisfies_pred_impl_enc_satisfies_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred:
+lemma (in encodingFunction) enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> 'b \<Rightarrow> bool"
   shows "(\<forall>S a. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) a) = (\<forall>(P, Q) \<in> indRelR. \<forall>a. Pred (P, Q) a)"
-      using enc_satisfies_pred_iff_indRelR_satisfies_pred
-    by simp
+  using enc_satisfies_pred_iff_indRelR_satisfies_pred
+  by simp
 
-lemma (in encoding) enc_preserves_pred_iff_indRelR_preserves_pred:
+lemma (in encodingFunction) enc_preserves_pred_iff_indRelR_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_preserves_pred Pred = rel_preserves_pred indRelR Pred"
-      using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
-    by blast
+  using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
+  by blast
 
-lemma (in encoding) enc_preserves_binary_pred_iff_indRelR_preserves_binary_pred:
+lemma (in encodingFunction) enc_preserves_binary_pred_iff_indRelR_preserves_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_preserves_binary_pred Pred = rel_preserves_binary_pred indRelR Pred"
-      using enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred[where
-             Pred="\<lambda>(P, Q) a. Pred P a \<longrightarrow> Pred Q a"]
-    by blast
+  using enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred[where
+          Pred="\<lambda>(P, Q) a. Pred P a \<longrightarrow> Pred Q a"]
+  by blast
 
-lemma (in encoding) enc_preserves_pred_iff_indRelRPO_preserves_pred:
+lemma (in encodingFunction) enc_preserves_pred_iff_indRelRPO_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_preserves_pred Pred = rel_preserves_pred indRelRPO Pred"
-      using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
-            indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where
-             Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
-    by blast
+  using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
+        indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
+  by blast
 
-lemma (in encoding) enc_reflects_pred_iff_indRelR_reflects_pred:
+lemma (in encodingFunction) enc_reflects_pred_iff_indRelR_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_reflects_pred Pred = rel_reflects_pred indRelR Pred"
-      using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
-    by blast
+  using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
+  by blast
 
-lemma (in encoding) enc_reflects_binary_pred_iff_indRelR_reflects_binary_pred:
+lemma (in encodingFunction) enc_reflects_binary_pred_iff_indRelR_reflects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_reflects_binary_pred Pred = rel_reflects_binary_pred indRelR Pred"
-      using enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred[where
-             Pred="\<lambda>(P, Q) a. Pred Q a \<longrightarrow> Pred P a"]
-    by blast
+  using enc_satisfies_binary_pred_iff_indRelR_satisfies_binary_pred[where
+          Pred="\<lambda>(P, Q) a. Pred Q a \<longrightarrow> Pred P a"]
+  by blast
 
-lemma (in encoding) enc_reflects_pred_iff_indRelRPO_reflects_pred:
+lemma (in encodingFunction) enc_reflects_pred_iff_indRelRPO_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_reflects_pred Pred = rel_reflects_pred indRelRPO Pred"
-      using enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
-            indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where
-             Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
-    by blast
+  using enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
+        indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
+  by blast
 
-lemma (in encoding) enc_respects_pred_iff_indRelR_respects_pred:
+lemma (in encodingFunction) enc_respects_pred_iff_indRelR_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred = rel_respects_pred indRelR Pred"
-      using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
-            enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
-    by blast
+  using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
+        enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) enc_respects_binary_pred_iff_indRelR_respects_binary_pred:
+lemma (in encodingFunction) enc_respects_binary_pred_iff_indRelR_respects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_respects_binary_pred Pred = rel_respects_binary_pred indRelR Pred"
-      using enc_preserves_binary_pred_iff_indRelR_preserves_binary_pred[where Pred="Pred"]
-            enc_reflects_binary_pred_iff_indRelR_reflects_binary_pred[where Pred="Pred"]
-    by blast
+  using enc_preserves_binary_pred_iff_indRelR_preserves_binary_pred[where Pred="Pred"]
+        enc_reflects_binary_pred_iff_indRelR_reflects_binary_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) enc_respects_pred_iff_indRelRPO_respects_pred:
+lemma (in encodingFunction) enc_respects_pred_iff_indRelRPO_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred = rel_respects_pred indRelRPO Pred"
-      using enc_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
-            indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="\<lambda>(P, Q). Pred Q = Pred P"]
-    apply simp by blast
+  using enc_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
+        indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="\<lambda>(P, Q). Pred Q = Pred P"]
+  apply simp by blast
 
 text \<open>Accordingly an encoding preserves, reflects, or respects a predicate iff there exists a
-        relation that relates source terms with their literal translations and preserves, reflects,
-        or respects this predicate.\<close>
+      relation that relates source terms with their literal translations and preserves, reflects,
+      or respects this predicate.\<close>
 
-lemma (in encoding) enc_satisfies_pred_iff_source_target_satisfies_pred:
+lemma (in encodingFunction) enc_satisfies_pred_iff_source_target_satisfies_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)))
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)))"
@@ -356,24 +352,24 @@ lemma (in encoding) enc_satisfies_pred_iff_source_target_satisfies_pred:
 proof -
   show "(\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)))
         = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)))"
-      using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="Pred"]
-            indRelR_iff_exists_source_target_relation[where Pred="Pred"]
+    using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="Pred"]
+          indRelR_iff_exists_source_target_relation[where Pred="Pred"]
     by simp
 next
   have "(\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))) = (\<forall>(P, Q) \<in> indRelR. Pred (P, Q))"
-      using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="Pred"]
+    using enc_satisfies_pred_iff_indRelR_satisfies_pred[where Pred="Pred"]
     by simp
   moreover assume "\<forall>P Q R. Pred (P, Q) \<and> Pred (Q, R) \<longrightarrow> Pred (P, R)" and "\<forall>P. Pred (P, P)"
   hence "(\<forall>(P, Q) \<in> indRelR. Pred (P, Q)) = (\<forall>(P, Q) \<in> indRelRPO. Pred (P, Q))"
-      using indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="Pred"]
+    using indRelR_modulo_pred_impl_indRelRPO_modulo_pred[where Pred="Pred"]
     by blast
   ultimately show "(\<forall>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))) = (\<exists>Rel.
    (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)) \<and> preorder Rel)"
-      using indRelRPO_iff_exists_source_target_relation[where Pred="Pred"]
+    using indRelRPO_iff_exists_source_target_relation[where Pred="Pred"]
     by simp
 qed
 
-lemma (in encoding) enc_preserves_pred_iff_source_target_rel_preserves_pred:
+lemma (in encodingFunction) enc_preserves_pred_iff_source_target_rel_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_preserves_pred Pred
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_preserves_pred Rel Pred)"
@@ -388,17 +384,17 @@ proof -
     by blast
   ultimately show "enc_preserves_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_preserves_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
     by simp
   from A1 A2 show "enc_preserves_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_preserves_pred Rel Pred \<and> preorder Rel)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
-             Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
+            Pred="\<lambda>(P, Q). Pred P \<longrightarrow> Pred Q"]
     by simp
 qed
 
-lemma (in encoding) enc_preserves_binary_pred_iff_source_target_rel_preserves_binary_pred:
+lemma (in encodingFunction) enc_preserves_binary_pred_iff_source_target_rel_preserves_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_preserves_binary_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
          \<and> rel_preserves_binary_pred Rel Pred)"
@@ -411,12 +407,12 @@ proof -
     by blast
   ultimately show "enc_preserves_binary_pred Pred = (\<exists>Rel. (\<forall>S.
                    (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_preserves_binary_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). \<forall>a. Pred P a \<longrightarrow> Pred Q a"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). \<forall>a. Pred P a \<longrightarrow> Pred Q a"]
     by simp
 qed
 
-lemma (in encoding) enc_reflects_pred_iff_source_target_rel_reflects_pred:
+lemma (in encodingFunction) enc_reflects_pred_iff_source_target_rel_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_reflects_pred Pred
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_pred Rel Pred)"
@@ -431,17 +427,17 @@ proof -
     by blast
   ultimately show "enc_reflects_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_reflects_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
     by simp
   from A1 A2 show "enc_reflects_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_reflects_pred Rel Pred \<and> preorder Rel)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
-             Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
+            Pred="\<lambda>(P, Q). Pred Q \<longrightarrow> Pred P"]
     by simp
 qed
 
-lemma (in encoding) enc_reflects_binary_pred_iff_source_target_rel_reflects_binary_pred:
+lemma (in encodingFunction) enc_reflects_binary_pred_iff_source_target_rel_reflects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_reflects_binary_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
          \<and> rel_reflects_binary_pred Rel Pred)"
@@ -454,12 +450,12 @@ proof -
     by blast
   ultimately show "enc_reflects_binary_pred Pred = (\<exists>Rel. (\<forall>S.
                    (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_binary_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). \<forall>a. Pred Q a \<longrightarrow> Pred P a"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). \<forall>a. Pred Q a \<longrightarrow> Pred P a"]
     by simp
 qed
 
-lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encR:
+lemma (in encodingFunction) enc_respects_pred_iff_source_target_rel_respects_pred_encR:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_respects_pred Rel Pred)"
@@ -474,17 +470,18 @@ proof -
     by blast
   ultimately show "enc_respects_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_respects_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). Pred P = Pred Q"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). Pred P = Pred Q"]
     by simp
   from A1 A2 show "enc_respects_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                    \<and> rel_respects_pred Rel Pred \<and> preorder Rel)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
-             Pred="\<lambda>(P, Q). Pred P = Pred Q"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(2)[where
+            Pred="\<lambda>(P, Q). Pred P = Pred Q"]
     by simp
 qed
 
-lemma (in encoding) enc_respects_binary_pred_iff_source_target_rel_respects_binary_pred_encR:
+lemma (in encodingFunction)
+  enc_respects_binary_pred_iff_source_target_rel_respects_binary_pred_encR:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "enc_respects_binary_pred Pred = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
          \<and> rel_respects_binary_pred Rel Pred)"
@@ -497,40 +494,36 @@ proof -
     by blast
   ultimately show "enc_respects_binary_pred Pred = (\<exists>Rel. (\<forall>S.
                    (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_respects_binary_pred Rel Pred)"
-      using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
-             Pred="\<lambda>(P, Q). \<forall>a. Pred P a = Pred Q a"]
+    using enc_satisfies_pred_iff_source_target_satisfies_pred(1)[where
+            Pred="\<lambda>(P, Q). \<forall>a. Pred P a = Pred Q a"]
     by simp
 qed
 
 text \<open>To analyse the reflection of source term behaviours we use relations that contain the pairs
-        (enc S, S) for all source terms S.\<close>
+      (enc S, S) for all source terms S.\<close>
 
-inductive_set (in encoding) indRelL
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
+inductive_set (in encodingFunction) indRelL
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
   encL: "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelL"
 
-abbreviation (in encoding) indRelLinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>L Q \<equiv> (P, Q) \<in> indRelL"
 
-inductive_set (in encoding) indRelLPO
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLPO" |
-  source: "(SourceTerm S, SourceTerm S) \<in> indRelLPO" |
-  target: "(TargetTerm T, TargetTerm T) \<in> indRelLPO" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelLPO; (Q, R) \<in> indRelLPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelLPO"
+inductive_set (in encodingFunction) indRelLPO
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
+  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLPO"
+| source: "(SourceTerm S, SourceTerm S) \<in> indRelLPO"
+| target: "(TargetTerm T, TargetTerm T) \<in> indRelLPO"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelLPO; (Q, R) \<in> indRelLPO\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelLPO"
 
-abbreviation (in encoding) indRelLPOinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L _\<close> [75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L Q \<equiv> (P, Q) \<in> indRelLPO"
 
-lemma (in encoding) indRelLPO_refl:
+lemma (in encodingFunction) indRelLPO_refl:
   shows "refl indRelLPO"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L P"
@@ -547,7 +540,7 @@ proof auto
   qed
 qed
 
-lemma (in encoding) indRelLPO_is_preorder:
+lemma (in encodingFunction) indRelLPO_is_preorder:
   shows "preorder indRelLPO"
   unfolding preorder_on_def
 proof (intro conjI)
@@ -567,7 +560,7 @@ next
   qed
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelL:
+lemma (in encodingFunction) refl_trans_closure_of_indRelL:
   shows "indRelLPO = indRelL\<^sup>*"
 proof auto
   fix P Q
@@ -576,7 +569,7 @@ proof auto
   proof induct
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelL\<^sup>*"
-        using indRelL.encL[of S]
+      using indRelL.encL[of S]
       by simp
   next
     case (source S)
@@ -598,8 +591,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L Q"
   proof induct
     show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L P"
-        using indRelLPO_refl
-        unfolding refl_on_def
+      using indRelLPO_refl
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -613,10 +606,10 @@ next
 qed
 
 text \<open>The relations indRelR and indRelL are dual. indRelR preserves some predicate iff indRelL
-        reflects it. indRelR reflects some predicate iff indRelL reflects it. indRelR respects some
-        predicate iff indRelL does.\<close>
+      reflects it. indRelR reflects some predicate iff indRelL reflects it. indRelR respects some
+      predicate iff indRelL does.\<close>
 
-lemma (in encoding) indRelR_preserves_pred_iff_indRelL_reflects_pred:
+lemma (in encodingFunction) indRelR_preserves_pred_iff_indRelL_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "rel_preserves_pred indRelR Pred = rel_reflects_pred indRelL Pred"
 proof
@@ -631,7 +624,7 @@ proof
       by (simp add: indRelR.encR)
     moreover assume "Pred Q"
     ultimately show "Pred P"
-        using preservation
+      using preservation
       by blast
   qed
 next
@@ -646,12 +639,12 @@ next
       by (simp add: indRelL.encL)
     moreover assume "Pred P"
     ultimately show "Pred Q"
-        using reflection
+      using reflection
       by blast
   qed
 qed
 
-lemma (in encoding) indRelR_preserves_binary_pred_iff_indRelL_reflects_binary_pred:
+lemma (in encodingFunction) indRelR_preserves_binary_pred_iff_indRelL_reflects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "rel_preserves_binary_pred indRelR Pred = rel_reflects_binary_pred indRelL Pred"
 proof
@@ -666,7 +659,7 @@ proof
       by (simp add: indRelR.encR)
     moreover assume "Pred Q x"
     ultimately show "Pred P x"
-        using preservation
+      using preservation
       by blast
   qed
 next
@@ -681,12 +674,12 @@ next
       by (simp add: indRelL.encL)
     moreover assume "Pred P x"
     ultimately show "Pred Q x"
-        using reflection
+      using reflection
       by blast
   qed
 qed
 
-lemma (in encoding) indRelR_reflects_pred_iff_indRelL_preserves_pred:
+lemma (in encodingFunction) indRelR_reflects_pred_iff_indRelL_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "rel_reflects_pred indRelR Pred = rel_preserves_pred indRelL Pred"
 proof
@@ -701,7 +694,7 @@ proof
       by (simp add: indRelR.encR)
     moreover assume "Pred P"
     ultimately show "Pred Q"
-        using reflection
+      using reflection
       by blast
   qed
 next
@@ -716,12 +709,12 @@ next
       by (simp add: indRelL.encL)
     moreover assume "Pred Q"
     ultimately show "Pred P"
-        using preservation
+      using preservation
       by blast
   qed
 qed
 
-lemma (in encoding) indRelR_reflects_binary_pred_iff_indRelL_preserves_binary_pred:
+lemma (in encodingFunction) indRelR_reflects_binary_pred_iff_indRelL_preserves_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "rel_reflects_binary_pred indRelR Pred = rel_preserves_binary_pred indRelL Pred"
 proof
@@ -736,7 +729,7 @@ proof
       by (simp add: indRelR.encR)
     moreover assume "Pred P x"
     ultimately show "Pred Q x"
-        using reflection
+      using reflection
       by blast
   qed
 next
@@ -751,26 +744,26 @@ next
       by (simp add: indRelL.encL)
     moreover assume "Pred Q x"
     ultimately show "Pred P x"
-        using preservation
+      using preservation
       by blast
   qed
 qed
 
-lemma (in encoding) indRelR_respects_pred_iff_indRelL_respects_pred:
+lemma (in encodingFunction) indRelR_respects_pred_iff_indRelL_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "rel_respects_pred indRelR Pred = rel_respects_pred indRelL Pred"
-      using indRelR_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
-            indRelR_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
-    by blast
+  using indRelR_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
+        indRelR_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) indRelR_respects_binary_pred_iff_indRelL_respects_binary_pred:
+lemma (in encodingFunction) indRelR_respects_binary_pred_iff_indRelL_respects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow>'b \<Rightarrow> bool"
   shows "rel_respects_binary_pred indRelR Pred = rel_respects_binary_pred indRelL Pred"
-      using indRelR_preserves_binary_pred_iff_indRelL_reflects_binary_pred[where Pred="Pred"]
-            indRelR_reflects_binary_pred_iff_indRelL_preserves_binary_pred[where Pred="Pred"]
-    by blast
+  using indRelR_preserves_binary_pred_iff_indRelL_reflects_binary_pred[where Pred="Pred"]
+        indRelR_reflects_binary_pred_iff_indRelL_preserves_binary_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) indRelR_cond_preservation_iff_indRelL_cond_reflection:
+lemma (in encodingFunction) indRelR_cond_preservation_iff_indRelL_cond_reflection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_preserves_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_reflects_pred Rel Pred)"
@@ -799,7 +792,7 @@ next
     by blast
 qed
 
-lemma (in encoding) indRelR_cond_binary_preservation_iff_indRelL_cond_binary_reflection:
+lemma (in encodingFunction) indRelR_cond_binary_preservation_iff_indRelL_cond_binary_reflection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_preserves_binary_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -830,7 +823,7 @@ next
     by blast
 qed
 
-lemma (in encoding) indRelR_cond_reflection_iff_indRelL_cond_preservation:
+lemma (in encodingFunction) indRelR_cond_reflection_iff_indRelL_cond_preservation:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_preserves_pred Rel Pred)"
@@ -855,12 +848,11 @@ next
     by simp
   moreover from B2 have "rel_reflects_pred (Rel\<inverse>) Pred"
     by simp
-  ultimately
-  show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_pred Rel Pred"
+  ultimately show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_pred Rel Pred"
     by blast
 qed
 
-lemma (in encoding) indRelR_cond_binary_reflection_iff_indRelL_cond_binary_preservation:
+lemma (in encodingFunction) indRelR_cond_binary_reflection_iff_indRelL_cond_binary_preservation:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_reflects_binary_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -891,7 +883,7 @@ next
     by blast
 qed
 
-lemma (in encoding) indRelR_cond_respection_iff_indRelL_cond_respection:
+lemma (in encodingFunction) indRelR_cond_respection_iff_indRelL_cond_respection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_respects_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_respects_pred Rel Pred)"
@@ -919,7 +911,7 @@ next
     by blast
 qed
 
-lemma (in encoding) indRelR_cond_binary_respection_iff_indRelL_cond_binary_respection:
+lemma (in encodingFunction) indRelR_cond_binary_respection_iff_indRelL_cond_binary_respection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "(\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> rel_respects_binary_pred Rel Pred)
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -950,93 +942,89 @@ next
     by blast
 qed
 
-text \<open>An encoding preserves, reflects, or respects a predicate iff indRelL reflects, preserves,
-        or respects this predicate.\<close>
+text \<open>An encoding preserves, reflects, or respects a predicate iff indRelL reflects, preserves, or
+      respects this predicate.\<close>
 
-lemma (in encoding) enc_preserves_pred_iff_indRelL_reflects_pred:
+lemma (in encodingFunction) enc_preserves_pred_iff_indRelL_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_preserves_pred Pred = rel_reflects_pred indRelL Pred"
-      using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
-            indRelR_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
-    by blast
+  using enc_preserves_pred_iff_indRelR_preserves_pred[where Pred="Pred"]
+        indRelR_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) enc_reflects_pred_iff_indRelL_preserves_pred:
+lemma (in encodingFunction) enc_reflects_pred_iff_indRelL_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_reflects_pred Pred = rel_preserves_pred indRelL Pred"
-      using enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
-            indRelR_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
-    by blast
+  using enc_reflects_pred_iff_indRelR_reflects_pred[where Pred="Pred"]
+        indRelR_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
+  by blast
 
-lemma (in encoding) enc_respects_pred_iff_indRelL_respects_pred:
+lemma (in encodingFunction) enc_respects_pred_iff_indRelL_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred = rel_respects_pred indRelL Pred"
-      using enc_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
-            enc_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
-    by blast
+  using enc_preserves_pred_iff_indRelL_reflects_pred[where Pred="Pred"]
+        enc_reflects_pred_iff_indRelL_preserves_pred[where Pred="Pred"]
+  by blast
 
-text \<open>An encoding preserves, reflects, or respects a predicate iff there exists a relation,
-        namely indRelL, that relates literal translations with their source terms and reflects,
-        preserves, or respects this predicate.\<close>
+text \<open>An encoding preserves, reflects, or respects a predicate iff there exists a relation, namely
+      indRelL, that relates literal translations with their source terms and reflects, preserves,
+      or respects this predicate.\<close>
 
-lemma (in encoding) enc_preserves_pred_iff_source_target_rel_reflects_pred:
+lemma (in encodingFunction) enc_preserves_pred_iff_source_target_rel_reflects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_preserves_pred Pred
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_reflects_pred Rel Pred)"
-      using enc_preserves_pred_iff_source_target_rel_preserves_pred[where Pred="Pred"]
-            indRelR_cond_preservation_iff_indRelL_cond_reflection[where Pred="Pred"]
-    by simp
+  using enc_preserves_pred_iff_source_target_rel_preserves_pred[where Pred="Pred"]
+        indRelR_cond_preservation_iff_indRelL_cond_reflection[where Pred="Pred"]
+  by simp
 
-lemma (in encoding) enc_reflects_pred_iff_source_target_rel_preserves_pred:
+lemma (in encodingFunction) enc_reflects_pred_iff_source_target_rel_preserves_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_reflects_pred Pred
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_preserves_pred Rel Pred)"
-      using enc_reflects_pred_iff_source_target_rel_reflects_pred[where Pred="Pred"]
-            indRelR_cond_reflection_iff_indRelL_cond_preservation[where Pred="Pred"]
-    by simp
+  using enc_reflects_pred_iff_source_target_rel_reflects_pred[where Pred="Pred"]
+        indRelR_cond_reflection_iff_indRelL_cond_preservation[where Pred="Pred"]
+  by simp
 
-lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encL:
+lemma (in encodingFunction) enc_respects_pred_iff_source_target_rel_respects_pred_encL:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred
          = (\<exists>Rel. (\<forall>S. (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel) \<and> rel_respects_pred Rel Pred)"
-      using enc_respects_pred_iff_source_target_rel_respects_pred_encR[where Pred="Pred"]
-            indRelR_cond_respection_iff_indRelL_cond_respection[where Pred="Pred"]
-    by simp
+  using enc_respects_pred_iff_source_target_rel_respects_pred_encR[where Pred="Pred"]
+        indRelR_cond_respection_iff_indRelL_cond_respection[where Pred="Pred"]
+  by simp
 
 text \<open>To analyse the respection of source term behaviours we use relations that contain both kind
-        of pairs: (S, enc S) as well as (enc S, S) for all source terms S.\<close>
+      of pairs: (S, enc S) as well as (enc S, S) for all source terms S.\<close>
 
-inductive_set (in encoding) indRel
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
-  encR: "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRel" |
-  encL: "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRel"
+inductive_set (in encodingFunction) indRel
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
+  encR: "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRel"
+| encL: "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRel"
 
-abbreviation (in encoding) indRelInfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelInfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk> Q \<equiv> (P, Q) \<in> indRel"
 
-lemma (in encoding) indRel_symm:
+lemma (in encodingFunction) indRel_symm:
   shows "sym indRel"
-      unfolding sym_def
-    by (auto simp add: indRel.simps indRel.encR indRel.encL)
+  unfolding sym_def
+  by (auto simp add: indRel.simps indRel.encR indRel.encL)
 
-inductive_set (in encoding) indRelEQ
-    :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelEQ" |
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelEQ" |
-  target: "(TargetTerm T, TargetTerm T) \<in> indRelEQ" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelEQ; (Q, R) \<in> indRelEQ\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelEQ"
+inductive_set (in encodingFunction) indRelEQ
+  :: "((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelEQ"
+| encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelEQ"
+| target: "(TargetTerm T, TargetTerm T) \<in> indRelEQ"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelEQ; (Q, R) \<in> indRelEQ\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelEQ"
 
-abbreviation (in encoding) indRelEQinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelEQinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk> _\<close> [75, 75] 80) where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk> Q \<equiv> (P, Q) \<in> indRelEQ"
 
-lemma (in encoding) indRelEQ_refl:
+lemma (in encodingFunction) indRelEQ_refl:
   shows "refl indRelEQ"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<sim>\<lbrakk>\<cdot>\<rbrakk> P"
@@ -1057,7 +1045,7 @@ proof auto
   qed
 qed
 
-lemma (in encoding) indRelEQ_is_preorder:
+lemma (in encodingFunction) indRelEQ_is_preorder:
   shows "preorder indRelEQ"
   unfolding preorder_on_def
 proof (intro conjI)
@@ -1077,9 +1065,9 @@ next
   qed
 qed
 
-lemma (in encoding) indRelEQ_symm:
+lemma (in encodingFunction) indRelEQ_symm:
   shows "sym indRelEQ"
-    unfolding sym_def
+  unfolding sym_def
 proof clarify
   fix P Q
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk> Q"
@@ -1104,13 +1092,13 @@ proof clarify
   qed
 qed
 
-lemma (in encoding) indRelEQ_is_equivalence:
+lemma (in encodingFunction) indRelEQ_is_equivalence:
   shows "equivalence indRelEQ"
-      using indRelEQ_is_preorder indRelEQ_symm
-      unfolding equiv_def preorder_on_def
-    by blast
+  using indRelEQ_is_preorder indRelEQ_symm
+  unfolding equiv_def preorder_on_def
+  by blast
 
-lemma (in encoding) refl_trans_closure_of_indRel:
+lemma (in encodingFunction) refl_trans_closure_of_indRel:
   shows "indRelEQ = indRel\<^sup>*"
 proof auto
   fix P Q
@@ -1119,12 +1107,12 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRel\<^sup>*"
-        using indRel.encR[of S]
+      using indRel.encR[of S]
       by simp
   next
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRel\<^sup>*"
-        using indRel.encL[of S]
+      using indRel.encL[of S]
       by simp
   next
     case (target T)
@@ -1142,8 +1130,8 @@ next
   thus "P \<sim>\<lbrakk>\<cdot>\<rbrakk> Q"
   proof induct
     show "P \<sim>\<lbrakk>\<cdot>\<rbrakk> P"
-        using indRelEQ_refl
-        unfolding refl_on_def
+      using indRelEQ_refl
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -1156,7 +1144,7 @@ next
   qed
 qed
 
-lemma (in encoding) refl_symm_trans_closure_of_indRel:
+lemma (in encodingFunction) refl_symm_trans_closure_of_indRel:
   shows "indRelEQ = (symcl (indRel\<^sup>=))\<^sup>+"
 proof -
   have "(symcl (indRel\<^sup>=))\<^sup>+ = (symcl indRel)\<^sup>*"
@@ -1167,7 +1155,7 @@ proof -
     by (simp add: refl_trans_closure_of_indRel)
 qed
 
-lemma (in encoding) symm_closure_of_indRelR:
+lemma (in encodingFunction) symm_closure_of_indRelR:
   shows "indRel = symcl indRelR"
     and "indRelEQ = (symcl (indRelR\<^sup>=))\<^sup>+"
 proof -
@@ -1184,12 +1172,12 @@ proof -
       by (auto simp add: symcl_def indRelR.simps indRel.encR indRel.encL)
   qed
   thus "indRelEQ = (symcl (indRelR\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelR"]
-            refl_trans_closure_of_indRel
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelR"]
+          refl_trans_closure_of_indRel
     by simp
 qed
 
-lemma (in encoding) symm_closure_of_indRelL:
+lemma (in encodingFunction) symm_closure_of_indRelL:
   shows "indRel = symcl indRelL"
     and "indRelEQ = (symcl (indRelL\<^sup>=))\<^sup>+"
 proof -
@@ -1198,7 +1186,7 @@ proof -
     fix P Q
     assume "P \<R>\<lbrakk>\<cdot>\<rbrakk> Q"
     thus "(P, Q) \<in> symcl indRelL"
-     by (induct, simp_all add: symcl_def indRelL.encL)
+      by (induct, simp_all add: symcl_def indRelL.encL)
   next
     fix P Q
     assume "(P, Q) \<in> symcl indRelL"
@@ -1206,15 +1194,15 @@ proof -
       by (auto simp add: symcl_def indRelL.simps indRel.encR indRel.encL)
   qed
   thus "indRelEQ = (symcl (indRelL\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelL"]
-            refl_trans_closure_of_indRel
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelL"]
+          refl_trans_closure_of_indRel
     by simp
 qed
 
-text \<open>The relation indRel is a combination of indRelL and indRelR. indRel respects a predicate
-        iff indRelR (or indRelL) respects it.\<close>
+text \<open>The relation indRel is a combination of indRelL and indRelR. indRel respects a predicate iff
+      indRelR (or indRelL) respects it.\<close>
 
-lemma (in encoding) indRel_respects_pred_iff_indRelR_respects_pred:
+lemma (in encodingFunction) indRel_respects_pred_iff_indRelR_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "rel_respects_pred indRel Pred = rel_respects_pred indRelR Pred"
 proof
@@ -1229,7 +1217,7 @@ proof
       by (simp add: indRel.encR)
     moreover assume "Pred P"
     ultimately show "Pred Q"
-        using respection
+      using respection
       by blast
   next
     fix P Q
@@ -1240,18 +1228,18 @@ proof
       by (simp add: indRel.encR)
     moreover assume "Pred Q"
     ultimately show "Pred P"
-        using respection
+      using respection
       by blast
   qed
 next
   assume "rel_respects_pred indRelR Pred"
   thus "rel_respects_pred indRel Pred"
-      using symm_closure_of_indRelR(1)
-            respection_and_closures(2)[where Rel="indRelR" and Pred="Pred"]
+    using symm_closure_of_indRelR(1)
+          respection_and_closures(2)[where Rel="indRelR" and Pred="Pred"]
     by blast
 qed
 
-lemma (in encoding) indRel_respects_binary_pred_iff_indRelR_respects_binary_pred:
+lemma (in encodingFunction) indRel_respects_binary_pred_iff_indRelR_respects_binary_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "rel_respects_binary_pred indRel Pred = rel_respects_binary_pred indRelR Pred"
 proof
@@ -1266,7 +1254,7 @@ proof
       by (simp add: indRel.encR)
     moreover assume "Pred P x"
     ultimately show "Pred Q x"
-        using respection
+      using respection
       by blast
   next
     fix P Q x
@@ -1277,18 +1265,18 @@ proof
       by (simp add: indRel.encR)
     moreover assume "Pred Q x"
     ultimately show "Pred P x"
-        using respection
+      using respection
       by blast
   qed
 next
   assume "rel_respects_binary_pred indRelR Pred"
   thus "rel_respects_binary_pred indRel Pred"
-      using symm_closure_of_indRelR(1)
-            respection_of_binary_predicates_and_closures(2)[where Rel="indRelR" and Pred="Pred"]
+    using symm_closure_of_indRelR(1)
+          respection_of_binary_predicates_and_closures(2)[where Rel="indRelR" and Pred="Pred"]
     by blast
 qed
 
-lemma (in encoding) indRel_cond_respection_iff_indRelR_cond_respection:
+lemma (in encodingFunction) indRel_cond_respection_iff_indRelR_cond_respection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "(\<exists>Rel.
           (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -1312,7 +1300,7 @@ next
                 \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> symcl Rel"
     by (simp add: symcl_def)
   moreover from A2 have "rel_respects_pred (symcl Rel) Pred"
-      using respection_and_closures(2)[where Rel="Rel" and Pred="Pred"]
+    using respection_and_closures(2)[where Rel="Rel" and Pred="Pred"]
     by blast
   ultimately
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -1320,7 +1308,7 @@ next
     by blast
 qed
 
-lemma (in encoding) indRel_cond_binary_respection_iff_indRelR_cond_binary_respection:
+lemma (in encodingFunction) indRel_cond_binary_respection_iff_indRelR_cond_binary_respection:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> 'b \<Rightarrow> bool"
   shows "(\<exists>Rel.
           (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -1345,7 +1333,7 @@ next
                 \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> symcl Rel"
     by (simp add: symcl_def)
   moreover from A2 have "rel_respects_binary_pred (symcl Rel) Pred"
-      using respection_of_binary_predicates_and_closures(2)[where Rel="Rel" and Pred="Pred"]
+    using respection_of_binary_predicates_and_closures(2)[where Rel="Rel" and Pred="Pred"]
     by blast
   ultimately
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
@@ -1355,66 +1343,61 @@ qed
 
 text \<open>An encoding respects a predicate iff indRel respects this predicate.\<close>
 
-lemma (in encoding) enc_respects_pred_iff_indRel_respects_pred:
+lemma (in encodingFunction) enc_respects_pred_iff_indRel_respects_pred:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred = rel_respects_pred indRel Pred"
-      using enc_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
-            indRel_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
-    by simp
+  using enc_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
+        indRel_respects_pred_iff_indRelR_respects_pred[where Pred="Pred"]
+  by simp
 
 text \<open>An encoding respects a predicate iff there exists a relation, namely indRel, that relates
-        source terms and their literal translations in both directions and respects this predicate.
-\<close>
+      source terms and their literal translations in both directions and respects this predicate.\<close>
 
-lemma (in encoding) enc_respects_pred_iff_source_target_rel_respects_pred_encRL:
+lemma (in encodingFunction) enc_respects_pred_iff_source_target_rel_respects_pred_encRL:
   fixes Pred :: "('procS, 'procT) Proc \<Rightarrow> bool"
   shows "enc_respects_pred Pred
          = (\<exists>Rel.
             (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel \<and> (TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> Rel)
             \<and> rel_respects_pred Rel Pred)"
-      using enc_respects_pred_iff_source_target_rel_respects_pred_encR[where Pred="Pred"]
-            indRel_cond_respection_iff_indRelR_cond_respection[where Pred="Pred"]
-    by simp
+  using enc_respects_pred_iff_source_target_rel_respects_pred_encR[where Pred="Pred"]
+        indRel_cond_respection_iff_indRelR_cond_respection[where Pred="Pred"]
+  by simp
 
 subsection \<open>Relations Induced by the Encoding and a Relation on Target Terms\<close>
 
-text \<open>Some encodability like e.g. operational correspondence are defined w.r.t. a relation on
-        target terms. To analyse such criteria we include the respective target term relation in
-        the considered relation on the disjoint union of source and target terms.\<close>
+text \<open>Some encodability criteria like e.g. operational correspondence are defined w.r.t. a relation
+      on target terms. To analyse such criteria we include the respective target term relation in
+      the considered relation on the disjoint union of source and target terms.\<close>
 
-inductive_set (in encoding) indRelRT
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRT TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRT TRel"
+inductive_set (in encodingFunction) indRelRT
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRT TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRT TRel"
 
-abbreviation (in encoding) indRelRTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q \<equiv> (P, Q) \<in> indRelRT TRel"
 
-inductive_set (in encoding) indRelRTPO
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRTPO TRel" |
-  source: "(SourceTerm S, SourceTerm S) \<in> indRelRTPO TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRTPO TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelRTPO TRel; (Q, R) \<in> indRelRTPO TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelRTPO TRel"
+inductive_set (in encodingFunction) indRelRTPO
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRTPO TRel"
+| source: "(SourceTerm S, SourceTerm S) \<in> indRelRTPO TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRTPO TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelRTPO TRel; (Q, R) \<in> indRelRTPO TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelRTPO TRel"
 
-abbreviation (in encoding) indRelRTPOinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRTPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<_> _\<close> [75, 75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q \<equiv> (P, Q) \<in> indRelRTPO TRel"
 
-lemma (in encoding) indRelRTPO_refl:
+lemma (in encodingFunction) indRelRTPO_refl:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "refl (indRelRTPO TRel)"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> P"
@@ -1427,12 +1410,12 @@ proof auto
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with refl show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelRTPO.target)
   qed
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelRT:
+lemma (in encodingFunction) refl_trans_closure_of_indRelRT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "indRelRTPO TRel = (indRelRT TRel)\<^sup>*"
@@ -1443,7 +1426,7 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (indRelRT TRel)\<^sup>*"
-        using indRelRT.encR[of S TRel]
+      using indRelRT.encR[of S TRel]
       by simp
   next
     case (source S)
@@ -1453,7 +1436,7 @@ proof auto
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelRT TRel)\<^sup>*"
-        using indRelRT.target[of T1 T2 TRel]
+      using indRelRT.target[of T1 T2 TRel]
       by simp
   next
     case (trans P Q R)
@@ -1467,8 +1450,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q"
   proof induct
     from refl show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> P"
-        using indRelRTPO_refl[of TRel]
-        unfolding refl_on_def
+      using indRelRTPO_refl[of TRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -1481,7 +1464,7 @@ next
   qed
 qed
 
-lemma (in encoding) indRelRTPO_is_preorder:
+lemma (in encodingFunction) indRelRTPO_is_preorder:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
   shows "preorder (indRelRTPO TRel)"
@@ -1504,7 +1487,7 @@ next
   qed
 qed
 
-lemma (in encoding) transitive_closure_of_TRel_to_indRelRTPO:
+lemma (in encodingFunction) transitive_closure_of_TRel_to_indRelRTPO:
   fixes TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   shows "(TP, TQ) \<in> TRel\<^sup>+ \<Longrightarrow> TargetTerm TP \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm TQ"
@@ -1528,11 +1511,11 @@ proof -
 qed
 
 text \<open>The relation indRelRT is the smallest relation that relates all source terms and their
-        literal translations and contains TRel. Thus there exists a relation that relates source
-        terms and their literal translations and satisfies some predicate on its pairs iff the
-        predicate holds for the pairs of indRelR.\<close>
+      literal translations and contains TRel. Thus there exists a relation that relates source
+      terms and their literal translations and satisfies some predicate on its pairs iff the
+      predicate holds for the pairs of indRelR.\<close>
 
-lemma (in encoding) indRelR_modulo_pred_impl_indRelRT_modulo_pred:
+lemma (in encodingFunction) indRelR_modulo_pred_impl_indRelRT_modulo_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>(P, Q) \<in> indRelR. Pred (P, Q)) = (\<forall>TRel. (\<forall>(TP, TQ) \<in> TRel.
          Pred (TargetTerm TP, TargetTerm TQ)) \<longleftrightarrow> (\<forall>(P, Q) \<in> indRelRT TRel. Pred (P, Q)))"
@@ -1558,22 +1541,22 @@ next
             \<longleftrightarrow> (\<forall>(P, Q) \<in> indRelRT TRel. Pred (P, Q))"
     by blast
   have "\<And>S. Pred (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>))"
-      using B[of "{}"]
+    using B[of "{}"]
     by (simp add: indRelRT.simps)
   thus "\<forall>(P, Q) \<in> indRelR. Pred (P, Q)"
     by (auto simp add: indRelR.simps)
 qed
 
-lemma (in encoding) indRelRT_iff_exists_source_target_relation:
+lemma (in encodingFunction) indRelRT_iff_exists_source_target_relation:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   shows "(\<forall>TRel. (\<forall>(TP, TQ) \<in> TRel. Pred (TargetTerm TP, TargetTerm TQ))
           \<longleftrightarrow> (\<forall>(P, Q) \<in> indRelRT TRel. Pred (P, Q)))
          = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel) \<and> (\<forall>(P, Q) \<in> Rel. Pred (P, Q)))"
-      using indRelR_iff_exists_source_target_relation[where Pred="Pred"]
-            indRelR_modulo_pred_impl_indRelRT_modulo_pred[where Pred="Pred"]
-    by simp
+  using indRelR_iff_exists_source_target_relation[where Pred="Pred"]
+        indRelR_modulo_pred_impl_indRelRT_modulo_pred[where Pred="Pred"]
+  by simp
 
-lemma (in encoding) indRelRT_modulo_pred_impl_indRelRTPO_modulo_pred:
+lemma (in encodingFunction) indRelRT_modulo_pred_impl_indRelRTPO_modulo_pred:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes reflCond:  "\<forall>P. Pred (P, P)"
@@ -1614,7 +1597,7 @@ next
     by (auto simp add: indRelRTPO.encR indRelRTPO.target indRelRT.simps)
 qed
 
-lemma (in encoding) indRelR_modulo_pred_impl_indRelRTPO_modulo_pred:
+lemma (in encodingFunction) indRelR_modulo_pred_impl_indRelRTPO_modulo_pred:
   fixes Pred :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) \<Rightarrow> bool"
   assumes "\<forall>P. Pred (P, P)"
       and "\<forall>P Q R. Pred (P, Q) \<and> Pred (Q, R) \<longrightarrow> Pred (P, R)"
@@ -1624,52 +1607,47 @@ lemma (in encoding) indRelR_modulo_pred_impl_indRelRTPO_modulo_pred:
 proof -
   have "(\<forall>(P, Q)\<in>indRelR. Pred (P, Q)) = (\<forall>TRel. (\<forall>(TP, TQ) \<in> TRel.
         Pred (TargetTerm TP, TargetTerm TQ)) \<longleftrightarrow> (\<forall>(P, Q) \<in> indRelRT TRel. Pred (P, Q)))"
-      using indRelR_modulo_pred_impl_indRelRT_modulo_pred[where Pred="Pred"]
+    using indRelR_modulo_pred_impl_indRelRT_modulo_pred[where Pred="Pred"]
     by simp
   moreover
   have "\<forall>TRel. (\<forall>(P, Q)\<in>indRelRT TRel. Pred (P, Q)) = (\<forall>(P, Q)\<in>indRelRTPO TRel. Pred (P, Q))"
-      using assms indRelRT_modulo_pred_impl_indRelRTPO_modulo_pred[where Pred="Pred"]
+    using assms indRelRT_modulo_pred_impl_indRelRTPO_modulo_pred[where Pred="Pred"]
     by blast
   ultimately show ?thesis
     by simp
 qed
 
-text \<open>The relation indRelLT includes TRel and relates literal translations and their source
-        terms.\<close>
+text \<open>The relation indRelLT includes TRel and relates literal translations and their source terms.\<close>
 
-inductive_set (in encoding) indRelLT
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLT TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLT TRel"
+inductive_set (in encodingFunction) indRelLT
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLT TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLT TRel"
 
-abbreviation (in encoding) indRelLTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q \<equiv> (P, Q) \<in> indRelLT TRel"
 
-inductive_set (in encoding) indRelLTPO
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLTPO TRel" |
-  source: "(SourceTerm S, SourceTerm S) \<in> indRelLTPO TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLTPO TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelLTPO TRel; (Q, R) \<in> indRelLTPO TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelLTPO TRel"
+inductive_set (in encodingFunction) indRelLTPO
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLTPO TRel"
+| source: "(SourceTerm S, SourceTerm S) \<in> indRelLTPO TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLTPO TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelLTPO TRel; (Q, R) \<in> indRelLTPO TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelLTPO TRel"
 
-abbreviation (in encoding) indRelLTPOinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLTPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<_> _\<close> [75, 75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q \<equiv> (P, Q) \<in> indRelLTPO TRel"
 
-lemma (in encoding) indRelLTPO_refl:
+lemma (in encodingFunction) indRelLTPO_refl:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "refl (indRelLTPO TRel)"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> P"
@@ -1682,13 +1660,13 @@ proof auto
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with refl show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> P"
-        using indRelLTPO.target[of TP TP TRel]
-        unfolding refl_on_def
+      using indRelLTPO.target[of TP TP TRel]
+      unfolding refl_on_def
       by simp
   qed
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelLT:
+lemma (in encodingFunction) refl_trans_closure_of_indRelLT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "indRelLTPO TRel = (indRelLT TRel)\<^sup>*"
@@ -1699,7 +1677,7 @@ proof auto
   proof induct
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (indRelLT TRel)\<^sup>*"
-        using indRelLT.encL[of S TRel]
+      using indRelLT.encL[of S TRel]
       by simp
   next
     case (source S)
@@ -1709,7 +1687,7 @@ proof auto
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelLT TRel)\<^sup>*"
-        using indRelLT.target[of T1 T2 TRel]
+      using indRelLT.target[of T1 T2 TRel]
       by simp
   next
     case (trans P Q R)
@@ -1723,8 +1701,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q"
   proof induct
     from refl show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> P"
-        using indRelLTPO_refl[of TRel]
-        unfolding refl_on_def
+      using indRelLTPO_refl[of TRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -1737,54 +1715,50 @@ next
   qed
 qed
 
-inductive_set (in encoding) indRelT
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelT TRel" |
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelT TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelT TRel"
+inductive_set (in encodingFunction) indRelT
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelT TRel"
+| encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelT TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelT TRel"
 
-abbreviation (in encoding) indRelTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q \<equiv> (P, Q) \<in> indRelT TRel"
 
-lemma (in encoding) indRelT_symm:
+lemma (in encodingFunction) indRelT_symm:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes symm: "sym TRel"
   shows "sym (indRelT TRel)"
-    unfolding sym_def
+  unfolding sym_def
 proof clarify
   fix P Q
   assume "(P, Q) \<in> indRelT TRel"
   thus "(Q, P) \<in> indRelT TRel"
-      using symm
-      unfolding sym_def
+    using symm
+    unfolding sym_def
     by (induct, simp_all add: indRelT.encL indRelT.encR indRelT.target)
 qed
 
-inductive_set (in encoding) indRelTEQ
-    :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelTEQ TRel" |
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelTEQ TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelTEQ TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelTEQ TRel; (Q, R) \<in> indRelTEQ TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelTEQ TRel"
+inductive_set (in encodingFunction) indRelTEQ
+  :: "('procT \<times> 'procT) set \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelTEQ TRel"
+| encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelTEQ TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelTEQ TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelTEQ TRel; (Q, R) \<in> indRelTEQ TRel\<rbrakk> \<Longrightarrow> (P, R) \<in> indRelTEQ TRel"
 
-abbreviation (in encoding) indRelTEQinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
-       (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelTEQinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procT \<times> 'procT) set \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool"
+  (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk>T<_> _\<close> [75, 75, 75] 80) where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q \<equiv> (P, Q) \<in> indRelTEQ TRel"
 
-lemma (in encoding) indRelTEQ_refl:
+lemma (in encodingFunction) indRelTEQ_refl:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "refl (indRelTEQ TRel)"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> P"
@@ -1801,16 +1775,16 @@ proof auto
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with refl show "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelTEQ.target)
   qed
 qed
 
-lemma (in encoding) indRelTEQ_symm:
+lemma (in encodingFunction) indRelTEQ_symm:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes symm: "sym TRel"
   shows "sym (indRelTEQ TRel)"
-    unfolding sym_def
+  unfolding sym_def
 proof clarify
   fix P Q
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q"
@@ -1827,7 +1801,7 @@ proof clarify
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     with symm show "TargetTerm T2 \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> TargetTerm T1"
-        unfolding sym_def
+      unfolding sym_def
       by (simp add: indRelTEQ.target)
   next
     case (trans P Q R)
@@ -1837,7 +1811,7 @@ proof clarify
   qed
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelT:
+lemma (in encodingFunction) refl_trans_closure_of_indRelT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
   shows "indRelTEQ TRel = (indRelT TRel)\<^sup>*"
@@ -1848,18 +1822,18 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (indRelT TRel)\<^sup>*"
-        using indRelT.encR[of S TRel]
+      using indRelT.encR[of S TRel]
       by simp
   next
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (indRelT TRel)\<^sup>*"
-        using indRelT.encL[of S TRel]
+      using indRelT.encL[of S TRel]
       by simp
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelT TRel)\<^sup>*"
-        using indRelT.target[of T1 T2 TRel]
+      using indRelT.target[of T1 T2 TRel]
       by simp
   next
     case (trans P Q R)
@@ -1873,8 +1847,8 @@ next
   thus "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q"
   proof induct
     from refl show "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> P"
-        using indRelTEQ_refl[of TRel]
-        unfolding refl_on_def
+      using indRelTEQ_refl[of TRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -1887,7 +1861,7 @@ next
   qed
 qed
 
-lemma (in encoding) refl_symm_trans_closure_of_indRelT:
+lemma (in encodingFunction) refl_symm_trans_closure_of_indRelT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
       and symm: "sym TRel"
@@ -1896,19 +1870,19 @@ proof -
   have "(symcl ((indRelT TRel)\<^sup>=))\<^sup>+ = (symcl (indRelT TRel))\<^sup>*"
     by (rule refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelT TRel"])
   moreover from symm have "symcl (indRelT TRel) = indRelT TRel"
-      using indRelT_symm[where TRel="TRel"] symm_closure_of_symm_rel[where Rel="indRelT TRel"]
+    using indRelT_symm[where TRel="TRel"] symm_closure_of_symm_rel[where Rel="indRelT TRel"]
     by blast
   ultimately show "indRelTEQ TRel = (symcl ((indRelT TRel)\<^sup>=))\<^sup>+"
-      using refl refl_trans_closure_of_indRelT[where TRel="TRel"]
+    using refl refl_trans_closure_of_indRelT[where TRel="TRel"]
     by simp
 qed
 
-lemma (in encoding) symm_closure_of_indRelRT:
+lemma (in encodingFunction) symm_closure_of_indRelRT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
       and symm: "sym TRel"
-  shows "indRelT TRel = symcl (indRelRT TRel)"
-    and "indRelTEQ TRel = (symcl ((indRelRT TRel)\<^sup>=))\<^sup>+"
+    shows "indRelT TRel = symcl (indRelRT TRel)"
+      and "indRelTEQ TRel = (symcl ((indRelRT TRel)\<^sup>=))\<^sup>+"
 proof -
   show "indRelT TRel = symcl (indRelRT TRel)"
   proof auto
@@ -1937,22 +1911,22 @@ proof -
       fix T1 T2
       assume "(T1, T2) \<in> TRel"
       with symm show "TargetTerm T2 \<R>\<lbrakk>\<cdot>\<rbrakk>T<TRel> TargetTerm T1"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelT.target)
     qed
   qed
   with refl show "indRelTEQ TRel = (symcl ((indRelRT TRel)\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelRT TRel"]
-            refl_trans_closure_of_indRelT
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelRT TRel"]
+          refl_trans_closure_of_indRelT
     by simp
 qed
 
-lemma (in encoding) symm_closure_of_indRelLT:
+lemma (in encodingFunction) symm_closure_of_indRelLT:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes refl: "refl TRel"
       and symm: "sym TRel"
-  shows "indRelT TRel = symcl (indRelLT TRel)"
-    and "indRelTEQ TRel = (symcl ((indRelLT TRel)\<^sup>=))\<^sup>+"
+    shows "indRelT TRel = symcl (indRelLT TRel)"
+      and "indRelTEQ TRel = (symcl ((indRelLT TRel)\<^sup>=))\<^sup>+"
 proof -
   show "indRelT TRel = symcl (indRelLT TRel)"
   proof auto
@@ -1981,54 +1955,53 @@ proof -
       fix T1 T2
       assume "(T1, T2) \<in> TRel"
       with symm show "TargetTerm T2 \<R>\<lbrakk>\<cdot>\<rbrakk>T<TRel> TargetTerm T1"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelT.target)
     qed
   qed
   with refl show "indRelTEQ TRel = (symcl ((indRelLT TRel)\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelLT TRel"]
-            refl_trans_closure_of_indRelT
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelLT TRel"]
+          refl_trans_closure_of_indRelT
     by simp
 qed
 
 text \<open>If the relations indRelRT, indRelLT, or indRelT contain a pair of target terms, then this
-        pair is also related by the considered target term relation.\<close>
+      pair is also related by the considered target term relation.\<close>
 
-lemma (in encoding) indRelRT_to_TRel:
+lemma (in encodingFunction) indRelRT_to_TRel:
   fixes TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelRT.simps)
+  using rel
+  by (simp add: indRelRT.simps)
 
-lemma (in encoding) indRelLT_to_TRel:
+lemma (in encodingFunction) indRelLT_to_TRel:
   fixes TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelLT.simps)
+  using rel
+  by (simp add: indRelLT.simps)
 
-lemma (in encoding) indRelT_to_TRel:
+lemma (in encodingFunction) indRelT_to_TRel:
   fixes TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk>T<TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelT.simps)
+  using rel
+  by (simp add: indRelT.simps)
 
 text \<open>If the preorders indRelRTPO, indRelLTPO, or the equivalence indRelTEQ contain a pair of
-        terms, then the pair of target terms that is related to these two terms is also related by
-        the reflexive and transitive closure of the considered target term relation.\<close>
+      terms, then the pair of target terms that is related to these two terms is also related by
+      the reflexive and transitive closure of the considered target term relation.\<close>
 
-lemma (in encoding) indRelRTPO_to_TRel:
+lemma (in encodingFunction) indRelRTPO_to_TRel:
   fixes TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel: "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q"
   shows "\<forall>SP SQ. SP \<in>S P \<and> SQ \<in>S Q \<longrightarrow> SP = SQ"
-    and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q
-         \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
     and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> False"
     and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> TRel\<^sup>+"
 proof -
@@ -2091,8 +2064,7 @@ proof -
       with A7 show ?thesis
         by blast
     qed
-    show "\<forall>SP TR. SP \<in>S P \<and> TR \<in>T R
-          \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TR) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    show "\<forall>SP TR. SP \<in>S P \<and> TR \<in>T R \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TR) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
     proof (cases Q)
       case (SourceTerm SQ)
       assume "SQ \<in>S Q"
@@ -2157,14 +2129,13 @@ proof -
   qed
 qed
 
-lemma (in encoding) indRelLTPO_to_TRel:
+lemma (in encodingFunction) indRelLTPO_to_TRel:
   fixes TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel: "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>LT<TRel> Q"
   shows "\<forall>SP SQ. SP \<in>S P \<and> SQ \<in>S Q \<longrightarrow> SP = SQ"
     and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> False"
-    and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q
-         \<longrightarrow> (TP, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> (TP, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
     and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> TRel\<^sup>+"
 proof -
   have reflTRel: "\<forall>S. (\<lbrakk>S\<rbrakk>, \<lbrakk>S\<rbrakk>) \<in> TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>}"
@@ -2238,8 +2209,7 @@ proof -
       with A2 show ?thesis
         by blast
     qed
-    show "\<forall>TP SR. TP \<in>T P \<and> SR \<in>S R
-          \<longrightarrow> (TP, \<lbrakk>SR\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    show "\<forall>TP SR. TP \<in>T P \<and> SR \<in>S R \<longrightarrow> (TP, \<lbrakk>SR\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
     proof (cases Q)
       case (SourceTerm SQ)
       assume "SQ \<in>S Q"
@@ -2293,18 +2263,14 @@ proof -
   qed
 qed
 
-lemma (in encoding) indRelTEQ_to_TRel:
+lemma (in encodingFunction) indRelTEQ_to_TRel:
   fixes TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel: "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q"
-  shows "\<forall>SP SQ. SP \<in>S P \<and> SQ \<in>S Q
-         \<longrightarrow> (\<lbrakk>SP\<rbrakk>, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
-    and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q
-         \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
-    and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q
-         \<longrightarrow> (TP, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
-    and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q
-         \<longrightarrow> (TP, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+  shows "\<forall>SP SQ. SP \<in>S P \<and> SQ \<in>S Q \<longrightarrow> (\<lbrakk>SP\<rbrakk>, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> (\<lbrakk>SP\<rbrakk>, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> (TP, \<lbrakk>SQ\<rbrakk>) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
+    and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
 proof -
   have reflTRel: "\<forall>S. (\<lbrakk>S\<rbrakk>, \<lbrakk>S\<rbrakk>) \<in> TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>}"
     by auto
@@ -2423,7 +2389,7 @@ proof -
   qed
 qed
 
-lemma (in encoding) trans_closure_of_TRel_refl_cond:
+lemma (in encodingFunction) trans_closure_of_TRel_refl_cond:
   fixes TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes "(TP, TQ) \<in> (TRel \<union> {(T1, T2). \<exists>S. T1 = \<lbrakk>S\<rbrakk> \<and> T2 = \<lbrakk>S\<rbrakk>})\<^sup>+"
@@ -2444,10 +2410,10 @@ next
     by simp
 qed
 
-text \<open>Note that if indRelRTPO relates a source term S to a target term T, then the translation of
-        S is equal to T or indRelRTPO also relates the translation of S to T.\<close>
+text \<open>Note that if indRelRTPO relates a source term S to a target term T, then the translation of S
+      is equal to T or indRelRTPO also relates the translation of S to T.\<close>
 
-lemma (in encoding) indRelRTPO_relates_source_target:
+lemma (in encodingFunction) indRelRTPO_relates_source_target:
   fixes TRel :: "('procT \<times> 'procT) set"
     and S    :: "'procS"
     and T    :: "'procT"
@@ -2455,30 +2421,30 @@ lemma (in encoding) indRelRTPO_relates_source_target:
   shows "(TargetTerm (\<lbrakk>S\<rbrakk>), TargetTerm T) \<in> (indRelRTPO TRel)\<^sup>="
 proof -
   from pair have "(\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
-      using indRelRTPO_to_TRel(2)[where TRel="TRel"] trans_closure_of_TRel_refl_cond
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"] trans_closure_of_TRel_refl_cond
     by simp
   hence "\<lbrakk>S\<rbrakk> = T \<or> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>+"
-      using rtrancl_eq_or_trancl[of "\<lbrakk>S\<rbrakk>" T TRel]
+    using rtrancl_eq_or_trancl[of "\<lbrakk>S\<rbrakk>" T TRel]
     by blast
   moreover have "\<lbrakk>S\<rbrakk> = T \<Longrightarrow> (TargetTerm (\<lbrakk>S\<rbrakk>), TargetTerm T) \<in> (indRelRTPO TRel)\<^sup>="
     by simp
   moreover
   have "(\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>+ \<Longrightarrow> (TargetTerm (\<lbrakk>S\<rbrakk>), TargetTerm T) \<in> (indRelRTPO TRel)\<^sup>="
-      using transitive_closure_of_TRel_to_indRelRTPO[where TRel="TRel"]
+    using transitive_closure_of_TRel_to_indRelRTPO[where TRel="TRel"]
     by simp
   ultimately show "(TargetTerm (\<lbrakk>S\<rbrakk>), TargetTerm T) \<in> (indRelRTPO TRel)\<^sup>="
     by blast
 qed
 
-text \<open>If indRelRTPO, indRelLTPO, or indRelTPO preserves barbs then so does the corresponding
-        target term relation.\<close>
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO preserves barbs then so does the corresponding target
+      term relation.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes preservation: "rel_preserves_barbs Rel (STCalWB SWB TWB)"
       and targetInRel:  "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
-  shows "rel_preserves_barbs TRel TWB"
+    shows "rel_preserves_barbs TRel TWB"
 proof clarify
   fix TP TQ a
   assume "(TP, TQ) \<in> TRel"
@@ -2488,7 +2454,7 @@ proof clarify
   hence "TargetTerm TP\<down>.a"
     by simp
   ultimately have "TargetTerm TQ\<down>.a"
-      using preservation preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using preservation preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "TQ\<down><TWB>a"
     by simp
@@ -2498,32 +2464,32 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_preserves_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_preserves_barbs TRel TWB"
-      using preservation
-            rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelRTPO TRel" and TRel="TRel"]
-    by (simp add: indRelRTPO.target)
+  using preservation
+        rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelRTPO TRel" and TRel="TRel"]
+  by (simp add: indRelRTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_preserves_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_preserves_barbs TRel TWB"
-      using preservation
-            rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelLTPO TRel" and TRel="TRel"]
-    by (simp add: indRelLTPO.target)
+  using preservation
+        rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelLTPO TRel" and TRel="TRel"]
+  by (simp add: indRelLTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_preserves_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_preserves_barbs TRel TWB"
-      using preservation
-            rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelTEQ TRel" and TRel="TRel"]
-    by (simp add: indRelTEQ.target)
+  using preservation
+        rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelTEQ TRel" and TRel="TRel"]
+  by (simp add: indRelTEQ.target)
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_weakly_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes preservation: "rel_weakly_preserves_barbs Rel (STCalWB SWB TWB)"
       and targetInRel:  "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
-  shows "rel_weakly_preserves_barbs TRel TWB"
+    shows "rel_weakly_preserves_barbs TRel TWB"
 proof clarify
   fix TP TQ a TP'
   assume "(TP, TQ) \<in> TRel"
@@ -2533,7 +2499,7 @@ proof clarify
   hence "TargetTerm TP\<Down>.a"
     by blast
   ultimately have "TargetTerm TQ\<Down>.a"
-      using preservation weak_preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using preservation weak_preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "TQ\<Down><TWB>a"
     by simp
@@ -2543,35 +2509,35 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_weakly_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_weakly_preserves_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelRTPO TRel" and TRel="TRel"]
-    by (simp add: indRelRTPO.target)
+  using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by (simp add: indRelRTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_weakly_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_weakly_preserves_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelLTPO TRel" and TRel="TRel"]
-    by (simp add: indRelLTPO.target)
+  using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by (simp add: indRelLTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_preserves_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes preservation: "rel_weakly_preserves_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelTEQ TRel" and TRel="TRel"]
-    by (simp add: indRelTEQ.target)
+  using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where Rel="indRelTEQ TRel"
+          and TRel="TRel"]
+  by (simp add: indRelTEQ.target)
 
-text \<open>If indRelRTPO, indRelLTPO, or indRelTPO reflects barbs then so does the corresponding
-        target term relation.\<close>
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO reflects barbs then so does the corresponding target
+      term relation.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes reflection: "rel_reflects_barbs Rel (STCalWB SWB TWB)"
       and targetInRel:  "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
-  shows "rel_reflects_barbs TRel TWB"
+    shows "rel_reflects_barbs TRel TWB"
 proof clarify
   fix TP TQ a
   assume "(TP, TQ) \<in> TRel"
@@ -2581,7 +2547,7 @@ proof clarify
   hence "TargetTerm TQ\<down>.a"
     by simp
   ultimately have "TargetTerm TP\<down>.a"
-      using reflection reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using reflection reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "TP\<down><TWB>a"
     by simp
@@ -2591,32 +2557,32 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_reflects_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_reflects_barbs TRel TWB"
-      using reflection
-            rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelRTPO TRel" and TRel="TRel"]
-    by (simp add: indRelRTPO.target)
+  using reflection
+        rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelRTPO TRel" and TRel="TRel"]
+  by (simp add: indRelRTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_reflects_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_reflects_barbs TRel TWB"
-      using reflection
-            rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelLTPO TRel" and TRel="TRel"]
-    by (simp add: indRelLTPO.target)
+  using reflection
+        rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelLTPO TRel" and TRel="TRel"]
+  by (simp add: indRelLTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_reflects_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_reflects_barbs TRel TWB"
-      using reflection
-            rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelTEQ TRel" and TRel="TRel"]
-    by (simp add: indRelTEQ.target)
+  using reflection
+        rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelTEQ TRel" and TRel="TRel"]
+  by (simp add: indRelTEQ.target)
 
 lemma (in encoding_wrt_barbs) rel_with_target_impl_TRel_weakly_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes reflection: "rel_weakly_reflects_barbs Rel (STCalWB SWB TWB)"
       and targetInRel:  "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
-  shows "rel_weakly_reflects_barbs TRel TWB"
+    shows "rel_weakly_reflects_barbs TRel TWB"
 proof clarify
   fix TP TQ a TQ'
   assume "(TP, TQ) \<in> TRel"
@@ -2626,7 +2592,7 @@ proof clarify
   hence "TargetTerm TQ\<Down>.a"
     by blast
   ultimately have "TargetTerm TP\<Down>.a"
-      using reflection weak_reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using reflection weak_reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "TP\<Down><TWB>a"
     by simp
@@ -2636,79 +2602,80 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_weakly_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_weakly_reflects_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                        Rel="indRelRTPO TRel" and TRel="TRel"]
-    by (simp add: indRelRTPO.target)
+  using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by (simp add: indRelRTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_weakly_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_weakly_reflects_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                        Rel="indRelLTPO TRel" and TRel="TRel"]
-    by (simp add: indRelLTPO.target)
+  using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by (simp add: indRelLTPO.target)
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_reflects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes reflection: "rel_weakly_reflects_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                        Rel="indRelTEQ TRel" and TRel="TRel"]
-    by (simp add: indRelTEQ.target)
+  using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where Rel="indRelTEQ TRel"
+          and TRel="TRel"]
+  by (simp add: indRelTEQ.target)
 
-text \<open>If indRelRTPO, indRelLTPO, or indRelTPO respects barbs then so does the corresponding
-        target term relation.\<close>
+text \<open>If indRelRTPO, indRelLTPO, or indRelTPO respects barbs then so does the corresponding target
+      term relation.\<close>
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_respects_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_respects_barbs TRel TWB"
-      using respection indRelRTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
-            indRelRTPO_impl_TRel_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelRTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
+        indRelRTPO_impl_TRel_reflects_barbs[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_respects_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_respects_barbs TRel TWB"
-      using respection indRelLTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
-            indRelLTPO_impl_TRel_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelLTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
+        indRelLTPO_impl_TRel_reflects_barbs[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_respects_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_respects_barbs TRel TWB"
-      using respection indRelTEQ_impl_TRel_preserves_barbs[where TRel="TRel"]
-            indRelTEQ_impl_TRel_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelTEQ_impl_TRel_preserves_barbs[where TRel="TRel"]
+        indRelTEQ_impl_TRel_reflects_barbs[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_weakly_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_weakly_respects_barbs (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            indRelRTPO_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+        indRelRTPO_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_weakly_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_weakly_respects_barbs (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            indRelLTPO_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+        indRelLTPO_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_weakly_respects_barbs:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes respection: "rel_weakly_respects_barbs (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            indRelTEQ_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
-    by blast
+  using respection indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+        indRelTEQ_impl_TRel_weakly_reflects_barbs[where TRel="TRel"]
+  by blast
 
 text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a simulation then so is the corresponding target
-        term relation.\<close>
+      term relation. For the labelled cases with encoded labels we have to additionally assume that
+      the label encoding preserves the internal.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2716,7 +2683,7 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_simulatio
   assumes sim:    "weak_reduction_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "weak_reduction_simulation (TRel\<^sup>+) Target"
+    shows "weak_reduction_simulation (TRel\<^sup>+) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<longmapsto>Target* TP'"
@@ -2731,7 +2698,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain Q' where A2: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q'"
                            and A3: "(TargetTerm TP', Q') \<in> Rel"
-        using sim
+      using sim
       by blast
     from A2 obtain TQ' where A4: "TQ \<longmapsto>Target* TQ'" and A5: "TQ' \<in>T Q'"
       by (auto simp add: STCal_steps)
@@ -2752,7 +2719,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target)* R'"
                            and B4: "(TargetTerm TQ', R') \<in> Rel"
-        using sim
+      using sim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target* TR'"
       by (auto simp add: STCal_steps)
@@ -2765,23 +2732,203 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_weak_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                           and A3: "(TargetTerm TP', Q') \<in> Rel"
+      using sim
+      by blast
+    from A1 A2 obtain TQ' where A4: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A5: "TQ' \<in>T Q'"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> Q']
+      unfolding getTargetLabel_def
+      by blast
+    from A3 A5 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A4 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* R'"
+                           and A5: "(TargetTerm TQ', R') \<in> Rel"
+      using sim
+      by blast
+    from A1 A4 obtain TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta> R']
+      unfolding getTargetLabel_def
+      by blast
+    from A5 A6 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A7 show "\<exists>TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<and> (TP', TR') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain \<beta>' Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>(STLCal Source Target)* Q'"
+      and A3: "(TargetTerm TP', Q') \<in> Rel" and A4: "\<langle>TargetTerm TP, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TQ' where A5: "TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>Target* TQ'" and A6: "TQ' \<in>T Q'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta>' Q']
+      by blast
+    from A1 A4 A7 have "\<alpha> = \<alpha>'"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by blast
+    with A5 have A8: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'"
+      by simp
+    from A3 A6 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A8 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain \<beta>' R' where A4: "TargetTerm TR \<midarrow>\<Zcat>\<beta>'\<rightarrow>(STLCal Source Target)* R'"
+       and A5: "(TargetTerm TQ', R') \<in> Rel" and A6: "\<langle>TargetTerm TQ, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A4 obtain \<alpha>' TR' where A7: "TR' \<in>T R'" and A8: "TR \<midarrow>\<Zcat>\<alpha>'\<rightarrow>Target* TR'"
+                            and A9: "\<alpha>' \<in>TL \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta>' R']
+      by blast
+    from A1 A6 A9 have "\<alpha> = \<alpha>'"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A8 have A10: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      by simp
+    from A5 A7 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A10 show "\<exists>TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<and> (TP', TR') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "weak_reduction_simulation (indRelRTPO TRel) (STCal Source Target)"
   shows "weak_reduction_simulation (TRel\<^sup>+) Target"
-      using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation_encL (indRelRTPO TRel)"
+  shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "weak_reduction_simulation (indRelLTPO TRel) (STCal Source Target)"
   shows "weak_reduction_simulation (TRel\<^sup>+) Target"
-      using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation_encL (indRelLTPO TRel)"
+    shows "weak_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2789,7 +2936,7 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_simulatio
   assumes sim:    "weak_reduction_simulation (Rel\<inverse>) (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "weak_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
+    shows "weak_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TQ, TP) \<in> TRel\<^sup>+"
@@ -2805,7 +2952,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain Q' where A2: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q'"
                            and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>"
-        using sim
+      using sim
       by blast
     from A2 obtain TQ' where A4: "TQ \<longmapsto>Target* TQ'" and A5: "TQ' \<in>T Q'"
       by (auto simp add: STCal_steps(2))
@@ -2823,7 +2970,7 @@ proof clarify
       by simp
     ultimately obtain R' where B1: "TargetTerm TR \<longmapsto>(STCal Source Target)* R'"
                            and B2: "(TargetTerm TP', R') \<in> Rel\<inverse>"
-        using sim
+      using sim
       by blast
     from B1 obtain TR' where B3: "TR' \<in>T R'" and B4: "TR \<longmapsto>Target* TR'"
       by (auto simp add: STCal_steps)
@@ -2841,23 +2988,209 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation (Rel\<inverse>) (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TQ, TP) \<in> TRel\<^sup>+"
+  moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  ultimately show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+  proof (induct arbitrary: TP')
+    fix TP TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TQ, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel\<inverse>"
+      by simp
+    moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                           and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>"
+      using sim
+      by blast
+    from A1 A2 obtain TQ' where A4: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A5: "TQ' \<in>T Q'"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> Q']
+      unfolding getTargetLabel_def
+      by blast
+    from A3 A5 trel have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A4 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  next
+    case (step TR TP TP')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    moreover assume "(TR, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TR) \<in> Rel\<inverse>"
+      by simp
+    ultimately obtain R' where A2: "TargetTerm TR \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* R'"
+                           and A3: "(TargetTerm TP', R') \<in> Rel\<inverse>"
+      using sim
+      by blast
+    from A1 A2 obtain TR' where A4: "TR' \<in>T R'" and A5: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta> R']
+      unfolding getTargetLabel_def
+      by blast
+    assume "\<And>TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+    with A5 obtain TQ' where A6: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A7: "(TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+    from A7 have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    moreover from A3 A4 trel have "(TR', TP') \<in> TRel\<^sup>+"
+      by simp
+    ultimately have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A6 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation_encL (Rel\<inverse>)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TQ, TP) \<in> TRel\<^sup>+"
+  moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  ultimately show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+  proof (induct arbitrary: \<alpha> TP')
+    fix TP \<alpha> TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TQ, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel\<inverse>"
+      by simp
+    moreover assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain \<beta>' Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>(STLCal Source Target)* Q'"
+      and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>" and A4: "\<langle>TargetTerm TP, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TQ' where A5: "TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>Target* TQ'" and A6: "TQ' \<in>T Q'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta>' Q']
+      by blast
+    from A1 A4 A7 have "\<alpha> = \<alpha>'"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A5 have A8: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'"
+      by simp
+    from A3 A6 trel have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A8 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  next
+    case (step TR TP \<alpha> TP')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSteps(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    moreover assume "(TR, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TR) \<in> Rel\<inverse>"
+      by simp
+    ultimately obtain \<beta>' R' where A2: "TargetTerm TR \<midarrow>\<Zcat>\<beta>'\<rightarrow>(STLCal Source Target)* R'"
+      and A3: "(TargetTerm TP', R') \<in> Rel\<inverse>" and A4: "\<langle>TargetTerm TP, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TR' where A5: "TR' \<in>T R'" and A6: "TR \<midarrow>\<Zcat>\<alpha>'\<rightarrow>Target* TR'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta>' R']
+      by blast
+    from A1 A4 A7 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A6 have A8: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      by simp
+    assume "\<And>\<alpha> TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+    with A8 obtain TQ' where A9: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A10: "(TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+    from A10 have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    moreover from A3 A5 trel have "(TR', TP') \<in> TRel\<^sup>+"
+      by simp
+    ultimately have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A9 show "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "weak_reduction_simulation ((indRelRTPO TRel)\<inverse>) (STCal Source Target)"
   shows "weak_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
-      using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_simulation_rev[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_simulation_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation ((indRelRTPO TRel)\<inverse>) (STLCal Source Target)"
+  shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation_encL ((indRelRTPO TRel)\<inverse>)"
+  shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "weak_reduction_simulation ((indRelLTPO TRel)\<inverse>) (STCal Source Target)"
   shows "weak_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
-      using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_simulation_rev[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_simulation_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation ((indRelLTPO TRel)\<inverse>) (STLCal Source Target)"
+  shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation_encL ((indRelLTPO TRel)\<inverse>)"
+  shows "weak_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2865,7 +3198,7 @@ lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_sim
   assumes sim:    "weak_reduction_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "weak_reduction_simulation (TRel\<^sup>*) Target"
+    shows "weak_reduction_simulation (TRel\<^sup>*) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<longmapsto>Target* TP'"
@@ -2890,7 +3223,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target)* R'"
                            and B4: "(TargetTerm TQ', R') \<in> Rel"
-        using sim
+      using sim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target* TR'"
       by (auto simp add: STCal_steps)
@@ -2903,15 +3236,140 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_simulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* R'"
+                           and A5: "(TargetTerm TQ', R') \<in> Rel"
+      using sim
+      by blast
+    from A1 A4 obtain TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta> R']
+      unfolding getTargetLabel_def
+      by blast
+    from A5 A6 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A7 show "\<exists>TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<and> (TP', TR') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "weak_labelled_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_simulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSteps(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain \<beta>' R' where A4: "TargetTerm TR \<midarrow>\<Zcat>\<beta>'\<rightarrow>(STLCal Source Target)* R'"
+       and A5: "(TargetTerm TQ', R') \<in> Rel" and A6: "\<langle>TargetTerm TQ, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A4 obtain \<alpha>' TR' where A7: "TR' \<in>T R'" and A8: "TR \<midarrow>\<Zcat>\<alpha>'\<rightarrow>Target* TR'"
+                            and A9: "\<alpha>' \<in>TL \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using STLCal_weakLabelledSteps(2)[of TR \<beta>' R']
+      by blast
+    from A1 A6 A9 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A8 have A10: "TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR'"
+      by simp
+    from A5 A7 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A10 show "\<exists>TR'. TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* TR' \<and> (TP', TR') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelTEQ_impl_TRel_is_weak_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "weak_reduction_simulation (indRelTEQ TRel) (STCal Source Target)"
   shows "weak_reduction_simulation (TRel\<^sup>*) Target"
-      using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where
-             Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_weak_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "weak_labelled_simulation (TRel\<^sup>*) Target"
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_weak_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "weak_labelled_simulation_encL (indRelTEQ TRel)"
+    shows "weak_labelled_simulation (TRel\<^sup>*) Target"
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation_encL[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2919,7 +3377,7 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_simulat
   assumes sim:    "strong_reduction_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "strong_reduction_simulation (TRel\<^sup>+) Target"
+    shows "strong_reduction_simulation (TRel\<^sup>+) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<longmapsto>Target TP'"
@@ -2934,7 +3392,7 @@ proof clarify
       by (simp add: STCal_step)
     ultimately obtain Q' where A2: "TargetTerm TQ \<longmapsto>(STCal Source Target) Q'"
                            and A3: "(TargetTerm TP', Q') \<in> Rel"
-        using sim
+      using sim
       by blast
     from A2 obtain TQ' where A4: "TQ \<longmapsto>Target TQ'" and A5: "TQ' \<in>T Q'"
       by (auto simp add: STCal_step)
@@ -2955,7 +3413,7 @@ proof clarify
       by (simp add: STCal_step)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target) R'"
                            and B4: "(TargetTerm TQ', R') \<in> Rel"
-        using sim
+      using sim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target TR'"
       by (auto simp add: STCal_step)
@@ -2968,23 +3426,203 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_strong_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+    unfolding getTargetLabel_def
+    by blast
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TP')"
+      using STLCal_labelledStep(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) Q'"
+                           and A3: "(TargetTerm TP', Q') \<in> Rel"
+      using sim
+      by blast
+    from A1 A2 obtain TQ' where A4: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A5: "TQ' \<in>T Q'"
+      using STLCal_labelledStep(2)[of TQ \<beta> Q']
+      unfolding getTargetLabel_def
+      by blast
+    from A3 A5 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A4 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+       and "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+      using STLCal_labelledStep(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) R'"
+                           and A5: "(TargetTerm TQ', R') \<in> Rel"
+      using sim
+      by blast
+    from A1 A4 obtain TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+      using STLCal_labelledStep(2)[of TR \<beta> R']
+      unfolding getTargetLabel_def
+      by blast
+    from A5 A6 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A7 show "\<exists>TR'. TR \<midarrow>\<alpha>\<rightarrow>Target TR' \<and> (TP', TR') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+    unfolding getTargetLabel_def
+    by blast
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TP')"
+      using STLCal_labelledStep(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain \<beta>' Q' where A2: "TargetTerm TQ \<midarrow>\<beta>'\<rightarrow>(STLCal Source Target) Q'"
+      and A3: "(TargetTerm TP', Q') \<in> Rel" and A4: "\<langle>TargetTerm TP, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TQ' where A5: "TQ \<midarrow>\<alpha>'\<rightarrow>Target TQ'" and A6: "TQ' \<in>T Q'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using STLCal_labelledStep(2)[of TQ \<beta>' Q']
+      by blast
+    from A1 A4 A7 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A5 have A8: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'"
+      by simp
+    from A3 A6 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A8 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+       and "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+      using STLCal_labelledStep(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain \<beta>' R' where A4: "TargetTerm TR \<midarrow>\<beta>'\<rightarrow>(STLCal Source Target) R'"
+      and A5: "(TargetTerm TQ', R') \<in> Rel" and A6: "\<langle>TargetTerm TQ, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A4 obtain \<alpha>' TR' where A7: "TR' \<in>T R'" and A8: "TR \<midarrow>\<alpha>'\<rightarrow>Target TR'"
+                            and A9: "\<alpha>' \<in>TL \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using STLCal_labelledStep(2)[of TR \<beta>' R']
+      by blast
+    from A1 A6 A9 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A8 have A10: "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+      by simp
+    from A5 A7 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A10 show "\<exists>TR'. TR \<midarrow>\<alpha>\<rightarrow>Target TR' \<and> (TP', TR') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_strong_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "strong_reduction_simulation (indRelRTPO TRel) (STCal Source Target)"
   shows "strong_reduction_simulation (TRel\<^sup>+) Target"
-      using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_strong_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_strong_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation_encL (indRelRTPO TRel)"
+  shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_strong_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "strong_reduction_simulation (indRelLTPO TRel) (STCal Source Target)"
   shows "strong_reduction_simulation (TRel\<^sup>+) Target"
-      using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_strong_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_strong_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation_encL (indRelLTPO TRel)"
+  shows "strong_labelled_simulation (TRel\<^sup>+) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -2992,7 +3630,7 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_simulat
   assumes sim:    "strong_reduction_simulation (Rel\<inverse>) (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "strong_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
+    shows "strong_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TQ, TP) \<in> TRel\<^sup>+"
@@ -3008,7 +3646,7 @@ proof clarify
       by (simp add: STCal_step)
     ultimately obtain Q' where A2: "TargetTerm TQ \<longmapsto>(STCal Source Target) Q'"
                            and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>"
-        using sim
+      using sim
       by blast
     from A2 obtain TQ' where A4: "TQ \<longmapsto>Target TQ'" and A5: "TQ' \<in>T Q'"
       by (auto simp add: STCal_step(2))
@@ -3026,7 +3664,7 @@ proof clarify
       by (simp add: STCal_step)
     ultimately obtain P' where B1: "TargetTerm TP \<longmapsto>(STCal Source Target) P'"
                            and B2: "(P', TargetTerm TR') \<in> Rel"
-        using sim
+      using sim
       by blast
     from B1 obtain TP' where B3: "TP' \<in>T P'" and B4: "TP \<longmapsto>Target TP'"
       by (auto simp add: STCal_step)
@@ -3042,32 +3680,213 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation (Rel\<inverse>) (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TQ, TP) \<in> TRel\<^sup>+"
+  moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  ultimately show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+  proof (induct arbitrary: TP')
+    fix TP TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TQ, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel\<inverse>"
+      by simp
+    moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TP')"
+      using STLCal_labelledStep(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) Q'"
+                           and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>"
+      using sim
+      by blast
+    from A1 A2 obtain TQ' where A4: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A5: "TQ' \<in>T Q'"
+      using STLCal_labelledStep(2)[of TQ \<beta> Q']
+      unfolding getTargetLabel_def
+      by blast
+    from A3 A5 trel have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A4 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  next
+    case (step TP TR TR')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TR, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TP, TR) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover assume "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+    with A1 have "TargetTerm TR \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+      using STLCal_labelledStep(2)[of TR \<beta> "TargetTerm TR'"]
+      by blast
+    ultimately obtain P' where A2: "TargetTerm TP \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) P'"
+                           and A3: "(P', TargetTerm TR') \<in> Rel"
+      using sim
+      by blast
+    from A1 A2 obtain TP' where A4: "TP' \<in>T P'" and A5: "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+      using STLCal_labelledStep(2)[of TP \<beta> P']
+      unfolding getTargetLabel_def
+      by blast
+    assume "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+    with A5 obtain TQ' where A6: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A7: "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+    from A3 A4 trel have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A7 have "(TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A6 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation_encL (Rel\<inverse>)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TQ, TP) \<in> TRel\<^sup>+"
+  moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  ultimately show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+  proof (induct arbitrary: TP')
+    fix TP TP'
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TP, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TQ, TP) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel\<inverse>"
+      by simp
+    moreover assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TP')"
+      using STLCal_labelledStep(2)[of TP \<beta> "TargetTerm TP'"]
+      by blast
+    ultimately obtain \<beta>' Q' where A2: "TargetTerm TQ \<midarrow>\<beta>'\<rightarrow>(STLCal Source Target) Q'"
+      and A3: "(TargetTerm TP', Q') \<in> Rel\<inverse>" and A4: "\<langle>TargetTerm TP, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TQ' where A5: "TQ \<midarrow>\<alpha>'\<rightarrow>Target TQ'" and A6: "TQ' \<in>T Q'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TQ, \<beta>'\<rangle>"
+      using STLCal_labelledStep(2)[of TQ \<beta>' Q']
+      by blast
+    from A1 A4 A7 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A5 have A8: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'"
+      by simp
+    from A3 A6 trel have "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A8 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  next
+    case (step TP TR TR')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TR, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "(TP, TR) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover assume "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+    with A1 have "TargetTerm TR \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+      using STLCal_labelledStep(2)[of TR \<beta> "TargetTerm TR'"]
+      by blast
+    ultimately obtain \<beta>' P' where A2: "TargetTerm TP \<midarrow>\<beta>'\<rightarrow>(STLCal Source Target) P'"
+      and A3: "(P', TargetTerm TR') \<in> Rel" and A4: "\<langle>TargetTerm TR, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TP, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A2 obtain \<alpha>' TP' where A5: "TP' \<in>T P'" and A6: "TP \<midarrow>\<alpha>'\<rightarrow>Target TP'"
+                            and A7: "\<alpha>' \<in>TL \<langle>TargetTerm TP, \<beta>'\<rangle>"
+      using STLCal_labelledStep(2)[of TP \<beta>' P']
+      by blast
+    from A1 A4 A7 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A6 have A8: "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+      by simp
+    assume "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+    with A8 obtain TQ' where A9: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A10: "(TP', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+    from A3 A5 trel have "(TP', TR') \<in> TRel\<^sup>+"
+      by simp
+    with A10 have "(TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by simp
+    with A9 show "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TR', TQ') \<in> (TRel\<^sup>+)\<inverse>"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_strong_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "strong_reduction_simulation ((indRelRTPO TRel)\<inverse>) (STCal Source Target)"
   shows "strong_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
-      using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_simulation_rev[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_simulation_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_strong_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation ((indRelRTPO TRel)\<inverse>) (STLCal Source Target)"
+  shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_strong_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation_encL ((indRelRTPO TRel)\<inverse>)"
+  shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL_rev[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_strong_reduction_simulation_rev:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "strong_reduction_simulation ((indRelLTPO TRel)\<inverse>) (STCal Source Target)"
   shows "strong_reduction_simulation ((TRel\<^sup>+)\<inverse>) Target"
-      using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_simulation_rev[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_simulation_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_strong_labelled_simulation_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation ((indRelLTPO TRel)\<inverse>) (STLCal Source Target)"
+  shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_strong_labelled_simulation_encL_rev:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation_encL ((indRelLTPO TRel)\<inverse>)"
+  shows "strong_labelled_simulation ((TRel\<^sup>+)\<inverse>) Target"
+  using sim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL_rev[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes sim:    "strong_reduction_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
-      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel
-                   \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "strong_reduction_simulation (TRel\<^sup>*) Target"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "strong_reduction_simulation (TRel\<^sup>*) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<longmapsto>Target TP'"
@@ -3092,7 +3911,7 @@ proof clarify
       by (simp add: STCal_step)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target) R'"
                            and B4: "(TargetTerm TQ', R') \<in> Rel"
-        using sim
+      using sim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target TR'"
       by (auto simp add: STCal_step)
@@ -3105,15 +3924,141 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "strong_labelled_simulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR TP')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+       and "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+      using STLCal_labelledStep(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) R'"
+                           and A5: "(TargetTerm TQ', R') \<in> Rel"
+      using sim
+      by blast
+    from A1 A4 obtain TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+      using STLCal_labelledStep(2)[of TR \<beta> R']
+      unfolding getTargetLabel_def
+      by blast
+    from A5 A6 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A7 show "\<exists>TR'. TR \<midarrow>\<alpha>\<rightarrow>Target TR' \<and> (TP', TR') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes sim:    "strong_labelled_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "strong_labelled_simulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ \<alpha> TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR TP')
+    obtain \<beta> where A1: "\<alpha> \<in>TL \<langle>TargetTerm TQ, \<beta>\<rangle>"
+      unfolding getTargetLabel_def
+      by blast
+    assume "TP \<midarrow>\<alpha>\<rightarrow>Target TP'"
+       and "\<And>TP'. TP \<midarrow>\<alpha>\<rightarrow>Target TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<alpha>\<rightarrow>Target TQ' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<alpha>\<rightarrow>Target TQ'" and A3: "(TP', TQ') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<beta>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+      using STLCal_labelledStep(2)[of TQ \<beta> "TargetTerm TQ'"]
+      by blast
+    ultimately obtain \<beta>' R' where A4: "TargetTerm TR \<midarrow>\<beta>'\<rightarrow>(STLCal Source Target) R'"
+      and A5: "(TargetTerm TQ', R') \<in> Rel" and A6: "\<langle>TargetTerm TQ, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using sim
+      by blast
+    from A4 obtain \<alpha>' TR' where A7: "TR' \<in>T R'" and A8: "TR \<midarrow>\<alpha>'\<rightarrow>Target TR'"
+                            and A9: "\<alpha>' \<in>TL \<langle>TargetTerm TR, \<beta>'\<rangle>"
+      using STLCal_labelledStep(2)[of TR \<beta>' R']
+      by blast
+    from A1 A6 A9 have "\<alpha>' = \<alpha>"
+      unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+      by auto
+    with A8 have A10: "TR \<midarrow>\<alpha>\<rightarrow>Target TR'"
+      by simp
+    from A5 A7 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A3 have "(TP', TR') \<in> TRel\<^sup>*"
+      by simp
+    with A10 show "\<exists>TR'. TR \<midarrow>\<alpha>\<rightarrow>Target TR' \<and> (TP', TR') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelTEQ_impl_TRel_is_strong_reduction_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes sim: "strong_reduction_simulation (indRelTEQ TRel) (STCal Source Target)"
   shows "strong_reduction_simulation (TRel\<^sup>*) Target"
-      using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_simulation[where
-             Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_strong_labelled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "strong_labelled_simulation (TRel\<^sup>*) Target"
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_strong_labelled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes sim: "strong_labelled_simulation_encL (indRelTEQ TRel)"
+  shows "strong_labelled_simulation (TRel\<^sup>*) Target"
+  using sim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation_encL[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3121,12 +4066,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_simulation:
   shows "weak_barbed_simulation (TRel\<^sup>+) TWB"
 proof
   from sim show "weak_reduction_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_weakly_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3136,12 +4081,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_weak_barbed_simulation:
   shows "weak_barbed_simulation (TRel\<^sup>+) TWB"
 proof
   from sim show "weak_reduction_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_weakly_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3151,12 +4096,12 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_simulation:
   shows "weak_barbed_simulation (TRel\<^sup>*) TWB"
 proof
   from sim show "weak_reduction_simulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_weakly_preserves_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3166,12 +4111,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_strong_barbed_simulation:
   shows "strong_barbed_simulation (TRel\<^sup>+) TWB"
 proof
   from sim show "strong_reduction_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
-            preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
+          preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3181,12 +4126,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_strong_barbed_simulation:
   shows "strong_barbed_simulation (TRel\<^sup>+) TWB"
 proof
   from sim refl show "strong_reduction_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
-            preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_preserves_barbs[where TRel="TRel"]
+          preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3196,17 +4141,17 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_strong_barbed_simulation:
   shows "strong_barbed_simulation (TRel\<^sup>*) TWB"
 proof
   from sim refl show "strong_reduction_simulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_strong_reduction_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from sim show "rel_preserves_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_preserves_barbs[where TRel="TRel"]
-            preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_preserves_barbs[where TRel="TRel"]
+          preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
 text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a contrasimulation then so is the corresponding
-        target term relation.\<close>
+      target term relation.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3214,7 +4159,7 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_contrasim
   assumes conSim: "weak_reduction_contrasimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "weak_reduction_contrasimulation (TRel\<^sup>+) Target"
+    shows "weak_reduction_contrasimulation (TRel\<^sup>+) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<longmapsto>Target* TP'"
@@ -3229,7 +4174,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain Q' where A2: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q'"
                            and A3: "(Q', TargetTerm TP') \<in> Rel"
-        using conSim
+      using conSim
       by blast
     from A2 obtain TQ' where A4: "TQ \<longmapsto>Target* TQ'" and A5: "TQ' \<in>T Q'"
       by (auto simp add: STCal_steps)
@@ -3250,15 +4195,181 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target)* R'"
                            and B4: "(R', TargetTerm TQ') \<in> Rel"
-        using conSim
+      using conSim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target* TR'"
       by (auto simp add: STCal_steps)
     from B4 B5 trel have "(TR', TQ') \<in> TRel\<^sup>+"
       by simp
-    from this B2 have "(TR', TP') \<in> TRel\<^sup>+"
+    with B2 have "(TR', TP') \<in> TRel\<^sup>+"
       by simp
     with B6 show "\<exists>TR'. TR \<longmapsto>Target* TR' \<and> (TR', TP') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes conSim: "weak_labelled_contrasimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ w TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    obtain P v where "w \<in>TL* \<langle>P, v\<rangle>"
+      using lift_word_on_target_labels[of w]
+      by blast
+    hence A1: "w \<in>TL* \<langle>TargetTerm TP, v\<rangle>"
+      using lift_target_word_exchange[of w P v "TargetTerm TP"]
+      by simp
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+    with A1 have "TargetTerm TP \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSequence(2)[of TP v "TargetTerm TP'"]
+      by blast
+    ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* Q'"
+                           and A3: "(Q', TargetTerm TP') \<in> Rel"
+      using conSim
+      by blast
+    from A2 obtain TQ' w' where A4: "TQ \<midarrow>\<frown>w'\<rightarrow>Target* TQ'" and A5: "TQ' \<in>T Q'"
+                            and A6: "w' \<in>TL* \<langle>TargetTerm TQ, v\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TQ v Q']
+      by blast
+    from A1 A6 have A7: "w = w'"
+      using lifted_word_on_target_labels_is_unique[of w "TargetTerm TP" v w']
+            lift_target_word_exchange[of w' "TargetTerm TQ" v "TargetTerm TP"]
+      by simp
+    from A3 A5 trel have "(TQ', TP') \<in> TRel\<^sup>+"
+      by simp
+    with A4 A7 show "\<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain v where A1: "w \<in>TL* \<langle>TargetTerm TQ, v\<rangle>"
+      using lift_word_on_target_labels[of w]
+            lift_target_word_exchange[where Q="TargetTerm TQ"]
+      by blast
+    assume "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<frown>w\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ'" and A3: "(TQ', TP') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSequence(2)[of TQ v "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* R'"
+                           and A5: "(R', TargetTerm TQ') \<in> Rel"
+      using conSim
+      by blast
+    from A4 obtain w' TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<frown>w'\<rightarrow>Target* TR'"
+                            and A8: "w' \<in>TL* \<langle>TargetTerm TR, v\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TR v R']
+      by blast
+    from A1 A8 have A9: "w = w'"
+      using lifted_word_on_target_labels_is_unique[of w "TargetTerm TQ" v w']
+            lift_target_word_exchange[of w' "TargetTerm TR" v "TargetTerm TQ"]
+      by simp
+    from A5 A6 trel have "(TR', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TR', TP') \<in> TRel\<^sup>+"
+      by simp
+    with A7 A9 show "\<exists>TR'. TR \<midarrow>\<frown>w\<rightarrow>Target* TR' \<and> (TR', TP') \<in> TRel\<^sup>+"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes conSim: "weak_labelled_contrasimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+proof clarify
+  fix TP TQ w TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>+" and "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+  proof (induct arbitrary: TP')
+    fix TQ TP'
+    obtain v where A1: "w \<in>TL* \<langle>TargetTerm TP, v\<rangle>"
+      using lift_word_on_target_labels[of w]
+            lift_target_word_exchange[where Q="TargetTerm TP"]
+      by blast
+    assume "(TP, TQ) \<in> TRel"
+    with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+      by simp
+    moreover assume "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+    with A1 have A2: "TargetTerm TP \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* (TargetTerm TP')"
+      using STLCal_weakLabelledSequence(2)[of TP v "TargetTerm TP'"]
+      by blast
+    ultimately obtain v' Q' where A3: "TargetTerm TQ \<midarrow>\<frown>v'\<rightarrow>(STLCal Source Target)* Q'"
+      and A4: "(Q', TargetTerm TP') \<in> Rel" and A5: "\<langle>TargetTerm TP, v\<rangle> \<equiv>\<lparr>\<rparr>* \<langle>TargetTerm TQ, v'\<rangle>"
+      using conSim
+      by blast
+    from A3 obtain TQ' w' where A6: "TQ \<midarrow>\<frown>w'\<rightarrow>Target* TQ'" and A7: "TQ' \<in>T Q'"
+                            and A8: "w' \<in>TL* \<langle>TargetTerm TQ, v'\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TQ v' Q']
+      by blast
+    from A5 have "v = v'"
+      using related_words_equal[of "TargetTerm TP" v "TargetTerm TQ" v']
+      by simp
+    with A1 A8 have "w = w'"
+      using lifted_word_on_target_labels_is_unique[of w "TargetTerm TP" v w']
+            lift_target_word_exchange[of w' "TargetTerm TQ" v' "TargetTerm TP"]
+      by simp
+    with A6 have A10: "TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ'"
+      by simp
+    from A4 A7 trel have "(TQ', TP') \<in> TRel\<^sup>+"
+      by simp
+    with A10 show "\<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+      by blast
+  next
+    case (step TQ TR)
+    obtain v where A1: "w \<in>TL* \<langle>TargetTerm TQ, v\<rangle>"
+      using lift_word_on_target_labels[of w]
+            lift_target_word_exchange[where Q="TargetTerm TQ"]
+      by blast
+    assume "TP \<midarrow>\<frown>w\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<frown>w\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>+"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<frown>w\<rightarrow>Target* TQ'" and A3: "(TQ', TP') \<in> TRel\<^sup>+"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have A4: "TargetTerm TQ \<midarrow>\<frown>v\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSequence(2)[of TQ v "TargetTerm TQ'"]
+      by blast
+    ultimately obtain v' R' where A5: "TargetTerm TR \<midarrow>\<frown>v'\<rightarrow>(STLCal Source Target)* R'"
+      and A6: "(R', TargetTerm TQ') \<in> Rel" and A7: "\<langle>TargetTerm TQ, v\<rangle> \<equiv>\<lparr>\<rparr>* \<langle>TargetTerm TR, v'\<rangle>"
+      using conSim
+      by blast
+    from A5 obtain w' TR' where A8:  "TR' \<in>T R'" and A9: "TR \<midarrow>\<frown>w'\<rightarrow>Target* TR'"
+                            and A10: "w' \<in>TL* \<langle>TargetTerm TR, v'\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TR v' R']
+      by blast
+    from A7 have "v = v'"
+      using related_words_equal[of "TargetTerm TQ" v "TargetTerm TR" v']
+      by simp
+    with A1 A10 have "w = w'"
+      using lifted_word_on_target_labels_is_unique[of w "TargetTerm TQ" v w']
+            lift_target_word_exchange[of w' "TargetTerm TR" v' "TargetTerm TQ"]
+      by simp
+    with A9 have A12: "TR \<midarrow>\<frown>w\<rightarrow>Target* TR'"
+      by simp
+    from A6 A8 trel have "(TR', TQ') \<in> TRel\<^sup>+"
+      by simp
+    with A3 have "(TR', TP') \<in> TRel\<^sup>+"
+      by simp
+    with A12 show "\<exists>TR'. TR \<midarrow>\<frown>w\<rightarrow>Target* TR' \<and> (TR', TP') \<in> TRel\<^sup>+"
       by blast
   qed
 qed
@@ -3267,19 +4378,55 @@ lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes conSim: "weak_reduction_contrasimulation (indRelRTPO TRel) (STCal Source Target)"
   shows "weak_reduction_contrasimulation (TRel\<^sup>+) Target"
-      using conSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using conSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_contrasimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+  using conSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_contrasimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation_encL (indRelRTPO TRel)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+  using conSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes conSim: "weak_reduction_contrasimulation (indRelLTPO TRel) (STCal Source Target)"
   shows "weak_reduction_contrasimulation (TRel\<^sup>+) Target"
-      using conSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using conSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_contrasimulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_contrasimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+  using conSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_contrasimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation_encL (indRelLTPO TRel)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+  using conSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_contrasimulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3287,7 +4434,7 @@ lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_con
   assumes conSim: "weak_reduction_contrasimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "weak_reduction_contrasimulation (TRel\<^sup>*) Target"
+    shows "weak_reduction_contrasimulation (TRel\<^sup>*) Target"
 proof clarify
   fix TP TQ TP'
   assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<longmapsto>Target* TP'"
@@ -3312,7 +4459,7 @@ proof clarify
       by (simp add: STCal_steps)
     ultimately obtain R' where B3: "TargetTerm TR \<longmapsto>(STCal Source Target)* R'"
                            and B4: "(R', TargetTerm TQ') \<in> Rel"
-        using conSim
+      using conSim
       by blast
     from B3 obtain TR' where B5: "TR' \<in>T R'" and B6: "TR \<longmapsto>Target* TR'"
       by (auto simp add: STCal_steps)
@@ -3325,15 +4472,149 @@ proof clarify
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_contrasimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes conSim: "weak_labelled_contrasimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ v TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR)
+    obtain w where A1: "v \<in>TL* \<langle>TargetTerm TQ, w\<rangle>"
+      using lift_word_on_target_labels[of v]
+            lift_target_word_exchange[where Q="TargetTerm TQ"]
+      by blast
+    assume "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<frown>v\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ'" and A3: "(TQ', TP') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have "TargetTerm TQ \<midarrow>\<frown>w\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSequence(2)[of TQ w "TargetTerm TQ'"]
+      by blast
+    ultimately obtain R' where A4: "TargetTerm TR \<midarrow>\<frown>w\<rightarrow>(STLCal Source Target)* R'"
+                           and A5: "(R', TargetTerm TQ') \<in> Rel"
+      using conSim
+      by blast
+    from A4 obtain v' TR' where A6: "TR' \<in>T R'" and A7: "TR \<midarrow>\<frown>v'\<rightarrow>Target* TR'"
+                            and A8: "v' \<in>TL* \<langle>TargetTerm TR, w\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TR w R']
+      by blast
+    from A1 A8 have A9: "v = v'"
+      using lifted_word_on_target_labels_is_unique[of v "TargetTerm TQ" w v']
+            lift_target_word_exchange[of v' "TargetTerm TR" w "TargetTerm TQ"]
+      by simp
+    from A5 A6 trel have "(TR', TQ') \<in> TRel\<^sup>*"
+      by simp
+    from this A3 have "(TR', TP') \<in> TRel\<^sup>*"
+      by simp
+    with A7 A9 show "\<exists>TR'. TR \<midarrow>\<frown>v\<rightarrow>Target* TR' \<and> (TR', TP') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_contrasimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes conSim: "weak_labelled_contrasimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+proof clarify
+  fix TP TQ v TP'
+  assume "(TP, TQ) \<in> TRel\<^sup>*" and "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+  thus "\<exists>TQ'. TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+  proof (induct arbitrary: TP')
+    fix TP'
+    assume "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+    moreover have "(TP', TP') \<in> TRel\<^sup>*"
+      by simp
+    ultimately show "\<exists>TQ'. TP \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+      by blast
+  next
+    case (step TQ TR)
+    obtain w where A1: "v \<in>TL* \<langle>TargetTerm TQ, w\<rangle>"
+      using lift_word_on_target_labels[of v]
+            lift_target_word_exchange[where Q="TargetTerm TQ"]
+      by blast
+    assume "TP \<midarrow>\<frown>v\<rightarrow>Target* TP'"
+       and "\<And>TP'. TP \<midarrow>\<frown>v\<rightarrow>Target* TP' \<Longrightarrow> \<exists>TQ'. TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ' \<and> (TQ', TP') \<in> TRel\<^sup>*"
+    from this obtain TQ' where A2: "TQ \<midarrow>\<frown>v\<rightarrow>Target* TQ'" and A3: "(TQ', TP') \<in> TRel\<^sup>*"
+      by blast
+    assume "(TQ, TR) \<in> TRel"
+    with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+      by simp
+    moreover from A1 A2 have A4: "TargetTerm TQ \<midarrow>\<frown>w\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+      using STLCal_weakLabelledSequence(2)[of TQ w "TargetTerm TQ'"]
+      by blast
+    ultimately obtain w' R' where A5: "TargetTerm TR \<midarrow>\<frown>w'\<rightarrow>(STLCal Source Target)* R'"
+      and A6: "(R', TargetTerm TQ') \<in> Rel" and A7: "\<langle>TargetTerm TQ, w\<rangle> \<equiv>\<lparr>\<rparr>* \<langle>TargetTerm TR, w'\<rangle>"
+      using conSim
+      by blast
+    from A5 obtain v' TR' where A8:  "TR' \<in>T R'" and A9: "TR \<midarrow>\<frown>v'\<rightarrow>Target* TR'"
+                            and A10: "v' \<in>TL* \<langle>TargetTerm TR, w'\<rangle>"
+      using STLCal_weakLabelledSequence(2)[of TR w' R']
+      by blast
+    from A7 have "w = w'"
+      using related_words_equal[of "TargetTerm TQ" w "TargetTerm TR" w']
+      by simp
+    with A1 A10 have A12: "v = v'"
+      using lifted_word_on_target_labels_is_unique[of v "TargetTerm TQ" w v']
+            lift_target_word_exchange[of v' "TargetTerm TR" w' "TargetTerm TQ"]
+      by simp
+    from A6 A8 trel have "(TR', TQ') \<in> TRel\<^sup>*"
+      by simp
+    from this A3 have "(TR', TP') \<in> TRel\<^sup>*"
+      by simp
+    with A9 A12 show "\<exists>TR'. TR \<midarrow>\<frown>v\<rightarrow>Target* TR' \<and> (TR', TP') \<in> TRel\<^sup>*"
+      by blast
+  qed
+qed
+
 lemma (in encoding) indRelTEQ_impl_TRel_is_weak_reduction_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes conSim: "weak_reduction_contrasimulation (indRelTEQ TRel) (STCal Source Target)"
   shows "weak_reduction_contrasimulation (TRel\<^sup>*) Target"
-      using conSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_contrasimulation[where
-             Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using conSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_contrasimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_weak_labelled_contrasimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+  using conSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_contrasimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_weak_labelled_contrasimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes conSim: "weak_labelled_contrasimulation_encL (indRelTEQ TRel)"
+  shows "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+  using conSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_contrasimulation_encL[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_contrasimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3341,12 +4622,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_contrasimulati
   shows "weak_barbed_contrasimulation (TRel\<^sup>+) TWB"
 proof
   from conSim show "weak_reduction_contrasimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from conSim show "rel_weakly_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3356,12 +4637,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_weak_barbed_contrasimulati
   shows "weak_barbed_contrasimulation (TRel\<^sup>+) TWB"
 proof
   from conSim show "weak_reduction_contrasimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from conSim show "rel_weakly_preserves_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(2)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3371,74 +4652,211 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_contrasimulatio
   shows "weak_barbed_contrasimulation (TRel\<^sup>*) TWB"
 proof
   from conSim show "weak_reduction_contrasimulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from conSim show "rel_weakly_preserves_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
-            weak_preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_weakly_preserves_barbs[where TRel="TRel"]
+          weak_preservation_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
-text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a coupled simulation then so is the
-        corresponding target term relation.\<close>
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a coupled simulation then so is the corresponding
+      target term relation. We require that the label encoding respects the internal for the
+      labelled cases with encoded labels.\<close>
 
 lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_reduction_coupled_simulation (indRelRTPO TRel) (STCal Source Target)"
   shows "weak_reduction_coupled_simulation (TRel\<^sup>+) Target"
-      using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelRTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
-            indRelRTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelRTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+        indRelRTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_coupled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim: "weak_labelled_coupled_simulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+proof -
+  from couSim have A1: "weak_labelled_simulation (indRelRTPO TRel) (STLCal Source Target)"
+               and A2: "weak_labelled_contrasimulation (indRelRTPO TRel) (STLCal Source Target)"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of
+            "indRelRTPO TRel" "STLCal Source Target"]
+    by auto
+  from A1 have A3: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using indRelRTPO_impl_TRel_is_weak_labelled_simulation[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+    using indRelRTPO_impl_TRel_is_weak_labelled_contrasimulation[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>+"
+            Target]
+    by simp
+qed
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_coupled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim:    "weak_labelled_coupled_simulation_encL (indRelRTPO TRel)"
+      and preserves: "encL_preserves_internal"
+  shows "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+proof -
+  from couSim preserves have A1: "weak_labelled_simulation_encL (indRelRTPO TRel)"
+                         and A2: "weak_labelled_contrasimulation_encL (indRelRTPO TRel)"
+    using wl_coupled_simulation_encL_and_preservation_versus_simulation_and_contrasimulation[of
+            "indRelRTPO TRel"] indRelRTPO_to_TRel(3)
+    by blast+
+  from preserves A1 have A3: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using indRelRTPO_impl_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+    using indRelRTPO_impl_TRel_is_weak_labelled_contrasimulation_encL[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>+"
+            Target]
+    by simp
+qed
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_reduction_coupled_simulation (indRelLTPO TRel) (STCal Source Target)"
   shows "weak_reduction_coupled_simulation (TRel\<^sup>+) Target"
-      using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelLTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
-            indRelLTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelLTPO_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+        indRelLTPO_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_coupled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim: "weak_labelled_coupled_simulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+proof -
+  from couSim have A1: "weak_labelled_simulation (indRelLTPO TRel) (STLCal Source Target)"
+               and A2: "weak_labelled_contrasimulation (indRelLTPO TRel) (STLCal Source Target)"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of
+            "indRelLTPO TRel" "STLCal Source Target"]
+    by auto
+  from A1 have A3: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using indRelLTPO_impl_TRel_is_weak_labelled_simulation[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+    using indRelLTPO_impl_TRel_is_weak_labelled_contrasimulation[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>+"
+            Target]
+    by simp
+qed
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_coupled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim: "weak_labelled_coupled_simulation_encL (indRelLTPO TRel)"
+      and res:    "encL_respects_internal"
+  shows "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+proof -
+  from couSim res have A1: "weak_labelled_simulation_encL (indRelLTPO TRel)"
+                   and A2: "weak_labelled_contrasimulation_encL (indRelLTPO TRel)"
+    using wl_coupled_simulation_encL_and_respection_versus_simulation_and_contrasimulation[of
+            "indRelLTPO TRel"]
+    by auto
+  from res A1 have A3: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using indRelLTPO_impl_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>+) Target"
+    using indRelLTPO_impl_TRel_is_weak_labelled_contrasimulation_encL[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>+) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>+"
+            Target]
+    by simp
+qed
 
 lemma (in encoding) indRelTEQ_impl_TRel_is_weak_reduction_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_reduction_coupled_simulation (indRelTEQ TRel) (STCal Source Target)"
   shows "weak_reduction_coupled_simulation (TRel\<^sup>*) Target"
-      using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelTEQ_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
-            indRelTEQ_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_reduction_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelTEQ_impl_TRel_is_weak_reduction_simulation[where TRel="TRel"]
+        indRelTEQ_impl_TRel_is_weak_reduction_contrasimulation[where TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_weak_labelled_coupled_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim: "weak_labelled_coupled_simulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "weak_labelled_coupled_simulation (TRel\<^sup>*) Target"
+proof -
+  from couSim have A1: "weak_labelled_simulation (indRelTEQ TRel) (STLCal Source Target)"
+               and A2: "weak_labelled_contrasimulation (indRelTEQ TRel) (STLCal Source Target)"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of
+            "indRelTEQ TRel" "STLCal Source Target"]
+    by auto
+  from A1 have A3: "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using indRelTEQ_impl_TRel_is_weak_labelled_simulation[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+    using indRelTEQ_impl_TRel_is_weak_labelled_contrasimulation[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>*) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>*"
+            Target]
+    by simp
+qed
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_weak_labelled_coupled_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes couSim: "weak_labelled_coupled_simulation_encL (indRelTEQ TRel)"
+      and res:    "encL_respects_internal"
+    shows "weak_labelled_coupled_simulation (TRel\<^sup>*) Target"
+proof -
+  from couSim res have A1: "weak_labelled_simulation_encL (indRelTEQ TRel)"
+                   and A2: "weak_labelled_contrasimulation_encL (indRelTEQ TRel)"
+    using wl_coupled_simulation_encL_and_respection_versus_simulation_and_contrasimulation[of
+            "indRelTEQ TRel"]
+    by auto
+  from res A1 have A3: "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using indRelTEQ_impl_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"]
+    by simp
+  from A2 have "weak_labelled_contrasimulation (TRel\<^sup>*) Target"
+    using indRelTEQ_impl_TRel_is_weak_labelled_contrasimulation_encL[where TRel="TRel"]
+    by simp
+  with A3 show "weak_labelled_coupled_simulation (TRel\<^sup>*) Target"
+    using weak_labelled_coupled_simulation_versus_simulation_and_contrasimulation[of "TRel\<^sup>*"
+            Target]
+    by simp
+qed
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_barbed_coupled_simulation (indRelRTPO TRel) (STCalWB SWB TWB)"
   shows "weak_barbed_coupled_simulation (TRel\<^sup>+) TWB"
-      using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelRTPO_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
-            indRelRTPO_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelRTPO_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
+        indRelRTPO_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_weak_barbed_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_barbed_coupled_simulation (indRelLTPO TRel) (STCalWB SWB TWB)"
   shows "weak_barbed_coupled_simulation (TRel\<^sup>+) TWB"
-      using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelLTPO_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
-            indRelLTPO_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelLTPO_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
+        indRelLTPO_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_coupled_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes couSim: "weak_barbed_coupled_simulation (indRelTEQ TRel) (STCalWB SWB TWB)"
   shows "weak_barbed_coupled_simulation (TRel\<^sup>*) TWB"
-      using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
-            refl indRelTEQ_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
-            indRelTEQ_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
-    by blast
+  using couSim weak_barbed_coupled_simulation_versus_simulation_and_contrasimulation
+        refl indRelTEQ_impl_TRel_is_weak_barbed_simulation[where TRel="TRel"]
+        indRelTEQ_impl_TRel_is_weak_barbed_contrasimulation[where TRel="TRel"]
+  by blast
 
 text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a correspondence simulation then so is the
-        corresponding target term relation.\<close>
+      corresponding target term relation. For the labelled case with encoded labels we additionally
+      assume that the label encoding preserves the internal.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3446,11 +4864,11 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_correspon
   assumes corSim: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "weak_reduction_correspondence_simulation (TRel\<^sup>+) Target"
+    shows "weak_reduction_correspondence_simulation (TRel\<^sup>+) Target"
 proof -
   from corSim target trel have A: "weak_reduction_simulation (TRel\<^sup>+) Target"
-      using rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
-             and Rel="Rel"]
+    using rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
+            and Rel="Rel"]
     by blast
   moreover have "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q'
                  \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>+)"
@@ -3468,7 +4886,7 @@ proof -
         by (simp add: STCal_steps)
       ultimately obtain P'' Q'' where A2: "TargetTerm TP \<longmapsto>(STCal Source Target)* P''"
         and A3: "TargetTerm TQ' \<longmapsto>(STCal Source Target)* Q''" and A4: "(P'', Q'') \<in> Rel"
-          using corSim
+        using corSim
         by blast
       from A2 obtain TP'' where A5: "TP \<longmapsto>Target* TP''" and A6: "TP'' \<in>T P''"
         by (auto simp add: STCal_steps)
@@ -3476,8 +4894,7 @@ proof -
         by (auto simp add: STCal_steps)
       from A4 A6 A8 trel have "(TP'', TQ'') \<in> TRel\<^sup>+"
         by blast
-      with A5 A7
-      show "\<exists>TP'' TQ''. TP \<longmapsto>Target* TP'' \<and> TQ' \<longmapsto>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+      with A5 A7 show "\<exists>TP'' TQ''. TP \<longmapsto>Target* TP'' \<and> TQ' \<longmapsto>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
         by blast
     next
       case (step TQ TR TR')
@@ -3496,7 +4913,7 @@ proof -
           by (simp add: STCal_steps)
         ultimately obtain Q'' R'' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q''"
          and B2: "TargetTerm TR' \<longmapsto>(STCal Source Target)* R''" and B3: "(Q'', R'') \<in> Rel"
-            using corSim
+          using corSim
           by blast
         from B1 obtain TQ'' where B4: "TQ'' \<in>T Q''" and B5: "TQ \<longmapsto>Target* TQ''"
           by (auto simp add: STCal_steps)
@@ -3511,9 +4928,215 @@ proof -
       moreover have "trans (TRel\<^sup>+)"
         by simp
       moreover assume "TR \<longmapsto>Target* TR'"
-      ultimately
-      show "\<exists>TP'' TR''. TP \<longmapsto>Target* TP'' \<and> TR' \<longmapsto>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>+"
+      ultimately show "\<exists>TP'' TR''. TP \<longmapsto>Target* TP'' \<and> TR' \<longmapsto>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>+"
         using A reduction_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>+"
+                and Cal="Target"]
+        by blast
+    qed
+  qed
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes corSim: "weak_labelled_correspondence_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+proof -
+  from corSim target trel have A: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_weak_labelled_simulation[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+  moreover have "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q'
+                 \<longrightarrow> (\<exists>P'' Q''. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P'' \<and> Q' \<rightarrow>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by blast
+      moreover assume "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain P'' Q'' where A2: "TargetTerm TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P''"
+        and A3: "TargetTerm TQ' \<rightarrow>(STLCal Source Target)* Q''" and A4: "(P'', Q'') \<in> Rel"
+        using corSim
+        by blast
+      from A1 A2 obtain TP'' where A5: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP''" and A6: "TP'' \<in>T P''"
+        using STLCal_weakLabelledSteps(2)[of TP \<alpha> P'']
+        unfolding getTargetLabel_def
+        by blast
+      from A3 obtain TQ'' where A7: "TQ' \<rightarrow>Target* TQ''" and A8: "TQ'' \<in>T Q''"
+        using STLCal_weakTauSteps(2)[of TQ' Q'']
+        by blast
+      from A4 A6 A8 trel have "(TP'', TQ'') \<in> TRel\<^sup>+"
+        by blast
+      with A5 A7
+        show "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'\<Longrightarrow> \<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ''
+              \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+      moreover assume "(TQ, TR) \<in> TRel"
+      hence "\<And>TR'. TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'
+             \<longrightarrow> (\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>+)"
+      proof clarify
+        fix TR'
+        obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          unfolding getTargetLabel_def
+          by blast
+        assume "(TQ, TR) \<in> TRel"
+        with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+          by simp
+        moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+        with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+          using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+          by blast
+        ultimately obtain Q'' R'' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q''"
+         and A3: "TargetTerm TR' \<rightarrow>(STLCal Source Target)* R''" and A4: "(Q'', R'') \<in> Rel"
+          using corSim
+          by blast
+        from A1 A2 obtain TQ'' where A5: "TQ'' \<in>T Q''" and A6: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''"
+          using STLCal_weakLabelledSteps(2)[of TQ \<alpha> Q'']
+          unfolding getTargetLabel_def
+          by blast
+        from A3 obtain TR'' where A7: "TR'' \<in>T R''" and A8: "TR' \<rightarrow>Target* TR''"
+          using STLCal_weakTauSteps(2)[of TR' R'']
+          by blast
+        from A4 A5 A7 trel have "(TQ'', TR'') \<in> TRel\<^sup>+"
+          by simp
+        with A6 A8
+        show "\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>+"
+          by blast
+      qed
+      moreover have "trans (TRel\<^sup>+)"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      ultimately
+      show "\<exists>TP'' TR''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>+"
+        using A labelled_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>+"
+                and Cal="Target"]
+        by blast
+    qed
+  qed
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes corSim: "weak_labelled_correspondence_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+proof -
+  from corSim target trel have A: "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+  moreover have "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q'
+                 \<longrightarrow> (\<exists>P'' Q''. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P'' \<and> Q' \<rightarrow>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by blast
+      moreover assume "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain \<alpha>' P'' Q'' where A2: "TargetTerm TP \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* P''"
+                                     and A3: "TargetTerm TQ' \<rightarrow>(STLCal Source Target)* Q''"
+                                     and A4: "(P'', Q'') \<in> Rel"
+                                     and A5: "\<langle>TargetTerm TP, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        using corSim
+        by blast
+      from A2 obtain \<beta>' TP'' where A6: "TP \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TP''" and A7: "TP'' \<in>T P''"
+                               and A8: "\<beta>' \<in>TL \<langle>TargetTerm TP, \<alpha>'\<rangle>"
+        using STLCal_weakLabelledSteps(2)[of TP \<alpha>' P'']
+        by blast
+      from A1 A5 A8 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A6 have A9: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP''"
+        by simp
+      from A3 obtain TQ'' where A10: "TQ' \<rightarrow>Target* TQ''" and A11: "TQ'' \<in>T Q''"
+        using STLCal_weakTauSteps(2)[of TQ' Q'']
+        by blast
+      from A4 A7 A11 trel have "(TP'', TQ'') \<in> TRel\<^sup>+"
+        by blast
+      with A9 A10
+        show "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'\<Longrightarrow> \<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ''
+              \<and> (TP'', TQ'') \<in> TRel\<^sup>+"
+      moreover assume "(TQ, TR) \<in> TRel"
+      hence "\<And>TR'. TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'
+             \<longrightarrow> (\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>+)"
+      proof clarify
+        fix TR'
+        obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          unfolding getTargetLabel_def
+          by blast
+        assume "(TQ, TR) \<in> TRel"
+        with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+          by simp
+        moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+        with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+          using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+          by blast
+        ultimately obtain \<alpha>' Q'' R'' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* Q''"
+                                       and A3: "TargetTerm TR' \<rightarrow>(STLCal Source Target)* R''"
+                                       and A4: "(Q'', R'') \<in> Rel"
+                                       and A5: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          using corSim
+          by blast
+        from A2 obtain \<beta>' TQ'' where A6: "TQ'' \<in>T Q''" and A7: "TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TQ''"
+                                 and A8: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+          using STLCal_weakLabelledSteps(2)[of TQ \<alpha>' Q'']
+          by blast
+        from A1 A5 A8 have "\<beta>' = \<beta>"
+          unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+          by auto
+        with A7 have A9: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''"
+          by simp
+        from A3 obtain TR'' where A10: "TR'' \<in>T R''" and A11: "TR' \<rightarrow>Target* TR''"
+          using STLCal_weakTauSteps(2)[of TR' R'']
+          by blast
+        from A4 A6 A10 trel have "(TQ'', TR'') \<in> TRel\<^sup>+"
+          by simp
+        with A9 A11
+        show "\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>+"
+          by blast
+      qed
+      moreover have "trans (TRel\<^sup>+)"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      ultimately
+      show "\<exists>TP'' TR''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>+"
+        using A labelled_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>+"
                 and Cal="Target"]
         by blast
     qed
@@ -3526,19 +5149,55 @@ lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_correspondence_simula
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes cSim: "weak_reduction_correspondence_simulation (indRelRTPO TRel) (STCal Source Target)"
   shows "weak_reduction_correspondence_simulation (TRel\<^sup>+) Target"
-      using cSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation[where
-              Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using cSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_correspondence_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes cSim: "weak_labelled_correspondence_simulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+  using cSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_correspondence_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes cSim: "weak_labelled_correspondence_simulation_encL (indRelRTPO TRel)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+  using cSim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_correspondence_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes cSim: "weak_reduction_correspondence_simulation (indRelLTPO TRel) (STCal Source Target)"
   shows "weak_reduction_correspondence_simulation (TRel\<^sup>+) Target"
-      using cSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation[where
-              Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using cSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_correspondence_simulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_correspondence_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes cSim: "weak_labelled_correspondence_simulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+  using cSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_correspondence_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes cSim: "weak_labelled_correspondence_simulation_encL (indRelLTPO TRel)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>+) Target"
+  using cSim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_correspondence_simulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding)
   rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_correspondence_simulation:
@@ -3547,11 +5206,11 @@ lemma (in encoding)
   assumes corSim: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "weak_reduction_correspondence_simulation (TRel\<^sup>*) Target"
+    shows "weak_reduction_correspondence_simulation (TRel\<^sup>*) Target"
 proof -
   from corSim target trel have A: "weak_reduction_simulation (TRel\<^sup>*) Target"
-      using rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
-             and Rel="Rel"]
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
+            and Rel="Rel"]
     by blast
   moreover have "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<longmapsto>Target* Q' \<longrightarrow>
     (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>*)"
@@ -3585,7 +5244,7 @@ proof -
           by (simp add: STCal_steps)
         ultimately obtain Q'' R'' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q''"
          and B2: "TargetTerm TR' \<longmapsto>(STCal Source Target)* R''" and B3: "(Q'', R'') \<in> Rel"
-            using corSim
+          using corSim
           by blast
         from B1 obtain TQ'' where B4: "TQ'' \<in>T Q''" and B5: "TQ \<longmapsto>Target* TQ''"
           by (auto simp add: STCal_steps)
@@ -3599,10 +5258,179 @@ proof -
       qed
       moreover assume "TR \<longmapsto>Target* TR'"
       moreover have "trans (TRel\<^sup>*)"
-          using trans_rtrancl[of TRel]
+        using trans_rtrancl[of TRel]
         by simp
       ultimately show "\<exists>TP'' TR''. TP \<longmapsto>Target* TP'' \<and> TR' \<longmapsto>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>*"
         using A reduction_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>*"
+                and Cal="Target"]
+        by blast
+    qed
+  qed
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma (in encodingLS)
+  rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_correspondence_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes corSim: "weak_labelled_correspondence_simulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_correspondence_simulation (TRel\<^sup>*) Target"
+proof -
+  from corSim target trel have A: "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+  moreover have "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+    (\<exists>P'' Q''. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P'' \<and> Q' \<rightarrow>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      moreover have "TQ' \<rightarrow>Target* TQ'"
+        using WTS_refl[of TQ' Target]
+        by simp
+      moreover have "(TQ', TQ') \<in> TRel\<^sup>*"
+        by simp
+      ultimately
+      show "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'\<Longrightarrow> \<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ''
+              \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+      moreover assume "(TQ, TR) \<in> TRel"
+      with corSim have "\<And>TR'. TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR' \<Longrightarrow> \<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''
+                        \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>*"
+      proof clarify
+        fix TR'
+        obtain \<alpha> where B1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          unfolding getTargetLabel_def
+          by blast
+        assume "(TQ, TR) \<in> TRel"
+        with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+          by simp
+        moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+        with B1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+          using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+          by blast
+        ultimately obtain Q'' R'' where B2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q''"
+         and B3: "TargetTerm TR' \<rightarrow>(STLCal Source Target)* R''" and B4: "(Q'', R'') \<in> Rel"
+          using corSim
+          by blast
+        from B1 B2 obtain TQ'' where B5: "TQ'' \<in>T Q''" and B6: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''"
+          using STLCal_weakLabelledSteps(2)[of TQ \<alpha> Q'']
+          unfolding getTargetLabel_def
+          by blast
+        from B3 obtain TR'' where B7: "TR'' \<in>T R''" and B8: "TR' \<rightarrow>Target* TR''"
+          using STLCal_weakTauSteps(2)[of TR' R'']
+          by blast
+        from B4 B5 B7 trel have "(TQ'', TR'') \<in> TRel\<^sup>*"
+          by simp
+        with B6 B8
+        show "\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>*"
+          by blast
+      qed
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      moreover have "trans (TRel\<^sup>*)"
+        using trans_rtrancl[of TRel]
+        by simp
+      ultimately
+      show "\<exists>TP'' TR''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>*"
+        using A labelled_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>*"
+                and Cal="Target"]
+        by blast
+    qed
+  qed
+  ultimately show ?thesis
+    by simp
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_correspondence_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes corSim: "weak_labelled_correspondence_simulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_correspondence_simulation (TRel\<^sup>*) Target"
+proof -
+  from corSim target trel have A: "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+  moreover have "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+    (\<exists>P'' Q''. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P'' \<and> Q' \<rightarrow>Target* Q'' \<and> (P'', Q'') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      moreover have "TQ' \<rightarrow>Target* TQ'"
+        using WTS_refl[of TQ' Target]
+        by simp
+      moreover have "(TQ', TQ') \<in> TRel\<^sup>*"
+        by simp
+      ultimately
+      show "\<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ'' \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'\<Longrightarrow> \<exists>TP'' TQ''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TQ' \<rightarrow>Target* TQ''
+              \<and> (TP'', TQ'') \<in> TRel\<^sup>*"
+      moreover assume "(TQ, TR) \<in> TRel"
+      with corSim have "\<And>TR'. TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR' \<Longrightarrow> \<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''
+                        \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>*"
+      proof clarify
+        fix TR'
+        obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          unfolding getTargetLabel_def
+          by blast
+        assume "(TQ, TR) \<in> TRel"
+        with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+          by simp
+        moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+        with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+          using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+          by blast
+        ultimately obtain \<alpha>' Q'' R'' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* Q''"
+                                       and A3: "TargetTerm TR' \<rightarrow>(STLCal Source Target)* R''"
+                                       and A4: "(Q'', R'') \<in> Rel"
+                                       and A5: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+          using corSim
+          by blast
+        from A2 obtain \<beta>' TQ'' where A6: "TQ'' \<in>T Q''" and A7: "TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TQ''"
+                                 and A8: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+          using STLCal_weakLabelledSteps(2)[of TQ \<alpha>' Q'']
+          by blast
+        from A1 A5 A8 have "\<beta>' = \<beta>"
+          unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+          by auto
+        with A7 have A9: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ''"
+          by simp
+        from A3 obtain TR'' where A10: "TR'' \<in>T R''" and A11: "TR' \<rightarrow>Target* TR''"
+          using STLCal_weakTauSteps(2)[of TR' R'']
+          by blast
+        from A4 A6 A10 trel have "(TQ'', TR'') \<in> TRel\<^sup>*"
+          by simp
+        with A9 A11
+        show "\<exists>TQ'' TR''. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TQ'', TR'') \<in> TRel\<^sup>*"
+          by blast
+      qed
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      moreover have "trans (TRel\<^sup>*)"
+        using trans_rtrancl[of TRel]
+        by simp
+      ultimately
+      show "\<exists>TP'' TR''. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'' \<and> TR' \<rightarrow>Target* TR'' \<and> (TP'', TR'') \<in> TRel\<^sup>*"
+        using A labelled_correspondence_simulation_condition_trans[where Rel="TRel\<^sup>*"
                 and Cal="Target"]
         by blast
     qed
@@ -3615,11 +5443,31 @@ lemma (in encoding) indRelTEQ_impl_TRel_is_weak_reduction_correspondence_simulat
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes corSim: "weak_reduction_correspondence_simulation (indRelTEQ TRel) (STCal Source Target)"
   shows "weak_reduction_correspondence_simulation (TRel\<^sup>*) Target"
-      using corSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_correspondence_simulation[
-              where Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using corSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_correspondence_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_weak_labelled_correspondence_simulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes corSim: "weak_labelled_correspondence_simulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>*) Target"
+  using corSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_correspondence_simulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_weak_labelled_correspondence_simulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes corSim: "weak_labelled_correspondence_simulation_encL (indRelTEQ TRel)"
+  shows "weak_labelled_correspondence_simulation (TRel\<^sup>*) Target"
+  using corSim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_correspondence_simulation_encL[
+          where Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_correspondence_simulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3627,12 +5475,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_correspondence
   shows "weak_barbed_correspondence_simulation (TRel\<^sup>+) TWB"
 proof
   from corSim show "weak_reduction_correspondence_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from corSim show "rel_weakly_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3642,12 +5490,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_weak_barbed_correspondence
   shows "weak_barbed_correspondence_simulation (TRel\<^sup>+) TWB"
 proof
   from corSim show "weak_reduction_correspondence_simulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from corSim show "rel_weakly_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3657,17 +5505,18 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_correspondence_
   shows "weak_barbed_correspondence_simulation (TRel\<^sup>*) TWB"
 proof
   from corSim show "weak_reduction_correspondence_simulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_weak_reduction_correspondence_simulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from corSim show "rel_weakly_respects_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
-text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a bisimulation then so is the corresponding
-        target term relation.\<close>
+text \<open>If indRelRTPO, indRelLTPO, or indRelTEQ is a bisimulation then so is the corresponding target
+      term relation, where we again add the preservation of the internal for the labelled case with
+      encoded labels.\<close>
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3675,11 +5524,11 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulat
   assumes bisim:  "weak_reduction_bisimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "weak_reduction_bisimulation (TRel\<^sup>+) Target"
+    shows "weak_reduction_bisimulation (TRel\<^sup>+) Target"
 proof
   from bisim target trel show "weak_reduction_simulation (TRel\<^sup>+) Target"
-      using rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
-             and Rel="Rel"]
+    using rel_with_target_impl_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
+            and Rel="Rel"]
     by blast
 next
   show "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
@@ -3697,7 +5546,7 @@ next
         by (simp add: STCal_steps)
       ultimately obtain P' where A2: "TargetTerm TP \<longmapsto>(STCal Source Target)* P'"
                              and A3: "(P', TargetTerm TQ') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from A2 obtain TP' where A4: "TP \<longmapsto>Target* TP'" and A5: "TP' \<in>T P'"
         by (auto simp add: STCal_steps)
@@ -3715,7 +5564,7 @@ next
         by (simp add: STCal_steps)
       ultimately obtain Q' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q'"
                              and B2: "(Q', TargetTerm TR') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from B1 obtain TQ' where B3: "TQ' \<in>T Q'" and B4: "TQ \<longmapsto>Target* TQ'"
         by (auto simp add: STCal_steps)
@@ -3732,23 +5581,223 @@ next
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "weak_labelled_bisimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+proof
+  from bisim target trel show "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_weak_labelled_simulation[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+        (\<exists>P'. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by simp
+      moreover assume "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain P' where A2: "TargetTerm TP \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                             and A3: "(P', TargetTerm TQ') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TP' where A4: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'" and A5: "TP' \<in>T P'"
+        using STLCal_weakLabelledSteps(2)[of TP \<alpha> P']
+        unfolding getTargetLabel_def
+        by blast
+      from A3 A5 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+        by simp
+      with A4 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+        using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                             and A3: "(Q', TargetTerm TR') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TQ' where A4: "TQ' \<in>T Q'" and A5: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> Q']
+        unfolding getTargetLabel_def
+        by blast
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      with A5 obtain TP' where A6: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'" and A7: "(TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+      from A3 A4 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A7 have "(TP', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A6 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TR') \<in> TRel\<^sup>+"
+        by blast
+    qed
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "weak_labelled_bisimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+proof
+  from bisim target trel show "weak_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+        (\<exists>P'. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by simp
+      moreover assume "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TQ')"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain \<alpha>' P' where A2: "TargetTerm TP \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* P'"
+                                and A3: "(P', TargetTerm TQ') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TP, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TP' where A5: "TP \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TP'" and A6: "TP' \<in>T P'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TP, \<alpha>'\<rangle>"
+        using STLCal_weakLabelledSteps(2)[of TP \<alpha>' P']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A5 have A8: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'"
+        by simp
+      from A3 A6 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+        by simp
+      with A8 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+        using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain \<alpha>' Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* Q'"
+                                and A3: "(Q', TargetTerm TR') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TQ' where A5: "TQ' \<in>T Q'" and A6: "TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TQ'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha>' Q']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A6 have A8: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+        by simp
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      with A8 obtain TP' where A9: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'" and A10: "(TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+      from A3 A5 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A10 have "(TP', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A9 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TR') \<in> TRel\<^sup>+"
+        by blast
+    qed
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "weak_reduction_bisimulation (indRelRTPO TRel) (STCal Source Target)"
   shows "weak_reduction_bisimulation (TRel\<^sup>+) Target"
-      using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_weak_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation[where Rel="indRelRTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_weak_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation_encL (indRelRTPO TRel)"
+  shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "weak_reduction_bisimulation (indRelLTPO TRel) (STCal Source Target)"
   shows "weak_reduction_bisimulation (TRel\<^sup>+) Target"
-      using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_reduction_bisimulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_weak_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation[where Rel="indRelLTPO TRel"
+          and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_weak_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation_encL (indRelLTPO TRel)"
+    shows "weak_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_weak_labelled_bisimulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3756,11 +5805,11 @@ lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_bis
   assumes bisim:  "weak_reduction_bisimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "weak_reduction_bisimulation (TRel\<^sup>*) Target"
+    shows "weak_reduction_bisimulation (TRel\<^sup>*) Target"
 proof
   from bisim target trel show "weak_reduction_simulation (TRel\<^sup>*) Target"
-      using rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
-             and Rel="Rel"]
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_simulation[where TRel="TRel"
+            and Rel="Rel"]
     by blast
 next
   show "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>*)"
@@ -3785,7 +5834,7 @@ next
         by (simp add: STCal_steps)
       ultimately obtain Q' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target)* Q'"
                              and B2: "(Q', TargetTerm TR') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from B1 obtain TQ' where B3: "TQ' \<in>T Q'" and B4: "TQ \<longmapsto>Target* TQ'"
         by (auto simp add: STCal_steps)
@@ -3802,15 +5851,160 @@ next
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "weak_labelled_bisimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_bisimulation (TRel\<^sup>*) Target"
+proof
+  from bisim target trel show "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+        (\<exists>P'. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      moreover have "(TQ', TQ') \<in> TRel\<^sup>*"
+        by simp
+      ultimately show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+        using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                             and A3: "(Q', TargetTerm TR') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TQ' where A4: "TQ' \<in>T Q'" and A5: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha> Q']
+        unfolding getTargetLabel_def
+        by blast
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      with A5 obtain TP' where A6: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'" and A7: "(TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+      from A3 A4 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A7 have "(TP', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A6 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TR') \<in> TRel\<^sup>*"
+        by blast
+    qed
+  qed
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "weak_labelled_bisimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "weak_labelled_bisimulation (TRel\<^sup>*) Target"
+proof
+  from bisim target trel show "weak_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_simulation_encL[where TRel="TRel"
+            and Rel="Rel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* Q' \<longrightarrow>
+        (\<exists>P'. P \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+      moreover have "(TQ', TQ') \<in> TRel\<^sup>*"
+        by simp
+      ultimately show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (TargetTerm TR')"
+        using STLCal_weakLabelledSteps(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain \<alpha>' Q' where A2: "TargetTerm TQ \<midarrow>\<Zcat>\<alpha>'\<rightarrow>(STLCal Source Target)* Q'"
+                                and A3: "(Q', TargetTerm TR') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TQ' where A5: "TQ' \<in>T Q'" and A6: "TQ \<midarrow>\<Zcat>\<beta>'\<rightarrow>Target* TQ'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+        using STLCal_weakLabelledSteps(2)[of TQ \<alpha>' Q']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A6 have A8: "TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ'"
+        by simp
+      assume "\<And>TQ'. TQ \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      with A8 obtain TP' where A9: "TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP'" and A10: "(TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+      from A3 A5 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A10 have "(TP', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A9 show "\<exists>TP'. TP \<midarrow>\<Zcat>\<beta>\<rightarrow>Target* TP' \<and> (TP', TR') \<in> TRel\<^sup>*"
+        by blast
+    qed
+  qed
+qed
+
 lemma (in encoding) indRelTEQ_impl_TRel_is_weak_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "weak_reduction_bisimulation (indRelTEQ TRel) (STCal Source Target)"
   shows "weak_reduction_bisimulation (TRel\<^sup>*) Target"
-      using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_bisimulation[where
-             Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_reduction_bisimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_weak_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "weak_labelled_bisimulation (TRel\<^sup>*) Target"
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_bisimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_weak_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "weak_labelled_bisimulation_encL (indRelTEQ TRel)"
+  shows "weak_labelled_bisimulation (TRel\<^sup>*) Target"
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_weak_labelled_bisimulation_encL[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3818,11 +6012,11 @@ lemma (in encoding) rel_with_target_impl_transC_TRel_is_strong_reduction_bisimul
   assumes bisim:  "strong_reduction_bisimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
-  shows "strong_reduction_bisimulation (TRel\<^sup>+) Target"
+    shows "strong_reduction_bisimulation (TRel\<^sup>+) Target"
 proof
   from bisim target trel show "strong_reduction_simulation (TRel\<^sup>+) Target"
-      using rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where Rel="Rel"
-              and TRel="TRel"]
+    using rel_with_target_impl_transC_TRel_is_strong_reduction_simulation[where Rel="Rel"
+            and TRel="TRel"]
     by blast
 next
   show "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel\<^sup>+)"
@@ -3840,7 +6034,7 @@ next
         by (simp add: STCal_step)
       ultimately obtain P' where A2: "TargetTerm TP \<longmapsto>(STCal Source Target) P'"
                              and A3: "(P', TargetTerm TQ') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from A2 obtain TP' where A4: "TP \<longmapsto>Target TP'" and A5: "TP' \<in>T P'"
         by (auto simp add: STCal_step)
@@ -3858,7 +6052,7 @@ next
         by (simp add: STCal_step)
       ultimately obtain Q' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target) Q'"
                              and B2: "(Q', TargetTerm TR') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from B1 obtain TQ' where B3: "TQ' \<in>T Q'" and B4: "TQ \<longmapsto>Target TQ'"
         by (auto simp add: STCal_step)
@@ -3875,23 +6069,221 @@ next
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "strong_labelled_bisimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+proof
+  from bisim target trel show "strong_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_strong_labelled_simulation[where Rel="Rel"
+            and TRel="TRel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<beta>\<rightarrow>Target Q' \<longrightarrow> (\<exists>P'. P \<midarrow>\<beta>\<rightarrow>Target P' \<and> (P', Q') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by simp
+      moreover assume "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+        using STLCal_labelledStep(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain P' where A2: "TargetTerm TP \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) P'"
+                             and A3: "(P', TargetTerm TQ') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TP' where A4: "TP \<midarrow>\<beta>\<rightarrow>Target TP'" and A5: "TP' \<in>T P'"
+        using STLCal_labelledStep(2)[of TP \<alpha> P']
+        unfolding getTargetLabel_def
+        by blast
+      from A3 A5 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+        by simp
+      with A4 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<beta>\<rightarrow>Target TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+        using STLCal_labelledStep(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) Q'"
+                             and A3: "(Q', TargetTerm TR') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TQ' where A4: "TQ' \<in>T Q'" and A5: "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+        using STLCal_labelledStep(2)[of TQ \<alpha> Q']
+        unfolding getTargetLabel_def
+        by blast
+      assume "\<And>TQ'. TQ \<midarrow>\<beta>\<rightarrow>Target TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      with A5 obtain TP' where A6: "TP \<midarrow>\<beta>\<rightarrow>Target TP'" and A7: "(TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+      from A3 A4 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A7 have "(TP', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A6 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TR') \<in> TRel\<^sup>+"
+        by blast
+    qed
+  qed
+qed
+
+lemma (in encodingLS_encL) rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "strong_labelled_bisimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+proof
+  from bisim target trel show "strong_labelled_simulation (TRel\<^sup>+) Target"
+    using rel_with_target_impl_transC_TRel_is_strong_labelled_simulation_encL[where Rel="Rel"
+            and TRel="TRel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<beta>\<rightarrow>Target Q' \<longrightarrow> (\<exists>P'. P \<midarrow>\<beta>\<rightarrow>Target P' \<and> (P', Q') \<in> TRel\<^sup>+)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>+" and "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+    proof (induct arbitrary: TQ')
+      fix TQ TQ'
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TP, TQ) \<in> TRel"
+      with target have "(TargetTerm TP, TargetTerm TQ) \<in> Rel"
+        by simp
+      moreover assume "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+      with A1 have "TargetTerm TQ \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TQ')"
+        using STLCal_labelledStep(2)[of TQ \<alpha> "TargetTerm TQ'"]
+        by blast
+      ultimately obtain \<alpha>' P' where A2: "TargetTerm TP \<midarrow>\<alpha>'\<rightarrow>(STLCal Source Target) P'"
+                                and A3: "(P', TargetTerm TQ') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TP, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TQ, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TP' where A5: "TP \<midarrow>\<beta>'\<rightarrow>Target TP'" and A6: "TP' \<in>T P'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TP, \<alpha>'\<rangle>"
+        using STLCal_labelledStep(2)[of TP \<alpha>' P']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A5 have A8: "TP \<midarrow>\<beta>\<rightarrow>Target TP'"
+        by simp
+      from A3 A6 trel have "(TP', TQ') \<in> TRel\<^sup>+"
+        by simp
+      with A8 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<beta>\<rightarrow>Target TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+        using STLCal_labelledStep(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain \<alpha>' Q' where A2: "TargetTerm TQ \<midarrow>\<alpha>'\<rightarrow>(STLCal Source Target) Q'"
+                                and A3: "(Q', TargetTerm TR') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TQ' where A5: "TQ' \<in>T Q'" and A6: "TQ \<midarrow>\<beta>'\<rightarrow>Target TQ'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+        using STLCal_labelledStep(2)[of TQ \<alpha>' Q']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A6 have A8: "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+        by simp
+      assume "\<And>TQ'. TQ \<midarrow>\<beta>\<rightarrow>Target TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>+"
+      with A8 obtain TP' where A9: "TP \<midarrow>\<beta>\<rightarrow>Target TP'" and A10: "(TP', TQ') \<in> TRel\<^sup>+"
+        by blast
+      from A3 A5 trel have "(TQ', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A10 have "(TP', TR') \<in> TRel\<^sup>+"
+        by simp
+      with A9 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TR') \<in> TRel\<^sup>+"
+        by blast
+    qed
+  qed
+qed
+
 lemma (in encoding) indRelRTPO_impl_TRel_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "strong_reduction_bisimulation (indRelRTPO TRel) (STCal Source Target)"
   shows "strong_reduction_bisimulation (TRel\<^sup>+) Target"
-      using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_bisimulation[where
-             Rel="indRelRTPO TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_bisimulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelRTPO_impl_TRel_is_strong_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation (indRelRTPO TRel) (STLCal Source Target)"
+  shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelRTPO_impl_TRel_is_strong_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation_encL (indRelRTPO TRel)"
+    shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelRTPO.target[where TRel="TRel"] indRelRTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation_encL[where
+          Rel="indRelRTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) indRelLTPO_impl_TRel_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "strong_reduction_bisimulation (indRelLTPO TRel) (STCal Source Target)"
   shows "strong_reduction_bisimulation (TRel\<^sup>+) Target"
-      using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
-            rel_with_target_impl_transC_TRel_is_strong_reduction_bisimulation[where
-             Rel="indRelLTPO TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_reduction_bisimulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelLTPO_impl_TRel_is_strong_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation (indRelLTPO TRel) (STLCal Source Target)"
+  shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelLTPO_impl_TRel_is_strong_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation_encL (indRelLTPO TRel)"
+  shows "strong_labelled_bisimulation (TRel\<^sup>+) Target"
+  using bisim indRelLTPO.target[where TRel="TRel"] indRelLTPO_to_TRel(4)[where TRel="TRel"]
+        rel_with_target_impl_transC_TRel_is_strong_labelled_bisimulation_encL[where
+          Rel="indRelLTPO TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3899,11 +6291,11 @@ lemma (in encoding) rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_b
   assumes bisim:  "strong_reduction_bisimulation Rel (STCal Source Target)"
       and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
       and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
-  shows "strong_reduction_bisimulation (TRel\<^sup>*) Target"
+    shows "strong_reduction_bisimulation (TRel\<^sup>*) Target"
 proof
   from bisim target trel show "strong_reduction_simulation (TRel\<^sup>*) Target"
-      using rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_simulation[where Rel="Rel"
-              and TRel="TRel"]
+    using rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_simulation[where Rel="Rel"
+            and TRel="TRel"]
     by blast
 next
   show "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel\<^sup>*)"
@@ -3926,7 +6318,7 @@ next
         by (simp add: STCal_step)
       ultimately obtain Q' where B1: "TargetTerm TQ \<longmapsto>(STCal Source Target) Q'"
                              and B2: "(Q', TargetTerm TR') \<in> Rel"
-          using bisim
+        using bisim
         by blast
       from B1 obtain TQ' where B3: "TQ' \<in>T Q'" and B4: "TQ \<longmapsto>Target TQ'"
         by (auto simp add: STCal_step)
@@ -3943,15 +6335,154 @@ next
   qed
 qed
 
+lemma (in encodingLS) rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "strong_labelled_bisimulation Rel (STLCal Source Target)"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "strong_labelled_bisimulation (TRel\<^sup>*) Target"
+proof
+  from bisim target trel show "strong_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation[where Rel="Rel"
+            and TRel="TRel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<beta>\<rightarrow>Target Q' \<longrightarrow> (\<exists>P'. P \<midarrow>\<beta>\<rightarrow>Target P' \<and> (P', Q') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<beta>\<rightarrow>Target TQ'"
+      thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<beta>\<rightarrow>Target TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+        using STLCal_labelledStep(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain Q' where A2: "TargetTerm TQ \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) Q'"
+                             and A3: "(Q', TargetTerm TR') \<in> Rel"
+        using bisim
+        by blast
+      from A1 A2 obtain TQ' where A4: "TQ' \<in>T Q'" and A5: "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+        using STLCal_labelledStep(2)[of TQ \<alpha> Q']
+        unfolding getTargetLabel_def
+        by blast
+      assume "\<And>TQ'. TQ \<midarrow>\<beta>\<rightarrow>Target TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      with A5 obtain TP' where A6: "TP \<midarrow>\<beta>\<rightarrow>Target TP'" and A7: "(TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+      from A3 A4 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A7 have "(TP', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A6 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TR') \<in> TRel\<^sup>*"
+        by blast
+    qed
+  qed
+qed
+
+lemma (in encodingLS_encL)
+  rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+    and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
+  assumes bisim:  "strong_labelled_bisimulation_encL Rel"
+      and target: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+      and trel:   "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>*"
+    shows "strong_labelled_bisimulation (TRel\<^sup>*) Target"
+proof
+  from bisim target trel show "strong_labelled_simulation (TRel\<^sup>*) Target"
+    using rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_simulation_encL[where Rel="Rel"
+            and TRel="TRel"]
+    by blast
+next
+  show "\<forall>P Q \<beta> Q'. (P, Q) \<in> TRel\<^sup>* \<and> Q \<midarrow>\<beta>\<rightarrow>Target Q' \<longrightarrow> (\<exists>P'. P \<midarrow>\<beta>\<rightarrow>Target P' \<and> (P', Q') \<in> TRel\<^sup>*)"
+  proof clarify
+    fix TP TQ \<beta> TQ'
+    assume "(TP, TQ) \<in> TRel\<^sup>*" and "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+    thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+    proof (induct arbitrary: TQ')
+      fix TQ'
+      assume "TP \<midarrow>\<beta>\<rightarrow>Target TQ'"
+      thus "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+    next
+      case (step TQ TR TR')
+      obtain \<alpha> where A1: "\<beta> \<in>TL \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        unfolding getTargetLabel_def
+        by blast
+      assume "(TQ, TR) \<in> TRel"
+      with target have "(TargetTerm TQ, TargetTerm TR) \<in> Rel"
+        by simp
+      moreover assume "TR \<midarrow>\<beta>\<rightarrow>Target TR'"
+      with A1 have "TargetTerm TR \<midarrow>\<alpha>\<rightarrow>(STLCal Source Target) (TargetTerm TR')"
+        using STLCal_labelledStep(2)[of TR \<alpha> "TargetTerm TR'"]
+        by blast
+      ultimately obtain \<alpha>' Q' where A2: "TargetTerm TQ \<midarrow>\<alpha>'\<rightarrow>(STLCal Source Target) Q'"
+                                and A3: "(Q', TargetTerm TR') \<in> Rel"
+                                and A4: "\<langle>TargetTerm TQ, \<alpha>'\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm TR, \<alpha>\<rangle>"
+        using bisim
+        by blast
+      from A2 obtain \<beta>' TQ' where A5: "TQ' \<in>T Q'" and A6: "TQ \<midarrow>\<beta>'\<rightarrow>Target TQ'"
+                              and A7: "\<beta>' \<in>TL \<langle>TargetTerm TQ, \<alpha>'\<rangle>"
+        using STLCal_labelledStep(2)[of TQ \<alpha>' Q']
+        by blast
+      from A1 A4 A7 have "\<beta>' = \<beta>"
+        unfolding related_labels_def encLST_def getSourceLabel_def getTargetLabel_def
+        by auto
+      with A6 have A8: "TQ \<midarrow>\<beta>\<rightarrow>Target TQ'"
+        by simp
+      assume "\<And>TQ'. TQ \<midarrow>\<beta>\<rightarrow>Target TQ' \<Longrightarrow> \<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TQ') \<in> TRel\<^sup>*"
+      with A8 obtain TP' where A9: "TP \<midarrow>\<beta>\<rightarrow>Target TP'" and A10: "(TP', TQ') \<in> TRel\<^sup>*"
+        by blast
+      from A3 A5 trel have "(TQ', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A10 have "(TP', TR') \<in> TRel\<^sup>*"
+        by simp
+      with A9 show "\<exists>TP'. TP \<midarrow>\<beta>\<rightarrow>Target TP' \<and> (TP', TR') \<in> TRel\<^sup>*"
+        by blast
+    qed
+  qed
+qed
+
 lemma (in encoding) indRelTEQ_impl_TRel_is_strong_reduction_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
   assumes bisim: "strong_reduction_bisimulation (indRelTEQ TRel) (STCal Source Target)"
   shows "strong_reduction_bisimulation (TRel\<^sup>*) Target"
-      using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond
-            rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_bisimulation[where
-             Rel="indRelTEQ TRel" and TRel="TRel"]
-    by blast
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_reduction_bisimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS) indRelTEQ_impl_TRel_is_strong_labelled_bisimulation:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation (indRelTEQ TRel) (STLCal Source Target)"
+  shows "strong_labelled_bisimulation (TRel\<^sup>*) Target"
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_bisimulation[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
+
+lemma (in encodingLS_encL) indRelTEQ_impl_TRel_is_strong_labelled_bisimulation_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  assumes bisim: "strong_labelled_bisimulation_encL (indRelTEQ TRel)"
+  shows "strong_labelled_bisimulation (TRel\<^sup>*) Target"
+  using bisim indRelTEQ.target[where TRel="TRel"] indRelTEQ_to_TRel(4)[where TRel="TRel"]
+        trans_closure_of_TRel_refl_cond
+        rel_with_target_impl_reflC_transC_TRel_is_strong_labelled_bisimulation_encL[where
+          Rel="indRelTEQ TRel" and TRel="TRel"]
+  by blast
 
 lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_bisimulation:
   fixes TRel :: "('procT \<times> 'procT) set"
@@ -3959,12 +6490,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_weak_barbed_bisimulation:
   shows "weak_barbed_bisimulation (TRel\<^sup>+) TWB"
 proof
   from bisim show "weak_reduction_bisimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_weakly_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3974,12 +6505,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_weak_barbed_bisimulation:
   shows "weak_barbed_bisimulation (TRel\<^sup>+) TWB"
 proof
   from bisim show "weak_reduction_bisimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_weakly_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -3989,12 +6520,12 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_weak_barbed_bisimulation:
   shows "weak_barbed_bisimulation (TRel\<^sup>*) TWB"
 proof
   from bisim show "weak_reduction_bisimulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_weak_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_weakly_respects_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
-            weak_respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_weakly_respects_barbs[where TRel="TRel"]
+          weak_respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -4004,12 +6535,12 @@ lemma (in encoding_wrt_barbs) indRelRTPO_impl_TRel_is_strong_barbed_bisimulation
   shows "strong_barbed_bisimulation (TRel\<^sup>+) TWB"
 proof
   from bisim show "strong_reduction_bisimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelRTPO_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
+    using indRelRTPO_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelRTPO_impl_TRel_respects_barbs[where TRel="TRel"]
-            respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelRTPO_impl_TRel_respects_barbs[where TRel="TRel"]
+          respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -4019,12 +6550,12 @@ lemma (in encoding_wrt_barbs) indRelLTPO_impl_TRel_is_strong_barbed_bisimulation
   shows "strong_barbed_bisimulation (TRel\<^sup>+) TWB"
 proof
   from bisim refl show "strong_reduction_bisimulation (TRel\<^sup>+) (Calculus TWB)"
-      using indRelLTPO_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
+    using indRelLTPO_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_respects_barbs (TRel\<^sup>+) TWB"
-      using indRelLTPO_impl_TRel_respects_barbs[where TRel="TRel"]
-            respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
+    using indRelLTPO_impl_TRel_respects_barbs[where TRel="TRel"]
+          respection_of_barbs_and_closures(3)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
@@ -4034,62 +6565,58 @@ lemma (in encoding_wrt_barbs) indRelTEQ_impl_TRel_is_strong_barbed_bisimulation:
   shows "strong_barbed_bisimulation (TRel\<^sup>*) TWB"
 proof
   from bisim refl show "strong_reduction_bisimulation (TRel\<^sup>*) (Calculus TWB)"
-      using indRelTEQ_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
+    using indRelTEQ_impl_TRel_is_strong_reduction_bisimulation[where TRel="TRel"]
     by (simp add: STCalWB_def calS calT)
 next
   from bisim show "rel_respects_barbs (TRel\<^sup>*) TWB"
-      using indRelTEQ_impl_TRel_respects_barbs[where TRel="TRel"]
-            respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
+    using indRelTEQ_impl_TRel_respects_barbs[where TRel="TRel"]
+          respection_of_barbs_and_closures(5)[where Rel="TRel" and CWB="TWB"]
     by blast
 qed
 
 subsection \<open>Relations Induced by the Encoding and Relations on Source Terms and Target Terms\<close>
 
-text \<open>Some encodability like e.g. full abstraction are defined w.r.t. a relation on source terms
-        and a relation on target terms. To analyse such criteria we include these two relations in
-        the considered relation on the disjoint union of source and target terms.\<close>
+text \<open>Some encodability criteria like e.g. full abstraction are defined w.r.t. a relation on source
+      terms and a relation on target terms. To analyse such criteria we include these two relations
+      in the considered relation on the disjoint union of source and target terms.\<close>
 
-inductive_set (in encoding) indRelRST
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRST SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelRST SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRST SRel TRel"
+inductive_set (in encodingFunction) indRelRST
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRST SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelRST SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRST SRel TRel"
 
-abbreviation (in encoding) indRelRSTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRSTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelRST SRel TRel"
 
-inductive_set (in encoding) indRelRSTPO
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRSTPO SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelRSTPO SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRSTPO SRel TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelRSTPO SRel TRel; (Q, R) \<in> indRelRSTPO SRel TRel\<rbrakk>
+inductive_set (in encodingFunction) indRelRSTPO
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelRSTPO SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelRSTPO SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelRSTPO SRel TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelRSTPO SRel TRel; (Q, R) \<in> indRelRSTPO SRel TRel\<rbrakk>
            \<Longrightarrow> (P, R) \<in> indRelRSTPO SRel TRel"
 
-abbreviation (in encoding) indRelRSTPOinfix ::
-    "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-     \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelRSTPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelRSTPO SRel TRel"
 
-lemma (in encoding) indRelRSTPO_refl:
+lemma (in encodingFunction) indRelRSTPO_refl:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflS: "refl SRel"
       and reflT: "refl TRel"
-  shows "refl (indRelRSTPO SRel TRel)"
-    unfolding refl_on_def
+    shows "refl (indRelRSTPO SRel TRel)"
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> P"
@@ -4097,22 +6624,22 @@ proof auto
     case (SourceTerm SP)
     assume "SP \<in>S P"
     with reflS show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelRSTPO.source)
   next
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with reflT show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelRSTPO.target)
   qed
 qed
 
-lemma (in encoding) indRelRSTPO_trans:
+lemma (in encodingFunction) indRelRSTPO_trans:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   shows "trans (indRelRSTPO SRel TRel)"
-    unfolding trans_def
+  unfolding trans_def
 proof clarify
   fix P Q R
   assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "Q \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R"
@@ -4120,12 +6647,12 @@ proof clarify
     by (rule indRelRSTPO.trans)
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelRST:
+lemma (in encodingFunction) refl_trans_closure_of_indRelRST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflS: "refl SRel"
       and reflT: "refl TRel"
-  shows "indRelRSTPO SRel TRel = (indRelRST SRel TRel)\<^sup>*"
+    shows "indRelRSTPO SRel TRel = (indRelRST SRel TRel)\<^sup>*"
 proof auto
   fix P Q
   assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q"
@@ -4133,19 +6660,19 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (indRelRST SRel TRel)\<^sup>*"
-        using indRelRST.encR[of S SRel TRel]
+      using indRelRST.encR[of S SRel TRel]
       by simp
   next
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     thus "(SourceTerm S1, SourceTerm S2) \<in> (indRelRST SRel TRel)\<^sup>*"
-        using indRelRST.source[of S1 S2 SRel TRel]
+      using indRelRST.source[of S1 S2 SRel TRel]
       by simp
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelRST SRel TRel)\<^sup>*"
-        using indRelRST.target[of T1 T2 TRel SRel]
+      using indRelRST.target[of T1 T2 TRel SRel]
       by simp
   next
     case (trans P Q R)
@@ -4159,8 +6686,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q"
   proof induct
     from reflS reflT show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> P"
-        using indRelRSTPO_refl[of SRel TRel]
-        unfolding refl_on_def
+      using indRelRSTPO_refl[of SRel TRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -4173,47 +6700,43 @@ next
   qed
 qed
 
-inductive_set (in encoding) indRelLST
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLST SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelLST SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLST SRel TRel"
+inductive_set (in encodingFunction) indRelLST
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLST SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelLST SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLST SRel TRel"
 
-abbreviation (in encoding) indRelLSTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLSTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelLST SRel TRel"
 
-inductive_set (in encoding) indRelLSTPO
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLSTPO SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelLSTPO SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLSTPO SRel TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelLSTPO SRel TRel; (Q, R) \<in> indRelLSTPO SRel TRel\<rbrakk>
+inductive_set (in encodingFunction) indRelLSTPO
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelLSTPO SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelLSTPO SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelLSTPO SRel TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelLSTPO SRel TRel; (Q, R) \<in> indRelLSTPO SRel TRel\<rbrakk>
            \<Longrightarrow> (P, R) \<in> indRelLSTPO SRel TRel"
 
-abbreviation (in encoding) indRelLSTPOinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelLSTPOinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q \<equiv> (P, Q) \<in> indRelLSTPO SRel TRel"
 
-lemma (in encoding) indRelLSTPO_refl:
+lemma (in encodingFunction) indRelLSTPO_refl:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflS: "refl SRel"
       and reflT: "refl TRel"
-  shows "refl (indRelLSTPO SRel TRel)"
-    unfolding refl_on_def
+    shows "refl (indRelLSTPO SRel TRel)"
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> P"
@@ -4221,22 +6744,22 @@ proof auto
     case (SourceTerm SP)
     assume "SP \<in>S P"
     with reflS show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelLSTPO.source)
   next
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with reflT show "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelLSTPO.target)
   qed
 qed
 
-lemma (in encoding) indRelLSTPO_trans:
+lemma (in encodingFunction) indRelLSTPO_trans:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   shows "trans (indRelLSTPO SRel TRel)"
-    unfolding trans_def
+  unfolding trans_def
 proof clarify
   fix P Q R
   assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q" and "Q \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> R"
@@ -4244,12 +6767,12 @@ proof clarify
     by (rule indRelLSTPO.trans)
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelLST:
+lemma (in encodingFunction) refl_trans_closure_of_indRelLST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflS: "refl SRel"
       and reflT: "refl TRel"
-  shows "indRelLSTPO SRel TRel = (indRelLST SRel TRel)\<^sup>*"
+    shows "indRelLSTPO SRel TRel = (indRelLST SRel TRel)\<^sup>*"
 proof auto
   fix P Q
   assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q"
@@ -4257,19 +6780,19 @@ proof auto
   proof induct
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (indRelLST SRel TRel)\<^sup>*"
-        using indRelLST.encL[of S SRel TRel]
+      using indRelLST.encL[of S SRel TRel]
       by simp
   next
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     thus "(SourceTerm S1, SourceTerm S2) \<in> (indRelLST SRel TRel)\<^sup>*"
-        using indRelLST.source[of S1 S2 SRel TRel]
+      using indRelLST.source[of S1 S2 SRel TRel]
       by simp
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelLST SRel TRel)\<^sup>*"
-        using indRelLST.target[of T1 T2 TRel SRel]
+      using indRelLST.target[of T1 T2 TRel SRel]
       by simp
   next
     case (trans P Q R)
@@ -4283,8 +6806,8 @@ next
   thus "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> Q"
   proof induct
     from reflS reflT show " P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> P"
-        using indRelLSTPO_refl[of SRel TRel]
-        unfolding refl_on_def
+      using indRelLSTPO_refl[of SRel TRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -4297,30 +6820,28 @@ next
   qed
 qed
 
-inductive_set (in encoding) indRelST
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelST SRel TRel" |
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelST SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelST SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelST SRel TRel"
+inductive_set (in encodingFunction) indRelST
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelST SRel TRel"
+| encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelST SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelST SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelST SRel TRel"
 
-abbreviation (in encoding) indRelSTinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelSTinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<R>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q \<equiv> (P, Q) \<in> indRelST SRel TRel"
 
-lemma (in encoding) indRelST_symm:
+lemma (in encodingFunction) indRelST_symm:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "sym (indRelST SRel TRel)"
-    unfolding sym_def
+    shows "sym (indRelST SRel TRel)"
+  unfolding sym_def
 proof clarify
   fix P Q
   assume "(P, Q) \<in> indRelST SRel TRel"
@@ -4337,42 +6858,40 @@ proof clarify
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     with symmS show "(SourceTerm S2, SourceTerm S1) \<in> indRelST SRel TRel"
-        unfolding sym_def
+      unfolding sym_def
       by (simp add: indRelST.source)
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     with symmT show "(TargetTerm T2, TargetTerm T1) \<in> indRelST SRel TRel"
-        unfolding sym_def
+      unfolding sym_def
       by (simp add: indRelST.target)
   qed
 qed
 
-inductive_set (in encoding) indRelSTEQ
-    :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
-    for SRel :: "('procS \<times> 'procS) set"
-    and TRel :: "('procT \<times> 'procT) set"
-  where
-  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelSTEQ SRel TRel" |
-  encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelSTEQ SRel TRel" |
-  source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelSTEQ SRel TRel" |
-  target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelSTEQ SRel TRel" |
-  trans:  "\<lbrakk>(P, Q) \<in> indRelSTEQ SRel TRel; (Q, R) \<in> indRelSTEQ SRel TRel\<rbrakk>
+inductive_set (in encodingFunction) indRelSTEQ
+  :: "('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ((('procS, 'procT) Proc) \<times> (('procS, 'procT) Proc)) set"
+  for SRel :: "('procS \<times> 'procS) set"
+  and TRel :: "('procT \<times> 'procT) set" where
+  encR:   "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> indRelSTEQ SRel TRel"
+| encL:   "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> indRelSTEQ SRel TRel"
+| source: "(S1, S2) \<in> SRel \<Longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> indRelSTEQ SRel TRel"
+| target: "(T1, T2) \<in> TRel \<Longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> indRelSTEQ SRel TRel"
+| trans:  "\<lbrakk>(P, Q) \<in> indRelSTEQ SRel TRel; (Q, R) \<in> indRelSTEQ SRel TRel\<rbrakk>
            \<Longrightarrow> (P, R) \<in> indRelSTEQ SRel TRel"
 
-abbreviation (in encoding) indRelSTEQinfix
-    :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
-        \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80)
-  where
+abbreviation (in encodingFunction) indRelSTEQinfix
+  :: "('procS, 'procT) Proc \<Rightarrow> ('procS \<times> 'procS) set \<Rightarrow> ('procT \<times> 'procT) set
+      \<Rightarrow> ('procS, 'procT) Proc \<Rightarrow> bool" (\<open>_ \<sim>\<lbrakk>\<cdot>\<rbrakk><_,_> _\<close> [75, 75, 75, 75] 80) where
   "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q \<equiv> (P, Q) \<in> indRelSTEQ SRel TRel"
 
-lemma (in encoding) indRelSTEQ_refl:
+lemma (in encodingFunction) indRelSTEQ_refl:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
   shows "refl (indRelSTEQ SRel TRel)"
-    unfolding refl_on_def
+  unfolding refl_on_def
 proof auto
   fix P
   show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> P"
@@ -4389,18 +6908,18 @@ proof auto
     case (TargetTerm TP)
     assume "TP \<in>T P"
     with reflT show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> P"
-        unfolding refl_on_def
+      unfolding refl_on_def
       by (simp add: indRelSTEQ.target)
   qed
 qed
 
-lemma (in encoding) indRelSTEQ_symm:
+lemma (in encodingFunction) indRelSTEQ_symm:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "sym (indRelSTEQ SRel TRel)"
-    unfolding sym_def
+    shows "sym (indRelSTEQ SRel TRel)"
+  unfolding sym_def
 proof clarify
   fix P Q
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
@@ -4417,13 +6936,13 @@ proof clarify
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     with symmS show "SourceTerm S2 \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S1"
-        unfolding sym_def
+      unfolding sym_def
       by (simp add: indRelSTEQ.source)
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     with symmT show "TargetTerm T2 \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> TargetTerm T1"
-        unfolding sym_def
+      unfolding sym_def
       by (simp add: indRelSTEQ.target)
   next
     case (trans P Q R)
@@ -4433,11 +6952,11 @@ proof clarify
   qed
 qed
 
-lemma (in encoding) indRelSTEQ_trans:
+lemma (in encodingFunction) indRelSTEQ_trans:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   shows "trans (indRelSTEQ SRel TRel)"
-    unfolding trans_def
+  unfolding trans_def
 proof clarify
   fix P Q R
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q" and "Q \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> R"
@@ -4445,7 +6964,7 @@ proof clarify
     by (rule indRelSTEQ.trans)
 qed
 
-lemma (in encoding) refl_trans_closure_of_indRelST:
+lemma (in encodingFunction) refl_trans_closure_of_indRelST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
@@ -4457,24 +6976,24 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (indRelST SRel TRel)\<^sup>*"
-        using indRelST.encR[of S SRel TRel]
+      using indRelST.encR[of S SRel TRel]
       by simp
   next
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (indRelST SRel TRel)\<^sup>*"
-        using indRelST.encL[of S SRel TRel]
+      using indRelST.encL[of S SRel TRel]
       by simp
   next
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     thus "(SourceTerm S1, SourceTerm S2) \<in> (indRelST SRel TRel)\<^sup>*"
-        using indRelST.source[of S1 S2 SRel TRel]
+      using indRelST.source[of S1 S2 SRel TRel]
       by simp
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (indRelST SRel TRel)\<^sup>*"
-        using indRelST.target[of T1 T2 TRel SRel]
+      using indRelST.target[of T1 T2 TRel SRel]
       by simp
   next
     case (trans P Q R)
@@ -4488,8 +7007,8 @@ next
   thus "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
   proof induct
     from reflT show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> P"
-        using indRelSTEQ_refl[of TRel SRel]
-        unfolding refl_on_def
+      using indRelSTEQ_refl[of TRel SRel]
+      unfolding refl_on_def
       by simp
   next
     case (step Q R)
@@ -4502,33 +7021,33 @@ next
   qed
 qed
 
-lemma (in encoding) refl_symm_trans_closure_of_indRelST:
+lemma (in encodingFunction) refl_symm_trans_closure_of_indRelST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
       and symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "indRelSTEQ SRel TRel = (symcl ((indRelST SRel TRel)\<^sup>=))\<^sup>+"
+    shows "indRelSTEQ SRel TRel = (symcl ((indRelST SRel TRel)\<^sup>=))\<^sup>+"
 proof -
   have "(symcl ((indRelST SRel TRel)\<^sup>=))\<^sup>+ = (symcl (indRelST SRel TRel))\<^sup>*"
     by (rule refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelST SRel TRel"])
   moreover from symmS symmT have "symcl (indRelST SRel TRel) = indRelST SRel TRel"
-      using indRelST_symm[where SRel="SRel" and TRel="TRel"]
-            symm_closure_of_symm_rel[where Rel="indRelST SRel TRel"]
+    using indRelST_symm[where SRel="SRel" and TRel="TRel"]
+          symm_closure_of_symm_rel[where Rel="indRelST SRel TRel"]
     by blast
   ultimately show "indRelSTEQ SRel TRel = (symcl ((indRelST SRel TRel)\<^sup>=))\<^sup>+"
-      using reflT refl_trans_closure_of_indRelST[where SRel="SRel" and TRel="TRel"]
+    using reflT refl_trans_closure_of_indRelST[where SRel="SRel" and TRel="TRel"]
     by simp
 qed
 
-lemma (in encoding) symm_closure_of_indRelRST:
+lemma (in encodingFunction) symm_closure_of_indRelRST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
       and symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "indRelST SRel TRel = symcl (indRelRST SRel TRel)"
-    and "indRelSTEQ SRel TRel = (symcl ((indRelRST SRel TRel)\<^sup>=))\<^sup>+"
+    shows "indRelST SRel TRel = symcl (indRelRST SRel TRel)"
+      and "indRelSTEQ SRel TRel = (symcl ((indRelRST SRel TRel)\<^sup>=))\<^sup>+"
 proof -
   show "indRelST SRel TRel = symcl (indRelRST SRel TRel)"
   proof auto
@@ -4562,30 +7081,30 @@ proof -
       fix S1 S2
       assume "(S1, S2) \<in> SRel"
       with symmS show "SourceTerm S2 \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S1"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelST.source)
     next
       fix T1 T2
       assume "(T1, T2) \<in> TRel"
       with symmT show "(TargetTerm T2, TargetTerm T1) \<in> indRelST SRel TRel"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelST.target)
     qed
   qed
   with reflT show "indRelSTEQ SRel TRel = (symcl ((indRelRST SRel TRel)\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelRST SRel TRel"]
-            refl_trans_closure_of_indRelST
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelRST SRel TRel"]
+          refl_trans_closure_of_indRelST
     by simp
 qed
 
-lemma (in encoding) symm_closure_of_indRelLST:
+lemma (in encodingFunction) symm_closure_of_indRelLST:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes reflT: "refl TRel"
       and symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "indRelST SRel TRel = symcl (indRelLST SRel TRel)"
-    and "indRelSTEQ SRel TRel = (symcl ((indRelLST SRel TRel)\<^sup>=))\<^sup>+"
+    shows "indRelST SRel TRel = symcl (indRelLST SRel TRel)"
+      and "indRelSTEQ SRel TRel = (symcl ((indRelLST SRel TRel)\<^sup>=))\<^sup>+"
 proof -
   show "indRelST SRel TRel = symcl (indRelLST SRel TRel)"
   proof auto
@@ -4619,28 +7138,28 @@ proof -
       fix S1 S2
       assume "(S1, S2) \<in> SRel"
       with symmS show "SourceTerm S2 \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S1"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelST.source)
     next
       fix T1 T2
       assume "(T1, T2) \<in> TRel"
       with symmT show "TargetTerm T2 \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> TargetTerm T1"
-          unfolding sym_def
+        unfolding sym_def
         by (simp add: indRelST.target)
     qed
   qed
   with reflT show "indRelSTEQ SRel TRel = (symcl ((indRelLST SRel TRel)\<^sup>=))\<^sup>+"
-      using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelLST SRel TRel"]
-            refl_trans_closure_of_indRelST
+    using refl_symm_trans_closure_is_symm_refl_trans_closure[where Rel="indRelLST SRel TRel"]
+          refl_trans_closure_of_indRelST
     by simp
 qed
 
-lemma (in encoding) symm_trans_closure_of_indRelRSTPO:
+lemma (in encodingFunction) symm_trans_closure_of_indRelRSTPO:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "indRelSTEQ SRel TRel = (symcl (indRelRSTPO SRel TRel))\<^sup>+"
+    shows "indRelSTEQ SRel TRel = (symcl (indRelRSTPO SRel TRel))\<^sup>+"
 proof auto
   fix P Q
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
@@ -4648,28 +7167,28 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (symcl (indRelRSTPO SRel TRel))\<^sup>+"
-        using indRelRSTPO.encR[of S SRel TRel]
-        unfolding symcl_def
+      using indRelRSTPO.encR[of S SRel TRel]
+      unfolding symcl_def
       by auto
   next
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (symcl (indRelRSTPO SRel TRel))\<^sup>+"
-        using indRelRSTPO.encR[of S SRel TRel]
-        unfolding symcl_def
+      using indRelRSTPO.encR[of S SRel TRel]
+      unfolding symcl_def
       by auto
   next
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     thus "(SourceTerm S1, SourceTerm S2) \<in> (symcl (indRelRSTPO SRel TRel))\<^sup>+"
-        using indRelRSTPO.source[of S1 S2 SRel TRel]
-        unfolding symcl_def
+      using indRelRSTPO.source[of S1 S2 SRel TRel]
+      unfolding symcl_def
       by auto
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (symcl (indRelRSTPO SRel TRel))\<^sup>+"
-        using indRelRSTPO.target[of T1 T2 TRel SRel]
-        unfolding symcl_def
+      using indRelRSTPO.target[of T1 T2 TRel SRel]
+      unfolding symcl_def
       by auto
   next
     case (trans P Q R)
@@ -4720,13 +7239,13 @@ next
         case (source S1 S2)
         assume "(S1, S2) \<in> SRel"
         with symmS show "SourceTerm S2 \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm S1"
-            unfolding sym_def
+          unfolding sym_def
           by (simp add: indRelSTEQ.source)
       next
         case (target T1 T2)
         assume "(T1, T2) \<in> TRel"
         with symmT show "TargetTerm T2 \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> TargetTerm T1"
-            unfolding sym_def
+          unfolding sym_def
           by (simp add: indRelSTEQ.target)
       next
         case (trans P Q R)
@@ -4761,8 +7280,8 @@ next
           by (rule indRelSTEQ.trans)
       qed
       with symmS symmT show "Q \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> R"
-          using indRelSTEQ_symm[of SRel TRel]
-          unfolding sym_def
+        using indRelSTEQ_symm[of SRel TRel]
+        unfolding sym_def
         by blast
     qed
     ultimately show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> R"
@@ -4770,12 +7289,12 @@ next
   qed
 qed
 
-lemma (in encoding) symm_trans_closure_of_indRelLSTPO:
+lemma (in encodingFunction) symm_trans_closure_of_indRelLSTPO:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
   assumes symmS: "sym SRel"
       and symmT: "sym TRel"
-  shows "indRelSTEQ SRel TRel = (symcl (indRelLSTPO SRel TRel))\<^sup>+"
+    shows "indRelSTEQ SRel TRel = (symcl (indRelLSTPO SRel TRel))\<^sup>+"
 proof auto
   fix P Q
   assume "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
@@ -4783,28 +7302,28 @@ proof auto
   proof induct
     case (encR S)
     show "(SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> (symcl (indRelLSTPO SRel TRel))\<^sup>+"
-        using indRelLSTPO.encL[of S SRel TRel]
-        unfolding symcl_def
+      using indRelLSTPO.encL[of S SRel TRel]
+      unfolding symcl_def
       by blast
   next
     case (encL S)
     show "(TargetTerm (\<lbrakk>S\<rbrakk>), SourceTerm S) \<in> (symcl (indRelLSTPO SRel TRel))\<^sup>+"
-        using indRelLSTPO.encL[of S SRel TRel]
-        unfolding symcl_def
+      using indRelLSTPO.encL[of S SRel TRel]
+      unfolding symcl_def
       by blast
   next
     case (source S1 S2)
     assume "(S1, S2) \<in> SRel"
     thus "(SourceTerm S1, SourceTerm S2) \<in> (symcl (indRelLSTPO SRel TRel))\<^sup>+"
-        using indRelLSTPO.source[of S1 S2 SRel TRel]
-        unfolding symcl_def
+      using indRelLSTPO.source[of S1 S2 SRel TRel]
+      unfolding symcl_def
       by blast
   next
     case (target T1 T2)
     assume "(T1, T2) \<in> TRel"
     thus "(TargetTerm T1, TargetTerm T2) \<in> (symcl (indRelLSTPO SRel TRel))\<^sup>+"
-        using indRelLSTPO.target[of T1 T2 TRel SRel]
-        unfolding symcl_def
+      using indRelLSTPO.target[of T1 T2 TRel SRel]
+      unfolding symcl_def
       by blast
   next
     case (trans P Q R)
@@ -4843,8 +7362,8 @@ next
           by (rule indRelSTEQ.trans)
       qed
       with symmS symmT show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
-          using indRelSTEQ_symm[of SRel TRel]
-          unfolding sym_def
+        using indRelSTEQ_symm[of SRel TRel]
+        unfolding sym_def
         by blast
     qed
   next
@@ -4874,8 +7393,8 @@ next
           by (rule indRelSTEQ.trans)
       qed
       with symmS symmT show "Q \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> R"
-          using indRelSTEQ_symm[of SRel TRel]
-          unfolding sym_def
+        using indRelSTEQ_symm[of SRel TRel]
+        unfolding sym_def
         by blast
     qed
     ultimately show "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> R"
@@ -4883,72 +7402,72 @@ next
   qed
 qed
 
-text \<open>If the relations indRelRST, indRelLST, or indRelST contain a pair of target terms, then
-        this pair is also related by the considered target term relation. Similarly a pair of
-        source terms is related by the considered source term relation.\<close>
+text \<open>If the relations indRelRST, indRelLST, or indRelST contain a pair of target terms, then this
+      pair is also related by the considered target term relation. Similarly a pair of source terms
+      is related by the considered source term relation.\<close>
 
-lemma (in encoding) indRelRST_to_SRel:
+lemma (in encodingFunction) indRelRST_to_SRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and SP SQ :: "'procS"
   assumes rel: "SourceTerm SP \<R>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> SourceTerm SQ"
   shows "(SP, SQ) \<in> SRel"
-      using rel
-    by (simp add: indRelRST.simps)
+  using rel
+  by (simp add: indRelRST.simps)
 
-lemma (in encoding) indRelRST_to_TRel:
+lemma (in encodingFunction) indRelRST_to_TRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelRST.simps)
+  using rel
+  by (simp add: indRelRST.simps)
 
-lemma (in encoding) indRelLST_to_SRel:
+lemma (in encodingFunction) indRelLST_to_SRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and SP SQ :: "'procS"
   assumes rel: "SourceTerm SP \<R>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> SourceTerm SQ"
   shows "(SP, SQ) \<in> SRel"
-      using rel
-    by (simp add: indRelLST.simps)
+  using rel
+  by (simp add: indRelLST.simps)
 
-lemma (in encoding) indRelLST_to_TRel:
+lemma (in encodingFunction) indRelLST_to_TRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk>L<SRel,TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelLST.simps)
+  using rel
+  by (simp add: indRelLST.simps)
 
-lemma (in encoding) indRelST_to_SRel:
+lemma (in encodingFunction) indRelST_to_SRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and SP SQ :: "'procS"
   assumes rel: "SourceTerm SP \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> SourceTerm SQ"
   shows "(SP, SQ) \<in> SRel"
-      using rel
-    by (simp add: indRelST.simps)
+  using rel
+  by (simp add: indRelST.simps)
 
-lemma (in encoding) indRelST_to_TRel:
+lemma (in encodingFunction) indRelST_to_TRel:
   fixes SRel  :: "('procS \<times> 'procS) set"
     and TRel  :: "('procT \<times> 'procT) set"
     and TP TQ :: "'procT"
   assumes rel: "TargetTerm TP \<R>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> TargetTerm TQ"
   shows "(TP, TQ) \<in> TRel"
-      using rel
-    by (simp add: indRelST.simps)
+  using rel
+  by (simp add: indRelST.simps)
 
-text \<open>If the relations indRelRSTPO or indRelLSTPO contain a pair of target terms, then this pair
-        is also related by the transitive closure of the considered target term relation. Similarly
-        a pair of source terms is related by the transitive closure of the source term relation. A
-        pair of a source and a target term results from the combination of pairs in the source
-        relation, the target relation, and the encoding function. Note that, because of the
-        symmetry, no similar condition holds for indRelSTEQ.\<close>
+text \<open>If the relations indRelRSTPO or indRelLSTPO contain a pair of target terms, then this pair is
+      also related by the transitive closure of the considered target term relation. Similarly a
+      pair of source terms is related by the transitive closure of the source term relation. A pair
+      of a source and a target term results from the combination of pairs in the source relation,
+      the target relation, and the encoding function. Note that, because of the symmetry, no
+      similar condition holds for indRelSTEQ.\<close>
 
-lemma (in encoding) indRelRSTPO_to_SRel_and_TRel:
+lemma (in encodingFunction) indRelRSTPO_to_SRel_and_TRel:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
@@ -4957,7 +7476,7 @@ lemma (in encoding) indRelRSTPO_to_SRel_and_TRel:
     and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> (\<exists>S. (SP, S) \<in> SRel\<^sup>* \<and> (\<lbrakk>S\<rbrakk>, TQ) \<in> TRel\<^sup>*)"
     and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> False"
     and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> TRel\<^sup>+"
-      using assms
+  using assms
 proof induct
   case (encR S)
   show "\<forall>SP SQ. SP \<in>S SourceTerm S \<and> SQ \<in>S TargetTerm (\<lbrakk>S\<rbrakk>) \<longrightarrow> (SP, SQ) \<in> SRel\<^sup>+"
@@ -5022,8 +7541,7 @@ next
         by blast
     qed
   qed
-  show "\<forall>SP TR. SP \<in>S P \<and> TR \<in>T R
-        \<longrightarrow> (\<exists>S. (SP, S) \<in> SRel\<^sup>* \<and> (\<lbrakk>S\<rbrakk>, TR) \<in> TRel\<^sup>*)"
+  show "\<forall>SP TR. SP \<in>S P \<and> TR \<in>T R \<longrightarrow> (\<exists>S. (SP, S) \<in> SRel\<^sup>* \<and> (\<lbrakk>S\<rbrakk>, TR) \<in> TRel\<^sup>*)"
   proof clarify
     fix SP TR
     assume A9: "SP \<in>S P" and A10: "TR \<in>T R"
@@ -5031,8 +7549,7 @@ next
     proof (cases Q)
       case (SourceTerm SQ)
       assume A11: "SQ \<in>S Q"
-      with A6 A10 obtain S where A12: "(SQ, S) \<in> SRel\<^sup>*"
-                             and A13: "(\<lbrakk>S\<rbrakk>, TR) \<in> TRel\<^sup>*"
+      with A6 A10 obtain S where A12: "(SQ, S) \<in> SRel\<^sup>*" and A13: "(\<lbrakk>S\<rbrakk>, TR) \<in> TRel\<^sup>*"
         by blast
       from A1 A9 A11 have "(SP, SQ) \<in> SRel\<^sup>*"
         by simp
@@ -5043,8 +7560,7 @@ next
     next
       case (TargetTerm TQ)
       assume A11: "TQ \<in>T Q"
-      with A2 A9 obtain S where A12: "(SP, S) \<in> SRel\<^sup>*"
-                            and A13: "(\<lbrakk>S\<rbrakk>, TQ) \<in> TRel\<^sup>*"
+      with A2 A9 obtain S where A12: "(SP, S) \<in> SRel\<^sup>*" and A13: "(\<lbrakk>S\<rbrakk>, TQ) \<in> TRel\<^sup>*"
         by blast
       from A8 A10 A11 have "(TQ, TR) \<in> TRel\<^sup>*"
         by simp
@@ -5094,7 +7610,7 @@ next
   qed
 qed
 
-lemma (in encoding) indRelLSTPO_to_SRel_and_TRel:
+lemma (in encodingFunction) indRelLSTPO_to_SRel_and_TRel:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
@@ -5103,7 +7619,7 @@ lemma (in encoding) indRelLSTPO_to_SRel_and_TRel:
     and "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> False"
     and "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> (\<exists>S. (TP, \<lbrakk>S\<rbrakk>) \<in> TRel\<^sup>* \<and> (S, SQ) \<in> SRel\<^sup>*)"
     and "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> TRel\<^sup>+"
-      using assms
+  using assms
 proof induct
   case (encL S)
   show "\<forall>SP SQ. SP \<in>S TargetTerm (\<lbrakk>S\<rbrakk>) \<and> SQ \<in>S SourceTerm S \<longrightarrow> (SP, SQ) \<in> SRel\<^sup>+"
@@ -5141,8 +7657,7 @@ next
   case (trans P Q R)
   assume A1: "\<forall>SP SQ. SP \<in>S P \<and> SQ \<in>S Q \<longrightarrow> (SP, SQ) \<in> SRel\<^sup>+"
      and A2: "\<forall>SP TQ. SP \<in>S P \<and> TQ \<in>T Q \<longrightarrow> False"
-     and A3: "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q
-              \<longrightarrow> (\<exists>S. (TP, \<lbrakk>S\<rbrakk>) \<in> TRel\<^sup>* \<and> (S, SQ) \<in> SRel\<^sup>*)"
+     and A3: "\<forall>TP SQ. TP \<in>T P \<and> SQ \<in>S Q \<longrightarrow> (\<exists>S. (TP, \<lbrakk>S\<rbrakk>) \<in> TRel\<^sup>* \<and> (S, SQ) \<in> SRel\<^sup>*)"
      and A4: "\<forall>TP TQ. TP \<in>T P \<and> TQ \<in>T Q \<longrightarrow> (TP, TQ) \<in> TRel\<^sup>+"
      and A5: "\<forall>SQ SR. SQ \<in>S Q \<and> SR \<in>S R \<longrightarrow> (SQ, SR) \<in> SRel\<^sup>+"
      and A6: "\<forall>SQ TR. SQ \<in>S Q \<and> TR \<in>T R \<longrightarrow> False"
@@ -5239,7 +7754,7 @@ next
 qed
 
 text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO preserves barbs then so do the corresponding
-        source term and target term relations.\<close>
+      source term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_preserves_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5256,7 +7771,7 @@ proof clarify
   hence "SourceTerm SP\<down>.a"
     by simp
   ultimately have "SourceTerm SQ\<down>.a"
-      using preservation preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using preservation preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "SQ\<down><SWB>a"
     by simp
@@ -5270,13 +7785,13 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_preserve_barbs:
     and "rel_preserves_barbs TRel TWB"
 proof -
   show "rel_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_preserves_barbs[where
-                          Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_preserves_barbs[where Rel="indRelRSTPO SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelRSTPO.source)
 next
   show "rel_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_preserves_barbs[where
-                          Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelRSTPO SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelRSTPO.target)
 qed
 
@@ -5288,13 +7803,13 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_preserve_barbs:
     and "rel_preserves_barbs TRel TWB"
 proof -
   show "rel_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_preserves_barbs[where
-                          Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_preserves_barbs[where Rel="indRelLSTPO SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelLSTPO.source)
 next
   show "rel_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_preserves_barbs[where
-                          Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelLSTPO SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelLSTPO.target)
 qed
 
@@ -5306,13 +7821,13 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_preserve_barbs:
     and "rel_preserves_barbs TRel TWB"
 proof -
   show "rel_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_preserves_barbs[where
-                          Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_preserves_barbs[where Rel="indRelSTEQ SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelSTEQ.source)
 next
   show "rel_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_preserves_barbs[where
-                          Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_preserves_barbs[where Rel="indRelSTEQ SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelSTEQ.target)
 qed
 
@@ -5321,7 +7836,7 @@ lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_weakly_preserves_barbs:
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes preservation: "rel_weakly_preserves_barbs Rel (STCalWB SWB TWB)"
       and sourceInRel:  "\<forall>S1 S2. (S1, S2) \<in> SRel \<longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> Rel"
-  shows "rel_weakly_preserves_barbs SRel SWB"
+    shows "rel_weakly_preserves_barbs SRel SWB"
 proof clarify
   fix SP SQ a SP'
   assume "(SP, SQ) \<in> SRel"
@@ -5331,7 +7846,7 @@ proof clarify
   hence "SourceTerm SP\<Down>.a"
     by blast
   ultimately have "SourceTerm SQ\<Down>.a"
-      using preservation weak_preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using preservation weak_preservation_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "SQ\<Down><SWB>a"
     by simp
@@ -5345,13 +7860,13 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_weakly_preserve_bar
     and "rel_weakly_preserves_barbs TRel TWB"
 proof -
   show "rel_weakly_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
-                          Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
+            Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
     by (simp add: indRelRSTPO.source)
 next
   show "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
+            Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
     by (simp add: indRelRSTPO.target)
 qed
 
@@ -5363,13 +7878,13 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_weakly_preserve_bar
     and "rel_weakly_preserves_barbs TRel TWB"
 proof -
   show "rel_weakly_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
-                          Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
+            Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
     by (simp add: indRelLSTPO.source)
 next
   show "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
+            Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
     by (simp add: indRelLSTPO.target)
 qed
 
@@ -5381,25 +7896,25 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_weakly_preserve_barb
     and "rel_weakly_preserves_barbs TRel TWB"
 proof -
   show "rel_weakly_preserves_barbs SRel SWB"
-      using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
-                          Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
+    using preservation rel_with_source_impl_SRel_weakly_preserves_barbs[where
+            Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
     by (simp add: indRelSTEQ.source)
 next
   show "rel_weakly_preserves_barbs TRel TWB"
-      using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
-                          Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
+    using preservation rel_with_target_impl_TRel_weakly_preserves_barbs[where
+            Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
     by (simp add: indRelSTEQ.target)
 qed
 
-text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO reflects barbs then so do the corresponding
-        source term and target term relations.\<close>
+text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO reflects barbs then so do the corresponding source
+      term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_reflects_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes reflection: "rel_reflects_barbs Rel (STCalWB SWB TWB)"
       and sourceInRel:  "\<forall>S1 S2. (S1, S2) \<in> SRel \<longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> Rel"
-  shows "rel_reflects_barbs SRel SWB"
+    shows "rel_reflects_barbs SRel SWB"
 proof clarify
   fix SP SQ a
   assume "(SP, SQ) \<in> SRel"
@@ -5409,7 +7924,7 @@ proof clarify
   hence "SourceTerm SQ\<down>.a"
     by simp
   ultimately have "SourceTerm SP\<down>.a"
-      using reflection reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using reflection reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "SP\<down><SWB>a"
     by simp
@@ -5423,13 +7938,13 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_reflect_barbs:
     and "rel_reflects_barbs TRel TWB"
 proof -
   show "rel_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_reflects_barbs[where
-                        Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_reflects_barbs[where Rel="indRelRSTPO SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelRSTPO.source)
 next
   show "rel_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_reflects_barbs[where
-                        Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelRSTPO SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelRSTPO.target)
 qed
 
@@ -5441,13 +7956,13 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_reflect_barbs:
     and "rel_reflects_barbs TRel TWB"
 proof -
   show "rel_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_reflects_barbs[where
-                        Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_reflects_barbs[where Rel="indRelLSTPO SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelLSTPO.source)
 next
   show "rel_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_reflects_barbs[where
-                        Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelLSTPO SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelLSTPO.target)
 qed
 
@@ -5459,13 +7974,13 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_reflect_barbs:
     and "rel_reflects_barbs TRel TWB"
 proof -
   show "rel_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_reflects_barbs[where
-                        Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_reflects_barbs[where Rel="indRelSTEQ SRel TRel"
+            and SRel="SRel"]
     by (simp add: indRelSTEQ.source)
 next
   show "rel_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_reflects_barbs[where
-                        Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_reflects_barbs[where Rel="indRelSTEQ SRel TRel"
+            and TRel="TRel"]
     by (simp add: indRelSTEQ.target)
 qed
 
@@ -5474,7 +7989,7 @@ lemma (in encoding_wrt_barbs) rel_with_source_impl_SRel_weakly_reflects_barbs:
     and Rel  :: "(('procS, 'procT) Proc \<times> ('procS, 'procT) Proc) set"
   assumes reflection: "rel_weakly_reflects_barbs Rel (STCalWB SWB TWB)"
       and sourceInRel:  "\<forall>S1 S2. (S1, S2) \<in> SRel \<longrightarrow> (SourceTerm S1, SourceTerm S2) \<in> Rel"
-  shows "rel_weakly_reflects_barbs SRel SWB"
+    shows "rel_weakly_reflects_barbs SRel SWB"
 proof clarify
   fix SP SQ a SQ'
   assume "(SP, SQ) \<in> SRel"
@@ -5484,7 +7999,7 @@ proof clarify
   hence "SourceTerm SQ\<Down>.a"
     by blast
   ultimately have "SourceTerm SP\<Down>.a"
-      using reflection weak_reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
+    using reflection weak_reflection_of_barbs_in_barbed_encoding[where Rel="Rel"]
     by blast
   thus "SP\<Down><SWB>a"
     by simp
@@ -5498,13 +8013,13 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_weakly_reflect_barb
     and "rel_weakly_reflects_barbs TRel TWB"
 proof -
   show "rel_weakly_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
-                        Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
+            Rel="indRelRSTPO SRel TRel" and SRel="SRel"]
     by (simp add: indRelRSTPO.source)
 next
   show "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                          Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
+            Rel="indRelRSTPO SRel TRel" and TRel="TRel"]
     by (simp add: indRelRSTPO.target)
 qed
 
@@ -5516,13 +8031,13 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_weakly_reflect_barb
     and "rel_weakly_reflects_barbs TRel TWB"
 proof -
   show "rel_weakly_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
-                        Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
+            Rel="indRelLSTPO SRel TRel" and SRel="SRel"]
     by (simp add: indRelLSTPO.source)
 next
   show "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                        Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
+            Rel="indRelLSTPO SRel TRel" and TRel="TRel"]
     by (simp add: indRelLSTPO.target)
 qed
 
@@ -5534,18 +8049,18 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_weakly_reflect_barbs
     and "rel_weakly_reflects_barbs TRel TWB"
 proof -
   show "rel_weakly_reflects_barbs SRel SWB"
-      using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
-                        Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
+    using reflection rel_with_source_impl_SRel_weakly_reflects_barbs[where
+            Rel="indRelSTEQ SRel TRel" and SRel="SRel"]
     by (simp add: indRelSTEQ.source)
 next
   show "rel_weakly_reflects_barbs TRel TWB"
-      using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
-                        Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
+    using reflection rel_with_target_impl_TRel_weakly_reflects_barbs[where
+            Rel="indRelSTEQ SRel TRel" and TRel="TRel"]
     by (simp add: indRelSTEQ.target)
 qed
 
-text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO respects barbs then so do the corresponding
-        source term and target term relations.\<close>
+text \<open>If indRelRSTPO, indRelLSTPO, or indRelSTPO respects barbs then so do the corresponding source
+      term and target term relations.\<close>
 
 lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_respect_barbs:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5555,15 +8070,15 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_respect_barbs:
     and "rel_respects_barbs TRel TWB"
 proof -
   show "rel_respects_barbs SRel SWB"
-      using respection
-            indRelRSTPO_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
-            indRelRSTPO_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelRSTPO_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
+          indRelRSTPO_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_respects_barbs TRel TWB"
-      using respection
-            indRelRSTPO_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
-            indRelRSTPO_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelRSTPO_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
+          indRelRSTPO_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
@@ -5575,15 +8090,15 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_respect_barbs:
     and "rel_respects_barbs TRel TWB"
 proof -
   show "rel_respects_barbs SRel SWB"
-      using respection
-            indRelLSTPO_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
-            indRelLSTPO_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelLSTPO_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
+          indRelLSTPO_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_respects_barbs TRel TWB"
-      using respection
-            indRelLSTPO_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
-            indRelLSTPO_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelLSTPO_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
+          indRelLSTPO_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
@@ -5595,15 +8110,15 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_respect_barbs:
     and "rel_respects_barbs TRel TWB"
 proof -
   show "rel_respects_barbs SRel SWB"
-      using respection
-            indRelSTEQ_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
-            indRelSTEQ_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelSTEQ_impl_SRel_and_TRel_preserve_barbs(1)[where SRel="SRel" and TRel="TRel"]
+          indRelSTEQ_impl_SRel_and_TRel_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_respects_barbs TRel TWB"
-      using respection
-            indRelSTEQ_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
-            indRelSTEQ_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
+    using respection
+          indRelSTEQ_impl_SRel_and_TRel_preserve_barbs(2)[where SRel="SRel" and TRel="TRel"]
+          indRelSTEQ_impl_SRel_and_TRel_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
@@ -5615,17 +8130,15 @@ lemma (in encoding_wrt_barbs) indRelRSTPO_impl_SRel_and_TRel_weakly_respect_barb
     and "rel_weakly_respects_barbs TRel TWB"
 proof -
   show "rel_weakly_respects_barbs SRel SWB"
-      using respection indRelRSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelRSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelRSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelRSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelRSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelRSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelRSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelRSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
@@ -5637,17 +8150,15 @@ lemma (in encoding_wrt_barbs) indRelLSTPO_impl_SRel_and_TRel_weakly_respect_barb
     and "rel_weakly_respects_barbs TRel TWB"
 proof -
   show "rel_weakly_respects_barbs SRel SWB"
-      using respection indRelLSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelLSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelLSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelLSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelLSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelLSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelLSTPO_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelLSTPO_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
@@ -5659,31 +8170,29 @@ lemma (in encoding_wrt_barbs) indRelSTEQ_impl_SRel_and_TRel_weakly_respect_barbs
     and "rel_weakly_respects_barbs TRel TWB"
 proof -
   show "rel_weakly_respects_barbs SRel SWB"
-      using respection indRelSTEQ_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelSTEQ_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelSTEQ_impl_SRel_and_TRel_weakly_preserve_barbs(1)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelSTEQ_impl_SRel_and_TRel_weakly_reflect_barbs(1)[where SRel="SRel" and TRel="TRel"]
     by blast
 next
   show "rel_weakly_respects_barbs TRel TWB"
-      using respection indRelSTEQ_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
-                        and TRel="TRel"]
-            indRelSTEQ_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel"
-              and TRel="TRel"]
+    using respection indRelSTEQ_impl_SRel_and_TRel_weakly_preserve_barbs(2)[where SRel="SRel"
+            and TRel="TRel"]
+          indRelSTEQ_impl_SRel_and_TRel_weakly_reflect_barbs(2)[where SRel="SRel" and TRel="TRel"]
     by blast
 qed
 
-text \<open>If TRel is reflexive then ind relRTPO is a subrelation of indRelTEQ. If SRel is reflexive
-        then indRelRTPO is a subrelation of indRelRTPO. Moreover, indRelRSTPO is a subrelation of
-        indRelSTEQ.\<close>
+text \<open>If TRel is reflexive then indRelRTPO is a subrelation of indRelTEQ. If SRel is reflexive then
+      indRelRTPO is a subrelation of indRelRTPO. Moreover, indRelRSTPO is a subrelation of
+      indRelSTEQ.\<close>
 
-lemma (in encoding) indRelRTPO_to_indRelTEQ:
+lemma (in encodingFunction) indRelRTPO_to_indRelTEQ:
   fixes TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel:   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q"
       and reflT: "refl TRel"
-  shows "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q"
-    using rel
+    shows "P \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> Q"
+  using rel
 proof induct
   case (encR S)
   show "SourceTerm S \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
@@ -5691,8 +8200,8 @@ proof induct
 next
   case (source S)
   from reflT show "SourceTerm S \<sim>\<lbrakk>\<cdot>\<rbrakk>T<TRel> SourceTerm S"
-      using indRelTEQ_refl[of TRel]
-      unfolding refl_on_def
+    using indRelTEQ_refl[of TRel]
+    unfolding refl_on_def
     by simp
 next
   case (target T1 T2)
@@ -5706,14 +8215,14 @@ next
     by (rule indRelTEQ.trans)
 qed
 
-lemma (in encoding) indRelRTPO_to_indRelRSTPO:
+lemma (in encodingFunction) indRelRTPO_to_indRelRSTPO:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel:   "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q"
       and reflS: "refl SRel"
-  shows "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q"
-    using rel
+    shows "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q"
+  using rel
 proof induct
   case (encR S)
   show "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
@@ -5721,7 +8230,7 @@ proof induct
 next
   case (source S)
   from reflS show "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> SourceTerm S"
-      unfolding refl_on_def
+    unfolding refl_on_def
     by (simp add: indRelRSTPO.source)
 next
   case (target T1 T2)
@@ -5735,13 +8244,13 @@ next
     by (rule indRelRSTPO.trans)
 qed
 
-lemma (in encoding) indRelRSTPO_to_indRelSTEQ:
+lemma (in encodingFunction) indRelRSTPO_to_indRelSTEQ:
   fixes SRel :: "('procS \<times> 'procS) set"
     and TRel :: "('procT \<times> 'procT) set"
     and P Q  :: "('procS, 'procT) Proc"
   assumes rel: "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q"
   shows "P \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> Q"
-    using rel
+  using rel
 proof induct
   case (encR S)
   show "SourceTerm S \<sim>\<lbrakk>\<cdot>\<rbrakk><SRel,TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
@@ -5763,8 +8272,9 @@ next
     by (rule indRelSTEQ.trans)
 qed
 
-text \<open>If indRelRTPO is a bisimulation and SRel is a reflexive bisimulation then also indRelRSTPO
-        is a bisimulation.\<close>
+text \<open>If indRelRTPO is a bisimulation and SRel is a reflexive bisimulation then also indRelRSTPO is
+      a bisimulation. For labelled case on encoded labels we additionally assume that the label
+      encoding is injective and preserves the internal label.\<close>
 
 lemma (in encoding) indRelRTPO_weak_reduction_bisimulation_impl_indRelRSTPO_bisimulation:
   fixes SRel :: "('procS \<times> 'procS) set"
@@ -5772,7 +8282,7 @@ lemma (in encoding) indRelRTPO_weak_reduction_bisimulation_impl_indRelRSTPO_bisi
   assumes bisimT: "weak_reduction_bisimulation (indRelRTPO TRel) (STCal Source Target)"
       and bisimS: "weak_reduction_bisimulation SRel Source"
       and reflS:  "refl SRel"
-  shows "weak_reduction_bisimulation (indRelRSTPO SRel TRel) (STCal Source Target)"
+    shows "weak_reduction_bisimulation (indRelRSTPO SRel TRel) (STCal Source Target)"
 proof auto
   fix P Q P'
   assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "P \<longmapsto>(STCal Source Target)* P'"
@@ -5784,7 +8294,7 @@ proof auto
     moreover assume "SourceTerm S \<longmapsto>(STCal Source Target)* P'"
     ultimately obtain Q' where A1: "TargetTerm (\<lbrakk>S\<rbrakk>) \<longmapsto>(STCal Source Target)* Q'"
                            and A2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
-        using bisimT
+      using bisimT
       by blast
     from reflS A2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
       by (simp add: indRelRTPO_to_indRelRSTPO)
@@ -5812,7 +8322,7 @@ proof auto
     moreover assume "TargetTerm T1 \<longmapsto>(STCal Source Target)* P'"
     ultimately obtain Q' where C1: "TargetTerm T2 \<longmapsto>(STCal Source Target)* Q'"
                            and C2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
-        using bisimT
+      using bisimT
       by blast
     from reflS C2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
       by (simp add: indRelRTPO_to_indRelRSTPO)
@@ -5845,7 +8355,7 @@ next
     moreover assume "TargetTerm (\<lbrakk>S\<rbrakk>) \<longmapsto>(STCal Source Target)* Q'"
     ultimately obtain P' where E1: "SourceTerm S \<longmapsto>(STCal Source Target)* P'"
                            and E2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
-        using bisimT
+      using bisimT
       by blast
     from reflS E2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
       by (simp add: indRelRTPO_to_indRelRSTPO)
@@ -5873,7 +8383,7 @@ next
     moreover assume "TargetTerm T2 \<longmapsto>(STCal Source Target)* Q'"
     ultimately obtain P' where G1: "TargetTerm T1 \<longmapsto>(STCal Source Target)* P'"
                            and G2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
-        using bisimT
+      using bisimT
       by blast
     from reflS G2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
       by (simp add: indRelRTPO_to_indRelRSTPO)
@@ -5893,6 +8403,318 @@ next
     from H4 H2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
       by (rule indRelRSTPO.trans)
     with H3 show "\<exists>P'. P \<longmapsto>(STCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS) indRelRTPO_weak_labelled_bisimulation_impl_indRelRSTPO_bisimulation:
+  fixes SRel :: "('procS \<times> 'procS) set"
+    and TRel :: "('procT \<times> 'procT) set"
+  assumes bisimT: "weak_labelled_bisimulation (indRelRTPO TRel) (STLCal Source Target)"
+      and bisimS: "weak_labelled_bisimulation SRel Source"
+      and reflS:  "refl SRel"
+    shows "weak_labelled_bisimulation (indRelRSTPO SRel TRel) (STLCal Source Target)"
+proof auto
+  fix P Q \<alpha> P'
+  assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+  thus "\<exists>Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+  proof (induct arbitrary: P')
+    case (encR S)
+    have "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
+      by (rule indRelRTPO.encR)
+    moreover assume "SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    ultimately obtain Q' where A1: "TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                           and A2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      using bisimT
+      by blast
+    from reflS A2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with A1 show "\<exists>Q'. TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (source S1 S2)
+    assume "SourceTerm S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    from this obtain \<beta> S1' where A1: "S1' \<in>S P'" and A2: "S1 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S1'"
+                             and A3: "\<beta> \<in>SL \<langle>SourceTerm S1, \<alpha>\<rangle>"
+      using STLCal_weakLabelledSteps(1)[of S1 \<alpha> P']
+      by blast
+    assume "(S1, S2) \<in> SRel"
+    with A2 bisimS obtain S2' where A4: "S2 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S2'" and A5: "(S1', S2') \<in> SRel"
+      by blast
+    from A3 A4 have "SourceTerm S2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (SourceTerm S2')"
+      using STLCal_weakLabelledSteps(1)[of S2 \<alpha> "SourceTerm S2'"]
+      unfolding getSourceLabel_def
+      by blast
+    moreover from A1 A5 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> SourceTerm S2'"
+      by (simp add: indRelRSTPO.source)
+    ultimately show "\<exists>Q'. SourceTerm S2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (target T1 T2)
+    assume "(T1, T2) \<in> TRel"
+    hence "TargetTerm T1 \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm T2"
+      by (rule indRelRTPO.target)
+    moreover assume "TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    ultimately obtain Q' where C1: "TargetTerm T2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                           and C2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      using bisimT
+      by blast
+    from reflS C2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with C1 show "\<exists>Q'. TargetTerm T2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (trans P Q R)
+    assume "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+       and "\<And>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'
+            \<Longrightarrow> \<exists>Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+    from this obtain Q' where D1: "Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                          and D2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+    assume "\<And>Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'
+            \<Longrightarrow> \<exists>R'. R \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* R' \<and> Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+    with D1 obtain R' where D3: "R \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* R'" and D4: "Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by blast
+    from D2 D4 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by (rule indRelRSTPO.trans)
+    with D3 show "\<exists>R'. R \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* R' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by blast
+  qed
+next
+  fix P Q \<alpha> Q'
+  assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+  thus "\<exists>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+  proof (induct arbitrary: Q')
+    case (encR S)
+    have "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
+      by (rule indRelRTPO.encR)
+    moreover assume "TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+    ultimately obtain P' where E1: "SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                           and E2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      using bisimT
+      by blast
+    from reflS E2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with E1 show "\<exists>P'. SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (source S1 S2)
+    assume "SourceTerm S2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+    from this obtain \<beta> S2' where A1: "S2' \<in>S Q'" and A2: "S2 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S2'"
+                              and A3: "\<beta> \<in>SL \<langle>SourceTerm S2, \<alpha>\<rangle>"
+      using STLCal_weakLabelledSteps(1)[of S2 \<alpha> Q']
+      by blast
+    assume "(S1, S2) \<in> SRel"
+    with A2 bisimS obtain S1' where A4: "S1 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S1'" and A5: "(S1', S2') \<in> SRel"
+      by blast
+    from A3 A4 have "SourceTerm S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (SourceTerm S1')"
+      using STLCal_weakLabelledSteps(1)[of S1 \<alpha> "SourceTerm S1'"]
+      unfolding getSourceLabel_def
+      by blast
+    moreover from A1 A5 have "SourceTerm S1' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRSTPO.source)
+    ultimately show "\<exists>P'. SourceTerm S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (target T1 T2)
+    assume "(T1, T2) \<in> TRel"
+    hence "TargetTerm T1 \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm T2"
+      by (rule indRelRTPO.target)
+    moreover assume "TargetTerm T2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+    ultimately obtain P' where G1: "TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                           and G2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+      using bisimT
+      by blast
+    from reflS G2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with G1 show "\<exists>P'. TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+  next
+    case (trans P Q R R')
+    assume "R \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* R'"
+       and "\<And>R'. R \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* R'
+            \<Longrightarrow> \<exists>Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+    from this obtain Q' where H1: "Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'"
+                          and H2: "Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by blast
+    assume "\<And>Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q'
+            \<Longrightarrow> \<exists>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+    with H1 obtain P' where H3: "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                        and H4: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by blast
+    from H4 H2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by (rule indRelRSTPO.trans)
+    with H3 show "\<exists>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by blast
+  qed
+qed
+
+lemma (in encodingLS_encL)
+  indRelRTPO_weak_labelled_bisimulation_impl_indRelRSTPO_bisimulation_encL:
+  fixes SRel :: "('procS \<times> 'procS) set"
+    and TRel :: "('procT \<times> 'procT) set"
+  assumes bisimT: "weak_labelled_bisimulation_encL (indRelRTPO TRel)"
+      and bisimS: "weak_labelled_bisimulation SRel Source"
+      and reflS:  "refl SRel"
+      and inj:    "inj encL"
+    shows "weak_labelled_bisimulation_encL (indRelRSTPO SRel TRel)"
+proof auto
+  fix P Q \<alpha> P'
+  assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+  thus "\<exists>\<beta> Q'. Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+  proof (induct arbitrary: \<alpha> P')
+    case (encR S)
+    have "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
+      by (rule indRelRTPO.encR)
+    moreover assume "SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    ultimately obtain \<beta> Q' where A1: "TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                             and A2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+                             and A3: "\<langle>SourceTerm S, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm (\<lbrakk>S\<rbrakk>), \<beta>\<rangle>"
+      using bisimT
+      by blast
+    from reflS A2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with A1 A3 show "\<exists>\<beta> Q'. TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>SourceTerm S, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm (\<lbrakk>S\<rbrakk>), \<beta>\<rangle>"
+      by blast
+  next
+    case (source S1 S2)
+    assume "SourceTerm S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    from this obtain \<beta> S1' where A1: "S1' \<in>S P'" and A2: "S1 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S1'"
+                             and A3: "\<beta> \<in>SL \<langle>SourceTerm S1, \<alpha>\<rangle>"
+      using STLCal_weakLabelledSteps(1)[of S1 \<alpha> P']
+      by blast
+    assume "(S1, S2) \<in> SRel"
+    with A2 bisimS obtain S2' where A4: "S2 \<midarrow>\<Zcat>\<beta>\<rightarrow>Source* S2'" and A5: "(S1', S2') \<in> SRel"
+      by blast
+    from A3 A4 have "SourceTerm S2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* (SourceTerm S2')"
+      using STLCal_weakLabelledSteps(1)[of S2 \<alpha> "SourceTerm S2'"]
+      unfolding getSourceLabel_def
+      by blast
+    moreover from A1 A5 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> SourceTerm S2'"
+      by (simp add: indRelRSTPO.source)
+    moreover have "\<langle>SourceTerm S1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>SourceTerm S2, \<alpha>\<rangle>"
+      unfolding related_labels_def
+      by simp
+    ultimately show "\<exists>\<beta> Q'. SourceTerm S2 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>SourceTerm S1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>SourceTerm S2, \<beta>\<rangle>"
+      by blast
+  next
+    case (target T1 T2)
+    assume "(T1, T2) \<in> TRel"
+    hence "TargetTerm T1 \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm T2"
+      by (rule indRelRTPO.target)
+    moreover assume "TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+    ultimately obtain \<beta> Q' where C1: "TargetTerm T2 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                             and C2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+                             and C3: "\<langle>TargetTerm T1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm T2, \<beta>\<rangle>"
+      using bisimT
+      by blast
+    from reflS C2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with C1 C3 show "\<exists>\<beta> Q'. TargetTerm T2 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>TargetTerm T1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm T2, \<beta>\<rangle>"
+      by blast
+  next
+    case (trans P Q R)
+    assume "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+       and "\<And>\<alpha> P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<Longrightarrow>
+            \<exists>\<beta> Q'. Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+    from this obtain \<beta> Q' where D1: "Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                            and D2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'" and D3: "\<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+      by blast
+    assume "\<And>\<alpha> Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<Longrightarrow>
+            \<exists>\<beta> R'. R \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* R' \<and> Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R' \<and> \<langle>Q, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<beta>\<rangle>"
+    with D1 obtain \<gamma> R' where D4: "R \<midarrow>\<Zcat>\<gamma>\<rightarrow>(STLCal Source Target)* R'"
+                          and D5: "Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'" and D6: "\<langle>Q, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
+      by blast
+    from D2 D5 have D7: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      by (rule indRelRSTPO.trans)
+    from inj D3 D6 have "\<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
+      using related_labels_trans_inj[of P \<alpha> Q \<beta> R \<gamma>]
+      by simp
+    with D4 D7
+    show "\<exists>\<gamma> R'. R \<midarrow>\<Zcat>\<gamma>\<rightarrow>(STLCal Source Target)* R' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
+      by blast
+  qed
+next
+  fix P Q \<beta> Q'
+  assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q" and "Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+  thus "\<exists>\<alpha> P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+  proof (induct arbitrary: \<beta> Q')
+    case (encR S)
+    have "SourceTerm S \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm (\<lbrakk>S\<rbrakk>)"
+      by (rule indRelRTPO.encR)
+    moreover assume "TargetTerm (\<lbrakk>S\<rbrakk>) \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+    ultimately obtain \<alpha> P' where E1: "SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                             and E2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+                             and E3: "\<langle>SourceTerm S, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm (\<lbrakk>S\<rbrakk>), \<beta>\<rangle>"
+      using bisimT
+      by blast
+    from reflS E2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with E1 E3 show "\<exists>\<alpha> P'. SourceTerm S \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>SourceTerm S, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm (\<lbrakk>S\<rbrakk>), \<beta>\<rangle>"
+      by blast
+  next
+    case (source S1 S2)
+    assume "SourceTerm S2 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+    from this obtain \<alpha> S2' where A1: "S2' \<in>S Q'" and A2: "S2 \<midarrow>\<Zcat>\<alpha>\<rightarrow>Source* S2'"
+                             and A3: "\<alpha> \<in>SL \<langle>SourceTerm S2, \<beta>\<rangle>"
+      using STLCal_weakLabelledSteps(1)[of S2 \<beta> Q']
+      by blast
+    assume "(S1, S2) \<in> SRel"
+    with A2 bisimS obtain S1' where A4: "S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>Source* S1'" and A5: "(S1', S2') \<in> SRel"
+      by blast
+    from A3 A4 have "SourceTerm S1 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* (SourceTerm S1')"
+      using STLCal_weakLabelledSteps(1)[of S1 \<beta> "SourceTerm S1'"]
+      unfolding getSourceLabel_def
+      by blast
+    moreover from A1 A5 have "SourceTerm S1' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRSTPO.source)
+    moreover have "\<langle>SourceTerm S1, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>SourceTerm S2, \<beta>\<rangle>"
+      unfolding related_labels_def
+      by simp
+    ultimately show "\<exists>\<alpha> P'. SourceTerm S1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>SourceTerm S1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>SourceTerm S2, \<beta>\<rangle>"
+      by blast
+  next
+    case (target T1 T2)
+    assume "(T1, T2) \<in> TRel"
+    hence "TargetTerm T1 \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> TargetTerm T2"
+      by (rule indRelRTPO.target)
+    moreover assume "TargetTerm T2 \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+    ultimately obtain \<alpha> P' where G1: "TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                             and G2: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q'"
+                             and G3: "\<langle>TargetTerm T1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm T2, \<beta>\<rangle>"
+      using bisimT
+      by blast
+    from reflS G2 have "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'"
+      by (simp add: indRelRTPO_to_indRelRSTPO)
+    with G1 G3 show "\<exists>\<alpha> P'. TargetTerm T1 \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and>
+                     P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>TargetTerm T1, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>TargetTerm T2, \<beta>\<rangle>"
+      by blast
+  next
+    case (trans P Q R \<gamma> R')
+    assume "R \<midarrow>\<Zcat>\<gamma>\<rightarrow>(STLCal Source Target)* R'"
+       and "\<And>\<beta> R'. R \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* R' \<Longrightarrow>
+            \<exists>\<alpha> Q'. Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* Q' \<and> Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R' \<and> \<langle>Q, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<beta>\<rangle>"
+    from this obtain \<beta> Q' where H1: "Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q'"
+                            and H2: "Q' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'" and H3: "\<langle>Q, \<beta>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
+      by blast
+    assume "\<And>\<beta> Q'. Q \<midarrow>\<Zcat>\<beta>\<rightarrow>(STLCal Source Target)* Q' \<Longrightarrow>
+            \<exists>\<alpha> P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+    with H1 obtain \<alpha> P' where H4: "P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P'"
+                          and H5: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> Q'" and H6: "\<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>Q, \<beta>\<rangle>"
+      by blast
+    from H2 H5 have H7: "P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R'"
+      using indRelRSTPO.trans[of P' Q' SRel TRel R']
+      by simp
+    from inj H3 H6 have "\<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
+      using related_labels_trans_inj[of P \<alpha> Q \<beta> R \<gamma>]
+      by simp
+    with H4 H7
+    show "\<exists>\<alpha> P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>(STLCal Source Target)* P' \<and> P' \<lesssim>\<lbrakk>\<cdot>\<rbrakk>R<SRel,TRel> R' \<and> \<langle>P, \<alpha>\<rangle> \<equiv>\<lparr>\<rparr> \<langle>R, \<gamma>\<rangle>"
       by blast
   qed
 qed

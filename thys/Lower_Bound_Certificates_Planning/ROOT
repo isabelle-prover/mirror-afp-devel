@@ -1,0 +1,22 @@
+chapter AFP
+
+session Lower_Bound_Certificates_Planning = HOL +
+  description "
+    Lower-bound certificates for optimal classical planning, following
+    Dold, Helmert, Nordström, Röger and Schindler: Pseudo-Boolean Proof
+    Logging for Optimal Classical Planning (ICAPS 2025).
+  "
+  options [timeout = 900]
+  theories
+    Lower_Bound_Certificates
+    Encoding_Semantics
+    K_Gates
+    Heuristic_Certificates
+    A_Star_Certificates
+    PDB_Certificates
+    Hmax_Certificates
+    Efficient_PDB
+    Locale_Instances
+  document_files
+    "root.tex"
+    "root.bib"

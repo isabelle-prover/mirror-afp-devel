@@ -4,6 +4,14 @@
     <title>Achim D. Brucker</title>
     <link>https://isa-afp.org/authors/brucker/</link>
     <description>AFP entries of Achim D. Brucker</description><item>
+  <title>ML-Lex and ML-Yacc for Isabelle</title>
+  <link>https://isa-afp.org/entries/Isabelle_Lex-Yacc.html</link>
+  <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
+  <description>ML-Lex and ML-Yacc for Isabelle in the AFP</description>
+    <category>Tools</category>
+    <category>Computer science/Programming languages/Misc</category>
+</item>
+<item>
   <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
   <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>

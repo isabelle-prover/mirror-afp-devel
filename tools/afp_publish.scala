@@ -40,10 +40,10 @@ object AFP_Publish {
     def afp_archive(current: Boolean = false): Path =
       release_dir + Path.basic(afp_archive_name(current))
 
-    def entry_name(session: String, current: Boolean = false): String =
-      "afp-" + session + "-" + (if (current) "current" else date)
-    def entry_archive(session: String, current: Boolean = false): Path =
-      release_dir + Path.basic(entry_name(session, current = current))
+    def entry_name(entry: String, current: Boolean = false): String =
+      "afp-" + entry + "-" + (if (current) "current" else date)
+    def entry_archive(entry: String, current: Boolean = false): Path =
+      release_dir + Path.basic(entry_name(entry, current = current))
   }
 
 
@@ -136,7 +136,7 @@ object AFP_Publish {
           dir = context.presentation_dir + Path.basic(name)
           if dir.is_dir
         } Isabelle_System.copy_dir(dir, files.browser_info())
-        Isabelle_System.symlink(files.browser_info(), files.browser_info(current = true))
+        Isabelle_System.symlink(files.browser_info().base, files.browser_info(current = true))
 
         progress.echo("Tarring [" + files.afp_archive_name() + "]")
         Isabelle_System.make_directory(files.afp_archive_dir)
@@ -145,7 +145,7 @@ object AFP_Publish {
         }
         val archive_file =
           tar_gz(files.afp_archive(), files.afp_archive_dir.dir, files.afp_archive_dir.file_name)
-        Isabelle_System.symlink(archive_file, files.afp_archive(current = true).tar.gz)
+        Isabelle_System.symlink(archive_file.base, files.afp_archive(current = true).tar.gz)
       }
 
       for (entry_name <- entries) {
@@ -153,7 +153,7 @@ object AFP_Publish {
 
         val archive_file =
           tar_gz(files.entry_archive(entry_name), tmp_dir + Path.basic("thys"), entry_name)
-        Isabelle_System.symlink(archive_file,
+        Isabelle_System.symlink(archive_file.base,
           files.entry_archive(entry_name, current = true).tar.gz)
 
         progress.echo("Finished [" + entry_name + "]")

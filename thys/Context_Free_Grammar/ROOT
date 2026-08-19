@@ -12,6 +12,7 @@ session Context_Free_Grammar = Finite_Automata_HF +
     Context_Free_Language
     Expansion
     Replace_Terminals
+    Infinite_iff_Pumpable
     Chomsky_Normal_Form
     Pumping_Lemma_CFG
     AnBnCn_not_CFL

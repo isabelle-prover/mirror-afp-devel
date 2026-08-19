@@ -1,0 +1,40 @@
+title = "Perron's Formula"
+date = 2026-06-17
+topics = [
+  "Mathematics/Number theory",
+]
+abstract = """
+<p>This entry provides a proof of <em>Perron's Formula</em>, which states that
+for a Dirichlet series $f(s) = \\sum_{n=1}^\\infty a_n n^{-s}$ with abscissa of convergence $\\sigma_c$
+we have for any $c, z, x$ with $c > 0$, $x > 0$, $\\text{Re}(z) > \\sigma_c - c$:</p>
+  \\[\\sum\\limits_{n\\leq x}\\kern-1pt^{'} a_n n^{-z} =
+      \\frac{1}{2\\pi i}\\, \\lim_{T\\to\\infty} \\int\\limits_{c-iT}^{c+iT}\\hskip-4pt f(z + w)\\, 
+         x^s\\kern1pt w\\,\\frac{\\text{d}w}{w} \\]
+<p>Additionally, various explicit bounds for the remainder (i.e.\\ when using some finite value of $T$ 
+instead of the limit) are shown.</p>
+<p>As an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near
+$\\pm i\\infty$ are also included, namely that if $a\\in[0,1)$ then $f(\\sigma + it) \\in o(t^{1-a})$ as
+$t\\to\\pm\\infty$, uniformly for all $\\sigma\\geq \\sigma_c + a + \\varepsilon$.</p>
+<p>The proofs mainly follow Tenenbaum's <em>Introduction to Analytic and Probabilistic Number
+Theory</em> and Titchmarsh's <em>Theory of Functions</em>.</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

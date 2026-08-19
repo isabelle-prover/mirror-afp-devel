@@ -1,0 +1,28 @@
+chapter AFP
+
+session Equality_Saturation_Checker = First_Order_Rewriting +
+  description \<open>
+    An executable checker for equality-saturation certificates, built on the
+    AFP sessions First_Order_Terms and First_Order_Rewriting.  Flat
+    explanations may be imported directly from egg 0.11.0's annotated
+    S-expression output, apply input rules, or reuse earlier checked e-class
+    merges at positions.  Chronological merge-log soundness and certified
+    dynamic-programming extraction from finite acyclic e-class DAGs are
+    verified against the existing AFP conversion relation.
+  \<close>
+  options [timeout = 600]
+  theories
+    Equality_Saturation_Checker
+    Egg_Flat_Explanation
+    EGraph_Explanations
+    Extraction_Certificates
+    Acyclic_EGraph_Extraction
+    Certified_Acyclic_EGraph
+    Examples_Acyclic_EGraph
+    Bounded_Certificate_Search
+    Examples_Compiler
+    Examples_Egg
+    Code_Generation
+  document_files
+    "root.tex"
+    "root.bib"

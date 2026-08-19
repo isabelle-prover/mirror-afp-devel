@@ -249,7 +249,7 @@ proof (rule "\<rightarrow>I")
   proof (AOT_subst \<open>[\<lambda>xy [R]yx]yx\<close> \<open>[R]xy\<close> for: x y;
         (safe intro!: "&I" "cqt:2[const_var]"[axiom_inst] 0[THEN "&E"(2)]
                       0[THEN "&E"(1), THEN "&E"(2)]; "cqt:2[lambda]")?)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_have \<open>[\<lambda>xy [R]yx]xy\<close> if \<open>[R]yx\<close> for y x
         by (auto intro!: "\<beta>\<leftarrow>C"(1) "cqt:2"
                  simp: "&I" "ex:1:a" prod_denotesI "rule-ui:3" that)
@@ -1526,7 +1526,7 @@ proof -
   proof (rule "\<exists>I"(1))+
     AOT_have \<open>\<diamond>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
     proof (rule "&I"; rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_show \<open>[L]\<^sup>- \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
         proof (safe intro!: "empty-approx:1"[unvarify F H, THEN "\<rightarrow>E"]
@@ -1564,7 +1564,7 @@ proof -
       AOT_show \<open>\<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         using \<theta> "&E" by blast
     next
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [L]\<^sup>-\<close>
         proof (safe intro!: "empty-approx:2"[unvarify F H, THEN "\<rightarrow>E"]
@@ -1642,7 +1642,7 @@ proof -
   proof (rule "\<exists>I"(1))+
     AOT_have \<open>\<diamond>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>] & \<diamond>\<not>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
     proof (rule "&I"; rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume A: \<open>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_show \<open>[\<lambda>z \<^bold>\<A>[L\<^sup>-]z] \<approx>\<^sub>E [\<guillemotleft>?P\<guillemotright>]\<close>
         proof (safe intro!: "empty-approx:1"[unvarify F H, THEN "\<rightarrow>E"]
@@ -1682,7 +1682,7 @@ proof -
     next
       AOT_show \<open>\<diamond>\<not>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close> using \<theta> "&E" by blast
     next
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume A: \<open>\<exists>x [\<guillemotleft>?P\<guillemotright>]x\<close>
         AOT_have B: \<open>\<not>[\<guillemotleft>?P\<guillemotright>] \<approx>\<^sub>E [\<lambda>z \<^bold>\<A>[L\<^sup>-]z]\<close>
         proof (safe intro!: "empty-approx:2"[unvarify F H, THEN "\<rightarrow>E"]
@@ -1824,7 +1824,7 @@ proof -
     using "\<forall>I" by fast
   AOT_hence 1: \<open>\<^bold>\<A>\<forall>u ([F]u \<equiv> [\<lambda>z \<^bold>\<A>[F]z]u)\<close>
     by (metis "Ordinary.res-var-bound-reas[2]" "\<rightarrow>E")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> by "cqt:2"
   } note 2 = this
   AOT_have \<open>\<^bold>\<A>(F \<equiv>\<^sub>E [\<lambda>z \<^bold>\<A>[F]z])\<close>
@@ -1844,7 +1844,7 @@ proof(safe intro!: GEN "\<rightarrow>I" "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\
 next
   AOT_show \<open>\<box>\<forall>x ([\<lambda>z \<^bold>\<A>[F]z]x \<rightarrow> \<box>[\<lambda>z \<^bold>\<A>[F]z]x)\<close>
   proof(rule RN; rule GEN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume \<open>[\<lambda>z \<^bold>\<A>[F]z]x\<close>
       AOT_hence \<open>\<^bold>\<A>[F]x\<close>
@@ -1959,7 +1959,7 @@ proof (rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>(\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)) \<rightarrow>
                      \<box>(F \<approx>\<^sub>E G \<rightarrow> \<box>F \<approx>\<^sub>E G)\<close>
   proof(rule RM; rule "\<rightarrow>I"; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x) & \<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
       AOT_hence \<open>\<box>\<forall>x([F]x \<rightarrow> \<box>[F]x)\<close> and \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
         using "&E" by blast+
@@ -2450,7 +2450,7 @@ proof(rule "\<rightarrow>I")
   AOT_hence \<open>\<box>\<box>\<forall>z([G]z \<rightarrow> \<box>[G]z)\<close> by (metis "S5Basic:6" "\<equiv>E"(1))
   moreover AOT_have \<open>\<box>\<box>\<forall>z([G]z \<rightarrow> \<box>[G]z) \<rightarrow> \<box>\<forall>x(Numbers(x,G) \<rightarrow> \<box>Numbers(x,G))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_have act_den: \<open>[\<lambda>z \<^bold>\<A>[F]z]\<down>\<close> for F by "cqt:2[lambda]"
       fix x
       AOT_assume G_nec: \<open>\<box>\<forall>z([G]z \<rightarrow> \<box>[G]z)\<close>
@@ -3294,7 +3294,7 @@ qed
 
 AOT_theorem "df-1-1:4": \<open>\<forall>R(Rigid\<^sub>1\<^sub>-\<^sub>1(R) \<rightarrow> \<box>Rigid\<^sub>1\<^sub>-\<^sub>1(R))\<close>
 proof(rule GEN;rule "\<rightarrow>I")
-AOT_modally_strict {
+AOT_modally_strict_{
   fix R
       AOT_assume 0: \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(R)\<close>
       AOT_hence 1: \<open>R\<down>\<close>
@@ -3324,7 +3324,7 @@ AOT_define InDomainOf :: \<open>\<tau> \<Rightarrow> \<tau> \<Rightarrow> \<phi>
 AOT_register_rigid_restricted_type
   RigidOneToOneRelation: \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>)\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<exists>\<alpha> Rigid\<^sub>1\<^sub>-\<^sub>1(\<alpha>)\<close>
     proof (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>(=\<^sub>E)\<guillemotright>\<close>])
       AOT_show \<open>Rigid\<^sub>1\<^sub>-\<^sub>1((=\<^sub>E))\<close>
@@ -3349,7 +3349,7 @@ proof
     qed(fact "=E[denotes]")
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>) \<rightarrow> \<Pi>\<down>\<close> for \<Pi>
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>Rigid\<^sub>1\<^sub>-\<^sub>1(\<Pi>)\<close>
@@ -3360,7 +3360,7 @@ next
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<forall>F(Rigid\<^sub>1\<^sub>-\<^sub>1(F) \<rightarrow> \<box>Rigid\<^sub>1\<^sub>-\<^sub>1(F))\<close>
       by (safe intro!: GEN "df-1-1:4"[THEN "\<forall>E"(2)])
   }
@@ -3913,7 +3913,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   moreover AOT_have
     \<open>\<box>[\<guillemotleft>?P\<guillemotright>]\<down> \<rightarrow> \<box>(\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (Numbers(x,F) \<equiv> Numbers(y,F))))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x y
       AOT_assume pred_den: \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
       AOT_hence pred_equiv:
@@ -4163,7 +4163,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
           using numxF "rule=E" by fast
     } note 0 = this
     text\<open>The only thing left is to generalize this result to a biconditional.\<close>
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x y
       AOT_assume \<open>[\<guillemotleft>?P\<guillemotright>]\<down>\<close>
       moreover AOT_assume \<open>\<forall>F([F]x \<equiv> [F]y)\<close>
@@ -4191,7 +4191,7 @@ next
      \<box>\<forall>x \<forall>y (\<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x) \<equiv>
               \<exists>F \<exists>u ([F]u & Numbers(y,F) & Numbers(x,[F]\<^sup>-\<^sup>u)))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x y
       AOT_assume 0: \<open>\<forall>F [\<lambda>x Numbers(x,F)]\<down>\<close>
       AOT_show \<open>\<exists>F \<exists>u ([F]u & [\<lambda>z Numbers(z,F)]y & [\<lambda>z Numbers(z,[F]\<^sup>-\<^sup>u)]x) \<equiv>
@@ -4240,7 +4240,7 @@ proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E", OF "&I"])
 next
   AOT_have 0: \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]\<down>\<close>
   proof(safe intro!: Comprehension_3[THEN "\<rightarrow>E"] "\<rightarrow>I" RN GEN)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         fix F H
         AOT_assume \<open>\<box>H \<equiv>\<^sub>E F\<close>
         AOT_hence \<open>\<box>\<forall>u ([H]u \<equiv> [F]u)\<close>
@@ -4268,7 +4268,7 @@ next
   qed
   AOT_show \<open>\<box>\<forall>x (A!x & [\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]x \<equiv> Numbers(x,G))\<close>
   proof (safe intro!: RN GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_show \<open>A!x & [\<lambda>x \<forall>F (x[F] \<equiv> [\<lambda>z \<^bold>\<A>[F]z] \<approx>\<^sub>E G)]x \<equiv> Numbers(x,G)\<close>
         by (AOT_subst_def numbers; AOT_subst_thm "beta-C-meta"[THEN "\<rightarrow>E", OF 0])
@@ -4342,7 +4342,7 @@ proof(rule "\<rightarrow>I")
                         "&I" "F-u[den]" GEN "\<equiv>I" "\<rightarrow>I")
       AOT_have \<open>\<box>\<forall>x([G]x \<rightarrow> \<box>[G]x) \<rightarrow> \<box>\<forall>x([[G]\<^sup>-\<^sup>u]x \<rightarrow> \<box>[[G]\<^sup>-\<^sup>u]x)\<close>
       proof (rule RM; safe intro!: "\<rightarrow>I" GEN)
-        AOT_modally_strict {
+        AOT_modally_strict_{
           fix x
           AOT_assume 0: \<open>\<forall>x([G]x \<rightarrow> \<box>[G]x)\<close>
           AOT_assume 1: \<open>[[G]\<^sup>-\<^sup>u]x\<close>
@@ -4653,7 +4653,7 @@ proof(rule "\<rightarrow>I")
       by (metis "0" "KBasic:3" Adjunction "\<equiv>E"(2) "\<rightarrow>E")
     moreover AOT_have \<open>\<box>([\<bbbP>]xy & [\<nat>]x) \<rightarrow> \<box>[\<nat>]y\<close>
     proof (rule RM; rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume 0: \<open>[\<bbbP>]xy\<close>
         AOT_assume \<open>[\<nat>]x\<close>
         AOT_hence 1: \<open>[[\<bbbP>]\<^sup>+]0x\<close>
@@ -4693,17 +4693,17 @@ AOT_theorem "mod-col-num:2": \<open>Rigid(\<nat>)\<close>
 AOT_register_rigid_restricted_type
   Number: \<open>[\<nat>]\<kappa>\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<exists>x [\<nat>]x\<close>
       by (rule "\<exists>I"(1)[where \<tau>=\<open>\<guillemotleft>0\<guillemotright>\<close>]; simp add: "0-n" "zero:2")
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>[\<nat>]\<kappa> \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
       by (simp add: "\<rightarrow>I" "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<forall>x([\<nat>]x \<rightarrow> \<box>[\<nat>]x)\<close>
       by (simp add: GEN "mod-col-num:1")
   }
@@ -4939,7 +4939,7 @@ proof (rule "safe-ext"[axiom_inst, THEN "\<rightarrow>E"]; safe intro!: "&I" GEN
   AOT_show \<open>[\<lambda>x Numbers(x,[\<lambda>z \<^bold>\<A>[G]z])]\<down>\<close>
     by (rule numbers_prop_den[unvarify G]) "cqt:2[lambda]"
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>Numbers(x,[\<lambda>z \<^bold>\<A>[G]z]) \<equiv> x = #G\<close> for x
       using "eq-num:2".
   }
@@ -4955,7 +4955,7 @@ lemma \<open>True\<close> nitpick[satisfy, user_axioms, card nat=1, expect = pot
 
 AOT_axiom "modal-axiom":
   \<open>\<exists>x([\<nat>]x & x = #G) \<rightarrow> \<diamond>\<exists>y([E!]y & \<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E y))\<close>
-proof(rule AOT_model_axiomI) AOT_modally_strict {
+proof(rule AOT_model_axiomI) AOT_modally_strict_{
   text\<open>The actual extension on the ordinary objects of a property is the
        set of ordinary urelements that exemplifies the property in the
        designated actual world.\<close>
@@ -4966,7 +4966,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
   AOT_have enc_finite_act_\<omega>ext_den:
     \<open>\<^bold>\<turnstile>\<^sub>\<box> [\<lambda>x \<exists>F(\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]\<down>\<close>
   proof(safe intro!: Comprehension_1[THEN "\<rightarrow>E"] RN GEN "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F G
       AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
       AOT_hence \<open>\<^bold>\<A>G \<equiv>\<^sub>E F\<close>
@@ -4990,7 +4990,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
     AOT_show \<open>[\<lambda>x \<not>[\<lambda>x \<exists>F(\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]x]\<down>\<close>
       by "cqt:2"
   next
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_show \<open>\<not>[\<lambda>x \<exists>F (\<not>\<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright> & x[F])]x \<equiv>
                 \<forall>F(x[F] \<rightarrow> \<guillemotleft>\<epsilon>\<^sub>\<o> w. finite (act_\<omega>ext F)\<guillemotright>)\<close>
@@ -5011,7 +5011,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
     proof(safe intro!: GEN "\<rightarrow>I")
       fix F
       AOT_assume \<open>0[F]\<close>
-      AOT_actually {
+      AOT_actually_{
         AOT_hence \<open>\<not>\<exists>u [F]u\<close>
           using "zero=:2" "intro-elim:3:a" AOT_sem_enc_nec by blast
         AOT_hence \<open>\<forall>x \<not>(O!x & [F]x)\<close>
@@ -5091,17 +5091,17 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
                            "cqt:2")
         obtain y where y_def: \<open>\<omega>\<kappa> y = AOT_term_of_var (Ordinary.Rep v)\<close>
           by (metis AOT_model_ordinary_\<omega>\<kappa> Ordinary.restricted_var_condition)
-        AOT_actually {
+        AOT_actually_{
           fix x
           AOT_assume \<open>[\<lambda>y [F]y & y \<noteq>\<^sub>E v]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
           AOT_hence \<open>[F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
             by (auto dest!: "\<beta>\<rightarrow>C" "&E"(1))
         }
-        moreover AOT_actually {
+        moreover AOT_actually_{
           AOT_have \<open>[F]\<guillemotleft>\<omega>\<kappa> y\<guillemotright>\<close>
             unfolding y_def using act_F_v AOT_sem_act by blast
         }
-        moreover AOT_actually {
+        moreover AOT_actually_{
           fix x
           assume noteq: \<open>x \<noteq> y\<close>
           AOT_assume \<open>[F]\<guillemotleft>\<omega>\<kappa> x\<guillemotright>\<close>
@@ -5182,7 +5182,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
       by (metis "betaC:1:a" "con-dis-i-e:2:a" AOT_sem_ordinary)
     moreover AOT_have \<open>\<box>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E x)\<close>
     proof(safe intro!: RN GEN "\<rightarrow>I")
-      AOT_modally_strict {
+      AOT_modally_strict_{
         fix y
         AOT_assume \<open>O!y\<close>
         AOT_assume 0: \<open>\<^bold>\<A>[G]y\<close>
@@ -5215,7 +5215,7 @@ proof(rule AOT_model_axiomI) AOT_modally_strict {
 AOT_theorem "modal-lemma":
   \<open>\<diamond>\<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v) \<rightarrow> \<forall>u(\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v)\<close>
 proof(safe intro!: "\<rightarrow>I" Ordinary.GEN)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix u
     AOT_assume act_Gu: \<open>\<^bold>\<A>[G]u\<close>
     AOT_have \<open>\<forall>u (\<^bold>\<A>[G]u \<rightarrow> u \<noteq>\<^sub>E v) \<rightarrow> u \<noteq>\<^sub>E v\<close>

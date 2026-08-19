@@ -1,7 +1,7 @@
 chapter AFP
 
 session Combinatorial_Nullstellensatz = "HOL-Computational_Algebra" +
-  options [document = pdf, timeout = 300]
+  options [timeout = 300]
   theories
     Combinatorial_Nullstellensatz
   document_files

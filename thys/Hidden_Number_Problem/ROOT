@@ -1,17 +1,14 @@
 chapter AFP
 
 session Hidden_Number_Problem = "HOL-Probability" +
-  options [timeout = 1500]
-
-sessions
-  Babai_Nearest_Plane
-  "HOL-Algebra"
-
-theories
-  Hidden_Number_Problem
-  Misc_PMF
-  Ad_Codegen_Example
-
-document_files
-  "root.bib"
-  "root.tex"
+  options [timeout = 5400]
+  sessions
+    Babai_Nearest_Plane
+    "HOL-Algebra"
+  theories
+    Hidden_Number_Problem
+    Misc_PMF
+    Ad_Codegen_Example
+  document_files
+    "root.bib"
+    "root.tex"

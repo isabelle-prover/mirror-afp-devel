@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+\newcommand{\poch}[2]{#1^{\overline{#2}}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Generalised Hypergeometric Series}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of the generalized hypergeometric series 
+${}_p F_{q}$, both as a formal power series and as a function in a Banach space.
+It is defined, for parameters $\textbf{a}=(a_1,\ldots,a_p)$ and $\textbf{b}=(b_1,\ldots,b_q)$
+with $b_i\notin\mathbb{Z}_{{\leq}0}$ as the exponential power series
+\[F(\mathbf{a}; \mathbf{b}; z) = 
+    \sum_{n\geq 0} \frac{\poch{a_1}{n} \cdots \poch{a_p}{n}}
+                        {\poch{b_1}{n} \cdots \poch{b_q}{n}}\kern2pt \frac{z^n}{n!}\]
+where $\poch{a}{n} = a(a+1)\ldots(a+n-1)$ is the Pochhammer symbol.
+
+Basic properties of ${}_p F_{q}$ are proven (uniform convergence, continuity, holomorphicity),
+as well as some important properties for specific instances, such as:
+\begin{itemize}
+\item representations of various trigonometric and hyperbolic functions in terms of ${}_0 F_{1}$
+      and ${}_2 F_{1}$
+\item the contiguous identities for ${}_2 F_{1}$ and ${}_1 F_{1}$
+\item the transformation identity ${}_1 F_1(a;b;z) = e^z {}_1 F_1(b-a;b;-z)$ for Kummer's
+confluent hypergeometric function
+\item the fact that ${}_1 F_1$ is a solution of the ODE 
+      $a W(x) - (b - x) W'(x) - x W''(x) = 0$
+\item the fact that the error function can be expressed in terms of ${}_1 F_1$ as
+      $\text{erf}(z) = \frac{2}{\sqrt{\pi}} z {}_1 F_{1}(\frac{1}{2};\frac{3}{2};-z^2)$
+\end{itemize}
+A regularised variant of ${}_p F_{q}$ that is also defined if $b_i\in\mathbb{Z}_{{\leq}\,0}$
+is also provided.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\nocite{duverney}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

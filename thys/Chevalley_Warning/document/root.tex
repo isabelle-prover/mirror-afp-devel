@@ -1,0 +1,36 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Chevalley--Warning Theorem}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes the Chevalley--Warning theorem for finite fields:
+if finitely many multivariate polynomials over a finite field have total
+degree sum strictly smaller than the number of variables, then the number of
+their common zeros is divisible by the characteristic
+\cite{Chevalley1935,Warning1935}.  The formalization reuses the concrete
+multivariate-polynomial representation and operations from the AFP
+\emph{Polynomials} entry \cite{Polynomials-AFP}, and the proof follows the
+standard finite-field power-sum argument.
+AI assistance was used for proof engineering.  The final definitions,
+statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

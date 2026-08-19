@@ -1,0 +1,12 @@
+chapter AFP
+
+session Generalized_Hypergeometric_Series (AFP) = "HOL-Complex_Analysis" +
+  options [timeout = 600]
+  sessions
+    "HOL-Real_Asymp"
+    Error_Function
+  theories  
+    Generalized_Hypergeometric_Series
+  document_files
+    "root.tex"
+    "root.bib"

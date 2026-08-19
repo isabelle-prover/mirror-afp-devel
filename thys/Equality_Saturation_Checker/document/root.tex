@@ -1,0 +1,208 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Checking Equality-Saturation Merge and Extraction Certificates}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J.\ G.\ B.\ de Queiroz}
+\maketitle
+
+\begin{abstract}
+Equality-saturation engines maintain equalities in an e-graph and later extract
+a representative from an e-class.  This entry verifies an executable checker
+for the corresponding engine boundary.  It directly parses the flat annotated
+S-expression format returned by egg 0.11.0's explanation API
+~\cite{egg,egg-api}; flat explanations may apply numbered rewrite rules at
+positions or reuse equalities from earlier checked e-class merges.  For
+extraction, a finite e-graph is represented as a topologically ordered e-class
+DAG.  An executable bottom-up dynamic program selects a representative, and a
+formal proof establishes minimum additive cost over every term represented by
+the designated class.  Class-aligned equality certificates additionally prove
+the selected term equivalent to the canonical class term.
+
+The development reuses the term, substitution, position, context, and rewriting
+infrastructure of the AFP entries \emph{First-Order Terms} and
+\emph{First-Order Rewriting}.  Its soundness statements target their existing
+conversion relation.  It does not introduce another first-order term datatype,
+rewrite relation, generic equational proof calculus, or proof of Birkhoff's
+theorem.  Those generic equational results and a checker for equality proofs
+already exist in IsaFoR/CeTA.  The new material is the chronological e-graph
+merge discipline, positional reuse of recorded merges, certified e-class DAG
+semantics, and globally optimal dynamic-programming extraction.
+\end{abstract}
+
+\tableofcontents
+\parindent 0pt\parskip 0.5ex
+
+\section{Reused foundations}
+
+This entry is an extension of existing rewriting libraries, not an alternative
+foundation.  It imports the AFP sessions \texttt{First\_Order\_Terms} and
+\texttt{First\_Order\_Rewriting}~\cite{afp-terms,afp-rewriting}.  In particular,
+it directly uses:
+\begin{itemize}
+  \item the AFP datatype \texttt{term}, substitutions and substitution
+        application;
+  \item AFP positions, valid-position sets, subterms, contexts,
+        \texttt{replace\_at}, and executable position enumeration; and
+  \item AFP rewrite rules, \texttt{rstep}, and the symmetric reflexive-transitive
+        closure used for conversions.
+\end{itemize}
+
+IsaFoR's equational-reasoning theory already defines the \texttt{eq\_proof}
+datatype with reflexivity, symmetry, transitivity, assumption, and congruence
+constructors; its executable \texttt{proves} function checks such proofs; and
+the same theory relates provability, conversions, semantic entailment, and
+Birkhoff completeness
+~\cite{isafor-equational-reasoning}.  CeTA also certifies equality proofs and
+completion certificates
+~\cite{recording-completion,certified-equational-reasoning,isafor-ceta}.  We
+therefore do not reproduce any of those definitions or results.
+
+The AFP entry \emph{Proof Terms for Term Rewriting} formalizes proof terms and
+their correspondence with multisteps~\cite{afp-proof-terms}.  Those proof terms
+represent reductions; the certificates here instead expose chronological
+e-class sharing and justify extraction over a finite represented DAG.
+
+\section{Difference from IsaFoR/CeTA}
+
+The generic equational content of a rule-only explanation is intentionally
+delegated to the AFP/IsaFoR foundation.  The contribution here begins where an
+e-graph exposes data that a generic equational proof does not record:
+\begin{enumerate}
+  \item The egg importer parses the public \texttt{get\_flat\_strings} format,
+        locates its nested \texttt{Rewrite=>}/\texttt{Rewrite<=} annotation,
+        resolves the named rule, and infers the substitution with the AFP
+        matcher.  The compiled step is then replayed independently.
+  \item A \texttt{Merge\_At} step cites a concrete equality by its index in the
+        e-graph's merge history and reuses it at an AFP position.
+  \item A merge log is checked chronologically.  Entry $i$ may cite only entries
+        before $i$, which rules out circular e-class justifications.
+  \item A finite acyclic e-graph is represented by nonempty e-classes in
+        topological order.  Its semantics contains every e-node and every
+        recursive combination of represented child terms.
+  \item An executable bottom-up dynamic program memoizes one optimum per class.
+        The selected term is proved minimum-cost among all terms represented by
+        the designated e-class.
+  \item Class-aligned flat certificates prove the canonical e-node equal to
+        every alternative e-node.  Congruence then proves every recursively
+        represented term equal to the canonical class term.
+  \item A separate candidate-set checker supports interchange formats that
+        enumerate terms explicitly.
+  \item A bounded producer accepts an arbitrary, untrusted step generator, but
+        adds only steps accepted by the independent checker.  Every emitted
+        path is therefore a valid AFP conversion.
+\end{enumerate}
+
+Thus this checker is not a replacement for CeTA's equational reasoning
+checker.  It is an equality-saturation-specific front end whose accepted
+claims are reduced to the existing AFP conversion relation.
+
+\section{Fixture generated by egg}
+
+The end-to-end fixture uses egg 0.11.0 with its \texttt{deterministic} feature.
+The crates.io checksum is:
+\begin{center}
+{\scriptsize\texttt{dd40cfd4196d7a8f882ace95d623d4d6734588e502b4e188675a7c2f55eb4fb4}}
+\end{center}
+The generator enabled explanations before adding the seed expression, disabled
+explanation-length optimization, ran the four named pattern rules shown in
+\texttt{Examples\_Egg}, and executed:
+\begin{verbatim}
+# Cargo.toml
+egg = { version = "=0.11.0", features = ["deterministic"] }
+
+// Rust
+let mut explanation =
+    runner.explain_equivalence(&left, &right);
+explanation.check_proof(&rules);
+for step in explanation.get_flat_strings() {
+    println!("{step}");
+}
+\end{verbatim}
+Repeated generator runs produced byte-identical output.  The forward fixture
+consumed by Isabelle is:
+\begin{verbatim}
+(+ (shl x 1) (* y 2))
+(+ (Rewrite=> shl-one (+ x x)) (* y 2))
+(+ (+ x x) (Rewrite=> mul-two (+ y y)))
+\end{verbatim}
+The backward fixture is:
+\begin{verbatim}
+z
+(Rewrite<= mul-one (* z 1))
+\end{verbatim}
+An additional regression fixture,
+\texttt{(f y (Rewrite=> add-zero z))}, checks that a rewrite in the second
+child is assigned AFP position $[1]$ even when the first child is an atom.
+These strings are parsed during evaluation of the Isabelle checker; they are
+not manually replaced by preconstructed certificate values.
+
+\section{Verified interface}
+
+The main results are:
+\begin{itemize}
+  \item \texttt{check\_egg\_explanation\_sound}: an accepted textual flat
+        explanation emitted by egg denotes an AFP conversion.  The checked
+        fixtures exercise both forward and backward annotations inside actual
+        egg output.
+  \item \texttt{check\_explanation\_sound}: an accepted flat explanation,
+        relative to sound recorded merges, is an AFP conversion.
+  \item \texttt{checked\_merge\_log\_sound}: every equality in an accepted
+        chronological merge log is an AFP conversion generated by the input
+        rules.
+  \item \texttt{egraph\_explanation\_sound}: a later explanation may safely
+        reuse any entry of an accepted merge log.
+  \item \texttt{represented\_eclass\_finite}: every class of a well-formed
+        acyclic e-graph represents a finite set of terms.
+  \item \texttt{extract\_eclass\_global\_minimum}: the executable dynamic
+        program returns a represented term no more expensive than any term
+        represented by the designated class.
+  \item \texttt{checked\_egraph\_eclass\_sound}: every pair of terms
+        represented by the same checked class is related by an AFP conversion.
+  \item {\footnotesize\texttt{certified\_egraph\_extraction\_correct}}: checked
+        equality, representedness, and global minimum cost hold simultaneously
+        for the extracted term.
+  \item \texttt{run\_bounded\_search\_accepted} and
+        \texttt{find\_explanation\_sound}: every path returned by the bounded
+        producer is accepted by the checker and denotes an AFP conversion,
+        without assumptions on the proposal generator.
+\end{itemize}
+
+The acyclic-DAG example has a child class with three equivalent
+strength-reduction forms and a root e-node that references that class twice.
+The root therefore represents all nine child combinations.  The checked
+dynamic program selects the globally cheapest one and proves it equal to the
+canonical root.  The executable functions are exported to SML and Haskell.
+Another example embeds literal output generated by egg 0.11.0 with deterministic
+iteration and explanation-length optimization disabled.  egg's own
+\texttt{check\_proof} accepted the traces; the Isabelle checker then parses and
+independently replays them against AFP rewriting.
+
+\section{Scope}
+
+No union-find implementation, congruence-closure algorithm, rebuilding,
+e-matching, scheduling policy, or e-graph construction algorithm is verified.
+The global minimum ranges over all terms represented by the supplied finite
+acyclic DAG; it does not claim that an untrusted engine supplied every e-node
+it discovered.  A separate candidate-set checker has only list-relative
+minimality.  The DAG is ground, with source-language atoms represented as
+nullary symbols, as in egg's recursive expressions.  The textual importer
+currently supports egg S-expressions with unquoted atoms and pattern-based
+named rules; custom appliers and quoted rule names require an adapter before
+checking.
+
+\input{session}
+
+\nocite{egg}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -127,7 +127,7 @@ qed
 AOT_register_rigid_restricted_type
   Situation: \<open>Situation(\<kappa>)\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix p
     AOT_obtain x where \<open>TruthValueOf(x,p)\<close>
       by (metis "instantiation" "p-has-!tv:1")
@@ -137,7 +137,7 @@ proof
     AOT_thus \<open>\<exists>x Situation(x)\<close> by (rule "\<exists>I")
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>Situation(\<kappa>) \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
     proof (rule "\<rightarrow>I")
       AOT_assume \<open>Situation(\<kappa>)\<close>
@@ -146,7 +146,7 @@ next
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<forall>\<alpha>(Situation(\<alpha>) \<rightarrow> \<box>Situation(\<alpha>))\<close>
       using "possit-sit:1"[THEN "conventions:3"[THEN "\<equiv>\<^sub>d\<^sub>fE"],
                            THEN "&E"(1)] GEN by fast
@@ -379,7 +379,7 @@ AOT_define TrivialSituation :: \<open>\<tau> \<Rightarrow> \<phi>\<close> (\<ope
 
 AOT_theorem "thm-null-trivial:1": \<open>\<exists>!x NullSituation(x)\<close>
 proof (AOT_subst \<open>NullSituation(x)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> F \<noteq> F)\<close> for: x)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>NullSituation(x) \<equiv> A!x & \<forall>F (x[F] \<equiv> F \<noteq> F)\<close> for x
     proof (safe intro!: "\<equiv>I" "\<rightarrow>I" "df-null-trivial:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"]
                 dest!: "df-null-trivial:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
@@ -445,7 +445,7 @@ qed
 
 AOT_theorem "thm-null-trivial:2": \<open>\<exists>!x TrivialSituation(x)\<close>
 proof (AOT_subst \<open>TrivialSituation(x)\<close> \<open>A!x & \<forall>F (x[F] \<equiv> \<exists>p F = [\<lambda>y p])\<close> for: x)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>TrivialSituation(x) \<equiv> A!x & \<forall>F (x[F] \<equiv> \<exists>p F = [\<lambda>y p])\<close> for x
     proof (safe intro!: "\<equiv>I" "\<rightarrow>I" "df-null-trivial:2"[THEN "\<equiv>\<^sub>d\<^sub>fI"]
                  dest!: "df-null-trivial:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"])
@@ -734,7 +734,7 @@ proof -
     by (metis "\<equiv>\<^sub>d\<^sub>fE" "instantiation" "cont-tf:1" "cont-tf-thm:1")
   AOT_have \<open>\<exists>s (\<forall>F (s[F] \<equiv> F = [\<lambda>y q\<^sub>1]))\<close>
   proof (safe intro!: "comp-sit:1" "cond-prop[I]" GEN "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_show \<open>Propositional([F])\<close> if \<open>F = [\<lambda>y q\<^sub>1]\<close> for F
         using "\<equiv>\<^sub>d\<^sub>fI" "existential:2[const_var]" "prop-prop1" that by fastforce
     }
@@ -835,7 +835,7 @@ proof -
   have cond_prop: \<open>ConditionOnPropositionalProperties (\<lambda> \<Pi> . \<guillemotleft>s'[\<Pi>] \<or> s''[\<Pi>]\<guillemotright>)\<close>
   proof(safe intro!: "cond-prop[I]" GEN "oth-class-taut:8:c"[THEN "\<rightarrow>E", THEN "\<rightarrow>E"];
         rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F
       AOT_have \<open>Situation(s')\<close>
         by (simp add: Situation.restricted_var_condition)
@@ -846,7 +846,7 @@ proof -
         using "\<rightarrow>E" by blast
     }
   next
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F
       AOT_have \<open>Situation(s'')\<close>
         by (simp add: Situation.restricted_var_condition)
@@ -937,7 +937,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   have "cond-prop": \<open>ConditionOnPropositionalProperties
                      (\<lambda> \<Pi> . \<guillemotleft>\<exists>p (\<Pi> = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<guillemotright>)\<close>
   proof (safe intro!: "cond-prop[I]"  "\<forall>I" "\<rightarrow>I" "prop-prop1"[THEN "\<equiv>\<^sub>d\<^sub>fI"])
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix \<beta>
       AOT_assume \<open>\<exists>p (\<beta> = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
       then AOT_obtain p where \<open>\<beta> = [\<lambda>y p]\<close> using "\<exists>E"[rotated] "&E" by blast
@@ -946,7 +946,7 @@ proof(rule "\<rightarrow>I"; frule "&E"(1); drule "&E"(2))
   qed
   have rigid: \<open>rigid_condition (\<lambda> \<Pi> . \<guillemotleft>\<exists>p (\<Pi> = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<guillemotright>)\<close>
   proof(safe intro!: "strict-can:1[I]" "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F
       AOT_assume \<open>\<exists>p (F = [\<lambda>y p] & (s' \<Turnstile> p \<or> s'' \<Turnstile> p))\<close>
       then AOT_obtain p\<^sub>1 where p\<^sub>1_prop: \<open>F = [\<lambda>y p\<^sub>1] & (s' \<Turnstile> p\<^sub>1 \<or> s'' \<Turnstile> p\<^sub>1)\<close>
@@ -1197,7 +1197,7 @@ proof -
                    OF "log-prop-prop:2", THEN "\<equiv>E"(1)] by blast
   moreover AOT_have \<open>\<box>(x \<Turnstile> (q\<^sub>1 & \<not>q\<^sub>1) \<rightarrow> \<not>Actual(x))\<close>
   proof(rule RN; rule "\<rightarrow>I"; rule "raa-cor:2")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>Actual(x)\<close>
       AOT_hence \<open>\<forall>p (x \<Turnstile> p \<rightarrow> p)\<close>
         using actual[THEN "\<equiv>\<^sub>d\<^sub>fE", THEN "&E"(2)] by blast
@@ -1345,7 +1345,7 @@ proof -
                         (\<lambda> \<Pi> . \<guillemotleft>\<exists>q (q & \<Pi> = [\<lambda>y q])\<guillemotright>)\<close>
   proof (safe intro!: "cond-prop[I]" GEN "\<rightarrow>I")
     fix F
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<exists>q (q & F = [\<lambda>y q])\<close>
       then AOT_obtain q where \<open>q & F = [\<lambda>y q]\<close>
         using "\<exists>E"[rotated] by blast
@@ -1465,15 +1465,15 @@ AOT_theorem "rigid-pw:4": \<open>\<^bold>\<A>PossibleWorld(x) \<equiv> PossibleW
 AOT_register_rigid_restricted_type
   PossibleWorld: \<open>PossibleWorld(\<kappa>)\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<exists>x PossibleWorld(x)\<close> using "world:2".
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>PossibleWorld(\<kappa>) \<rightarrow> \<kappa>\<down>\<close> for \<kappa> using "world:3".
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<forall>\<alpha>(PossibleWorld(\<alpha>) \<rightarrow> \<box>PossibleWorld(\<alpha>))\<close>
       by (meson GEN "\<rightarrow>I" "\<equiv>E"(1) "rigid-pw:1")
   }
@@ -1488,7 +1488,7 @@ proof (safe intro!: "\<equiv>\<^sub>d\<^sub>fE"[OF "world:1", OF PossibleWorld.\
     using "world:1"[THEN "\<equiv>\<^sub>d\<^sub>fE", OF PossibleWorld.\<psi>, THEN "&E"(2)].
   AOT_hence \<open>\<diamond>\<forall>p (w \<Turnstile> p \<rightarrow> p)\<close>
   proof (rule "RM\<diamond>"[THEN "\<rightarrow>E", rotated]; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix p
       AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
       AOT_hence \<open>w \<Turnstile> p \<equiv> p\<close> using "\<forall>E"(2) by blast
@@ -1564,7 +1564,7 @@ proof(safe intro!: PossibleWorld.\<psi>[THEN "\<equiv>\<^sub>d\<^sub>fE"[OF "wor
   fix q
   AOT_have \<open>\<diamond>(w \<Turnstile> q \<or> w \<Turnstile> \<not>q)\<close>
   proof(rule "RM\<diamond>"[THEN "\<rightarrow>E"]; (rule "\<rightarrow>I")?)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
       AOT_hence \<open>w \<Turnstile> q \<equiv> q\<close> and \<open>w \<Turnstile> \<not>q \<equiv> \<not>q\<close>
         using "\<forall>E"(1)[rotated, OF "log-prop-prop:2"] by blast+
@@ -1623,7 +1623,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" "&I" "world-pos"[unconstrain w, 
   AOT_have \<open>\<box>Maximal(x)\<close> using "world=maxpos:1"[THEN "\<rightarrow>E", OF max_x] by simp
   moreover AOT_have \<open>\<box>Maximal(x) \<rightarrow> \<box>(\<forall>p(x \<Turnstile> p \<rightarrow> p) \<rightarrow> \<forall>p (x \<Turnstile> p \<equiv> p))\<close>
   proof(safe intro!: "\<rightarrow>I" RM GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix p
       AOT_assume 0: \<open>Maximal(x)\<close>
       AOT_assume 1: \<open>\<forall>p (x \<Turnstile> p \<rightarrow> p)\<close>
@@ -2115,7 +2115,7 @@ qed
 
 AOT_theorem "fund-lem:1": \<open>\<diamond>p \<rightarrow> \<diamond>\<exists>w (w \<Turnstile> p)\<close>
 proof (rule "RM\<diamond>"; rule "\<rightarrow>I"; rule "raa-cor:1")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_obtain w where w_prop: \<open>\<forall>q (w \<Turnstile> q \<equiv> q)\<close>
       using "act-world:1" "PossibleWorld.\<exists>E"[rotated] by meson
     AOT_assume p: \<open>p\<close>
@@ -2222,7 +2222,7 @@ qed
 
 AOT_theorem "fund-lem:7": \<open>\<box>\<forall>w(w \<Turnstile> p) \<rightarrow> \<box>p\<close>
 proof(rule RM; rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_obtain w where w_prop: \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
       using "act-world:1" "PossibleWorld.\<exists>E"[rotated] by meson
     AOT_assume \<open>\<forall>w (w \<Turnstile> p)\<close>
@@ -2364,7 +2364,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p & q)\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> & \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> & w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2392,7 +2392,7 @@ next
           "&E" "&I" by blast
   AOT_hence 0: \<open>\<box>(w \<Turnstile> p & w \<Turnstile> q)\<close>
     by (metis "KBasic:3" "\<equiv>E"(2))
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> & w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> & \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2425,7 +2425,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_assume \<open>w \<Turnstile> p\<close>
   AOT_hence 1: \<open>\<box>w \<Turnstile> p\<close>
     by (metis "T\<diamond>" "\<equiv>E"(1) "rigid-truth-at:3" "\<rightarrow>E")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<rightarrow> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<rightarrow> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2459,7 +2459,7 @@ next
   AOT_hence 0: \<open>\<box>(w \<Turnstile> \<not>p \<or> w \<Turnstile> q)\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by (metis "KBasic:15" "\<or>I"(1) "\<or>I"(2) "\<or>E"(2) "reductio-aa:1" "\<rightarrow>E")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<not>\<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<rightarrow> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2488,7 +2488,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I")
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p \<or> q)\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<or> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2516,7 +2516,7 @@ next
   AOT_hence 0: \<open>\<box>(w \<Turnstile> p \<or> w \<Turnstile> q)\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by (metis "KBasic:15" "\<or>I"(1) "\<or>I"(2) "\<or>E"(2) "reductio-aa:1" "\<rightarrow>E")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> \<or> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<or> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2545,7 +2545,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence 0: \<open>\<box>w \<Turnstile> (p \<equiv> q)\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<phi> \<equiv> \<psi>)) \<rightarrow> (w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2589,7 +2589,7 @@ next
     using "\<equiv>E"(1) "rigid-pw:1" PossibleWorld.\<psi> by blast
   moreover {
     fix p
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_have \<open>PossibleWorld(w) \<rightarrow> (w \<Turnstile> p \<rightarrow> \<box>w \<Turnstile> p)\<close>
         using "rigid-truth-at:1" "\<rightarrow>I"
         by (metis "\<equiv>E"(1))
@@ -2604,7 +2604,7 @@ next
     using "sc-eq-box-box:5"[THEN "\<rightarrow>E", THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"],
                             THEN "\<rightarrow>E", OF "&I"]
           by (metis "1")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> \<phi> \<equiv> w \<Turnstile> \<psi>) \<rightarrow> (w \<Turnstile> (\<phi> \<equiv> \<psi>)))\<close> for w \<phi> \<psi>
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2632,7 +2632,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   AOT_hence 0: \<open>\<box>w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w
     proof(safe intro!: "\<rightarrow>I" GEN)
       AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2661,7 +2661,7 @@ next
           "&E" "&I" by blast
   AOT_hence \<open>\<forall>\<alpha> \<box>w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule GEN)
   AOT_hence 0: \<open>\<box>\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close> by (rule BF[THEN "\<rightarrow>E"])
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((\<forall>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (w \<Turnstile> (\<forall>\<alpha> \<phi>{\<alpha>})))\<close> for w
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2690,7 +2690,7 @@ proof(safe intro!: "\<equiv>I" "\<rightarrow>I" GEN)
   AOT_hence 0: \<open>\<box>w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})\<close>
     using "rigid-truth-at:1"[unvarify p, THEN "\<equiv>E"(1), OF "log-prop-prop:2"]
     by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})) \<rightarrow> (\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}))\<close> for w
     proof(safe intro!: "\<rightarrow>I" GEN)
       AOT_assume \<open>\<forall>p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2723,7 +2723,7 @@ next
     by (rule "\<exists>I")
   AOT_hence 0: \<open>\<box>\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}\<close>
     by (metis Buridan "\<rightarrow>E")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>p (w \<Turnstile> p \<equiv> p) \<rightarrow> ((\<exists>\<alpha> w \<Turnstile> \<phi>{\<alpha>}) \<rightarrow> (w \<Turnstile> (\<exists>\<alpha> \<phi>{\<alpha>})))\<close> for w
     proof(safe intro!: "\<rightarrow>I")
       AOT_assume \<open>\<forall> p (w \<Turnstile> p \<equiv> p)\<close>
@@ -2925,7 +2925,7 @@ proof(rule "\<rightarrow>I")
   moreover AOT_have
     \<open>\<box>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> ((w \<Turnstile> \<phi>{x}) \<equiv> ( w \<Turnstile> \<phi>{y})))\<close>
   proof (rule RM; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x y
       AOT_assume \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
       AOT_hence \<open>\<forall>x\<forall>y (\<forall>F ([F]x \<equiv> [F]y) \<rightarrow> \<box>(\<phi>{x} \<equiv> \<phi>{y}))\<close>
@@ -2958,7 +2958,7 @@ proof(rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n(
     \<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> ((w \<Turnstile> \<phi>{x\<^sub>1...x\<^sub>n}) \<equiv> ( w \<Turnstile> \<phi>{y\<^sub>1...y\<^sub>n})))\<close>
   proof (rule RM; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x\<^sub>1x\<^sub>n y\<^sub>1y\<^sub>n
       AOT_assume \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
       AOT_hence \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n (
@@ -3017,7 +3017,7 @@ proof(safe intro!: "\<equiv>\<^sub>d\<^sub>fI"[OF "df-rigid-rel:1"] "&I")
 next
   AOT_have \<open>\<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n ([[G]\<^sub>w]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[[G]\<^sub>w]x\<^sub>1...x\<^sub>n)\<close>
   proof(rule RN; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_have assms: \<open>PossibleWorld(w)\<close> using PossibleWorld.\<psi>.
       AOT_hence nec_pw_w: \<open>\<box>PossibleWorld(w)\<close>
         using "\<equiv>E"(1) "rigid-pw:1" by blast
@@ -3035,7 +3035,7 @@ next
         by blast
       moreover AOT_have \<open>\<box>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n \<rightarrow> \<box>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
       proof (rule RM; rule "\<rightarrow>I")
-        AOT_modally_strict {
+        AOT_modally_strict_{
           AOT_assume \<open>w \<Turnstile> [G]x\<^sub>1...x\<^sub>n\<close>
           AOT_thus \<open>[\<lambda>x\<^sub>1...x\<^sub>n w \<Turnstile> [G]x\<^sub>1...x\<^sub>n]x\<^sub>1...x\<^sub>n\<close>
             by (auto intro!: "\<beta>\<leftarrow>C"(1) simp: "w-rel:3" "cqt:2")

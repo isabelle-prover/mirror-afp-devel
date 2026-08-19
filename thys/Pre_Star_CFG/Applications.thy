@@ -13,10 +13,6 @@ suitable automata/languages. This happens behind the scenes via code equations.\
 
 text\<open>These lemmas link @{const pre_star} to different properties of context-free grammars:\<close>
 
-lemma pre_star_term:
-  "x \<in> pre_star P L \<longleftrightarrow> (\<exists>w. w \<in> L \<and> P \<turnstile> x \<Rightarrow>* w)"
-  unfolding pre_star_def by blast
-
 lemma pre_star_word:
   "[Nt S] \<in> pre_star P (map Tm ` L) \<longleftrightarrow> (\<exists>w. w \<in> L \<and> w \<in> Lang P S)"
   unfolding Lang_def pre_star_def by blast
@@ -147,8 +143,8 @@ theorem pre_star_reachable:
   shows "reachable P S X \<longleftrightarrow> [Nt S] \<in> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P }"
 proof -
   define L where "L \<equiv> { (\<alpha>::('n, 't) syms)@[Nt X]@\<beta> | \<alpha> \<beta>. set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P }"
-  have "[Nt S] \<in> pre_star P L  \<longleftrightarrow> (\<exists>w. w \<in> L \<and> P \<turnstile> [Nt S] \<Rightarrow>* w)"
-    by (simp add: pre_star_term)
+  have "[Nt S] \<in> pre_star P L  \<longleftrightarrow> (\<exists>w \<in> L. P \<turnstile> [Nt S] \<Rightarrow>* w)"
+    by (simp add: pre_star_iff)
   also have "... \<longleftrightarrow> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt S] \<Rightarrow>* (\<alpha>@[Nt X]@\<beta>) \<and> set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P)"
     unfolding L_def by blast
   also have "... \<longleftrightarrow> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt S] \<Rightarrow>* (\<alpha>@[Nt X]@\<beta>))"

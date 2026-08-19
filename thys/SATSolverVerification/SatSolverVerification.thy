@@ -5,7 +5,7 @@
 
 section\<open>Verification of DPLL based SAT solvers.\<close>
 theory SatSolverVerification
-imports CNF Trail
+imports Clause Trail
 begin
 
 text\<open>This theory contains a number of lemmas used in verification of

@@ -1,0 +1,64 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\newcommand{\oeiscite}[1]{\cite[\href{https://oeis.org/#1}{#1}]{oeis}}
+\newcommand{\poch}[2]{#1^{\overline{#2}}}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Rademacher's Series for the Partition Function}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a formalisation of Rademacher's convergent series for the partition function.
+The partition function $p(n)$ is defined as the number of ways in which a natural number $n$ can
+be written as the sum of positive integers, without taking the order into account. E.g.\ $p(3) = 3$
+since $3 = 2 + 1 = 1 + 1 + 1$.
+
+Using a contour integration argument based on earlier asymptotic sums for $p(n)$, Rademacher found 
+the remarkable \emph{convergent} series representation
+\begin{align*}
+  p(n) &= \frac{1}{\pi\sqrt{2}} \sum_{k\geq 1} A_k(n) \sqrt{k}  f(n,k)
+\intertext{where}
+  A_k(n) &= \hspace*{-1em}\sum_{\substack{1\leq h\leq k\\\text{gcd}(h,k)=1}}\hspace*{-1em} \cos(\pi(s(h,k) - 2nh/k))\\
+  f(x,k) &= \frac{\text{d}}{\text{d}x}\,
+    \frac{\sinh\left[\tfrac{\pi}{k}\sqrt{\tfrac{2}{3}(x-\tfrac{1}{24})}\,\right]}
+         {\sqrt{x-\tfrac{1}{24}}}
+\end{align*}
+and $s(h,k)$ denotes a Dedekind sum. Decent (albeit not very tight) bounds for the remainder
+of the truncated sum are also derived.
+
+One consequence of this formula that was also formalised is the asymptotic estimate 
+$p(n) \sim \exp(\pi\sqrt{2/3\,n}) / (4\sqrt{3}\,n)$.
+
+Rademacher's series also forms the basis for the most efficient known algorithms to compute $p(n)$,
+but this requires significantly more work and is out of scope for this entry.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
