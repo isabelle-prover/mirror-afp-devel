@@ -2033,7 +2033,7 @@ fun print_term meta_args_opt (string_list, string) trans =
 let
   val pos = Toplevel.pos_of trans
 in meta_args_exec meta_args_opt
-   #> tap (fn thy => print_item (prin string pos) (string_list, string) (Toplevel.make_state (SOME thy)))
+   #> tap (fn thy => print_item (prin string pos) (string_list, string) (Toplevel.make_state (SOME (Context.Theory thy))))
    |> (fn thy => Toplevel.theory thy trans)
 end
 
@@ -2049,7 +2049,7 @@ in trans
         (fn thy =>
            if Config.get_global thy disable_assert_evaluation
            then (meta_args_exec meta_args_opt
-                 #> tap (fn thy => print_item (prin t pos) (modes, t) (Toplevel.make_state (SOME thy))))
+                 #> tap (fn thy => print_item (prin t pos) (modes, t) (Toplevel.make_state (SOME (Context.Theory thy)))))
                 thy
            else value_cmd {assert=true} meta_args_opt name modes t pos thy) 
 end
