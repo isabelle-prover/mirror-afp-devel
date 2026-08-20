@@ -105,7 +105,7 @@ lemma distinct7_rot_CW:
 lemma desargues_config_rot_CW:
   assumes "desargues_config A B C A' B' C' M N P R"
   shows "desargues_config C A B C' A' B' P M N R"
-  by (smt assms col_rot_CW desargues_config_def distinct3_def distinct7_rot_CW line_comm 
+  by (smt (z3) assms col_rot_CW desargues_config_def distinct3_def distinct7_rot_CW line_comm 
       meet_3_in_def meet_all_3 meet_comm)
 
 lemma desargues_config_rot_CCW:

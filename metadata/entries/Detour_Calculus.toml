@@ -1,0 +1,44 @@
+title = "The Detour Calculus: Rigorous Local Deformation of Integration Contours"
+date = 2026-06-11
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides the <em>detour calculus</em>, a relational framework to construct deformed versions of integration contours by adding small indentations around problematic points (typically poles). It consists of:</p>
+<ul>
+<li>the definition of a relation that relates the original contour $\\gamma$ to a family of deformed contours $(\\gamma_\\epsilon)_{\\epsilon > 0}$</li>
+<li>theorems that allow transferring geometric properties from $\\gamma$ to $\\gamma_\\epsilon$ for sufficiently small $\\epsilon$</li>
+<li>a library of “basic avoidance patterns” to add indentations to lines, circular arcs, or the corners between them, and prove that they are in relation with the original contour</li>
+<li>a calculus of inference rules which, in particular, allows dealing with composite contours by proving the relation for its individual parts separately</li>
+</ul>
+<p>
+The motivating example for this calculus was the proof of the valence formula for modular forms (not included here), which requires such a complicated set of indentations that I deemed it beyond the reach of formalisation without a systematic approach such as the present one.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+No use of generative AI whatsoever.
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

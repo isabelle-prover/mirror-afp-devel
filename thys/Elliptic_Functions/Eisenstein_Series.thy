@@ -2,14 +2,17 @@ section \<open>Eisenstein series and the differential equations of \<open>\<wp>\
 theory Eisenstein_Series
 imports
   Weierstrass_Elliptic
-  Z_Plane_Q_Disc
+  "Elliptic_Functions.Z_Plane_Q_Disc"
   "Polynomial_Factorization.Fundamental_Theorem_Algebra_Factorized"
   "Zeta_Function.Zeta_Function"
   "Polylog.Polylog"
   "Lambert_Series.Lambert_Series"
   "Cotangent_PFD_Formula.Cotangent_PFD_Formula"
   "Algebraic_Numbers.Bivariate_Polynomials"
+  Theta_Inversion
 begin
+
+unbundle jacobi_theta_notation
 
 
 (* TODO Move. Or rather, fix whatever causes these problems. *)
@@ -40,12 +43,12 @@ context complex_lattice
 begin
 
 definition eisenstein_series :: "nat \<Rightarrow> complex" where
-  "eisenstein_series k = (if k = 0 then 1 else if odd k then 0 else
+  "eisenstein_series k = (if k = 0 then -1 else if odd k then 0 else
       2 / \<omega>1 ^ k * zeta (of_nat k) + (\<Sum>\<^sub>\<infinity>n\<in>-{0}. \<Sum>\<^sub>\<infinity>m. 1 / of_\<omega>12_coords (of_int m, of_int n) ^ k))"
 
 notation eisenstein_series ("G")
 
-lemma eisenstein_series_0 [simp]: "eisenstein_series 0 = 1"
+lemma eisenstein_series_0 [simp]: "eisenstein_series 0 = -1"
   by (auto simp: eisenstein_series_def)
 
 lemma eisenstein_series_odd_eq_0 [simp]: "odd k \<Longrightarrow> eisenstein_series k = 0"
@@ -714,8 +717,8 @@ text \<open>
 definition discr :: complex where
   "discr = \<g>\<^sub>2 ^ 3 - 27 * \<g>\<^sub>3 ^ 2"
 
-definition invariant_j :: complex where
-  "invariant_j = \<g>\<^sub>2 ^ 3 / discr"
+definition invariant_J :: complex where
+  "invariant_J = \<g>\<^sub>2 ^ 3 / discr"
 
 theorem
   fixes z:: "complex"
@@ -723,6 +726,10 @@ theorem
   shows discr_nonzero_aux1: "P = 4 * [:-\<e>\<^sub>1, 1:] * [:-\<e>\<^sub>2, 1:] * [:-\<e>\<^sub>3, 1:]"
   and   discr_nonzero_aux2: "4 * (\<wp> z)^3 - \<g>\<^sub>2 * (\<wp> z) - \<g>\<^sub>3 = 4 * (\<wp> z - \<e>\<^sub>1) * (\<wp> z - \<e>\<^sub>2) * (\<wp> z - \<e>\<^sub>3)" 
   and   discr_nonzero: "discr \<noteq> 0"
+  and   discr_altdef:  "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>2 - \<e>\<^sub>3)) ^ 2"
+  and   invariant_g3_conv_e123: "\<g>\<^sub>3 = 4 * \<e>\<^sub>1 * \<e>\<^sub>2 * \<e>\<^sub>3"
+  and   invariant_g2_conv_e123: "\<g>\<^sub>2 = -4 * (\<e>\<^sub>1 * \<e>\<^sub>2 + \<e>\<^sub>1 * \<e>\<^sub>3 + \<e>\<^sub>2 * \<e>\<^sub>3)"
+  and   sum_e123_0:             "\<e>\<^sub>1 + \<e>\<^sub>2 + \<e>\<^sub>3 = 0"
 proof -
   have zeroI: "poly P (\<wp> (\<omega> / 2)) = 0" if "\<omega> \<in> \<Lambda>" "\<omega> / 2 \<notin> \<Lambda>" for \<omega>
     using half_period_weierstrass_fun_is_root[OF that]
@@ -747,20 +754,67 @@ proof -
   thus P_eq': "P = 4 * [:-\<e>\<^sub>1, 1:] * [:-\<e>\<^sub>2, 1:] * [:-\<e>\<^sub>3, 1:]"
     unfolding set_xs using distinct_e123  by (simp add: xs numeral_poly algebra_simps)
 
-  from arg_cong[OF this, of "\<lambda>P. poly P (\<wp> z)"]
-    show "4 * (\<wp> z)^3 - \<g>\<^sub>2 * (\<wp> z) - \<g>\<^sub>3 = 4 * (\<wp> z - \<e>\<^sub>1) * (\<wp> z - \<e>\<^sub>2) * (\<wp> z - \<e>\<^sub>3)" 
+  have "\<g>\<^sub>3 = -poly.coeff P 0"
+    by (simp add: P_def)
+  also have "\<dots> = 4 * \<e>\<^sub>1 * \<e>\<^sub>2 * \<e>\<^sub>3"
+    by (simp add: P_eq' numeral_poly)
+  finally show "\<g>\<^sub>3 = 4 * \<e>\<^sub>1 * \<e>\<^sub>2 * \<e>\<^sub>3" .
+
+  have "\<g>\<^sub>2 = -poly.coeff P 1"
+    by (simp add: P_def)
+  also have "\<dots> = -4 * (\<e>\<^sub>1 * \<e>\<^sub>2 + \<e>\<^sub>1 * \<e>\<^sub>3 + \<e>\<^sub>2 * \<e>\<^sub>3)"
+    by (simp add: P_eq' numeral_poly algebra_simps)
+  finally show "\<g>\<^sub>2 = -4 * (\<e>\<^sub>1 * \<e>\<^sub>2 + \<e>\<^sub>1 * \<e>\<^sub>3 + \<e>\<^sub>2 * \<e>\<^sub>3)" .
+
+  have "0 = -poly.coeff P 2 / 4"
+    by (simp add: P_def numeral_2_eq_2)
+  also have "\<dots> = \<e>\<^sub>1 + \<e>\<^sub>2 + \<e>\<^sub>3"
+    by (simp add: P_eq' numeral_2_eq_2 numeral_poly algebra_simps)
+  finally show "\<e>\<^sub>1 + \<e>\<^sub>2 + \<e>\<^sub>3 = 0" ..
+
+  show "4 * (\<wp> z)^3 - \<g>\<^sub>2 * (\<wp> z) - \<g>\<^sub>3 = 4 * (\<wp> z - \<e>\<^sub>1) * (\<wp> z - \<e>\<^sub>2) * (\<wp> z - \<e>\<^sub>3)" 
+    using arg_cong[OF P_eq', of "\<lambda>P. poly P (\<wp> z)"]
     by (simp add: P_def numeral_poly algebra_simps power3_eq_cube)
 
-  have "-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2 = 4 ^ 3 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
+  have "discr = (-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2) / 4"
+    unfolding discr_def by simp
+  also have "-4 * (-\<g>\<^sub>2) ^ 3 - 27 * 4 * (-\<g>\<^sub>3) ^ 2 = 4 ^ 3 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
     by (rule sym, rule depressed_cubic_discriminant, fold P_def) (simp add: P_eq' numeral_poly)
-  also have "\<dots> \<noteq> 0"
-    using distinct_e123 by simp
-  finally show "discr \<noteq> 0"
-    by (simp add: discr_def)
+  also have "\<dots> / 4 = 4 ^ 2 * (\<e>\<^sub>1 - \<e>\<^sub>2)\<^sup>2 * (\<e>\<^sub>1 - \<e>\<^sub>3)\<^sup>2 * (\<e>\<^sub>2 - \<e>\<^sub>3)\<^sup>2"
+    by simp
+  finally show discr_eq: "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>2 - \<e>\<^sub>3)) ^ 2"
+    unfolding power_mult_distrib by simp
+
+  show "discr \<noteq> 0"
+    by (subst discr_eq) (use distinct_e123 in auto)
+qed
+
+corollary modulus_neq_0: "modulus \<noteq> 0" and modulus_neq_1: "modulus \<noteq> 1"
+  using distinct_e123 by (auto simp: modulus_def)
+
+text \<open>
+  The $J$ invariant can be expressed as a rational function of the modulus.
+\<close>
+corollary invariant_J_conv_modulus:
+  defines "x \<equiv> modulus * (1 - modulus)"
+  shows   "invariant_J = 4 / 27 * (1 - x) ^ 3 / x ^ 2"
+proof -
+  define l where "l = modulus"
+  have l: "(\<e>\<^sub>1 - \<e>\<^sub>2) * l = \<e>\<^sub>3 - \<e>\<^sub>2"
+    unfolding l_def modulus_def using distinct_e123 by (auto simp: field_simps)
+  have "256 * (1 - l * (1 - l)) ^ 3 * discr = 1728 * invariant_g2 ^ 3 * (l * (1 - l)) ^ 2"
+    using l sum_e123_0 unfolding modulus_def discr_altdef invariant_g2_conv_e123 
+    by Groebner_Basis.algebra
+  thus "invariant_J = 4 / 27 * (1 - x) ^ 3 / x ^ 2"
+    using modulus_neq_0 modulus_neq_1 discr_nonzero
+    by (simp add: divide_simps invariant_J_def x_def l_def mult_ac)
 qed
 
 end
 
+
+lemma (in complex_lattice_swap) modulus_swap: "swap.modulus = 1 - modulus"
+  using distinct_e123 by (auto simp: swap.modulus_def modulus_def field_simps)
 
 context std_complex_lattice
 begin
@@ -1135,8 +1189,8 @@ lemma invariant_g2_swap [simp]: "swap.invariant_g2 = invariant_g2"
 lemma discr_swap [simp]: "swap.discr = discr"
   by (simp add: discr_def swap.discr_def)
 
-lemma invariant_j_swap [simp]: "swap.invariant_j = invariant_j"
-  by (simp add: invariant_j_def swap.invariant_j_def)
+lemma invariant_J_swap [simp]: "swap.invariant_J = invariant_J"
+  by (simp add: invariant_J_def swap.invariant_J_def)
 
 end
 
@@ -1155,8 +1209,8 @@ lemma invariant_g2_cnj [simp]: "cnj.invariant_g2 = cnj invariant_g2"
 lemma discr_cnj [simp]: "cnj.discr = cnj discr"
   by (simp add: discr_def cnj.discr_def)
 
-lemma invariant_j_cnj [simp]: "cnj.invariant_j = cnj invariant_j"
-  by (simp add: invariant_j_def cnj.invariant_j_def)
+lemma invariant_J_cnj [simp]: "cnj.invariant_J = cnj invariant_J"
+  by (simp add: invariant_J_def cnj.invariant_J_def)
 
 end
 
@@ -1199,8 +1253,8 @@ lemma discr_stretch [simp]: "stretched.discr = discr / c ^ 12"
   unfolding stretched.discr_def discr_def invariant_g2_stretch invariant_g3_stretch
   by (simp add: field_simps stretch_nonzero)
 
-lemma invariant_j_stretch [simp]: "stretched.invariant_j = invariant_j"
-  unfolding stretched.invariant_j_def invariant_j_def invariant_g2_stretch discr_stretch
+lemma invariant_J_stretch [simp]: "stretched.invariant_J = invariant_J"
+  unfolding stretched.invariant_J_def invariant_J_def invariant_g2_stretch discr_stretch
   by (simp add: field_simps stretch_nonzero)
 
 end
@@ -1232,8 +1286,8 @@ lemma invariant_g2_transformed [simp]: "transformed.invariant_g2 = invariant_g2"
 lemma discr_transformed [simp]: "transformed.discr = discr"
   by (simp add: transformed.discr_def discr_def)
 
-lemma invariant_j_transformed [simp]: "transformed.invariant_j = invariant_j"
-  by (simp add: transformed.invariant_j_def invariant_j_def)
+lemma invariant_J_transformed [simp]: "transformed.invariant_J = invariant_J"
+  by (simp add: transformed.invariant_J_def invariant_J_def)
 
 end
 
@@ -1357,6 +1411,84 @@ lemma eisenstein_series_poly_0 [simp]: "eisenstein_series_poly 0 = [: [:0, 1:] :
                (eisenstein_series_poly i * eisenstein_series_poly (n-2-i)))"
   by (subst eisenstein_series_poly.simps; simp; fail)+
 
+lemma coeff_0_0_eisenstein_series_poly [simp]:
+  "poly.coeff (poly.coeff (eisenstein_series_poly n) 0) 0 = 0"
+  by (induction n rule: eisenstein_series_poly.induct; subst eisenstein_series_poly.simps)
+     (auto simp: coeff_sum coeff_mult_0)
+
+definition coeff2 where "coeff2 p m n = poly.coeff (poly.coeff p n) m"
+
+text \<open>
+  The polynomial $P(X,Y)$ that gives us $G_{2n+4} = P(G_4, G_6)$ only has monomials of the form
+  $X^i Y^j$ with $4i + 6j = 2n+4$.
+\<close>
+lemma support_eisenstein_series_poly:
+  assumes "coeff2 (eisenstein_series_poly n) i j \<noteq> 0"
+  shows   "4 * i + 6 * j = 2 * n + 4"
+  using assms
+proof (induction n arbitrary: i j rule: less_induct)
+  case (less n i j)
+  interpret coeff2: group_add_hom "\<lambda>p. coeff2 p i j"
+    by standard (auto simp: coeff2_def)
+  define P where "P \<equiv> eisenstein_series_poly"
+
+  consider "n = 0" | "n = 1" | "n \<ge> 2"
+    by linarith
+  thus ?case
+  proof cases
+    assume [simp]: "n = 0"
+    thus ?thesis using less.prems
+      by (cases i; cases j; auto simp: coeff2_def)
+  next
+    assume [simp]: "n = 1"
+    thus ?thesis using less.prems
+      by (cases i; cases j; auto simp: coeff2_def of_bool_def split: if_splits)
+  next
+    assume n: "n \<ge> 2"
+    have "coeff2 (P n) i j \<noteq> 0"
+      using less.prems by (simp add: P_def)
+    also have "coeff2 (P n) i j = 
+            (3 / ((2 * of_nat n + 5) * of_nat (n - 1) * (2 * of_nat n + 3))) *
+            (\<Sum>r\<le>n - 2. (2 * of_nat r + 3) * of_nat (2 * (n - r) - 1) *
+              coeff2 (P r * P (n - Suc (Suc r))) i j)"
+      unfolding P_def
+      by (subst eisenstein_series_poly_rec) (use n in \<open>auto simp: coeff2_def coeff_sum of_nat_poly\<close>)
+    finally have "(\<Sum>r\<le>n - 2. (2 * of_nat r + 3) * of_nat (2 * (n - r) - 1) *
+                    coeff2 (P r * P (n - Suc (Suc r))) i j) \<noteq> 0"
+      by simp
+    then obtain r where r: "r \<in> {..n - 2}" and
+      "(2 * rat_of_nat r + 3) * rat_of_nat (2 * (n - r) - 1) *
+         coeff2 (P r * P (n - Suc (Suc r))) i j \<noteq> 0"
+      using sum.not_neutral_contains_not_neutral by blast
+    hence "coeff2 (P r * P (n - Suc (Suc r))) i j \<noteq> 0"
+      by simp
+    also have "coeff2 (P r * P (n - Suc (Suc r))) i j = 
+                 (\<Sum>j'\<le>j. \<Sum>i'\<le>i. coeff2 (P r) i' j' * coeff2 (P (n - Suc (Suc r))) (i - i') (j - j'))"
+      by (simp add: coeff2_def coeff_mult coeff_sum)
+    finally obtain i' j' where i': "i' \<in> {..i}" and j': "j' \<in> {..j}" and
+      "coeff2 (P r) i' j' * coeff2 (P (n - Suc (Suc r))) (i - i') (j - j') \<noteq> 0"
+      using sum.not_neutral_contains_not_neutral by meson
+    hence nz: "coeff2 (P r) i' j' \<noteq> 0" "coeff2 (P (n - Suc (Suc r))) (i - i') (j - j') \<noteq> 0"
+      by auto
+
+    have "4 * i' + 6 * j' = 2 * r + 4"
+      by (rule less.IH) (use r i' j' n nz(1) in \<open>auto simp: P_def\<close>)
+    moreover have "4 * (i - i') + 6 * (j - j') = 2 * (n - Suc (Suc r)) + 4"
+      by (rule less.IH) (use r i' j' n nz(2) in \<open>auto simp: P_def\<close>)
+    ultimately have "(4 * i' + 6 * j') + (4 * (i - i') + 6 * (j - j')) = 
+                       (2 * r + 4) + (2 * (n - Suc (Suc r)) + 4)"
+      by (rule arg_cong2)
+    also have "(4 * i' + 6 * j') + (4 * (i - i') + 6 * (j - j')) = 4 * i + 6 * j"
+      using i' j' by (simp add: algebra_simps)
+    also have "(2 * r + 4) + (2 * (n - Suc (Suc r)) + 4) = 2 * n + 4"
+      using r n by (simp add: algebra_simps)
+    finally show ?thesis .
+  qed
+qed
+
+text \<open>
+  We now show that the polynomial also gives us the right answer.
+\<close>
 context complex_lattice
 begin
 

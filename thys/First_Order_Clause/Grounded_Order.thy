@@ -104,12 +104,12 @@ end
 subsection \<open>Substitution update stability\<close>
 
 locale subst_update_stability =
-  based_substitution +
+  based_subst_update +
   fixes base_R R
   assumes
     subst_update_stability:
       "\<And>update x \<gamma> expr.
-        base.is_ground update \<Longrightarrow>
+        base_is_ground update \<Longrightarrow>
         base_R update (x \<cdot>v \<gamma>) \<Longrightarrow>
         is_ground (expr \<cdot> \<gamma>) \<Longrightarrow>
         x \<in> vars expr \<Longrightarrow>
@@ -117,7 +117,8 @@ locale subst_update_stability =
 
 locale base_subst_update_stability =
   base_substitution +
-  subst_update_stability where base_R = R and base_subst = subst and base_vars = vars
+  subst_update_stability where 
+  base_R = R and base_subst = subst and base_vars = vars and base_is_ground = is_ground
 
 locale subst_update_stable_grounded_order =
   grounded_order + subst_update_stability where R = less and base_R = base_less
@@ -127,14 +128,13 @@ begin
 sublocale less_eq: subst_update_stability
   where base_R = "base_less\<^sup>=\<^sup>=" and R = "less\<^sup>=\<^sup>="
   using subst_update_stability
-  by unfold_locales
-     (metis (full_types) order.order_iff_strict subst_eq sup2E subst_update)
+  by unfold_locales auto
  
 end
 
 locale base_subst_update_stable_grounded_order =
   base_subst_update_stability where R = less +
   subst_update_stable_grounded_order where
-  base_less = less and base_subst = subst and base_vars = vars
+  base_less = less and base_subst = subst and base_vars = vars and base_is_ground = is_ground
 
 end

@@ -414,7 +414,7 @@ definition "cycle_free g \<equiv> \<nexists>p u. p\<noteq>[] \<and> simple p \<a
 
 lemma cycle_free_alt_in_nodes: 
   "cycle_free g \<equiv> \<nexists>p u. p\<noteq>[] \<and> u\<in>nodes g \<and> simple p \<and> path g u p u"
-  by (smt cycle_free_def path_endpoints(2))
+  by (smt (z3) cycle_free_def path_endpoints(2))
 
 lemma cycle_freeI:
   assumes "\<And>p u. \<lbrakk> path g u p u; p\<noteq>[]; simple p \<rbrakk> \<Longrightarrow> False"
@@ -686,7 +686,7 @@ proof -
     using assms(2,1)
     apply (induction rule: converse_rtrancl_induct)
     subgoal by auto
-    subgoal by (smt converse_rtrancl_into_rtrancl reachable_nodes_step')
+    subgoal by (smt (z3) converse_rtrancl_into_rtrancl reachable_nodes_step')
     done
 qed
    
@@ -972,7 +972,7 @@ proof -
         by (auto simp: in_set_conv_decomp uedge_commute)
       hence "path (restrict_edges T E') y p' u \<or> path (restrict_edges T E') x p' u"  
         apply (clarsimp simp: uedge_in_set_eq E'_def)
-        by (smt ComplD DiffI Int_iff UnCI edges_restrict_edges insertE 
+        by (smt (z3) ComplD DiffI Int_iff UnCI edges_restrict_edges insertE 
                 path_graph_cong subset_Compl_singleton subset_iff)
       then show ?thesis unfolding N1_def N2_def E'_def 
         by (auto dest: path_rtrancl_edgesD)

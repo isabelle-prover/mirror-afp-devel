@@ -97,7 +97,7 @@ fun f <*> x = A.<*> (A.map (fn f => fn x => maps (fn f => List.map f x) f) f, x)
 end
 end
 
-(*Note: only forms a monad if the underlying monad is commutative;
+(*Note: does not really form a monad (e.g. fails associativity);
 cf. https://wiki.haskell.org/ListT_done_right*)
 functor \<^eval>\<open>sfx_ParaT_nargs "List_Monad_Trans"\<close>(M : \<^eval>\<open>sfx_ParaT_nargs "MONAD_BASE"\<close>)
   : \<^eval>\<open>sfx_ParaT_nargs "MONAD_TRANS"\<close> =

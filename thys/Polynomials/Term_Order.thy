@@ -3,10 +3,8 @@
 section \<open>Computable Term Orders\<close>
 
 theory Term_Order
-  imports OAlist_Poly_Mapping "HOL-Library.Product_Lexorder"
+  imports Poly_Mapping_OAlist "HOL-Library.Product_Lexorder"
 begin
-
-declare [[code_del_allowed]]
 
 subsection \<open>Type Class \<open>nat\<close>\<close>
 
@@ -444,13 +442,13 @@ instantiation pp :: (nat, nat) nat_pp_compare
 begin
 
 definition rep_nat_pp_pp :: "('a, 'b) pp \<Rightarrow> (nat, nat) pp"
-  where rep_nat_pp_pp_def [code del]: "rep_nat_pp_pp x = pp_of_fun (\<lambda>n::nat. rep_nat (lookup_pp x (abs_nat n)))"
+  where rep_nat_pp_pp_def [code abort]: "rep_nat_pp_pp x = pp_of_fun (\<lambda>n::nat. rep_nat (lookup_pp x (abs_nat n)))"
 
 definition abs_nat_pp_pp :: "(nat, nat) pp \<Rightarrow> ('a, 'b) pp"
-  where abs_nat_pp_pp_def [code del]: "abs_nat_pp_pp t = pp_of_fun (\<lambda>n::'a. abs_nat (lookup_pp t (rep_nat n)))"
+  where abs_nat_pp_pp_def [code abort]: "abs_nat_pp_pp t = pp_of_fun (\<lambda>n::'a. abs_nat (lookup_pp t (rep_nat n)))"
 
 definition lex_comp'_pp :: "('a, 'b) pp comparator"
-  where lex_comp'_pp_def [code del]: "lex_comp'_pp = comp_of_ord lex_pp"
+  where lex_comp'_pp_def: "lex_comp'_pp = comp_of_ord lex_pp"
 
 definition deg'_pp :: "('a, 'b) pp \<Rightarrow> nat"
   where "deg'_pp x = rep_nat (deg_pp x)"
@@ -561,10 +559,10 @@ instantiation pp :: (nat, nat) nat_term
 begin
 
 definition rep_nat_term_pp :: "('a, 'b) pp \<Rightarrow> (nat, nat) pp \<times> nat"
-  where rep_nat_term_pp_def [code del]: "rep_nat_term_pp t = (rep_nat_pp t, 0)"
+  where rep_nat_term_pp_def: "rep_nat_term_pp t = (rep_nat_pp t, 0)"
 
 definition splus_pp :: "('a, 'b) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> ('a, 'b) pp"
-  where splus_pp_def [code del]: "splus_pp = (+)"
+  where splus_pp_def: "splus_pp = (+)"
 
 instance proof
   fix x y :: "('a, 'b) pp"
@@ -645,10 +643,14 @@ instantiation prod :: ("{nat_pp_compare, comm_powerprod}", nat) nat_term
 begin
 
 definition rep_nat_term_prod :: "('a \<times> 'b) \<Rightarrow> ((nat, nat) pp \<times> nat)"
-  where rep_nat_term_prod_def [code del]: "rep_nat_term_prod u = (rep_nat_pp (fst u), rep_nat (snd u))"
+  where rep_nat_term_prod_def: "rep_nat_term_prod u = (rep_nat_pp (fst u), rep_nat (snd u))"
 
 definition splus_prod :: "('a \<times> 'b) \<Rightarrow> ('a \<times> 'b) \<Rightarrow> ('a \<times> 'b)"
-  where splus_prod_def [code del]: "splus_prod t u = pprod.splus (fst t) u"
+  where splus_prod_def: "splus_prod t u = pprod.splus (fst t) u"
+
+lemma splus_prod_eq [code]:
+  \<open>splus (a, c) (b, d) = (a + b, d)\<close>
+  by (simp add: splus_prod_def pprod.splus_def pprod.pp_of_term_def pprod.component_of_term_def)
 
 instance proof
   fix x y :: "'a \<times> 'b"
@@ -726,8 +728,6 @@ next
 qed
 
 end
-
-lemmas [code del] = deg_pp.rep_eq plus_pp.abs_eq minus_pp.abs_eq
 
 lemma rep_nat_pp_nat [code_unfold]: "(rep_nat_pp::(nat, nat) pp \<Rightarrow> (nat, nat) pp) = (\<lambda>x. x)"
   by (intro ext pp_eqI, simp add: lookup_rep_nat_pp_pp abs_nat_nat_def rep_nat_nat_def)
@@ -900,7 +900,7 @@ lemma nat_pp_order_of_le_nat_pp [code]: "nat_term_order_of_le = LEX"
 subsubsection \<open>Equality of Term Orders\<close>
 
 definition nat_term_order_eq :: "'a nat_term_order \<Rightarrow> 'a::nat_term_compare nat_term_order \<Rightarrow> bool \<Rightarrow> bool \<Rightarrow> bool"
-  where nat_term_order_eq_def [code del]:
+  where nat_term_order_eq_def:
       "nat_term_order_eq to1 to2 dg ps =
                 (\<forall>u v. (dg \<longrightarrow> deg_pp (fst (rep_nat_term u)) = deg_pp (fst (rep_nat_term v))) \<longrightarrow>
                        (ps \<longrightarrow> snd (rep_nat_term u) = snd (rep_nat_term v)) \<longrightarrow>
@@ -1431,7 +1431,87 @@ qed (fact nat_term_order_eq_sym)+
 lemma nat_term_order_equal [code]: "HOL.equal to1 to2 = nat_term_order_eq to1 to2 False False"
   by (auto simp: nat_term_order_eq_def equal_eq nat_term_compare_inject[symmetric])
 
+lemma lex_comp_PP_oalist [code]:
+  "lex_comp' (PP_oalist xs) (PP_oalist ys) =
+         the (OAlist_tc_lex_ord (\<lambda>_ x y. Some (comparator_of x y)) xs ys)"
+  for xs ys::"('a::nat, 'b::nat) oalist_tc"
+proof (cases "lex_comp' (PP_oalist xs) (PP_oalist ys) = Eq")
+  case True
+  hence "PP_oalist xs = PP_oalist ys" by (rule lex_comp'_EqD)
+  hence eq: "OAlist_tc_lookup xs = OAlist_tc_lookup ys" by (simp add: pp_eq_iff)
+  have "OAlist_tc_lex_ord (\<lambda>_ x y. Some (comparator_of x y)) xs ys = Some Eq"
+    by (rule OAlist_tc_lex_ord_EqI, simp add: eq)
+  thus ?thesis by (simp add: True)
+next
+  case False
+  then obtain x where 1: "x \<in> keys_pp (rep_nat_pp (PP_oalist xs)) \<union> keys_pp (rep_nat_pp (PP_oalist ys))"
+    and 2: "comparator_of (lookup_pp (rep_nat_pp (PP_oalist xs)) x) (lookup_pp (rep_nat_pp (PP_oalist ys)) x) =
+          lex_comp' (PP_oalist xs) (PP_oalist ys)"
+    and 3: "\<And>y. y < x \<Longrightarrow> lookup_pp (rep_nat_pp (PP_oalist xs)) y = lookup_pp (rep_nat_pp (PP_oalist ys)) y"
+    by (rule lex_comp'_valE, blast)
+  have "OAlist_tc_lex_ord (\<lambda>_ x y. Some (comparator_of x y)) xs ys = Some (lex_comp' (PP_oalist xs) (PP_oalist ys))"
+  proof (rule OAlist_tc_lex_ord_valI)
+    from False show "Some (lex_comp' (PP_oalist xs) (PP_oalist ys)) \<noteq> Some Eq" by simp
+  next
+    from 1 have "abs_nat x \<in> abs_nat ` (keys_pp (rep_nat_pp (PP_oalist xs)) \<union> keys_pp (rep_nat_pp (PP_oalist ys)))"
+      by (rule imageI)
+    also have "... = fst ` set (list_of_oalist_tc xs) \<union> fst ` set (list_of_oalist_tc ys)"
+      by (simp add: keys_rep_nat_pp_pp keys_PP_oalist OAlist_tc_sorted_domain_def image_Un image_image)
+    finally show "abs_nat x \<in> fst ` set (list_of_oalist_tc xs) \<union> fst ` set (list_of_oalist_tc ys)" .
+  next
+    show "Some (lex_comp' (PP_oalist xs) (PP_oalist ys)) =
+          Some (comparator_of (OAlist_tc_lookup xs (abs_nat x)) (OAlist_tc_lookup ys (abs_nat x)))"
+      by (simp add: 2[symmetric] lookup_rep_nat_pp_pp)
+  next
+    fix y::'a
+    assume "y < abs_nat x"
+    hence "rep_nat y < x" by (metis abs_inverse ord_iff(2))
+    hence "lookup_pp (rep_nat_pp (PP_oalist xs)) (rep_nat y) = lookup_pp (rep_nat_pp (PP_oalist ys)) (rep_nat y)"
+      by (rule 3)
+    hence "OAlist_tc_lookup xs y = OAlist_tc_lookup ys y" by (auto simp: lookup_rep_nat_pp_pp elim: rep_inj)
+    thus "Some (comparator_of (OAlist_tc_lookup xs y) (OAlist_tc_lookup ys y)) = Some Eq" by simp
+  qed
+  thus ?thesis by simp
+qed
+
 hide_const (open) of_exps
+
+experiment
+begin
+
+abbreviation "X \<equiv> 0::nat"
+abbreviation "Y \<equiv> 1::nat"
+abbreviation "Z \<equiv> 2::nat"
+
+lemma
+  "lex_comp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)]) = Lt"
+  by eval
+
+lemma
+  "lex_comp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)], 3::nat) (sparse\<^sub>0 [(X, 4)], 2) = Lt"
+  by eval
+
+lemma
+  "lex_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)])"
+  by eval
+
+lemma
+  "lex_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)])"
+  by eval
+
+lemma
+  "\<not> dlex_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3)]) (sparse\<^sub>0 [(X, 4)])"
+  by eval
+
+lemma
+  "dlex_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 2)]) (sparse\<^sub>0 [(X, 5)])"
+  by eval
+
+lemma
+  "\<not> drlex_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 2)]) (sparse\<^sub>0 [(X, 5)])"
+  by eval
+
+end
 
 value [code] "DEG (POT DRLEX) = (DRLEX::((nat, nat) pp \<times> nat) nat_term_order)"
 

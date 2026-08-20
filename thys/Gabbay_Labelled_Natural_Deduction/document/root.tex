@@ -1,0 +1,150 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{textcomp}
+\usepackage{amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+\title{A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+A reusable Isabelle/HOL framework presenting labelled natural deduction
+as a conservative refinement of ordinary natural deduction, with generic
+structural metatheory and several concrete label interpretations. We
+define ordinary intuitionistic propositional natural deduction, a
+parametric labelled refinement, prove erasure soundness (labelled
+derivations are ordinary derivations after erasing labels) and a
+controlled lifting theorem (ordinary derivations admit some labelling).
+Standard structural metatheory --- weakening, exchange, substitution,
+cut admissibility --- is established in both the ordinary and labelled
+systems.
+
+The framework is instantiated three times. Unit labels recover ordinary
+ND as a special case via conservativity. Provenance labels carry sets
+of assumption indices and give both a sound over-approximation of
+assumption dependencies and a completeness result equating ordinary
+derivability with the existence of a provenance-labelled derivation
+whose filtered sub-context still derives the conclusion. A
+possible-world modal instance derives the K axiom schema and
+necessitation and is connected to Kripke validity; the modal fragment
+is presented as an example instantiation, not as a full labelled modal
+proof theory.
+
+The development is fully constructive, contains no unfinished proof
+commands or oracle invocations, and is intended as a foundation other
+entries can cite.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{What this entry proves}
+
+The main named results, with the theory in which each is established, are:
+
+\begin{sloppypar}
+\begin{itemize}
+  \item \texttt{labelled\_sound\_under\_erasure} \\
+        (\texttt{Erasure}) --- every labelled derivation erases to an
+        ordinary derivation.
+  \item \texttt{lifting\_general},
+        \texttt{ordinary\_derivations\_admit\_labelling} \\
+        (\texttt{Label\_Algebra}, \texttt{Lifting}) --- ordinary
+        derivations admit a labelling under the assumed lift-coherence
+        law.
+  \item \texttt{framework\_adequacy},
+        \texttt{framework\_adequacy\_iff} \\
+        (\texttt{Label\_Algebra}) --- the locale-level equivalence
+        between labelled derivability up to a label and ordinary
+        derivability after erasure.
+  \item \texttt{unit\_labels\_conservative} \\
+        (\texttt{Unit\_Labels}) --- the unit-labels instance recovers
+        ordinary ND.
+  \item \texttt{provenance\_overapproximates\_dependencies} \\
+        (\texttt{Provenance\_Labels}) --- the provenance instance gives
+        a sound over-approximation of assumption dependencies.
+  \item \texttt{ordinary\_admits\_safe\_provenance}, \\
+        \texttt{ordinary\_admits\_tight\_provenance}, \\
+        \texttt{provenance\_completeness} \\
+        (\texttt{Provenance\_Labels}) --- the provenance instance is
+        dependency-tracking complete: ordinary derivability is
+        equivalent to the existence of a provenance-labelled derivation
+        whose selected filtered context still derives the conclusion.
+  \item \texttt{modal\_K\_schema}, \texttt{modal\_necessitation},
+        \texttt{modal\_K\_kripke\_valid} \\
+        (\texttt{Modal\_K\_Schema}) --- the worked modal instance, where
+        the K axiom schema is derived uniformly and connected to Kripke
+        validity.
+\end{itemize}
+\end{sloppypar}
+
+\section{Overview}
+Labelled deductive systems were introduced by Gabbay as a general way to attach
+structured information to formulae and rules \cite{gabbay-lds}.  The modal
+example in this entry follows the standard possible-world reading of modal
+labels, closely related to labelled proof-theoretic presentations such as
+Simpson's work on intuitionistic modal logic \cite{simpson-modal}. Labelled
+approaches to non-classical proof systems have been developed extensively by
+Vigan\`o \cite{vigano-labelled-modal} and by Basin, Matthews, and
+Vigan\`o \cite{basin-vigano-labelled}; our framework targets the simpler
+proof-theoretic core of propositional intuitionistic ND but recovers similar
+structural properties.
+
+\section{Label algebra and adequacy}
+The entry factors the parametric part of labelled derivability through a
+label-algebra locale.  The locale records the proof obligations needed by
+any future label instance: that label constructors are uniform under erasure
+to the singleton type and that ordinary derivations can be lifted coherently
+over the labelled context.  Its central theorem,
+\texttt{framework\_adequacy}, states that labelled derivability up to a label
+is equivalent to ordinary derivability after erasing the context, with the
+chosen lift supplying the canonical labelled witness.  The result is
+intentionally architectural rather than surprising: it packages the
+soundness/lifting obligations a new label instance must discharge, so that
+once those obligations are met the equivalence comes for free.
+
+\section{Modal K axiom and necessitation}
+\begin{sloppypar}
+The worked modal instance is presented as an example, not as a self-contained
+labelled modal proof theory, but it is strong enough to derive the K axiom
+schema uniformly in the formulae \(A\), \(B\), the accessibility relation
+\(R\), and the world \(w\).  The theory \texttt{Modal\_K\_Schema.thy} records
+this as \texttt{modal\_K\_schema}, proves \texttt{modal\_necessitation} under
+the standard side-condition that necessitation applies only to formulae
+derivable from the empty context at every world and relation, and connects
+the labelled derivation to Kripke semantics through
+\texttt{modal\_K\_kripke\_valid}.
+\end{sloppypar}
+
+\section{Provenance completeness}
+The provenance instance is the entry's main dependency-tracking result.
+It is adequate in a strong sense: every ordinary derivation lifts to a
+labelled derivation whose provenance is contained in the indices of the
+ordinary context and whose selected sub-context is still sufficient to
+re-derive the conclusion.  The relevant named theorems are:
+
+\begin{sloppypar}
+\begin{itemize}
+  \item \texttt{ordinary\_admits\_safe\_provenance} ---
+        records the index-bound and well-formedness properties of the
+        lifted provenance derivation.
+  \item \texttt{ordinary\_admits\_tight\_provenance} ---
+        strengthens this to a sufficient filtered sub-context.
+  \item \texttt{provenance\_completeness} ---
+        states the resulting equivalence between ordinary derivability
+        and provenance-labelled derivability with a sufficient filtered
+        context.
+\end{itemize}
+\end{sloppypar}
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

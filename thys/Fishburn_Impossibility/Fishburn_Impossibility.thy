@@ -260,7 +260,7 @@ text \<open>
 \<close>
 local_setup \<open>fn lthy =>
   let
-    val lthy' = lthy addsimps @{thms Fishb_strict_iff Ball_scf Ball_scf_diff R_evals}
+    val lthy' = lthy |> Simplifier.add_simps @{thms Fishb_strict_iff Ball_scf Ball_scf_diff R_evals}
     val thms = Par_List.map (Simplifier.asm_full_simplify lthy') @{thms sp}
   in
     Local_Theory.notes [((@{binding sp'}, []), [(thms, [])])] lthy |> snd

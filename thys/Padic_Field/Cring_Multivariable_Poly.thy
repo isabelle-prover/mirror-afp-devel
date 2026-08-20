@@ -3918,7 +3918,7 @@ proof-
       then show ?thesis
         unfolding o_def
         using True assms m_closed m_lcomm
-        by (smt PiE UNIV_I)
+        by (smt (z3) PiE UNIV_I)
       qed
     next
       case False
@@ -4255,7 +4255,7 @@ proof
         using assms  assms(1) monomials_ofE complement_of_monomials_of  r_null[of k]
         by (metis (no_types, lifting) mem_Collect_eq)
        have 01: "(\<lambda>n. monom_eval R (restrict_to_indices n S) g \<otimes> (k \<otimes> P n)) \<in> monomials_reducing_to R m P S \<rightarrow> carrier R"
-        by (smt Pi_I Pring_cfs_closed assms(1) assms(2) assms(3) closed_fun_simp m_closed monom_eval_car)
+        by (smt (z3) Pi_I Pring_cfs_closed assms(1) assms(2) assms(3) closed_fun_simp m_closed monom_eval_car)
        have 02: "finite (monomials_reducing_to R m P S)"
         using assms(3) monomials_reducing_to_finite
         by blast
@@ -4290,7 +4290,7 @@ proof
       have 02: "finite (monomials_reducing_to R m P S)"
         using assms(3) monomials_reducing_to_finite by blast
       have 04: "(\<lambda>n. monom_eval R (restrict_to_indices n S) g \<otimes> (k \<otimes> P n)) \<in> monomials_reducing_to R m P S \<rightarrow> carrier R"
-        by (smt Pi_I assms(1) assms(2) assms(3) closed_fun_simp cring.axioms(1) is_cring m_closed monom_eval_car ring.Pring_cfs_closed)
+        by (smt (z3) Pi_I assms(1) assms(2) assms(3) closed_fun_simp cring.axioms(1) is_cring m_closed monom_eval_car ring.Pring_cfs_closed)
       show ?thesis
         using 00 01 02 04
             finsum_eq_parition[of "monomials_reducing_to R m P S"
@@ -4983,7 +4983,7 @@ proof-
   have 2: "poly_scalar_mult R (g i) (poly_eval R S g (poly_scalar_mult R k (mset_to_IP R m)))
             = poly_scalar_mult R (g i)
               (poly_scalar_mult R k  (poly_eval R S g (mset_to_IP R m))) "
-    by (smt assms(1) assms(2) local.ring_axioms poly_eval_scalar_mult ring.mset_to_IP_closed subsetD subset_refl)
+    by (smt (z3) assms(1) assms(2) local.ring_axioms poly_eval_scalar_mult ring.mset_to_IP_closed subsetD subset_refl)
   hence 3: "poly_scalar_mult R (g i) (poly_eval R S g (poly_scalar_mult R k (mset_to_IP R m)))
             = poly_scalar_mult R k
               (poly_scalar_mult R (g i) (poly_eval R S g (mset_to_IP R m))) "
@@ -5017,7 +5017,7 @@ proof-
   hence "poly_eval R S g (poly_scalar_mult R k (mset_to_IP R m) \<Otimes> i) =
       (poly_scalar_mult R k (poly_eval R S g (mset_to_IP R m))) \<Otimes> i"
     using poly_eval_monom_insert'[of g i S m]
-    by (smt assms(1) assms(2) assms(3) assms(4) poly_eval_monomial_closed poly_scalar_mult_indexed_pmult subsetD subset_refl)
+    by (smt (z3) assms(1) assms(2) assms(3) assms(4) poly_eval_monomial_closed poly_scalar_mult_indexed_pmult subsetD subset_refl)
   thus ?thesis using assms poly_eval_scalar_mult[of k g _ UNIV S]
     by (metis UNIV_I mset_to_IP_closed subsetI)
 qed
@@ -5027,7 +5027,7 @@ lemma indexed_pmult_add:
   assumes "q \<in> Pring_set R I"
   shows "p \<Oplus> q \<Otimes> i = (p \<Otimes> i) \<Oplus> (q \<Otimes> i)"
   using assms poly_index_mult[of _ "I \<union> {i}"]
-  by (smt Pring_carrier_subset Set.basic_monos(1) Un_upper1 Un_upper2 cring.axioms(1)
+  by (smt (z3) Pring_carrier_subset Set.basic_monos(1) Un_upper1 Un_upper2 cring.axioms(1)
       insert_subset is_cring mk_disjoint_insert mset_to_IP_closed ring.P_ring_ldistr
       ring.indexed_pset.intros(2) ring.indexed_pset_in_carrier set_mset_add_mset_insert
       set_mset_empty)
@@ -5052,7 +5052,7 @@ proof(cases "i \<in> S")
     have "poly_eval R S g (p \<Oplus> q \<Otimes> i) = poly_eval R S g (p \<Otimes> i) \<Oplus> poly_eval R S g (q \<Otimes> i)"
       using assms poly_eval_add[of "p \<Otimes> i" "I \<union> {i}" "q \<Otimes> i" g S]
             indexed_pmult_add[of p  I q i]
-      by (smt A(1) A(3) Pring_carrier_subset Un_insert_right Un_upper1 indexed_pset.indexed_pmult insert_iff insert_subset mk_disjoint_insert)
+      by (smt (z3) A(1) A(3) Pring_carrier_subset Un_insert_right Un_upper1 indexed_pset.indexed_pmult insert_iff insert_subset mk_disjoint_insert)
     hence "poly_eval R S g (p \<Oplus> q \<Otimes> i) = poly_scalar_mult R (g i) (poly_eval R S g p) \<Oplus>
                                            poly_scalar_mult R (g i) (poly_eval R S g q)"
       using A
@@ -5084,7 +5084,7 @@ next
     have "poly_eval R S g (p \<Oplus> q \<Otimes> i) = poly_eval R S g (p \<Otimes> i) \<Oplus> poly_eval R S g (q \<Otimes> i)"
       using assms poly_eval_add[of "p \<Otimes> i" "I \<union> {i}" "q \<Otimes> i" g S]
             indexed_pmult_add[of p  I q i]
-      by (smt A(1) A(3) Pring_carrier_subset Un_insert_right Un_upper1 indexed_pset.indexed_pmult insert_iff insert_subset mk_disjoint_insert)
+      by (smt (z3) A(1) A(3) Pring_carrier_subset Un_insert_right Un_upper1 indexed_pset.indexed_pmult insert_iff insert_subset mk_disjoint_insert)
     thus "poly_eval R S g (p \<Oplus> q \<Otimes> i) = poly_eval R S g (p \<Oplus> q) \<Otimes> i"
       by (metis A(1) A(2) A(3) A(4) assms(2) indexed_pmult_add poly_eval_add poly_eval_closed)
   qed
@@ -5161,7 +5161,7 @@ proof(cases "i \<in> S")
     by presburger
   have 1: "poly_eval R S g (mset_to_IP R {#i#}) = indexed_const (g i)"
     using assms True
-    by (smt PiE UNIV_I genideal_one genideal_zero indexed_pmult_zero monom_add_mset one_mset_to_IP poly_eval_constant poly_eval_index singletonD)
+    by (smt (z3) PiE UNIV_I genideal_one genideal_zero indexed_pmult_zero monom_add_mset one_mset_to_IP poly_eval_constant poly_eval_index singletonD)
   then have "poly_eval R S g P  \<Otimes>\<^sub>p  poly_eval R S g (mset_to_IP R {#i#})=  poly_eval R S g P\<Otimes>\<^sub>p indexed_const (g i) "
     by presburger
   then have "poly_eval R S g P  \<Otimes>\<^sub>p  poly_eval R S g (mset_to_IP R {#i#})= indexed_const (g i) \<Otimes>\<^sub>p  poly_eval R S g P"
@@ -5488,7 +5488,7 @@ proof-
       by (metis indexed_padd_const indexed_padd_def)
     thus "poly_eval R I (\<lambda>n. \<zero>) (P \<Oplus> Q) = indexed_const ((P \<Oplus> Q) {#})"
       using A B C D poly_eval_add[of P I Q "\<lambda>n. \<zero>" I]
-      by (smt zero_fun_closed)
+      by (smt (z3) zero_fun_closed)
   qed
   show "\<And>P i. P \<in> Pring_set R I \<Longrightarrow> poly_eval R I (\<lambda>n. \<zero>) P = indexed_const (P {#}) \<Longrightarrow> i \<in> I \<Longrightarrow> poly_eval R I (\<lambda>n. \<zero>) (P \<Otimes> i) = indexed_const ((P \<Otimes> i) {#})"
   proof-
@@ -5583,7 +5583,7 @@ lemma eval_in_ring_smult:
   assumes "closed_fun R g"
   shows "eval_in_ring R S g (a \<odot>\<^bsub>Pring R I\<^esub> P) = a \<otimes> eval_in_ring R S g P "
   using assms unfolding eval_in_ring_def
-  by (smt Pring_car Pring_smult poly_eval_scalar_mult poly_scalar_mult_def)
+  by (smt (z3) Pring_car Pring_smult poly_eval_scalar_mult poly_scalar_mult_def)
 
 
 lemma total_eval_ring_hom:
@@ -5613,7 +5613,7 @@ lemma total_eval_var:
   unfolding total_eval_def eval_in_ring_def
   using UNIV_I assms indexed_const_def indexed_pmult_zero monom_add_mset one_closed
       one_mset_to_IP one_zeroD poly_eval_constant poly_eval_index  singletonD
-  by (smt PiE iso_tuple_UNIV_I monom_eval_add monom_eval_car mset_to_IP_simp poly_scalar_mult_const r_one)
+  by (smt (z3) PiE iso_tuple_UNIV_I monom_eval_add monom_eval_car mset_to_IP_simp poly_scalar_mult_const r_one)
 
 lemma total_eval_indexed_pmult:
   assumes "P \<in> carrier (Pring R I)"
@@ -6789,7 +6789,7 @@ proof
       by (meson False nat_to_mset_inj)
     have 3: "(X_poly R [^]\<^bsub>UP R\<^esub> n) x = \<zero>"
       unfolding X_poly_def using False
-      by (smt ctrm_degree P.nat_pow_closed P.nat_pow_eone P.r_null P_def R.one_closed
+      by (smt (z3) ctrm_degree P.nat_pow_closed P.nat_pow_eone P.r_null P_def R.one_closed
           UP_cring.ltrm_of_X UP_cring.ltrm_rep_X_pow UP_cring.X_closed UP_cring.monom_coeff
           UP_r_one UP_zero_closed X_mult_cf cfs_closed cfs_monom deg_nzero_nzero is_UP_cring
           monom_closed monom_one to_poly_inverse to_poly_mult_simp(2))
@@ -6812,13 +6812,13 @@ proof
     then have "IP_to_UP i \<one>\<^bsub>Pring R {i}\<^esub> = IP_to_UP i (\<lambda> m. if m = {#} then \<one>\<^bsub>R\<^esub> else \<zero>\<^bsub>R\<^esub>)"
       by presburger
     then have LHS: "IP_to_UP i \<one>\<^bsub>Pring R {i}\<^esub> x = \<one>\<^bsub>R\<^esub>"
-      by (smt True count_empty IP_to_UP_def multi_count_eq nat_to_msetE nat_to_msetE')
+      by (smt (z3) True count_empty IP_to_UP_def multi_count_eq nat_to_msetE nat_to_msetE')
     then show ?thesis
       using RHS by presburger
   next
     case False
     have RHS: "\<one>\<^bsub>UP R\<^esub> x = \<zero>\<^bsub>R\<^esub>"
-      by (smt False UP_def monoid.simps(2))
+      by (smt (z3) False UP_def monoid.simps(2))
     show ?thesis
       using False count_empty
             nat_to_msetE
@@ -7212,7 +7212,7 @@ proof
   proof(cases "(set_mset x) = {i}")
     case True
     have "{a. 0 < (\<lambda>j. if j = i then count x i else 0) a} = {i}"
-      by (smt Collect_cong True count_eq_zero_iff neq0_conv singletonI singleton_conv)
+      by (smt (z3) Collect_cong True count_eq_zero_iff neq0_conv singletonI singleton_conv)
   then have "finite {j. (if j = i then count x i else 0) \<noteq> 0}"
       by auto
     have "(\<lambda>j. if j = i then count x i else 0) = count x"
@@ -7270,7 +7270,7 @@ proof
       by (metis R.Pring_add R.indexed_padd_def)
     then show ?thesis     using assms True
       unfolding UP_to_IP_def UP_def
-      by (smt partial_object.select_convs(1) restrict_def ring_record_simps(12))
+      by (smt (z3) partial_object.select_convs(1) restrict_def ring_record_simps(12))
   next
     case False
     have "(UP_to_IP R i p \<oplus>\<^bsub>Pring R {i}\<^esub> UP_to_IP R i Q) x =
@@ -7536,7 +7536,7 @@ proof-
     using IP_to_UP_ring_hom[of  i]
           ring_hom_mult[of "IP_to_UP i"]
           UP_to_IP_closed assms
-    by (smt P_def ring_hom_ring.homh)
+    by (smt (z3) P_def ring_hom_ring.homh)
   have 2: "IP_to_UP i (UP_to_IP R i (p \<otimes>\<^bsub>UP R\<^esub> Q)) =
         IP_to_UP i (UP_to_IP R i p \<otimes>\<^bsub>Pring R {i}\<^esub> UP_to_IP R i Q)"
     using 0 1 assms
@@ -7647,7 +7647,7 @@ proof-
         pvar_closed[of "Pring R J0" x J1]
         cring.indexed_const_closed[of "Pring R J0" ]
       unfolding dist_varset_var_ass_def
-      by (smt Pring_is_cring is_cring)
+      by (smt (z3) Pring_is_cring is_cring)
   qed
   have 1: " cring (Pring R J0)"
     by (simp add: Pring_is_cring is_cring)
@@ -7662,7 +7662,7 @@ proof-
     using  0 1 2 assms Pring_universal_prop(2)[of "Pring (Pring R J0) J1" g I \<phi> \<psi>]
         dist_varset_morphism_is_morphism[of I J0 J1 \<phi>] dist_varset_var_ass_def
         dist_varset_morphism_def unfolding var_factor_def  var_to_IP_def
-    by (smt IntE dist_varset_var_ass_def inf_commute inf_le2 ring.Pring_is_cring subsetD var_to_IP_def)
+    by (smt (z3) IntE dist_varset_var_ass_def inf_commute inf_le2 ring.Pring_is_cring subsetD var_to_IP_def)
   have 3: "\<And>i. i \<in> J1 \<Longrightarrow> g i = mset_to_IP (Pring R J0) {#i#} "
     using assms unfolding dist_varset_var_ass_def var_to_IP_def
     by (meson disjoint_iff_not_equal)
@@ -7734,7 +7734,7 @@ proof-
         then have " \<psi> (P \<Otimes> i) = ring.indexed_const (Pring R J0) (P \<otimes>\<^bsub>Pring R J0\<^esub> (pvar R i))"
           using A0'' A2  cring.indexed_const_ring_hom[of "Pring R J0" J1] ring_hom_ring.homh
                 ring_hom_mult[of "ring.indexed_const (Pring R J0)" "Pring R J0" _  P "pvar R i"]
-          by (smt "1" IntE Pring_var_closed)
+          by (smt (z3) "1" IntE Pring_var_closed)
         then show "\<psi> (P \<Otimes> i) = ring.indexed_const (Pring R J0) (P \<Otimes> i)"
           using poly_index_mult[of P J0 i] unfolding var_to_IP_def
           by (metis A0'' A2 IntE Pring_car Pring_mult)
@@ -7801,7 +7801,7 @@ proof-
   show "\<And>a. a \<in> carrier (Pring R J0) \<Longrightarrow> \<psi> (ring.indexed_const (Pring R J0) a) = a"
     using 0 assms pvar_ass_closed[of J0 I]
         cring.Pring_universal_prop(3)[of "Pring R J0" "Pring R I" "pvar R" J1 id \<psi>]
-    by (smt Pi_I Pring_is_cring Pring_var_closed id_def is_cring subsetD var_factor_inv_def)
+    by (smt (z3) Pi_I Pring_is_cring Pring_var_closed id_def is_cring subsetD var_factor_inv_def)
 qed
 
 lemma var_factor_inv_inverse:
@@ -7884,7 +7884,7 @@ proof-
       by metis
     have 1: "closed_fun (Pring R J0) (indexed_const \<circ> g)"
       using assms comp_apply
-      by (smt Pi_I closed_fun_simp indexed_const_closed)
+      by (smt (z3) Pi_I closed_fun_simp indexed_const_closed)
     have 2: "\<psi> P \<in> carrier (Pring (Pring R J0) J1)"
       using assms A var_factor_morphism'(1)[of I J0 J1 \<psi>]
             ring_hom_ring.homh ring_hom_closed Pring_car
@@ -7908,7 +7908,7 @@ proof-
       using 5 6 4 assms
             total_eval_add[of  "(total_eval (Pring R J0) (indexed_const \<circ> g) (\<psi> p))" J0
                               "(total_eval (Pring R J0) (indexed_const \<circ> g) (\<psi> Q))" ]
-      by (smt A(1) A(2) B(1) B(2) Pring_add Pring_car in_mono indexed_pset_mono order_refl
+      by (smt (z3) A(1) A(2) B(1) B(2) Pring_add Pring_car in_mono indexed_pset_mono order_refl
           subsetD subset_iff total_eval_add)
   qed
   show "\<And>P i. P \<in> Pring_set R I \<Longrightarrow>
@@ -7924,7 +7924,7 @@ proof-
     have 1: "\<psi> (P \<Otimes> i) = \<psi> P \<otimes>\<^bsub>Pring (Pring R J0) J1\<^esub> \<psi> (pvar R i)"
       using 0 A assms var_factor_morphism'(1)[of I J0 J1 \<psi>]
             pvar_closed[of R i] ring_hom_mult ring_hom_ring.homh
-      by (smt Pring_car Pring_var_closed)
+      by (smt (z3) Pring_car Pring_var_closed)
     have 2: "\<psi> P \<in> carrier (Pring (Pring R J0) J1)"
       using assms A var_factor_morphism'(1)[of I J0 J1 \<psi>]
             ring_hom_ring.homh ring_hom_closed Pring_car

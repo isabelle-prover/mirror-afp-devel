@@ -1,0 +1,194 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+
+% Allow discretionary line breaks inside long typewriter identifiers
+% (e.g. MSOinHOL_lowenheim_skolem_lemmas) without changing their rendering.
+% Encourage breaking (penalty < hyphenpenalty so TeX actually uses it).
+\newcommand{\bk}{\_\penalty10\hspace{0pt}}
+
+% Extra stretch lets TeX absorb the leftover whitespace once it does break,
+% so it stops preferring an overfull line.
+\setlength{\emergencystretch}{3em}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Monadic Second-Order Logic in HOL:\\
+       Deep and Shallow Embeddings with Automated Faithfulness\\
+       (Isabelle/HOL dataset)}
+\author{Christoph Benzm\"uller \and Daniel Kirchner}
+\maketitle
+
+\begin{abstract}
+We develop, in Isabelle/HOL, three embeddings of monadic second-order logic
+(MSO) into classical higher-order logic side by side: a \emph{deep} embedding
+(an inductive datatype with an explicitly defined satisfaction relation), a
+\emph{maximal-shallow} embedding, and a \emph{minimal-shallow} embedding --- the
+last a locale parametrised by an interpretation and by first- and second-order
+assignments. The enabling ingredient is a \emph{two-sorted} capture-avoiding
+substitution apparatus (predication, substitution, alphabetic renaming, and a
+substitution lemma, developed once for each of the two binder namespaces), in
+which each binder is transparent for the other. Faithfulness of all three
+embeddings is mechanised and automated.
+
+The central result is a fully mechanised two-sorted downward
+L\"owenheim--Skolem theorem. Its corollary identifies range-relative validity
+with the general (Henkin-style) reading of MSO, while comprehension witnesses
+that the standard reading is strictly stronger; an elementary-substructure
+refinement recovers the standard reading from the minimal embedding as well, so
+the two readings become one device under two interpretation classes (all
+interpretations versus the elementary ones). We further exercise the embeddings
+on classical MSO landmarks: Boolean closure and graph operations hold under the
+standard (full second-order) reading and fail under the general one, making the
+dichotomy concrete, while reachability and $2$-colorability are non-theorems,
+refuted throughout with \texttt{nitpick} countermodels.
+\end{abstract}
+
+% List sections and subsections only.  The experiment theories carry many
+% subsubsection headings; showing them would make the Experiments entry
+% dominate the table of contents.
+\setcounter{tocdepth}{2}
+\tableofcontents
+\newpage
+
+\section{Overview}
+
+This entry extends the deep-and-shallow embedding methodology of
+\emph{Faithful Logic Embeddings in HOL --- Deep and Shallow}~\cite{C98} from
+propositional modal logic to a logic with genuine quantifier binding. The shallow-embedding approach goes
+back to the modal-logic embeddings of Benzm\"uller and Paulson~\cite{J21,J23}
+and underlies the LogiKEy methodology~\cite{J48}. The background on MSO and its
+model theory follows the standard references~\cite{Thomas1997,Courcelle2012,Buchi1960};
+the notions of general (Henkin) and standard second-order semantics follow
+\cite{henkin1950,Shapiro1991,Vaananen2011,Manzano1996}. Locales~\cite{ballarin2014}
+parametrise the minimal embedding throughout. Within the AFP, MSO on words has
+been treated algorithmically by Traytel and Nipkow~\cite{MSO_Regex_Equivalence-AFP},
+who verify decision procedures based on derivatives of regular expressions; the
+present entry is complementary, being concerned not with decision procedures but
+with faithful embeddings of MSO into HOL and with the resulting model theory
+(the general versus standard readings and a two-sorted L\"owenheim--Skolem
+theorem).
+
+The development is organised as follows.
+
+\paragraph{Syntax and the deep embedding.}
+\texttt{MSOinHOL\_preliminaries} fixes the variable namespaces, domains, and
+assignment-update operations. \texttt{MSOinHOL\_deep} introduces MSO formulae as
+an inductive datatype together with the deep satisfaction relation and the
+global validity notions $\models^{d}$ (general; all interpretations) and
+$\models^{d'}$ (standard; full second-order domain).
+
+\paragraph{Shallow embeddings.}
+\texttt{MSOinHOL\_shallow} gives the maximal-shallow embedding.
+\texttt{MSOinHOL\bk shallow\bk minimal\bk locale} and
+\texttt{MSOinHOL\bk shallow\bk minimal} give the minimal-shallow embedding as a
+locale \texttt{MinS} parametrised by an interpretation and two assignments,
+together with its translation into HOL.
+
+\paragraph{Substitution.}
+\texttt{MSOinHOL\bk deep\bk subst\bk lemma} develops the two-sorted
+capture-avoiding substitution and renaming machinery and the substitution
+lemmas \texttt{SubstitutionLemma} and \texttt{SubstitutionLemma2}, one per
+binder namespace; \texttt{MSOinHOL\bk subst\bk extras} collects auxiliary
+renaming-preserves-truth results.
+
+\paragraph{Faithfulness.}
+\texttt{MSOinHOL\bk faithfulness\bk locale} proves the faithfulness theorems
+relating the deep, maximal-shallow and minimal-shallow embeddings
+(\texttt{FaithfulSD}, \texttt{FaithfulMD}, \texttt{FaithfulMS}, and
+\texttt{FaithfulMS\_all}, which identifies minimal validity with range-relative
+deep validity).
+
+\paragraph{Comprehension and L\"owenheim--Skolem.}
+\texttt{MSOinHOL\bk comprehension} isolates the comprehension schema that
+separates the readings. \texttt{MSOinHOL\bk lowenheim\bk skolem\bk lemmas}
+builds the two-sorted Tarski--Vaught stage construction, and
+\texttt{MSOinHOL\bk lowenheim\bk skolem} assembles the headline results: the
+downward L\"owenheim--Skolem theorem \texttt{DownwardLowenheimSkolem}, the
+elementary-substructure relation \texttt{ElementarySubstructure}, the
+faithfulness corollaries \texttt{Faithful\bk to\bk Henkin} and
+\texttt{Faithful\bk to\bk Standard}, and the limitative result
+\texttt{Standard\bk strictly\bk stronger}.
+
+\paragraph{Experiments.}
+The \texttt{experiments} theories exercise classical MSO landmarks across the
+embeddings --- Boolean closure and graph operations hold under the standard
+reading and fail under the general one, while reachability~\cite{BasinKlarlund1995}
+and $2$-colorability~\cite{Thomas1997} are non-theorems, refuted throughout ---
+using \texttt{nitpick} for the
+distinguishing countermodels; the \texttt{\_elementary} theories carry the same
+landmarks over the elementary minimal interpretation.
+
+\paragraph{Disclosure on the use of generative AI.}
+The authors used generative-AI assistants (Anthropic's Claude family of
+models) as a drafting aid: to help condense prose, to suggest and shorten
+selected proofs (in particular parts of the two-sorted
+L\"owenheim--Skolem construction), and to help keep the \LaTeX{} sources of
+this entry tidy. All mathematical content, the theory development, and the
+design decisions are the authors' own. Every definition, proof, and piece
+of text in the final entry has been checked by the authors, who take full
+responsibility for the content.
+
+% Generated theory content. Section/subsection headings issued here (before
+% each \input) so they precede each theory's "theory ... imports ... begin"
+% header in the rendering.
+\section{Preliminaries}
+\input{MSOinHOL_preliminaries.tex}
+
+\section{The deep embedding}
+\input{MSOinHOL_deep.tex}
+
+\section{Two-sorted substitution}
+\input{MSOinHOL_deep_subst_lemma.tex}
+\subsection{Auxiliary renaming results}
+\input{MSOinHOL_subst_extras.tex}
+
+\section{Shallow embeddings}
+\subsection{Maximal-shallow embedding}
+\input{MSOinHOL_shallow.tex}
+\subsection{Minimal-shallow embedding (locale)}
+\input{MSOinHOL_shallow_minimal_locale.tex}
+\subsection{Minimal-shallow embedding (translation)}
+\input{MSOinHOL_shallow_minimal.tex}
+
+\section{Faithfulness}
+\subsection{The faithfulness locale}
+\input{MSOinHOL_faithfulness_locale.tex}
+\subsection{Faithfulness theorems}
+\input{MSOinHOL_faithfulness.tex}
+
+\section{Comprehension}
+\input{MSOinHOL_comprehension.tex}
+
+\section{Downward L\"owenheim--Skolem}
+\subsection{Tarski--Vaught stage lemmas}
+\input{MSOinHOL_lowenheim_skolem_lemmas.tex}
+\subsection{The theorem and its corollaries}
+\input{MSOinHOL_lowenheim_skolem.tex}
+
+\section{Experiments}
+\subsection{Basic landmarks}
+\input{MSOinHOL_experiments.tex}
+\subsection{Classical MSO landmarks}
+\input{MSOinHOL_experiments_classic.tex}
+\subsection{Locale-based variants}
+\input{MSOinHOL_experiments_locale.tex}
+\subsection{Elementary minimal embedding (setup)}
+\input{MSOinHOL_shallow_minimal_elementary.tex}
+\subsection{Elementary minimal embedding (landmarks)}
+\input{MSOinHOL_experiments_classic_elementary.tex}
+\subsection{Additional landmarks}
+\input{MSOinHOL_experiments_extra.tex}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

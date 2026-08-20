@@ -3,7 +3,7 @@ subsection \<open>Assumption Tactic\<close>
 theory Unify_Assumption_Tactic_Base
   imports
     ML_Functor_Instances
-    ML_Tactic_Utils
+    ML_Unifiers_Base
     ML_Unification_Parsers
 begin
 

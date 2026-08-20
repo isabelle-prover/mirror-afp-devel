@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Bessel Functions of the First Kind - Archive of Formal Proofs</title>
+    <meta name="description" content="Bessel Functions of the First Kind in the Archive of Formal Proofs">
+    <meta property="og:description" content="Bessel Functions of the First Kind in the Archive of Formal Proofs">
+    <meta property="og:title" content="Bessel Functions of the First Kind">
+    <meta property="og:url" content="https://isa-afp.org/entries/Bessel.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>B</span>essel <span class='first'>F</span>unctions of the <span class='first'>F</span>irst <span class='first'>K</span>ind
+  </h1>
+  <div>
+      <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>
+      </p>
+      <p class="date">July 3, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>This entry provides a formalisation of the Bessel function of the first kind $J_a$ and the 
+modified Bessel function of the first kind $I_a$ as well as several related notions such as 
+Bessel polynomials and the spherical Bessel functions.</p>
+<p>Properties that are proven about $I_a$ and $J_a$ include:</p>
+<ul>
+<li>the definition as a hypergeometric series \[\sum_{n\geq 0} (-1)^n (z/2)^{a+2n} / (n! \Gamma(1+a+n))\]</li>
+<li>monotonicity and convexity of $I_a$ on the reals</li>
+<li>the contiguous relations, e.g. $2 a J_a(z) = z (J_{a-1}(z) + J_{a+1}(z))$</li>
+<li>the derivatives, e.g. $J_a' = \frac{1}{2} (J_{a-1} - J_{a+1})$</li>
+<li>closed form expressions for the half-integer case $a = n + \frac{1}{2}$ in terms of trigonometric and hyperbolic functions</li>
+<li>the representation of $J_a$ as contour integral of the form $\int_{c-i\infty}^{c+i\infty}$</li>
+</ul></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Claude was used to generate the TikZ code for Figure 1.
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
+      </ul>
+      <h3>Session Bessel</h3>
+      <ul>
+          <li><a href="../thys/Bessel/Bessel.html">Bessel</a></li>
+          <li><a href="../thys/Bessel/Bessel_Hankel_Integral.html">Bessel_Hankel_Integral</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Incomplete_Gamma.html">The Incomplete Gamma Function</a></li>
+              <li><a href="../entries/Path_Automation.html">Path Equivalence and Automation for Integration Contours</a></li>
+              <li><a href="../entries/Prime_Number_Theorem.html">The Prime Number Theorem</a></li>
+          </ul>
+        </div>
+        <div>
+          <h3>Used by</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Rademacher_Series.html">Rademacher's Series for the Partition Function</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Bessel/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Bessel/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Bessel/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Bessel-AFP</p>
+        <pre id="copy-text">@article{Bessel-AFP,
+  author  = {Manuel Eberl},
+  title   = {Bessel Functions of the First Kind},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Bessel.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Bessel-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

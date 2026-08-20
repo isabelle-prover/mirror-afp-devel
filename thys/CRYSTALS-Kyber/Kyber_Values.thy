@@ -64,10 +64,7 @@ end
 instantiation fin7681 :: finite
 begin
 instance 
-proof
-  show "finite (UNIV :: fin7681 set)" unfolding type_definition.univ [OF type_definition_fin7681]
-    by auto
-qed
+  by standard (auto simp flip: type_definition.Abs_image [OF type_definition_fin7681])
 end
 
 

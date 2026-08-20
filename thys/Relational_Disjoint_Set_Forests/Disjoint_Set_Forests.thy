@@ -146,7 +146,7 @@ lemma update_postcondition:
   subgoal
     apply (rule order.antisym)
     subgoal by (metis assms conv_dist_comp conv_involutive inf.boundedI inf.cobounded1 vector_covector vector_restrict_comp_conv)
-    subgoal by (smt assms comp_associative conv_dist_comp conv_involutive covector_restrict_comp_conv dense_conv_closed equivalence_top_closed inf.boundedI shunt_mapping vector_covector preorder_idempotent)
+    subgoal by (smt (z3) assms comp_associative conv_dist_comp conv_involutive covector_restrict_comp_conv dense_conv_closed equivalence_top_closed inf.boundedI shunt_mapping vector_covector preorder_idempotent)
     done
   done
 
@@ -224,7 +224,7 @@ qed
 
 lemma update_inf:
   "u \<le> y \<Longrightarrow> (x[y\<longmapsto>z]) \<sqinter> u = z\<^sup>T \<sqinter> u"
-  by (smt comp_inf.mult_right_dist_sup comp_inf.semiring.mult_zero_right inf.left_commute inf.sup_monoid.add_assoc inf_absorb2 p_inf sup_bot_right inf.sup_monoid.add_commute)
+  by (smt (z3) comp_inf.mult_right_dist_sup comp_inf.semiring.mult_zero_right inf.left_commute inf.sup_monoid.add_assoc inf_absorb2 p_inf sup_bot_right inf.sup_monoid.add_commute)
 
 lemma update_inf_same:
   "(x[y\<longmapsto>z]) \<sqinter> y = z\<^sup>T \<sqinter> y"
@@ -232,7 +232,7 @@ lemma update_inf_same:
 
 lemma update_inf_different:
   "u \<le> -y \<Longrightarrow> (x[y\<longmapsto>z]) \<sqinter> u = x \<sqinter> u"
-  by (smt inf.right_idem inf.sup_monoid.add_commute inf.sup_relative_same_increasing inf_import_p maddux_3_13 sup.cobounded2 update_inf_same)
+  by (smt (z3) inf.right_idem inf.sup_monoid.add_commute inf.sup_relative_same_increasing inf_import_p maddux_3_13 sup.cobounded2 update_inf_same)
 
 end
 
@@ -400,7 +400,7 @@ lemma fc_via_root:
   shows "fc p = p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
 proof (rule order.antisym)
   have "1 \<le> p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
-    by (smt assms comp_associative conv_dist_comp conv_star_commute coreflexive_idempotent coreflexive_symmetric inf.cobounded2 total_var)
+    by (smt (z3) assms comp_associative conv_dist_comp conv_star_commute coreflexive_idempotent coreflexive_symmetric inf.cobounded2 total_var)
   hence "fc p \<le> p\<^sup>\<star> * p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star> * p\<^sup>T\<^sup>\<star>"
     by (metis comp_right_one mult_left_isotone mult_right_isotone mult_assoc)
   thus "fc p \<le> p\<^sup>\<star> * (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
@@ -613,7 +613,7 @@ lemma univalent_root_successors:
   shows "(p \<sqinter> 1) * p\<^sup>\<star> = p \<sqinter> 1"
 proof (rule order.antisym)
   have "(p \<sqinter> 1) * p \<le> p \<sqinter> 1"
-    by (smt assms(1) comp_inf.mult_semi_associative conv_dist_comp conv_dist_inf conv_order equivalence_one_closed inf.absorb1 inf.sup_monoid.add_assoc injective_codomain)
+    by (smt (z3) assms(1) comp_inf.mult_semi_associative conv_dist_comp conv_dist_inf conv_order equivalence_one_closed inf.absorb1 inf.sup_monoid.add_assoc injective_codomain)
   thus "(p \<sqinter> 1) * p\<^sup>\<star> \<le> p \<sqinter> 1"
     using star_right_induct_mult by blast
   show "p \<sqinter> 1 \<le> (p \<sqinter> 1) * p\<^sup>\<star>"
@@ -627,7 +627,7 @@ lemma same_component_same_root_sub:
   shows "root p x \<le> root p y"
 proof -
   have "root p x * y\<^sup>T \<le> (p \<sqinter> 1) * p\<^sup>T\<^sup>\<star>"
-    by (smt assms(1,3) mult_isotone mult_assoc root_var fc_plus fc_star order.eq_iff univalent_root_successors)
+    by (smt (z3) assms(1,3) mult_isotone mult_assoc root_var fc_plus fc_star order.eq_iff univalent_root_successors)
   thus ?thesis
     by (simp add: assms(2) shunt_bijective root_var)
 qed
@@ -671,7 +671,7 @@ lemma same_roots:
     and "p \<sqinter> 1 = q \<sqinter> 1"
     and "fc p = fc q"
   shows "p\<^sup>\<star> * (p \<sqinter> 1) = q\<^sup>\<star> * (q \<sqinter> 1)"
-  by (smt assms conv_dist_comp conv_dist_inf conv_involutive conv_star_commute inf_commute one_inf_conv symmetric_one_closed root_var univalent_root_successors)
+  by (smt (z3) assms conv_dist_comp conv_dist_inf conv_involutive conv_star_commute inf_commute one_inf_conv symmetric_one_closed root_var univalent_root_successors)
 
 lemma same_root:
   assumes "univalent p"
@@ -717,12 +717,12 @@ proof -
   hence "(p \<sqinter> 1) * (p\<^sup>T\<^sup>+ - 1) * (p \<sqinter> 1) = bot"
     by (simp add: coreflexive_symmetric le_bot)
   thus ?thesis
-    by (smt assms(1) conv_complement conv_dist_comp conv_dist_inf conv_star_commute inf_absorb1 star.circ_plus_same symmetric_one_closed reachable_without_loops star_plus_without_loops)
+    by (smt (z3) assms(1) conv_complement conv_dist_comp conv_dist_inf conv_star_commute inf_absorb1 star.circ_plus_same symmetric_one_closed reachable_without_loops star_plus_without_loops)
 qed
 
 lemma root_root:
   "root p x = root p (root p x)"
-  by (smt comp_associative comp_inf.mult_right_sub_dist_sup_right dual_order.eq_iff inf.cobounded1 inf.cobounded2 inf.orderE mult_right_isotone star.circ_loop_fixpoint star.circ_transitive_equal root_var)
+  by (smt (z3) comp_associative comp_inf.mult_right_sub_dist_sup_right dual_order.eq_iff inf.cobounded1 inf.cobounded2 inf.orderE mult_right_isotone star.circ_loop_fixpoint star.circ_transitive_equal root_var)
 
 lemma loop_root_2:
   assumes "acyclic (p - 1)"
@@ -1203,7 +1203,7 @@ proof -
     have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 = p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1"
     proof (rule order.antisym)
       have "(p0 \<sqinter> 1) * p0\<^sup>T\<^sup>\<star> * x \<sqinter> 1 \<le> p0"
-        by (smt coreflexive_comp_top_inf_one inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc root_var)
+        by (smt (z3) coreflexive_comp_top_inf_one inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc root_var)
       hence "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 \<le> p0"
         by (metis inf_le1 a4 conv_dist_inf coreflexive_symmetric inf.absorb2 inf.cobounded2 inf.sup_monoid.add_assoc root_var symmetric_one_closed)
       thus "p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1 \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1"
@@ -1211,7 +1211,7 @@ proof -
       have "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1 \<le> y"
         by (metis a4 coreflexive_comp_top_inf_one inf.cobounded1 inf_assoc inf_le2)
       thus "p0\<^sup>T\<^sup>\<star> * x \<sqinter> p0 \<sqinter> 1 \<le> p0\<^sup>T\<^sup>\<star> * x \<sqinter> y\<^sup>T \<sqinter> 1"
-        by (smt conv_dist_inf coreflexive_symmetric inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc)
+        by (smt (z3) conv_dist_inf coreflexive_symmetric inf.absorb_iff2 inf.cobounded2 inf.sup_monoid.add_assoc)
     qed
     thus ?thesis
       by simp
@@ -1284,7 +1284,7 @@ proof -
     also have "... = p0\<^sup>\<star> * (p0\<^sup>T\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
       by (simp add: a1 cancel_separate_eq mult_right_dist_sup)
     also have "... = p0\<^sup>\<star> * ((p0 \<sqinter> 1) \<squnion> p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
-      by (smt univalent_root_successors a1 conv_dist_comp conv_dist_inf coreflexive_idempotent coreflexive_symmetric inf.cobounded2 injective_codomain loop_root root_transitive_successor_loop symmetric_one_closed)
+      by (smt (z3) univalent_root_successors a1 conv_dist_comp conv_dist_inf coreflexive_idempotent coreflexive_symmetric inf.cobounded2 injective_codomain loop_root root_transitive_successor_loop symmetric_one_closed)
     also have "... = p0\<^sup>\<star> * (p0\<^sup>\<star> * (p0 \<sqinter> 1) \<squnion> 1)"
       by (metis inf.sup_left_divisibility inf_commute sup.left_idem sup_commute sup_relative_same_increasing)
     also have "... \<le> p0\<^sup>\<star> * p0\<^sup>\<star>"
@@ -1313,7 +1313,7 @@ theorem path_compression_assign:
   subgoal using update_univalent mult_assoc by auto
   subgoal using bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed update_mapping mult_assoc by auto
   subgoal using update_acyclic_6 by blast
-  subgoal by (smt same_root path_compression_exact path_compression_precondition_def update_univalent vector_mult_closed)
+  subgoal by (smt (z3) same_root path_compression_exact path_compression_precondition_def update_univalent vector_mult_closed)
   subgoal using path_compression_exact(1) path_compression_precondition_def by blast
   subgoal using path_compression_exact(2) path_compression_precondition_def by blast
   by blast
@@ -1597,7 +1597,7 @@ proof -
       also have "... = w * y\<^sup>T \<squnion> p"
         by (simp add: i3 i5 vector_covector)
       also have "... \<le> p\<^sup>\<star> \<squnion> p"
-        by (smt i5 i6 conv_dist_comp conv_involutive conv_isotone conv_star_commute le_supI shunt_bijective star.circ_increasing sup_absorb1)
+        by (smt (z3) i5 i6 conv_dist_comp conv_involutive conv_isotone conv_star_commute le_supI shunt_bijective star.circ_increasing sup_absorb1)
       also have "... \<le> fc p"
         using fc_increasing star.circ_back_loop_prefixpoint by auto
       finally have "fc ?p \<le> fc p"
@@ -1708,7 +1708,7 @@ proof -
         hence 39: "w \<le> (?p\<^sup>T - 1)\<^sup>\<star> * (p[[w]])"
           using reachable_without_loops by auto
         hence "p[[w]] \<le> (?p - 1)\<^sup>\<star> * w"
-          using 2 by (smt i5 bijective_reverse conv_star_commute reachable_without_loops)
+          using 2 by (smt (z3) i5 bijective_reverse conv_star_commute reachable_without_loops)
         also have "... \<le> p\<^sup>\<star> * w"
         proof -
           have "p\<^sup>T\<^sup>\<star> * y = y"
@@ -1782,13 +1782,13 @@ proof -
   have "regular (p0\<^sup>T\<^sup>\<star> * w)"
     using i13 i5 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
   hence 6: "?p \<sqinter> p0\<^sup>T\<^sup>\<star> * x = p \<sqinter> p0\<^sup>T\<^sup>\<star> * x"
-    using 4 5 by (smt inf_sup_distrib1 maddux_3_11_pp)
+    using 4 5 by (smt (z3) inf_sup_distrib1 maddux_3_11_pp)
   have 7: "?p - p0\<^sup>T\<^sup>\<star> * x = p - p0\<^sup>T\<^sup>\<star> * x"
-    by (smt i12 inf.sup_monoid.add_commute inf_import_p inf_sup_absorb le_iff_inf p_dist_inf update_inf_different inf.idem p_antitone_inf)
+    by (smt (z3) i12 inf.sup_monoid.add_commute inf_import_p inf_sup_absorb le_iff_inf p_dist_inf update_inf_different inf.idem p_antitone_inf)
   have "regular (p0\<^sup>T\<^sup>\<star> * x)"
     using i13 i2 bijective_regular mapping_regular regular_closed_star regular_conv_closed regular_mult_closed by auto
   thus "?p = p"
-    using 6 7 by (smt inf_sup_distrib1 maddux_3_11_pp)
+    using 6 7 by (smt (z3) inf_sup_distrib1 maddux_3_11_pp)
 qed
 
 lemma path_compression_3:
@@ -1872,7 +1872,7 @@ theorem find_set_path_compression_2:
   apply vcg_tc_simp
     apply (fact find_set_1)
    apply (fact find_set_2)
-  by (smt find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_function path_compression_precondition_def)
+  by (smt (z3) find_set_3 find_set_invariant_def find_set_postcondition_def find_set_precondition_def path_compression_function path_compression_precondition_def)
 
 theorem find_set_path_compression_3:
   "VARS p t w y
@@ -1938,7 +1938,7 @@ proof -
   have "path_compression_postcondition ?p x ?y p"
     using assms find_set_path_compression_function prod.collapse by blast
   thus "?r = ?y"
-    using 1 by (smt assms same_root find_set_precondition_def find_set_postcondition_def path_compression_postcondition_def)
+    using 1 by (smt (z3) assms same_root find_set_precondition_def find_set_postcondition_def path_compression_postcondition_def)
 qed
 
 text \<open>
@@ -2026,7 +2026,7 @@ proof (unfold union_sets_postcondition_def, intro conjI)
     hence "bot = r \<sqinter> s"
       using 1 2 distinct_points by blast
     also have "... = r \<sqinter> p2\<^sup>T\<^sup>\<star> * s"
-      using 2 by (smt root_transitive_successor_loop)
+      using 2 by (smt (z3) root_transitive_successor_loop)
     finally have "s \<sqinter> p2\<^sup>\<star> * r = bot"
       using schroeder_1 conv_star_commute inf.sup_monoid.add_commute by fastforce
     thus ?thesis

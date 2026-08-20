@@ -358,7 +358,7 @@ next
 
     have "(\<Sum>\<^sup>+ e. h_plus (Suc i) e) =
       (\<Sum>\<^sup>+ e\<in>UNIV. h_plus i e) + (\<Sum>\<^sup>+ (x, y). ((g (x, y) - h_plus i (x, y)) * (d_IN (h_plus i) x - d_OUT (h_plus i) x) / (d_OUT g x - d_OUT (h_plus i) x)) * indicator (range (Pair xi)) (x, y))"
-      (is "_ = ?IH + ?rest" is "_ = _ + \<integral>\<^sup>+ (x, y). ?f x y * _ \<partial>_") using xi True
+      (is "_ = ?IH + ?rest" is "_ = _ + (\<integral>\<^sup>+ (x, y). ?f x y * _ \<partial>_)") using xi True
       by(subst nn_integral_add[symmetric])(auto simp add: xi_def split_beta AE_count_space intro!: nn_integral_cong split: split_indicator intro!: h_plus_le_g h_plus_OUT_le_IN d_OUT_mono le_funI)
     also have "?rest = (\<Sum>\<^sup>+ (x, y)\<in>range (Pair xi). ?f x y)"
       by(simp add: nn_integral_count_space_indicator split_def)

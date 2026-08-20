@@ -13,7 +13,7 @@ adhoc_overloading eval \<rightleftharpoons> eval_rel
 
 open_bundle eval_syntax
 begin
-notation eval (\<open>'(`')\<close>)
+notation eval (infixl \<open>('(`'))\<close> 999)
 notation eval (\<open>(_`_)\<close> [999, 1000] 999)
 end
 

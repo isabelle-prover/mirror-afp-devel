@@ -95,7 +95,7 @@ lemma ill_eq_refl [simp]:
 
 lemma ill_eq_sym [sym]:
   "a \<stileturn>\<turnstile> b \<Longrightarrow> b \<stileturn>\<turnstile> a"
-  by (smt ill_eq_def)
+  by (smt (z3) ill_eq_def)
 
 lemma ill_eq_tran [trans]:
   "\<lbrakk>a \<stileturn>\<turnstile> b; b \<stileturn>\<turnstile> c\<rbrakk> \<Longrightarrow> a \<stileturn>\<turnstile> c"

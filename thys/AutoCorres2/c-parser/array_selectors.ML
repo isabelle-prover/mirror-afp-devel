@@ -35,9 +35,9 @@ fun array_selectors ctxt {recursive_record_simpset} thm =
     val index = mk_index tys_array |> Thm.cterm_of ctxt
     val n = tys_array |> snd |> dest_numeralT
     val simpset = if recursive_record_simpset
-      then merge_ss (HOL_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt))
+      then Simplifier.merge_ss (HOL_ss, RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt))
       else HOL_ss
-    val ctxt' = put_simpset simpset ctxt addsimps
+    val ctxt' = ctxt |> put_simpset simpset |> Simplifier.add_simps
       (Named_Theorems.get ctxt @{named_theorems array_selectors_simps})
     fun array_selector i =
       let

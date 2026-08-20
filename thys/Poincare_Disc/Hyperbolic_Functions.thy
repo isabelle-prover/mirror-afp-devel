@@ -80,7 +80,7 @@ proof-
   moreover
   have "x * y \<ge> 1"
     using assms
-    by (smt mult_le_cancel_left1)
+    by (smt (z3) mult_le_cancel_left1)
   ultimately
   have **: "x * y + sqrt ((x\<^sup>2 - 1) * (y\<^sup>2 - 1)) \<ge> 1"
     by linarith
@@ -125,6 +125,6 @@ lemma arcosh_double:
   fixes x :: real
   assumes "x \<ge> 1"
   shows "2 * arcosh x = arcosh (2*x\<^sup>2 - 1)"
-  by (smt arcosh_add arcosh_mono assms one_power2 power2_eq_square real_sqrt_abs)
+  by (smt (z3) arcosh_add arcosh_mono assms one_power2 power2_eq_square real_sqrt_abs)
 
 end

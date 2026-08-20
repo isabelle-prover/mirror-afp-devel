@@ -824,7 +824,7 @@ proof -
     note short_main = LLL_short_polynomial[OF deg_u deg_uf pl1 mon_u]
     from short_main(1-2)[folded g_def] 
     have "degree k < degree f" unfolding k_def
-      by (smt Suc_leI Suc_less_eq degree_gcd1 gcd.commute le_imp_less_Suc le_trans) 
+      by (smt (z3) Suc_leI Suc_less_eq degree_gcd1 gcd.commute le_imp_less_Suc le_trans) 
     hence deg_fk: "(degree k = 0 \<or> degree f \<le> degree k) = (degree k = 0)" by auto
     note res = res[unfolded LLL_reconstruction.simps[of f us] Let_def, folded u_def, 
         folded g_def, folded k_def, unfolded deg_fk]
@@ -1239,7 +1239,7 @@ proof -
   define N where "N = sqrt_int_ceiling K" 
   have K0: "K \<ge> 0" unfolding K_def by fastforce
   have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
-    by (smt of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
+    by (smt (z3) of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
   define n where "n = find_exponent p N" 
   note res = res[folded n_def[unfolded N_def K_def]]
   note n = find_exponent[OF p.m1, of N, folded n_def]
@@ -1254,7 +1254,7 @@ proof -
     and norm: "\<And>ui. ui \<in> set (berlekamp_hensel p n f) \<Longrightarrow> poly_mod.Mp (p ^ n) ui = ui" 
     unfolding berlekamp_hensel_def fff split by auto
   have K: "K < (p ^ n)\<^sup>2" using n sqrt_int_ceiling_bound[OF K0] 
-    by (smt N0 N_def n(1) power2_le_imp_le)
+    by (smt (z3) N0 N_def n(1) power2_le_imp_le)
   show ?thesis
     by (rule LLL_implementation.LLL_reconstruction[OF res deg uf dvd_refl norm f0 cop sf pn1 
           refl prime K[unfolded K_def]]) 
@@ -1281,7 +1281,7 @@ proof -
   define N where "N = sqrt_int_ceiling K" 
   have K0: "K \<ge> 0" unfolding K_def by fastforce
   have N0: "N \<ge> 0" unfolding N_def sqrt_int_ceiling using K0 
-    by (smt of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
+    by (smt (z3) of_int_nonneg real_sqrt_ge_0_iff zero_le_ceiling)
   define n where "n = find_exponent p N" 
   note res = res[folded n_def[unfolded N_def K_def]]
   note n = find_exponent[OF p.m1, of N, folded n_def]
@@ -1296,7 +1296,7 @@ proof -
     and norm: "\<And>ui. ui \<in> set (berlekamp_hensel p n f) \<Longrightarrow> poly_mod.Mp (p ^ n) ui = ui" 
     unfolding berlekamp_hensel_def fff split by auto
   have K: "K < (p ^ n)\<^sup>2" using n sqrt_int_ceiling_bound[OF K0] 
-    by (smt N0 N_def n(1) power2_le_imp_le)
+    by (smt (z3) N0 N_def n(1) power2_le_imp_le)
   show ?thesis
     by (rule LLL_implementation.LLL_many_reconstruction[OF res deg uf dvd_refl norm f0 cop sf pn1 
           refl prime K[unfolded K_def]]) 

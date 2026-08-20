@@ -112,7 +112,7 @@ proof -
     by (simp add: more_arith_simps(11))
   hence "[int y * 1 = (int d' - int d) * (fst (bezw ((m - m')) (order \<G>)))] (mod order \<G>)"
     using inverse gcd 
-    by (smt Groups.mult_ac(2) Number_Theory_Aux.inverse Totient.of_nat_eq_1_iff * cong_def int_ops(9) mod_mult_right_eq mod_one_cancel)
+    by (smt (z3) Groups.mult_ac(2) Number_Theory_Aux.inverse Totient.of_nat_eq_1_iff * cong_def int_ops(9) mod_mult_right_eq mod_one_cancel)
   hence "[int y = (int d' - int d) * (fst (bezw ((m - m')) (order \<G>)))] (mod order \<G>)" by simp
   hence "y mod order \<G> = (int d' - int d) * (fst (bezw ((m - m')) (order \<G>))) mod order \<G>"
     using cong_def zmod_int by auto

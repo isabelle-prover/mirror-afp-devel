@@ -1,19 +1,19 @@
 section \<open>Solver Export\<close>
 
 theory SolverExport
-  imports NaiveSolver PCNF SearchSolver Parser
+  imports ExpansionSolver PCNF SearchSolver Parser
     "HOL-Library.Code_Abstract_Char" "HOL-Library.Code_Target_Numeral" "HOL-Library.RBT_Set"
 begin
 
-fun run_naive_solver :: "String.literal \<Rightarrow> bool" where
-  "run_naive_solver qdimacs_str = naive_solver (convert (the (parse qdimacs_str)))"
+fun run_expansion_solver :: "String.literal \<Rightarrow> bool" where
+  "run_expansion_solver qdimacs_str = expansion_solver (convert (the (parse qdimacs_str)))"
 
 fun run_search_solver :: "String.literal \<Rightarrow> bool" where
   "run_search_solver qdimacs_str = search_solver (the (parse qdimacs_str))"
 
 text \<open>Simple tests.\<close>
 
-value "run_naive_solver (String.implode
+value "run_expansion_solver (String.implode
 ''c an extension of the example from the QDIMACS specification
 c multiple
 c lines
@@ -98,20 +98,20 @@ let asciis_of_literal s = explode ascii_of_char s;;
 end;;\<close> for constant String.literal_of_asciis String.asciis_of_literal
 
 export_code
-  run_naive_solver
-  in SML file_prefix run_naive_solver
+  run_expansion_solver
+  in SML file_prefix run_expansion_solver
 
 export_code
-  run_naive_solver
-  in OCaml file_prefix run_naive_solver
+  run_expansion_solver
+  in OCaml file_prefix run_expansion_solver
 
 export_code
-  run_naive_solver
-  in Scala file_prefix run_naive_solver
+  run_expansion_solver
+  in Scala file_prefix run_expansion_solver
 
 export_code
-  run_naive_solver
-  in Haskell file_prefix run_naive_solver
+  run_expansion_solver
+  in Haskell file_prefix run_expansion_solver
 
 export_code
   run_search_solver

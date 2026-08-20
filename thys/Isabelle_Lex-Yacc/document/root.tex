@@ -1,0 +1,144 @@
+\documentclass[abstract=on,fontsize=10pt,a5paper,mpinclude=true,
+%open=right,twoside,
+oneside,
+pagesize,DIV=14]{scrartcl}
+\usepackage[no-math]{fontspec}
+\usepackage[sfdefault,lining,scaled=.85]{FiraSans}
+\usepackage[varqu,varl]{zi4}% inconsolata typewriter
+\setmonofont{Inconsolatazi4}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{lualatex-math}
+\usepackage{mathtools}
+\usepackage[scaled=1.06]{newtxsf}
+%\DeclareSymbolFont{operators}{OT1}{ntxtlf}{m}{n}
+%\SetSymbolFont{operators}{bold}{OT1}{ntxtlf}{b}{n}
+\usepackage[USenglish]{babel}
+\usepackage{mparhack}
+\usepackage{subcaption}
+\usepackage{csquotes}
+\usepackage{isabelle,isabellesym}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{xspace}
+\usepackage[cmyk]{xcolor}
+\usepackage{railsetup}
+\usepackage[backend=bibtex,style=trad-abbrv]{biblatex}
+\addbibresource{root.bib}
+\definecolor{lhWhite}        {RGB}{248,248,248}
+\definecolor{lhOrange}       {RGB}{243,107, 33}
+\definecolor{lhMagentaDark}  {RGB}{ 62, 10, 71}
+\definecolor{CornflowerBlue}{cmyk}{0.65,0.13,0,0}
+
+\usepackage[pdfpagelabels, pageanchor=false, plainpages=false]{hyperref}
+\usepackage{orcidlink}
+\newcommand\tocgobble[1]{}% 
+%\renewcommand\familydefault{\sfdefault}
+\colorlet{sectioncolor}{blue!60!black}
+\addtokomafont{partentry}{\color{sectioncolor}\Large}
+\addtokomafont{title}{\color{sectioncolor}\bfseries}
+\addtokomafont{section}{\color{sectioncolor}}
+\addtokomafont{subsection}{\color{sectioncolor}}
+\addtokomafont{subsubsection}{\color{sectioncolor}}
+\addtokomafont{paragraph}{\color{sectioncolor}}
+\addtokomafont{subparagraph}{\color{sectioncolor}}
+\sloppy
+
+\addtokomafont{partentry}{\hfill}
+\RedeclareSectionCommand[
+  tocpagenumberbox=\tocgobble%
+]{part}
+
+
+\renewcommand{\isastyletext}{\normalsize\normalfont\sffamily}
+\renewcommand{\isastyletxt}{\normalfont\sffamily}
+\renewcommand{\isastylecmt}{\normalfont\sffamily\itshape\color{blue}}
+\isabellestyle{literal}
+\isabellestyle{sf}
+\usepackage{listings}
+\usepackage{listingsutf8}
+\usepackage[many]{tcolorbox}
+\tcbuselibrary{listings}
+\tcbuselibrary{skins}
+
+%%% <todo>
+\usepackage{tcolorbox}
+
+\newenvironment{isatxt}{%
+\mbox{}\\
+\tcbsetforeverylayer{colframe=red!75!black}
+\begin{tcolorbox}[breakable,title={\textsf{\textbf{Isabelle/HOL}}}]}{%
+\end{tcolorbox}
+}
+
+
+\isabellestyle{literal}
+\isabellestyle{it}
+\renewcommand{\isacharunderscore}{\_}%
+\renewcommand{\isacharunderscorekeyword}{\_}%
+\isakeeptag{ML}
+\let\oldisatagML\isatagML
+\let\oldendisatagML\endisatagML
+\renewcommand{\isatagML}{\oldisatagML\ttfamily\small}
+\renewcommand{\endisatagML}{\oldendisatagML\normalfont}
+
+\newcommand{\thy}{\isabellecontext}
+\renewcommand{\isamarkupchapter}[1]{%
+  \begingroup% 
+  \def\isacharunderscore{\textunderscore}%
+  \chapter{#1 (\thy)}%
+  \endgroup% 
+}
+\renewcommand{\isamarkupchapter}[1]{\chapter{#1}}
+\let\oldisakeyword\isakeyword
+\renewcommand{\isakeyword}[1]{\oldisakeyword{\color{black!70!white}#1}}
+\renewcommand{\isakeyword}[1]{\oldisakeyword{\color{red}#1}}
+\renewcommand{\isacommand}[1]{\isakeyword{\color{sectioncolor}#1}}
+\renewcommand{\isacommand}[1]{\isakeyword{\color{green}#1}}
+
+\usepackage{hyperref}
+\urlstyle{sf}
+\isabellestyle{literalunderscore}
+\setcounter{tocdepth}{2} 
+\hypersetup{%
+   bookmarksdepth=3
+  ,pdfpagelabels
+  ,pageanchor=true
+  ,pdfauthor={Achim D. Brucker and Burkhart Wolff}
+  ,pdfkeywords={Isabelle/ML, Isabelle/PIDE, ML-Lex, ML-Yacc, Parser Generators},
+  ,pdftitle={ML-Lex and ML-Yacc for Isabelle}
+  ,bookmarksnumbered
+  ,plainpages=false
+} % more detailed digital TOC (aka bookmarks)
+
+
+
+\title{ML-Lex and ML-Yacc for Isabelle}
+\author{
+\begin{minipage}{0.11\textwidth}\end{minipage}\begin{minipage}{0.4\textwidth}\centering
+Achim~D.~Brucker\textsuperscript{\orcidlink{0000-0002-6355-1200}}\\\small
+Department of Computer Science\\
+University of Exeter\\
+Exeter, UK\\
+\texttt{a.brucker@exeter.ac.uk}
+\end{minipage}\and\begin{minipage}{0.4\textwidth}\centering
+Burkhart~Wolff\textsuperscript{\orcidlink{0000-0002-9648-7663}}\\\small
+Université Paris-Saclay\\
+LMF\\
+Paris, France\\
+\texttt{wolff@lmf.cnrs.fr}
+\end{minipage}
+}
+\date{}
+\begin{document}
+\renewcommand{\sectionautorefname}{Section}
+\renewcommand{\subsectionautorefname}{Section}
+\renewcommand{\subsubsectionautorefname}{Section}
+
+\input{session.tex}
+
+\printbibliography
+\end{document}
+
+\endinput

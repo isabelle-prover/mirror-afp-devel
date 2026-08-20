@@ -1,0 +1,16 @@
+chapter AFP
+
+session ZF_finite (AFP) = HOL +
+  options [timeout = 600]
+  sessions
+    HereditarilyFinite
+  theories
+    ZFfin
+    ZFfin_HF
+    (* Not_separation_model: included in ZFfin *)
+    Permutation_models
+    Not_regular_model
+    Not_ts_model
+  document_files
+    root.tex
+    root.bib

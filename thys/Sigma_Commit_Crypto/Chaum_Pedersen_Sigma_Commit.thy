@@ -297,7 +297,7 @@ proof-
   hence "[int z + int t * int e' = int z' + int t * int e] (mod order \<G>)"
     using cong_int_iff by force
   hence "[int z - int z' = int t * int e - int t * int e'] (mod order \<G>)"
-    by (smt cong_diff_iff_cong_0)
+    by (smt (z3) cong_diff_iff_cong_0)
   hence "[int z - int z' = int t * (int e - int e')] (mod order \<G>)"
     by (simp add: right_diff_distrib)
   hence "[int z - int z' = int t * (e - e')] (mod order \<G>)" 
@@ -348,7 +348,7 @@ proof-
   hence "[int x * int z + int t * int e' = int x * int z' + int t * int e] (mod order \<G>)"
     by (metis Groups.add_ac(2) Groups.mult_ac(2) cong_int_iff int_ops(7) int_plus)
   hence "[int x * int z - int x * int z' = int t * int e - int t * int e'] (mod order \<G>)"
-    by (smt cong_diff_iff_cong_0)
+    by (smt (z3) cong_diff_iff_cong_0)
   hence "[int x * (int z - int z') = int t * (int e - int e')] (mod order \<G>)"
     by (simp add: int_distrib(4))
   hence "[int x * (int z - int z') = int t * (e - e')] (mod order \<G>)"
@@ -395,7 +395,7 @@ proof-
   hence "[int x * int z + int t * int e' = int x * int z' + int t * int e] (mod order \<G>)"
     by (metis Groups.add_ac(2) Groups.mult_ac(2) cong_int_iff int_ops(7) int_plus)
   hence "[int x * int z - int x * int z' = int t * int e - int t * int e'] (mod order \<G>)"
-    by (smt cong_diff_iff_cong_0)
+    by (smt (z3) cong_diff_iff_cong_0)
   hence "[int x * (int z - int z') = int t * (int e - int e')] (mod order \<G>)"
     by (simp add: int_distrib(4))
   hence "[int x * (int z - int z') = int t * (int e mod order \<G> - int e' mod order \<G>) mod order \<G>] (mod order \<G>)"

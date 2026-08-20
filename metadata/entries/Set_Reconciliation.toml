@@ -1,0 +1,35 @@
+title = "Set Reconciliation"
+date = 2025-12-03
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+This entry formally verifies the set reconciliation algorithm with nearly optimal communication complexity, due to Y. Minsky et al. [1]. The algorithm allows two communication partners, who have a similar pair of sets to reconcile them while using messages of nearly optimal size, proportional to a bound on the maximum symmetric difference between the sets.
+
+The formalization also introduces an optimization, which reduces the communication complexity even further compared to the original publication."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.hofmeier]
+email = "hofmeier_email"
+
+[authors.karayel]
+email = "karayel_email"
+
+[contributors]
+
+[notify]
+hofmeier = "hofmeier_email"
+karayel = "karayel_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1109/TIT.2003.815784",
+]
+pubs = []

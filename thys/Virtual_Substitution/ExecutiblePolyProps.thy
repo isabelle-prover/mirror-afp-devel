@@ -619,7 +619,7 @@ next
     by (metis zero_le) 
   have hpq: "\<forall>m\<in>{a+b | a b . a \<in> monomials p \<and> b \<in> monomials q}.
       lookup m var \<le> (MPoly_Type.degree p var) + (MPoly_Type.degree q var)"
-    by (smt add_le_mono hp hq mem_Collect_eq plus_poly_mapping.rep_eq)
+    by (smt (z3) add_le_mono hp hq mem_Collect_eq plus_poly_mapping.rep_eq)
   have h1: "(\<forall>m\<in>monomials (p*q). lookup m var \<le> (MPoly_Type.degree p var) + (MPoly_Type.degree q var))" 
     using mult_monomials_dir_one hpq
     by blast 
@@ -840,7 +840,7 @@ qed
 subsubsection "More Miscellaneous"
 lemma var_not_in_Const : "var\<notin>vars (Const x :: real mpoly)"
   unfolding vars_def keys_def
-  by (smt UN_iff coeff_def coeff_isolate_variable_sparse const_lookup_zero keys_def lookup_eq_zero_in_keys_contradict) 
+  by (smt (z3) UN_iff coeff_def coeff_isolate_variable_sparse const_lookup_zero keys_def lookup_eq_zero_in_keys_contradict) 
 
 lemma mpoly_to_nested_poly_mult:
   "mpoly_to_nested_poly (p * q) v = mpoly_to_nested_poly p v * mpoly_to_nested_poly q v"
@@ -985,7 +985,7 @@ proof -
     by (metis (no_types, lifting) degh1 degree_const h1b mult.commute mult.left_commute of_nat_1 of_nat_add)
   have h5: "(MPoly_Type.degree (f i) x) \<le> i" using h3 h4 by auto
   have h6: "(MPoly_Type.degree (f n) x) = n" using h1c3 h4
-    by (smt One_nat_def add.right_neutral add_Suc_right degree_const degree_mult divisors_zero f_def h1a h1b h1c1 mult.commute nonzero_const_is_nonzero of_nat_1 of_nat_add of_nat_neq_0) 
+    by (smt (z3) One_nat_def add.right_neutral add_Suc_right degree_const degree_mult divisors_zero f_def h1a h1b h1c1 mult.commute nonzero_const_is_nonzero of_nat_1 of_nat_add of_nat_neq_0) 
   have h7a: "derivative x p = (\<Sum>i\<in>{0..MPoly_Type.degree p x-1}. isolate_variable_sparse p x (i+1) * (Var x)^i * (Const (i+1)))" using derivative_def by auto
   have h7b: "(\<Sum>i\<in>{0..MPoly_Type.degree p x-1}. isolate_variable_sparse p x (i+1) * (Var x)^i * (Const (i+1))) = (\<Sum>i\<in>{0..MPoly_Type.degree p x-1}. (f i))" using f_def
     by (metis Suc_eq_plus1 add.commute semiring_1_class.of_nat_simps(2)) 
@@ -1000,7 +1000,7 @@ proof -
   next
     case (Suc n)
     then show ?case using h5 degree_less_sum
-      by (smt add_cancel_right_right atLeastAtMost_iff degree_const degree_mult degree_sum_less degree_var_i diff_Suc_1 f_def h1a le_imp_less_Suc mult.commute mult_eq_0_iff)
+      by (smt (z3) add_cancel_right_right atLeastAtMost_iff degree_const degree_mult degree_sum_less degree_var_i diff_Suc_1 f_def h1a le_imp_less_Suc mult.commute mult_eq_0_iff)
   qed 
   have h9a: "n = 0 \<longrightarrow> MPoly_Type.degree (\<Sum>i\<in>{0..n}. (f i)) x = n" using h6
     by auto   

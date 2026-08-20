@@ -422,7 +422,7 @@ proof (simp, transfer, transfer)
     have "Re(z1*cnj z1 + z2*cnj z2) \<ge> 0"
       by auto
     hence "Re ?B \<le> 0"
-      by (smt uminus_complex.simps(1))
+      by (smt (z3) uminus_complex.simps(1))
     hence "abs (Re ?B) = - Re ?B"
       by auto
     also have "... = (Re z1)\<^sup>2 + (Im z1)\<^sup>2 + (Re z2)\<^sup>2 + (Im z2)\<^sup>2"
@@ -453,7 +453,7 @@ proof (simp, transfer, transfer)
       by (simp_all add: cmod_eq_Re)
     ultimately
     have "(cmod ?B)\<^sup>2 > (cmod ?A)\<^sup>2"
-      by (smt power2_le_imp_le)
+      by (smt (z3) power2_le_imp_le)
     thus ?thesis
       using z False
       by (simp_all add: Let_def hermitean_def mat_adj_def mat_cnj_def cmod_eq_Re vec_cnj_def field_simps)

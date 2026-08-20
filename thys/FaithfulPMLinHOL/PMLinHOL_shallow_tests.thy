@@ -32,7 +32,7 @@ lemma Dist:"\<Turnstile>\<^sup>s \<box>\<^sup>s(\<phi> \<supset>\<^sup>s \<psi>)
 lemma cM:"reflexive R \<longleftrightarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s\<phi> \<supset>\<^sup>s \<phi>)" \<comment>\<open>sledgehammer: Proof found\<close> oops (**)
 lemma cBa: "symmetric R \<longrightarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<phi> \<supset>\<^sup>s \<box>\<^sup>s(\<diamond>\<^sup>s\<phi>))" by auto 
 (**)lemma cBb: "symmetric R \<longleftarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<phi> \<supset>\<^sup>s \<box>\<^sup>s(\<diamond>\<^sup>s\<phi>))" \<comment>\<open>sledgehammer: No proof\<close> oops
-lemma c4a: "transitive R \<longrightarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s\<phi> \<supset>\<^sup>s \<box>\<^sup>s(\<box>\<^sup>s\<phi>))" by (smt DefS)
+lemma c4a: "transitive R \<longrightarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s\<phi> \<supset>\<^sup>s \<box>\<^sup>s(\<box>\<^sup>s\<phi>))" by (smt (z3) DefS)
 (**)lemma c4b: "transitive R \<longleftarrow> (\<forall>\<phi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s\<phi> \<supset>\<^sup>s \<box>\<^sup>s(\<box>\<^sup>s\<phi>))" \<comment>\<open>sledgehammer: No proof\<close> oops
 
 \<comment>\<open>Correspondence theory: incorrect statements\<close> 
@@ -45,7 +45,7 @@ lemma "\<Turnstile>\<^sup>s (\<diamond>\<^sup>s(\<box>\<^sup>s \<phi>)) \<supset
 
 \<comment>\<open>Implied axiom schemata in S5\<close>
 lemma KB: "symmetric R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s (\<diamond>\<^sup>s(\<box>\<^sup>s\<phi>)) \<supset>\<^sup>s\<box>\<^sup>s(\<diamond>\<^sup>s\<phi>))" by auto
-lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s( \<box>\<^sup>s\<phi> \<supset>\<^sup>s\<box>\<^sup>s\<psi>) \<or>\<^sup>s \<box>\<^sup>s( \<box>\<^sup>s\<psi> \<supset>\<^sup>s\<box>\<^sup>s\<phi>))" by (smt DefS)
+lemma K4B: "symmetric R \<and> transitive R \<longrightarrow> (\<forall>\<phi> \<psi> W V. \<forall>w:W. \<langle>W,R,V\<rangle>,w \<Turnstile>\<^sup>s \<box>\<^sup>s( \<box>\<^sup>s\<phi> \<supset>\<^sup>s\<box>\<^sup>s\<psi>) \<or>\<^sup>s \<box>\<^sup>s( \<box>\<^sup>s\<psi> \<supset>\<^sup>s\<box>\<^sup>s\<phi>))" by (smt (z3) DefS)
 end
 
 

@@ -354,10 +354,10 @@ proof -
           integrable_measure_pmf_finite finite_replicate_pmf) auto
   also have "\<dots> = ennreal ?n + 2*ennreal(\<integral>ds. real (?cps (min_list ds)) \<partial>replicate_pmf ?n ?dpmf)"
     by (simp add:ennreal_mult' integrable_measure_pmf_finite finite_replicate_pmf T_fin_ne)
-  also have "\<dots> = ennreal ?n + 2*\<integral>\<^sup>+ x. ennreal (real (?cps (min_list x))) \<partial>replicate_pmf ?n ?dpmf"
+  also have "\<dots> = ennreal ?n + 2 * (\<integral>\<^sup>+ x. ennreal (real (?cps (min_list x))) \<partial>replicate_pmf ?n ?dpmf)"
     by (intro arg_cong2[where f="(+)"]  arg_cong2[where f="(*)"] finite_replicate_pmf
         nn_integral_eq_integral[symmetric] integrable_measure_pmf_finite) (auto simp:T_fin_ne)
-  also have "\<dots> = ennreal ?n +2*\<integral>\<^sup>+ x. ennreal_of_enat (?cps (min_list x)) \<partial>replicate_pmf ?n ?dpmf"
+  also have "\<dots> = ennreal ?n + 2 * (\<integral>\<^sup>+ x. ennreal_of_enat (?cps (min_list x)) \<partial>replicate_pmf ?n ?dpmf)"
     by (intro nn_integral_cong arg_cong2[where f="(+)"]  arg_cong2[where f="(*)"] refl)
       (simp add: ennreal_of_nat_eq_real_of_nat)
   also have "\<dots> = ennreal ?n +2*(\<Sum>t. emeasure (replicate_pmf ?n ?dpmf) {x. t<?cps (min_list x)})"

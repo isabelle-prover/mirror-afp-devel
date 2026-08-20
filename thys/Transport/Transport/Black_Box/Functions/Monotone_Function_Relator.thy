@@ -11,17 +11,13 @@ abbreviation "Mono_Fun_Rel R S \<equiv> Mono_Dep_Fun_Rel R (\<lambda>_ _. S)"
 
 open_bundle Mono_Dep_Fun_Rel_syntax
 begin
-notation "Mono_Fun_Rel" (infixr \<open>\<Rrightarrow>\<oplus>\<close> 40)
+notation "Mono_Fun_Rel" (infixr \<open>\<Rrightarrow>\<oplus>\<close> 50)
 syntax
-  "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 40] 40)
-  "_Mono_Dep_Fun_Rel_rel_if" :: "idt \<Rightarrow> idt \<Rightarrow> ('a \<Rightarrow> 'b \<Rightarrow> bool) \<Rightarrow> bool \<Rightarrow> ('c \<Rightarrow> 'd \<Rightarrow> bool) \<Rightarrow>
-    ('a \<Rightarrow> 'c) \<Rightarrow> ('b \<Rightarrow> 'd) \<Rightarrow> bool" (\<open>'(_/ _/ \<Colon>/ _/ |/ _') \<Rrightarrow>\<oplus> (_)\<close> [41, 41, 41, 41, 40] 40)
+  "_Mono_Dep_Fun_Rel_rel" :: "idt \<Rightarrow> idt \<Rightarrow> 'a \<Rightarrow> 'b \<Rightarrow> 'c" (\<open>('(_ _ \<Colon> _') \<Rrightarrow>\<oplus>/ _)\<close> [0,0, 0, 10] 50)
 syntax_consts
-  "_Mono_Dep_Fun_Rel_rel" "_Mono_Dep_Fun_Rel_rel_if" \<rightleftharpoons> Mono_Dep_Fun_Rel
+  "_Mono_Dep_Fun_Rel_rel" \<rightleftharpoons> Mono_Dep_Fun_Rel
 translations
   "(x y \<Colon> R) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. S)"
-  "(x y \<Colon> R | B) \<Rrightarrow>\<oplus> S" \<rightleftharpoons> "CONST Mono_Dep_Fun_Rel R (\<lambda>x y. CONST rel_if B S)"
 end
 
 text \<open>The monotone function relator is the function relator restricted to monotone functions:\<close>
@@ -38,19 +34,21 @@ begin
 
 sublocale o : orders L "R a b" for a b .
 
-notation L (infix \<open>\<le>\<^bsub>L\<^esub>\<close> 50)
 notation o.ge_left (infix \<open>\<ge>\<^bsub>L\<^esub>\<close> 50)
 
-notation R (\<open>(\<le>\<^bsub>R (_) (_)\<^esub>)\<close> 50)
+notation (input) R (\<open>('(\<le>(\<^bsub>R (_) (_)\<^esub>)'))\<close>)
+notation (output) R (\<open>('(\<le>(\<^bsub>R ('(_')) ('(_'))\<^esub>)'))\<close>)
 abbreviation "right_infix c a b d \<equiv> (\<le>\<^bsub>R a b\<^esub>) c d"
-notation right_infix (\<open>(_) \<le>\<^bsub>R (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) right_infix (\<open>(_ \<le>(\<^bsub>R (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) right_infix (\<open>(_ \<le>(\<^bsub>R ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 
-notation o.ge_right (\<open>(\<ge>\<^bsub>R (_) (_)\<^esub>)\<close> 50)
+notation (input) o.ge_right (\<open>('(\<ge>(\<^bsub>R (_) (_)\<^esub>)'))\<close>)
+notation (output) o.ge_right (\<open>('(\<ge>(\<^bsub>R ('(_')) ('(_'))\<^esub>)'))\<close>)
+abbreviation (input) "ge_right_infix d a b c \<equiv> (\<le>\<^bsub>R a b\<^esub>) d c"
+notation (input) ge_right_infix (\<open>(_ \<ge>(\<^bsub>R (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) ge_right_infix (\<open>(_ \<ge>(\<^bsub>R ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 
-abbreviation (input) "ge_right_infix d a b c \<equiv> (\<ge>\<^bsub>R a b\<^esub>) d c"
-notation ge_right_infix (\<open>(_) \<ge>\<^bsub>R (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
-
-abbreviation (input) "DFR \<equiv> ((a b \<Colon> L) \<Rrightarrow> R a b)"
+abbreviation (input) "DFR \<equiv> ((a b \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow> (\<le>\<^bsub>R a b\<^esub>))"
 
 end
 
@@ -76,7 +74,7 @@ qed
 
 lemma Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_mono_if_reflexive_onI:
   assumes "reflexive_on (in_field (\<le>\<^bsub>L\<^esub>)) (\<le>\<^bsub>L\<^esub>)"
-  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3) \<Rrightarrow> (\<le>)) R"
+  and "((x1 x2 \<Colon> (\<ge>\<^bsub>L\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L\<^esub>) | x1 \<le>\<^bsub>L\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) R"
   shows "((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>)\<^sup>\<oplus>) = ((x y \<Colon> (\<le>\<^bsub>L\<^esub>)) \<Rrightarrow>\<oplus> (\<le>\<^bsub>R x y\<^esub>))"
   using assms
   by (intro Mono_Dep_Fun_Refl_Rel_right_eq_Mono_Dep_Fun_if_le_if_reflexive_onI)

@@ -39,8 +39,10 @@ local
   fun expand is_neg ct =
     [Thm.reflexive ct, if is_neg then expand_neg else expand_pos] MRS transitive_thm;
 
-  val ss = simpset_of (@{context} |> put_simpset HOL_ss
-    |> fold Simplifier.add_simp @{thms take_bit_0 take_bit_numeral_bit0 take_bit_numeral_bit1 take_bit_numeral_minus_bit0 take_bit_numeral_minus_bit1
+  val ss =
+    HOL_ss
+    |> Simplifier.simpset_map \<^context> 
+       (Simplifier.add_simps @{thms take_bit_0 take_bit_numeral_bit0 take_bit_numeral_bit1 take_bit_numeral_minus_bit0 take_bit_numeral_minus_bit1
          pred_numeral_simps len_num0 len_num1 len_bit0 len_bit1 len_signed
          arith_simps
          mult_1 mult_1_right numeral_plus_one uminus_numeral_One take_bit_numeral_minus_1_eq

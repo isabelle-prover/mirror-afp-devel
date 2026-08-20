@@ -1,6 +1,17 @@
 theory Restricted_Order
-  imports Main
+  imports 
+    Main
+    (*TODO: Complete_Non_Orders.Binary_Relations *)
 begin
+(* TODO: Report 
+definition aless where
+  "aless _ _ = True"
+
+definition alesseq where
+  "alesseq _ _ = True"
+
+interpretation t: order aless alesseq
+  sorry*)
 
 section \<open>Restricted Orders\<close>
 

@@ -107,13 +107,13 @@ and "line A B' = line A' B \<or> line B C' = line B' C \<or> line A C' = line A'
   shows "col P Q R"
 proof -
   have "col P Q R" if "line A B' = line A' B"
-    by (smt assms(1) assms(3) assms(4) assms(5) assms(6) ax_uniqueness col_def distinct6_def 
+    by (smt (z3) assms(1) assms(3) assms(4) assms(5) assms(6) ax_uniqueness col_def distinct6_def 
         incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "line B C' = line B' C"
-    by (smt \<open>line A B' = line A' B \<Longrightarrow> col P Q R\<close> assms(1) assms(2) assms(3) ax_uniqueness col_def 
+    by (smt (z3) \<open>line A B' = line A' B \<Longrightarrow> col P Q R\<close> assms(1) assms(2) assms(3) ax_uniqueness col_def 
         distinct6_def incidA_lAB incidB_lAB that)
   have "col P Q R" if "line A C' = line A' C"
-    by (smt \<open>line B C' = line B' C \<Longrightarrow> col P Q R\<close> assms(1) assms(2) assms(3) assms(7) ax_uniqueness 
+    by (smt (z3) \<open>line B C' = line B' C \<Longrightarrow> col P Q R\<close> assms(1) assms(2) assms(3) assms(7) ax_uniqueness 
         col_def distinct6_def incidA_lAB incidB_lAB)
   show "col P Q R"
     using \<open>line A B' = line A' B \<Longrightarrow> col P Q R\<close> \<open>line A C' = line A' C \<Longrightarrow> col P Q R\<close> 
@@ -142,7 +142,7 @@ proof -
           is_a_intersec_def that 
         by auto
       then show "col P Q R"
-        by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C 
+        by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C 
           \<and> A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> ax_uniqueness col_def)
   qed
   have "col P Q R" if "A = C" (* case where P = A = C = Q and P,Q,R belong to AB' *)
@@ -155,35 +155,35 @@ proof -
         is_a_intersec_def that 
       by auto
     then show "col P Q R"
-      by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C 
+      by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C 
         \<and> A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> ax_uniqueness col_def)
   qed
   have "col P Q R" if "A = A'" (* very degenerate case, all the 9 points are collinear*)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec R A C' A' C\<close> 
         ax_uniqueness col_ABA col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "B = C" (* case where B = C = Q and P,Q,R belong to A'B *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec Q B C' B' C\<close> 
         \<open>is_a_intersec R A C' A' C\<close> ax_uniqueness col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "B = B'" (* very degenerate case, the 9 points are collinear *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec Q B C' B' C\<close> 
         ax_uniqueness col_AAB col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "C = C'" (* again, very degenerate case, the 9 points are collinear *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec Q B C' B' C\<close> \<open>is_a_intersec R A C' A' C\<close> 
         ax_uniqueness col_ABB col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "A' = B'" (* case where P = A' = B', and P,Q,R belong to A'C *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec Q B C' B' C\<close> 
         \<open>is_a_intersec R A C' A' C\<close> ax_uniqueness col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "A' = C'" (* case where R = A' = B', the points P,Q,R belong to A'B *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec Q B C' B' C\<close> 
         \<open>is_a_intersec R A C' A' C\<close> ax_uniqueness col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "B' = C'" (* case where Q = B' = C', the points P,Q,R belong to AB' *)
-    by (smt \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
+    by (smt (z3) \<open>A \<noteq> B' \<and> A' \<noteq> B \<and> line A B' \<noteq> line A' B \<and> B \<noteq> C' \<and> B' \<noteq> C \<and> line B C' \<noteq> line B' C \<and> 
       A \<noteq> C' \<and> A' \<noteq> C \<and> line A C' \<noteq> line A' C\<close> \<open>is_a_intersec P A B' A' B\<close> \<open>is_a_intersec Q B C' B' C\<close> 
         \<open>is_a_intersec R A C' A' C\<close> ax_uniqueness col_def incidA_lAB incidB_lAB is_a_intersec_def that)
   have "col P Q R" if "A \<noteq> B \<and> A \<noteq> C \<and> A \<noteq> A' \<and> B \<noteq> C \<and> B \<noteq> B' \<and> C \<noteq> C' \<and> A'\<noteq> B'

@@ -585,7 +585,7 @@ qed
 
 lemma singleton_iff:
  "singleton x \<longleftrightarrow> x \<noteq> 0 \<and> x\<^sup>T;1;x + x;1;x\<^sup>T \<le> 1'"
-by (smt comp_assoc conv_contrav conv_invol conv_one is_inj_def le_sup_iff one_idem_mult
+by (smt (z3) comp_assoc conv_contrav conv_invol conv_one is_inj_def le_sup_iff one_idem_mult
         sur_def_var1 tarski)
 
 lemma singleton_not_atom_in_relation_algebra_tarski:

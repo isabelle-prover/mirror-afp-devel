@@ -70,7 +70,7 @@ proof(unfold inj_def, intro allI impI)
   qed
 qed
 
-sublocale term_order_notation.
+sublocale term_order_notation .
 
 abbreviation literal_order_restriction where
   "literal_order_restriction \<equiv> {b. set_mset (literal_to_mset b) \<subseteq> restriction}"
@@ -107,7 +107,7 @@ begin
 
 sublocale literal.order: total_wellfounded_multiset_extension where
   less = "(\<prec>\<^sub>t)" and to_mset = literal_to_mset
-  by unfold_locales (auto simp: inj_literal_to_mset)
+  by unfold_locales (auto simp: inj_literal_to_mset) 
 
 sublocale clause.order: total_wellfounded_multiset_extension where
   less = "(\<prec>\<^sub>l)" and to_mset = "\<lambda>x. x"

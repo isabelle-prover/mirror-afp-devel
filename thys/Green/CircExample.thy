@@ -379,7 +379,7 @@ proof -
 qed
 
 lemma circle_right_bot_edges_neq [simp]: "circle_right_edge \<noteq> circle_bot_edge"
-  by (smt Pair_inject circle_bot_edge_def d_gt_0 circle.circle_right_edge_def circle_axioms mult_le_cancel_right_pos x_coord_def)
+  by (smt (z3) Pair_inject circle_bot_edge_def d_gt_0 circle.circle_right_edge_def circle_axioms mult_le_cancel_right_pos x_coord_def)
 
 definition circle_polar where
   "circle_polar t = ((d/2)  * cos (2 * pi * t), (d/2) * sin (2 * pi * t))"
@@ -471,7 +471,7 @@ proof -
           apply (auto simp add: inj_on_def x_coord_def)
     using pi_ge_zero apply auto[1]
      apply (smt arccos)
-    by (smt arccos_lbound)
+    by (smt (z3) arccos_lbound)
   then have fin: "\<And>x. \<lbrakk>0 \<le> x; x \<le> 1\<rbrakk> \<Longrightarrow> finite (?\<phi> -` {x})" 
     by (simp add: finite_vimageI)
   have "?\<phi> ` {0..1} = {0..1}"
@@ -509,7 +509,7 @@ proof -
     have 2: "?LHS2 x = ?RHS2 x"
       using x d_gt_0 iii by (auto simp add: x_coord_def diff_divide_distrib algebra_simps)
     have a: "cos (pi / 2 - arccos (x * 2 - 1)) = cos (pi / 2 - arccos (1 - x * 2))"
-      by (smt arccos_minus arccos_cos2 arccos_lbound cos_arccos cos_ge_minus_one cos_le_one i(1) i(2) pi_def pi_half)
+      by (smt (z3) arccos_minus arccos_cos2 arccos_lbound cos_arccos cos_ge_minus_one cos_le_one i(1) i(2) pi_def pi_half)
     have b: "cos (arccos (1 - x * 2) + pi * 3 / 2) = cos ((pi / 2 - arccos (x * 2 - 1)) + 2 * pi)"
       using arccos_minus[OF i]  by(auto simp add: mult.commute add.commute)
     then have c: "... = cos (pi / 2 - arccos (x * 2 - 1))" using cos_periodic by blast
@@ -530,7 +530,7 @@ proof -
        apply (auto simp add: x_coord_def algebra_simps diff_divide_distrib power2_eq_square)
        apply (auto simp add: sin_cos_eq cosm)
       using d apply (auto simp add: right_diff_distrib)
-      by (smt cos_minus)
+      by (smt (z3) cos_minus)
     note 1 2 34
   } note * = this
   show ?P1 ?P2 ?P3 ?P4

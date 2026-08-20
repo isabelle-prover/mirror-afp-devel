@@ -110,7 +110,7 @@ proof-
             using insertion_p' aval0
             by simp
           then show ?thesis using False
-            by (smt nonzero_mult_div_cancel_left)
+            by (smt (z3) nonzero_mult_div_cancel_left)
         qed
         have freecneg : "var \<notin> vars (-C)" using freeC not_in_neg by auto
         have h1:  "(\<forall>a\<in>set L. aEval (linear_substitution var (-C) (B) a) (X[var := x]))"
@@ -555,7 +555,7 @@ proof-
 
   then have right : "(\<exists>x. eval (elimVar var L F (Eq p)) (xs @ x # \<Gamma>)) \<Longrightarrow>
                ((\<exists>x. eval (list_conj (map fm.Atom L @ F)) (xs @ x # \<Gamma>))\<or>(\<forall>x. aEval (Eq p) (xs @ x # \<Gamma>)))"
-    by (smt UnE eval.simps(1) eval_list_conj hlength imageE list_update_length set_append set_map)
+    by (smt (z3) UnE eval.simps(1) eval_list_conj hlength imageE list_update_length set_append set_map)
 
 
   show ?thesis using right left by blast

@@ -84,7 +84,7 @@ proof -
   then show ?thesis
     unfolding de_def comp_def rat_plus_code xy 
     apply (auto split:prod.split simp:Rat.normalize_def Let_def)
-    by (smt div_by_1 gcd_pos_int int_div_less_self mult_eq_0_iff mult_sign_intros(1))
+    by (smt (z3) div_by_1 gcd_pos_int int_div_less_self mult_eq_0_iff mult_sign_intros(1))
 qed
 
 lemma quotient_of_inj: "inj quotient_of"
@@ -240,7 +240,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
           using ab_1[of "Suc k"] by auto
         finally show ?thesis .
       qed
-      ultimately show ?thesis by (smt INFM_conjI INFM_mono)
+      ultimately show ?thesis by (smt (z3) INFM_conjI INFM_mono)
     qed
     ultimately show ?thesis by auto
   qed
@@ -311,7 +311,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
         finally show ?case .
       qed 
       then show ?thesis 
-        by (smt \<open>0 < \<delta>\<close> frac_le of_int_0 of_int_le_iff powr_gt_zero 
+        by (smt (z3) \<open>0 < \<delta>\<close> frac_le of_int_0 of_int_le_iff powr_gt_zero 
                   powr_mono2 q_pos)
     qed
     finally show "\<bar>\<xi> - real_of_int (p k) / real_of_int (q k)\<bar> < 1 / real_of_int (q k) powr (2 + \<delta>)" .
@@ -441,7 +441,7 @@ The witness for $\exists A>1 $ is denoted by $M$ here.\<close>
           have "qn*m \<le> \<bar>m\<bar>" using \<open>0<qn\<close> \<open>qn<1\<close> 
             apply (cases "m\<ge>0")
             subgoal by (simp add: mult_left_le_one_le)
-            subgoal by (smt of_int_0_le_iff zero_le_mult_iff)
+            subgoal by (smt (z3) of_int_0_le_iff zero_le_mult_iff)
             done
           moreover have "q / q powr (2 + \<delta>) \<le> 1"
           proof -
@@ -575,7 +575,7 @@ proof-
       using \<open>\<epsilon>>0\<close> by (simp add:divide_simps,simp add:algebra_simps)
     ultimately show ?thesis 
       apply (elim INFM_mono)
-      by (smt nonzero_mult_div_cancel_left powr_divide powr_mult powr_one_eq_one
+      by (smt (z3) nonzero_mult_div_cancel_left powr_divide powr_mult powr_one_eq_one
                 that tt_pos zero_less_divide_iff)
   qed
 
@@ -618,11 +618,11 @@ proof-
         by (auto simp add: negligible_convex_frontier)
       then show ?thesis 
         apply (rule has_integral_cong[THEN iffD1, rotated 1])
-        unfolding f_def by (smt powr_minus_divide)
+        unfolding f_def by (smt (z3) powr_minus_divide)
     qed
     moreover have "\<And>x. 0 \<le> x \<Longrightarrow> 0 \<le> f (x - 1)" unfolding f_def by simp
     moreover have "\<And>x y. 0 \<le> x \<Longrightarrow> x \<le> y \<Longrightarrow> f (y - 1) \<le> f (x - 1)" unfolding f_def 
-      by (smt assms(6) frac_le powr_mono2 powr_nonneg_iff that)
+      by (smt (z3) assms(6) frac_le powr_mono2 powr_nonneg_iff that)
     ultimately have "summable (\<lambda>i. f (real i))" "(\<Sum>i. f (real i)) \<le> (z - 1) powr - \<epsilon> / \<epsilon>"
       using decreasing_sum_le_integral[of "\<lambda>x. f (x-1)" "((z-1) powr - \<epsilon>) / \<epsilon>",simplified]
       by auto
@@ -675,7 +675,7 @@ proof-
                       \<le> (gg (Suc (k+t))) powr (1 / (1 + \<epsilon>))"
         by auto
       then have "gg (k+t)\<le> gg (Suc (k+t))"
-        by (smt aa_bb_pos(1) aa_bb_pos(2) assms(6) divide_pos_pos gg_def 
+        by (smt (z3) aa_bb_pos(1) aa_bb_pos(2) assms(6) divide_pos_pos gg_def 
                 powr_less_mono2)
       then show "ff (k + t) \<le> ff (Suc k + t)" 
         unfolding gg_def ff_def by auto
@@ -725,7 +725,7 @@ proof-
         have "ff k n powr (1 + \<epsilon>) \<le> aa (k + n +1 ) / bb (k + n+1 )"
           using elim(1)[rule_format,of n] unfolding ff_def by auto
         moreover have "ff k n powr (1 + \<epsilon>) > 0" 
-          unfolding ff_def by (smt elim(2) of_nat_0_le_iff powr_gt_zero ratio_large)
+          unfolding ff_def by (smt (z3) elim(2) of_nat_0_le_iff powr_gt_zero ratio_large)
         ultimately have "1 / ff k n powr (1 + \<epsilon>) \<ge>  bb (k + (n + 1)) / aa (k + (n + 1))"
           apply (drule_tac le_imp_inverse_le)
           by (auto simp add: inverse_eq_divide)

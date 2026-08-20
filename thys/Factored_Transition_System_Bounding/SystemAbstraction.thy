@@ -1288,7 +1288,7 @@ proof (cases "v = v'")
     \<or> v = v'"
     using assms
     unfolding dep_def prob_proj_def
-    by (smt image_iff NOT_IN_PRE_EFF_NOT_IN_PRE_EFF_PROJ)
+    by (smt (z3) image_iff NOT_IN_PRE_EFF_NOT_IN_PRE_EFF_PROJ)
 qed blast
 
 
@@ -1357,7 +1357,7 @@ next
         by simp
       then show ?thesis using cons False
         unfolding Cons
-        by (smt action_proj_def action_proj_idempot as_proj.simps(2) prod.inject subseq_Cons2_neq)
+        by (smt (z3) action_proj_def action_proj_idempot as_proj.simps(2) prod.inject subseq_Cons2_neq)
     qed
   qed simp
 qed
@@ -1445,7 +1445,7 @@ lemma as_proj_valid_in_prob_proj:
 lemma prob_proj_comm:
   fixes PROB vs vs'
   shows "prob_proj (prob_proj PROB vs) vs' = prob_proj (prob_proj PROB vs') vs"
-  by (smt graph_plan_neq_mems_state_set_neq_len inf_commute inf_le2 PROJ_DOM_IDEMPOT prob_proj_idempot)
+  by (smt (z3) graph_plan_neq_mems_state_set_neq_len inf_commute inf_le2 PROJ_DOM_IDEMPOT prob_proj_idempot)
 
 
 \<comment> \<open>TODO Unwrap the metis proof.\<close>
@@ -1530,7 +1530,7 @@ proof -
   }
   then show ?thesis
     unfolding prob_proj_def
-    by (smt image_cong image_image)
+    by (smt (z3) image_cong image_image)
 qed
 
 
@@ -1697,7 +1697,7 @@ lemma prob_proj_inter: "prob_proj (prob_proj PROB vs1) vs2 = prob_proj PROB (vs1
   unfolding prob_proj_def
   using set_eq_iff image_iff action_proj_inter
   supply[[smt_timeout=100]]
-  by (smt image_cong image_image)
+  by (smt (z3) image_cong image_image)
 
 
 subsection "Snapshotting"
@@ -2253,7 +2253,7 @@ proof -
       case ii
       then show ?thesis
         using assms(2, 3, 5) 2 P
-        by (smt SUBMAP_FUNION_DRESTRICT_i agree_def
+        by (smt (z3) SUBMAP_FUNION_DRESTRICT_i agree_def
             fmdom'.rep_eq fmdom'_fmrestrict_set fmdom'_notD fmdom'_notI fmlookup_add
             fmrestrict_set_dom fmsubset.rep_eq inf.orderE map_le_def subset_Un_eq)
     next
@@ -2323,7 +2323,7 @@ lemma valid_proj_neq_succ_restricted_neq_succ:
   unfolding state_succ_def
   using FDOM_eff_subset_prob_dom_pair dom_prob_proj limited_dom_neq_restricted_neq
   using assms(1, 2)
-  by (smt dual_order.trans state_succ_def)
+  by (smt (z3) dual_order.trans state_succ_def)
 
 lemma proj_successors: "
   ((\<lambda>s. fmrestrict_set vs s) ` (state_successors (prob_proj PROB vs) s))

@@ -42,7 +42,7 @@ value "matrix_to_list_of_list (matpow test_rat_3x3 5)"
 definition test_int_3x3 :: "int^3^3"
   where "test_int_3x3 = list_of_list_to_matrix [[3,2,8], [0,3,9], [8,7,9]]"
 
-value "det test_int_3x3"
+value "matrix_det test_int_3x3"
 
 definition test_real_3x3 :: "real^3^3"
   where "test_real_3x3 = list_of_list_to_matrix [[3,5,1],[2,1,3],[1,2,1]]"
@@ -84,7 +84,7 @@ definition test_int_8x8 :: "int^8^8"
 
 text\<open>SLOW; several minutes.\<close>
 
-(*value "det test_int_8x8"
+(*value "matrix_det test_int_8x8"
 
 value "matrix_to_list_of_list (echelon_form_of test_int_8x8 euclid_ext2)"*)
 

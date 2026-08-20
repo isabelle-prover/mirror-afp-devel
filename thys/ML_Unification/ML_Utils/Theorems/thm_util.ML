@@ -7,19 +7,43 @@ signature THM_UTIL =
 sig
   include HAS_LOGGER
 
+  val pretty_nth_subgoal : Proof.context -> int -> thm -> Pretty.T
+  val pretty_nth_subgoal_concl : Proof.context -> int -> thm -> Pretty.T
+  val pretty_subgoals : Proof.context -> thm -> Pretty.T
+
   val pretty_THM : Proof.context -> string * int * thm list -> Pretty.T
 
   (*fails if the theorem contains a tpair or implicit Assumption mentioning the bound variable*)
   val abstract_rule : Proof.context -> string -> cterm -> thm -> thm option
   val forall_intr : Proof.context -> cterm -> thm -> thm option
 
+  (*creates equality theorem for a subgoal from an equality theorem for the subgoal's conclusion;
+    fails if the equality theorem contains a tpair or implicit assumption mentioning one of the bound variables*)
+  val eq_subgoal_from_eq_concl : cterm Binders.binders -> cterm list -> Proof.context -> thm ->
+    thm option
+  (*creates theorem for a subgoal from theorem for the subgoal's conclusion;
+    fails if the theorem contains a tpair or implicit assumption mentioning one of the bound variables*)
+  val subgoal_thm_from_concl_thm : cterm Binders.binders -> cterm list -> Proof.context -> thm ->
+    thm option
+
   val protect : thm -> thm
+  val make_elim : Proof.context -> thm -> thm
 end
 
 structure Thm_Util : THM_UTIL =
 struct
 
 val logger = Logger.setup_new_logger Logger.root "Thm_Util"
+
+fun gen_pretty_nth_subgoal f ctxt i st = Term_Util.nth_subgoal i st |> f ctxt
+  handle TERM _ => Pretty.block [
+      Pretty.str "State ",
+      Thm.pretty_thm ctxt st,
+      Pretty.str (implode_space [" has fewer than", string_of_int i, "subgoals."])
+    ]
+val pretty_nth_subgoal = gen_pretty_nth_subgoal Term_Util.pretty_subgoal
+val pretty_nth_subgoal_concl = gen_pretty_nth_subgoal Term_Util.pretty_subgoal_concl
+fun pretty_subgoals ctxt = Thm.prems_of #> Term_Util.pretty_subgoals ctxt
 
 fun pretty_THM ctxt (msg, subgoal, thms) = Pretty.fbreaks [
     Pretty.str msg,
@@ -34,7 +58,33 @@ fun forall_intr ctxt ct thm = SOME (Thm.forall_intr ct thm)
   handle THM data => (@{log Logger.DEBUG} ctxt (fn _ => pretty_THM ctxt data |> Pretty.string_of);
     NONE)
 
+fun eq_subgoal_from_eq_concl cbinders cprems ctxt eq_thm =
+  let fun all_abstract ((x, T), cfree) =
+    let val all_const = Logic.all_const T |> Thm.cterm_of ctxt
+    in abstract_rule ctxt x cfree #> Option.map (Drule.arg_cong_rule all_const) end
+  in
+    (*introduce the premises*)
+    SOME (fold_rev (Drule.imp_cong_rule o Thm.reflexive) cprems eq_thm)
+    (*introduce abstractions for the fresh Frees*)
+    |> fold (Option.mapPartial o all_abstract) cbinders
+  end
+
+fun subgoal_thm_from_concl_thm cbinders cprems ctxt concl_thm =
+  let fun all_abstract (_, cfree) = forall_intr ctxt cfree
+  in
+    (*introduce the premises*)
+    SOME (fold_rev Thm.implies_intr cprems concl_thm)
+    (*introduce abstractions for the fresh Frees*)
+    |> fold (Option.mapPartial o all_abstract) cbinders
+  end
+
 fun protect thm = Thm.instantiate' [] [SOME (Thm.cprop_of thm)] Drule.protectI
   |> Thm.elim_implies thm
+
+(*Tactic.make_elim allows no context passing but Thm.biresolution fails to certificate certain
+theorems without a context*)
+fun make_elim ctxt thm =
+  let val resolve = Thm.biresolution (SOME ctxt) false [(false, thm)] |> HEADGOAL #> Seq.hd
+  in zero_var_indexes (resolve revcut_rl) end
 
 end

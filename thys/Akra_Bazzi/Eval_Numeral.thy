@@ -123,7 +123,7 @@ struct
 
 fun eval_numeral_tac ctxt =
   let
-    val ctxt' = put_simpset HOL_ss ctxt addsimps @{thms eval_numeral_simps}
+    val ctxt' = ctxt |> put_simpset HOL_ss |> Simplifier.add_simps @{thms eval_numeral_simps}
   in
     SELECT_GOAL (SOLVE (Simplifier.simp_tac ctxt' 1))
   end

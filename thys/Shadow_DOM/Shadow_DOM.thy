@@ -5168,7 +5168,7 @@ proof -
     and shadow_root: "h \<turnstile> get_shadow_root host \<rightarrow>\<^sub>r Some shadow_root_ptr"
     using assms(1) assms(4) get_shadow_root_ok assms(2)
     apply(auto simp add: heap_is_wellformed_def a_shadow_root_valid_def)[1]
-    by (smt returns_result_select_result)
+    by (smt (z3) returns_result_select_result)
 
 
   obtain host_candidates where

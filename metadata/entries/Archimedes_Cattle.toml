@@ -1,0 +1,40 @@
+title = "Archimedes' Cattle Problem"
+date = 2026-04-01
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>
+In the 3rd century BC, Archimedes challenged the mathematicians of the time with a puzzle that 
+involved computing the size of the cattle herd of the sun god, based on a number of linear 
+equations and other restrictions, which ultimately result in a Pell equation with the gigantic 
+parameter $D = 410{,}286{,}423{,}278{,}424$. Since the solution to that Pell equation has 
+103,266 digits, solving the problem was far beyond the computational capabilities at the time.
+The first approximate solution was computed by Amthor in 1880, and the exact
+solution by Williams et al. using electronic computers in 1965.
+</p><p>
+This article gives a formal description of the problem and proves the general shape of the 
+solutions in terms of the solutions of the Pell equation. It then uses existing machinery from 
+the AFP using continued fractions to explicitly compute the smallest solution, which has
+266,454 decimal digits.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

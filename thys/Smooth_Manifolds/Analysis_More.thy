@@ -1,7 +1,7 @@
 section \<open>Library Additions\<close>
 theory Analysis_More
   imports "HOL-Analysis.Equivalence_Lebesgue_Henstock_Integration"
-    "HOL-Library.Function_Algebras"
+    "HOL-Library.Function_Real_Vectors"
     "HOL-Types_To_Sets.Linear_Algebra_On"
 begin
 
@@ -847,24 +847,6 @@ definition refines :: "'a set set \<Rightarrow> 'a set set \<Rightarrow> bool" (
 
 lemma refines_subset: "x refines y" if "z refines y" "x \<subseteq> z"
   using that by (auto simp: refines_def)
-
-subsection \<open>Functions as vector space\<close>
-
-instantiation "fun" :: (type, scaleR) scaleR begin
-
-definition scaleR_fun :: "real \<Rightarrow> ('a \<Rightarrow> 'b) \<Rightarrow> 'a \<Rightarrow> 'b" where
-  "scaleR_fun r f = (\<lambda>x. r *\<^sub>R f x)"
-
-lemma scaleR_fun_beta[simp]: "(r *\<^sub>R f) x = r *\<^sub>R f x"
-  by (simp add: scaleR_fun_def)
-
-instance ..
-
-end
-
-instance "fun" :: (type, real_vector) real_vector
-  by standard (auto simp: scaleR_fun_def algebra_simps)
-
 
 subsection \<open>Additional lemmas\<close>
 

@@ -549,7 +549,7 @@ proof
   next
     case 2
     then show ?thesis
-      by (smt add_diff_inverse_nat add_less_cancel_left length_append nth_append prepend)
+      by (smt (z3) add_diff_inverse_nat add_less_cancel_left length_append nth_append prepend)
   next
     case 3
     then show ?thesis
@@ -695,7 +695,7 @@ lemma learn_lim_closed_subseteq:
 corollary LIM_closed_subseteq:
   assumes "U \<in> LIM" and "V \<subseteq> U"
   shows "V \<in> LIM"
-  using assms learn_lim_closed_subseteq by (smt Lim_def mem_Collect_eq)
+  using assms learn_lim_closed_subseteq by (smt (z3) Lim_def mem_Collect_eq)
 
 text \<open>Changing the hypothesis infinitely often precludes learning in
 the limit.\<close>
@@ -842,7 +842,7 @@ lemma learn_bc_closed_subseteq:
 corollary BC_closed_subseteq:
   assumes "U \<in> BC" and "V \<subseteq> U"
   shows "V \<in> BC"
-  using assms by (smt BC_def learn_bc_closed_subseteq mem_Collect_eq)
+  using assms by (smt (z3) BC_def learn_bc_closed_subseteq mem_Collect_eq)
 
 text \<open>Just like with LIM, guessing a wrong hypothesis infinitely often
 precludes BC-style learning.\<close>
@@ -998,7 +998,7 @@ lemma learn_cons_closed_subseteq:
 lemma CONS_closed_subseteq:
   assumes "U \<in> CONS" and "V \<subseteq> U"
   shows "V \<in> CONS"
-  using assms learn_cons_closed_subseteq by (smt CONS_def mem_Collect_eq)
+  using assms learn_cons_closed_subseteq by (smt (z3) CONS_def mem_Collect_eq)
 
 text \<open>A consistent strategy cannot output the same hypothesis for two
 different prefixes from the class to be learned.\<close>
@@ -1063,7 +1063,7 @@ lemma learn_total_closed_subseteq:
 lemma TOTAL_closed_subseteq:
   assumes "U \<in> TOTAL" and "V \<subseteq> U"
   shows "V \<in> TOTAL"
-  using assms learn_total_closed_subseteq by (smt TOTAL_def mem_Collect_eq)
+  using assms learn_total_closed_subseteq by (smt (z3) TOTAL_def mem_Collect_eq)
 
 
 subsection \<open>CP: Learning in the limit with class-preserving hypotheses\<close>
@@ -1090,7 +1090,7 @@ lemma learn_cp_wrt_goedel:
 
 corollary CP_wrt_phi: "CP = CP_wrt \<phi>"
   using learn_cp_wrt_goedel[OF goedel_numbering_phi]
-  by (smt CP_def CP_wrt_def Collect_cong)
+  by (smt (z3) CP_def CP_wrt_def Collect_cong)
 
 lemma learn_cpI:
   assumes "environment \<psi> U s"

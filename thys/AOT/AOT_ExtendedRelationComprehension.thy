@@ -48,17 +48,17 @@ qed
 AOT_register_rigid_restricted_type
   Ordinary: \<open>O!\<kappa>\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<exists>x O!x\<close>
       by (meson "B\<diamond>" "T\<diamond>" "o-objects-exist:1" "\<rightarrow>E")
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>O!\<kappa> \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
       by (simp add: "\<rightarrow>I" "cqt:5:a[1]"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)])
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<forall>\<alpha>(O!\<alpha> \<rightarrow> \<box>O!\<alpha>)\<close>
       by (simp add: GEN "oa-facts:1")
   }
@@ -80,7 +80,7 @@ proof -
   AOT_have Aux: \<open>\<forall>F (\<box>F \<equiv>\<^sub>E G \<rightarrow> (x[F] \<equiv> x[G])), \<not>(x[G] \<equiv> y[G])
     \<^bold>\<turnstile>\<^sub>\<box> \<exists>F([F]x & \<not>[F]y)\<close> for x y G
   proof -
-    AOT_modally_strict {
+    AOT_modally_strict_{
     AOT_assume 0: \<open>\<forall>F (\<box>F \<equiv>\<^sub>E G \<rightarrow> (x[F] \<equiv> x[G]))\<close>
     AOT_assume G_prop: \<open>\<not>(x[G] \<equiv> y[G])\<close>
     {
@@ -277,7 +277,7 @@ proof -
   }
   qed
 
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
@@ -314,7 +314,7 @@ proof -
                               "intro-elim:3:b")
           moreover AOT_have \<open>\<box>(H \<equiv>\<^sub>E G & G \<equiv>\<^sub>E F) \<rightarrow> \<box>(H \<equiv>\<^sub>E F)\<close>
           proof(rule RM)
-            AOT_modally_strict {
+            AOT_modally_strict_{
               AOT_show \<open>H \<equiv>\<^sub>E G & G \<equiv>\<^sub>E F \<rightarrow> H \<equiv>\<^sub>E F\<close>
               proof (safe intro!: "\<rightarrow>I" "eqE"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Ordinary.GEN)
                 fix u
@@ -345,7 +345,7 @@ proof -
         using F_prop[THEN "&E"(2)] by (metis "raa-cor:3")
     qed
   } note 0 = this
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
     moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
@@ -356,7 +356,7 @@ proof -
   AOT_show \<open>[\<lambda>x \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> x[G])]\<down>\<close>
     by (safe intro!: RN GEN "\<rightarrow>I" 1 "kirchner-thm:2"[THEN "\<equiv>E"(2)])
 
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
     AOT_hence nec_indist: \<open>\<box>\<forall>F ([F]x \<equiv> [F]y)\<close> 
@@ -396,7 +396,7 @@ proof -
                       "reductio-aa:1" G_prop)
           moreover AOT_have \<open>\<box>(H \<equiv>\<^sub>E G & G \<equiv>\<^sub>E F) \<rightarrow> \<box>(H \<equiv>\<^sub>E F)\<close>
           proof (rule RM)
-            AOT_modally_strict {
+            AOT_modally_strict_{
               AOT_show \<open>H \<equiv>\<^sub>E G & G \<equiv>\<^sub>E F \<rightarrow> H \<equiv>\<^sub>E F\<close>
               proof (safe intro!: "\<rightarrow>I" "eqE"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2" Ordinary.GEN)
                 fix u
@@ -428,7 +428,7 @@ proof -
         using F_prop[THEN "&E"(2)] by (metis "raa-cor:3")
     qed
   } note 0 = this
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
     moreover AOT_have \<open>\<forall>F ([F]y \<equiv> [F]x)\<close>
@@ -474,7 +474,7 @@ AOT_theorem Comprehension_1:
   shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<exists>F (\<phi>{F} & x[F])]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume assm: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
@@ -499,7 +499,7 @@ proof(rule "\<rightarrow>I")
     AOT_hence \<open>\<exists>F (\<phi>{F} & y[F])\<close>
       by (rule "\<exists>I")
   } note 1 = this
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     {
       fix x y
@@ -532,7 +532,7 @@ AOT_theorem Comprehension_2:
   shows \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> [\<lambda>x \<exists>F (\<phi>{F} & \<not>x[F])]\<down>\<close>
 proof(rule "\<rightarrow>I")
   AOT_assume assm: \<open>\<box>\<forall>F\<forall>G(\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x y
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     AOT_assume indist: \<open>\<forall>F ([F]x \<equiv> [F]y)\<close>
@@ -557,7 +557,7 @@ proof(rule "\<rightarrow>I")
     AOT_hence \<open>\<exists>F (\<phi>{F} & \<not>y[F])\<close>
       by (rule "\<exists>I")
   } note 1 = this
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_assume 0: \<open>\<forall>F\<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<phi>{F} \<equiv> \<phi>{G}))\<close>
     {
       fix x y
@@ -650,7 +650,7 @@ notepad
 begin
 text\<open>Verify that the original axioms are equivalent to @{thm denotes_ex}
      and @{thm denotes_ex_neg}.\<close>
-AOT_modally_strict {
+AOT_modally_strict_{
   fix x y H
   AOT_have \<open>A!x & A!y & \<forall>F \<box>([F]x \<equiv> [F]y) \<rightarrow>
   (\<forall>G (\<forall>z (O!z \<rightarrow> \<box>([G]z \<equiv> [H]z)) \<rightarrow> x[G]) \<equiv>

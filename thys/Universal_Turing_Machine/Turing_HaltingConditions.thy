@@ -338,7 +338,7 @@ qed
 (* for clarification
 lemma TMC_has_num_res_iff': "TMC_has_num_res p ns \<equiv>
        (\<exists>stp k n l. steps0 (1, [],<ns::nat list>) p stp = (0, Bk \<up> k, <n::nat> @ Bk \<up> l))"
-  by (smt TMC_has_num_res_iff is_finalI steps_0 steps_add)
+  by (smt (z3) TMC_has_num_res_iff is_finalI steps_0 steps_add)
 *)
 
 (* --- *)
@@ -366,7 +366,7 @@ qed
 (* for clarification
 lemma TMC_has_num_list_res_iff': "TMC_has_num_list_res p ns \<equiv>
         (\<exists>stp k ms l. steps0 (1, [],<ns::nat list>) p stp = (0, Bk \<up> k, <ms::nat list> @ Bk \<up> l))"
-  by (smt TMC_has_num_list_res_iff is_finalI steps_0 steps_add)
+  by (smt (z3) TMC_has_num_list_res_iff is_finalI steps_0 steps_add)
 *)
 
 subsubsection \<open>Relation between TMC\_has\_num\_res and TMC\_has\_num\_list\_res\<close>

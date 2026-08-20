@@ -161,7 +161,7 @@ proof-
   then obtain M where M1: \<open>\<And>n. norm (x n) < M\<close> and M2: \<open>\<And>n. norm (y n) < M\<close>
     by blast
   have M3: \<open>M > 0\<close>
-    by (smt M2 norm_not_less_zero)
+    by (smt (z3) M2 norm_not_less_zero)
   have \<open>\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. norm ( (\<lambda> i. x i \<bullet>\<^sub>C y i) n -  (\<lambda> i. x i \<bullet>\<^sub>C y i) m ) < e\<close>
     if "e > 0" for e
   proof-
@@ -206,7 +206,7 @@ proof-
       moreover have \<open>norm (x n - x m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N1 \<le> N\<close> N1_def by auto
       ultimately have \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < (e/(2*M)) * M\<close>
-        by (smt mult_strict_mono norm_ge_zero)
+        by (smt (z3) mult_strict_mono norm_ge_zero)
       moreover have \<open> (e/(2*M)) * M = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x n \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y n)) < e/2\<close>
@@ -224,7 +224,7 @@ proof-
       moreover have \<open>norm (y n - y m) < e/(2*M)\<close>
         using \<open>N \<le> m\<close> \<open>N \<le> n\<close> \<open>N2 \<le> N\<close> N2_def by auto
       ultimately have \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < M * (e/(2*M))\<close>
-        by (smt mult_strict_mono norm_ge_zero)
+        by (smt (z3) mult_strict_mono norm_ge_zero)
       moreover have \<open>M * (e/(2*M)) = e/2\<close>
         using \<open>M > 0\<close> by simp
       ultimately have  \<open>norm ((x m \<bullet>\<^sub>C y n) - (x m \<bullet>\<^sub>C y m)) < e/2\<close>
@@ -554,7 +554,7 @@ lemma is_orthogonal_cspan:
 proof-
   have "\<exists>t r. finite t \<and> t \<subseteq> S \<and> (\<Sum>a\<in>t. r a *\<^sub>C a) = x"
     using complex_vector.span_explicit
-    by (smt a3 mem_Collect_eq)
+    by (smt (z3) a3 mem_Collect_eq)
   then obtain t r where b1: "finite t" and b2: "t \<subseteq> S" and b3: "(\<Sum>a\<in>t. r a *\<^sub>C a) = x"
     by blast
   have x1: "is_orthogonal a i"
@@ -700,7 +700,7 @@ proof -
     ultimately show "u v = 0" by simp
   qed
   thus ?thesis using complex_vector.independent_explicit_module
-    by (smt cdependent_raw_def)
+    by (smt (z3) cdependent_raw_def)
 qed
 
 
@@ -953,7 +953,7 @@ proof -
       if y1: "n \<ge> N" and y2: "m \<ge> N"
       for m n::nat
       using that
-      by (smt \<open>\<And>n m. \<parallel>r n - r m\<parallel>\<^sup>2 < 2 * (1 / (real n + 1) + 1 / (real m + 1))\<close> of_nat_1 of_nat_add)
+      by (smt (z3) \<open>\<And>n m. \<parallel>r n - r m\<parallel>\<^sup>2 < 2 * (1 / (real n + 1) + 1 / (real m + 1))\<close> of_nat_1 of_nat_add)
     thus ?thesis
       by blast
   qed
@@ -995,7 +995,7 @@ proof -
       is_arg_min_def \<open>d = \<parallel>k\<parallel>\<^sup>2\<close>
     by smt
   thus \<open>\<exists> k. is_arg_min (\<lambda> x. \<parallel>x\<parallel>) (\<lambda> t. t \<in> M) k\<close>
-    by (smt is_arg_min_def norm_ge_zero power2_eq_square power2_le_imp_le)
+    by (smt (z3) is_arg_min_def norm_ge_zero power2_eq_square power2_le_imp_le)
 qed
 
 
@@ -1440,7 +1440,7 @@ proof-
   hence \<open>\<parallel> \<pi> h \<parallel>^2 + \<parallel> h - \<pi> h \<parallel>^2 = \<parallel> h \<parallel>^2\<close>
     using pythagorean_theorem by fastforce
   hence \<open>\<parallel>\<pi> h \<parallel>^2 \<le> \<parallel> h \<parallel>^2\<close>
-    by (smt zero_le_power2)
+    by (smt (z3) zero_le_power2)
   thus ?thesis
     using norm_ge_zero power2_le_imp_le by blast
 qed
@@ -1691,13 +1691,13 @@ proof -
     hence \<open>\<forall>z \<in> A. (z \<bullet>\<^sub>C x) = 0\<close>
       using t1 by auto
     hence w1: \<open>x \<in> (orthogonal_complement A)\<close>
-      by (smt mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
+      by (smt (z3) mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
     have \<open>B \<subseteq> A + B\<close>
       using \<open>0 \<in> A\<close> subset_iff set_zero_plus2 by blast
     hence \<open>\<forall> z \<in> B. (z \<bullet>\<^sub>C x) = 0\<close>
       using t1 by auto
     hence \<open>x \<in> (orthogonal_complement B)\<close>
-      by (smt mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
+      by (smt (z3) mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
     thus ?thesis
       using w1 by auto
   qed
@@ -1720,7 +1720,7 @@ proof -
     hence \<open>\<forall> y \<in> (A + B). y \<bullet>\<^sub>C x = 0\<close>
       using set_plus_elim by force
     hence \<open>x \<in> (orthogonal_complement (A + B))\<close>
-      by (smt mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
+      by (smt (z3) mem_Collect_eq is_orthogonal_sym orthogonal_complement_def)
     moreover have \<open>(orthogonal_complement (A + B)) = (orthogonal_complement (A +\<^sub>M B))\<close>
       unfolding closed_sum_def by (subst orthogonal_complement_of_closure[symmetric], simp)
     ultimately have \<open>x \<in> (orthogonal_complement (A +\<^sub>M B))\<close>
@@ -2385,7 +2385,7 @@ proof
     by simp
   hence b6: \<open>\<parallel>x\<parallel> * \<parallel>A ((A\<^sup>\<dagger>) x)\<parallel> \<le>  \<parallel>x\<parallel> * M * \<parallel>(A\<^sup>\<dagger>) x\<parallel>\<close> for x
     using q2
-    by (smt ordered_comm_semiring_class.comm_mult_left_mono vector_space_over_itself.scale_scale)
+    by (smt (z3) ordered_comm_semiring_class.comm_mult_left_mono vector_space_over_itself.scale_scale)
   have z3: \<open>\<parallel> (A\<^sup>\<dagger>) x \<parallel> \<le> \<parallel>x\<parallel> * M\<close> for x
   proof(cases \<open>\<parallel>(A\<^sup>\<dagger>) x\<parallel> = 0\<close>)
     case True
@@ -2394,9 +2394,9 @@ proof
   next
     case False
     have \<open>\<parallel> (A\<^sup>\<dagger>) x \<parallel>^2 \<le> \<parallel>x\<parallel> *  M *  \<parallel>(A\<^sup>\<dagger>) x\<parallel>\<close>
-      by (smt b5 b6)
+      by (smt (z3) b5 b6)
     thus ?thesis
-      by (smt False mult_right_cancel mult_right_mono norm_ge_zero semiring_normalization_rules(29))
+      by (smt (z3) False mult_right_cancel mult_right_mono norm_ge_zero semiring_normalization_rules(29))
   qed
   thus \<open>\<exists>K. \<forall>x. \<parallel>(A\<^sup>\<dagger>) x\<parallel> \<le> \<parallel>x\<parallel> * K\<close>
     by auto

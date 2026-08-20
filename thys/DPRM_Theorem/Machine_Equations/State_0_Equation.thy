@@ -110,7 +110,7 @@ proof -
       apply (rule sum_sadd_cong, auto)
       unfolding pushed_def using push_push_map_i[of ks 2 _ s a] that 
       unfolding \<open>length p = length s\<close> list_eval_def 
-      by (smt One_nat_def assms le_imp_less_Suc m_def nth_map p_len2)
+      by (smt (z3) One_nat_def assms le_imp_less_Suc m_def nth_map p_len2)
 
     have z0_unfold: 
       "peval (s' ! k) (push_list a ks) && peval (z0 ! k) (push_list a ks) 

@@ -39,14 +39,14 @@ proof-
 
   have "Re (((c1 + c2) * (cnj c1 + cnj c2))) = 
        (cmod c1)\<^sup>2 + (cmod c2)\<^sup>2 + Re (cnj c1 * c2 + c1 * cnj c2)"
-    by (smt Re_complex_of_real complex_norm_square plus_complex.simps(1) semiring_normalization_rules(34) semiring_normalization_rules(7))
+    by (smt (z3) Re_complex_of_real complex_norm_square plus_complex.simps(1) semiring_normalization_rules(34) semiring_normalization_rules(7))
   moreover
   have "Re (((1 + cnj c1 * c2) * (1 + c1 * cnj c2))) =
         Re (1 + cnj c1 * c2 + cnj c2 * c1 + c1 * cnj c1 * c2 * cnj c2)"
     by (simp add: field_simps)
   hence *: "Re (((1 + cnj c1 * c2) * (1 + c1 * cnj c2))) =
         1 + Re (cnj c1 * c2 + c1 * cnj c2) + (cmod c1)\<^sup>2 * (cmod c2)\<^sup>2"
-    by (smt Re_complex_of_real ab_semigroup_mult_class.mult_ac(1) complex_In_mult_cnj_zero complex_cnj_one complex_norm_square one_complex.simps(1) one_power2 plus_complex.simps(1) power2_eq_square semiring_normalization_rules(7) times_complex.simps(1))
+    by (smt (z3) Re_complex_of_real ab_semigroup_mult_class.mult_ac(1) complex_In_mult_cnj_zero complex_cnj_one complex_norm_square one_complex.simps(1) one_power2 plus_complex.simps(1) power2_eq_square semiring_normalization_rules(7) times_complex.simps(1))
   moreover
   have "(cmod c1)\<^sup>2 + (cmod c2)\<^sup>2 < 1 + (cmod c1)\<^sup>2 * (cmod c2)\<^sup>2"
   proof-
@@ -63,7 +63,7 @@ proof-
     by simp
   moreover
   have "Re (((1 + cnj c1 * c2) * (1 + c1 * cnj c2))) > 0"
-    by (smt "*" Re_complex_div_lt_0 calculation complex_cnj_add divide_self mult_zero_left one_complex.simps(1) zero_complex.simps(1))
+    by (smt (z3) "*" Re_complex_div_lt_0 calculation complex_cnj_add divide_self mult_zero_left one_complex.simps(1) zero_complex.simps(1))
   ultimately
   have 2: "Re (((c1 + c2) * (cnj c1 + cnj c2))) / Re (((1 + cnj c1 * c2) * (1 + c1 * cnj c2))) < 1"
     by (simp add: divide_less_eq)
@@ -140,7 +140,7 @@ proof transfer
           (a + b + (1 + a * cnj b) * z) / 
           ((cnj a + cnj b) * z + (1 + cnj a * b))"
       unfolding gyr_m'_def oplus_m'_def
-      by (smt "*"(2) "*"(3) ab_semigroup_mult_class.mult_ac(1) add.left_commute add_divide_eq_iff combine_common_factor den_not_zero divide_divide_eq_right mult.commute mult_cancel_right2 nonzero_mult_div_cancel_left semiring_normalization_rules(1) semiring_normalization_rules(23) semiring_normalization_rules(34) times_divide_eq_right)
+      by (smt (z3) "*"(2) "*"(3) ab_semigroup_mult_class.mult_ac(1) add.left_commute add_divide_eq_iff combine_common_factor den_not_zero divide_divide_eq_right mult.commute mult_cancel_right2 nonzero_mult_div_cancel_left semiring_normalization_rules(1) semiring_normalization_rules(23) semiring_normalization_rules(34) times_divide_eq_right)
   have 2: "oplus_m' (oplus_m' a b) (gyr_m' a b z) = 
           ((a + b) + (1 + a * cnj b) * z) / 
           ((cnj a + cnj b) * z + (1 + cnj a * b))"
@@ -211,7 +211,7 @@ proof-
       by (metis (no_types, lifting) ab_semigroup_add_class.add_ac(1) distrib_right)
     have 2: "1 + cnj ((a + b) / (1 + cnj a * b)) * b = 
              (1 + cnj a * b + a * cnj b + b * cnj b) / (1 + a * cnj b)"
-      by (smt "1" complex_cnj_add complex_cnj_cnj complex_cnj_divide complex_cnj_mult complex_cnj_one semiring_normalization_rules(23) semiring_normalization_rules(7))
+      by (smt (z3) "1" complex_cnj_add complex_cnj_cnj complex_cnj_divide complex_cnj_mult complex_cnj_one semiring_normalization_rules(23) semiring_normalization_rules(7))
     have "1 + cnj a * b + a * cnj b + b * cnj b \<noteq> 0"
       using * 1
       by auto

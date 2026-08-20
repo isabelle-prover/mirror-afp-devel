@@ -21,7 +21,7 @@ lemma leading_principle_submatrix_sylvester:
 lemma sylvester_criterion_positive_det:
   assumes "A \<in> carrier_mat n n"
   assumes "sylvester_criterion A"
-  shows "det A > 0"
+  shows "Determinant.det A > 0"
 proof-
   have "A = lps A n"
     unfolding leading_principal_submatrix_def submatrix_def
@@ -46,7 +46,7 @@ proof(induction n arbitrary: A x)
 next
   case (Suc n)
 
-  have *: "\<And>k. k \<le> dim_row A \<Longrightarrow> det (leading_principal_submatrix A k) > 0"
+  have *: "\<And>k. k \<le> dim_row A \<Longrightarrow> Determinant.det (leading_principal_submatrix A k) > 0"
     using Suc(3) unfolding sylvester_criterion_def by blast
 
   define A\<^sub>n where "A\<^sub>n \<equiv> (leading_principal_submatrix A n)"
@@ -236,7 +236,7 @@ next
   qed
   have 3: "a - QF A\<^sub>n' v\<^sub>n > 0"
   proof-
-    have "det A = det A\<^sub>n * (a - QF A\<^sub>n' v\<^sub>n)"
+    have "Determinant.det A = Determinant.det A\<^sub>n * (a - QF A\<^sub>n' v\<^sub>n)"
     proof-
       let ?B = "mat_of_cols n [v\<^sub>n]"
       let ?C = "mat_of_rows n [conjugate v\<^sub>n]"
@@ -298,10 +298,10 @@ next
         qed
         ultimately show ?thesis unfolding split_block_def by metis
       qed
-      hence "det A = det A\<^sub>n * det (?D - ?C * A\<^sub>n' * ?B)"
+      hence "Determinant.det A = Determinant.det A\<^sub>n * Determinant.det (?D - ?C * A\<^sub>n' * ?B)"
         using schur_formula[of A\<^sub>n ?B ?C ?D A n n A\<^sub>n'] An' Suc(5,6) herm_A\<^sub>n hermitian_is_square
         by (metis carrier_matD(1) carrier_matD(2) lessI)
-      moreover have "det (?D - ?C * A\<^sub>n' * ?B) = (a - QF A\<^sub>n' v\<^sub>n)"
+      moreover have "Determinant.det (?D - ?C * A\<^sub>n' * ?B) = (a - QF A\<^sub>n' v\<^sub>n)"
       proof-
         have "?C * A\<^sub>n' * ?B = mat 1 1 (\<lambda>_. QF A\<^sub>n' v\<^sub>n)" (is "?lhs = ?rhs")
         proof
@@ -327,8 +327,8 @@ next
       qed
       ultimately show ?thesis by argo
     qed
-    moreover have "det A > 0" using Suc.prems sylvester_criterion_positive_det by blast
-    moreover have "det A\<^sub>n > 0" using Suc unfolding A\<^sub>n_def sylvester_criterion_def by simp
+    moreover have "Determinant.det A > 0" using Suc.prems sylvester_criterion_positive_det by blast
+    moreover have "Determinant.det A\<^sub>n > 0" using Suc unfolding A\<^sub>n_def sylvester_criterion_def by simp
     ultimately show ?thesis by (simp add: less_complex_def zero_less_mult_iff)
   qed
   have 4: "(cmod b)^2 > 0" if "b \<noteq> 0" using that by force
@@ -439,7 +439,7 @@ proof clarify
   let ?A' = "lps A k"
   have pd: "positive_definite ?A'"
     using A_dim pd leading_principal_submatrix_positive_definite k by auto
-  hence det_nz: "det ?A' \<noteq> 0" using positive_definite_det_nz by blast
+  hence det_nz: "Determinant.det ?A' \<noteq> 0" using positive_definite_det_nz by blast
   have square: "square_mat ?A'" using pd hermitian_is_square positive_definite_def by blast
   have A'_dim: "?A' \<in> carrier_mat k k" using A_dim k leading_principal_submatrix_carrier by auto
 
@@ -462,7 +462,7 @@ proof clarify
     thus ?thesis
       by (metis length_map map_nth_eq_conv of_real_hom.hom_prod_list)
   qed
-  ultimately show "0 < det ?A'"
+  ultimately show "0 < Determinant.det ?A'"
     using det_is_prod_of_eigenvalues[OF square] by (simp add: less_complex_def)
 qed
 
@@ -533,19 +533,19 @@ lemma sylvester_criterion_rat:
   shows "sylvester_criterion A \<longleftrightarrow> sylvester_criterion (hom\<^sub>H A)"
   unfolding sylvester_criterion_def
 proof-
-  have "\<forall>k \<le> dim_row A. 0 < det (lps A k) \<longleftrightarrow> 0 < det (lps (hom\<^sub>H A) k)"
+  have "\<forall>k \<le> dim_row A. 0 < Determinant.det (lps A k) \<longleftrightarrow> 0 < Determinant.det (lps (hom\<^sub>H A) k)"
   proof clarify
     fix k assume k: "k \<le> dim_row A"
-    have "det (lps (hom\<^sub>H A) k) = complex_of_rat (det (lps A k))"
+    have "Determinant.det (lps (hom\<^sub>H A) k) = complex_of_rat (Determinant.det (lps A k))"
       using of_rat_hom.hom_det[of "lps A k", where 'a = complex]
       unfolding hom\<^sub>H_def leading_principal_submatrix_def
       apply (subst of_rat_hom.mat_hom_submatrix[of "{..<k}" A "{..<k}"])
       using k square
       by simp_all
-    thus "0 < det (lps A k) \<longleftrightarrow> 0 < det (lps (hom\<^sub>H A) k)"
+    thus "0 < Determinant.det (lps A k) \<longleftrightarrow> 0 < Determinant.det (lps (hom\<^sub>H A) k)"
       using of_rat_less_complex k hom\<^sub>H_def by (metis of_rat_hom.hom_zero)
   qed
-  thus "(\<forall>k \<le> dim_row A. 0 < det (lps A k)) = (\<forall>k \<le> dim_row (hom\<^sub>H A). 0 < det (lps (hom\<^sub>H A) k))"
+  thus "(\<forall>k \<le> dim_row A. 0 < Determinant.det (lps A k)) = (\<forall>k \<le> dim_row (hom\<^sub>H A). 0 < Determinant.det (lps (hom\<^sub>H A) k))"
     by simp
 qed
 

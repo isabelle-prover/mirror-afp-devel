@@ -146,14 +146,14 @@ lemma "nucleus f \<Longrightarrow> f (x \<cdot> y) = f x \<cdot> f y" (*nitpick*
 
 lemma nuc_bres_closed: "nucleus f \<Longrightarrow> f (f x \<rightarrow> f y) = f x \<rightarrow> f y"
   unfolding nucleus_def apply clarsimp
-  by (smt clop_closure clop_extensive_var nucleus_alt_def_cor1 nucleus_def order_class.order.antisym rangeI)
+  by (smt (z3) clop_closure clop_extensive_var nucleus_alt_def_cor1 nucleus_def order_class.order.antisym rangeI)
 
 lemma "nucleus f \<Longrightarrow> f (x \<rightarrow> y) = f x \<rightarrow> f y" (*nitpick*)
   oops
 
 lemma nuc_fres_closed: "nucleus f \<Longrightarrow> f (f x \<leftarrow> f y) = f x \<leftarrow> f y"
   unfolding nucleus_def apply clarsimp
-  by (smt clop_closure clop_extensive_var eq_iff nucleus_alt_def_cor2 nucleus_def rangeI)
+  by (smt (z3) clop_closure clop_extensive_var eq_iff nucleus_alt_def_cor2 nucleus_def rangeI)
 
 lemma nuc_fres_closed: "nucleus f \<Longrightarrow> f (x \<leftarrow> y) = f x \<leftarrow> f y" (*nitpick*)
   oops
@@ -162,7 +162,7 @@ lemma nuc_inf_closed: "nucleus f \<Longrightarrow> inf_closed_set (Fix f)"
   by (simp add: Inf_inf_closed nuc_Inf_closed)
 
 lemma nuc_inf_closed_var: "nucleus f \<Longrightarrow> f (f x \<sqinter> f y) = f x \<sqinter> f y"
-  by (smt antisym_conv clop_alt clop_extensive_var inf_le2 inf_sup_ord(1) le_inf_iff nucleus_def)
+  by (smt (z3) antisym_conv clop_alt clop_extensive_var inf_le2 inf_sup_ord(1) le_inf_iff nucleus_def)
 
 text \<open>Taken together these facts show that, for $f:Q\to Q$, $f[Q]$ forms a quantale with 
 composition $f\, (-\cdot -)$ and sup $f\, (\bigsqcup -)$, and that $f:Q\to f[Q]$ is a quantale morphism. 
@@ -215,7 +215,7 @@ lemma nuc_hom: "Abs_cl_op_im \<circ> cl_op \<in> quantale_homset"
   unfolding quantale_homset_iff comp_def fun_eq_iff
   apply safe
   apply (metis (no_types, lifting) Abs_cl_op_im_inverse Rep_cl_op_im_inverse nuc_comp_prop nucleus_cl_op rangeI times_cl_op_im.rep_eq)
-  unfolding Sup_cl_op_im_def by (smt Abs_cl_op_im_inverse SUP_cong image_image map_fun_apply nuc_Sup_closed_var nucleus_cl_op rangeI)
+  unfolding Sup_cl_op_im_def by (smt (z3) Abs_cl_op_im_inverse SUP_cong image_image map_fun_apply nuc_Sup_closed_var nucleus_cl_op rangeI)
 
 text \<open>This finishes the first statement of Theorem 3.1.1. The second part follows. It states that for every 
 surjective quantale homomorphism there is a nucleus such that the range of the nucleus is isomorphic to the range of the surjection.\<close> 
@@ -349,7 +349,7 @@ text \<open>The final proofs for nuclei lead to Rosenthal's representation theor
 lemma down_set_lax_morph: "(\<down> \<circ> Sup) (X::'a::quantale set) \<cdot> (\<down> \<circ> Sup) Y \<subseteq> (\<down> \<circ> Sup) (X \<cdot> Y)"
 proof-
   have "\<Squnion>((\<down> \<circ> Sup) X \<cdot> (\<down> \<circ> Sup) Y) = \<Squnion>(X \<cdot> Y)"
-    by (smt Sup_downset_adj adj_cancel_eq1 comp_apply comp_dist_mix)
+    by (smt (z3) Sup_downset_adj adj_cancel_eq1 comp_apply comp_dist_mix)
   thus ?thesis
     by (simp add: Sup_downset_adj_var eq_iff)
 qed
@@ -367,7 +367,7 @@ lemma downset_Sup_pres_var: "\<down> (\<Squnion>X) = (\<down> \<circ> Sup) (\<Do
   unfolding comp_def downset_prop downset_set_def 
   apply safe
   apply (smt Sup_subset_mono dual_order.refl mem_Collect_eq order_subst1 subset_iff)
-  by (smt Sup_mono le_iff_inf le_infI2 mem_Collect_eq)
+  by (smt (z3) Sup_mono le_iff_inf le_infI2 mem_Collect_eq)
 
 lemma downset_Sup_pres: "\<down> (\<Squnion>X) = (\<down> \<circ> Sup) (\<Union> (\<down> ` (X::'a::quantale set)))"
   by (metis downset_Sup_pres_var downset_set_prop_var)  
@@ -393,7 +393,7 @@ text \<open>Next I prove Theorem 3.1.3.\<close>
 
 lemma conuc_Sup_closed: "conucleus f \<Longrightarrow> f \<circ> Sup \<circ> (`) f = Sup \<circ> (`) f" 
   unfolding conucleus_def fun_eq_iff comp_def
-  by (smt coclop_coextensive_var coclop_idem coclop_iso image_comp image_image le_iff_sup mono_SUP sup.orderE)
+  by (smt (z3) coclop_coextensive_var coclop_idem coclop_iso image_comp image_image le_iff_sup mono_SUP sup.orderE)
 
 lemma conuc_comp_closed: "conucleus f \<Longrightarrow> f (f x \<cdot> f y) = f x \<cdot> f y"
   unfolding conucleus_def by (metis antisym_conv coclop_coextensive_var coclop_idem_var)
@@ -427,7 +427,7 @@ proof-
     apply (rule Sup_least, clarsimp, smt Collect_mono_iff Sup_subset_mono)
     by (rule Sup_least, clarsimp, smt Sup_upper2 eq_iff mem_Collect_eq)
   also have "... \<le> ?\<phi> (x \<cdot> y)"
-    by (smt Collect_mono_iff Sup_subset_mono assms(2) comp_closed_set_def psrpq.mult_isol_var)
+    by (smt (z3) Collect_mono_iff Sup_subset_mono assms(2) comp_closed_set_def psrpq.mult_isol_var)
   finally show ?thesis
     by force
 qed

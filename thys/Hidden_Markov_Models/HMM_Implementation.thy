@@ -198,7 +198,7 @@ lemma pmf_of_alist_support_aux_2:
   apply (subst sum.mono_neutral_left[where T = "fst ` set \<mu>"])
      apply blast
   subgoal
-    by (smt ennreal_less_zero_iff map_of_eq_None_iff mem_Collect_eq option.case(1) subsetI)
+    by (smt (z3) ennreal_less_zero_iff map_of_eq_None_iff mem_Collect_eq option.case(1) subsetI)
   subgoal
     by auto
   subgoal premises prems
@@ -219,7 +219,7 @@ lemma pmf_of_alist_support_aux_2:
         by (metis fst_conv nth_mem option.inject prod_eqI snd_conv)
       done
     with prems(2) show ?thesis
-      by (smt pmf_of_alist_support_aux_1[OF assms(1)] atLeastLessThan_iff ennreal_1
+      by (smt (z3) pmf_of_alist_support_aux_1[OF assms(1)] atLeastLessThan_iff ennreal_1
           length_map nth_map sum.cong sum_ennreal sum_list_sum_nth
           )
   qed
@@ -277,7 +277,7 @@ lemma pmf_of_alist_aux:
 
 lemma unique: "\<mu> = \<mu>'" if "(s, \<mu>) \<in> set K" "(s, \<mu>') \<in> set K"
   using that is_unique
-  by (smt Pair_inject distinct_conv_nth fst_conv in_set_conv_nth length_map nth_map)
+  by (smt (z3) Pair_inject distinct_conv_nth fst_conv in_set_conv_nth length_map nth_map)
 
 lemma (in -) map_of_NoneD:
   "x \<notin> fst ` set M" if "map_of M x = None"

@@ -1,0 +1,33 @@
+title = "Alon’s Combinatorial Nullstellensatz"
+date = 2026-05-10
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = "This entry formalizes Alon’s Combinatorial Nullstellensatz for sparse multivariate polynomials over fields. The proof derives the coefficient formula from univariate Lagrange interpolation and uses it to obtain the standard nonvanishing conclusion over finite grids. AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+license = "bsd"
+note = ""
+creation_note = """
+codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.queiroz]
+
+[authors.hulak]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

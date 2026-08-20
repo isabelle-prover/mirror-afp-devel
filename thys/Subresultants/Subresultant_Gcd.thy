@@ -20,7 +20,7 @@ definition gcd_impl_primitive where
 
 definition gcd_impl_main where
   "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
-   smult (gcd (content G1) (content G2))
+   smult (gcd (Polynomial.content G1) (Polynomial.content G2))
      (gcd_impl_primitive (primitive_part G1) (primitive_part G2)))"
 
 definition gcd_impl where
@@ -116,7 +116,7 @@ lemma gcd_impl_primitive: assumes "primitive_part G1 = G1" and "primitive_part G
 shows "gcd_impl_primitive G1 G2 = gcd G1 G2"
 proof -
   let ?pp = primitive_part
-  let ?c = "content"
+  let ?c = "Polynomial.content"
   let ?n = normalize
   from F2 F0[of 2] k2 have G2: "G2 \<noteq> 0" by auto
   obtain Gk hk where sub: "subresultant_prs G1 G2 = (Gk, hk)" by force
@@ -217,7 +217,7 @@ proof -
       with len have f: "f \<noteq> 0" by auto
       let ?f = "primitive_part f"
       let ?g = "primitive_part g"
-      let ?c = "content"
+      let ?c = "Polynomial.content"
       from len have len: "length (coeffs ?f) \<ge> length (coeffs ?g)" by simp
       obtain Gk hk where sub: "subresultant_prs ?f ?g = (Gk,hk)" by force
       have cf: "?c f \<noteq> 0" and cg: "?c g \<noteq> 0" using f g by auto
@@ -325,8 +325,8 @@ qed
 
 lemma gcd_impl_main_code:
   "gcd_impl_main G1 G2 = (if G1 = 0 then 0 else if G2 = 0 then normalize G1 else
-    let c1 = content G1;
-      c2 = content G2;
+    let c1 = Polynomial.content G1;
+      c2 = Polynomial.content G2;
       p1 = map_poly (\<lambda> x. x div c1) G1;
       p2 = map_poly (\<lambda> x. x div c2) G2
      in smult (gcd c1 c2) (normalize (primitive_part (gcd_impl_start p1 p2))))"

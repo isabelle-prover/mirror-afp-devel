@@ -74,8 +74,8 @@ object DOF_Document_Build
       // LaTeX styles from Isabelle/DOF directory
       (List(Path.explode("latex/styles"), Path.explode("ontologies")) :::(ltx_ontologies.map(name => 
               context.session_context.sessions_structure((Long_Name.base_name(Long_Name.qualifier(name))).mkString).dir))) 
-        .flatMap(dir => File.find_files((isabelle_dof_dir + dir).file, _.getName.endsWith(".sty")))
-        .foreach(sty => Isabelle_System.copy_file(sty, directory.doc_dir.file))
+        .flatMap(dir => File.find_files(isabelle_dof_dir + dir, pred = path => path.file_name.endsWith(".sty")))
+        .foreach(sty => Isabelle_System.copy_file(sty, directory.doc_dir))
 
       // ontologies.tex from session exports
       File.write(directory.doc_dir + Path.explode("ontologies.tex"),

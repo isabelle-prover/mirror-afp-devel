@@ -6,8 +6,6 @@ theory Tree_Automata
     "HOL-Library.Option_ord"
 begin
 
-declare [[code_del_allowed]]
-
 subsection \<open>Tree automaton definition and functionality\<close>
 
 datatype ('q, 'f) ta_rule = TA_rule (r_root: 'f) (r_lhs_states: "'q list") (r_rhs: 'q) (\<open>_ _ \<rightarrow> _\<close> [51, 51, 51] 52)
@@ -66,7 +64,7 @@ inductive run for \<A> where
 subsubsection \<open>Language acceptance\<close>
 
 definition ta_lang :: "'q fset \<Rightarrow> ('q, 'f) ta \<Rightarrow> ('f, 'v) terms" where
-  [code del]: "ta_lang Q \<A> = {adapt_vars t | t. ground t \<and> Q |\<inter>| ta_der \<A> t \<noteq> {||}}"
+  "ta_lang Q \<A> = {adapt_vars t | t. ground t \<and> Q |\<inter>| ta_der \<A> t \<noteq> {||}}"
 
 definition gta_der where
   "gta_der \<A> t = ta_der \<A> (term_of_gterm t)"
@@ -444,7 +442,6 @@ lemma ta_der_Fun:
   by (intro iffI fCollect_memberI finite_Collect_less_eq[OF _ finite_eps[of \<A>]]) auto
 
 declare ta_der.simps[simp del]
-declare ta_der.simps[code del]
 lemmas ta_der_simps [simp] = ta_der_Var ta_der_Fun
 
 lemma ta_der'_Var:
@@ -471,7 +468,6 @@ proof -
 qed
 
 declare ta_der'.simps[simp del]
-declare ta_der'.simps[code del]
 lemmas ta_der'_simps [simp] = ta_der'_Var ta_der'_Fun ta_der'_Fun2
 
 text \<open>Induction schemes for the most used cases\<close>

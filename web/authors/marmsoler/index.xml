@@ -4,6 +4,15 @@
     <title>Diego Marmsoler</title>
     <link>https://isa-afp.org/authors/marmsoler/</link>
     <description>AFP entries of Diego Marmsoler</description><item>
+  <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
+  <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages</category>
+    <category>Tools</category>
+</item>
+<item>
   <title>Isabelle/Solidity: A deep Embedding of Solidity in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Solidity.html</link>
   <pubDate>Mon, 18 Jul 2022 00:00:00 +0000</pubDate>

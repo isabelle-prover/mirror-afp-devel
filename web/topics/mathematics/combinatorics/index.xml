@@ -4,6 +4,35 @@
     <title>Mathematics/Combinatorics</title>
     <link>https://isa-afp.org/topics/mathematics/combinatorics/</link>
     <description>AFP entries in Combinatorics</description><item>
+  <title>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method</title>
+  <link>https://isa-afp.org/entries/Cauchy_Davenport_Vosper.html</link>
+  <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Vosper&#39;s Theorem and the Cauchy–Davenport Theorem via the Polynomial Method in the AFP</description>
+    <category>Mathematics/Number theory</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Freiman&#39;s 3k - 4 Theorem</title>
+  <link>https://isa-afp.org/entries/Freiman_3k_4.html</link>
+  <pubDate>Tue, 02 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Freiman&#39;s 3k - 4 Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Alon’s Combinatorial Nullstellensatz</title>
+  <link>https://isa-afp.org/entries/Combinatorial_Nullstellensatz.html</link>
+  <pubDate>Sun, 10 May 2026 00:00:00 +0000</pubDate>
+  <description>Alon’s Combinatorial Nullstellensatz in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Swap Distance</title>
+  <link>https://isa-afp.org/entries/Swap_Distance.html</link>
+  <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
+  <description>Swap Distance in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
   <title>Formal Proof of Dilworth&#39;s Theorem</title>
   <link>https://isa-afp.org/entries/Dilworth.html</link>
   <pubDate>Tue, 25 Mar 2025 00:00:00 +0000</pubDate>

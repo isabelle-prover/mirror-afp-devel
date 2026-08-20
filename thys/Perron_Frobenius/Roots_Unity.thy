@@ -19,7 +19,7 @@ lemma cis_plus_2pi[simp]: "cis (x + 2 * pi) = cis x" by (auto simp: complex_eq_i
 lemma cis_plus_2pi_neq_1: assumes x: "0 < x" "x < 2 * pi"
   shows "cis x \<noteq> 1"
 proof -
-  from x have "cos x \<noteq> 1" by (smt cos_2pi_minus cos_monotone_0_pi cos_zero)
+  from x have "cos x \<noteq> 1" by (smt (z3) cos_2pi_minus cos_monotone_0_pi cos_zero)
   thus ?thesis by (auto simp: complex_eq_iff)
 qed
 
@@ -105,7 +105,7 @@ definition prod_root_unity :: "nat list \<Rightarrow> 'a :: idom poly" where
 
 lemma poly_prod_root_unity: "poly (prod_root_unity ns) x = 0 \<longleftrightarrow> (\<exists>k\<in>set ns. x ^ k = 1)"
   unfolding prod_root_unity_def
-  by (simp add: poly_prod_list prod_list_zero_iff o_def image_def poly_root_unity)
+  by (simp add: poly_prod_list_eq o_def image_def poly_root_unity)
 
 lemma degree_prod_root_unity[simp]: "0 \<notin> set ns \<Longrightarrow> degree (prod_root_unity ns) = sum_list ns"
   unfolding prod_root_unity_def
@@ -225,7 +225,7 @@ proof -
     show "n \<le> card {x. poly ?u x = 0}" using main by auto
     show "?u \<noteq> 0" using n by auto
     show "{x. poly ?u x = 0} \<subseteq> {x. poly ?p x = 0}"
-      unfolding main(2) main(1)[symmetric] poly_prod_list prod_list_zero_iff by auto
+      unfolding main(2) main(1)[symmetric] poly_prod_list_eq prod_list_zero_iff by auto
   qed
   have deg': "degree ?p = n"
     by (subst degree_prod_list_eq, auto simp: o_def sum_list_triv)
@@ -299,7 +299,7 @@ lemma root_unity_witness: fixes xs :: "complex list"
 proof -
   from assms have n0: "n \<noteq> 0" by (cases "n = 0", auto simp: prod_list_zero_iff)
   have "x \<in> set xs \<longleftrightarrow> poly (prod_list (map (\<lambda> x. [:-x,1:]) xs)) x = 0"
-    unfolding poly_prod_list prod_list_zero_iff by auto
+    unfolding poly_prod_list_eq prod_list_zero_iff by auto
   also have "\<dots> \<longleftrightarrow> x^n = 1" using roots_of_unity(2)[OF n0] unfolding assms root_unity_def by auto
   finally show ?thesis by auto
 qed
@@ -565,9 +565,8 @@ proof (induct p k rule: decompose_prod_root_unity_main.induct)
   show ?case
     unfolding simp[of ?p k] simp[of p k] if_distrib[of "map_prod id ?h"] Let_def u'
     unfolding 0 p.hom_div[symmetric] p.hom_dvd_iff
-    by (rule if_cong[OF refl], force, rule if_cong[OF refl if_cong[OF refl]], force,
-     (subst 1(1), auto, cases ?rec1, auto)[1],
-     (subst 1(2), auto))
+    using 1
+    by (cases ?rec1) fastforce
 qed
 
 lemma (in field_hom) hom_decompose_prod_root_unity:

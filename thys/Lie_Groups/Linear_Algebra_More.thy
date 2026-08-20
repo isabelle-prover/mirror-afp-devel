@@ -52,8 +52,9 @@ lemma continuous_on_ijth_of_mat:
 
 lemma continuous_on_det:
   fixes s::"('a::real_normed_field,'n::finite)square_matrix set"
-  shows "continuous_on s det"
-proof (unfold det_def, intro continuous_on_sum)
+  shows "continuous_on s matrix_det"
+unfolding matrix_det_def
+proof (intro continuous_on_sum)
   fix p
   assume "p \<in> {p. p permutes (UNIV::'n set)}"
   show "continuous_on s (\<lambda>A. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))"
@@ -90,11 +91,11 @@ section \<open>Component expressions for inverse matrices over fields\<close>
 
 lemma inv_adj_det_field_component:
   fixes i j::"'n::finite" and A A'::"'a::field^'n^'n"
-  defines invA: "A' \<equiv> map_matrix (\<lambda>x. x / (det A)) (adjugate A)"
+  defines invA: "A' \<equiv> map_matrix (\<lambda>x. x / (matrix_det A)) (adjugate A)"
   assumes "invertible A"
   shows "(A**A')$i$j = (if i=j then 1 else 0)"
 proof -
-  let ?D = "det A"
+  let ?D = "matrix_det A"
   have det_not_0: "?D \<noteq> 0"
     using assms by (metis det_I det_mul invertible_inv_ex(2) mult_zero_left zero_neq_one)
   have "(\<Sum> k\<in>UNIV. (A$i$k * (adjugate A)$k$j)) = (if i=j then ?D else 0)"
@@ -111,10 +112,10 @@ qed
 lemma inverse_adjugate_det_2:
   fixes A::"'a::field^'n^'n"
   assumes "invertible A"
-  shows "matrix_inv A =  map_matrix (\<lambda>x. x / (det A)) (adjugate A)"
+  shows "matrix_inv A =  map_matrix (\<lambda>x. x / (matrix_det A)) (adjugate A)"
   (is "matrix_inv A = ?A'")
 proof -
-  let ?D = "det A"
+  let ?D = "matrix_det A"
   have det_not_0: "?D \<noteq> 0"
     using assms by (metis det_I det_mul invertible_inv_ex(2) mult_zero_left zero_neq_one)
   have AA': "A ** ?A' = mat 1"
@@ -128,7 +129,7 @@ qed
 lemma inverse_adjugate_det:
   fixes A::"'a::field^'n^'n"
   assumes "invertible A"
-  shows "matrix_inv A =  (1 / (det A)) *\<^sub>s (adjugate A)"
+  shows "matrix_inv A =  (1 / (matrix_det A)) *\<^sub>s (adjugate A)"
   using inverse_adjugate_det_2[OF assms] unfolding map_matrix_def smult_mat_def by auto
 
 lemma transpose_component: "(transpose A) $i$j = A$j$i"
@@ -137,19 +138,19 @@ lemma transpose_component: "(transpose A) $i$j = A$j$i"
 lemma matrix_inverse_component:
   fixes A::"'a::field^'n^'n" and i j::"'n::finite"
   assumes "invertible A"
-  shows "(matrix_inv A)$i$j = det (\<chi> k l. if k = j \<and> l = i then 1 else if k = j \<or> l = i then 0 else A $ k $ l) / (det A)"
+  shows "(matrix_inv A)$i$j = matrix_det (\<chi> k l. if k = j \<and> l = i then 1 else if k = j \<or> l = i then 0 else A $ k $ l) / (matrix_det A)"
   using inverse_adjugate_det_2 [OF assms]
   by (simp add: transpose_component adjugate_def cofac_def minor_mat_def)
 
 lemma matrix_adjugate_component:
   fixes A::"'a::field^'n^'n" and i j::"'n::finite"
   assumes "invertible A"
-  shows "(adjugate A)$i$j = det (\<chi> k l. if k = j \<and> l = i then 1 else if k = j \<or> l = i then 0 else A $ k $ l)"
+  shows "(adjugate A)$i$j = matrix_det (\<chi> k l. if k = j \<and> l = i then 1 else if k = j \<or> l = i then 0 else A $ k $ l)"
   by (simp add: transpose_component adjugate_def cofac_def minor_mat_def)
 
 
 
-section \<open>Smoothness of real matrix operations and \<open>det\<close>\<close>
+section \<open>Smoothness of real matrix operations and \<open>matrix_det\<close>\<close>
 
 
 subsection \<open>Smoothness of matrix multiplication\<close>
@@ -295,7 +296,7 @@ lemma smooth_on_matrix_mult:
   by (rule bounded_bilinear.smooth_on[OF bounded_bilinear_matrix_mult assms])
 
 
-subsection \<open>Smoothness of \<open>\<Prod>\<close> and \<open>det\<close>\<close>
+subsection \<open>Smoothness of \<open>\<Prod>\<close> and \<open>matrix_det\<close>\<close>
 
 lemma higher_differentiable_on_prod:
   fixes f::"_ \<Rightarrow> _ \<Rightarrow> 'c::{real_normed_algebra, comm_monoid_mult}"
@@ -313,8 +314,9 @@ lemma smooth_on_prod:
 lemma smooth_on_det:
   fixes s::"('a::real_normed_field,'n::finite)square_matrix set"
   assumes "open s"
-  shows "k-smooth_on s det"
-proof (unfold det_def, intro smooth_on_sum)
+  shows "k-smooth_on s matrix_det"
+  unfolding matrix_det_def
+proof (intro smooth_on_sum)
   fix p
   assume "p \<in> {p. p permutes (UNIV::'n set)}"
   show "k-smooth_on s (\<lambda>A. of_int (sign p) * (\<Prod>i\<in>UNIV. A $ i $ p i))"
@@ -502,12 +504,12 @@ lemma smooth_on_matrix_inv_component:
   shows "k-smooth_on S (\<lambda>A. (matrix_inv A)$i$j)"
   using matrix_inverse_component smooth_on_mat smooth_on_det smooth_on_compose smooth_on_divide smooth_on_cong
 proof -
-  have smooth_on_div_det: "k-smooth_on S (\<lambda>x. f x / (det x))" if "smooth_on S f" for f
-    apply (intro smooth_on_divide[of k S f det])
+  have smooth_on_div_det: "k-smooth_on S (\<lambda>x. f x / (matrix_det x))" if "smooth_on S f" for f
+    apply (intro smooth_on_divide[of k S f matrix_det])
     using that smooth_on_det[OF assms(2)] assms by (auto simp: smooth_on_def invertible_det_nz)
 
   let ?inv_comp' = "\<lambda>A::'a^'n^'n. \<chi> k l. if k = j \<and> l = i then 1 else if k = j \<or> l = i then 0 else A $ k $ l"
-  let ?inv_comp = "\<lambda>A::'a^'n^'n. det (?inv_comp' A) / det A"
+  let ?inv_comp = "\<lambda>A::'a^'n^'n. matrix_det (?inv_comp' A) / matrix_det A"
 
   have matrix_inv_cong: "\<And>A. A\<in>S \<Longrightarrow> (matrix_inv A)$i$j = ?inv_comp A"
     using matrix_inverse_component assms by blast
@@ -524,8 +526,8 @@ proof -
 
   thus "k-smooth_on S (\<lambda>A. (matrix_inv A)$i$j)"
     apply (intro smooth_on_cong[OF _ assms(2) matrix_inv_cong])
-    apply (intro smooth_on_div_det[of "\<lambda>A. det (?inv_comp' A)"])
-    using smooth_on_compose[of \<infinity> UNIV det S ?inv_comp'] smooth_on_det[OF open_UNIV]
+    apply (intro smooth_on_div_det[of "\<lambda>A. matrix_det (?inv_comp' A)"])
+    using smooth_on_compose[of \<infinity> UNIV matrix_det S ?inv_comp'] smooth_on_det[OF open_UNIV]
     using assms(2) smooth_on_cong by fastforce
 qed
 
@@ -571,8 +573,7 @@ qed
 lemma smooth_on_matrix_inv:
   assumes "\<forall>A. A\<in>S \<longrightarrow> invertible A" "open S"
   shows "k-smooth_on S (matrix_inv::'a::{euclidean_space,real_normed_field}^'n^'n \<Rightarrow> 'a^'n^'n)"
-  apply (intro smooth_on_mat[of k S])
-  apply (intro smooth_on_matrix_inv_component[of S])
+  apply (intro smooth_on_mat[of k S] smooth_on_matrix_inv_component[of S])
   by (auto simp add: assms)+
 
 

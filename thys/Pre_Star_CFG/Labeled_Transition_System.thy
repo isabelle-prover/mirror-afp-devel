@@ -98,6 +98,17 @@ lemma steps_lts_mono: "T\<^sub>1 \<subseteq> T\<^sub>2 \<Longrightarrow> steps_l
 lemma steps_lts_union: "q' \<in> steps_lts T w q \<Longrightarrow> q' \<in> steps_lts (T \<union> T') w q"
 using steps_lts_mono[of T "T \<union> T'"] by blast
 
+lemma Steps_lts_Cons: "Steps_lts T (x#w) S = Steps_lts T (w) ((T `` S) `` {x})"
+proof -
+  have "(T `` S) `` {x} = (\<Union> {y. \<exists>xa\<in>S. y = {y. (xa, x, y) \<in> T}})" by(auto)
+  thus ?thesis
+    unfolding Steps_lts_def Step_lts_def step_lts_def
+    by(clarsimp simp add: image_def)
+qed
+
+lemma Steps_lts_Nil[simp]: "Steps_lts U [] S = S"
+  by (simp add: Steps_lts_def)
+
 lemma Steps_lts_path:
   assumes "q\<^sub>f \<in> Steps_lts T w s"
   shows "\<exists>q\<^sub>0 \<in> s. q\<^sub>f \<in> steps_lts T w q\<^sub>0"
@@ -119,6 +130,25 @@ next
     by (simp add: steps_lts_defs)
   ultimately show ?case
     using \<open>q' \<in> s\<close> by blast
+qed
+
+lemma Steps_lts_Union_steps_lts: "Steps_lts U w S = \<Union> (steps_lts U w ` S)" (is "?L = ?R")
+proof
+  show "?L \<subseteq> ?R" using Steps_lts_path by fast
+next
+  show "?R \<subseteq> ?L"
+    using Steps_lts_mono[of "{_}" S] by blast
+qed
+
+lemma steps_lts_Cons: "steps_lts U (c#w) s = (\<Union>q\<in>{q. (s,c,q)\<in>U}. steps_lts U w q)"
+proof -
+  have "Step_lts U c {s} = {q. (s,c,q)\<in>U}"
+    by (force simp: Step_lts_def step_lts_def)
+  hence "steps_lts U (c#w) s = Steps_lts U w {q. (s,c,q)\<in>U}"
+    by (simp add: Steps_lts_def)
+  also have "\<dots> = (\<Union>q\<in>{q. (s,c,q)\<in>U}. steps_lts U w q)"
+    by (rule Steps_lts_Union_steps_lts)
+  finally show ?thesis .
 qed
 
 lemma Steps_lts_split:

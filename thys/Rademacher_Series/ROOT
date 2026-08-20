@@ -1,0 +1,17 @@
+chapter AFP
+
+session Rademacher_Series (AFP) = Elliptic_Functions +
+  options [timeout = 900]
+  sessions 
+    "HOL-Library"
+    "HOL-Number_Theory"
+    "HOL-Decision_Procs"
+    Elliptic_Functions
+    Pentagonal_Number_Theorem
+    Bessel
+    Farey_Sequences
+  theories
+    Rademacher_Series_Concrete_Bounds
+  document_files
+    root.tex
+    root.bib

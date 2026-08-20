@@ -1,0 +1,38 @@
+title = "The Exponential and Logarithmic Integral"
+date = 2026-07-03
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry provides three closely related special functions: the exponential integral
+$\\text{Ei}$, the logarithmic integral $\\text{li}$, and the complementary exponential
+integral $\\text{Ein}$. All three functions are defined both on the reals and in the complex plane.</p>
+<p>Basic properties are shown, e.g.:</p>
+<ul>
+<li>derivatives, continuity, limits, etc.</li>
+<li>$\\text{Ei}(x) = \\int_{-\\infty}^x e^t/t\\,\\text{d}t$ and $\\text{li}(x) = \\int_0^x 1/\\ln t\\,\\text{d}t$ for 
+    real $x$, where for $x>0$ and $x>1$, respectively, the integrals must be interpreted as Cauchy principal values</li>
+<li>asymptotic expansions for $\\text{Ei}$ and $\\text{li}$</li>
+<li>the relationship to the incomplete gamma function via $\\Gamma(0, x) = -\\text{Ei}(-x)$ and $\\Gamma(0, z) = \\text{Ein}(z) - \\ln z - \\gamma$</li>
+</ul>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

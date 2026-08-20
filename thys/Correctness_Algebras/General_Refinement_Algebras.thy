@@ -18,21 +18,21 @@ begin
 
 lemma Omega_unfold_equal:
   "y\<^sup>\<Omega> = 1 \<squnion> y * y\<^sup>\<Omega>"
-  by (smt Omega_induct Omega_unfold sup_right_isotone order.antisym mult_right_isotone mult_1_right)
+  by (smt (z3) Omega_induct Omega_unfold sup_right_isotone order.antisym mult_right_isotone mult_1_right)
 
 lemma Omega_sup_1:
   "(x \<squnion> y)\<^sup>\<Omega> = x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega>"
   apply (rule order.antisym)
   apply (smt Omega_induct Omega_unfold_equal sup_assoc sup_commute sup_right_isotone mult_assoc mult_right_dist_sup mult_right_isotone mult_1_right order_refl)
-  by (smt Omega_induct Omega_unfold_equal sup_assoc sup_commute mult_assoc mult_left_one mult_right_dist_sup mult_1_right order_refl)
+  by (smt (z3) Omega_induct Omega_unfold_equal sup_assoc sup_commute mult_assoc mult_left_one mult_right_dist_sup mult_1_right order_refl)
 
 lemma Omega_left_slide:
   "(x * y)\<^sup>\<Omega> * x \<le> x * (y * x)\<^sup>\<Omega>"
 proof -
   have "1 \<squnion> y * (x * y)\<^sup>\<Omega> * x \<le> 1 \<squnion> y * x * (1 \<squnion> (y * (x * y)\<^sup>\<Omega>) * x)"
-    by (smt Omega_unfold_equal sup_right_isotone mult_assoc mult_left_one mult_left_sub_dist_sup mult_right_dist_sup mult_right_isotone mult_1_right)
+    by (smt (z3) Omega_unfold_equal sup_right_isotone mult_assoc mult_left_one mult_left_sub_dist_sup mult_right_dist_sup mult_right_isotone mult_1_right)
   thus ?thesis
-    by (smt Omega_induct Omega_unfold_equal le_sup_iff mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone mult_1_right)
+    by (smt (z3) Omega_induct Omega_unfold_equal le_sup_iff mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone mult_1_right)
 qed
 
 end
@@ -128,11 +128,11 @@ lemma Omega_mult:
 
 lemma Omega_sup:
   "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>"
-  by (smt Omega_sup_1 Omega_mult mult_assoc mult_left_dist_sup mult_left_one mult_right_dist_sup mult_1_right)
+  by (smt (z3) Omega_sup_1 Omega_mult mult_assoc mult_left_dist_sup mult_left_one mult_right_dist_sup mult_1_right)
 
 lemma Omega_simulate:
   "z * x \<le> y * z \<Longrightarrow> z * x\<^sup>\<Omega> \<le> y\<^sup>\<Omega> * z"
-  by (smt Omega_induct Omega_unfold_equal sup_right_isotone mult_assoc mult_left_dist_sup mult_left_isotone mult_1_right)
+  by (smt (z3) Omega_induct Omega_unfold_equal sup_right_isotone mult_assoc mult_left_dist_sup mult_left_isotone mult_1_right)
 
 end
 
@@ -150,7 +150,7 @@ begin
 
 lemma Omega_sum_unfold_1:
   "(x \<squnion> y)\<^sup>\<Omega> = y\<^sup>\<Omega> \<squnion> y\<^sup>\<star> * x * (x \<squnion> y)\<^sup>\<Omega>"
-  by (smt Omega1.circ_sup_9 Omega.circ_loop_fixpoint Omega_isolate_equal sup_assoc sup_commute mult_assoc mult_left_zero mult_right_dist_sup)
+  by (smt (z3) Omega1.circ_sup_9 Omega.circ_loop_fixpoint Omega_isolate_equal sup_assoc sup_commute mult_assoc mult_left_zero mult_right_dist_sup)
 
 lemma Omega_sup_3:
   "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<star> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>"
@@ -171,9 +171,9 @@ proof -
   have "z * x\<^sup>\<Omega> = z \<squnion> z * x * x\<^sup>\<Omega>"
     using Omega1.circ_back_loop_fixpoint Omega1.circ_plus_same sup_commute mult_assoc by auto
   also have "... \<le> y * y\<^sup>\<Omega> * z * x\<^sup>\<Omega> \<squnion> z \<squnion> w * x\<^sup>\<Omega>"
-    by (smt assms sup_assoc sup_commute sup_right_isotone le_iff_sup mult_right_dist_sup)
+    by (smt (z3) assms sup_assoc sup_commute sup_right_isotone le_iff_sup mult_right_dist_sup)
   finally have "z * x\<^sup>\<Omega> \<le> (y * y\<^sup>\<Omega>)\<^sup>\<Omega> * (z \<squnion> w * x\<^sup>\<Omega>)"
-    by (smt Omega_induct sup_assoc sup_commute mult_assoc)
+    by (smt (z3) Omega_induct sup_assoc sup_commute mult_assoc)
   thus ?thesis
     by (simp add: Omega.left_plus_circ)
 qed
@@ -183,9 +183,9 @@ lemma Omega_circ_simulate_left_plus:
     shows "x\<^sup>\<Omega> * z \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>"
 proof -
   have "x * ((z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>) \<le> (z * y\<^sup>\<Omega> \<squnion> w \<squnion> x * x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>"
-    by (smt assms mult_assoc mult_left_dist_sup sup_left_isotone mult_left_isotone)
+    by (smt (z3) assms mult_assoc mult_left_dist_sup sup_left_isotone mult_left_isotone)
   also have "... \<le> z * y\<^sup>\<Omega> * y\<^sup>\<Omega> \<squnion> w * y\<^sup>\<Omega> \<squnion> x\<^sup>\<Omega> * w * y\<^sup>\<Omega>"
-    by (smt Omega.left_plus_below_circ sup_right_isotone mult_left_isotone mult_right_dist_sup)
+    by (smt (z3) Omega.left_plus_below_circ sup_right_isotone mult_left_isotone mult_right_dist_sup)
   finally have 1: "x * ((z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>) \<le> (z \<squnion> x\<^sup>\<Omega> * w) * y\<^sup>\<Omega>"
     by (metis Omega.circ_transitive_equal mult_assoc Omega.circ_reflexive sup_assoc le_iff_sup mult_left_one mult_right_dist_sup)
   have "x\<^sup>\<Omega> * z  = x\<^sup>\<Omega> * bot \<squnion> x\<^sup>\<star> * z"
@@ -272,7 +272,7 @@ lemma Omega_sup:
   "(x \<squnion> y)\<^sup>\<Omega> = (x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega>"
 proof -
   have "(x\<^sup>\<Omega> * y)\<^sup>\<Omega> * x\<^sup>\<Omega> = (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>\<^sup>\<star> * x\<^sup>\<Omega>"
-    by (smt sup_commute Omega_def mult_assoc mult_right_dist_sup mult_bot_add_omega omega_left_zero_equal star.circ_sup_1)
+    by (smt (z3) sup_commute Omega_def mult_assoc mult_right_dist_sup mult_bot_add_omega omega_left_zero_equal star.circ_sup_1)
   thus ?thesis
     using Omega_def Omega_sup_1 comb2.circ_slide_1 omega_left_zero_equal by auto
 qed

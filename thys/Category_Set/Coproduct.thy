@@ -155,7 +155,7 @@ proof (rule ccontr, clarify)
   then have fact2: "\<f> = ((g \<amalg> h) \<circ>\<^sub>c (right_coproj X Y)) \<circ>\<^sub>c y"
     by (typecheck_cfuncs, smt (verit, ccfv_SIG) comp_associative2 factors_through_def2 gUh_def h_def id_right_unit2 terminal_func_comp_elem terminal_func_unique)
   also have "... = ((g \<amalg> h) \<circ>\<^sub>c (left_coproj X Y)) \<circ>\<^sub>c x"
-    by (smt BWOC comp_associative2 gUh_type left_proj_type right_proj_type x_type y_type) 
+    by (smt (z3) BWOC comp_associative2 gUh_type left_proj_type right_proj_type x_type y_type) 
   also have "... = \<t>"
     by (simp add: fact1 gUh_def)
   ultimately show False
@@ -307,7 +307,7 @@ lemma coprod_eq:
   shows "a = b \<longleftrightarrow> 
     (a \<circ>\<^sub>c left_coproj X Y   = b \<circ>\<^sub>c left_coproj X Y 
       \<and> a \<circ>\<^sub>c right_coproj X Y  = b \<circ>\<^sub>c right_coproj X Y)"
-  by (smt assms cfunc_coprod_unique cfunc_type_def codomain_comp domain_comp left_proj_type right_proj_type)
+  by (smt (z3) assms cfunc_coprod_unique cfunc_type_def codomain_comp domain_comp left_proj_type right_proj_type)
 
 lemma coprod_eqI:
   assumes "a : X \<Coprod> Y \<rightarrow> Z" "b : X \<Coprod> Y \<rightarrow> Z"
@@ -1194,7 +1194,7 @@ proof -
           have "\<langle>a, left_coproj B C \<circ>\<^sub>c b\<rangle> = \<langle>id A \<circ>\<^sub>c a, left_coproj B C \<circ>\<^sub>c b\<rangle>"
             using ab_def id_left_unit2 by force
           also have "... = (id A \<times>\<^sub>f left_coproj B C)  \<circ>\<^sub>c \<langle>a, b\<rangle>"
-            by (smt ab_def cfunc_cross_prod_comp_cfunc_prod id_type left_proj_type)
+            by (smt (z3) ab_def cfunc_cross_prod_comp_cfunc_prod id_type left_proj_type)
           also have "... = (\<phi> \<circ>\<^sub>c left_coproj (A \<times>\<^sub>c B) (A \<times>\<^sub>c C)) \<circ>\<^sub>c \<langle>a, b\<rangle>"
             unfolding \<phi>_def using  left_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
           also have "... = \<phi> \<circ>\<^sub>c x"
@@ -1228,7 +1228,7 @@ proof -
         have "\<langle>a, left_coproj B C \<circ>\<^sub>c b\<rangle> = \<langle>id A \<circ>\<^sub>c a, left_coproj B C \<circ>\<^sub>c b\<rangle>"
           using ab_def id_left_unit2 by force
         also have "... = (id A \<times>\<^sub>f left_coproj B C) \<circ>\<^sub>c \<langle>a, b\<rangle>"
-          by (smt ab_def cfunc_cross_prod_comp_cfunc_prod id_type left_proj_type)
+          by (smt (z3) ab_def cfunc_cross_prod_comp_cfunc_prod id_type left_proj_type)
         also have "... = (\<phi> \<circ>\<^sub>c left_coproj (A \<times>\<^sub>c B) (A \<times>\<^sub>c C)) \<circ>\<^sub>c \<langle>a, b\<rangle>"
           unfolding \<phi>_def using left_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
         also have "... = \<phi> \<circ>\<^sub>c x"
@@ -1270,7 +1270,7 @@ proof -
         have "\<langle>a, right_coproj B C \<circ>\<^sub>c c\<rangle> = \<langle>id(A) \<circ>\<^sub>c a, right_coproj B C \<circ>\<^sub>c c\<rangle>"
           using ac_def id_left_unit2 by force
         also have "... = (id A \<times>\<^sub>f right_coproj B C)  \<circ>\<^sub>c \<langle>a, c\<rangle>"
-          by (smt ac_def cfunc_cross_prod_comp_cfunc_prod id_type right_proj_type)
+          by (smt (z3) ac_def cfunc_cross_prod_comp_cfunc_prod id_type right_proj_type)
         also have "... = (\<phi> \<circ>\<^sub>c right_coproj (A \<times>\<^sub>c B) (A \<times>\<^sub>c C)) \<circ>\<^sub>c \<langle>a, c\<rangle>"
           unfolding \<phi>_def using right_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
         also have "... = \<phi> \<circ>\<^sub>c x"
@@ -1302,7 +1302,7 @@ proof -
           have "\<langle>a, right_coproj B C \<circ>\<^sub>c c\<rangle> = \<langle>id A \<circ>\<^sub>c a, right_coproj B C \<circ>\<^sub>c c\<rangle>"
             using ac_def id_left_unit2 by force
           also have "... = (id A \<times>\<^sub>f right_coproj B C)  \<circ>\<^sub>c \<langle>a,  c\<rangle>"
-            by (smt ac_def cfunc_cross_prod_comp_cfunc_prod id_type right_proj_type)
+            by (smt (z3) ac_def cfunc_cross_prod_comp_cfunc_prod id_type right_proj_type)
           also have "... = (\<phi> \<circ>\<^sub>c right_coproj (A \<times>\<^sub>c B) (A \<times>\<^sub>c C)) \<circ>\<^sub>c \<langle>a, c\<rangle>"
             unfolding \<phi>_def using right_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
           also have "... = \<phi> \<circ>\<^sub>c x"
@@ -1845,17 +1845,17 @@ qed
 lemma try_cast_m_m:
   assumes m_type: "monomorphism m" "m : X \<rightarrow> Y"
   shows "(try_cast m) \<circ>\<^sub>c m = left_coproj X (Y \<setminus> (X,m))"
-  by (smt comp_associative2 complement_morphism_type id_left_unit2 into_super_def into_super_type left_coproj_cfunc_coprod left_proj_type m_type try_cast_into_super try_cast_type)
+  by (smt (z3) comp_associative2 complement_morphism_type id_left_unit2 into_super_def into_super_type left_coproj_cfunc_coprod left_proj_type m_type try_cast_into_super try_cast_type)
 
 lemma try_cast_m_m':
   assumes m_type: "monomorphism m" "m : X \<rightarrow> Y"
   shows "(try_cast m) \<circ>\<^sub>c m\<^sup>c = right_coproj X (Y \<setminus> (X,m))"
-  by (smt comp_associative2 complement_morphism_type id_left_unit2 into_super_def into_super_type m_type(1) m_type(2) right_coproj_cfunc_coprod right_proj_type try_cast_into_super try_cast_type)
+  by (smt (z3) comp_associative2 complement_morphism_type id_left_unit2 into_super_def into_super_type m_type(1) m_type(2) right_coproj_cfunc_coprod right_proj_type try_cast_into_super try_cast_type)
 
 lemma try_cast_mono:
   assumes m_type: "monomorphism m" "m : X \<rightarrow> Y"
   shows "monomorphism(try_cast m)"
-  by (smt cfunc_type_def comp_monic_imp_monic' id_isomorphism into_super_type iso_imp_epi_and_monic try_cast_def2 assms)  
+  by (smt (z3) cfunc_type_def comp_monic_imp_monic' id_isomorphism into_super_type iso_imp_epi_and_monic try_cast_def2 assms)  
 
 subsection \<open>Cases\<close>
 
@@ -1972,7 +1972,7 @@ proof -
   have fact2: "(g \<circ>\<^sub>c k) \<circ>\<^sub>c (left_coproj (A \<Coprod> B) C) = (left_coproj (A \<Coprod> B) C)"
     by (typecheck_cfuncs, smt (verit) cfunc_coprod_comp cfunc_coprod_unique comp_associative2 comp_type f_prop g_prop g_type h_def h_type j_def k_def k_type left_coproj_cfunc_coprod left_proj_type m_def p_def p_type q_def right_proj_type)
   have fact3: "(g \<circ>\<^sub>c k) \<circ>\<^sub>c (right_coproj (A \<Coprod> B) C) = (right_coproj (A \<Coprod> B) C)"
-    by (smt comp_associative2 comp_type f_def g_prop g_type h_type j_def k_def k_type q_type right_coproj_cfunc_coprod right_proj_type)
+    by (smt (z3) comp_associative2 comp_type f_def g_prop g_type h_type j_def k_def k_type q_type right_coproj_cfunc_coprod right_proj_type)
   have fact4: "(k \<circ>\<^sub>c g) \<circ>\<^sub>c (right_coproj A (B \<Coprod> C)) = (right_coproj A (B \<Coprod> C))"
     by (typecheck_cfuncs, smt (verit, ccfv_threshold) cfunc_coprod_unique cfunc_type_def comp_associative comp_type f_prop g_prop h_prop2 h_type j_def k_def left_coproj_cfunc_coprod left_proj_type p_def q_def right_coproj_cfunc_coprod right_proj_type)
   have fact5: "(k \<circ>\<^sub>c g) = id( A \<Coprod> (B \<Coprod> C))"
@@ -2121,7 +2121,7 @@ proof-
           also have "... = (left_coproj C D \<circ>\<^sub>c f) \<circ>\<^sub>c a'"
             unfolding \<phi>_def using f_def g_def a'_def left_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
           ultimately show "a = a'"
-            by (smt a'_def a_def cfunc_type_def coproj_f_inject domain_comp f_def injective_def left_proj_type)
+            by (smt (z3) a'_def a_def cfunc_type_def coproj_f_inject domain_comp f_def injective_def left_proj_type)
         qed
         then show "x=y"
           by (simp add:  a'_def(2) a_def(2))
@@ -2165,7 +2165,7 @@ proof-
           have "right_coproj C D \<circ>\<^sub>c (g \<circ>\<^sub>c b) = (right_coproj C D \<circ>\<^sub>c g) \<circ>\<^sub>c b"
             using b_def cfunc_type_def comp_associative g_def right_proj_type by auto
           also have "...  = \<phi> \<circ>\<^sub>c x"
-            by (smt \<phi>_def \<phi>_type b_def comp_associative2 comp_type f_def(1) g_def(1) left_proj_type right_coproj_cfunc_coprod right_proj_type)
+            by (smt (z3) \<phi>_def \<phi>_type b_def comp_associative2 comp_type f_def(1) g_def(1) left_proj_type right_coproj_cfunc_coprod right_proj_type)
           also have "... = \<phi> \<circ>\<^sub>c y"
             by (meson equals)
           also have "... = (\<phi> \<circ>\<^sub>c left_coproj A B) \<circ>\<^sub>c a'"
@@ -2186,7 +2186,7 @@ proof-
         then have "b = b'"
         proof - 
           have "(right_coproj C D \<circ>\<^sub>c g) \<circ>\<^sub>c b = \<phi> \<circ>\<^sub>c x"
-            by (smt \<phi>_def \<phi>_type b_def comp_associative2 comp_type f_def(1) g_def(1) left_proj_type right_coproj_cfunc_coprod right_proj_type)
+            by (smt (z3) \<phi>_def \<phi>_type b_def comp_associative2 comp_type f_def(1) g_def(1) left_proj_type right_coproj_cfunc_coprod right_proj_type)
           also have "... = \<phi> \<circ>\<^sub>c y"
             by (meson equals)
           also have "... = (\<phi> \<circ>\<^sub>c right_coproj A B) \<circ>\<^sub>c b'"
@@ -2194,7 +2194,7 @@ proof-
           also have "... = (right_coproj C D \<circ>\<^sub>c g) \<circ>\<^sub>c b'"
             unfolding \<phi>_def using f_def g_def b'_def right_coproj_cfunc_coprod by (typecheck_cfuncs, auto)
           ultimately show "b = b'"
-            by (smt b'_def b_def cfunc_type_def coproj_g_inject domain_comp g_def injective_def right_proj_type)
+            by (smt (z3) b'_def b_def cfunc_type_def coproj_g_inject domain_comp g_def injective_def right_proj_type)
         qed
         then show "x = y"
           by (simp add: b'_def(2) b_def)

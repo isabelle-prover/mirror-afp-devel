@@ -11,96 +11,47 @@ text \<open>This theory contains several lemmas which might be of interest to th
 
 theory Missing_Unsorted
 imports
-  HOL.Complex "HOL-Computational_Algebra.Factorial_Ring"
+  Complex_Main "HOL-Computational_Algebra.Factorial_Ring"
 begin
-
-lemma bernoulli_inequality: 
-  assumes x: "-1 \<le> (x :: 'a :: linordered_field)"
-  shows "1 + of_nat n * x \<le> (1 + x) ^ n"
-proof (induct n)
-  case (Suc n)
-  have "1 + of_nat (Suc n) * x = 1 + x + of_nat n * x" by (simp add: field_simps)
-  also have "\<dots> \<le> \<dots> + of_nat n * x ^ 2" by simp
-  also have "\<dots> = (1 + of_nat n * x) * (1 + x)" by (simp add: field_simps power2_eq_square)
-  also have "\<dots> \<le> (1 + x) ^ n * (1 + x)"
-    by (rule mult_right_mono[OF Suc], insert x, auto)
-  also have "\<dots> = (1 + x) ^ (Suc n)" by simp
-  finally show ?case .
-qed simp
 
 context
   fixes b :: "'a :: archimedean_field"
   assumes b: "0 < b" "b < 1"
 begin
-private lemma pow_one: "b ^ x \<le> 1" using power_Suc_less_one[OF b, of "x - 1"] by (cases x, auto)
 
-private lemma pow_zero: "0 < b ^ x" using b(1) by simp
-
-lemma exp_tends_to_zero: 
-  assumes c: "c > 0"
-  shows "\<exists> x. b ^ x \<le> c" 
-proof (rule ccontr)
-  assume not: "\<not> ?thesis"
-  define bb where "bb = inverse b"
-  define cc where "cc = inverse c"
-  from b have bb: "bb > 1" unfolding bb_def by (rule one_less_inverse)  
-  from c have cc: "cc > 0" unfolding cc_def by simp
-  define bbb where "bbb = bb - 1"
-  have id: "bb = 1 + bbb" and bbb: "bbb > 0" and bm1: "bbb \<ge> -1" unfolding bbb_def using bb by auto
-  have "\<exists> n. cc / bbb < of_nat n" by (rule reals_Archimedean2)
-  then obtain n where lt: "cc / bbb < of_nat n" by auto
-  from not have "\<not> b ^ n \<le> c" by auto
-  hence bnc: "b ^ n > c" by simp
-  have "bb ^ n = inverse (b ^ n)" unfolding bb_def by (rule power_inverse)
-  also have "\<dots> < cc" unfolding cc_def
-    by (rule less_imp_inverse_less[OF bnc c])
-  also have "\<dots> < bbb * of_nat n" using lt bbb by (metis mult.commute pos_divide_less_eq)
-  also have "\<dots> \<le> bb ^ n"
-    using bernoulli_inequality[OF bm1, folded id, of n] by (simp add: ac_simps)
-  finally show False by simp
-qed
-
-lemma linear_exp_bound: "\<exists> p. \<forall> x. b ^ x * of_nat x \<le> p"
+lemma linear_exp_bound: "\<exists> p. \<forall> n. b ^ n * of_nat n \<le> p"
 proof -
-  from b have "1 - b > 0" by simp
-  from exp_tends_to_zero[OF this]
-  obtain x0 where x0: "b ^ x0 \<le> 1 - b" ..
-  {
-    fix x
-    assume "x \<ge> x0"
-    hence "\<exists> y. x = x0 + y" by arith
-    then obtain y where x: "x = x0 + y" by auto
-    have "b ^ x = b ^ x0 * b ^ y" unfolding x by (simp add: power_add)
-    also have "\<dots> \<le> b ^ x0" using pow_one[of y] pow_zero[of x0] by auto
-    also have "\<dots> \<le> 1 - b" by (rule x0)
-    finally have "b ^ x \<le> 1 - b" .
-  } note x0 = this
-  define bs where "bs = insert 1 { b ^ Suc x * of_nat (Suc x) | x . x \<le> x0}"
-  have bs: "finite bs" unfolding bs_def by auto
+  obtain n0 where x0: "b ^ n0 \<le> 1 - b"
+    by (meson arch_pow_inv b diff_gt_0_iff_gt order.strict_iff_not)
+  have *: "b ^ n \<le> 1 - b" if "n \<ge> n0" for n
+   by (metis that b order_trans power_decreasing_iff x0)
+  define bs where "bs \<equiv> insert 1 ((\<lambda>n. b ^ Suc n * of_nat (Suc n)) ` {..n0})"
+  have "finite bs" unfolding bs_def by auto
   define p where "p = Max bs"
-  have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p" unfolding p_def using bs by simp
+  have bs: "\<And> b. b \<in> bs \<Longrightarrow> b \<le> p"
+    by (simp add: \<open>finite bs\<close> p_def)
   hence p1: "p \<ge> 1" unfolding bs_def by auto
   show ?thesis
   proof (intro allI exI)
-    fix x
-    show "b ^ x * of_nat x \<le> p"
-    proof (induct x)
-      case (Suc x)
+    fix n
+    show "b ^ n * of_nat n \<le> p"
+    proof (induct n)
+      case (Suc n)
       show ?case
-      proof (cases "x \<le> x0")
+      proof (cases "n \<le> n0")
         case True
-        show ?thesis 
-          by (rule bs, unfold bs_def, insert True, auto)
+        with bs show ?thesis 
+          by (auto simp: bs_def)
       next
         case False
-        let ?x = "of_nat x :: 'a"
-        have "b ^ (Suc x) * of_nat (Suc x) = b * (b ^ x * ?x) + b ^ Suc x" by (simp add: field_simps)
-        also have "\<dots> \<le> b * p + b ^ Suc x"
+        let ?x = "of_nat n :: 'a"
+        have "b ^ (Suc n) * of_nat (Suc n) = b * (b ^ n * ?x) + b ^ Suc n" by (simp add: field_simps)
+        also have "\<dots> \<le> b * p + b ^ Suc n"
           using b by (intro add_right_mono[OF mult_left_mono[OF Suc]]) auto
-        also have "\<dots> = p - ((1 - b) * p - b ^ (Suc x))" by (simp add: field_simps)
+        also have "\<dots> = p - ((1 - b) * p - b ^ (Suc n))" by (simp add: field_simps)
         also have "\<dots> \<le> p - 0"
         proof -
-          have "b ^ Suc x \<le> 1 - b" using x0[of "Suc x"] False by auto
+          have "b ^ Suc n \<le> 1 - b" using *[of "Suc n"] False by auto
           also have "\<dots> \<le> (1 - b) * p" using b p1 by auto
           finally show ?thesis
             by (intro diff_left_mono, simp)
@@ -111,13 +62,13 @@ proof -
   qed
 qed
 
-lemma poly_exp_bound: "\<exists> p. \<forall> x. b ^ x * of_nat x ^ deg \<le> p" 
+lemma poly_exp_bound: "\<exists> p. \<forall> n. b ^ n * of_nat n ^ deg \<le> p" 
 proof -
   show ?thesis
   proof (induct deg)
     case 0
     show ?case
-      by (rule exI[of _ 1], intro allI, insert pow_one, auto)
+      using b power_decreasing_iff by auto
   next
     case (Suc deg)
     then obtain q where IH: "\<And> x. b ^ x * (of_nat x) ^ deg \<le> q" by auto
@@ -160,7 +111,7 @@ proof -
           also have "c * \<dots> = (2 ^ Suc deg) * ((b ^ x * ?x ^ deg) * (b ^ x * ?x ^ deg))" 
             unfolding c_def by (simp add: ac_simps)  
           also have "\<dots> \<le> (2 ^ Suc deg) * (p * p)"
-            by (rule mult_left_mono[OF mult_mono[OF IH IH p]], insert pow_zero[of x], auto)
+            using mult_left_mono[OF mult_mono[OF IH IH p]] b by fastforce
           finally show "f (2 * x) \<le> (2 ^ Suc deg) * (p * p)" .
         qed (auto simp: f_def)
         hence "?f (2 * x) \<le> (2 ^ Suc deg) * (p * p)" unfolding f_def .
@@ -362,29 +313,7 @@ lemma real_of_rat_sgn: "sgn (of_rat x) = real_of_rat (sgn x)"
 lemma inverse_le_iff_sgn: 
   assumes sgn: "sgn x = sgn y"
   shows "(inverse (x :: real) \<le> inverse y) = (y \<le> x)"
-proof (cases "x = 0")
-  case True
-  with sgn have "sgn y = 0" by simp
-  hence "y = 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0"; auto)
-  thus ?thesis using True by simp
-next
-  case False note x = this
-  show ?thesis
-  proof (cases "x < 0")
-    case True
-    with x sgn have "sgn y = -1" by simp
-    hence "y < 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
-    show ?thesis
-      by (rule inverse_le_iff_le_neg[OF True \<open>y < 0\<close>])
-  next
-    case False
-    with x have x: "x > 0" by auto
-    with sgn have "sgn y = 1" by auto
-    hence "y > 0" unfolding sgn_real_def by (cases "y = 0"; cases "y < 0", auto)
-    show ?thesis
-      by (rule inverse_le_iff_le[OF x \<open>y > 0\<close>])
-  qed
-qed
+  by (metis inverse_le_imp_le inverse_le_imp_le_neg linorder_not_less nle_le sgn sgn_0_0 sgn_le_0_iff)
 
 lemma inverse_le_sgn: 
   assumes sgn: "sgn x = sgn y" and xy: "x \<le> (y :: real)"
@@ -393,20 +322,9 @@ lemma inverse_le_sgn:
 
 lemma set_list_update: "set (xs [i := k]) = 
   (if i < length xs then insert k (set (take i xs) \<union> set (drop (Suc i) xs)) else set xs)"
-proof (induct xs arbitrary: i)
-  case (Cons x xs i) 
-  thus ?case
-    by (cases i, auto)
-qed simp
+  by (simp add: leI list_update_beyond set_list_update)
 
-lemma prod_list_dvd: assumes "(x :: 'a :: comm_monoid_mult) \<in> set xs"
-  shows "x dvd prod_list xs"
-proof -
-  from assms[unfolded in_set_conv_decomp] obtain ys zs where xs: "xs = ys @ x # zs" by auto
-  show ?thesis unfolding xs dvd_def by (intro exI[of _ "prod_list (ys @ zs)"], simp add: ac_simps)
-qed
-
-lemma dvd_prod: 
+lemma dvd_prod:
 fixes A::"'b set" 
 assumes "\<exists>b\<in>A. a dvd f b" "finite A"
 shows "a dvd prod f A" 
@@ -431,16 +349,7 @@ end
 lemma dvd_imp_mult_div_cancel_left[simp]:
   assumes "(a :: 'a :: semidom_divide) dvd b"
   shows "a * (b div a) = b"
-proof(cases "b = 0")
-  case True then show ?thesis by auto
-next
-  case False
-  with dvdE[OF assms] obtain c where *: "b = a * c" by auto
-  also with False have "a \<noteq> 0" by auto
-  then have "a * c div a = c" by auto
-  also note *[symmetric]
-  finally show ?thesis.
-qed
+  using assms nonzero_mult_div_cancel_left by fastforce
 
 lemma (in semidom) prod_list_zero_iff[simp]: 
   "prod_list xs = 0 \<longleftrightarrow> 0 \<in> set xs" by (induction xs, auto)
@@ -474,7 +383,8 @@ lemma not_irreducibleE:
 
 lemma prime_elem_dvd_prod_list:
   assumes p: "prime_elem p" and pA: "p dvd prod_list A" shows "\<exists>a \<in> set A. p dvd a"
-proof(insert pA, induct A)
+  using pA
+proof(induct A)
   case Nil
   with p show ?case by (simp add: prime_elem_not_unit)
 next
@@ -484,7 +394,8 @@ qed
 
 lemma prime_elem_dvd_prod_mset:
   assumes p: "prime_elem p" and pA: "p dvd prod_mset A" shows "\<exists>a \<in># A. p dvd a"
-proof(insert pA, induct A)
+  using pA
+proof(induct A)
   case empty
   with p show ?case by (simp add: prime_elem_not_unit)
 next
@@ -495,13 +406,7 @@ qed
 lemma mult_unit_dvd_iff[simp]:
   assumes "b dvd 1"
   shows "a * b dvd c \<longleftrightarrow> a dvd c"
-proof
-  assume "a * b dvd c"
-  with assms show "a dvd c" using dvd_mult_left[of a b c] by simp
-next
-  assume "a dvd c"
-  with assms mult_dvd_mono show "a * b dvd c" by fastforce
-qed
+  by (metis assms dvd.dvdE local.dvd_mult_left local.dvd_refl local.mult_dvd_mono local.one_dvd)
 
 lemma mult_unit_dvd_iff'[simp]: "a dvd 1 \<Longrightarrow> (a * b) dvd c \<longleftrightarrow> b dvd c"
   using mult_unit_dvd_iff [of a b c] by (simp add: ac_simps)
@@ -548,15 +453,9 @@ lemma irreducible_altdef:
   using local.irreducibleD' irreducibleI' irreducible_def by blast
 
 lemma dvd_mult_unit_iff:
-  assumes b: "b dvd 1"
+  assumes "b dvd 1"
   shows "a dvd c * b \<longleftrightarrow> a dvd c"
-proof-
-  from b obtain b' where 1: "b * b' = 1" by (elim dvdE, auto)
-  then have b0: "b \<noteq> 0" by auto
-  from 1 have "a = (a * b') * b" by (simp add: ac_simps)
-  also have "\<dots> dvd c * b \<longleftrightarrow> a * b' dvd c" using b0 by auto
-  finally show ?thesis by (auto intro: dvd_mult_left)
-qed
+  by (meson assms local.dvd_refl local.dvd_trans local.mult_unit_dvd_iff)
 
 lemma dvd_mult_unit_iff': "b dvd 1 \<Longrightarrow> a dvd b * c \<longleftrightarrow> a dvd c"
   using dvd_mult_unit_iff [of b a c] by (simp add: ac_simps)
@@ -584,45 +483,22 @@ proof (rule irreducibleI)
 qed (insert assms, simp_all add: prime_elem_def)
 
 lemma unit_imp_dvd [dest]: "b dvd 1 \<Longrightarrow> b dvd a"
-  by (rule dvd_trans [of _ 1]) simp_all
+  using local.dvd_trans local.one_dvd by blast
 
 lemma unit_mult_left_cancel: "a dvd 1 \<Longrightarrow> a * b = a * c \<longleftrightarrow> b = c"
-  using mult_cancel_left [of a b c] by auto
+  by auto
 
 lemma unit_mult_right_cancel: "a dvd 1 \<Longrightarrow> b * a = c * a \<longleftrightarrow> b = c"
-  using unit_mult_left_cancel [of a b c] by (auto simp add: ac_simps)
-
-text \<open>New parts from here\<close>
-
-lemma irreducible_multD:
-  assumes l: "irreducible (a*b)"
-  shows "a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
-proof-
-  from l have "a dvd 1 \<or> b dvd 1" using irreducibleD by auto
-  then show ?thesis
-  proof(elim disjE)
-    assume a: "a dvd 1"
-    with l have "irreducible b"
-      unfolding irreducible_def
-      by (metis is_unit_mult_iff mult.left_commute mult_not_zero)
-    with a show ?thesis by auto
-  next
-    assume a: "b dvd 1"
-    with l have "irreducible a"
-      unfolding irreducible_def
-      by (meson is_unit_mult_iff mult_not_zero semiring_normalization_rules(16))
-    with a show ?thesis by auto
-  qed
-qed
+  by auto
 
 end
 
 lemma (in field) irreducible_field[simp]:
-  "irreducible x \<longleftrightarrow> False" by (auto simp: dvd_field_iff irreducible_def)
+  "irreducible x \<longleftrightarrow> False" 
+  by (auto simp: dvd_field_iff irreducible_def)
 
 lemma (in idom) irreducible_mult:
   shows "irreducible (a*b) \<longleftrightarrow> a dvd 1 \<and> irreducible b \<or> b dvd 1 \<and> irreducible a"
   by (auto dest: irreducible_multD simp: irreducible_mult_unit_left irreducible_mult_unit_right)
-
 
 end

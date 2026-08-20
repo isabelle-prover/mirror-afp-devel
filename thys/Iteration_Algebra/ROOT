@@ -1,0 +1,10 @@
+chapter AFP
+
+session Iteration_Algebra = HOL +
+  options [timeout = 600]
+
+  theories
+    Iteration
+
+  document_files
+    "root.tex"

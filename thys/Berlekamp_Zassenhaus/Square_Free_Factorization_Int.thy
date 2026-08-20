@@ -16,7 +16,7 @@ definition yun_wrel :: "int poly \<Rightarrow> rat \<Rightarrow> rat poly \<Righ
 
 definition yun_rel :: "int poly \<Rightarrow> rat \<Rightarrow> rat poly \<Rightarrow> bool" where
   "yun_rel F c f = (yun_wrel F c f
-    \<and> content F = 1 \<and> lead_coeff F > 0 \<and> monic f)" 
+    \<and> Polynomial.content F = 1 \<and> lead_coeff F > 0 \<and> monic f)" 
 
 definition yun_erel :: "int poly \<Rightarrow> rat poly \<Rightarrow> bool" where
   "yun_erel F f = (\<exists> c. yun_rel F c f)" 
@@ -28,12 +28,12 @@ lemma yun_wrelD: assumes "yun_wrel F c f"
 lemma yun_relD: assumes "yun_rel F c f"
   shows "yun_wrel F c f" "map_poly rat_of_int F = smult c f" 
     "degree F = degree f" "F \<noteq> 0" "lead_coeff F > 0" "monic f" 
-    "f = 1 \<longleftrightarrow> F = 1" "content F = 1" 
+    "f = 1 \<longleftrightarrow> F = 1" "Polynomial.content F = 1" 
 proof -
   note * = assms[unfolded yun_rel_def yun_wrel_def, simplified]
   then have "degree (map_poly rat_of_int F) = degree f" by auto
   then show deg: "degree F = degree f" by simp
-  show "F \<noteq> 0" "lead_coeff F > 0" "monic f" "content F = 1" 
+  show "F \<noteq> 0" "lead_coeff F > 0" "monic f" "Polynomial.content F = 1" 
     "map_poly rat_of_int F = smult c f"
     "yun_wrel F c f" using * by (auto simp: yun_wrel_def)
   {
@@ -41,7 +41,7 @@ proof -
     with deg have "degree F = 0" by auto
     from degree0_coeffs[OF this] obtain c where F: "F = [:c:]" and c: "c = lead_coeff F" by auto
     from c * have c0: "c > 0" by auto
-    hence cF: "content F = c" unfolding F content_def by auto
+    hence cF: "Polynomial.content F = c" unfolding F content_def by auto
     with * have "c = 1" by auto
     with F have "F = 1" by simp
   }
@@ -122,8 +122,8 @@ proof -
     from arg_cong[OF fg, of monic] ff(6) gg(6) 
     show "monic (f div g)" using monic_factor by blast
     from dvd have FG: "F = G * (F div G)" by auto
-    from arg_cong[OF FG, of content, unfolded content_mult] ff(8) gg(8)
-    show "content (F div G) = 1" by simp
+    from arg_cong[OF FG, of Polynomial.content, unfolded content_mult] ff(8) gg(8)
+    show "Polynomial.content (F div G) = 1" by simp
     from arg_cong[OF FG, of lead_coeff, unfolded lead_coeff_mult] ff(5) gg(5)
     show "lead_coeff (F div G) > 0" by (simp add: zero_less_mult_iff)
   qed
@@ -169,10 +169,10 @@ proof (intro conjI)
     subst Polynomial.degree_map_poly, auto simp: sgn_if)
   have "H dvd F" unfolding H[symmetric] by auto
   then obtain K where F: "F = H * K" unfolding dvd_def by auto
-  from arg_cong[OF this, of content, unfolded content_mult ff(8)]
-    content_ge_0_int[of H] have "content H = 1"
+  from arg_cong[OF this, of Polynomial.content, unfolded content_mult ff(8)]
+    content_ge_0_int[of H] have "Polynomial.content H = 1"
     by (auto simp add: zmult_eq_1_iff)
-  thus "content (gcd F G) = 1" unfolding H .
+  thus "Polynomial.content (gcd F G) = 1" unfolding H .
 qed
   
 
@@ -282,8 +282,8 @@ proof -
   have "smult (?r b) (?rp f) = smult (?r a) (?rp g)" using b by auto
   hence "?rp (smult b f) = ?rp (smult a g)" by (auto simp: hom_distribs)
   then have fg: "[:b:] * f = [:a:] * g" by auto
-  from arg_cong[OF this, of content, unfolded content_mult f(8) g(8)] 
-  have "content [: b :] = content [: a :]" by simp
+  from arg_cong[OF this, of Polynomial.content, unfolded content_mult f(8) g(8)] 
+  have "Polynomial.content [: b :] = Polynomial.content [: a :]" by simp
   hence abs: "abs a = abs b" unfolding content_def using b a by auto
   from arg_cong[OF fg, of "\<lambda> x. lead_coeff x > 0", unfolded lead_coeff_mult] f(5) g(5) a b 
   have "(a > 0) = (b > 0)" by (simp add: zero_less_mult_iff)
@@ -299,9 +299,9 @@ definition square_free_factorization_int_main :: "int poly \<Rightarrow> (int po
     yun_gcd.yun_monic_factorization gcd f | Some p \<Rightarrow> [(f,1)])"
 
 lemma square_free_factorization_int_main: assumes res: "square_free_factorization_int_main f = fs"
-  and ct: "content f = 1" and lc: "lead_coeff f > 0" 
+  and ct: "Polynomial.content f = 1" and lc: "lead_coeff f > 0" 
   and deg: "degree f \<noteq> 0" 
-shows "square_free_factorization f (1,fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0) \<and>
+shows "square_free_factorization f (1,fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> Polynomial.content fi = 1 \<and> lead_coeff fi > 0) \<and>
   distinct (map snd fs)" 
 proof (cases "square_free_heuristic f")
   case None  
@@ -327,7 +327,7 @@ proof (cases "square_free_heuristic f")
   note sff = square_free_factorizationD[OF this(1)]
   from out_rel have "map snd fs = map snd Fs" by (induct fs Fs rule: list_all2_induct, auto)
   with dist have dist': "distinct (map snd fs)" by auto
-  have main: "square_free_factorization f (1, fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)"
+  have main: "square_free_factorization f (1, fs) \<and> (\<forall> fi i. (fi, i) \<in> set fs \<longrightarrow> Polynomial.content fi = 1 \<and> lead_coeff fi > 0)"
     unfolding square_free_factorization_def split
   proof (intro conjI allI impI)
     from ct have "f \<noteq> 0" by auto
@@ -347,7 +347,7 @@ proof (cases "square_free_heuristic f")
       from square_free_smult[OF c0 b'(1), folded aa(2)]
       show "square_free a" unfolding square_free_def by (force simp: dvd_def hom_distribs)
       show "i > 0" by fact
-      show cnt: "content a = 1" and lc: "lead_coeff a > 0" using aa by auto
+      show cnt: "Polynomial.content a = 1" and lc: "lead_coeff a > 0" using aa by auto
       fix A I
       assume A: "(A,I) \<in> set fs" and diff: "(a,i) \<noteq> (A,I)" 
       from a[unfolded set_conv_nth] obtain k where k: "fs ! k = (a,i)" "k < length fs" by auto
@@ -402,8 +402,8 @@ qed
 
 definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times> (int poly \<times> nat)list" where
   "square_free_factorization_int' f = (if degree f = 0
-    then (lead_coeff f,[]) else (let \<comment> \<open>content factorization\<close>
-      c = content f;
+    then (lead_coeff f,[]) else (let \<comment> \<open>Polynomial.content factorization\<close>
+      c = Polynomial.content f;
       d = (sgn (lead_coeff f) * c);
       g = sdiv_poly f d
       \<comment> \<open>and \<open>square_free\<close> factorization\<close>
@@ -412,12 +412,12 @@ definition square_free_factorization_int' :: "int poly \<Rightarrow> int \<times
 
 lemma square_free_factorization_int': assumes res: "square_free_factorization_int' f = (d, fs)"
   shows "square_free_factorization f (d,fs)" 
-    "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" 
+    "(fi, i) \<in> set fs \<Longrightarrow> Polynomial.content fi = 1 \<and> lead_coeff fi > 0" 
     "distinct (map snd fs)" 
 proof -
   note res = res[unfolded square_free_factorization_int'_def Let_def]
   have "square_free_factorization f (d,fs) 
-    \<and> ((fi, i) \<in> set fs \<longrightarrow> content fi = 1 \<and> lead_coeff fi > 0)
+    \<and> ((fi, i) \<in> set fs \<longrightarrow> Polynomial.content fi = 1 \<and> lead_coeff fi > 0)
     \<and> distinct (map snd fs)"
   proof (cases "degree f = 0")
     case True
@@ -428,17 +428,17 @@ proof -
     let ?s = "sgn (lead_coeff f)" 
     have s: "?s \<in> {-1,1}" using False unfolding sgn_if by auto
     define g where "g = smult ?s f" 
-    let ?d = "?s * content f"
-    have "content g = content ([:?s:] * f)" unfolding g_def by simp
-    also have "\<dots> = content [:?s:] * content f" unfolding content_mult by simp
-    also have "content [:?s:] = 1" using s by (auto simp: content_def)
-    finally have cg: "content g = content f" by simp
+    let ?d = "?s * Polynomial.content f"
+    have "Polynomial.content g = Polynomial.content ([:?s:] * f)" unfolding g_def by simp
+    also have "\<dots> = Polynomial.content [:?s:] * Polynomial.content f" unfolding content_mult by simp
+    also have "Polynomial.content [:?s:] = 1" using s by (auto simp: content_def)
+    finally have cg: "Polynomial.content g = Polynomial.content f" by simp
     from False res 
     have d: "d = ?d" and fs: "fs = square_free_factorization_int_main (sdiv_poly f ?d)" by auto
     let ?g = "primitive_part g" 
     define ng where "ng = primitive_part g" 
     note fs
-    also have "sdiv_poly f ?d = sdiv_poly g (content g)" unfolding cg unfolding g_def
+    also have "sdiv_poly f ?d = sdiv_poly g (Polynomial.content g)" unfolding cg unfolding g_def
       by (rule poly_eqI, unfold coeff_sdiv_poly coeff_smult, insert s, auto simp: div_minus_right)
     finally have fs: "square_free_factorization_int_main ng = fs" 
       unfolding primitive_part_alt_def ng_def by simp
@@ -446,12 +446,12 @@ proof -
     hence lg: "lead_coeff g > 0" unfolding g_def lead_coeff_smult
       by (meson linorder_neqE_linordered_idom sgn_greater sgn_less zero_less_mult_iff)
     hence g0: "g \<noteq> 0" by auto
-    from g0 have "content g \<noteq> 0" by simp
+    from g0 have "Polynomial.content g \<noteq> 0" by simp
     from arg_cong[OF content_times_primitive_part[of g], of lead_coeff, unfolded lead_coeff_smult]
       lg content_ge_0_int[of g] have lg': "lead_coeff ng > 0" unfolding ng_def 
-      by (metis \<open>content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
-    from content_primitive_part[OF g0] have c_ng: "content ng = 1" unfolding ng_def .
-    have "degree ng = degree f" using \<open>content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def
+      by (metis \<open>Polynomial.content g \<noteq> 0\<close> dual_order.antisym dual_order.strict_implies_order zero_less_mult_iff)
+    from content_primitive_part[OF g0] have c_ng: "Polynomial.content ng = 1" unfolding ng_def .
+    have "degree ng = degree f" using \<open>Polynomial.content [:sgn (lead_coeff f):] = 1\<close> g_def ng_def
       by (auto simp add: sgn_eq_0_iff)
     with False have "degree ng \<noteq> 0" by auto
     note main = square_free_factorization_int_main[OF fs c_ng lg' this] 
@@ -459,12 +459,12 @@ proof -
     proof (intro conjI impI)
       {
         assume "(fi, i) \<in> set fs" 
-        with main show "content fi = 1" "0 < lead_coeff fi" by auto
+        with main show "Polynomial.content fi = 1" "0 < lead_coeff fi" by auto
       }
-      have d0: "d \<noteq> 0" using \<open>content [:?s:] = 1\<close> d by (auto simp:sgn_eq_0_iff)
-      have "smult d ng = smult ?s (smult (content g) (primitive_part g))" 
+      have d0: "d \<noteq> 0" using \<open>Polynomial.content [:?s:] = 1\<close> d by (auto simp:sgn_eq_0_iff)
+      have "smult d ng = smult ?s (smult (Polynomial.content g) (primitive_part g))" 
         unfolding ng_def d cg by simp
-      also have "smult (content g) (primitive_part g) = g" using content_times_primitive_part .
+      also have "smult (Polynomial.content g) (primitive_part g) = g" using content_times_primitive_part .
       also have "smult ?s g = f" unfolding g_def using s by auto
       finally have id: "smult d ng = f" .
       from main have "square_free_factorization ng (1, fs)" by auto
@@ -474,7 +474,7 @@ proof -
     qed
   qed
   thus  "square_free_factorization f (d,fs)" 
-    "(fi, i) \<in> set fs \<Longrightarrow> content fi = 1 \<and> lead_coeff fi > 0" "distinct (map snd fs)" by auto
+    "(fi, i) \<in> set fs \<Longrightarrow> Polynomial.content fi = 1 \<and> lead_coeff fi > 0" "distinct (map snd fs)" by auto
 qed
 
  
@@ -576,7 +576,7 @@ proof -
       proof (rule gcdI)
         fix d
         assume d: "d dvd ?x" "d dvd a" 
-        from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (content d)" by auto
+        from content_dvd_contentI[OF d(1)] x have cnt: "is_unit (Polynomial.content d)" by auto
         show "is_unit d"
         proof (cases "degree d = 1")
           case False
@@ -592,10 +592,10 @@ proof -
             by (metis True add.right_neutral degree_0 degree_mult_eq one_neq_zero)
           with True have "degree e = 0" by auto
           from degree0_coeffs[OF this] xde obtain e where xde: "?x = [:e:] * d" by auto
-          from arg_cong[OF this, of content, unfolded content_mult] x
-          have "content [:e:] * content d = 1" by auto
-          also have "content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
-          finally have "\<bar>e\<bar> * content d = 1" .
+          from arg_cong[OF this, of Polynomial.content, unfolded content_mult] x
+          have "Polynomial.content [:e:] * Polynomial.content d = 1" by auto
+          also have "Polynomial.content [:e :] = abs e" by (auto simp: content_def, cases "e = 0", auto)
+          finally have "\<bar>e\<bar> * Polynomial.content d = 1" .
           from pos_zmult_eq_1_iff_lemma[OF this] have "e * e = 1" by (cases "e = 1"; cases "e = -1", auto)
           with arg_cong[OF xde, of "smult e"] have "d = ?x * [:e:]" by auto
           hence "?x dvd d" unfolding dvd_def by blast

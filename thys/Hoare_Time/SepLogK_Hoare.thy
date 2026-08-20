@@ -349,7 +349,7 @@ next
         by (simp add: plus_fun_conv subset_iff) 
            
       have f: "([x \<mapsto> v'] + ps2a)(x \<mapsto> v) = ps2a + [x \<mapsto> v]"
-        by (smt \<open>\<And>thesis. (\<And>v'. \<lbrakk>n1 = 0; ps1 = [x \<mapsto> v']; x \<in> dom ps1\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> \<open>ps1 ## ps2\<close> add2 disjoint_iff_not_equal dom_fun_upd domain_conv fun_upd_upd map_add_upd_left option.distinct(1) plus_fun_conv ps2b sep_add_commute sep_add_zero sep_disj_fun_def) 
+        by (smt (z3) \<open>\<And>thesis. (\<And>v'. \<lbrakk>n1 = 0; ps1 = [x \<mapsto> v']; x \<in> dom ps1\<rbrakk> \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> \<open>ps1 ## ps2\<close> add2 disjoint_iff_not_equal dom_fun_upd domain_conv fun_upd_upd map_add_upd_left option.distinct(1) plus_fun_conv ps2b sep_add_commute sep_add_zero sep_disj_fun_def) 
         
           
       let ?n' = "n2a + n1"
@@ -406,7 +406,7 @@ next
   case (Assign' x v' v Q )
   have "\<And>aa. aa ## [x \<mapsto> v'] \<Longrightarrow>
        \<not> aa ## [x \<mapsto> v] \<Longrightarrow> False"   unfolding sep_disj_fun_def domain_def
-    apply auto by (smt Collect_conj_eq Collect_empty_eq) 
+    apply auto by (smt (z3) Collect_conj_eq Collect_empty_eq) 
   have f: "\<And>v'. domain [x \<mapsto> v'] = {x}" unfolding domain_conv by auto 
      
   { fix ps
@@ -987,7 +987,7 @@ proof -
   have c'': "\<turnstile>\<^sub>3\<^sub>a { (\<lambda>(s,n). I (s,n) \<and> lmaps_to_axpr b True s) } c { (\<lambda>(s, n). I (s, n) \<and> vars b \<subseteq> dom s)  ** $1 }"
     apply(rule strengthen_postR[OF c'])
       unfolding I'
-      by (smt R case_prod_beta prod.sel(1) prod.sel(2))  
+      by (smt (z3) R case_prod_beta prod.sel(1) prod.sel(2))  
    
     have ka: "(\<lambda>(s, n). I (s, n) \<and> vars b \<subseteq> dom s) = I"
       apply rule unfolding I' by auto

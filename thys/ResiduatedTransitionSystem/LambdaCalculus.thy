@@ -2018,7 +2018,7 @@ begin
 
     lemma quotient_by_cnv_is_discrete:
     shows "\<Lambda>q.arr t \<longleftrightarrow> \<Lambda>q.ide t"
-      by (metis Red.Cong_class_memb_is_arr \<Lambda>q.arr_char \<Lambda>q.ide_char' mem_Collect_eq subsetI)
+      by (metis \<Lambda>q.arr_char \<Lambda>q.cong_class_memb_is_arr \<Lambda>q.ide_char\<^sub>Q\<^sub>C\<^sub>N mem_Collect_eq subsetI)
 
     subsection "Normalization"
 
@@ -2212,7 +2212,7 @@ begin
         using \<Lambda>.Lam_is_simulation by simp
       interpret simulation Resid Resid
                   \<open>\<lambda>T. if Arr T then map (\<lambda>t. if \<Lambda>.arr t then \<^bold>\<lambda>\<^bold>[t\<^bold>] else \<^bold>\<sharp>) T else []\<close>
-        using assms Lam.lifts_to_paths by blast
+        using assms Lam.extends_to_paths by blast
       have "map (\<lambda>t. if \<Lambda>.Arr t then \<^bold>\<lambda>\<^bold>[t\<^bold>] else \<^bold>\<sharp>) T = map \<Lambda>.Lam T"
         using assms set_Arr_subset_arr by fastforce
       thus ?thesis
@@ -2228,7 +2228,7 @@ begin
         using assms \<Lambda>.App_is_simulation1 [of b] by simp
       interpret simulation Resid Resid
                   \<open>\<lambda>T. if Arr T then map (\<lambda>t. if \<Lambda>.arr t then t \<^bold>\<circ> b else \<^bold>\<sharp>) T else []\<close>
-        using assms App1.lifts_to_paths by blast
+        using assms App1.extends_to_paths by blast
       have "map (\<lambda>t. if \<Lambda>.arr t then t \<^bold>\<circ> b else \<^bold>\<sharp>) T = map (\<lambda>t. t \<^bold>\<circ> b) T"
         using assms set_Arr_subset_arr by auto
       thus ?thesis
@@ -2244,7 +2244,7 @@ begin
         using assms \<Lambda>.App_is_simulation2 by simp
       interpret simulation Resid Resid
                   \<open>\<lambda>T. if Arr T then map (\<lambda>u. if \<Lambda>.arr u then a \<^bold>\<circ> u else \<^bold>\<sharp>) T else []\<close>
-        using assms App2.lifts_to_paths by blast
+        using assms App2.extends_to_paths by blast
       have "map (\<lambda>u. if \<Lambda>.arr u then a \<^bold>\<circ> u else \<^bold>\<sharp>) T = map (\<lambda>u. a \<^bold>\<circ> u) T"
         using assms set_Arr_subset_arr by auto
       thus ?thesis
@@ -2338,17 +2338,17 @@ begin
     proof -
       interpret P\<^sub>A\<^sub>p\<^sub>p: paths_in_rts \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid
         ..
-      interpret un_App1: simulation P\<^sub>A\<^sub>p\<^sub>p.Resid Resid
+      interpret un_App1': simulation P\<^sub>A\<^sub>p\<^sub>p.Resid Resid
                           \<open>\<lambda>T. if P\<^sub>A\<^sub>p\<^sub>p.Arr T then
                                  map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T
                                else []\<close>
-        using un_App1.lifts_to_paths by simp
+        using un_App1.extends_to_paths by simp
       have 1: "map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T = map \<Lambda>.un_App1 T"
         using assms set_Arr_subset_arr by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr_char)
       have 2: "P\<^sub>A\<^sub>p\<^sub>p.Arr T"
         using assms set_Arr_subset_arr \<Lambda>\<^sub>A\<^sub>p\<^sub>p.path_reflection [of T] by blast
       hence "arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T else [])"
-        using un_App1.preserves_reflects_arr [of T] by blast
+        using un_App1'.preserves_reflects_arr [of T] by blast
       hence "Arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App1 t else \<^bold>\<sharp>) T else [])"
         using arr_char by auto
       hence "Arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map \<Lambda>.un_App1 T else [])"
@@ -2363,17 +2363,17 @@ begin
     proof -
       interpret P\<^sub>A\<^sub>p\<^sub>p: paths_in_rts \<Lambda>\<^sub>A\<^sub>p\<^sub>p.resid
         ..
-      interpret un_App2: simulation P\<^sub>A\<^sub>p\<^sub>p.Resid Resid
+      interpret un_App2': simulation P\<^sub>A\<^sub>p\<^sub>p.Resid Resid
                            \<open>\<lambda>T. if P\<^sub>A\<^sub>p\<^sub>p.Arr T then
                                   map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T
                                 else []\<close>
-        using un_App2.lifts_to_paths by simp
+        using un_App2.extends_to_paths by simp
       have 1: "map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T = map \<Lambda>.un_App2 T"
         using assms set_Arr_subset_arr by (auto simp add: \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr_char)
       have 2: "P\<^sub>A\<^sub>p\<^sub>p.Arr T"
         using assms set_Arr_subset_arr \<Lambda>\<^sub>A\<^sub>p\<^sub>p.path_reflection [of T] by blast
       hence "arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T else [])"
-        using un_App2.preserves_reflects_arr [of T] by blast
+        using un_App2'.preserves_reflects_arr [of T] by blast
       hence "Arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map (\<lambda>t. if \<Lambda>\<^sub>A\<^sub>p\<^sub>p.arr t then \<Lambda>.un_App2 t else \<^bold>\<sharp>) T else [])"
         using arr_char by blast
       hence "Arr (if P\<^sub>A\<^sub>p\<^sub>p.Arr T then map \<Lambda>.un_App2 T else [])"
@@ -2402,7 +2402,7 @@ begin
                         \<open>\<lambda>T. if Arr T then
                                map (\<lambda>t. if \<Lambda>.arr t then \<^bold>\<lambda>\<^bold>[t\<^bold>] else \<^bold>\<sharp>) T
                          else []\<close>
-        using Lam.lifts_to_paths by simp
+        using Lam.extends_to_paths by simp
       have "\<And>T. Arr T \<Longrightarrow> map (\<lambda>t. if \<Lambda>.arr t then \<^bold>\<lambda>\<^bold>[t\<^bold>] else \<^bold>\<sharp>) T = map \<Lambda>.Lam T"
         using set_Arr_subset_arr by auto
       moreover have "Arr (T \<^sup>*\\\<^sup>* U)"
@@ -2423,7 +2423,7 @@ begin
         using assms \<Lambda>.App_is_simulation2 by simp
       interpret Appx: simulation Resid Resid
                         \<open>\<lambda>T. if Arr T then map (\<lambda>t. if \<Lambda>.arr t then x \<^bold>\<circ> t else \<^bold>\<sharp>) T else []\<close>
-        using App.lifts_to_paths by simp
+        using App.extends_to_paths by simp
       have "\<And>T. Arr T \<Longrightarrow> map (\<lambda>t. if \<Lambda>.arr t then x \<^bold>\<circ> t else \<^bold>\<sharp>) T = map (\<Lambda>.App x) T"
         using set_Arr_subset_arr by auto
       moreover have "Arr (T \<^sup>*\\\<^sup>* U)"
@@ -2444,7 +2444,7 @@ begin
         using assms \<Lambda>.App_is_simulation1 by simp
       interpret Appx: simulation Resid Resid
                         \<open>\<lambda>T. if Arr T then map (\<lambda>t. if \<Lambda>.arr t then t \<^bold>\<circ> x else \<^bold>\<sharp>) T else []\<close>
-        using App.lifts_to_paths by simp
+        using App.extends_to_paths by simp
       have "\<And>T. Arr T \<Longrightarrow> map (\<lambda>t. if \<Lambda>.arr t then t \<^bold>\<circ> x else \<^bold>\<sharp>) T = map (\<lambda>t. t \<^bold>\<circ> x) T"
         using set_Arr_subset_arr by auto
       moreover have "Arr (T \<^sup>*\\\<^sup>* U)"

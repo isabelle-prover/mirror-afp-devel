@@ -282,7 +282,7 @@ text \<open>Problem definition:
       apply auto []
       apply auto []
       apply clarsimp
-      by (smt less_Suc_eq_0_disj nth_Cons_0 nth_Cons_Suc)
+      by (smt (z3) less_Suc_eq_0_disj nth_Cons_0 nth_Cons_Suc)
   
   end
     

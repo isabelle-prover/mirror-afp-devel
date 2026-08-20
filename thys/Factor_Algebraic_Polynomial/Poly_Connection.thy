@@ -410,7 +410,7 @@ proof (rule poly_eqI, rule mpoly_eqI)
           (a * MPoly_Type.coeff q (mon - remove_key x m + Poly_Mapping.single x (n - lookup m x))
           when lookup (remove_key x m) \<le> lookup mon \<and> lookup m x \<le> n \<and> lookup mon x = 0)"
     by (simp add: coeff_coeff_mpoly_to_mpoly_poly coeff_monom_mult' lookup_minus_fun
-                  remove_key_lookup Missing_Polynomial.coeff_monom_mult when_def)
+                  remove_key_lookup coeff_monom_mult when_def)
   also have "lookup (remove_key x m) \<le> lookup mon \<and> lookup m x \<le> n \<and> lookup mon x = 0 \<longleftrightarrow>
              lookup m \<le> lookup (mon + Poly_Mapping.single x n) \<and> lookup mon x = 0" (is "_ = ?P")
     by transfer (auto simp: when_def le_fun_def)

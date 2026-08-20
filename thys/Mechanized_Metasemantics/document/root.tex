@@ -1,0 +1,296 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols
+\usepackage{latexsym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{apalike} %
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Mechanized Metasemantics of Modal Necessity:\\
+Valuation Factorization and Modal Non-Collapse}
+\author{Yong-Dock Kim}
+\maketitle
+
+\nocite{*}
+
+\begin{abstract}
+This formalization develops a mechanized metasemantics for modal necessity in Isabelle/HOL. Its core construction factorizes Kripke-style valuation as
+\[
+V = I \circ \delta,
+\]
+where $\delta$ maps object-language formulas to syntactic distinctions and $I$ maps such distinctions to possible-worlds truth-conditions. Thus modal evaluation is carried out over interpreted distinctions rather than over valuation alone.
+
+The development provides three witnesses. First, a concrete satisfiability witness shows that the abstract interpretive-structure locale is jointly satisfiable. Second, a nontrivial truth-condition witness shows that $I_0(\delta_0(\mathrm{Atom}\ 0))$ separates the two worlds of the concrete model. Third, a no-collapse witness proves that $\Diamond \mathrm{Atom}\ 0$ holds while $\Box \mathrm{Atom}\ 0$ fails. The development introduces no additional global axioms; its locale assumptions are discharged by an explicit concrete model. Hence the framework is non-vacuous, nontrivial, and non-collapsing. This shows that, in the present framework, modal force is not a feature of bare syntax alone, but is grounded in syntactic distinctions only insofar as they are interpreted as possible-worlds truth-conditions.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+Standard Kripke semantics usually starts with a frame together with a valuation function \cite{Kripke1963}. This development does not replace Kripke semantics. Rather, it factorizes its valuation component into two layers: a syntactic parsing map and an interpretive truth-condition determination map.
+
+The motivation is metasemantic. A formula is not evaluated modally as a bare syntactic item. It must first be associated with a possible-worlds truth-condition. The present formalization makes this dependency explicit by introducing the factorization
+\[
+\mathrm{Formula} \xrightarrow{\delta} D \xrightarrow{I} \mathcal{P}(W),
+\qquad
+V = I \circ \delta.
+\]
+Here $D$ is a syntactic distinction space, $\delta$ maps object-language formulas into this space, and $I$ determines the possible-worlds truth-condition associated with each syntactic distinction.
+
+The resulting Isabelle/HOL development proves that modal necessity and possibility are evaluated over interpreted distinctions. A concrete two-world model witnesses satisfiability, genuine contingency, and failure of modal collapse.
+
+This formulation is also motivated by broader philosophical concerns about the relation between syntax, semantics, and grounding. Quinean worries about modal opacity suggest that modal contexts cannot be treated as transparent extensions of ordinary syntactic substitution \cite{Quine1953}. This already points to a gap between formal expression and modal evaluation. Searle's distinction between syntax and semantics sharpens the same point: formal manipulation of symbols is not yet semantic understanding \cite{Searle1980}. Harnad's symbol grounding problem further generalizes the concern, motivating the need to distinguish internally manipulated symbols from semantically grounded contents \cite{Harnad1990}. The present development does not attempt to solve these philosophical problems in full. It isolates a weaker and formally precise requirement: in the present framework, modal evaluation is well-formed only after syntactic distinctions have been mapped to interpreted truth-conditions.
+
+A further motivating intuition is that error is not merely a natural occurrence, but a failure relative to an interpretive standard. In a world of bare natural events without any interpretive structure, there may be causal variation, but not semantic error in the strict sense. Error presupposes that something is taken or evaluated under a truth-condition. This motivates the separation between syntactic distinction and interpretive truth-condition determination in the present development.
+
+\section{The Core Architecture: $V = I \circ \delta$}
+
+The central construction of this formalization is the factorization of the valuation function. Instead of taking valuation as an unanalyzed primitive, the development decomposes it into two maps:
+\[
+\mathrm{Formula} \xrightarrow{\delta} D \xrightarrow{I} \mathcal{P}(W).
+\]
+
+The first map,
+\[
+\delta : \mathrm{Formula} \to D,
+\]
+sends object-language formulas to syntactic distinctions. This layer is syntactic or proof-theoretic. It does not by itself assign possible-worlds truth-conditions.
+
+The second map,
+\[
+I : D \to \mathcal{P}(W),
+\]
+is an interpretive truth-condition determination map. For each syntactic distinction $d \in D$, $I(d) \subseteq W$ is the set of possible worlds in which $d$ is true. Equivalently, in Isabelle/HOL this is represented as a function of type
+\[
+I : D \to W \to \mathrm{bool}.
+\]
+
+Thus the valuation of a formula is reconstructed as
+\[
+V(\varphi) = I(\delta(\varphi)).
+\]
+In the Isabelle theory, this is expressed definitionally as
+\[
+V\ \varphi\ w \equiv I(\delta \varphi)\ w.
+\]
+
+This factorization makes explicit that modal evaluation depends on interpreted truth-conditions. Without the interpretive layer $I$, formulas are not yet assigned possible-worlds truth-conditions, and hence modal evaluation is not semantically well-formed in this framework.
+
+\section{Necessity as Interpreted False-Possibility Blocking}
+
+The formalization defines modal necessity and possibility in the usual Kripke-style manner, but over the factorized valuation:
+\[
+\Box \varphi\ w \equiv \forall v.\ R(w,v) \longrightarrow V(\varphi)(v),
+\]
+\[
+\Diamond \varphi\ w \equiv \exists v.\ R(w,v) \wedge V(\varphi)(v).
+\]
+
+Since $V(\varphi)(v)$ is definitionally $I(\delta(\varphi))(v)$, modal necessity unfolds into:
+\[
+\Box \varphi\ w
+\;\Longleftrightarrow\;
+\forall v.\ R(w,v) \longrightarrow I(\delta(\varphi))(v).
+\]
+
+The central theorem further rewrites necessity as the absence of an interpreted false possibility:
+\[
+\Box \varphi\ w
+\;\Longleftrightarrow\;
+\neg \exists v.\ R(w,v) \wedge \neg I(\delta(\varphi))(v).
+\]
+
+This theorem is the main modal-metasemantic reading of the development. Necessity is not treated merely as an isolated truth-value. Rather, in this framework it is evaluated as closure against accessible worlds in which the interpreted truth-condition of $\varphi$ fails.
+
+\section{Axioms, Locale Assumptions, and Discharge}
+
+This development does not introduce any additional global axioms beyond Isabelle/HOL Main. In particular, it does not rely on an \texttt{axiomatization} command or on additional \texttt{axioms}. The formalization proceeds by conservative definitions and by a locale-based abstraction of the intended interpretive structure.
+
+The abstract part of the theory is formulated as a locale. Its assumptions specify the structural behavior expected of syntactic operations, interpretation, and proof-theoretic derivability. Thus the locale does contain assumptions, but these assumptions are not added as global axioms to the surrounding HOL theory. Rather, they define the class of structures to which the locale theorems apply.
+
+The crucial point is that these locale assumptions are discharged by the concrete interpretation:
+\[
+\texttt{Concrete\_Model}.
+\]
+The concrete model instantiates the abstract locale and proves that all assumptions are simultaneously satisfied by explicitly defined objects:
+\[
+W_0 = \mathrm{bool},
+\qquad
+D_0 = W_0 \to \mathrm{bool},
+\qquad
+I_0(d,w)=d(w).
+\]
+
+Therefore, the assumptions of the abstract interpretive structure are not empty postulates. They are witnessed by an explicit model. The development is consequently non-vacuous: the abstract locale has a concrete instance, and the later contingency and no-collapse results are proved inside that instance.
+
+It is important that modal necessity is not introduced by a separate necessity axiom. The modal operator $\Box$ is defined in the usual Kripke-style manner as preservation of the valuation over accessible worlds:
+\[
+\Box \varphi\ w \equiv \forall v.\ R(w,v) \longrightarrow V(\varphi)(v).
+\]
+Since valuation itself is factorized as $V = I \circ \delta$, this means that necessity is defined as the preservation of an interpreted truth-condition over all accessible worlds:
+\[
+\Box \varphi\ w \equiv \forall v.\ R(w,v) \longrightarrow I(\delta(\varphi))(v).
+\]
+Thus necessity is not imposed by an additional axiom. It is reconstructed definitionally from accessibility, valuation factorization, and interpretive truth-condition determination. The concrete model then shows that this definition is nontrivial: it admits genuine contingency and does not force modal collapse.
+
+In summary, the code is not an axiom extension of HOL. It is a conservative definitional development with locale assumptions that are explicitly satisfied by a concrete model witness.
+
+\section{Witnessing Genuine Contingency}
+
+A common hazard in strong modal systems and ontological settings is modal collapse, in which truths become necessary truths, often expressed schematically as
+\[
+\varphi \longrightarrow \Box \varphi.
+\]
+The present development does not claim that modal collapse is impossible in all conceivable extensions. It proves a more precise and useful fact: the factorized metasemantic framework itself does not force modal collapse.
+
+To show this, the theory instantiates a conservative concrete model using a two-world Boolean frame:
+\[
+W_0 = \mathrm{bool},
+\qquad
+D_0 = W_0 \to \mathrm{bool}.
+\]
+
+In this model, distinctions are represented extensionally as truth-condition functions over the two worlds. The concrete interpretation map is simply application:
+\[
+I_0(d,w) = d(w).
+\]
+
+The atom $\mathrm{Atom}\ 0$ is interpreted so that it varies across the two worlds:
+\[
+I_0(\delta_0(\mathrm{Atom}\ 0))(\mathrm{True}) = \mathrm{True},
+\]
+\[
+I_0(\delta_0(\mathrm{Atom}\ 0))(\mathrm{False}) = \mathrm{False}.
+\]
+
+Since the accessibility relation in the concrete model is universal, this yields genuine contingency:
+\[
+\Diamond \mathrm{Atom}\ 0
+\quad\text{and}\quad
+\Diamond \neg \mathrm{Atom}\ 0.
+\]
+
+Most importantly, the model proves the no-collapse witness:
+\[
+\Diamond \mathrm{Atom}\ 0 \wedge \neg \Box \mathrm{Atom}\ 0.
+\]
+
+Thus the concrete model demonstrates that the framework admits a formula which is possible but not necessary. Modal collapse is therefore not forced by the factorized valuation structure.
+
+\section{The Three Witnesses}
+
+The primary contribution is not the construction of a large modal logic library, but the isolation of a compact mechanized kernel for modal metasemantics.
+
+It provides three central witnesses.
+
+\subsection{Concrete Satisfiability Witness}
+
+The locale of interpretive structures is instantiated by a concrete model. This shows that the assumptions of the abstract framework are jointly satisfiable and that the locale is not vacuous.
+
+\[
+\texttt{Concrete\_Model}
+\]
+
+serves as a concrete satisfiability witness for the abstract interpretive-structure locale.
+
+\subsection{Nontrivial Truth-Condition Witness}
+
+The concrete model is not trivial. The formula $\mathrm{Atom}\ 0$ separates the two worlds:
+\[
+I_0(\delta_0(\mathrm{Atom}\ 0))(\mathrm{True})
+\]
+holds, while
+\[
+I_0(\delta_0(\mathrm{Atom}\ 0))(\mathrm{False})
+\]
+does not.
+
+Thus truth-condition determination is nontrivial: the interpretation map actually partitions the possible worlds.
+
+\subsection{No-Collapse Witness}
+
+The theory proves:
+\[
+\Diamond \mathrm{Atom}\ 0 \wedge \neg \Box \mathrm{Atom}\ 0.
+\]
+
+This shows that possibility does not collapse into necessity in the concrete model. Hence the framework is not only satisfiable and nontrivial, but also non-collapsing.
+
+In summary:
+\[
+\text{non-vacuous}
+\quad+\quad
+\text{nontrivial}
+\quad+\quad
+\text{non-collapsing}.
+\]
+
+\section{Philosophical Outlook: Necessary Truth and Interpretive-Cognitive Structure}
+
+The present entry is formally independent of any theological conclusion. Its main contribution is the factorization of modal valuation and the demonstration that the resulting framework is non-vacuous, nontrivial, and non-collapsing.
+
+Nevertheless, the development can be read as part of a broader research program. A preceding mechanized development formalizes a necessary-truth structure \cite{Kim2026AxiomFreeTrinity}. In that setting, necessary truth is treated not merely as an accidental truth, but as a structurally constrained object of modal investigation.
+
+The present development contributes a metasemantic layer to that program. It shows that modal force is not imposed by a separate necessity axiom, but is reconstructed definitionally from accessibility, valuation factorization, and interpretive truth-condition determination:
+\[
+\Box \varphi\ w
+\equiv
+\forall v.\ R(w,v) \longrightarrow I(\delta(\varphi))(v).
+\]
+Thus, modal force is justified not at the level of bare syntax, but at the level of interpreted truth-conditions. In this framework, necessity and possibility are semantically well-formed only after syntactic distinctions have been mapped to possible-worlds truth-conditions by the interpretive layer.
+
+This observation has a possible connection with the classical Boethian definition of personhood\footnote{Boethius, \textit{Contra Eutychen et Nestorium} (\textit{Liber de persona et duabus naturis}), Chapter 3.}:
+\[
+persona = naturae\ rationalis\ individua\ substantia,
+\]
+that is, a person is an individual substance of a rational nature. The preceding mechanized development may be understood as addressing the side of necessary existence or necessary structure, while the present development isolates a formal component of rational nature: the capacity to determine truth-conditions and preserve modal contrast.
+
+Accordingly, this entry does not prove divine personhood in the full theological sense. It provides a formal basis for a more limited claim: if personhood is understood in the Boethian tradition as involving an individual structure endowed with rational nature, then interpretive truth-condition determination may be viewed as a formal analogue of the rational-nature component. In this sense, a necessary-truth structure that requires modal force may be interpreted as structurally compatible with, or open to, a Boethian reconstruction of personhood.
+
+This philosophical reading is not used in the formal proofs below. The mechanized contribution of the entry remains the valuation factorization
+\[
+V = I \circ \delta,
+\]
+together with the concrete witnesses showing that the framework is non-vacuous, nontrivial, and non-collapsing.
+
+\section{Scope and Limitations}
+
+This entry does not attempt to replace Kripke semantics. It also does not provide a full philosophical theory of meaning, grounding, cognition, or consciousness. Its aim is narrower and formal: to factorize valuation into syntactic distinction and interpretive truth-condition determination, and to prove that modal evaluation in this setting is carried out over interpreted distinctions.
+
+The concrete model is intentionally conservative. By taking
+\[
+D_0 = W_0 \to \mathrm{bool}
+\]
+and
+\[
+I_0(d,w)=d(w),
+\]
+the model provides a simple extensional satisfiability witness. This does not collapse the abstract distinction between $D$ and $I$ in the locale. Rather, it shows that the abstract assumptions admit a concrete, nontrivial, and non-collapsing instance.
+
+\newpage
+\section{Formal Development in Isabelle/HOL}
+
+The following sections present the mechanized proof scripts verified by the Isabelle/HOL theorem prover.
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{apalike}
+\bibliography{root}
+
+\end{document}
+

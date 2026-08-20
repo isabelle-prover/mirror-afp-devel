@@ -580,8 +580,8 @@ proof -
     unfolding max_depth_sort_smp_def mp by simp
   also have "\<dots> \<le> Max (insert 0 (max_depth_sort ` (snd ` vars (\<tau> x) \<union> snd ` vars t)))" 
     by (rule Max_mono, auto simp: vars_term_subst tau \<tau>c_def subst_def)
-  also have "snd ` vars (\<tau> x) = set \<sigma>s" unfolding tau \<tau>c_def subst_def 
-    by (force simp: set_zip set_conv_nth[of \<sigma>s])
+  also have "snd ` vars (\<tau> x) = set \<sigma>s"
+    by (simp add: tau \<tau>c_def subst_def) (simp flip: set_map)
   also have "Max (insert 0 (max_depth_sort ` (set \<sigma>s \<union> snd ` vars t))) < max_depth_sort (snd x)"
   proof (subst Max_less_iff, force, force, intro ballI)
     fix d
@@ -644,8 +644,8 @@ proof -
       
     have "max_depth_sort_smp ?mp = Max (insert 0 (max_depth_sort ` (snd ` vars (\<tau> x) \<union> snd ` (tv - {x}))))"
       unfolding max_depth_sort_smp_def tvars by (metis image_Un)
-    also have "snd ` vars (\<tau> x) = set \<sigma>s" unfolding tau subst_def 
-      by (force simp: set_zip set_conv_nth[of \<sigma>s])
+    also have "snd ` vars (\<tau> x) = set \<sigma>s"
+      by (simp add: tau subst_def) (simp flip: set_map)
     also have "Max (insert 0 (max_depth_sort ` (set \<sigma>s \<union> snd ` (tv - {x})))) 
        \<le> max_depth_sort_smp mp" unfolding max_mp
     proof (intro Max_le_MaxI)
@@ -943,7 +943,7 @@ lemma max_dupl_smp_\<tau>s: assumes \<tau>: "\<tau> \<in> \<tau>s n x"
 proof - 
   from \<tau>[unfolded \<tau>s_def] obtain f ss 
     where f: "f : ss \<rightarrow> snd x in C" and \<tau>: "\<tau> = \<tau>c n x (f,ss)" by auto
-  define vs where "vs = (zip [n..<n + length ss] ss)" 
+  define vs where "vs = indexed_from n ss" 
   define s where "s = (Fun f (map Var vs))" 
   have tau: "\<tau> = subst x s" unfolding \<tau> \<tau>c_def s_def vs_def by auto
   show ?thesis
@@ -1002,15 +1002,15 @@ proof -
           with d show ?thesis by auto
         next
           case True
-          have dist: "distinct vs" unfolding vs_def
-            by (metis distinct_enumerate enumerate_eq_zip)
+          have dist: "distinct vs"
+            by (simp add: vs_def)
           from split_list[OF True] obtain vs1 vs2 where vs: "vs = vs1 @ y # vs2" by auto
           with dist have nmem: "y \<notin> set vs1" "y \<notin> set vs2" by auto
           have "count (syms_term s) (Inl y) = 1" unfolding syms_s vs using nmem
             by (auto simp: count_eq_zero_iff) 
           with d have d: "d \<le> ?symsy + ?symsx" by auto
-          from True have "fst y \<in> {n..<n + m}" unfolding vs_def using m[OF f] 
-            by (auto simp: set_zip)
+          from True have "fst y \<in> {n..<n + m}" using m[OF f]
+            by (simp add: in_set_indexed_from_eq vs_def)
           with disj have "y \<notin> tvars_smp (mset2 mp)" by blast
           hence "?symsy = 0" 
             by (auto simp: count_eq_zero_iff vars_term_syms_term)

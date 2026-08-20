@@ -208,7 +208,7 @@ fun apply_inv_component::"nat \<Rightarrow> update \<Rightarrow> energy \<Righta
                 minus_one \<Rightarrow> (if i=j then (e ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e ! j) else 0) | 
                 plus_one \<Rightarrow> (if i=j then (e ! i)-1 else 0))) 
-          (List.enumerate 0 u)))" 
+          (indexed_from 0 u)))" 
 
 fun apply_inv_update:: "update \<Rightarrow> energy \<Rightarrow> energy option" where 
   "apply_inv_update u e = (if (length u = length e) 
@@ -259,8 +259,8 @@ proof -
         have nth: "(the (apply_inv_update u e)) ! n = apply_inv_component n u e" using apply_inv_update.simps
           by (metis \<open>n < length u\<close> add_0 assms diff_add_inverse nth_map_upt option.sel)
 
-        have n_minus_one: "List.enumerate 0 u ! n = (n,minus_one) " using minus_one
-          by (simp add: \<open>n < length u\<close> nth_enumerate_eq) 
+        have n_minus_one: "indexed_from 0 u ! n = (n,minus_one) " using minus_one
+          by (simp add: \<open>n < length u\<close> nth_indexed_from_eq) 
         have "(\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
@@ -270,8 +270,8 @@ proof -
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow>(if n=m then (nth e n)-1 else 0)))(List.enumerate 0 u))" using n_minus_one
-          by (metis (no_types, lifting) \<open>n < length u\<close> case_prod_conv length_enumerate length_map nth_map nth_mem update_component.simps(15))
+                plus_one \<Rightarrow>(if n=m then (nth e n)-1 else 0)))(indexed_from 0 u))" using n_minus_one
+          by (metis (no_types, lifting) \<open>n < length u\<close> case_prod_conv length_indexed_from length_map nth_map nth_mem update_component.simps(15))
         hence "(nth e n)+1 \<le> apply_inv_component n u e" using minus_one nth apply_inv_component.simps Max_ge
           by simp
         hence "(nth (the (apply_inv_update u e)) n >0)" using nth by fastforce
@@ -321,7 +321,7 @@ lemma inverse_monotonic:
                 zero \<Rightarrow> (if i=m then (nth e i) else 0)  | 
                 minus_one \<Rightarrow> (if i=m then (e ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e ! m) else 0) |
-                plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))) (List.enumerate 0 u)))" using apply_inv_component.simps
+                plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))) (indexed_from 0 u)))" using apply_inv_component.simps
         by presburger 
 
 
@@ -338,49 +338,49 @@ lemma inverse_monotonic:
                 zero \<Rightarrow>(if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) |
-                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u)))" using apply_inv_component.simps
+                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u)))" using apply_inv_component.simps
         by presburger 
 
       have fin': "finite (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) |
-                plus_one \<Rightarrow>(if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u)))" by simp
+                plus_one \<Rightarrow>(if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u)))" by simp
       have fin: "finite (set (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0) | minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 |
                             plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0)) 
-                   (List.enumerate 0 u)))" by simp
+                   (indexed_from 0 u)))" by simp
 
       have "\<And>x. x \<in> (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if i=m then (nth e i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e ! m) else 0) |
-                plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))) (List.enumerate 0 u))) \<Longrightarrow> (\<exists>y. x\<le> y \<and> y\<in> (set (map (\<lambda>(m,up). (case up of 
+                plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))) (indexed_from 0 u))) \<Longrightarrow> (\<exists>y. x\<le> y \<and> y\<in> (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0)|
-                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u))))"
+                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u))))"
       proof-
         fix x
         assume "x \<in> set (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0) | minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 |
                 plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))
-                   (List.enumerate 0 u))" 
+                   (indexed_from 0 u))" 
         hence "\<exists>j < length u. x = (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0) | minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 |
                 plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))
-                   (List.enumerate 0 u)) ! j" using in_set_conv_nth
-          by (metis (no_types, lifting) length_enumerate length_map)
+                   (indexed_from 0 u)) ! j" using in_set_conv_nth
+          by (metis (no_types, lifting) length_indexed_from length_map)
         from this obtain j where "j < length u" and X: "x = (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0)| minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 |
                 plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))
-                   (List.enumerate 0 u)) ! j" by auto
-        hence "(List.enumerate 0 u) ! j = (j, (u !j))"
-          by (simp add: nth_enumerate_eq) 
+                   (indexed_from 0 u)) ! j" by auto
+        hence "(indexed_from 0 u) ! j = (j, (u !j))"
+          by (simp add: nth_indexed_from_eq) 
         hence X: "x=(case (u !j) of zero \<Rightarrow> (if i=j then (nth e i) else 0) | minus_one \<Rightarrow> if i = j then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! j else 0 |
                 plus_one \<Rightarrow> (if i=j then (nth e i)-1 else 0))" using X
@@ -393,7 +393,7 @@ lemma inverse_monotonic:
                 zero \<Rightarrow> (if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
                 min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) |
-                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u))))" 
+                plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u))))" 
         proof(cases)
           case zero
           hence "x= (if i=j then (nth e i) else 0)" using X by simp
@@ -409,8 +409,8 @@ lemma inverse_monotonic:
                             case up of zero \<Rightarrow> (if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0|
                             plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-            by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+            by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
           then show ?thesis
             using \<open>j < length u\<close> by auto 
         next
@@ -430,8 +430,8 @@ lemma inverse_monotonic:
                             case up of zero \<Rightarrow>(if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0|
                 plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-            by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+            by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
           then show ?thesis
             using \<open>j < length u\<close> by auto
           next
@@ -447,8 +447,8 @@ lemma inverse_monotonic:
              finally have "x \<le> (map (\<lambda>(m, up).
                             case up of zero \<Rightarrow> (if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-            by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+            by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
           then show ?thesis
             using \<open>j < length u\<close> by auto
           qed
@@ -468,8 +468,8 @@ lemma inverse_monotonic:
             finally have "x \<le> (map (\<lambda>(m, up).
                             case up of zero \<Rightarrow> (if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-              by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+              by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
             then show ?thesis
               using \<open>j < length u\<close> by auto
           next
@@ -482,8 +482,8 @@ lemma inverse_monotonic:
             finally have "x \<le> (map (\<lambda>(m, up).
                             case up of zero \<Rightarrow> (if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-              by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+              by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
             then show ?thesis
               using \<open>j < length u\<close> by auto
           qed
@@ -525,8 +525,8 @@ lemma inverse_monotonic:
               qed
             qed
             show ?thesis
-              using plus_one True \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close> \<open>x \<le> e' ! i - 1\<close>
-              by (smt (verit, best) nth_map case_prod_conv length_enumerate length_map nth_mem update_component.simps(17))
+              using plus_one True \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close> \<open>x \<le> e' ! i - 1\<close>
+              by (smt (verit, best) nth_map case_prod_conv length_indexed_from length_map nth_mem update_component.simps(17))
           next
             case False
             hence "x = 0" using X
@@ -540,8 +540,8 @@ lemma inverse_monotonic:
             finally have "x \<le> (map (\<lambda>(m, up).
                             case up of zero \<Rightarrow> (if i=m then (nth e' i) else 0) | minus_one \<Rightarrow> if i = m then e' ! i + 1 else 0
                             | min_set A \<Rightarrow> if i \<in> A then e' ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))
-                     (List.enumerate 0 u))!j"
-              by (simp add: \<open>List.enumerate 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
+                     (indexed_from 0 u))!j"
+              by (simp add: \<open>indexed_from 0 u ! j = (j, u ! j)\<close> \<open>j < length u\<close>)
             then show ?thesis
               using \<open>j < length u\<close> by auto
           qed
@@ -551,23 +551,23 @@ lemma inverse_monotonic:
       hence "\<forall>x\<in> (set (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0) | minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))
-                   (List.enumerate 0 u))). 
+                   (indexed_from 0 u))). 
             x\<le> Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
-                min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u)))"
+                min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u)))"
         using fin'
         by (meson Max.coboundedI dual_order.trans) 
       hence "Max (set (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if i=m then (nth e i) else 0) | minus_one \<Rightarrow> if i = m then e ! i + 1 else 0
                           | min_set A \<Rightarrow> if i \<in> A then e ! m else 0 | plus_one \<Rightarrow> (if i=m then (nth e i)-1 else 0))
-                   (List.enumerate 0 u)))
+                   (indexed_from 0 u)))
             \<le> Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if i=m then (nth e' i) else 0) | 
                 minus_one \<Rightarrow> (if i=m then (e' ! i)+1 else 0) |
-                min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (List.enumerate 0 u)))"
+                min_set A \<Rightarrow> (if i\<in>A then (e' ! m) else 0) | plus_one \<Rightarrow> (if i=m then (nth e' i)-1 else 0))) (indexed_from 0 u)))"
         using fin assms Max_less_iff
-        by (metis (no_types, lifting) Max_in \<open>i < length (the (apply_inv_update u e))\<close> \<open>length (the (apply_inv_update u e)) = length (the (apply_inv_update u e'))\<close> ex_in_conv len_inv_appl length_enumerate length_map nth_mem)
+        by (metis (no_types, lifting) Max_in \<open>i < length (the (apply_inv_update u e))\<close> \<open>length (the (apply_inv_update u e)) = length (the (apply_inv_update u e'))\<close> ex_in_conv len_inv_appl length_indexed_from length_map nth_mem)
 
       thus "the (apply_inv_update u e) ! i \<le> the (apply_inv_update u e') ! i " using E E'
         by presburger 
@@ -651,14 +651,14 @@ lemma leq_up_inv:
       thus "e ! n \<le> the (apply_update u (the (apply_inv_update u e))) ! n" 
       proof (cases)
         case zero
-        hence "(List.enumerate 0 u) ! n = (n, zero)"
-          by (simp add: \<open>n < length e\<close> assms(1) nth_enumerate_eq) 
+        hence "(indexed_from 0 u) ! n = (n, zero)"
+          by (simp add: \<open>n < length e\<close> assms(1) nth_indexed_from_eq) 
         hence nth_in_set: "e ! n \<in> set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u))" using nth_map
-          by (smt (verit) \<open>n < length e\<close> assms(1) length_enumerate length_map nth_mem old.prod.case update_component.simps(14))
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u))" using nth_map
+          by (smt (verit) \<open>n < length e\<close> assms(1) length_indexed_from length_map nth_mem old.prod.case update_component.simps(14))
 
         from zero have "the (apply_update u (the (apply_inv_update u e))) ! n = the (apply_component n zero (the (apply_inv_update u e)))" using unfolded_apply_update by auto
         also have "... = ((the (apply_inv_update u e)) ! n)" using apply_component.simps(1) by simp
@@ -667,7 +667,7 @@ lemma leq_up_inv:
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using apply_inv_component.simps by auto
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using apply_inv_component.simps by auto
         also have "... \<ge> e ! n " using nth_in_set by simp
         finally show ?thesis .
       next
@@ -679,20 +679,20 @@ lemma leq_up_inv:
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
                 plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (n,(u!n)) = (e!n) +1"
           by simp 
-        have "(List.enumerate 0 u)!n = (n,(u!n))"
-          using \<open>n < length e\<close> assms(1) nth_enumerate_eq
+        have "(indexed_from 0 u)!n = (n,(u!n))"
+          using \<open>n < length e\<close> assms(1) nth_indexed_from_eq
           by (metis add_0)
         hence "(e!n) +1 \<in> (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using A nth_map
-          by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) length_enumerate length_map nth_mem) 
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using A nth_map
+          by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) length_indexed_from length_map nth_mem) 
         hence leq: "(e!n) +1 \<le> Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow>(if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using Max_ge by simp
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using Max_ge by simp
 
         have notNone_comp: "apply_component n minus_one (the (apply_inv_update u e)) \<noteq> None" using notNone
           by (smt (z3) \<open>n < length e\<close> add_0 len1 len_appl length_map length_upt map_nth minus_one notNone_n nth_map_upt)
@@ -705,7 +705,7 @@ lemma leq_up_inv:
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u))) -1" using apply_inv_component.simps by auto
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u))) -1" using apply_inv_component.simps by auto
         also have "... \<ge> e ! n" using leq 
           by (smt (verit) add.assoc add_diff_assoc_enat le_iff_add) 
         finally show ?thesis .
@@ -737,17 +737,17 @@ lemma leq_up_inv:
                 zero \<Rightarrow> (if j=m then (nth e j) else 0) | 
                 minus_one \<Rightarrow> (if j=m then (nth e j)+1 else 0) |
                 min_set A \<Rightarrow> (if j\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (List.enumerate 0 u)))"
+                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (indexed_from 0 u)))"
             by auto
 
-          have "(List.enumerate 0 u)! n = (n, u ! n)"
-            by (simp add: \<open>n < length e\<close> assms(1) nth_enumerate_eq)
+          have "(indexed_from 0 u)! n = (n, u ! n)"
+            by (simp add: \<open>n < length e\<close> assms(1) nth_indexed_from_eq)
 
           have fin: "finite (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if j=m then (nth e j) else 0) | 
                 minus_one \<Rightarrow> (if j=m then (nth e j)+1 else 0) |
                 min_set A \<Rightarrow> (if j\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (List.enumerate 0 u)))" by auto
+                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (indexed_from 0 u)))" by auto
           have "e!n =  (case (min_set A)  of 
                 zero \<Rightarrow> (if j=n then (nth e j) else 0) | 
                 minus_one \<Rightarrow> (if j=n then (nth e j)+1 else 0) |
@@ -764,13 +764,13 @@ lemma leq_up_inv:
                 zero \<Rightarrow> (if j=m then (nth e j) else 0) | 
                 minus_one \<Rightarrow> (if j=m then (nth e j)+1 else 0) |
                 min_set A \<Rightarrow> (if j\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (List.enumerate 0 u)))"
-            using \<open>(List.enumerate 0 u)! n = (n, u ! n)\<close> nth_map
-            by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) in_set_conv_nth length_enumerate length_map)
+                plus_one \<Rightarrow> (if j=m then (nth e j)-1 else 0))) (indexed_from 0 u)))"
+            using \<open>(indexed_from 0 u)! n = (n, u ! n)\<close> nth_map
+            by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) in_set_conv_nth length_indexed_from length_map)
 
           thus "e!n \<le> (inv_upd u e)!j"
             using fin Max_le_iff
-            using \<open>inv_upd u e ! j = Max (set (map (\<lambda>(k, y). case y of zero \<Rightarrow>(if j=k then (nth e j) else 0) | minus_one \<Rightarrow> if j = k then e ! j + 1 else 0 | min_set A \<Rightarrow> if j \<in> A then e ! k else 0 | plus_one \<Rightarrow> if j = k then e ! j - 1 else 0) (List.enumerate 0 u)))\<close> by fastforce
+            using \<open>inv_upd u e ! j = Max (set (map (\<lambda>(k, y). case y of zero \<Rightarrow>(if j=k then (nth e j) else 0) | minus_one \<Rightarrow> if j = k then e ! j + 1 else 0 | min_set A \<Rightarrow> if j \<in> A then e ! k else 0 | plus_one \<Rightarrow> if j = k then e ! j - 1 else 0) (indexed_from 0 u)))\<close> by fastforce
         qed
 
         have "A \<noteq> {} \<and> A \<subseteq> {x. x < length u}" using assms
@@ -820,20 +820,20 @@ lemma leq_up_inv:
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
                 plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (n,(u!n)) = (e!n) -1"
           by simp 
-        have "(List.enumerate 0 u)!n = (n,(u!n))"
-          using \<open>n < length e\<close> assms(1) nth_enumerate_eq
+        have "(indexed_from 0 u)!n = (n,(u!n))"
+          using \<open>n < length e\<close> assms(1) nth_indexed_from_eq
           by (metis add_0)
         hence "(e!n) -1 \<in> (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using plus_one nth_map A
-          by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) length_enumerate length_map nth_mem)
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using plus_one nth_map A
+          by (metis (no_types, lifting) \<open>n < length e\<close> assms(1) length_indexed_from length_map nth_mem)
         hence leq: "(e!n) -1 \<le> Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using Max_ge by simp
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using Max_ge by simp
 
         have "e ! n \<le> ((e!n)-1)+1"
           by (metis dual_order.trans eSuc_minus_1 eSuc_plus_1 le_iff_add linorder_le_cases plus_1_eSuc(1))
@@ -841,7 +841,7 @@ lemma leq_up_inv:
                 zero \<Rightarrow> (if n=m then (nth e n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))) +1" using leq
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))) +1" using leq
           by simp 
         also have "... = (inv_upd u e) ! n  +1"
           using apply_inv_component.simps unfolded_apply_inv by presburger
@@ -913,12 +913,12 @@ proof
                 zero \<Rightarrow> (if n=m then (nth e n) else 0)| 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))" using apply_inv_component.simps by auto
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))" using apply_inv_component.simps by auto
           finally have inv_max: "the (apply_inv_update u e) ! n = Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0)| 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u)))".
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u)))".
 
           from B have "e ! n \<le> (the (apply_update u e')) ! n" using \<open>n < length (the (apply_inv_update u e))\<close>
             using assms(1) len_inv_appl by auto 
@@ -929,17 +929,17 @@ proof
                 zero \<Rightarrow> (if n=m then (nth e n) else 0)| 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u))) \<le> e' ! n)
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u))) \<le> e' ! n)
                 = (\<forall>a\<in> (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth e n) else 0)| 
                 minus_one \<Rightarrow> (if n=m then (nth e n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth e m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (List.enumerate 0 u))). a \<le> e' ! n)"
+                plus_one \<Rightarrow> (if n=m then (nth e n)-1 else 0))) (indexed_from 0 u))). a \<le> e' ! n)"
           proof(rule Max_le_iff)
-            show "finite (set (map (\<lambda>(m, y). case y of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (List.enumerate 0 u)))"
+            show "finite (set (map (\<lambda>(m, y). case y of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (indexed_from 0 u)))"
               by simp
-            show "set (map (\<lambda>(m, y). case y of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (List.enumerate 0 u)) \<noteq> {} "
-              by (metis (no_types, lifting) \<open>n < length (inv_upd u e)\<close> assms(1) empty_iff len_inv_appl length_enumerate length_map nth_mem)
+            show "set (map (\<lambda>(m, y). case y of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (indexed_from 0 u)) \<noteq> {} "
+              by (metis (no_types, lifting) \<open>n < length (inv_upd u e)\<close> assms(1) empty_iff len_inv_appl length_indexed_from length_map nth_mem)
           qed
 
 
@@ -947,13 +947,13 @@ proof
             unfolding inv_max Max_iff
           proof
             fix a 
-            assume "a \<in>(set (map (\<lambda>(m, up). case up of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (List.enumerate 0 u)))"
-            hence "\<exists>i. i< length (List.enumerate 0 u) \<and> a = (\<lambda>(m, up). case up of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) ((List.enumerate 0 u) ! i) " 
+            assume "a \<in>(set (map (\<lambda>(m, up). case up of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (indexed_from 0 u)))"
+            hence "\<exists>i. i< length (indexed_from 0 u) \<and> a = (\<lambda>(m, up). case up of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) ((indexed_from 0 u) ! i) " 
               using set_map
               by (metis (no_types, lifting) in_set_conv_nth length_map nth_map)
             from this obtain m where A: "a =  (\<lambda>(m, up). case up of zero \<Rightarrow> if n = m then e ! n else 0 | minus_one \<Rightarrow> if n = m then e ! n + 1 else 0 | min_set A \<Rightarrow> if n \<in> A then e ! m else 0 | plus_one \<Rightarrow> if n = m then e ! n - 1 else 0) (m, (u!m))"
               and "m < length u"
-              using nth_enumerate_eq by fastforce
+              using nth_indexed_from_eq by fastforce
 
             consider (zero) "u ! m = zero" | (minus_one) "u ! m = minus_one" | (min) "\<exists>A. u !m = min_set A" | (plus_one) "u!m = plus_one"
               using update_component.exhaust by auto
@@ -1166,7 +1166,7 @@ lemma inv_up_leq:
                 minus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth (the (apply_update u e)) m) else 0) |
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0)
-                )) (List.enumerate 0 u)). x \<le> e ! n" 
+                )) (indexed_from 0 u)). x \<le> e ! n" 
           proof
             fix x 
             assume X: "x \<in> set (map (\<lambda>(m, up).
@@ -1174,26 +1174,26 @@ lemma inv_up_leq:
                           | minus_one \<Rightarrow> if n = m then the (apply_update u e) ! n + 1 else 0
                           | min_set A \<Rightarrow> if n \<in> A then the (apply_update u e) ! m else 0|
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))
-                   (List.enumerate 0 u))"
-            hence "\<exists>m < length (List.enumerate 0 u). x =  (map (\<lambda>(m, up).
+                   (indexed_from 0 u))"
+            hence "\<exists>m < length (indexed_from 0 u). x =  (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n) else 0)
                           | minus_one \<Rightarrow> if n = m then the (apply_update u e) ! n + 1 else 0
                           | min_set A \<Rightarrow> if n \<in> A then the (apply_update u e) ! m else 0 |
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))
-                   (List.enumerate 0 u)) ! m" using in_set_conv_nth
+                   (indexed_from 0 u)) ! m" using in_set_conv_nth
               by (metis (no_types, lifting) length_map) 
-            from this obtain m where "m < length (List.enumerate 0 u)" and "x =  (map (\<lambda>(m, up).
+            from this obtain m where "m < length (indexed_from 0 u)" and "x =  (map (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n) else 0)
                           | minus_one \<Rightarrow> if n = m then the (apply_update u e) ! n + 1 else 0
                           | min_set A \<Rightarrow> if n \<in> A then the (apply_update u e) ! m else 0 |
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))
-                   (List.enumerate 0 u)) ! m" by auto
+                   (indexed_from 0 u)) ! m" by auto
             hence "x = (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n) else 0)
                           | minus_one \<Rightarrow> if n = m then the (apply_update u e) ! n + 1 else 0
                           | min_set A \<Rightarrow> if n \<in> A then the (apply_update u e) ! m else 0 |
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))
-                   ((List.enumerate 0 u) ! m)" using nth_map \<open>m < length (List.enumerate 0 u)\<close>
+                   ((indexed_from 0 u) ! m)" using nth_map \<open>m < length (indexed_from 0 u)\<close>
               by simp 
             hence X: "x= (\<lambda>(m, up).
                           case up of zero \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n) else 0)
@@ -1201,7 +1201,7 @@ lemma inv_up_leq:
                           | min_set A \<Rightarrow> if n \<in> A then the (apply_update u e) ! m else 0 |
                 plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))
                    (m, (u ! m))"
-              by (metis (no_types, lifting) \<open>m < length (List.enumerate 0 u)\<close> add_cancel_left_left length_enumerate nth_enumerate_eq)
+              by (metis (no_types, lifting) \<open>m < length (indexed_from 0 u)\<close> add_cancel_left_left length_indexed_from nth_indexed_from_eq)
 
 
 
@@ -1274,7 +1274,7 @@ lemma inv_up_leq:
                   case True
                   hence "x = the (apply_update u e) ! m" using X \<open>u ! m = min_set A\<close> by simp
                   also have "... = (the (apply_component n (u ! m) e))" using apply_to_comp_n
-                    by (metis \<open>length e = length u\<close> \<open>m < length (List.enumerate 0 u)\<close> \<open>u ! m = min_set A\<close> apply_component.simps(3) assms(1) length_enumerate) 
+                    by (metis \<open>length e = length u\<close> \<open>m < length (indexed_from 0 u)\<close> \<open>u ! m = min_set A\<close> apply_component.simps(3) assms(1) length_indexed_from) 
                   also have "... = (min_list (nths e A))" using \<open>u ! m = min_set A\<close> apply_component.simps by simp
                   also have "... = Min (set (nths e A))" using \<open>A\<noteq>{} \<and> A \<subseteq> {x. x < length e}\<close> min_list_Min
                     by (smt (z3) True \<open>n < length e\<close> less_zeroE list.size(3) mem_Collect_eq set_conv_nth set_nths)
@@ -1316,16 +1316,16 @@ lemma inv_up_leq:
                 zero \<Rightarrow>(if n=m then (nth (the (apply_update u e)) n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth (the (apply_update u e)) m) else 0) |
-                plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))) (List.enumerate 0 u))). x \<le> e ! n" by blast
+                plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))) (indexed_from 0 u))). x \<le> e ! n" by blast
 
           have "apply_inv_component n u (the (apply_update u e)) =  Max (set (map (\<lambda>(m,up). (case up of 
                 zero \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n) else 0) | 
                 minus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)+1 else 0) |
                 min_set A \<Rightarrow> (if n\<in>A then (nth (the (apply_update u e)) m) else 0)|
-                plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))) (List.enumerate 0 u)))" using apply_inv_component.simps
+                plus_one \<Rightarrow> (if n=m then (nth (the (apply_update u e)) n)-1 else 0))) (indexed_from 0 u)))" using apply_inv_component.simps
             by blast 
           also have "... \<le> e! n" using leq Max_le_iff
-            by (smt (verit) List.finite_set \<open>length e = length u\<close> \<open>n < length e\<close> empty_iff length_enumerate length_map nth_mem)
+            by (smt (verit) List.finite_set \<open>length e = length u\<close> \<open>n < length e\<close> empty_iff length_indexed_from length_map nth_mem)
           finally show ?thesis .
         qed
         thus ?thesis using A by presburger 

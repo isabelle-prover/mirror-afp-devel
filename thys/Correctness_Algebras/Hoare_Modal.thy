@@ -138,7 +138,7 @@ lemma Z_circ_left_zero:
 
 subclass ifthenelse
   apply unfold_locales
-  by (smt a_d_closed box_a_export box_left_dist_sup box_x_a tests_dual.case_duality d_def ite_def pre_def)
+  by (smt (z3) a_d_closed box_a_export box_left_dist_sup box_x_a tests_dual.case_duality d_def ite_def pre_def)
 
 text \<open>Theorem 48.1\<close>
 
@@ -244,7 +244,7 @@ qed
 
 lemma box_circ_induct:
   "-p \<le> |x](-p) \<Longrightarrow> -p*aL \<le> |x\<^sup>\<circ>](-p)"
-  by (smt aL_circ_ext aL_test box_left_mult box_star_induct order_trans tests_dual.inf_commutative pre_closed pre_def pre_test tests_dual.shunting_right)
+  by (smt (z3) aL_circ_ext aL_test box_left_mult box_star_induct order_trans tests_dual.inf_commutative pre_closed pre_def pre_test tests_dual.shunting_right)
 
 lemma a_while_soundness:
   assumes "-p*-q \<le> |x](-q)"
@@ -253,7 +253,7 @@ proof -
   have "|(-p*x)\<^sup>\<circ>](-q) \<le> |(-p*x)\<^sup>\<circ>*--p](-q)"
     by (meson box_left_antitone circ_mult_upper_bound circ_reflexive order.refl order.trans tests_dual.sub_bot_least)
   thus ?thesis
-    by (smt assms box_import_shunting box_circ_induct order_trans sub_comm aL_test)
+    by (smt (z3) assms box_import_shunting box_circ_induct order_trans sub_comm aL_test)
 qed
 
 subclass hoare_calculus_sound
@@ -274,7 +274,7 @@ lemma aL_circ_equal:
 
 lemma aL_zero:
   "aL = bot"
-  by (smt aL_circ_equal aL_one_circ d_export d_mult_idempotent diamond_d_bot diamond_def mult_assoc mult_1_right star_one)
+  by (smt (z3) aL_circ_equal aL_one_circ d_export d_mult_idempotent diamond_d_bot diamond_def mult_assoc mult_1_right star_one)
 
 subclass hoare_calculus_sound
   apply unfold_locales
@@ -294,7 +294,7 @@ subclass hoare_calculus_complete
   subgoal
     apply (unfold pre_def box_def)
     by (metis a_ascending_chain a_dist_Prod a_dist_Sum descending_chain_left_mult while_mult_left_dist_Prod test_seq_def)
-  by (smt box_circ_induct_2 tests_dual.double_negation tests_dual.greatest_lower_bound tests_dual.upper_bound_left mult_right_dist_sup pre_closed pre_def pre_import pre_seq pre_test sub_mult_closed while_def)
+  by (smt (z3) box_circ_induct_2 tests_dual.double_negation tests_dual.greatest_lower_bound tests_dual.upper_bound_left mult_right_dist_sup pre_closed pre_def pre_import pre_seq pre_test sub_mult_closed while_def)
 
 end
 
@@ -313,7 +313,7 @@ proof -
   also have "... \<le> d p * x\<^sup>\<star> \<squnion> Z"
     by (metis Z_mult_decreasing mult_right_isotone star.left_plus_below_circ sup.bounded_iff sup_ge1 sup_mono sup_monoid.add_commute mult_assoc)
   finally show ?thesis
-    by (smt sup_commute le_sup_iff sup_ge2 d_mult_d diamond_def diamond_demodalisation_3 order_trans star.circ_back_loop_prefixpoint star_left_induct)
+    by (smt (z3) sup_commute le_sup_iff sup_ge2 d_mult_d diamond_def diamond_demodalisation_3 order_trans star.circ_back_loop_prefixpoint star_left_induct)
 qed
 
 lemma diamond_star_induct:
@@ -327,11 +327,11 @@ proof -
   have "--p*-q \<squnion> |-p*x>(-q) \<le> -q"
     using assms pre_def pre_export tests_dual.upper_bound_right by auto
   hence "|(-p*x)\<^sup>\<star>>(--p*-q) \<le> -q"
-    by (smt diamond_star_induct d_def sub_mult_closed tests_dual.double_negation)
+    by (smt (z3) diamond_star_induct d_def sub_mult_closed tests_dual.double_negation)
   hence "|-aL*(-p*x)\<^sup>\<circ>>(--p*-q) \<le> -q"
     by (meson dL_circ diamond_isotone order.eq_iff order.trans)
   thus ?thesis
-    by (smt aL_test diamond_a_export diamond_def mult_assoc tests_dual.inf_commutative pre_closed pre_def tests_dual.shunting while_def)
+    by (smt (z3) aL_test diamond_a_export diamond_def mult_assoc tests_dual.inf_commutative pre_closed pre_def tests_dual.shunting while_def)
 qed
 
 subclass hoare_calculus_complete
@@ -382,7 +382,7 @@ begin
 
 subclass hoare_calculus_sound
   apply unfold_locales
-  by (smt a_export diamond_associative diamond_circ_induct_2 tests_dual.double_negation tests_dual.sup_complement_intro pre_def pre_import_equiv_mult sub_comm sub_mult_closed while_def)
+  by (smt (z3) a_export diamond_associative diamond_circ_induct_2 tests_dual.double_negation tests_dual.sup_complement_intro pre_def pre_import_equiv_mult sub_comm sub_mult_closed while_def)
 
 end
 

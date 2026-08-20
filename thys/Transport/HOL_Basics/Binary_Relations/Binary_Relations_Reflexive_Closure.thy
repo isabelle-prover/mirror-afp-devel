@@ -41,7 +41,7 @@ definition "refl_closure_field R \<equiv> refl_closure_on (in_field R) R"
 
 open_bundle refl_closure_field_syntax
 begin
-notation refl_closure_field (\<open>(_\<^sup>+)\<close> [1000])
+notation refl_closure_field (\<open>_\<^sup>+\<close> [1000])
 end
 
 lemma refl_closure_fieldI [intro]:

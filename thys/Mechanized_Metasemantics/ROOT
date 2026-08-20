@@ -1,0 +1,9 @@
+chapter AFP
+
+session Mechanized_Metasemantics = HOL +
+  options [timeout = 300]
+  theories
+    Mechanized_Metasemantics
+  document_files
+    "root.tex"
+    "root.bib"

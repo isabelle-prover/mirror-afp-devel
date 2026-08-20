@@ -520,7 +520,7 @@ lemma nonzero_int_pow_distrib:
 proof(induction k)
   case (nonneg n)
   then show ?case using pow_nat[of n _ Q\<^sub>p] 
-    by (smt Qp.nat_pow_distrib Qp.nonzero_closed assms(1) assms(2) int_pow_int)
+    by (smt (z3) Qp.nat_pow_distrib Qp.nonzero_closed assms(1) assms(2) int_pow_int)
 next
   case N: (neg n)
   have "a \<otimes> b \<in> Units Q\<^sub>p"
@@ -1184,7 +1184,7 @@ lemma zero_in_val_ring:
 lemma ord_p:
 "ord \<pp> = 1"
   using p_nonzero ord_Zp_p ord_of_inc p_inc 
-  by (smt Zp_int_inc_closed ord_of_nonzero(2))
+  by (smt (z3) Zp_int_inc_closed ord_of_nonzero(2))
 
 lemma ord_p_pow_nat:
 "ord (\<pp> [^] (n::nat)) = n"
@@ -1558,7 +1558,7 @@ proof(rule ccontr)
     then have "x \<oplus> y = \<zero>"
       using Qp.add.m_closed Qp.nonzero_closed Qp.nonzero_memI assms(1) assms(2) by blast
     then have "x = \<ominus> y"
-      by (smt \<open>x \<oplus> y \<notin> nonzero Q\<^sub>p\<close> assms(1) assms(2) assms(3) diff_ord_nonzero)      
+      by (smt (z3) \<open>x \<oplus> y \<notin> nonzero Q\<^sub>p\<close> assms(1) assms(2) assms(3) diff_ord_nonzero)      
     then have "ord x = ord y"
       using assms(2) ord_minus by presburger
     then show False 
@@ -1603,7 +1603,7 @@ lemma val_ultrametric_noteq:
   apply(cases "x = \<zero>")
   apply (simp add: assms(2))
     using assms unfolding val_def 
-    by (smt Qp.not_nonzero_memI diff_ord_nonzero eint_ord_simps(2) not_nonzero_Qp ord_ultrametric_noteq val_def val_nonzero)
+    by (smt (z3) Qp.not_nonzero_memI diff_ord_nonzero eint_ord_simps(2) not_nonzero_Qp ord_ultrametric_noteq val_def val_nonzero)
 
 lemma val_ultrametric_noteq':
   assumes "x \<in> carrier Q\<^sub>p"
@@ -1761,7 +1761,7 @@ proof-
         using False "3" by blast
       show " val (finsum Q\<^sub>p g (insert a A)) \<ge> Min (val ` g ` insert a A)"
         using 5 4 1 
-        by (smt image_insert min.cobounded1 min_def order_trans)        
+        by (smt (z3) image_insert min.cobounded1 min_def order_trans)        
     qed
   qed
   then show ?thesis 
@@ -1840,7 +1840,7 @@ lemma Qp_diff_diff:
   assumes "c \<in> carrier Q\<^sub>p"
   assumes "d \<in> carrier Q\<^sub>p"
   shows "(x \<ominus> c) \<ominus> (d \<ominus> c) = x \<ominus> d "
-  by (smt Qp.domain_axioms a_minus_def assms(1) assms(2) assms(3) cring.cring_simprules(10) 
+  by (smt (z3) Qp.domain_axioms a_minus_def assms(1) assms(2) assms(3) cring.cring_simprules(10) 
       cring.cring_simprules(19) cring.cring_simprules(3) cring.cring_simprules(4) 
       cring.cring_simprules(7) domain.axioms(1))
 
@@ -1989,7 +1989,7 @@ proof-
           Q\<^sub>p_def Zp.Units_closed Zp.inv_cancelR(1) Zp.m_closed Zp.nonzero_closed Zp.nonzero_memE(2) Z\<^sub>p_def ac_Zp_is_Unit assms(1) assms(2) mult_assoc padic_fields.numer_denom_facts(2) padic_fields_axioms by auto   
   then have "(inv \<^bsub>Z\<^sub>p\<^esub> (ac_Zp (denom c))) \<otimes>\<^bsub>Z\<^sub>p\<^esub> (ac_Zp (numer c))  =  (ac_Zp a) \<otimes>\<^bsub>Z\<^sub>p\<^esub> inv \<^bsub>Z\<^sub>p\<^esub> (ac_Zp b)"
     using ac_Zp_is_Unit[of "ac_Zp b"] Zp.domain_axioms inv_cancelL(2) 
-    by (smt Q\<^sub>p_def Zp.Units_inv_closed Zp.Units_r_inv Zp.nonzero_closed Zp.nonzero_memE(2) Zp.r_one Z\<^sub>p_def ac_Zp_is_Unit assms(1) assms(3) mult_assoc mult_comm padic_fields.numer_denom_facts(2) padic_fields_axioms)
+    by (smt (z3) Q\<^sub>p_def Zp.Units_inv_closed Zp.Units_r_inv Zp.nonzero_closed Zp.nonzero_memE(2) Zp.r_one Z\<^sub>p_def ac_Zp_is_Unit assms(1) assms(3) mult_assoc mult_comm padic_fields.numer_denom_facts(2) padic_fields_axioms)
   then show ?thesis 
     by (simp add: angular_component_def mult_comm)
 qed
@@ -2347,7 +2347,7 @@ proof-
   have "ord_Zp a < N"
     using assms zero_below_ord by force    
   then show ?thesis 
-    by (smt R.minus_closed Zp_def \<open>(a \<ominus> b) N = 0\<close> above_ord_nonzero assms(2) assms(3) assms(4) assms(5) ord_Zp_ultrametric_eq' ord_Zp_ultrametric_eq'' padic_integers.ord_Zp_not_equal_imp_notequal(2) padic_integers.ord_of_nonzero(2) padic_integers.ord_pos padic_integers_axioms residue_of_zero(2))
+    by (smt (z3) R.minus_closed Zp_def \<open>(a \<ominus> b) N = 0\<close> above_ord_nonzero assms(2) assms(3) assms(4) assms(5) ord_Zp_ultrametric_eq' ord_Zp_ultrametric_eq'' padic_integers.ord_Zp_not_equal_imp_notequal(2) padic_integers.ord_of_nonzero(2) padic_integers.ord_pos padic_integers_axioms residue_of_zero(2))
 qed
 
 lemma(in padic_integers) equal_res_mod:
@@ -2461,7 +2461,7 @@ lemma ac_mult:
   apply(cases "x \<in> nonzero Q\<^sub>p \<and> y \<in> nonzero Q\<^sub>p")
   apply (simp add: ac_mult')
   using assms unfolding ac_def 
-  by (smt Qp.integral_iff Qp.nonzero_memI residue_times_zero_l residue_times_zero_r)
+  by (smt (z3) Qp.integral_iff Qp.nonzero_memI residue_times_zero_l residue_times_zero_r)
  
 lemma ac_one[simp]:
   assumes "n \<ge> 1"

@@ -1,0 +1,73 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{wasysym}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Modular Forms}
+\author{Manuel Eberl, Anthony Bordg, Lawrence C.\ Paulson, Wenda Li}
+\maketitle
+
+\begin{abstract}
+This entry provides the definition and proofs of basic properties of
+modular forms and modular functions. 
+These are holomorphic or meromorphic functions in the complex upper half 
+plane that satisfy certain symmetries with respect to the modular group 
+$\text{SL}_2(\mathbb{Z})$ or a subgroup thereof. They are a cornerstone
+of modern number theory and an essential ingredient in the proof of
+Fermat's Last Theorem.
+
+Most of the work focuses on level 1 modular forms/functions (i.e.\ the
+full modular group rather than a proper subgroup). Some notable results include:
+\begin{itemize}
+  \item Infrastructure to reason about $q$-expansions of periodic functions.
+  \item The valence formula for level 1 meromorphic forms, giving the number of zeros and poles (including both the special cases of modular forms and modular functions).
+  \item Basic level 1 modular forms such as the Eisenstein series $E_k$ and the modular discriminant $\Delta$.
+  \item The Ramanujan $\tau$ function and the identity $\Delta = (2\pi)^{12}\eta^24$ relating the modular discriminant to the Dedekind $\eta$ function.
+  \item Properties of Klein's $J$ invariant, including bijectivity, non-conformality, covering properties, and that the level 1 modular functions are exactly the rational functions of $J$.
+  \item The graded ring structure of the space of modular forms $\mathcal M_k$, including its dimension and explicit bases in terms of $E_4$, $E_6$, and $\Delta$.
+  \item Zagier's theory of level 1 quasimodular forms, including the structure theorem in terms of $E_2$, $E_4$, and $E_6$.
+  \item The Serre derivative operator.
+\end{itemize}
+A number of applications are also provided:
+\begin{itemize}
+  \item Ramanujan-type identities for the divisor $\sigma$ functions (using the Serre derivative and the structure theorem for $\mathcal M_k$), e.g.
+  \[20 \sigma_3(n) = (24 n - 4) \sigma_1(n) + 48\sum_{i=1}^{n-1} \sigma_1(i) \sigma_1(n-i)\]
+  \item The Eisenstein inversion theorem, relating elliptic curves to lattices (using the properties of Klein's $J$ invariant).
+  \item A short proof of Picard's Little Theorem using the fact that $J$ is a covering map.
+\end{itemize}
+The proofs and definitions mostly follow Apostol's 
+\emph{Modular Functions and Dirichlet Series in Number Theory}~\cite{apostol}.
+\end{abstract}
+
+\newpage
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\nocite{apostol}
+\nocite{royer}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

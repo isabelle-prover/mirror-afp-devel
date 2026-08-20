@@ -8,15 +8,34 @@ sig
   include HAS_LOGGER
 
   (*first-order, then higher-order pattern, then fallback*)
-  val first_higherp_e_match : Unification_Base.e_matcher
-  val norms_first_higherp_match : Unification_Base.normalisers
+  (*precondition: types of terms are matched*)
+  val gen_fo_hop_e_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser ->
+    Unification_Base.e_matcher
+  val gen_fo_hop_match_args_match : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
+  val gen_fo_hop_match_args_unif : Unification_Base.term_type_matcher * Envir_Normalisation.type_normaliser
+  val fo_hop_e_match : Unification_Base.e_matcher
+  val fo_hop_match : Unification_Base.matcher
+  val norms_fo_hop_match : Unification_Base.normalisers
+  val fo_hop_e_match_type_unify : Unification_Base.e_matcher
+  val fo_hop_match_type_unify : Unification_Base.matcher
+  val norms_fo_hop_match_type_unify : Unification_Base.normalisers
 
-  val first_higherp_e_unify : Unification_Base.e_unifier
-  val norms_first_higherp_unify : Unification_Base.normalisers
+  (*precondition: types of terms are unified*)
+  val fo_hop_e_unify : Unification_Base.e_unifier
+  val fo_hop_unify : Unification_Base.unifier
+  val norms_fo_hop_unify : Unification_Base.normalisers
 
-  (*first_higherp_e_unify with variable higher-order pattern unification fallback*)
-  val first_higherp_var_higherp_e_unify : Unification_Base.e_unifier
-  val norms_first_higherp_var_higherp_unify : Unification_Base.normalisers
+  (*fo_hop_e_unify with higher-order pattern variable unification fallback*)
+  (*precondition: types of terms are unified*)
+  val fo_hop_hop_var_e_unify : Unification_Base.e_unifier
+  val fo_hop_hop_var_unify : Unification_Base.unifier
+  val norms_fo_hop_hop_var_unify : Unification_Base.normalisers
+
+  (*fo_hop_hop_var_e_unify with higher-order unification fallback*)
+  (*precondition: types of terms are unified*)
+  val fo_hop_hop_var_ho_e_unify : Unification_Base.e_unifier
+  val fo_hop_hop_var_ho_unify : Unification_Base.unifier
+  val norms_fo_hop_hop_var_ho_unify : Unification_Base.normalisers
 end
 
 structure Mixed_Unification : MIXED_UNIFICATION =
@@ -25,55 +44,82 @@ struct
 val logger = Logger.setup_new_logger Unification_Base.logger "Mixed_Unification"
 
 structure UUtil = Unification_Util
-structure UComb = Unification_Combinator
+structure UCO = Unification_Combinator
 structure Norm = Envir_Normalisation
 
-fun pretty_unif_problem descr norm ctxt tp = Pretty.breaks [
+fun pretty_unif_problem descr norm binders ctxt tp = Pretty.breaks [
     Pretty.str descr,
-    UUtil.pretty_unif_problem ctxt (norm tp)
+    UUtil.pretty_unif_problem binders ctxt (norm tp)
   ] |> Pretty.block |> Pretty.string_of
 
-fun first_higherp_e_match match_theory binders ctxt tp env = Seq.make (fn _ =>
-  let
-    val match_types = UUtil.match_types
-    val higherp_comb_higher = Higher_Order_Pattern_Unification.e_match
-        match_types match_theory match_theory
-      |> Type_Unification.e_match match_types
-    val fo_higherp_comb_higher = First_Order_Unification.e_match match_types higherp_comb_higher
+fun gen_fo_hop_e_match args match_theory binders ctxt tp env = Seq.make (fn _ =>
+  let val fo_hop_comb_higher = UCO.add_fallback_matcher (First_Order_Unification.gen_e_match args)
+    (Higher_Order_Pattern_Unification.gen_e_match args match_theory match_theory)
   in
     (@{log Logger.DEBUG} ctxt (fn _ => pretty_unif_problem
       "First-order with higher-order pattern E-matching"
-      (apfst (Norm.norm_term_match env)) ctxt tp);
-    fo_higherp_comb_higher binders ctxt tp env)
+      (apfst (Same.commit (Norm.norm_term_match env))) binders ctxt tp);
+    fo_hop_comb_higher binders ctxt tp env)
     |> Seq.pull
   end)
-val norms_first_higherp_match = UUtil.beta_eta_short_norms_match
+val gen_fo_hop_match_args_match = First_Order_Unification.gen_match_args_match
+val gen_fo_hop_match_args_unif = First_Order_Unification.gen_match_args_unify
+val fo_hop_e_match = gen_fo_hop_e_match gen_fo_hop_match_args_match
+val fo_hop_match = fo_hop_e_match UCO.fail_match
+val norms_fo_hop_match = UUtil.beta_eta_short_norms_match
+val fo_hop_e_match_type_unify = gen_fo_hop_e_match gen_fo_hop_match_args_unif
+val fo_hop_match_type_unify = fo_hop_e_match_type_unify UCO.fail_match
+val norms_fo_hop_match_type_unify = UUtil.beta_eta_short_norms_match_type_unify
 
-fun first_higherp_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
+fun fo_hop_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
   let
-    val unify_types = UUtil.unify_types
-    val higherp_comb_higher = Higher_Order_Pattern_Unification.e_unify
-        unify_types unif_theory unif_theory
-      |> Type_Unification.e_unify unify_types
-    val fo_higherp_comb_higher = First_Order_Unification.e_unify unify_types
-      higherp_comb_higher
+    val hop_comb_higher = Higher_Order_Pattern_Unification.e_unify unif_theory unif_theory
+    fun weak_head_norm_unify binders ctxt (s, t) env =
+      let
+        val unif' = fo_hop_e_unify unif_theory binders ctxt
+        val norm = Norm.beta_weak_head_unif env
+        val _ = @{log Logger.DEBUG} ctxt (fn _ => pretty_unif_problem
+          "Instantiating and weak-head-normalising" I binders ctxt (s, t))
+      in
+        unif' (norm s, t) env
+        handle Same.SAME => unif' (s, norm t) env
+        handle Same.SAME => hop_comb_higher binders ctxt (s, t) env
+      end
+    val fo_hop_comb_higher = UCO.add_fallback_unifier First_Order_Unification.e_unify
+      weak_head_norm_unify
   in
     (@{log Logger.DEBUG} ctxt (fn _ => pretty_unif_problem
       "First-order with higher-order pattern E-unifying"
-      (apply2 (Norm.norm_term_unif env)) ctxt tp);
-    fo_higherp_comb_higher binders ctxt tp env)
+      (apply2 (Same.commit (Norm.norm_term_unif env))) binders ctxt tp);
+    fo_hop_comb_higher binders ctxt tp env)
     |> Seq.pull
   end)
-val norms_first_higherp_unify = UUtil.beta_eta_short_norms_unif
+val fo_hop_unify = fo_hop_e_unify UCO.fail_unify
+val norms_fo_hop_unify = UUtil.beta_eta_short_norms_unif
 
-fun first_higherp_var_higherp_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
+fun fo_hop_hop_var_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.DEBUG} ctxt (fn _ => pretty_unif_problem
-    "First-order with higher-order pattern with variable head higher-order pattern E-unifying"
-    (apply2 (Norm.norm_term_unif env)) ctxt tp);
-  UComb.add_fallback_e_unifier first_higherp_e_unify Var_Higher_Order_Pattern_Unification.e_unify
-    unif_theory binders ctxt tp env)
+    "First-order with higher-order pattern with higher-order pattern variable E-unifying"
+    (apply2 (Same.commit (Norm.norm_term_unif env))) binders ctxt tp);
+  UCO.add_fallback_unifier fo_hop_e_unify
+    (UCO.norm_unifier (UUtil.inst_norm_term' norms_fo_hop_unify)
+      (Higher_Order_Pattern_Var_Unification.e_unify unif_theory))
+    binders ctxt tp env)
   |> Seq.pull)
-val norms_first_higherp_var_higherp_unify = norms_first_higherp_unify
+val fo_hop_hop_var_unify = fo_hop_hop_var_e_unify UCO.fail_unify
+val norms_fo_hop_hop_var_unify = norms_fo_hop_unify
+
+fun fo_hop_hop_var_ho_e_unify unif_theory binders ctxt tp env = Seq.make (fn _ =>
+  (@{log Logger.DEBUG} ctxt (fn _ => pretty_unif_problem
+    "First-order with higher-order pattern with higher-order pattern variable with higher-order E-unifying"
+    (apply2 (Same.commit (Norm.norm_term_unif env))) binders ctxt tp);
+  UCO.add_fallback_unifier fo_hop_hop_var_e_unify
+    (*Note: there is no higher-order E-unification as of 10.06.2026.
+    We hence simply add the theory unifier as an alternative to the higher-order unifier*)
+    (UCO.orelse_unifiers [Higher_Order_Unification.unify, unif_theory]) binders ctxt tp env)
+  |> Seq.pull)
+val fo_hop_hop_var_ho_unify = fo_hop_hop_var_ho_e_unify UCO.fail_unify
+val norms_fo_hop_hop_var_ho_unify = norms_fo_hop_hop_var_unify
 
 end
 
@@ -84,12 +130,12 @@ sig
   structure UC : UNIFICATION_COMBINE
 
   (*first-order, then higher-order pattern with decomposition, then UC.e_unify*)
-  val first_higherp_comb_e_unify : Unification_Base.e_unifier
-  val first_higherp_comb_unify : Unification_Base.unifier
-  val norms_first_higherp_comb_unify : Unification_Base.normalisers
+  val fo_hop_comb_e_unify : Unification_Base.e_unifier
+  val fo_hop_comb_unify : Unification_Base.unifier
+  val norms_fo_hop_comb_unify : Unification_Base.normalisers
 end
 
-functor Mixed_Comb_Unification(A :
+functor Mixed_Comb_Unification_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
     structure UC : UNIFICATION_COMBINE
@@ -101,19 +147,18 @@ val logger = Logger.setup_new_logger Unification_Base.logger FI.name
 
 structure UUtil = Unification_Util
 structure UCO = Unification_Combinator
+structure Norm = Envir_Normalisation
 structure UC = A.UC
 
-val first_higherp_comb_e_unify = UCO.add_fallback_e_unifier Mixed_Unification.first_higherp_e_unify
-  UC.e_unify
-
-fun first_higherp_comb_unify binders ctxt tp env = Seq.make (fn _ =>
+fun fo_hop_comb_e_unify unify_theory binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.DEBUG} ctxt (fn _ => Pretty.breaks [
       Pretty.block [Pretty.str "First-order with higher-order pattern with ",
-        Binding.pretty UC.binding, Pretty.str " unifying"],
-      UUtil.pretty_unif_problem ctxt (apply2 (Envir_Normalisation.norm_term_unif env) tp)
+        Binding.pretty UC.Data.binding, Pretty.str " E-unifying"],
+      UUtil.pretty_unif_problem binders ctxt (apply2 (Same.commit (Norm.norm_term_unif env)) tp)
     ] |> Pretty.block |> Pretty.string_of);
-  first_higherp_comb_e_unify UCO.fail_unify binders ctxt tp env
+  Mixed_Unification.fo_hop_e_unify (UC.e_unify unify_theory) binders ctxt tp env
   |> Seq.pull))
-val norms_first_higherp_comb_unify = UUtil.beta_eta_short_norms_unif
+val fo_hop_comb_unify = fo_hop_comb_e_unify UCO.fail_unify
+val norms_fo_hop_comb_unify = Mixed_Unification.norms_fo_hop_unify
 
 end

@@ -583,7 +583,7 @@ proof
       assume "x \<in> vars (s \<cdot> \<tau>)" 
       from this[unfolded tau \<tau>c_def split vars_term_subst subst_def]
       obtain i where i: "i < length \<iota>s" and 
-        x: "x = (n + i, \<iota>s ! i)" by (auto simp: set_conv_nth split: if_splits)
+        x: "x = (n + i, \<iota>s ! i)" by (auto simp: set_conv_nth nth_indexed_from_eq split: if_splits)
       with x_disj show False by auto
     qed
 
@@ -613,7 +613,7 @@ proof
           next
             case True
             show ?thesis unfolding True using x_disj 
-              by (auto simp add: tau \<tau>c_def subst_compose_def \<sigma>'_def t_def intro!: nth_equalityI)
+              by (auto simp add: tau \<tau>c_def subst_compose_def \<sigma>'_def t_def nth_indexed_from_eq intro!: nth_equalityI)
           qed
         }
         thus "s \<cdot> \<tau> \<cdot> \<sigma>' = s' \<cdot> \<tau> \<cdot> \<sigma>'" using eq
@@ -717,7 +717,7 @@ next
             qed
             hence sig'x: "\<sigma>' x = \<sigma> x" unfolding \<sigma>'_def by auto
             show ?thesis unfolding True sig'x sigxF using cx ts[unfolded list_all2_conv_all_nth]
-              by (auto simp add: \<tau>c_def subst_compose_def \<sigma>'_def \<tau>_def cond_def intro!: nth_equalityI)
+              by (auto simp add: \<tau>c_def subst_compose_def \<sigma>'_def \<tau>_def cond_def nth_indexed_from_eq intro!: nth_equalityI)
           qed
         }
         with eq show "s \<cdot> \<sigma>' = t \<cdot> \<sigma>'" by (metis eval_same_vars_cong eval_subst)
@@ -762,7 +762,7 @@ next
             hence "(n + i, \<sigma>s ! i) : \<sigma>s ! i in \<V> |` SS" by (auto simp: hastype_def restrict_map_def)
           }
           thus ?thesis unfolding \<sigma> True tau \<tau>c_def split subst_def
-            by (auto intro!: Fun_hastypeI[OF f] list_all2_all_nthI)
+            by (auto simp add: nth_indexed_from_eq intro!: Fun_hastypeI[OF f] list_all2_all_nthI)
         qed
       qed
     qed

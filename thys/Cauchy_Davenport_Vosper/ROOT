@@ -1,0 +1,10 @@
+chapter AFP
+
+session Cauchy_Davenport_Vosper = "HOL-Number_Theory" +
+  options [timeout=600]
+  theories
+    Cauchy_Davenport_Entry
+  document_files
+    "root.tex"
+    "root.bib"
+

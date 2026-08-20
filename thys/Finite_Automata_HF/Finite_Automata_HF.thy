@@ -793,6 +793,9 @@ next
     by (force simp: finite)
 qed
 
+corollary dfa_Power: "dfa Power_dfa"
+by unfold_locales
+
 text\<open>The Power DFA accepts the same language as the NFA.\<close>
 theorem Power_language [simp]: "Power.language = language"
 proof -

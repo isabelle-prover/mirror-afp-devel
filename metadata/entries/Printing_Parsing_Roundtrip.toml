@@ -1,0 +1,57 @@
+title = "Type Annotations with Roundtrip Property"
+date = 2026-05-12
+topics = [
+  "Computer science/Algorithms/Optimization",
+  "Computer science/Programming languages/Type systems",
+]
+abstract = """
+Type annotations are essential when printing terms in a way that preserves their meaning under reparsing and type inference. We study the problem of complete and minimal type annotations for rank-one polymorphic $\\lambda$-calculus terms, as used in Isabelle.
+Building on prior work by Smolka, Blanchette et al., we show that a reverse-greedy approach leads to a locally minimal and complete set of annotations.
+Our development is a series of experiments featuring human-driven and AI-driven formalization workflows: a human and an AI agent independently produce pen-and-paper proofs, and the agent autoformalizes them in Isabelle.
+We refined the resulting AI proof developments for this AFP submission, the original version and our experimental setup can be found in the related Zenodo entry.
+We give a metatheoretical account of the problem, with a full formal specification and proofs in our paper \"Just Type It in Isabelle! AI Agents Drafting, Mechanizing, and Generalizing from Human Hints\"."""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI (Claude Opus 4.6 via I/Q) was used to develop an initial version of the Isabelle theories. Subsequently, we checked all definitions manually and refactored the development before submitting it to the AFP.
+
+
+
+"""
+
+[authors]
+
+[authors.kappelmann]
+email = "kappelmann_email"
+
+[authors.schaeffeler]
+email = "schaeffeler_email"
+
+[authors.stevens]
+email = "stevens_email"
+
+[authors.abdulaziz]
+email = "abdulaziz_email"
+
+[authors.popescu]
+email = "popescu_email"
+
+[authors.traytel]
+email = "traytel_email"
+
+[contributors]
+
+[notify]
+schaeffeler = "schaeffeler_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s10817-015-9335-3",
+  "10.48550/arXiv.2604.15713",
+  "10.5281/zenodo.19406624",
+]
+pubs = []

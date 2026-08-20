@@ -175,11 +175,8 @@ sublocale tper_bij? : transport_partial_equivalence_rel_bijection "(=\<^bsub>P\<
     mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field[of "in_field (=\<^bsub>Q\<^esub>)"]
     flip_of.mono_wrt_rel_left_if_reflexive_on_if_le_eq_if_mono_wrt_in_field[of "in_field (=\<^bsub>P\<^esub>)"])
 
-lemma left_Galois_eq_Galois_eq_eq_restrict: "(\<^bsub>L\<^esub>\<lessapprox>) = (galois_rel.Galois (=) (=) r)\<restriction>\<^bsub>P\<^esub>\<upharpoonleft>\<^bsub>Q\<^esub>"
-  by (subst galois_rel.left_Galois_restrict_left_eq_left_Galois_left_restrict_left
-    galois_rel.left_Galois_restrict_right_eq_left_Galois_right_restrict_right
-    rel_restrict_right_eq rel_inv_eq_self_if_symmetric)+
-  auto
+lemma left_Galois_eq_inv_Graph_on_right_restrict: "(\<^bsub>L\<^esub>\<lessapprox>) = (Graph_on Q r)\<upharpoonleft>\<^bsub>P\<^esub>\<inverse>"
+  by (simp add: left_Galois_eq_restrict_eq_inv_restrict_right_Graph_on_in_codom)
 
 end
 
@@ -193,7 +190,11 @@ begin
 sublocale teq_restr_bij? : transport_eq_restrict_bijection \<top> \<top> l r
   rewrites "(=\<^bsub>\<top> :: 'a \<Rightarrow> bool\<^esub>) = ((=) :: 'a \<Rightarrow> _)"
   and "(=\<^bsub>\<top> :: 'b \<Rightarrow> bool\<^esub>) = ((=) :: 'b \<Rightarrow> _)"
-  using bijection_on_in_field by unfold_locales simp_all
+  and "Graph_on \<top> r = Graph r"
+  and "\<And>R. R\<upharpoonleft>\<^bsub>\<top>\<^esub> = R"
+  using bijection_on_in_field by unfold_locales (simp_all add: Graph_eq_Graph_on)
+
+lemmas left_Galois_eq_inv_Graph = left_Galois_eq_inv_Graph_on_right_restrict
 
 end
 

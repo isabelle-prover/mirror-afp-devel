@@ -77,17 +77,18 @@ begin
       unfolding graph_rec.defs
       by simp
 
-    definition "ngba_acc_bs cs p \<equiv> fold (\<lambda> (k, c) bs. if c p then bs_insert k bs else bs) (List.enumerate 0 cs) (bs_empty ())"
+    definition
+      "ngba_acc_bs cs p \<equiv> fold (\<lambda> (k, c) bs. if c p then bs_insert k bs else bs) (indexed_from 0 cs) (bs_empty ())"
 
     lemma ngba_acc_bs_empty[simp]: "ngba_acc_bs [] p = bs_empty ()" unfolding ngba_acc_bs_def by simp
     lemma ngba_acc_bs_insert[simp]:
       assumes "c p"
       shows "ngba_acc_bs (cs @ [c]) p = bs_insert (length cs) (ngba_acc_bs cs p)"
-      using assms unfolding ngba_acc_bs_def by (simp add: enumerate_append_eq)
+      using assms unfolding ngba_acc_bs_def by (simp add: indexed_from_append_eq)
     lemma ngba_acc_bs_skip[simp]:
       assumes "\<not> c p"
       shows "ngba_acc_bs (cs @ [c]) p = ngba_acc_bs cs p"
-      using assms unfolding ngba_acc_bs_def by (simp add: enumerate_append_eq)
+      using assms unfolding ngba_acc_bs_def by (simp add: indexed_from_append_eq)
 
     lemma ngba_acc_bs_correct[simp]: "bs_\<alpha> (ngba_acc_bs cs p) = ngba_acc cs p"
     proof (induct cs rule: rev_induct)

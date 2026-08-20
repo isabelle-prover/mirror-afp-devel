@@ -395,7 +395,7 @@ proof -
 
     have "sqrt (sin x ^ 3 + cos x ^ 3) ^ 8 =  (sin x ^ 3 + cos x ^ 3) ^ 4"
       using s3_c3_gt_zero
-      by (smt mult_2 numeral_Bit0 power2_eq_square power_even_eq real_sqrt_mult_self)
+      by (smt (z3) mult_2 numeral_Bit0 power2_eq_square power_even_eq real_sqrt_mult_self)
     moreover have "sqrt (sin x ^ 3 + cos x ^ 3) ^ 5 =  (sin x ^ 3 + cos x ^ 3) ^ 2 * sqrt (sin x ^ 3 + cos x ^ 3)"
       by (simp add: mult.assoc power2_eq_square power5)
     ultimately

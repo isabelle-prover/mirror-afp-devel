@@ -194,12 +194,14 @@ structure Step =
 struct
   local structure Log = Zippy_Logger_Mixin_Base(val parent_logger = Logging.logger; val name =  "Step")
   in open Log end
-  local structure ZCost = Zippy_Collect_Trace_Mixin(ZLPC.ZCollect)
-  in
+
   fun check_depth_limit opt_limit = ZP.ZZDepth_Co4.getter
     #> (fn depth => case opt_limit of
         NONE => pure depth
       | SOME l => if depth <= l then pure depth else Exn.ME.throw Util.exn)
+
+  local structure ZCost = Zippy_Collect_Trace_Mixin(ZLPC.ZCollect)
+  in
   structure AStar =
   struct
     structure Logging =
@@ -284,7 +286,7 @@ struct
   local
     type prio = {depth : int, prio : PAction.prio}
     fun prio_ord depth_ord ({depth = depth1, prio = prio1}, {depth = depth2, prio = prio2}) =
-    prod_ord depth_ord Cost.ord ((depth1, prio1), (depth2, prio2))
+      prod_ord depth_ord Cost.ord ((depth1, prio1), (depth2, prio2))
   in
   structure Depth_First =
   struct
@@ -366,7 +368,7 @@ struct
     val mk_prio_depth_limit = Depth_First.mk_prio_depth_limit
   end
   end
-  end
+end
 
 (* run *)
 structure Run =
@@ -447,6 +449,10 @@ struct
   end
 end
 end
+
+val are_thm_variants = apply2 Thm.prop_of #> Term_Util.are_beta_eta_variants
+fun changed_uniquesq st = Seq.filter (fn st' => not (are_thm_variants (st, st')))
+  #> Tactic_Util.unique_thmsq are_thm_variants
 end
 end
 end

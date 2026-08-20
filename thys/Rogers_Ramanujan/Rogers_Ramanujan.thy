@@ -794,6 +794,6 @@ proof -
     by (subst (asm) has_sum_of_real_iff)
 qed
 
-unbundle no_qpochhammer_inf_notation
+unbundle no qpochhammer_inf_notation
 
 end

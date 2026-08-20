@@ -42,7 +42,7 @@ proof -
 qed
   
 lemma sup_distr: "(x \<squnion> y) \<cdot> z = (x \<cdot> z) \<squnion> (y \<cdot> z)"
-  by (smt SUP_empty SUP_insert Sup_distr sup_Sup sup_bot.right_neutral)
+  by (smt (z3) SUP_empty SUP_insert Sup_distr sup_Sup sup_bot.right_neutral)
    
 lemma mult_isor: "x \<le> y \<Longrightarrow> x \<cdot> z \<le> y \<cdot> z"
   by (metis sup.absorb_iff1 sup_distr)
@@ -96,7 +96,7 @@ lemma bres_iso: "x \<le> y \<Longrightarrow> z \<rightarrow> x \<le> z \<rightar
   using Sup_le_iff bres_def bres_galois_imp by force
 
 lemma bres_anti: "x \<le> y \<Longrightarrow> y \<rightarrow> z \<le> x \<rightarrow> z"
-  by (smt Sup_le_iff bres_def bres_galois_imp fres_galois order_trans mem_Collect_eq)
+  by (smt (z3) Sup_le_iff bres_def bres_galois_imp fres_galois order_trans mem_Collect_eq)
 
 lemma fres_iso: "x \<le> y \<Longrightarrow> x \<leftarrow> z \<le> y \<leftarrow> z"
   using fres_galois dual_order.trans by blast
@@ -127,7 +127,7 @@ class proto_pre_quantale = proto_near_quantale +
 begin
 
 lemma sup_subdistl: "(x \<cdot> y) \<squnion> (x \<cdot> z) \<le> x \<cdot> (y \<squnion> z)"
-  by (smt SUP_empty SUP_insert Sup_subdistl sup_Sup sup_bot_right)
+  by (smt (z3) SUP_empty SUP_insert Sup_subdistl sup_Sup sup_bot_right)
 
 lemma mult_isol: "x \<le> y \<Longrightarrow> z \<cdot> x \<le> z \<cdot> y"
   by (metis le_iff_sup le_sup_iff sup_subdistl)
@@ -179,7 +179,7 @@ subclass weak_proto_quantale
   by standard (simp add: Sup_distl)
 
 lemma mult_botr [simp]: "x \<cdot> \<bottom> = \<bottom>"
-  by (smt image_empty Sup_distl Sup_empty)
+  by (smt (z3) image_empty Sup_distl Sup_empty)
 
 text \<open>Now there is also an adjunction for the other residual.\<close>
     

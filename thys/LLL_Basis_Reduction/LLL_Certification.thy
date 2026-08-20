@@ -203,7 +203,7 @@ proof -
         (is "?lhs = ?rhs")
       proof (rule eq_vecI)
         show dim_vec_eq: "dim_vec ?lhs = dim_vec ?rhs"
-          by (smt DiffE carrier_vecD gs.lincomb_closed local.set_rows_carrier subsetCE subsetI)
+          by (smt (z3) DiffE carrier_vecD gs.lincomb_closed local.set_rows_carrier subsetCE subsetI)
         fix i assume i: "i<dim_vec ?rhs"
         hence i_n: "i<n" using dim_vec_eq lincomb_f_closed by auto
         have "?lhs $ i =  (\<Sum>x\<in>(?set_rows-{v}). ?f x * x $ i)" 
@@ -304,10 +304,10 @@ proof -
       have Gs_U2Fs: "?gs = ?U2 * ?fs" using prod2
         by (metis U2 assms(6) len mat_of_rows_carrier(1) of_int_hom.mat_hom_mult)
       have fs_hom_eq: "?fs = ?P * ?fs"
-        by (smt U1 U1U2 U2 assms(5) assms(6) assoc_mult_mat fs_hom 
+        by (smt (z3) U1 U1U2 U2 assms(5) assms(6) assoc_mult_mat fs_hom 
             map_carrier_mat of_int_hom.mat_hom_mult)
       have P_id: "?P = 1\<^sub>m m" by (rule mult_left_identity[OF U1U2_hom fs_hom_eq[symmetric]])
-      hence "det (?U1) * det (?U2) = 1" by (smt U1_hom U2_hom det_mult det_one of_int_hom.hom_det)
+      hence "det (?U1) * det (?U2) = 1" by (smt (z3) U1_hom U2_hom det_mult det_one of_int_hom.hom_det)
       hence det_U2: "det ?U2 \<noteq> 0" and det_U1: "det ?U1 \<noteq> 0" by auto    
       from det_non_zero_imp_unit[OF U2_hom det_U2, unfolded Units_def, of "()"] 
       have inv_U2: "invertible_mat ?U2"

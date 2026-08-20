@@ -251,7 +251,7 @@ lemma sum_easier: "uGraph_from_list_invar L
     subgoal using b by(auto simp: \<alpha>_def split: prod.splits)   
     subgoal using a b apply(auto simp: uGraph_from_list_invar_def distinct_map split: prod.splits)  
       using \<alpha>_def 
-      by (smt \<alpha>_def inj_onD old.prod.case prod.inject set_mp)  
+      by (smt (z3) \<alpha>_def inj_onD old.prod.case prod.inject set_mp)  
     done
  
   have inj_on_E: "inj_on \<alpha> (set E)"

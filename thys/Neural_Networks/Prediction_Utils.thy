@@ -189,24 +189,24 @@ qed
 paragraph\<open>Maximum Prediction\<close>
 
 definition posmax_of :: \<open>'a::linorder list \<Rightarrow> (nat \<times> 'a) option\<close> where
-          \<open>posmax_of l = (let m = max\<^sub>l\<^sub>i\<^sub>s\<^sub>t l in find (\<lambda> e. snd e = m) (enumerate 0 l))\<close>
+          \<open>posmax_of l = (let m = max\<^sub>l\<^sub>i\<^sub>s\<^sub>t l in find (\<lambda> e. snd e = m) (indexed_from 0 l))\<close>
 definition pos_of_max :: \<open>'a::linorder list \<Rightarrow> nat option\<close> where
           \<open>pos_of_max l = map_option fst (posmax_of l)\<close>
 
 definition posmax_of' :: \<open>'a::linorder list \<Rightarrow> (nat \<times> 'a) option\<close> where
-          \<open>posmax_of' l = (if l = [] then None else Some ((hd o rev o (sort_key snd) o (enumerate 0)) l))\<close>
+          \<open>posmax_of' l = (if l = [] then None else Some ((hd o rev o (sort_key snd) o (indexed_from 0)) l))\<close>
 definition pos_of_max' :: \<open>'a::linorder list \<Rightarrow> nat option\<close> where
           \<open>pos_of_max' l = map_option fst (posmax_of' l)\<close>
 
 paragraph\<open>Minimum Prediction\<close>
 
 definition posmin_of :: \<open>'a::linorder list \<Rightarrow> (nat \<times> 'a) option\<close> where
-          \<open>posmin_of l = (let m = min\<^sub>l\<^sub>i\<^sub>s\<^sub>t l in find (\<lambda> e. snd e = m) (enumerate 0 l))\<close>
+          \<open>posmin_of l = (let m = min\<^sub>l\<^sub>i\<^sub>s\<^sub>t l in find (\<lambda> e. snd e = m) (indexed_from 0 l))\<close>
 definition pos_of_min :: \<open>'a::linorder list \<Rightarrow> nat option\<close> where
           \<open>pos_of_min l = map_option fst (posmin_of l)\<close>
 
 definition posmin_of' :: \<open>'a::linorder list \<Rightarrow> (nat \<times> 'a) option\<close> where
-          \<open>posmin_of' l = (if l = [] then None else Some ((hd o rev o (sort_key snd) o (enumerate 0)) l))\<close>
+          \<open>posmin_of' l = (if l = [] then None else Some ((hd o rev o (sort_key snd) o (indexed_from 0)) l))\<close>
 definition pos_of_min' :: \<open>'a::linorder list \<Rightarrow> nat option\<close> where
           \<open>pos_of_min' l = map_option fst (posmin_of' l)\<close>
 
@@ -229,12 +229,12 @@ next
     apply(simp)
     unfolding posmax_of_def Let_def o_def max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def
     apply clarsimp
-    apply (simp add: * max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq enumerate_append_eq find_append_eq)
+    apply (simp add: * max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq indexed_from_append_eq find_append_eq)
     apply(cases "xs=[]", simp) 
-    apply (cases " find (\<lambda>e. snd e = Max (insert x (set xs))) (enumerate 0 xs)" , simp_all)
+    apply (cases " find (\<lambda>e. snd e = Max (insert x (set xs))) (indexed_from 0 xs)" , simp_all)
     subgoal by (metis max_def)
     subgoal using  comp_def list.simps(15) max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def rotate1.simps(2) set_rotate1 
-      by (smt (verit) List.finite_set Max.in_idem enumerate_eq_zip find_None_iff find_cong in_set_conv_nth in_set_zip max_def
+      by (smt (verit) List.finite_set Max.in_idem indexed_from_eq_zip find_None_iff find_cong in_set_conv_nth in_set_zip max_def
           option.discI) 
     done
 qed
@@ -248,14 +248,14 @@ next
   then show ?thesis 
   apply(simp)
     unfolding posmin_of_def Let_def o_def min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def
-    apply (simp add: *  min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq enumerate_append_eq find_append_eq)
+    apply (simp add: *  min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq indexed_from_append_eq find_append_eq)
     apply (cases "xs = []")
      apply simp
-    apply (cases " find (\<lambda>e. snd e = Min (insert x (set xs))) (enumerate 0 xs)", simp_all )
+    apply (cases " find (\<lambda>e. snd e = Min (insert x (set xs))) (indexed_from 0 xs)", simp_all )
     subgoal
       by (metis linorder_not_le min.absorb4 min.orderE) 
     subgoal using 
-       List.finite_set Min.insert Min.insert_remove Min.remove  enumerate_eq_zip
+       List.finite_set Min.insert Min.insert_remove Min.remove indexed_from_eq_zip
           find_None_iff find_cong in_set_conv_nth in_set_zip length_append length_map 
           list.size(3) map_nth min.orderE min_def option.simps(3) set_append set_empty 
       by (smt (verit) insort_insert_triv set_insort_insert)  
@@ -281,7 +281,7 @@ next
   case (snoc x xs) note * = this
   then show ?case 
     unfolding posmax_of_def Let_def
-    apply(clarsimp simp add:enumerate_append_eq find_append_eq)
+    apply(clarsimp simp add: indexed_from_append_eq find_append_eq)
     subgoal using  max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq
       by (metis append_is_Nil_conv in_set_conv_decomp_last list.discI max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_is_element 
           not_Some_eq old.prod.exhaust self_append_conv2 set_ConsD)
@@ -297,7 +297,7 @@ next
   case (snoc x xs) note * = this
   then show ?case 
     unfolding posmin_of_def Let_def
-    apply(clarsimp simp add:enumerate_append_eq find_append_eq)[1]
+    apply(clarsimp simp add: indexed_from_append_eq find_append_eq)[1]
     using min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_append_eq
     by (metis append_Nil eq_snd_iff in_set_conv_nth list.distinct(1) list.size(3) min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_is_element 
         not_less_zero option.exhaust set_ConsD)
@@ -356,8 +356,8 @@ shows \<open>Min (set xs) = xs!n\<close>
   using assms min_in take_nth_drop_eq by metis
 
 lemma snd_numerate_eq: 
-  "xs \<noteq> [] \<Longrightarrow> n < length xs  \<Longrightarrow>  j < n \<Longrightarrow> snd (List.enumerate 0 xs ! j) = xs!j"
-  by (simp add: nth_enumerate_eq) 
+  "xs \<noteq> [] \<Longrightarrow> n < length xs  \<Longrightarrow> j < n \<Longrightarrow> snd (indexed_from 0 xs ! j) = xs ! j"
+  by (simp add: nth_indexed_from_eq) 
 
 lemma nth_lower_max: 
   assumes \<open>xs \<noteq> []\<close>
@@ -393,7 +393,7 @@ shows \<open>posmax_of xs = Some (n,xs!n)\<close>
 unfolding posmax_of_def max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def o_def Let_def
   apply(simp add: List.find_Some_iff)  
   apply(rule exI[of _ "n"])
-  apply(simp add: max_in' assms nth_enumerate_eq)
+  apply(simp add: max_in' assms nth_indexed_from_eq)
   apply(rule conjI)
   subgoal using assms max_in' by metis  
   subgoal
@@ -410,7 +410,7 @@ shows \<open>posmin_of xs = Some (n,xs!n)\<close>
 unfolding posmin_of_def min\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def o_def Let_def
   apply(simp add: List.find_Some_iff)  
   apply(rule exI[of _ "n"])
-  apply(simp add: min_in' assms nth_enumerate_eq)
+  apply(simp add: min_in' assms nth_indexed_from_eq)
   apply(rule conjI)
   subgoal using assms min_in' by metis  
   subgoal
@@ -493,9 +493,7 @@ next
   then show ?thesis using assms by(simp)
 qed
 
-lemma  pos_max_leq': \<open>(pos_of_max xs = Some n) \<Longrightarrow> \<forall> x \<in> set xs. x \<le> xs!n\<close>
-  apply(simp add: pos_of_max_def posmax_of_def max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def) 
-  by (smt (verit) List.finite_set Max_ge add_0 find_Some_iff fst_conv length_enumerate 
-                  nth_enumerate_eq snd_conv)
+lemma  pos_max_leq': \<open>pos_of_max xs = Some n \<Longrightarrow> \<forall> x \<in> set xs. x \<le> xs!n\<close>
+  by (auto simp add: pos_of_max_def posmax_of_def max\<^sub>l\<^sub>i\<^sub>s\<^sub>t_def find_Some_iff nth_indexed_from_eq) 
 
 end 

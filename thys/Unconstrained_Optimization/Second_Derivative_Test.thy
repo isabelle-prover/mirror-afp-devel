@@ -16,7 +16,7 @@ proof -
   have "(\<exists> \<epsilon>. 0 < \<epsilon> \<and> {x_min - \<epsilon> .. x_min + \<epsilon>} \<subset> U)"
   proof - 
     have "(\<exists> \<epsilon>. 0 < \<epsilon> \<and> ball x_min \<epsilon> \<subset> U)"
-      by (smt C2_cont_diff_at_xmin C_k_on_def assms(2) ball_subset_cball cball_eq_ball_iff 
+      by (smt (z3) C2_cont_diff_at_xmin C_k_on_def assms(2) ball_subset_cball cball_eq_ball_iff 
           open_contains_cball_eq order_le_less_trans psubsetI)
     then show ?thesis
       by (metis Elementary_Metric_Spaces.open_ball cball_eq_atLeastAtMost centre_in_ball 

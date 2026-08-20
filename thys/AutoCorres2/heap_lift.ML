@@ -207,7 +207,7 @@ fun mk_L2Tcorres_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Con
    val corres = \<^infer_instantiate>\<open>st and P and P_prev in term \<open>L2Tcorres st P P_prev\<close>\<close> ctxt'
    val goal = \<^instantiate>\<open>corres in term \<open>PROP DYN_CALL (Trueprop corres) \<Longrightarrow> corres\<close>\<close>
    val [thm] = Goal.prove ctxt' [] [] goal (fn {context,...} => 
-         asm_full_simp_tac (ctxt addsimps @{thms DYN_CALL_def}) 1) 
+         asm_full_simp_tac (ctxt |> Simplifier.add_simp @{thm DYN_CALL_def}) 1) 
      |> single |> Proof_Context.export ctxt' ctxt
  in
    [("", thm)]
@@ -406,7 +406,7 @@ let
           else C
       in
         Goal.prove ctxt [] [] (HOLogic.Trueprop $ (abs_spec $ st $ P' $ A' $ C))
-          (K (auto_tac (ctxt addsimps simp_thms)))
+          (K (auto_tac (ctxt |> Simplifier.add_simps simp_thms)))
       end
 
     fun solve_abs_spec_globals_no_heap ctxt = SUBGOAL (fn (_, i) => fn st => 

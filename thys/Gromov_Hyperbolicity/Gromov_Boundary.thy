@@ -287,7 +287,7 @@ unfolding Gromov_converging_at_boundary_def proof (auto)
   obtain N where *: "\<And>m n. n \<ge> N \<Longrightarrow> m \<ge> N \<Longrightarrow> Gromov_product_at a (u m) (u n) \<ge> M + dist a b"
     using assms[of "M + dist a b"] by auto
   have "Gromov_product_at b (u m) (u n) \<ge> M" if "m \<ge> N" "n \<ge> N" for m n
-    using *[OF that] Gromov_product_at_diff1[of a "u m" "u n" b] by (smt Gromov_product_commute)
+    using *[OF that] Gromov_product_at_diff1[of a "u m" "u n" b] by (smt (z3) Gromov_product_commute)
   then show "\<exists>N. \<forall>n \<ge> N. \<forall>m \<ge> N. M \<le> Gromov_product_at b (u m) (u n)" by auto
 qed
 

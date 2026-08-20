@@ -4,12 +4,13 @@ Utilities.
  */
 package afp
 
-
-import isabelle.*
+import scala.language.unsafeNulls
 
 import java.io.IOException
 
 import scala.collection.immutable.ListMap
+
+import isabelle._
 
 
 object Utils {

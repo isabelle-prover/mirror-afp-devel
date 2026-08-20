@@ -134,13 +134,13 @@ lemma while_right_plus_below:
 
 lemma while_right_plus_below_2:
   "(x \<star> x) * y \<le> x \<star> y"
-  by (smt order_trans while_right_plus_below while_sub_associative)
+  by (smt (z3) order_trans while_right_plus_below while_sub_associative)
 
 text \<open>Theorem 9.47\<close>
 
 lemma while_mult_transitive:
   "x \<le> z \<star> y \<Longrightarrow> y \<le> z \<star> w \<Longrightarrow> x \<le> z \<star> w"
-  by (smt order_trans while_right_isotone while_transitive)
+  by (smt (z3) order_trans while_right_isotone while_transitive)
 
 text \<open>Theorem 9.48\<close>
 
@@ -188,7 +188,7 @@ lemma while_sumstar_1_below:
   "x \<star> ((y * (x \<star> 1)) \<star> z) \<le> ((x \<star> 1) * y) \<star> (x \<star> z)"
 proof -
   have 1: "x * (((x \<star> 1) * y) \<star> (x \<star> z)) \<le> ((x \<star> 1) * y) \<star> (x \<star> z)"
-    by (smt sup_mono sup_ge2 mult_assoc mult_left_dist_sup mult_right_sub_dist_sup_right while_left_unfold)
+    by (smt (z3) sup_mono sup_ge2 mult_assoc mult_left_dist_sup mult_right_sub_dist_sup_right while_left_unfold)
   have "x \<star> ((y * (x \<star> 1)) \<star> z) \<le> (x \<star> z) \<squnion> (x \<star> (y * (((x \<star> 1) * y) \<star> ((x \<star> 1) * z))))"
     by (metis eq_refl while_left_dist_sup while_productstar)
   also have "... \<le> (x \<star> z) \<squnion> (x \<star> ((x \<star> 1) * y * (((x \<star> 1) * y) \<star> ((x \<star> 1) * z))))"
@@ -200,7 +200,7 @@ proof -
   also have "... \<le> (((x \<star> 1) * y) \<star> (x \<star> z)) \<squnion> (x \<star> bot)"
     using 1 while_simulate_absorb by auto
   also have "... = ((x \<star> 1) * y) \<star> (x \<star> z)"
-    by (smt sup_assoc sup_commute sup_bot_left while_left_dist_sup while_left_unfold)
+    by (smt (z3) sup_assoc sup_commute sup_bot_left while_left_dist_sup while_left_unfold)
   finally show ?thesis
     .
 qed
@@ -272,7 +272,7 @@ text \<open>Theorem 9.27\<close>
 
 lemma while_decompose_9:
   "(x \<star> (y \<star> 1)) \<star> z = x \<star> (y \<star> ((x \<star> (y \<star> 1)) \<star> z))"
-  by (smt sup_commute le_iff_sup order_trans while_sup_below while_increasing while_sub_dist_3)
+  by (smt (z3) sup_commute le_iff_sup order_trans while_sup_below while_increasing while_sub_dist_3)
 
 lemma while_decompose_10:
   "(x \<star> (y \<star> 1)) \<star> z = (x \<star> (y \<star> 1)) \<star> (x \<star> (y \<star> z))"
@@ -391,7 +391,7 @@ proof -
   also have "... \<le> (y \<star> z) \<squnion> (y \<star> (y * x * (x \<star> 1)) * ((y * (x \<star> 1)) \<star> z))"
     using sup_right_isotone while_sub_associative by auto
   also have "... \<le> (y \<star> z) \<squnion> (y \<star> (y * x * (x \<star> ((y * (x \<star> 1)) \<star> z))))"
-    by (smt sup_right_isotone mult_assoc mult_right_isotone while_one_mult_below while_right_isotone)
+    by (smt (z3) sup_right_isotone mult_assoc mult_right_isotone while_one_mult_below while_right_isotone)
   finally show ?thesis
     .
 qed
@@ -564,11 +564,11 @@ lemma while_separate_4:
     shows "(x \<squnion> y) \<star> z = x \<star> (y \<star> z)"
 proof -
   have "(1 \<squnion> y) * x \<le> x * (x \<star> (1 \<squnion> y))"
-    by (smt assms sup_assoc le_supI mult_left_one mult_left_sub_dist_sup_left mult_right_dist_sup mult_1_right while_left_unfold)
+    by (smt (z3) assms sup_assoc le_supI mult_left_one mult_left_sub_dist_sup_left mult_right_dist_sup mult_1_right while_left_unfold)
   hence 1: "(1 \<squnion> y) * (x \<star> 1) \<le> x \<star> (1 \<squnion> y)"
     by (metis mult_1_right while_simulate_right_plus_1)
   have "y * x * (x \<star> 1) \<le> x * (x \<star> ((1 \<squnion> y) * (x \<star> 1)))"
-    by (smt assms le_iff_sup mult_assoc mult_right_dist_sup while_associative_1 while_increasing)
+    by (smt (z3) assms le_iff_sup mult_assoc mult_right_dist_sup while_associative_1 while_increasing)
   also have "... \<le> x * (x \<star> (1 \<squnion> y))"
     using 1 mult_right_isotone while_mult_transitive by blast
   also have "... \<le> x * (x \<star> 1) * (y \<star> 1)"
@@ -576,7 +576,7 @@ proof -
   finally have "y \<star> (x * (x \<star> 1)) \<le> x * (x \<star> 1) * (y \<star> 1) \<squnion> (y \<star> bot)"
     by (metis mult_assoc mult_1_right while_simulate_left_plus_1)
   hence "(y \<star> 1) * (y \<star> x) \<le> x * (x \<star> y \<star> 1) \<squnion> (y \<star> bot)"
-    by (smt le_iff_sup mult_assoc mult_1_right order_refl order_trans while_absorb_2 while_left_dist_sup while_mult_star_exchange while_one_mult_below while_one_while while_plus_one)
+    by (smt (z3) le_iff_sup mult_assoc mult_1_right order_refl order_trans while_absorb_2 while_left_dist_sup while_mult_star_exchange while_one_mult_below while_one_while while_plus_one)
   hence "(y \<star> 1) * ((y \<star> x) \<star> (y \<star> z)) \<le> x \<star> ((y \<star> 1) * (y \<star> z) \<squnion> (y \<star> bot) * ((y \<star> x) \<star> (y \<star> z)))"
     by (simp add: while_simulate_right_plus)
   also have "... \<le> x \<star> ((y \<star> z) \<squnion> (y \<star> bot))"
@@ -584,7 +584,7 @@ proof -
   also have "... = x \<star> y \<star> z"
     using sup.absorb_iff1 while_right_isotone by auto
   finally show ?thesis
-    by (smt sup_commute le_iff_sup mult_left_one mult_right_dist_sup while_plus_one while_sub_associative while_sumstar)
+    by (smt (z3) sup_commute le_iff_sup mult_left_one mult_right_dist_sup while_plus_one while_sub_associative while_sumstar)
 qed
 
 lemma while_separate_5:
@@ -593,7 +593,7 @@ lemma while_separate_5:
 
 lemma while_separate_6:
   "y * x \<le> x * (x \<squnion> y) \<Longrightarrow> (x \<squnion> y) \<star> z = x \<star> (y \<star> z)"
-  by (smt order_trans while_increasing while_mult_star_exchange while_separate_5)
+  by (smt (z3) order_trans while_increasing while_mult_star_exchange while_separate_5)
 
 text \<open>Theorem 11.4\<close>
 
@@ -626,7 +626,7 @@ proof -
   also have "... = x \<star> y \<star> z"
     using sup.absorb_iff1 while_right_isotone by auto
   finally show ?thesis
-    by (smt sup_commute le_iff_sup mult_left_one mult_right_dist_sup while_plus_one while_sub_associative while_sumstar)
+    by (smt (z3) sup_commute le_iff_sup mult_left_one mult_right_dist_sup while_plus_one while_sub_associative while_sumstar)
 qed
 
 text \<open>Theorem 11.5\<close>
@@ -643,11 +643,11 @@ lemma while_simulate_4:
 
 lemma while_simulate_5:
   "y * x \<le> x * (x \<star> (x \<squnion> y)) \<Longrightarrow> y \<star> (x \<star> z) \<le> x \<star> (y \<star> z)"
-  by (smt order_trans while_sup_sub_sup_one_mult while_simulate_4)
+  by (smt (z3) order_trans while_sup_sub_sup_one_mult while_simulate_4)
 
 lemma while_simulate_6:
   "y * x \<le> x * (x \<squnion> y) \<Longrightarrow> y \<star> (x \<star> z) \<le> x \<star> (y \<star> z)"
-  by (smt order_trans while_increasing while_mult_star_exchange while_simulate_5)
+  by (smt (z3) order_trans while_increasing while_mult_star_exchange while_simulate_5)
 
 text \<open>Theorem 11.3\<close>
 
@@ -676,7 +676,7 @@ proof -
   also have "... \<le> (p * x) \<star> y"
     by (metis assms le_iff_sup mult_left_one mult_right_dist_sup while_right_isotone)
   finally have 2: "p * (x \<star> y) \<le> p * ((p * x) \<star> y)"
-    by (smt assms sup_commute le_iff_sup mult_assoc mult_left_dist_sup mult_1_right)
+    by (smt (z3) assms sup_commute le_iff_sup mult_assoc mult_left_dist_sup mult_1_right)
   have "p * ((p * x) \<star> y) \<le> p * (x \<star> y)"
     by (metis assms mult_left_isotone mult_left_one mult_right_isotone while_left_isotone)
   thus ?thesis
@@ -732,7 +732,7 @@ proof -
   also have "... = (x \<star> 1) * z \<squnion> (x \<star> 1) * (x \<star> y) * ((x \<star> y) \<star> z) \<squnion> (x \<star> z)"
     by (metis mult_assoc mult_left_dist_sup while_left_unfold)
   also have "... = (x \<star> y) * ((x \<star> y) \<star> z) \<squnion> (x \<star> z)"
-    by (smt sup_assoc sup_commute le_iff_sup mult_left_one mult_right_dist_sup order_refl while_absorb_1 while_plus_one while_sub_associative)
+    by (smt (z3) sup_assoc sup_commute le_iff_sup mult_left_one mult_right_dist_sup order_refl while_absorb_1 while_plus_one while_sub_associative)
   also have "... \<le> ((x \<star> y) \<star> z) \<squnion> (x \<star> z)"
     using sup_left_isotone while_left_plus_below by auto
   finally show ?thesis
@@ -840,13 +840,13 @@ proof -
   also have "... \<le> (x \<star> z) \<squnion> ((x \<star> y) \<star> (x \<star> (y * (x \<star> z))))"
     by (meson sup_right_isotone while_right_isotone while_sub_associative)
   also have "... \<le> (x \<star> z) \<squnion> ((x \<star> y) \<star> (x \<star> ((x \<star> y) \<star> (x \<star> z))))"
-    by (smt sup_right_isotone order_trans while_increasing while_mult_upper_bound while_one_increasing while_right_isotone)
+    by (smt (z3) sup_right_isotone order_trans while_increasing while_mult_upper_bound while_one_increasing while_right_isotone)
   also have "... \<le> (x \<star> z) \<squnion> ((x \<star> y) \<star> (x \<star> ((x \<star> y) \<star> ((x \<star> 1) * z))))"
     by (metis sup_right_isotone mult_left_isotone mult_left_one order_trans while_increasing while_right_isotone while_sumstar while_transitive)
   also have "... = (x \<star> z) \<squnion> ((x \<star> y) \<star> ((x \<star> 1) * z))"
     by (simp add: while_transitive while_02)
   also have "... = (x \<star> y) \<star> ((x \<star> 1) * z)"
-    by (smt sup_assoc mult_left_one mult_right_dist_sup while_02 while_left_dist_sup while_plus_one)
+    by (smt (z3) sup_assoc mult_left_one mult_right_dist_sup while_02 while_left_dist_sup while_plus_one)
   finally show ?thesis
     .
 qed
@@ -870,7 +870,7 @@ text \<open>Theorem 10.10\<close>
 
 lemma while_sumstar_1:
   "(x \<squnion> y) \<star> z = (x \<star> y) \<star> ((x \<star> 1) * z)"
-  by (smt order.eq_iff order_trans while_sup_1_below while_sumstar while_sumstar_3_below while_sumstar_4_below)
+  by (smt (z3) order.eq_iff order_trans while_sup_1_below while_sumstar while_sumstar_3_below while_sumstar_4_below)
 
 text \<open>Theorem 10.8\<close>
 
@@ -957,7 +957,7 @@ lemma atomicity_refinement:
     shows "s * ((x \<squnion> b \<squnion> r \<squnion> l) \<star> (q * z)) \<le> s * ((x * (b \<star> q) \<squnion> r \<squnion> l) \<star> z)"
 proof -
   have 1: "(x \<squnion> b \<squnion> r) * l \<le> l * (x \<squnion> b \<squnion> r)"
-    by (smt assms(5-7) mult_left_dist_sup semiring.add_mono semiring.distrib_right)
+    by (smt (z3) assms(5-7) mult_left_dist_sup semiring.add_mono semiring.distrib_right)
   have "q * ((x * (b \<star> r \<star> 1) * q) \<star> z) \<le> (x * (b \<star> r \<star> 1) * q) \<star> z"
     using assms(9) order_lesseq_imp while_increasing while_mult_upper_bound by blast
   also have "... \<le> (x * (b \<star> ((r \<star> 1) * q))) \<star> z"
@@ -971,7 +971,7 @@ proof -
   have "s * ((x \<squnion> b \<squnion> r \<squnion> l) \<star> (q * z)) = s * (l \<star> (x \<squnion> b \<squnion> r) \<star> (q * z))"
     using 1 sup_commute while_separate_1 by fastforce
   also have "... = s * q * (l \<star> b \<star> r \<star> (q * x * (b \<star> r \<star> 1)) \<star> (q * z))"
-    by (smt assms(1,2,4) sup_assoc sup_commute while_sumstar_2 while_separate_1)
+    by (smt (z3) assms(1,2,4) sup_assoc sup_commute while_sumstar_2 while_separate_1)
   also have "... = s * q * (l \<star> b \<star> r \<star> (q * ((x * (b \<star> r \<star> 1) * q) \<star> z)))"
     by (simp add: while_slide mult_assoc)
   also have "... \<le> s * q * (l \<star> b \<star> r \<star> (x * (b \<star> q) * (r \<star> 1)) \<star> z)"

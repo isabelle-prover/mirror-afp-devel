@@ -50,9 +50,10 @@ ML\<open>
 structure nn_common_utils = struct
 
    val mk_Trueprop_eq = HOLogic.mk_Trueprop o HOLogic.mk_eq
-    fun define_lemmas name thm_names = Specification.theorems_cmd "" 
+    fun define_lemmas name thm_names =
+      Specification.theorems_cmd {verbose = false, kind = ""}
                                   [((name, []), map (fn n => (Facts.named n, [])) thm_names)] 
-                                  [] false
+                                  []
     fun make_const_def (binding, trm) lthy = let
             val lthy' =  snd ( Local_Theory.begin_nested lthy )
             val arg = ((binding, NoSyn), ((Thm.def_binding binding,@{attributes [code]}), trm)) 
@@ -65,7 +66,7 @@ structure nn_common_utils = struct
 end
 \<close>
 
-definition \<open>map_of_list =  map_of o  (List.enumerate 0)\<close>
+definition \<open>map_of_list = map_of o indexed_from 0\<close>
 
 subsection\<open>Data Import\<close>
 
@@ -136,7 +137,7 @@ structure nn_tactics = struct
       in 
         case proof_mode of
           SKIP => error "Error in proof_sate_simple, too late to skip."
-        | SORRY => Proof.global_skip_proof true proof_state
+        | SORRY => Interactive.setmp true Proof.global_skip_proof proof_state
         | _ => prove_it method proof_state
       end 
 

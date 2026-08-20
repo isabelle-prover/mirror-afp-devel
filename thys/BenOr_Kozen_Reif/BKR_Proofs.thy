@@ -2023,7 +2023,7 @@ proof -
   have comb_sys_h: "snd(snd(reduce_system p (combine_systems p (qs1,calculate_data p qs1) (qs2,calculate_data p qs2)))) =
       snd(snd(reduce_system p (qs1@qs2, (matrix_A ?signs ?subsets, (?subsets, ?signs)))))"
     unfolding get_signs_def get_subsets_def using matrix_same
-    by (smt combining_to_smash get_signs_def get_subsets_def getter_functions prod.collapse prod.inject smash_systems_def)   
+    by (smt (z3) combining_to_smash get_signs_def get_subsets_def getter_functions prod.collapse prod.inject smash_systems_def)   
   then have extra_h: " snd(snd(reduce_system p (qs1@qs2, (matrix_A ?signs ?subsets, (?subsets, ?signs))))) = 
       snd(snd(reduction_step (matrix_A ?signs ?subsets) ?signs ?subsets (solve_for_lhs p (qs1@qs2) ?subsets (matrix_A ?signs ?subsets)))) "
     by simp
@@ -2126,7 +2126,7 @@ proof (induction "length qs" arbitrary: qs rule: less_induct)
         by (meson \<open>qs \<noteq> []\<close> length_0_conv less_one nat_neq_iff) 
     qed
     then show "set (find_consistent_signs_at_roots p qs) = set (characterize_consistent_signs_at_roots_copr p qs)"
-      by (smt One_nat_def calculate_data.simps find_consistent_signs_at_roots_thm length_0_conv nontriv)
+      by (smt (z3) One_nat_def calculate_data.simps find_consistent_signs_at_roots_thm length_0_conv nontriv)
   qed
 qed
 
@@ -2145,7 +2145,7 @@ proof -
     using assms by auto
   have "set(characterize_consistent_signs_at_roots_copr p []) = drop 1 ` set(characterize_consistent_signs_at_roots_copr p [1])"
     unfolding characterize_consistent_signs_at_roots_copr_def consistent_sign_vec_copr_def apply simp
-    by (smt drop0 drop_Suc_Cons image_cong image_image)
+    by (smt (z3) drop0 drop_Suc_Cons image_cong image_image)
   thus ?thesis using abc *
     apply (auto) apply (simp add: find_consistent_signs_at_roots_thm)
     by (simp add: find_consistent_signs_at_roots_thm) 

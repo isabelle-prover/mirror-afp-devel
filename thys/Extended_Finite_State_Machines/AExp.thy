@@ -74,7 +74,7 @@ lemma apply_empty_None [simp]: "<> $ x2 = None"
   by (simp add: null_state_def bot_option_def)
 
 definition input2state :: "value list \<Rightarrow> registers" where
-  "input2state n = fold (\<lambda>(k, v) f. f(k $:= Some v)) (enumerate 0 n) (K$ None)"
+  "input2state n = fold (\<lambda>(k, v) f. f(k $:= Some v)) (indexed_from 0 n) (K$ None)"
 
 primrec input2state_prim :: "value list \<Rightarrow> nat \<Rightarrow> registers" where
   "input2state_prim [] _ = (K$ None)" |
@@ -84,7 +84,7 @@ lemma input2state_append:
   "input2state (i @ [a]) = (input2state i)(length i $:= Some a)"
   apply (simp add: eq_finfun_All_ext finfun_All_def finfun_All_except_def)
   apply clarify
-  by (simp add: input2state_def enumerate_eq_zip)
+  by (simp add: input2state_def indexed_from_eq_zip)
 
 lemma input2state_out_of_bounds:
   "i \<ge> length ia \<Longrightarrow> input2state ia $ i = None"
@@ -95,7 +95,7 @@ proof(induct ia rule: rev_induct)
 next
   case (snoc a as)
   then show ?case
-    by (simp add: input2state_def enumerate_eq_zip)
+    by (simp add: input2state_def indexed_from_eq_zip)
 qed
 
 lemma input2state_within_bounds:
@@ -114,7 +114,7 @@ proof(induct ia rule: rev_induct)
 next
   case (snoc a ia)
   then show ?case
-    apply (simp add: input2state_def enumerate_eq_zip)
+    apply (simp add: input2state_def indexed_from_eq_zip)
     by (simp add: finfun_upd_apply nth_append)
 qed
 

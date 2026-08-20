@@ -16,8 +16,8 @@ elements. The restriction can be formulated, for example, by a predicate or a se
 open_bundle eq_rel_restrict_syntax
 begin
 syntax
-  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) =(\<^bsub>_\<^esub>) (_)\<close> [51,51,51] 50)
-  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>'(=(\<^bsub>_\<^esub>)')\<close>)
+  "_eq_restrict_infix" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ =(\<^bsub>_\<^esub>) _)\<close> [51,0,51] 50)
+  "_eq_restrict" :: "'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>('(=(\<^bsub>_\<^esub>)'))\<close>)
 syntax_consts
   "_eq_restrict_infix" \<rightleftharpoons> rel_restrict_left and
   "_eq_restrict" \<rightleftharpoons> rel_restrict_left
@@ -30,6 +30,21 @@ lemma in_dom_eq_restrict_eq [simp]: "in_dom (=\<^bsub>P\<^esub>) = P" by auto
 lemma in_codom_eq_restrict_eq [simp]: "in_codom (=\<^bsub>P\<^esub>) = P" by auto
 lemma in_field_eq_restrict_eq [simp]: "in_field (=\<^bsub>P\<^esub>) = P" by auto
 
+lemma Dep_Fun_Rel_left_eq_restrict_eq_Dep_Fun_Rel_pred [simp]:
+  "((x _ \<Colon> (=\<^bsub>P\<^esub>)) \<Rrightarrow> R x) = ((x : P) \<Rrightarrow> R x)"
+  by fastforce
+
+lemma Dep_Fun_Rel_right_eq_restrict_eq_Dep_Fun_Rel_pred [simp]:
+  "((_ x \<Colon> (=\<^bsub>P\<^esub>)) \<Rrightarrow> R x) = ((x : P) \<Rrightarrow> R x)"
+  by fastforce
+
+lemma dep_mono_wrt_left_eq_restrict_eq_dep_mono_wrt_pred [simp]:
+  "((x _ \<Colon> (=\<^bsub>P\<^esub>)) \<Rightarrow> (\<lambda>_. Q x)) = ((x : P) \<Rightarrow> Q x)"
+  by fastforce
+
+lemma dep_mono_wrt_right_eq_restrict_eq_dep_mono_wrt_pred [simp]:
+  "((_ x \<Colon> (=\<^bsub>P\<^esub>)) \<Rightarrow> (\<lambda>_. Q x)) = ((x : P) \<Rightarrow> Q x)"
+  by fastforce
 
 paragraph \<open>Order Properties\<close>
 

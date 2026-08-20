@@ -17,7 +17,7 @@ ML \<open>
 \<comment> \<open>from \<open>HOL/Library/code_test.ML\<close>\<close>
 val flags = {environment = ML_Env.SML, redirect = false, verbose = false, catch_all = true,
           debug = NONE, writeln = writeln, warning = warning}
-fun eval cmd = ML_Context.eval flags Position.none (ML_Lex.read_text (cmd, Position.none))
+fun eval cmd = ML_Context.eval flags Position.none (ML_Lex.read_source_text (cmd, Position.none))
 \<close>
 
 \<comment> \<open>Redirecting output to file:\<close>
@@ -157,13 +157,13 @@ compile_generated_files "code/Certificate.ML" (in Simple_Network_Language_Certif
 
       val exec = Generated_Files.execute dir
 
-      val _ = exec \<open>Copy MLunta\<close> ("cp -r '" ^  Path.implode mlunta_dir ^ "' .")
+      val _ = exec \<open>Copy MLunta\<close> ("cp -r " ^  File.bash_path mlunta_dir ^ " .")
       val _ = exec \<open>Compile MLunta\<close> "cd mlunta && mlton=$ISABELLE_MLTON make build_checker && cd .."
       val mlunta_path = "mlunta/build/mluntac-mlton"
 
       val _ =
         exec \<open>Copy Isabelle library files\<close>
-          ("cp '" ^ library_path ^ "' library.ML && cp '" ^ basics_path ^ "' basics.ML")
+          ("cp " ^ File.bash_path library_path ^ " library.ML && cp " ^ File.bash_path basics_path ^ " basics.ML")
 
       val _ =
         exec \<open>Preparation\<close>

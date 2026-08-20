@@ -94,7 +94,7 @@ structure Refine_Automation :REFINE_AUTOMATION = struct
       (list_comb (Free (name,param_types ---> fastype_of t'),param_vars),t');
 
     val ((lhs_t,(_,def_thm)),lthy) 
-      = Specification.definition NONE [] [] (Binding.empty_atts,def_t) lthy;
+      = Specification.definition {verbose = false} NONE [] [] (Binding.empty_atts,def_t) lthy;
 
     (*val _ = tracing "xxxx";*)
     val app_t = list_comb (lhs_t, params);
@@ -173,7 +173,7 @@ fun extract_recursion_eqs exs basename orig_def_thm lthy = let
   
   (* Obtain new def_thm *)
   val def_unfold_ss = 
-    put_simpset HOL_basic_ss lthy addsimps (orig_def_thm::def_thms)
+    lthy |> put_simpset HOL_basic_ss |> Simplifier.add_simps (orig_def_thm :: def_thms)
   val new_def_thm = Goal.prove_internal lthy
     [] (Logic.mk_equals (lhs,rhs') |> Thm.cterm_of lthy) (K (simp_tac def_unfold_ss 1))
 
@@ -285,7 +285,7 @@ let
 
   val attribs = map (Attrib.check_src lthy) attribs_raw;
 
-  val ((_,(_,def_thm)),lthy) = Specification.definition 
+  val ((_,(_,def_thm)),lthy) = Specification.definition {verbose = false}
     (SOME (fun_name,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,attribs),def_term) lthy;
 
   val folded_thm = Local_Defs.fold lthy [def_thm] thm';

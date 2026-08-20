@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Modular Forms - Archive of Formal Proofs</title>
+    <meta name="description" content="Modular Forms in the Archive of Formal Proofs">
+    <meta property="og:description" content="Modular Forms in the Archive of Formal Proofs">
+    <meta property="og:title" content="Modular Forms">
+    <meta property="og:url" content="https://isa-afp.org/entries/Modular_Forms.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>M</span>odular <span class='first'>F</span>orms
+  </h1>
+  <div>
+      <p><a href="../authors/eberl/">Manuel Eberl</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hbnVlbCJdLCJob3N0IjpbInBydXZpc3RvIiwib3JnIl19">📧</a>, <a href="../authors/bordg/">Anthony Bordg</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFwZGIzIl0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a>, <a href="../authors/paulson/">Lawrence C. Paulson</a> <a class="obfuscated" data="eyJ1c2VyIjpbImxwMTUiXSwiaG9zdCI6WyJjYW0iLCJhYyIsInVrIl19">📧</a> and <a href="../authors/li/">Wenda Li</a> <a class="obfuscated" data="eyJ1c2VyIjpbIndsMzAyIl0sImhvc3QiOlsiY2FtIiwiYWMiLCJ1ayJdfQ==">📧</a>
+      </p>
+      <p class="date">July 4, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>This entry provides the definition and proofs of basic properties of modular forms and modular functions. These are holomorphic or meromorphic functions in the complex upper half plane that satisfy certain symmetries with respect to the modular group $\text{SL}_2(\mathbb{Z})$ or a subgroup thereof. They are a cornerstone of modern number theory and an essential ingredient in the proof of Fermat's Last Theorem.</p>
+<p>Most of the work focuses on level 1 modular forms/functions (i.e. the
+full modular group rather than a proper subgroup). Some notable results include:</p>
+<ul>
+<li>Infrastructure to reason about $q$-expansions of periodic functions.</li>
+<li>The valence formula for level 1 meromorphic forms, giving the number of zeros and poles (including both the special cases of modular forms and modular functions).</li>
+<li>Basic level 1 modular forms such as Eisenstein series $E_k$ and the modular discriminant $\Delta$.</li>
+<li>The Ramanujan $\tau$ function and the identity $\Delta = (2\pi)^{12}\eta^24$ relating the modular discriminant to the Dedekind $\eta$ function.</li>
+<li>Properties of Klein's $J$ invariant, including bijectivity, non-conformality, covering properties, and that the level 1 modular functions are exactly the rational functions of $J$.</li>
+<li>The graded ring structure of the space of modular forms $\mathcal M_k$, including its dimension and explicit bases in terms of $E_4$, $E_6$, and $\Delta$.</li>
+<li>Zagier's theory of level 1 quasimodular forms, including the structure theorem in terms of $E_2$, $E_4$, and $E_6$.</li>
+<li>The Serre derivative operator.</li>
+</ul>
+<p>A number of applications are also provided:</p>
+<ul>
+<li>Ramanujan-type identities for the divisor $\sigma$ functions (using the Serre derivative and the structure theorem for $\mathcal M_k$), e.g.
+  \[20 \sigma_3(n) = (24 n - 4) \sigma_1(n) + 48\sum_{i=1}^{n-1} \sigma_1(i) \sigma_1(n-i)\]</li>
+<li>The Eisenstein inversion theorem, relating elliptic curves to lattices (using the properties of Klein's $J$ invariant).</li>
+<li>A short proof of Picard's Little Theorem using the fact that $J$ is a covering map.</li>
+</ul>
+<p>
+The proofs and definitions mostly follow Apostol's
+<a href="https://doi.org/10.1007/978-1-4612-0999-7"><em>Modular Functions and Dirichlet Series in Number Theory</em></a>.</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/number-theory/">Mathematics/Number theory</a></li>
+      </ul>
+      <h3>Session Modular_Forms</h3>
+      <ul>
+          <li><a href="../thys/Modular_Forms/Argument_Principle_Sparse.html">Argument_Principle_Sparse</a></li>
+          <li><a href="../thys/Modular_Forms/Modular_Forms_Library.html">Modular_Forms_Library</a></li>
+          <li><a href="../thys/Modular_Forms/Meromorphic_Upper_Half_Plane.html">Meromorphic_Upper_Half_Plane</a></li>
+          <li><a href="../thys/Modular_Forms/Fourier_Expansion_Mero_UHP.html">Fourier_Expansion_Mero_UHP</a></li>
+          <li><a href="../thys/Modular_Forms/Modular_Forms.html">Modular_Forms</a></li>
+          <li><a href="../thys/Modular_Forms/Meromorphic_Forms_Valence_Formula.html">Meromorphic_Forms_Valence_Formula</a></li>
+          <li><a href="../thys/Modular_Forms/Basic_Modular_Forms_Mero_UHP.html">Basic_Modular_Forms_Mero_UHP</a></li>
+          <li><a href="../thys/Modular_Forms/Modular_Functions.html">Modular_Functions</a></li>
+          <li><a href="../thys/Modular_Forms/Klein_J.html">Klein_J</a></li>
+          <li><a href="../thys/Modular_Forms/Serre_Derivative.html">Serre_Derivative</a></li>
+          <li><a href="../thys/Modular_Forms/Modular_Forms_Structure.html">Modular_Forms_Structure</a></li>
+          <li><a href="../thys/Modular_Forms/Quasimodular_Forms.html">Quasimodular_Forms</a></li>
+          <li><a href="../thys/Modular_Forms/Eisenstein_Derivative_Identities.html">Eisenstein_Derivative_Identities</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Detour_Calculus.html">The Detour Calculus: Rigorous Local Deformation of Integration Contours</a></li>
+              <li><a href="../entries/Elliptic_Functions.html">Complex Lattices, Elliptic Functions, and the Modular Group</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Modular_Forms/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Modular_Forms/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Modular_Forms/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Modular_Forms-AFP</p>
+        <pre id="copy-text">@article{Modular_Forms-AFP,
+  author  = {Manuel Eberl and Anthony Bordg and Lawrence C. Paulson and Wenda Li},
+  title   = {Modular Forms},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Modular_Forms.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Modular_Forms-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

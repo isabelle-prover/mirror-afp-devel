@@ -4143,7 +4143,7 @@ proof -
   thus ?thesis using assms(1)
   proof (induct args rule: shift1.pinduct)
     case step: (1 qs B)
-    obtain h U where hU: "(h, U) = (SOME b. b \<in> B \<and> card (snd b) = Suc m)" by (smt prod.exhaust)
+    obtain h U where hU: "(h, U) = (SOME b. b \<in> B \<and> card (snd b) = Suc m)" by (smt (z3) prod.exhaust)
     define x where "x = (SOME y. y \<in> U)"
     show ?case
     proof (simp add: shift1.psimps[OF step.hyps(1)] flip: hU x_def del: One_nat_def,

@@ -27,7 +27,7 @@ text\<open>T6 again, with an alternative, simpler proof.\<close>
 theorem T6again: "\<lfloor>\<^bold>\<box>(\<^bold>\<exists>\<^sup>E \<G>)\<rfloor>"  
 proof -
   have L1: "\<lfloor>(\<^bold>\<exists>X.((\<P> X)\<^bold>\<and>\<^bold>\<not>(\<^bold>\<exists>\<^sup>EX)))\<^bold>\<rightarrow>(\<P>(\<lambda>x.(x\<^bold>\<noteq>x)))\<rfloor>" 
-    by (smt A2'') 
+    by (smt (z3) A2'') 
   have L2: "\<lfloor>\<^bold>\<not>(\<^bold>\<exists>X.((\<P> X) \<^bold>\<and> \<^bold>\<not>(\<^bold>\<exists>\<^sup>E X)))\<rfloor>" by (metis L1 A1')
   have T1': "\<lfloor>\<^bold>\<forall>X.((\<P> X) \<^bold>\<rightarrow> (\<^bold>\<exists>\<^sup>E X))\<rfloor>" by (metis L2)  
   have T3': "\<lfloor>\<^bold>\<exists>\<^sup>E \<G>\<rfloor>" by (metis T1' T2)

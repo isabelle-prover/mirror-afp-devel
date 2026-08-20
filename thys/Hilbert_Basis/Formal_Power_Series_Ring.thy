@@ -1446,11 +1446,11 @@ from_nat_into (B m) (p m k)) \<and> subdegree (f + g) > m' \<and> (f +g) \<noteq
         qed
         have f51:\<open>the_s (Suc n) \<noteq> 0\<close>
           apply(subst subst_rec)
-          by (smt someI_ex f50)
+          by (smt (z3) someI_ex f50)
         have \<open>m \<le> subdegree (the_s (Suc n))\<close>
         proof(subst subst_rec)
           have \<open>subdegree ?g \<ge>m\<close> 
-            by (smt someI_ex f50)
+            by (smt (z3) someI_ex f50)
           then show \<open>m\<le>subdegree (the_s n + ?g)\<close>
             using f51 apply(subst (asm) subst_rec)
             by (smt (verit) add_diff_cancel_left' dual_order.trans f50 linorder_le_less_linear
@@ -1471,7 +1471,7 @@ subdegree ((the_s (n)) + g) > subdegree (the_s (n)) \<and> ((the_s (n)) + g) \<n
         by (smt (z3) tfl_some)
       from f53 have \<open>subdegree (the_s n) < subdegree (the_s (Suc n))\<close> for n
         apply(subst subst_rec) 
-        by (smt someI_ex f53 sum.cong)
+        by (smt (z3) someI_ex f53 sum.cong)
       then have f56:\<open>strict_mono (\<lambda>n. subdegree (the_s n))\<close>
         using strict_mono_Suc_iff by blast
       have f70:\<open>strict_mono (\<lambda>k. subdegree(the_s k) - m)\<close>

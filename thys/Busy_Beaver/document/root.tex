@@ -1,0 +1,64 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Busy Beaver Upper-Bound Principle}
+\author{Arthur Freitas Ramos\\
+David Barros Hulak\\
+Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes the Busy Beaver upper-bound principle and its
+computability consequences for the Turing machines from AFP's Universal Turing
+Machine entry.  The abstract layer works over machine models with finite size
+classes and unique exact halting times: it defines the time Busy Beaver function
+and proves that any total upper bound for this function decides zero-input
+halting.  The development then connects the abstract theory to AFP's Universal
+Turing Machine formalization by defining exact numeric-result halting times, a
+finite size measure for Turing programs, a concrete Turing-machine Busy Beaver
+function, a code-indexed Busy Beaver function whose upper bounds decide AFP's
+special halting problem \emph{K1}, and a strengthened program/input-pair Busy
+Beaver function whose upper bounds decide AFP's two-argument halting problem
+\emph{H1}.  Using AFP's Turing-computability interface, it further proves that
+no upper-bound-induced \emph{H1} decider set has a Turing-computable total
+characteristic function, with a specialization to the decider induced by the
+concrete pair-indexed Busy Beaver function itself.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Main Results}
+
+The formalization separates a reusable Busy Beaver upper-bound principle from
+its concrete Turing-machine applications.
+
+\begin{itemize}
+\item Any total upper bound for the abstract function \emph{BB-time} decides
+  zero-input halting for the corresponding model.
+\item The concrete function \emph{Turing-BB-time} bounds exact numeric-result
+  halting times for bounded-size Turing programs.
+\item In AFP's \emph{hpk} locale, code-indexed upper bounds decide the diagonal
+  halting problem \emph{K1}.
+\item Pair-indexed upper bounds decide the two-argument halting problem
+  \emph{H1}, and the induced \emph{H1} characteristic functions are not
+  Turing-computable total.
+\end{itemize}
+
+\input{session}
+
+\section*{AI Assistance}
+
+AI assistance was used for proof engineering. The final definitions,
+statements, and proofs are checked by Isabelle.
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

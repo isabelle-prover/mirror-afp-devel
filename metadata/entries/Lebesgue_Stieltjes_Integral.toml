@@ -1,0 +1,31 @@
+title = "Lebesgue-Stieltjes Integral"
+date = 2026-03-04
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+This entry formalizes some basic facts and lemmas relating to the integration with respect to the Lebesgue-Stieltjes measure (interval measure).
+It includes the well-known formula to calculate the Lebesgue-Stieltjes integral:
+\\[
+    \\int g(x) \\, dF(x) = \\int g(x) F'(x) \\, dx.
+\\]"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ito]
+email = "ito_email"
+
+[contributors]
+
+[notify]
+ito = "ito_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

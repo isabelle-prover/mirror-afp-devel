@@ -7,6 +7,8 @@ begin
 
 unbundle no funcset_syntax
 
+no_notation set_difference (infixl "\<setminus>" 65)
+
 text \<open> We introduce a novel logical calculus and prove completeness for
        probability inequalities. This is a vast generalization of \<^emph>\<open>Suppes' Theorem\<close>
        which lays the foundation for this theory.\<close>

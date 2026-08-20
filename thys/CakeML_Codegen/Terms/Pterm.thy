@@ -369,7 +369,7 @@ proof goal_cases
         apply (auto simp: ffUnion_alt_def closed_except_def)
         apply (drule ffUnion_least_rev)
         apply auto
-        by (smt case_prod_conv fBall_alt_def fminus_iff fset_rev_mp id_apply map_prod_simp)
+        by (smt (z3) case_prod_conv fBall_alt_def fminus_iff fset_rev_mp id_apply map_prod_simp)
     next
       case 2
       then show ?case

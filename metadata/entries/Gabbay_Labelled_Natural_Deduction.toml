@@ -1,0 +1,49 @@
+title = "A Reusable Isabelle/HOL Framework for Propositional Labelled Natural Deduction"
+date = 2026-05-27
+topics = [
+  "Logic/Proof theory",
+]
+abstract = """
+A reusable Isabelle/HOL framework showing that labelled natural deduction can be treated as a conservative refinement of ordinary natural deduction, with generic structural metatheory and several concrete label interpretations.
+
+We define ordinary intuitionistic propositional natural deduction and a parametric labelled refinement. We prove erasure soundness, namely that labelled derivations become ordinary derivations after erasing labels, and a controlled lifting theorem, namely that ordinary derivations admit some labelling.
+
+We instantiate the framework with unit labels, recovering ordinary natural deduction as a special case via conservativity; provenance labels, giving a sound over-approximation of assumption dependencies; and a small possible-world modal example, including a derivation of the modal K axiom.
+
+Standard structural metatheory, including weakening, exchange, substitution, and cut admissibility, is proved for both the ordinary and labelled systems. The modal fragment is presented as an example instantiation, not as a full labelled modal proof theory.
+
+The development is fully constructive, contains no unfinished proof commands or oracle invocations, and is intended as a foundation that other entries can cite."""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -19,7 +19,7 @@ theorem Faithful2: "\<forall>w. \<langle>(\<lambda>x::\<w>. True),R,V\<rangle>,w
 theorem Faithful3: "\<forall>w. \<langle>(\<lambda>x::\<w>. True),R,V\<rangle>,w \<Turnstile>\<^sup>s \<lparr>\<phi>\<rparr> \<longleftrightarrow> w \<Turnstile>\<^sup>m \<lbrakk>\<phi>\<rbrakk>" apply induct by auto
 
 \<comment>\<open>Additional check for soundness for the minimal shallow embedding\<close>
-lemma Sound1: "\<Turnstile>\<^sup>m \<psi> \<longleftrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>d \<phi>)" by (smt Faithful2 DefM DefD RelativeTruthD.simps ext[of \<psi> "\<lbrakk>x\<supset>\<^sup>dx\<rbrakk>"])   
+lemma Sound1: "\<Turnstile>\<^sup>m \<psi> \<longleftrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>d \<phi>)" by (smt (z3) Faithful2 DefM DefD RelativeTruthD.simps ext[of \<psi> "\<lbrakk>x\<supset>\<^sup>dx\<rbrakk>"])   
 lemma Sound2: "\<Turnstile>\<^sup>m \<psi> \<longleftrightarrow> (\<exists>\<phi>. \<psi>=\<lbrakk>\<phi>\<rbrakk> \<and> \<Turnstile>\<^sup>m \<lbrakk>\<phi>\<rbrakk>)" using Sound1 by blast
 end
 

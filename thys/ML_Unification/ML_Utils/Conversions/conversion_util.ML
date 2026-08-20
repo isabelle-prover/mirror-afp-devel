@@ -17,6 +17,7 @@ sig
   val repeat_forall_conv : (cterm list -> Proof.context -> conv) -> Proof.context -> conv
   val imp_conv : conv -> conv -> conv
   val symmetric_conv : conv
+  val beta_conv : conv
   val eta_short_conv : conv
   val beta_eta_short_conv : conv
 end
@@ -55,6 +56,7 @@ fun imp_conv cvprem cvconcl ct = (case try Thm.dest_implies ct of
 fun symmetric_conv ceq = let val (cl, cr) = Thm.dest_equals ceq
   in Thm.instantiate' [SOME (Thm.ctyp_of_cterm cl)] [SOME cl, SOME cr] @{thm meta_eq_symmetric} end
 
+val beta_conv = Thm.beta_conversion true
 val eta_short_conv = Thm.eta_conversion
 val beta_eta_short_conv = Drule.beta_eta_conversion
 

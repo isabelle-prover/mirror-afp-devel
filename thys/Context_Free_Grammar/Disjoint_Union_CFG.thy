@@ -145,10 +145,10 @@ proof -
       fix w
       assume "w \<in> Lang ?P S"
       then have "?P \<turnstile> [Nt S] \<Rightarrow>* map Tm w" using Lang_def by fastforce
-      then obtain \<alpha> where "?P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<and> (S, \<alpha>) \<in> ?P" using derives_start1 by fast
+      then obtain \<alpha> where "?P \<turnstile> \<alpha> \<Rightarrow>* map Tm w \<and> (S, \<alpha>) \<in> ?P" using derives_Nt_map_TmD by fast
       then have dervs: "?P \<turnstile> [Nt S1, Nt S2] \<Rightarrow>* map Tm w" using assms unfolding Nts_def by auto
       then obtain w1 w2 where "?P \<turnstile> [Nt S1] \<Rightarrow>* map Tm w1" "?P \<turnstile> [Nt S2] \<Rightarrow>* map Tm w2" "w = w1 @ w2"
-        using derives_append_decomp[of ?P "[Nt S1]" "[Nt S2]"] by (auto simp: map_eq_append_conv)
+        using derives_appendD[of ?P "[Nt S1]" "[Nt S2]"] by (auto simp: map_eq_append_conv)
       then have "P1 \<union> ({(S, [Nt S1,Nt S2])} \<union> P2) \<turnstile> [Nt S1] \<Rightarrow>* map Tm w1"
         and "P2 \<union> ({(S, [Nt S1,Nt S2])} \<union> P1) \<turnstile> [Nt S2] \<Rightarrow>* map Tm w2" by (simp_all add: Un_commute)
       from derives_disj_Un_iff[THEN iffD1, OF _ _ this(1)]

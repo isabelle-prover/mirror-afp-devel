@@ -4355,18 +4355,18 @@ let
  
   (* First subgoal *)
   val div1 = Goal.prove ctxt [] [] gxDeltax
-   (fn _ => asm_full_simp_tac (ctxt addsimps [nth assms 0,nth assms 1]) 1
+   (fn _ => asm_full_simp_tac (ctxt |> Simplifier.add_simps [nth assms 0, nth assms 1]) 1
             THEN REPEAT rewrite1
             THEN asm_full_simp_tac (ctxt
-                     addsimps (@{thms divide_simps} @ [nth assms 8, nth assms 10])) 1
+                     |> Simplifier.add_simps (@{thms divide_simps} @ [nth assms 8, nth assms 10])) 1
             THEN REPEAT (EqSubst.eqsubst_tac ctxt [0] 
                 (@{thms left_diff_distrib delta_x_def delta_y_def delta_minus_def delta_plus_def} @ [x1'_expr,y1'_expr,x3'_expr,y3'_expr]) 1)
             THEN simp_tac ctxt 1
             THEN REPEAT rewrite2
             THEN asm_full_simp_tac (ctxt
-                     addsimps (@{thms divide_simps} @ map (nth assms) [4,5,6,7] @ 
+                     |> Simplifier.add_simps (@{thms divide_simps} @ map (nth assms) [4, 5, 6, 7] @ 
                                [@{thm delta'_def}, @{thm delta_def}])) 1
-            THEN asm_full_simp_tac (ctxt addsimps
+            THEN asm_full_simp_tac (ctxt |> Simplifier.add_simps
                       [@{thm c_eq_1},@{thm t_expr(1)},@{thm delta_x_def},
                        @{thm delta_y_def}, @{thm delta_plus_def}, 
                        @{thm delta_minus_def}, @{thm e'_def}]) 1
@@ -4377,18 +4377,18 @@ let
   
   val eq1 = Goal.prove ctxt [] [] goal1
                 (fn _ => Method.insert_tac ctxt [div1] 1
-                        THEN asm_full_simp_tac (ctxt addsimps 
-                            (map (nth assms) [4,5,6,7,8,10,12,13,14]) @ @{thms delta'_def delta_def}) 1 )
+                        THEN asm_full_simp_tac (ctxt |> Simplifier.add_simps 
+                            (map (nth assms) [4, 5, 6, 7, 8, 10, 12, 13, 14] @ @{thms delta'_def delta_def})) 1)
   
   val div2 = Goal.prove ctxt [] [] gyDeltay
-   (fn _ => asm_full_simp_tac (@{context} addsimps [nth assms 0,nth assms 1]) 1
+   (fn _ => asm_full_simp_tac (@{context} |> Simplifier.add_simps [nth assms 0, nth assms 1]) 1
             THEN REPEAT rewrite3
-            THEN asm_full_simp_tac (@{context} addsimps (@{thms divide_simps} @ [nth assms 9,nth assms 11])) 1
+            THEN asm_full_simp_tac (@{context} |> Simplifier.add_simps (@{thms divide_simps} @ [nth assms 9, nth assms 11])) 1
             THEN REPEAT (EqSubst.eqsubst_tac ctxt [0] (@{thms left_diff_distrib delta_x_def delta_y_def delta_minus_def delta_plus_def} @ [x1'_expr,y1'_expr,x3'_expr,y3'_expr]) 1)
             THEN simp_tac @{context} 1
                         THEN REPEAT rewrite4
-            THEN asm_full_simp_tac (@{context}  addsimps (@{thms divide_simps delta'_def delta_def} @ (map (nth assms) [4,5,6,7]))) 1
-            THEN asm_full_simp_tac (@{context} addsimps
+            THEN asm_full_simp_tac (@{context} |> Simplifier.add_simps (@{thms divide_simps delta'_def delta_def} @ map (nth assms) [4, 5, 6, 7])) 1
+            THEN asm_full_simp_tac (@{context} |> Simplifier.add_simps
                                 [@{thm c_eq_1},@{thm t_expr(1)},@{thm delta_x_def},
                                  @{thm delta_y_def}, @{thm delta_plus_def}, 
                                  @{thm delta_minus_def}, @{thm e'_def}]) 1
@@ -4399,8 +4399,8 @@ let
   
   val eq2 = Goal.prove ctxt [] [] goal2
                 (fn _ => Method.insert_tac ctxt [div2] 1
-                        THEN asm_full_simp_tac (ctxt addsimps 
-                            (map (nth assms) [4,5,6,7,9,11,12,13,14]) @ @{thms delta'_def delta_def}) 1 );
+                        THEN asm_full_simp_tac (ctxt |> Simplifier.add_simps 
+                            (map (nth assms) [4, 5, 6, 7, 9, 11, 12, 13, 14] @ @{thms delta'_def delta_def})) 1);
   
   val goal = Goal.prove ctxt [] [] goal
                 (fn _ => Method.insert_tac ctxt ([eq1,eq2] @ [nth assms 2,nth assms 3]) 1

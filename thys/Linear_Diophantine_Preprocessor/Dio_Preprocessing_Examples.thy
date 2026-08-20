@@ -131,15 +131,16 @@ text \<open>Termination proof of binary logarithm program \<open>n := 0; while (
 definition example_log_transition_formula :: "(int,var) lpoly list"
   where "example_log_transition_formula = (let x = var_l 1; x' = var_l 2; n = var_l 3; n' = var_l 4
    in [const_l 1 - x,
-      n' - n,
-      n - n',
+      n' - (n + const_l 1),
+      (n + const_l 1) - n',
       smult_l 2 x' - x,
       x - smult_l 2 x' - const_l 1])" 
 
-text \<open>\<open>x\<close> is decreasing in each iteration\<close>
+text \<open>\<open>x\<close> is strictly decreasing in each iteration, i.e., adding \<open>x \<le> x'\<close> gives a contradiction\<close>
 value (code) "let x = var_l 1; x' = var_l 2 in dio_preprocess [] ((x - x') # example_log_transition_formula)" 
 
-text \<open>\<open>x\<close> is bounded by -2\<close>
+text \<open>a loop iteration is only possible if \<open>x\<close> is strictly above -2, 
+  i.e., adding \<open>x \<le> -2\<close> gives a contradiction\<close>
 value (code) "let x = var_l 1 in dio_preprocess [] ((x + const_l 2) # example_log_transition_formula)"
 
 end

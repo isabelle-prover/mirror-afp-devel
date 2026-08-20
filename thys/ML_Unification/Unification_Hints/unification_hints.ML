@@ -21,7 +21,6 @@ end
 structure Unification_Hints_Args : UNIFICATION_HINTS_ARGS =
 struct
 structure UB = Unification_Base
-structure EN = Envir_Normalisation
 structure UHB = Unification_Hints_Base
 
 @{parse_entries (struct) PA [concl_unifier, normalisers, prems_unifier]}
@@ -66,7 +65,7 @@ sig
     Unification_Hints_Args.PA.entries * Position.T -> attribute
 end
 
-functor Unification_Hints(A :
+functor Unification_Hints_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unification_Hints_Args.args

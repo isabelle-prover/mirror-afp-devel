@@ -6,7 +6,7 @@
 *)
 section \<open>The asymptotics of the summatory divisor $\sigma$ function\<close>
 theory Summatory_Divisor_Sigma_Bounds
-  imports Partial_Zeta_Bounds More_Dirichlet_Misc
+  imports Partial_Zeta_Bounds
 begin
 
 text \<open>

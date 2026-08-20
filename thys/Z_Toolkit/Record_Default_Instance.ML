@@ -30,7 +30,7 @@ let
        NONE => def_tm |
        SOME (ts, pname) => Syntax.const (pname ^ ".more") $ def_tm)
   val def_ty = Syntax.read_typ ctx0 ("'a " ^ r_ext);
-  val (_, ctx1) = Specification.definition (SOME (Binding.name ("default_" ^ tname ^ "_ext"), NONE, NoSyn)) [] [] ((Binding.empty, []), mk_def def_ty ("default_" ^ tname ^ "_ext") def_tm_ext) ctx0
+  val (_, ctx1) = Specification.definition {verbose = false} (SOME (Binding.name ("default_" ^ tname ^ "_ext"), NONE, NoSyn)) [] [] ((Binding.empty, []), mk_def def_ty ("default_" ^ tname ^ "_ext") def_tm_ext) ctx0
 in Class.prove_instantiation_exit (fn _ => Class.intro_classes_tac ctx1 []) ctx1 end
 
 end

@@ -713,7 +713,7 @@ lemma map_le_cong: "(\<And>x. m1 x = m2 x) \<Longrightarrow> m1 \<subseteq>\<^su
 lemma match_pres_submap:
   "match_pres (inorder (M.tree_map_of' empty pres)) s \<longleftrightarrow> Map.map_of pres \<subseteq>\<^sub>m s"
   using match_pres_distinct[OF M.tree_map_of_distinct]
-  by (smt M.invar_def M.invar_empty M.tree_map_of_invar M.tree_map_of_works map_le_cong map_of_eq map_of_lookup)  
+  by (smt (z3) M.invar_def M.invar_empty M.tree_map_of_invar M.tree_map_of_works map_le_cong map_of_eq map_of_lookup)  
 
 lemma [code]:
   "SAS_Plus_Representation.is_operator_applicable_in s op \<longleftrightarrow> 

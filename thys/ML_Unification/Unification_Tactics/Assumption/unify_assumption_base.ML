@@ -78,12 +78,12 @@ fun unify_assumption_tac_index norms unify ctxt i state = Seq.make (fn _ =>
         (Thm.prop_of state |> Logic.nth_prem o pair i |> Syntax.pretty_term ctxt)
         handle TERM _ => Pretty.str "<no subgoal for given index>"
       ] |> Pretty.block |> Pretty.string_of)
-    fun rewrite_subgoal ((n, binders), (res, state)) =
+    fun rewrite_subgoal ((n, binders), ((env, thm), state)) =
       (*rewrite conclusion to match the premise*)
-      Tactic_Util.rewrite_subgoal_unif_concl (#inst_term norms)
-        (Unification_Util.inst_norm_subgoal (#inst_thm norms) (#conv norms))
+      Tactic_Unification.tac_from_env_tac (Tactic_Unification.rewrite_subgoal_eq_concl_env_tac
+        (#inst_term norms) (Unification_Util.inst_norm_subgoal (#inst_thm norms) (#conv norms))
         (Unification_Util.inst_norm_thm (#inst_unif_thm norms) (#conv norms))
-        binders res ctxt i state
+        binders thm ctxt i) env state
       (*unified premise is moved to the front; now close by equality assumption*)
       |> Seq.maps (DETERM (Tactic_Util.nth_eq_assume_tac 1 i))
       |> Seq.map (pair n)

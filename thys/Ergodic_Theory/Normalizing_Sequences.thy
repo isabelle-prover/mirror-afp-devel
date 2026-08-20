@@ -112,7 +112,7 @@ proof (rule order_tendstoI)
       using N2 order_trans by blast
     then have "K * emeasure P (space M) \<le> n * epsilon"
       using \<open>epsilon > 0\<close> \<open>epsilon \<noteq> \<infinity>\<close>
-      by (smt divide_ennreal_def divide_right_mono_ennreal ennreal_mult_divide_eq ennreal_mult_eq_top_iff infinity_ennreal_def mult.commute not_le order_le_less)
+      by (smt (z3) divide_ennreal_def divide_right_mono_ennreal ennreal_mult_divide_eq ennreal_mult_eq_top_iff infinity_ennreal_def mult.commute not_le order_le_less)
     have "n \<ge> 1" using \<open>n \<ge> 2 * K\<close> \<open>K \<ge> 1\<close> by auto
 
     have *: "((\<Sum>k\<in>{K..<n-K}. indicator (A k) ((T^^k) x))::ennreal) \<le> (\<Sum>i\<in>{K..<n}. indicator (A (i-j)) ((T^^(i-j)) x))"

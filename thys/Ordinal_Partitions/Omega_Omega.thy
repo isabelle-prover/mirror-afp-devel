@@ -2141,7 +2141,7 @@ next
         next
           fix n
           have V: "\<lbrakk>Suc n < ka - 1\<rbrakk> \<Longrightarrow> list_of (RF (Suc n) q) < list_of (RF (Suc (Suc n)) p)" for n
-            by (smt RF_def Suc_leI \<open>ka - 1 \<le> k\<close> \<open>q < m\<close> diff_Suc_1 finite_RF less_QF_step less_le_trans less_sets_imp_sorted_list_of_set nat_neq_iff zero_less_Suc)
+            by (smt (z3) RF_def Suc_leI \<open>ka - 1 \<le> k\<close> \<open>q < m\<close> diff_Suc_1 finite_RF less_QF_step less_le_trans less_sets_imp_sorted_list_of_set nat_neq_iff zero_less_Suc)
           have "RF (k -  1) q \<lless> RF k p"
             by (metis One_nat_def RF_non_Nil Suc_pred \<open>0 < k\<close> finite_RF lessI less_RF_Suc less_RF_k less_sets_trans sorted_list_of_set_eq_Nil_iff)
           with kka have "RF (k-1) q \<union> RF (ka - 1) q \<lless> RF k p"

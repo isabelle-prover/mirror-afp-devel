@@ -203,7 +203,7 @@ proof -
 qed
 
 lemma derive_trans: "M \<rhd> N \<Longrightarrow> N \<rhd> N' \<Longrightarrow> M \<rhd> N'" 
-  using deriv_red_in by (smt Diff_subset_conv derive_def subset_trans sup.absorb_iff2)
+  using deriv_red_in by (smt (z3) Diff_subset_conv derive_def subset_trans sup.absorb_iff2)
 
 end
   

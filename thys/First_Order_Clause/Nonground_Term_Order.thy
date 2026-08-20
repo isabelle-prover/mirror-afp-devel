@@ -2,7 +2,7 @@ theory Nonground_Term_Order
   imports
     Nonground_Context
     Ground_Term_Order 
-    Grounded_Order 
+    Grounded_Order
 begin
 
 locale base_grounded_order =
@@ -17,7 +17,7 @@ locale nonground_term_order =
   order: restricted_wellfounded_total_strict_order where
   less = less\<^sub>t and restriction = "range term.from_ground" +
   order: ground_subst_stability where R = less\<^sub>t and comp_subst = "(\<odot>)" and subst = "(\<cdot>t)" and
-  vars = term.vars and to_ground = term.to_ground and
+  vars = term.vars and is_ground = term.is_ground and to_ground = term.to_ground and
   from_ground = "term.from_ground"
 for less\<^sub>t
 begin
@@ -25,7 +25,7 @@ begin
 interpretation term_order_notation .
 
 sublocale base_grounded_order where
-  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and is_ground = term.is_ground and comp_subst = "(\<odot>)" and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
   by unfold_locales
 
@@ -46,14 +46,14 @@ assumes ground_context_compatibility:
   "\<And>c t\<^sub>1 t\<^sub>2.
       term.is_ground t\<^sub>1 \<Longrightarrow>
       term.is_ground t\<^sub>2 \<Longrightarrow>
-      context.is_ground c \<Longrightarrow>
+      context_is_ground c \<Longrightarrow>
       t\<^sub>1 \<prec> t\<^sub>2 \<Longrightarrow>
       c\<langle>t\<^sub>1\<rangle> \<prec> c\<langle>t\<^sub>2\<rangle>"
 begin
 
 sublocale context_compatible_restricted_order where
-  restriction = "range term.from_ground" and context_restriction = "range context.from_ground" and
-  restricted = term.is_ground and restricted_context = context.is_ground
+  restriction = "range term.from_ground" and context_restriction = "range context_from_ground" and
+  restricted = term.is_ground and restricted_context = context_is_ground
   using ground_context_compatibility
   by unfold_locales
     (auto simp: term.is_ground_iff_range_from_ground context.is_ground_iff_range_from_ground)
@@ -64,11 +64,10 @@ locale ground_subterm_property =
   nonground_term_with_context +
   fixes R
   assumes ground_subterm_property:
-    "\<And>t\<^sub>G c\<^sub>G. term.is_ground t\<^sub>G \<Longrightarrow> context.is_ground c\<^sub>G \<Longrightarrow> c\<^sub>G \<noteq> \<box> \<Longrightarrow> R t\<^sub>G c\<^sub>G\<langle>t\<^sub>G\<rangle>"
+    "\<And>t\<^sub>G c\<^sub>G. term.is_ground t\<^sub>G \<Longrightarrow> context_is_ground c\<^sub>G \<Longrightarrow> c\<^sub>G \<noteq> \<box> \<Longrightarrow> R t\<^sub>G c\<^sub>G\<langle>t\<^sub>G\<rangle>"
 
 locale context_compatible_nonground_term_order =
-  nonground_term_with_context where
-  from_ground_context_map = "from_ground_context_map :: ('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c" +
+  nonground_term_with_context +
   nonground_term_order +
   order: ground_context_compatible_order where less = less\<^sub>t +
   order: ground_subterm_property where R = less\<^sub>t
@@ -77,7 +76,7 @@ begin
 interpretation term_order_notation .
 
 sublocale order: base_subst_update_stable_grounded_order where 
-  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and
+  subst = "(\<cdot>t)" and vars = term.vars and comp_subst = "(\<odot>)" and is_ground = term.is_ground and
   to_ground = term.to_ground and from_ground = "term.from_ground" and less = "(\<prec>\<^sub>t)"
 proof unfold_locales
   fix update x \<gamma> t
@@ -91,15 +90,23 @@ proof unfold_locales
   proof (induction "occurences t x - 1" arbitrary: t)
     case 0
 
-    then have "occurences t x = 1"
+    then have one_x: "occurences t x = 1"
       by (simp add: vars_occurences)
 
-    then obtain c where t: "t = c\<langle>term.Var x\<rangle>" and "x \<notin> context.vars c"
-      using one_occurence_obtain_context 
+    then have exists_nonground: "term.exists_nonground"
+      using term.no_vars_if_is_ground x_in_t
+      by auto
+
+    obtain c where t: "t = c\<langle>term.Var x\<rangle>" and "x \<notin> context_vars c"
+      using one_x one_occurence_obtain_context 
       by blast
 
     then have c_update: "c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = (c \<cdot>t\<^sub>c \<gamma>)\<langle>update\<rangle>"
-      by auto
+      unfolding context.apply_context_subst
+      using term.subst_update_var(1)[OF exists_nonground]
+      by (smt (verit, best) context.apply_context_subst context.apply_context_vars
+          sup_bot.right_neutral term.all_subst_ident_if_ground term.id_subst_subst
+          term.no_vars_if_is_ground term.subst_update(1) update_is_ground)
 
     show ?case
       using 0(3) update_less update_is_ground
@@ -119,13 +126,15 @@ proof unfold_locales
 
       show "n = occurences c\<langle>update\<rangle> x - 1"
         using Suc.hyps(2) occurences t update_is_ground 
-        by auto
+        by (metis diff_Suc_1 emptyE term.no_vars_if_is_ground x_in_t)
     next
 
       have "occurences c\<langle>update\<rangle> x = Suc n"
-        using Suc.hyps(2)
-        unfolding t occurences[OF update_is_ground]
-        by auto
+        using
+          Suc.hyps(2) occurences[OF _ update_is_ground]
+          vars_occurences term.no_vars_if_is_ground
+        unfolding t
+        by fastforce
 
       then show "x \<in> term.vars c\<langle>update\<rangle>"
         using vars_occurences
@@ -140,7 +149,8 @@ proof unfold_locales
 
     moreover have "c\<langle>update\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk> = c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>\<lbrakk>x := update\<rbrakk>"
       using update_is_ground
-      by auto
+      by (metis (full_types) context.apply_context_subst emptyE term.all_subst_ident_if_ground
+          term.id_subst_subst term.no_vars_if_is_ground term.subst_update_var(1) x_in_t)
 
     moreover have less: "c\<langle>update\<rangle> \<cdot>t \<gamma> \<prec>\<^sub>t c\<langle>term.Var x\<rangle> \<cdot>t \<gamma>"
       using Suc.prems(2) update_is_ground update_less
@@ -167,7 +177,7 @@ proof unfold_locales
     unfolding order.less\<^sub>G_def
     by simp
 next
-  fix t :: "'t\<^sub>G" and c :: "'c\<^sub>G"
+  fix t c
   assume "c \<noteq> \<box>\<^sub>G"
 
   then show "t \<prec>\<^sub>t\<^sub>G c\<langle>t\<rangle>\<^sub>G"

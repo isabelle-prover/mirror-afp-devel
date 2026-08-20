@@ -10,7 +10,7 @@ proof(rule "\<rightarrow>I")
   AOT_have \<open>Rigid([\<lambda>z O!z & z \<noteq>\<^sub>E z])\<close>
   proof (safe intro!: "df-rigid-rel:1"[THEN "\<equiv>\<^sub>d\<^sub>fI"] "&I" "cqt:2";
          rule RN; safe intro!: GEN "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]x\<close>
       AOT_hence \<open>O!x & x \<noteq>\<^sub>E x\<close> by (rule "\<beta>\<rightarrow>C")
@@ -119,7 +119,7 @@ proof -
   proof (rule "ab-obey:2"[THEN "\<rightarrow>E"])
     AOT_have \<open>\<box>\<not>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
     proof (safe intro!: RN "raa-cor:2")
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume \<open>\<exists>u [\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
         then AOT_obtain u where \<open>[\<lambda>z O!z & z \<noteq>\<^sub>E z]u\<close>
           using "Ordinary.\<exists>E"[rotated] by blast
@@ -311,13 +311,13 @@ next
   AOT_show \<open>\<box>\<forall>x (A!x & G\<down> & [\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]x \<equiv>
             OrdinaryExtensionOf(x,[G]))\<close>
   proof(safe intro!: RN GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_have \<open>[\<lambda>x \<forall>F (x[F] \<equiv> \<forall>z (O!z \<rightarrow> ([F]z \<equiv> [G]z)))]\<down>\<close>
         proof (safe intro!: "Comprehension_3"[THEN "\<rightarrow>E"] RN GEN
                             "\<rightarrow>I" "\<equiv>I" Ordinary.GEN)
-          AOT_modally_strict {
+          AOT_modally_strict_{
             fix F H u
             AOT_assume \<open>\<box>H \<equiv>\<^sub>E F\<close>
             AOT_hence \<open>\<forall>u([H]u \<equiv> [F]u)\<close>
@@ -360,7 +360,7 @@ AOT_define concept :: \<open>\<Pi>\<close> (\<open>C!\<close>)
 AOT_register_rigid_restricted_type
   Concept: \<open>C!\<kappa>\<close>
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<exists>x A!x\<close>
       using "o-objects-exist:2" "qml:2"[axiom_inst] "\<rightarrow>E" by blast
     AOT_thus \<open>\<exists>x C!x\<close>
@@ -368,13 +368,13 @@ proof
       by fast
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>C!\<kappa> \<rightarrow> \<kappa>\<down>\<close> for \<kappa>
       using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] "\<rightarrow>I"
       by blast
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>x(A!x \<rightarrow> \<box>A!x)\<close>
       by (simp add: "oa-facts:2" GEN)
     AOT_thus \<open>\<forall>x(C!x \<rightarrow> \<box>C!x)\<close>
@@ -423,7 +423,7 @@ proof(rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>\<box>\<forall>x([H]x \<rightarrow> O!x) \<rightarrow>
                      \<box>\<forall>F\<forall>G(\<box>(G \<equiv>\<^sub>E F) \<rightarrow> ([H] \<Rightarrow> [F] \<equiv> [H] \<Rightarrow> [G]))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN "\<equiv>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F G
       AOT_assume 0: \<open>\<box>\<forall>x([H]x \<rightarrow> O!x)\<close>
       AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
@@ -435,7 +435,7 @@ proof(rule "\<rightarrow>I")
         AOT_assume \<open>[H] \<Rightarrow> [F]\<close>
         AOT_hence \<open>\<box>\<forall>x([H]x \<rightarrow> [F]x)\<close>
           using "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-        moreover AOT_modally_strict {
+        moreover AOT_modally_strict_{
           AOT_assume \<open>\<forall>x([H]x \<rightarrow> O!x)\<close>
           moreover AOT_assume \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
           moreover AOT_assume \<open>\<forall>x([H]x \<rightarrow> [F]x)\<close>
@@ -456,7 +456,7 @@ proof(rule "\<rightarrow>I")
         AOT_assume \<open>[H] \<Rightarrow> [G]\<close>
         AOT_hence \<open>\<box>\<forall>x([H]x \<rightarrow> [G]x)\<close>
           using "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E" by blast
-        moreover AOT_modally_strict {
+        moreover AOT_modally_strict_{
           AOT_assume \<open>\<forall>x([H]x \<rightarrow> O!x)\<close>
           moreover AOT_assume \<open>\<forall>u([G]u \<equiv> [F]u)\<close>
           moreover AOT_assume \<open>\<forall>x([H]x \<rightarrow> [G]x)\<close>
@@ -485,7 +485,7 @@ proof(rule "\<rightarrow>I")
   next
     AOT_show \<open>\<box>\<forall>x (C!x & [\<lambda>x \<forall>F (x[F] \<equiv> [H] \<Rightarrow> [F])]x \<equiv> ConceptOf(x,H))\<close>
     proof (rule "RN[prem]"[where \<Gamma>=\<open>{\<guillemotleft>[\<lambda>x \<forall>F(x[F] \<equiv> ([H] \<Rightarrow> [F]))]\<down>\<guillemotright>}\<close>, simplified])
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume 0: \<open>[\<lambda>x \<forall>F (x[F] \<equiv> [H] \<Rightarrow> [F])]\<down>\<close>
         AOT_show \<open>\<forall>x (C!x & [\<lambda>x \<forall>F (x[F] \<equiv> [H] \<Rightarrow> [F])]x \<equiv> ConceptOf(x,H))\<close>
         proof(safe intro!: GEN "\<equiv>I" "\<rightarrow>I" "&I")
@@ -524,7 +524,7 @@ proof -
   AOT_have \<open>\<exists>!c \<forall>F (c[F] \<equiv> [G] \<Rightarrow> [F])\<close>
     using "concept-comp:2" by simp
   moreover {
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume \<open>\<forall>F (x[F] \<equiv> [G] \<Rightarrow> [F])\<close>
       moreover AOT_have \<open>[G] \<Rightarrow> [G]\<close>
@@ -648,7 +648,7 @@ proof(rule "\<rightarrow>I")
                dest: "&E" 4[THEN "\<rightarrow>E"])
   moreover AOT_have \<open>\<box>([H] \<Rightarrow> O!) \<rightarrow> \<box>\<forall>F \<forall>G (\<box>G \<equiv>\<^sub>E F \<rightarrow> (\<^bold>c\<^sub>H[F] \<equiv> \<^bold>c\<^sub>H[G]))\<close>
   proof(rule RM; safe intro!: "\<rightarrow>I" GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F G
       AOT_assume \<open>[H] \<Rightarrow> O!\<close>
       AOT_hence 0: \<open>\<box>\<forall>x ([H]x \<rightarrow> O!x)\<close>
@@ -659,7 +659,7 @@ proof(rule "\<rightarrow>I")
         using "conG-lemma:1"[THEN "\<forall>E"(2), THEN "\<equiv>E"(1)] by simp
       AOT_hence 2: \<open>\<box>\<forall>x ([H]x \<rightarrow> [F]x)\<close>
         by (safe dest!: "F-imp-G"[THEN "\<equiv>\<^sub>d\<^sub>fE"] "&E"(2))
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume 0: \<open>\<forall>x ([H]x \<rightarrow> O!x)\<close>
         AOT_assume 1: \<open>\<forall>x ([H]x \<rightarrow> [F]x)\<close>
         AOT_assume 2: \<open>G \<equiv>\<^sub>E F\<close>
@@ -683,7 +683,7 @@ proof(rule "\<rightarrow>I")
       AOT_hence \<open>\<^bold>c\<^sub>H[G]\<close>
         using "conG-lemma:1"[THEN "\<forall>E"(2), THEN "\<equiv>E"(2)] by simp
     } note 0 = this
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix F G
       AOT_assume \<open>[H] \<Rightarrow> O!\<close>
       moreover AOT_assume \<open>\<box>G \<equiv>\<^sub>E F\<close>
@@ -748,9 +748,9 @@ proof(rule "\<rightarrow>I")
       using 0 ConceptOfOrdinaryProperty[THEN "\<rightarrow>E"] by blast
     AOT_show \<open>\<box>\<forall>x (ConceptOf(x,H) \<equiv> FormOf(x,H))\<close>
     proof(safe intro!: RN GEN)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         fix x
-        AOT_modally_strict {
+        AOT_modally_strict_{
           AOT_have \<open>A!x \<equiv> A!x\<close>
             by (simp add: "oth-class-taut:3:a")
           AOT_hence \<open>C!x \<equiv> A!x\<close>
@@ -862,7 +862,7 @@ text\<open>The assumptions of the theorems above are derivable, if the additiona
      abstraction layer).\<close>
 notepad
 begin
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>R\<forall>y [\<lambda>x (y[\<lambda>z [R]zx])]\<down>\<close>
       by (safe intro!: GEN "cqt:2" AOT_instance_of_cqt_2_intro_next)
     AOT_have \<open>\<forall>G\<forall>y [\<lambda>x (y[\<lambda>z [G]x])]\<down>\<close>

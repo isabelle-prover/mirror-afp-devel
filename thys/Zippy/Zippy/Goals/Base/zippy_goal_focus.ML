@@ -14,7 +14,7 @@ sig
   val focused_data : focus -> 'a list -> (GCS.goal_pos * 'a) list
 end
 
-functor Zippy_Goal_Focus(GCS : ZIPPY_GOAL_CLUSTERS) : ZIPPY_GOAL_FOCUS =
+functor Zippy_Goal_Focus_Functor(GCS : ZIPPY_GOAL_CLUSTERS) : ZIPPY_GOAL_FOCUS =
 struct
 structure Show = SpecCheck_Show_Base
 
@@ -42,4 +42,4 @@ fun get_indices _ [] _ = []
 fun focused_data (Goals gposs) = get_indices 1 gposs
 end
 
-structure Standard_Zippy_Goal_Focus = Zippy_Goal_Focus(Standard_Zippy_Goal_Clusters)
+structure Zippy_Goal_Focus = Zippy_Goal_Focus_Functor(Zippy_Goal_Clusters)

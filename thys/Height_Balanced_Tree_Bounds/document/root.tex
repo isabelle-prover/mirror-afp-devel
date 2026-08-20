@@ -1,0 +1,50 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{pgfplots}
+\usepackage{tikz}
+\pgfplotsset{compat=1.16}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Height Bounds for Height-Balanced Trees}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This article takes a fresh look at the class of binary trees known as \emph{height-balanced trees}, where for each node, the height difference between the left and right subtree is bounded by some fixed integer $d > 0$. An interesting question from an algorithmic perspective is how bad the imbalance of such trees can be in the worst case. Luccio and Pagli~\cite{luccio} showed that the worst-case size of a tree of height $h$ is roughly $B_d\cdot C_d^h$ for large $h$ for some specific real numbers $B_d, C_d > 1$.
+
+This formalisation contains:
+\begin{itemize}
+\item A simpler proof that the worst-case size is at least $C_d ^ h$ for all $h$
+\item An explicit closed-form expression for the worst-case size
+\item A closed-form expression for $B_d$ in terms of $C_d$ and vice versa
+\item Explicit bounds for $C_d$ in terms of $d$
+\item Asymptotic expansions for $C_d$ and $B_d$ as $d\to\infty$
+\end{itemize}
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{luccio}
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

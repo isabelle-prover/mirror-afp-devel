@@ -1890,7 +1890,7 @@ proof -
   show ?thesis
     unfolding zip
     using proj_tuple_merge
-    by (smt assms(1) disj length_map map_fst_zip map_snd_zip sd_ns')
+    by (smt (z3) assms(1) disj length_map map_fst_zip map_snd_zip sd_ns')
 qed
 
 lemma proj_tuple_length:

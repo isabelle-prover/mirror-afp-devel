@@ -13,7 +13,9 @@ global_interpretation muliset_magma: natural_magma_with_empty where
   to_set = set_mset and plus = "(+)" and wrap = "\<lambda>l. {#l#}" and add = add_mset and empty = "{#}"
   by unfold_locales simp_all
 
-global_interpretation multiset_functor: finite_natural_functor where
+setup natural_functor_setups
+
+global_interpretation multiset_functor: non_empty_natural_functor where
   map = image_mset and to_set = set_mset
   by unfold_locales auto
 
@@ -455,7 +457,7 @@ lemma not_less_empty_multp: "\<not> multp R X {#}"
 (* TODO: Adapt these in HOL-Library *)
 lemma trans_mult: "trans (mult r)"
   unfolding mult_def
-  using trans_trancl 
+  using trans_trancl
   by blast
 
 lemma transp_multp: "transp (multp r)"

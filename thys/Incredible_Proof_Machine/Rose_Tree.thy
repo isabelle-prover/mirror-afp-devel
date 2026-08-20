@@ -40,14 +40,15 @@ lemmas it_paths_intros(1)[simp]
 lemma it_paths_RNode_Nil[simp]: "it_paths (RNode r []) = {[]}"
   by (auto elim: it_paths_cases)
 
-lemma it_paths_Union: "it_paths t \<subseteq> insert [] (Union (((\<lambda> (i,t). ((#) i) ` it_paths t) ` set (List.enumerate (0::nat) (children t)))))"
+lemma it_paths_Union:
+  "it_paths t \<subseteq> insert [] (Union (((\<lambda> (i,t). ((#) i) ` it_paths t) ` set (indexed_from 0 (children t)))))"
   apply (rule)
   apply (erule it_paths_cases)
-  apply (auto intro!: bexI simp add: in_set_enumerate_eq)
+  apply (auto intro!: bexI simp add: in_set_indexed_from_eq)
   done
 
 lemma finite_it_paths[simp]: "finite (it_paths t)"
-  by (induction t) (auto intro!:  finite_subset[OF it_paths_Union]  simp add: in_set_enumerate_eq)
+  by (induction t) (auto intro!:  finite_subset[OF it_paths_Union]  simp add: in_set_indexed_from_eq)
 
 subsubsection \<open>Indexing into a rose tree\<close>
 

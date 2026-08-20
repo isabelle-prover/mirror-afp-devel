@@ -1,0 +1,82 @@
+\documentclass[11pt,a4paper]{report}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+\usepackage{wasysym}
+\usepackage{pifont}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Abstract Consistency Properties}
+\author{Asta Halkjær Boserup, Anders Schlichtkrull}
+\maketitle
+
+\abstract{
+  Smullyan used abstract consistency properties to great effect in unifying meta-theoretical results in first-order logic.
+  By abstractly specifying when a set of formulas is consistent, he proved a single model existence result for all sets that met the specification, reusing this result in proving completeness, compactness, etc.
+  Fitting later defined abstract consistency properties for a range of other logics.
+
+  In this work we use locales to mechanize abstract consistency properties without fixing a particular logic or syntax, generalizing the work of Smullyan and Fitting.
+  We use Fitting's technique for closing a consistency property under limits to guarantee the existence of a maximal element.
+  This yields a maximal consistent set for any notion of consistency expressible in the framework.
+  The usual conjunctive, disjunctive, universal and existential conditions of abstract consistency properties ---based on Smullyan's uniform notation--- arise as special cases of our abstract development.
+  Users of the framework can define an abstract consistency property for their own syntax and logic, prove that it is well behaved, and receive a corresponding maximal consistent set from which to prove model existence.
+
+  We provide three example instantiations.
+  First, compactness and completeness for a first-order logic where we only instantiate universal quantifiers with already occurring terms.
+  Second, completeness over general models for a second-order logic.
+  Third, completeness of our own natural deduction system for Prior's Ideal Language, a recently developed hybrid logic with propositional quantification.
+}
+
+\nocite{*}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

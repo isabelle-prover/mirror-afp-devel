@@ -273,14 +273,13 @@ fun prove_corr_thm lthy' (corr_thm : term) def_deps deg_deps (auxthms : thm list
           THEN ((
             SOLVE (
               TRY (REPEAT_SOME (resolve_tac context [@{thm total_degree_env_mono3'}]))
-              THEN ALLGOALS (simp_tac (context addsimps
+              THEN ALLGOALS (simp_tac (context |> Simplifier.add_simps
                             (@{thms algebra_simps} @ prove_total_degree_var_list context 20)))
             )
           ) ORELSE ( 
             TRY (REPEAT_SOME (resolve_tac context [@{thm total_degree_env_mono3_bounded}]))
-            THEN (auto_tac (context addsimps auxthms
-              @ @{thms algebra_simps}
-              @ prove_total_degree_var_list context 20
+            THEN (auto_tac (context |> Simplifier.add_simps
+              (auxthms @ @{thms algebra_simps} @ prove_total_degree_var_list context 20)
             ))
           ))
         end

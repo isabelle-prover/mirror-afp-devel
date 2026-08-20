@@ -3,10 +3,29 @@
 AFP_BASE="$COMPONENT"
 AFP="$AFP_BASE/thys"
 
+source "$AFP_BASE/etc/version"
+
+if [ -z "$AFP_VERSION" ]; then
+  echo 1>&2 "*** Failed to determine AFP version!"
+  exit 2
+fi
+
+if [ ! "$ISABELLE_NAME" = "Isabelle$AFP_VERSION" ]; then
+  if [ "$ISABELLE_NAME" = "Isabelle" ]; then
+    [ ! "$AFP_VERSION" = "devel" ] && echo >&2 "### Version mismatch: Isabelle repository clone with afp-$AFP_VERSION"
+  else
+    case "$ISABELLE_NAME" in
+      Isabelle[0-9][0-9][0-9][0-9] | Isabelle[0-9][0-9][0-9][0-9]-*)
+        echo >&2 "### Version mismatch: $ISABELLE_NAME with afp-$AFP_VERSION"
+        ;;
+    esac
+  fi
+fi
+
 isabelle_directory '$AFP_BASE'
 isabelle_directory '$AFP'
 
-AFP_BUILD_OPTIONS='-v -o browser_info -o "document=pdf" -o "document_variants=document:outline=/proof,/ML"'
+AFP_BUILD_OPTIONS="browser_info document=pdf document_variants=document:outline=/proof,/ML"
 
 ISABELLE_TOOLS="$ISABELLE_TOOLS:$AFP_BASE/tools/lib"
 

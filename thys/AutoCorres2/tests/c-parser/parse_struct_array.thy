@@ -35,8 +35,7 @@ ML \<open>
   val cs = Term.add_consts b_t []
 \<close>
 
-ML \<open>member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard" orelse
-      OS.Process.exit OS.Process.failure\<close>
+ML \<open>\<^assert> (member (op =) (map #1 cs) "CProof.strictc_errortype.C_Guard")\<close>
 
 
 end

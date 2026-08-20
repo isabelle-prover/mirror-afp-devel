@@ -152,7 +152,7 @@ proof -
     then have l: "embe Q t < \<infinity>" by auto
     then have zz: "({enat n|n. Q (part t, n)} = {}) = False" unfolding embe_def Inf_enat_def apply safe by simp  
     from y have "Q (part t, y)"  unfolding embe_def zz Inf_enat_def apply auto
-       using zz apply auto   by (smt Collect_empty_eq LeastI enat.inject)
+       using zz apply auto   by (smt (z3) Collect_empty_eq LeastI enat.inject)
     
     from full_to_part[OF c] ps have c': "(c, ps) \<Rightarrow>\<^sub>A p \<Down> part t" by auto
 

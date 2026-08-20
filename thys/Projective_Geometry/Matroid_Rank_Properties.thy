@@ -49,7 +49,7 @@ proof-
   have "{A,B,M,P} \<union> {C,D,M,P} = {A,B,C,D,M,P}"
     by auto 
   then have "rk {A,B,C,D,M,P} + rk {M,P} \<le> rk {A,B,M,P} + rk {C,D,M,P}"
-    by (smt le_inf_iff matroid_ax_3_alt order_trans subset_insertI)
+    by (smt (z3) le_inf_iff matroid_ax_3_alt order_trans subset_insertI)
   then have i3:"rk {A,B,C,D,M,P} + rk {M,P} \<le> 4"
     using \<open>rk {A, B, M, P} = 2\<close> \<open>rk {C, D, M, P} = 2\<close> 
     by linarith
@@ -75,11 +75,11 @@ proof-
     have "{A,B,C,D,M} = {A,B,M} \<union> {C,D,M}"
       by auto
     then have "rk {A,B,C,D,M} + rk {M} \<le> rk {A,B,M} + rk {C,D,M}"
-      by (smt le_inf_iff matroid_ax_3_alt order_trans subset_insertI)
+      by (smt (z3) le_inf_iff matroid_ax_3_alt order_trans subset_insertI)
     then have "rk {A,B,C,D,M} \<le> 3" if "rk {A,B,M} = 2" and "rk {C,D,M} = 2"
       by (smt (z3) One_nat_def Suc_le_eq Suc_numeral add_Suc_right add_le_same_cancel1 nat_1_add_1 not_less numeral_Bit1 numerals(1) order_trans rk_ax_singleton semiring_norm(2) that(1) that(2))
     then have "rk {A,B,C,D} \<le> 3" if "rk {A,B,M} = 2" and "rk {C,D,M} = 2"
-      by (smt insert_commute matroid_ax_2 order_trans subset_insertI that(1) that(2))
+      by (smt (z3) insert_commute matroid_ax_2 order_trans subset_insertI that(1) that(2))
     thus "rk {A, B, M} \<noteq> 2 \<or> rk {C, D, M} \<noteq> 2 "
       using \<open>4 \<le> rk {A, B, C, D}\<close> 
       by linarith
@@ -153,7 +153,7 @@ proof-
     by linarith
   then have "rk (X \<union> {A}) = rk X + 1 \<or> rk (X \<union> {B}) = rk X + 1 \<or> rk (X \<union> {C}) = rk X + 1 \<or> 
     rk (X \<union> {D}) = rk X + 1"
-    by (smt One_nat_def Suc_le_eq Suc_numeral Un_upper2 \<open>4 \<le> rk {A, B, C, D}\<close> 
+    by (smt (z3) One_nat_def Suc_le_eq Suc_numeral Un_upper2 \<open>4 \<le> rk {A, B, C, D}\<close> 
         \<open>\<lbrakk>rk (X \<union> {A}) = rk (X \<union> {B}); rk (X \<union> {B}) = rk (X \<union> {C}); rk (X \<union> {C}) = rk (X \<union> {D}); rk (X \<union> {D}) = rk X\<rbrakk> \<Longrightarrow> rk (X \<union> {A, B, C, D}) = rk X\<close> 
         add.right_neutral add_Suc_right assms antisym_conv1 matroid_ax_2 matroid_ax_2_alt 
         not_less semiring_norm(2) semiring_norm(8) sup.coboundedI2 sup.orderE)

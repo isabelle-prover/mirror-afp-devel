@@ -482,7 +482,7 @@ proof -
                         and ?h = "\<lambda>k. if issub (p ! k) then Seq k t else 0"]
     by (auto simp: aux_addsub_excl atMost_atLeast0)
   also have "... \<le> (\<Sum>k\<le>length p - 1. Seq k t)"
-      by (smt eq_iff le0 sum_mono)
+      by (smt (z3) eq_iff le0 sum_mono)
 
   finally show ?thesis using sum_sk_bound[of t] Seq_def by auto
 qed
@@ -611,7 +611,7 @@ proof -
             d_block nth_bit_def t_bound assms rl_fst_digit_zero by auto
 
         from d_block t_bound have "nth_digit d (t-1) b \<exclamdown> c = 0"
-          by (smt aux_lt_implies_mask diff_le_self diff_less le_eq_less_or_eq le_trans
+          by (smt (z3) aux_lt_implies_mask diff_le_self diff_less le_eq_less_or_eq le_trans
                   zero_less_numeral zero_less_one zero_less_power)
         then have "(nth_digit (r l + d) t b) \<exclamdown> c = 1" using add b_def t_bound 
             block_additivity assms rl_fst_digit_zero c_gt0 d_block by (simp add: add.commute)
@@ -830,7 +830,7 @@ proof -
     moreover have "(\<Sum>S- p j (\<lambda>k. nth_digit (z (l k)) t b && nth_digit (s k) t b))
                    = (\<Sum>S- p j (\<lambda>k. Zeq (l k) t * Seq k t))"
       using skzl_bitAND_to_mult sum_ssub_nzero.simps l
-      by (smt atLeastAtMost_iff sum.cong)
+      by (smt (z3) atLeastAtMost_iff sum.cong)
 
     moreover have "(\<Sum>S0 p j (\<lambda>k. (1 - nth_digit (z (l k)) t b) && nth_digit (s k) t b))
                    = (\<Sum>S0 p j (\<lambda>k. (1 - Zeq (l k) t) * Seq k t))"
@@ -876,7 +876,7 @@ proof -
         nth_digit (s i) (k div Suc c) b * nth_digit (s j) (k div Suc c) b = 0" 
     using nth_digit_def s_bound apply auto 
     using b_gt1 div_greater_zero_iff leD le_less less_trans mod_less neq0_conv power_increasing_iff
-    by (smt assms) 
+    by (smt (z3) assms) 
   ultimately have "nth_digit (s i) (k div Suc c) b \<exclamdown> (k mod Suc c) 
       * nth_digit (s j) (k div Suc c) b \<exclamdown> (k mod Suc c) = 0" 
     using nth_bit_def by auto

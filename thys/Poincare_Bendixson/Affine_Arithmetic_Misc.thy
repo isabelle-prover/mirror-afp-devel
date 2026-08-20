@@ -116,7 +116,7 @@ next
           apply simp
           apply (frule Joints_imp_length_eq[where XS=ys])
           apply (auto simp: Suc_length_conv)
-          by (smt Inf_aform'_Affine_le)
+          by (smt (z3) Inf_aform'_Affine_le)
         subgoal
           apply (simp add: split_aforms_largest_uncond_def split: prod.splits)
           apply (drule Suc.IH)

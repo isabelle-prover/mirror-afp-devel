@@ -1,3 +1,4 @@
+Abel_Limit_Theorem
 ABY3_Protocols
 ADS_Functor
 AI_Planning_Languages_Semantics
@@ -10,6 +11,7 @@ Abs_Int_ITP2012
 Abstract-Hoare-Logics
 Abstract-Rewriting
 Abstract_Completeness
+Abstract_Consistency_Property
 Abstract_Soundness
 Abstract_Substitution
 Ackermanns_not_PR
@@ -17,6 +19,7 @@ Actuarial_Mathematics
 Adaptive_State_Counting
 Affine_Arithmetic
 Aggregation_Algebras
+Aho_Corasick
 Akra_Bazzi
 Algebraic_Numbers
 Algebraic_VCs
@@ -24,13 +27,17 @@ Allen_Calculus
 Alpha_Beta_Pruning
 Amicable_Numbers
 Amortized_Complexity
+Andrew_Monotone_Chain
 AnselmGod
 Applicative_Lifting
 Approximate_Model_Counting
 Approximation_Algorithms
+Arbitrage_Probability_Correspondence
+Archimedes_Cattle
 Architectural_Design_Patterns
 Aristotles_Assertoric_Syllogistic
 Arith_Prog_Rel_Primes
+Arithmetic_Geometric_Mean
 ArrowImpossibilityGS
 Attack_Trees
 Auto2_HOL
@@ -40,6 +47,7 @@ AutoFocus-Stream
 Automated_Stateful_Protocol_Verification
 Automatic_Refinement
 AxiomaticCategoryTheory
+Axiom_Free_Ontological_Trinity
 BDD
 BD_Security_Compositional
 BNF_CC
@@ -48,12 +56,14 @@ BTree
 Babai_Nearest_Plane
 Balog_Szemeredi_Gowers
 Banach_Steinhaus
+Banach_Tarski
 Belief_Revision
 Bell_Numbers_Spivey
 BenOr_Kozen_Reif
 Berlekamp_Zassenhaus
 Bernoulli
 Bertrands_Postulate
+Bessel
 Bicategory
 BinarySearchTree
 Binary_Code_Imprimitive
@@ -64,6 +74,7 @@ BirdKMP
 Birkhoff_Finite_Distributive_Lattices
 Bisimulation_Logic
 Blue_Eyes
+BMSSP_Correctness
 Bondy
 Boolean_Expression_Checkers
 Boolos_Curious_Inference
@@ -76,6 +87,7 @@ Budan_Fourier
 Buffons_Needle
 Buildings
 BurrowsWheeler
+Busy_Beaver
 BytecodeLogicJmlTypes
 C2KA_DistributedSystems
 CAVA_Automata
@@ -83,6 +95,7 @@ CAVA_LTL_Modelchecker
 CCS
 CHERI-C_Memory_Model
 CISC-Kernel
+CNF_DNF_Exp_Blowup
 CRDT
 CRYSTALS-Kyber
 CRYSTALS-Kyber_Security
@@ -110,12 +123,14 @@ Category3
 Category_Set
 Catoids
 Cauchy
+Cauchy_Davenport_Vosper
 Cayley_Hamilton
 Certification_Monads
 Ceva
 Chandy_Lamport
 Chebyshev_Polynomials
 Chebyshev_Prime_Bounds
+Chevalley_Warning
 Chomsky_Schuetzenberger
 Chord_Segments
 Circus
@@ -132,6 +147,7 @@ Coinductive_Languages
 Collections
 Combinable_Wands
 Combinatorial_Enumeration_Algorithms
+Combinatorial_Nullstellensatz
 Combinatorial_Q_Analogues
 Combinatorics_Words
 Combinatorics_Words_Graph_Lemma
@@ -147,7 +163,9 @@ Complex_Bounded_Operators
 Complex_Geometry
 Complx
 ComponentDependencies
+Compressed_Oracles
 Computational_pAdics
+Concentrated_Liquidity_Market_Making_Operations
 Concentration_Inequalities
 ConcurrentGC
 ConcurrentHOL
@@ -173,6 +191,7 @@ Core_SC_DOM
 Correctness_Algebras
 Cotangent_PFD_Formula
 Count_Complex_Roots
+Countable_Multiset
 Countable_Sums_and_Discrete_Distributions
 Coupledsim_Contrasim
 CryptHOL
@@ -205,6 +224,7 @@ Derangements
 Deriving
 Descartes_Sign_Rule
 Design_Theory
+Detour_Calculus
 Diagonal_Ramsey
 Dict_Construction
 Difference_Bound_Matrices
@@ -228,8 +248,10 @@ DiskPaxos
 Distributed_Distinct_Elements
 Dominance_CHK
 Doob_Convergence
+Dottie_Number
 Dyck_Language
 DynamicArchitectures
+Dynamic_Pushdown_Networks
 Dynamic_Tables
 E_Transcendental
 Earley_Parser
@@ -245,10 +267,13 @@ Elliptic_Functions
 Encodability_Process_Calculi
 EnrichedCategoryBasics
 Epistemic_Logic
+Equality_Saturation_Checker
 Equivalence_Relation_Enumeration
+Erdos_Ginzburg_Ziv
 Ergodic_Theory
 Error_Function
 Eudoxus_Reals
+Euler_Exponential
 Euler_MacLaurin
 Euler_Partition
 Euler_Polyhedron_Formula
@@ -256,8 +281,10 @@ Eval_FO
 Example-Submission
 Executable_Randomized_Algorithms
 Expander_Graphs
+Exp_Log_Integral
 Extended_Finite_State_Machine_Inference
 Extended_Finite_State_Machines
+Fair_Games_Theorem
 FFT
 FLP
 FOL-Fitting
@@ -278,6 +305,7 @@ Farkas
 FeatherweightJava
 Featherweight_OCL
 Fermat3_4
+Feuerbach
 FileRefinement
 FinFun
 Finger-Trees
@@ -305,6 +333,7 @@ Foundation_of_geometry
 Fourier
 Free-Boolean-Algebra
 Free-Groups
+Freiman_3k_4
 Frequency_Moments
 Fresh_Identifiers
 FunWithFunctions
@@ -313,6 +342,7 @@ Functional-Automata
 Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
 GPU_Kernel_PL
+Gabbay_Labelled_Natural_Deduction
 Gabow_SCC
 GaleStewart_Games
 Gale_Shapley
@@ -322,10 +352,12 @@ Gauss-Jordan-Elim-Fun
 Gauss_Jordan
 Gauss_Sums
 Gaussian_Integers
+Gelfand_Naimark_Segal
 GenClock
 General-Triangle
 Generalized_Cauchy_Davenport
 Generalized_Counting_Sort
+Generalized_Hypergeometric_Series
 Generic_Deriving
 Generic_Join
 GewirthPGCProof
@@ -353,12 +385,15 @@ GyrovectorSpaces
 HOL-CSP
 HOL-CSPM
 HOL-CSP_OpSem
+HOL-CSP_Proc-Omata
+HOL-CSP_PTick
 HOL-CSP_RS
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
 Hales_Jewett
 Heard_Of
+Height_Balanced_Tree_Bounds
 Hello_World
 HereditarilyFinite
 Hermite
@@ -399,11 +434,13 @@ Imperative_Insertion_Sort
 Implicational_Logic
 Impossible_Geometry
 Incompleteness
+Incomplete_Gamma
 Incredible_Proof_Machine
 Independence_CH
 Inductive_Confidentiality
 Inductive_Inference
 InfPathElimination
+Infinite_Descent_Criteria
 InformationFlowSlicing
 InformationFlowSlicing_Inter
 Integration
@@ -421,9 +458,12 @@ IsaGeoCoq
 IsaNet
 Isabelle_C
 Isabelle_DOF
+Isabelle_hoops
+Isabelle_Lex-Yacc
 Isabelle_Marries_Dirac
 Isabelle_Meta_Model
-Isabelle_hoops
+Isabelle-Solidity
+Iteration_Algebra
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
@@ -480,6 +520,7 @@ Launchbury
 Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
+Lebesgue_Stieltjes_Integral
 Lehmer
 Levy_Prokhorov_Metric
 Lie_Groups
@@ -504,6 +545,7 @@ Locally-Nameless-Sigma
 Logging_Independent_Anonymity
 Lovasz_Local
 Lowe_Ontological_Argument
+Lower_Bound_Certificates_Planning
 Lower_Semicontinuous
 Lp
 Lucas_Theorem
@@ -517,7 +559,9 @@ MHComputation
 MLSS_Decision_Proc
 MLSSmf_to_MLSS
 ML_Unification
+Modular_Forms
 MSO_Regex_Equivalence
+MSOinHOL
 Markov_Models
 Marriage
 Martingales
@@ -528,6 +572,7 @@ Matrix_Tensor
 Matroids
 Max-Card-Matching
 Maximum_Segment_Sum
+Mechanized_Metasemantics
 Median_Method
 Median_Of_Medians_Selection
 Menger
@@ -554,6 +599,7 @@ MonoidalCategory
 Monomorphic_Monad
 More_LazyLists
 Morley_Theorem
+Mostowski_Collapse
 MuchAdoAboutTwo
 Multi_Party_Computation
 Multirelations
@@ -564,8 +610,10 @@ Munta_Certificate_Checker
 Munta_Model_Checker
 Myhill-Nerode
 NREST
+Nagata-Factoriality
 Name_Carrying_Type_Inference
 Nano_JSON
+Nash_Equilibrium
 Nash_Williams
 Nat-Interval-Logic
 Native_Word
@@ -579,6 +627,7 @@ No_FTL_observers_Gen_Rel
 No_Free_Lunch_ML
 Nominal2
 Nominal_Myhill_Nerode
+Nominal_Unification
 Noninterference_CSP
 Noninterference_Concurrent_Composition
 Noninterference_Generic_Unwinding
@@ -630,6 +679,7 @@ Pentagonal_Number_Theorem
 Perfect-Number-Thm
 Perfect_Fields
 Perron_Frobenius
+Perrons_Formula
 Physical_Quantities
 Pi_Calculus
 Pi_Irrational
@@ -641,6 +691,7 @@ Poincare_Bendixson
 Poincare_Disc
 Polygonal_Number_Theorem
 Polylog
+Polynomial_Commitment_Schemes
 Polynomial_Crit_Geometry
 Polynomial_Factorization
 Polynomial_Interpolation
@@ -657,6 +708,7 @@ Prim_Dijkstra_Simple
 Prime_Distribution_Elementary
 Prime_Harmonic_Series
 Prime_Number_Theorem
+Printing_Parsing_Roundtrip
 Priority_Queue_Braun
 Priority_Search_Trees
 Probabilistic_Noninterference
@@ -701,6 +753,7 @@ RG_Locks
 RIPEMD-160-SPARK
 ROBDD
 RSAPSS
+Rademacher_Series
 Ramsey-Infinite
 Ramsey_Bounds
 Random_BSTs
@@ -708,6 +761,7 @@ Random_Graph_Subgraph_Threshold
 Randomised_BSTs
 Randomised_Social_Choice
 Randomized_Closest_Pair
+Rankings
 Rank_Nullity_Theorem
 Real_Impl
 Real_Power
@@ -756,13 +810,16 @@ Roth_Arithmetic_Progressions
 Routing
 Roy_Floyd_Warshall
 SATSolverVerification
+SAT_Not_Const_Time
 SCC_Bloemen_Sequential
 SCL_Simulates_Ground_Resolution
 SC_DOM_Components
 SDS_Impossibility
+Seifert-Van-Kampen
 SIFPL
 SIFUM_Type_Systems
 SPARCv8
+SWF_Impossibility
 S_Finite_Measure_Monad
 Safe_Distance
 Safe_OCL
@@ -784,6 +841,8 @@ Separation_Logic_Imperative_HOL
 Separation_Logic_Unbounded
 SequentInvertibility
 Serializable
+Set_Reconciliation
+Sets_Revisited
 Shadow_DOM
 Shadow_SC_DOM
 Shallow_Expressions
@@ -809,6 +868,7 @@ Solidity
 Sophie_Germain
 Sophomores_Dream
 Sort_Encodings
+Sorted_Rewriting
 Sorted_Terms
 Source_Coding_Theorem
 SpecCheck
@@ -839,6 +899,7 @@ Strong_Security
 Sturm_Sequences
 Sturm_Tarski
 Stuttering_Equivalence
+Submodular_Greedy
 Subresultants
 Subset_Boolean_Algebras
 Substitutions_Lambda_Free
@@ -851,11 +912,13 @@ SuperCalc
 Superposition_Calculus
 Suppes_Theorem
 Surprise_Paradox
+Swap_Distance
 Symmetric_Polynomials
 Syntax_Independent_Logic
 Synthetic_Completeness
 Szemeredi_Regularity
 Szpilrajn
+Tabulation_Hashing
 TESL_Language
 TLA
 Tail_Recursive_Functions
@@ -923,6 +986,7 @@ WebAssembly
 Weight_Balanced_Trees
 Weighted_Arithmetic_Geometric_Mean
 Weighted_Path_Order
+Weighted_Set
 Well_Quasi_Orders
 Wetzels_Problem
 Wieferich_Kempner
@@ -932,10 +996,12 @@ Wlog
 Wooley_Elementary_Discrete_Inequality
 Word_Lib
 WorkerWrapper
+Workflow_Net_Fitness_Measures
 Worklist_Algorithms
 X86_Semantics
 XML
 Youngs_Inequality
+ZF_finite
 ZFC_in_HOL
 Z_Toolkit
 Zeckendorf

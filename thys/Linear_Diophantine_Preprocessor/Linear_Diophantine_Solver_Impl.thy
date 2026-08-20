@@ -53,9 +53,39 @@ qed
 
 definition dleq_normalized where "dleq_normalized p = (Gcd (coeff_l p ` vars_l p) = 1)" 
 
-definition size_dleq :: "'v dleq \<Rightarrow> int" where "size_dleq p = sum (abs o coeff_l p) (vars_l p)" 
+definition size_dleq :: "'v dleq \<Rightarrow> int" where 
+  "size_dleq p = (if vars_l p = {} then 0 else Min ((abs o coeff_l p) ` (vars_l p)))"
 
 lemma size_dleq_pos: "size_dleq p \<ge> 0" unfolding size_dleq_def by simp
+
+lemma size_dleq_ge:
+  assumes "vars_l p \<noteq> {}" "\<And>v. v \<in> vars_l p \<Longrightarrow> abs (coeff_l p v) \<ge> c"
+  shows   "size_dleq p \<ge> c"
+  using assms unfolding size_dleq_def by auto
+
+lemma size_dleq_le:
+  assumes "v \<in> vars_l p"
+  shows   "abs (coeff_l p v) \<ge> size_dleq p"
+  using assms unfolding size_dleq_def by simp
+
+(* TODO: Move? *)
+lemma Min_image_mono:
+  assumes "X \<noteq> {}" "finite X"
+  assumes "\<And>x. x \<in> X \<Longrightarrow> f x \<le> g x"
+  shows   "Min (f ` X) \<le> Min (g ` X)"
+  using assms by (auto intro: Min.boundedI order.trans[OF Min.coboundedI])
+
+lemma size_dleq_mono:
+  assumes "vars_l p = vars_l q"
+  assumes "\<And>x. x \<in> vars_l p \<Longrightarrow> \<bar>coeff_l p x\<bar> \<le> \<bar>coeff_l q x\<bar>"
+  shows   "size_dleq p \<le> size_dleq q"
+proof (cases "vars_l p = {}")
+  case False
+  hence "Min ((abs o coeff_l p) ` (vars_l p)) \<le> Min ((abs o coeff_l q) ` (vars_l p))"
+    by (intro Min_image_mono) (use assms(2) in auto)
+  thus ?thesis
+    using False assms(1) by (simp_all add: size_dleq_def)
+qed (use assms in \<open>auto simp: size_dleq_def\<close>)
 
 lemma simplify_dleq_keep: assumes "simplify_dleq p = Inl q" 
   shows 
@@ -106,8 +136,8 @@ proof (atomize (full), unfold dleq_normalized_def, goal_cases)
         by (transfer, auto)
       have vars: "vars_l q = vars_l p" unfolding pq using g'01
         by (transfer, auto)
-      show "size_dleq q \<le> size_dleq p" unfolding size_dleq_def vars
-        by (rule sum_mono, auto simp: le)
+      show "size_dleq q \<le> size_dleq p"
+        using vars le by (intro size_dleq_mono) auto
       from gG have "?g = Gcd (range (fun_of_lpoly p))" unfolding g'[symmetric] using norm
         by transfer auto
       have "g' = ?g" by (rule g')
@@ -290,72 +320,46 @@ proof (atomize(full), induct es arbitrary: n s rule: wf_induct[OF wf_measures[of
             define m where "m = coeff_l p x" 
             have m: "m \<noteq> 0" using c0 unfolding m_def by auto
             from c1[unfolded c_def] have x: "x \<in> vars_l p" by transfer auto
-            have "vars_l p \<noteq> {x}" using np[unfolded dleq_normalized_def] c1[unfolded c_def]
-              by auto
-            with x obtain z where z: "z \<in> vars_l p - {x}" by auto
+
+            have "\<exists>z\<in>vars_l p-{x}. \<not>coeff_l p x dvd coeff_l p z"
+            proof (rule ccontr)
+              assume "\<not>(\<exists>z\<in>vars_l p-{x}. \<not>coeff_l p x dvd coeff_l p z)"
+              hence "Gcd (coeff_l p ` vars_l p) = abs (coeff_l p x)"
+                using x by (intro Gcd_eqI) auto
+              thus False
+                using np c1 by (simp add: dleq_normalized_def c_def)
+            qed
+            then obtain z where z: "z \<in> vars_l p - {x}" "\<not>coeff_l p x dvd coeff_l p z"
+              by blast
+
             have cy: "coeff_l (\<sigma> p) y = coeff_l p x" by (simp add: c\<sigma>p)
             with c0(2) have y': "y \<in> vars_l (\<sigma> p)" by transfer auto
-            {
-              fix u
-              assume "u \<in> vars_l (\<sigma> p)" 
-              hence "coeff_l (\<sigma> p) u \<noteq> 0" by (transfer, auto)
-              hence "u \<noteq> x \<and> (u \<noteq> y \<longrightarrow> coeff_l p u \<noteq> 0)" unfolding c\<sigma>p(2) using yp x
-                by (auto split: if_splits simp: m_def)
-              hence "u \<noteq> x \<and> (u \<noteq> y \<longrightarrow> u \<in> vars_l p)" by transfer auto
-              hence "u \<in> insert y (vars_l p) - {x}" by auto
-            }
-            hence vars: "vars_l (\<sigma> p) \<subseteq> insert y (vars_l p) - {x}" by auto
+            have vars: "vars_l (\<sigma> p) \<subseteq> insert y (vars_l p) - {x}" 
+              using yp x by (auto simp: vars_l_conv_coeff_l c\<sigma>p(2))
             have yz: "y \<noteq> z" using yp z by auto
-            have "size_dleq p = c + sum (abs \<circ> coeff_l p) (vars_l p - {x})" 
-              unfolding size_dleq_def c_def by (subst sum.remove[OF _ x], auto)
-            also have "\<dots> = c + abs (coeff_l p z) + sum (abs \<circ> coeff_l p) (vars_l p - {x,z})" 
-              by (subst sum.remove[OF _ z], force, subst sum.cong, auto)
-            finally have size_one: "size_dleq p = c + \<bar>coeff_l p z\<bar> + sum (abs \<circ> coeff_l p) (vars_l p - {x, z})" .
 
-            have "size_dleq (\<sigma> p) = c + sum (abs \<circ> coeff_l (\<sigma> p)) (vars_l (\<sigma> p) - {y})"
-              unfolding size_dleq_def
-              by (subst sum.remove[OF _ y'], auto simp: cy c_def)
-            also have "\<dots> = c + \<bar>coeff_l (\<sigma> p) z\<bar> + sum (abs \<circ> coeff_l (\<sigma> p)) (vars_l (\<sigma> p) - {y, z})"
-            proof (cases "z \<in> vars_l (\<sigma> p) - {y}")  
-              case True
-              show ?thesis by (subst sum.remove[OF _ True], force, subst sum.cong, auto)
+            have "size_dleq p = c"
+            proof (rule antisym)
+              show "size_dleq p \<le> c"
+                unfolding c_def by (rule size_dleq_le) (use x in auto)
             next
-              case False
-              hence "z \<notin> vars_l (\<sigma> p)" using yz by auto
-              hence "coeff_l (\<sigma> p) z = 0" by transfer auto
-              with False show ?thesis by (subst sum.cong, auto)
+              show "size_dleq p \<ge> c"
+                using x min_var(2) unfolding c_def x_def
+                by (intro size_dleq_ge) auto
             qed
-            also have "\<dots> < size_dleq p" 
-            proof -
-              have id: "coeff_l (\<sigma> p) z = coeff_l p z mod coeff_l p x" unfolding c\<sigma>p
-                using yz z by auto
-              have "\<bar>coeff_l (\<sigma> p) z\<bar> < c" unfolding id c_def unfolding m_def[symmetric] using m
-                by (rule abs_mod_less)
-              also have "\<dots> \<le> \<bar>coeff_l p z\<bar>" 
-                using min_var(2)[of z p, folded x_def, folded c_def] using z by auto
-              finally have less: "\<bar>coeff_l (\<sigma> p) z\<bar> < \<bar>coeff_l p z\<bar>" .
 
-              from yp x have xy: "x \<noteq> y" by auto
-              have x': "x \<notin> vars_l (\<sigma> p)" using fun_cong[OF c\<sigma>p(2)] xy by transfer auto
-              have "sum (abs \<circ> coeff_l (\<sigma> p)) (vars_l (\<sigma> p) - {y, z}) 
-                  = sum (abs \<circ> coeff_l (\<sigma> p)) (vars_l (\<sigma> p) - {x, y, z})" 
-                by (rule sum.cong[OF _ refl], insert x', auto)
-              also have "\<dots> \<le> sum (abs \<circ> coeff_l p) (vars_l (\<sigma> p) - {x, y, z})" 
-              proof (rule sum_mono, goal_cases)
-                case (1 u)
-                with vars have uy: "u \<noteq> y" and "u \<in> vars_l p" by auto
-                from min_var(2)[OF this(2), folded x_def, folded m_def]
-                have "\<bar>m\<bar> \<le> \<bar>coeff_l p u\<bar>" by auto
-                thus ?case unfolding o_def fun_cong[OF c\<sigma>p(2), folded m_def] using m uy 
-                  by auto (smt (verit, ccfv_threshold) abs_mod_less)
-              qed
-              also have "\<dots> \<le> sum (abs \<circ> coeff_l p) (vars_l p - {x, z})" 
-                by (rule sum_mono2, insert vars, auto)
-              finally have le: "sum (abs \<circ> coeff_l (\<sigma> p)) (vars_l (\<sigma> p) - {y, z}) \<le> sum (abs \<circ> coeff_l p) (vars_l p - {x, z})" .
-
-              from le less show ?thesis unfolding size_one by linarith
+            have "size_dleq (\<sigma> p) \<le> \<bar>coeff_l (\<sigma> p) z\<bar>"
+            proof (rule size_dleq_le)
+              show "z \<in> vars_l (\<sigma> p)"
+                using yp z by (auto simp: vars_l_conv_coeff_l c\<sigma>p(2))
             qed
-            finally show ?thesis .
+            also have "\<dots> = \<bar>coeff_l p z mod coeff_l p x\<bar>"
+              using z yp by (auto simp: c\<sigma>p)
+            also have "\<dots> < c"
+              unfolding c_def by (intro abs_mod_less) (use c0 in auto)
+            also have "\<dots> = size_dleq p"
+              using \<open>size_dleq p = c\<close> ..
+            finally show "size_dleq (\<sigma> p) < size_dleq p" .
           qed
           with ph have "size_dleq (\<sigma> p) < size_dleq ?h" by simp
           with len show ?thesis 

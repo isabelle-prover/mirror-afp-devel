@@ -171,9 +171,9 @@ next
       by (metis atLeastAtMost_iff set_upto) 
 
     have l_inorder: "inorder l = [i..k-1]"
-      by (smt C D append_Cons_eq_iff atLeastAtMost_iff set_upto)
+      by (smt (z3) C D append_Cons_eq_iff atLeastAtMost_iff set_upto)
     have r_inorder: "inorder r = [k+1..j]" 
-      by (smt C D append_Cons_eq_iff atLeastAtMost_iff set_upto)
+      by (smt (z3) C D append_Cons_eq_iff atLeastAtMost_iff set_upto)
 
     have "min_wpl i j = Min ?M" by (simp add: min_wpl.simps min_list_Min)
     also have "... \<le> ?w" by (rule aux_min)    

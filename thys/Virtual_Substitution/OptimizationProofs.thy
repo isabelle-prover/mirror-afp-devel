@@ -544,7 +544,7 @@ proof-
   have "insertion f p = sum_list [insertion f term * (f v) ^ i. (term,i)\<leftarrow>(chop (to_list v p))]" using insertion_chop[of f p v] .
   also have "...= (\<Sum>(term, d)\<leftarrow>chop (to_list v p). insertion f term * f v ^ (d-i) * f v ^ i)" 
     using simp
-    by (smt Pair_inject case_prodE map_eq_conv mult.assoc split_cong) 
+    by (smt (z3) Pair_inject case_prodE map_eq_conv mult.assoc split_cong) 
   also have "... =  (\<Sum>(term, d)\<leftarrow>chop (to_list v p). insertion f term * f v ^ (d - i)) * f v ^ i"
   proof-
     define d where "d = chop(to_list v p)"
@@ -677,7 +677,7 @@ next
         assume h:  "i mod 2 = Suc 0"
         show "(a = 0 \<or> a < 0 \<and> 0 \<le> x' \<or> 0 < a \<and> x' \<le> 0) = (a * x' ^ i \<le> 0)"
           using h
-          by (smt even_iff_mod_2_eq_zero mult_less_cancel_right mult_neg_neg mult_nonneg_nonpos mult_pos_pos not_mod2_eq_Suc_0_eq_0 power_0_Suc x_def zero_le_power_eq zero_less_mult_pos2 zero_less_power)
+          by (smt (z3) even_iff_mod_2_eq_zero mult_less_cancel_right mult_neg_neg mult_nonneg_nonpos mult_pos_pos not_mod2_eq_Suc_0_eq_0 power_0_Suc x_def zero_le_power_eq zero_less_mult_pos2 zero_less_power)
       qed
     qed 
   next

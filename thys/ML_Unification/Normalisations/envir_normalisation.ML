@@ -6,7 +6,7 @@ Normalisations with respect to an environment. Adapted and generalised from envi
 signature ENVIR_NORMALISATION =
 sig
   (* types *)
-  type type_normaliser = Type.tyenv -> typ -> typ
+  type type_normaliser = Type.tyenv -> typ Same.operation
   val norm_type_match : type_normaliser
   val norm_type_unif : type_normaliser
 
@@ -18,8 +18,10 @@ sig
   (** matching **)
   val norm_term_types_match : term_type_normaliser
   (*without beta-normalisation*)
+  val gen_norm_term_match : type_normaliser -> term_normaliser
   val norm_term_match : term_normaliser
   (*with beta-normalisation*)
+  val gen_beta_norm_term_match : type_normaliser -> term_normaliser
   val beta_norm_term_match : term_normaliser
 
   (** unification **)
@@ -28,6 +30,8 @@ sig
   val norm_term_unif : term_normaliser
   (*with beta-normalisation*)
   val beta_norm_term_unif : term_normaliser
+  val beta_head_unif : term_normaliser
+  val beta_weak_head_unif : term_normaliser
 
   (* theorems *)
   type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
@@ -46,14 +50,14 @@ structure Envir_Normalisation : ENVIR_NORMALISATION =
 struct
 
 (* types *)
-type type_normaliser = Type.tyenv -> typ -> typ
+type type_normaliser = Type.tyenv -> typ Same.operation
 
-val norm_type_match = Envir.subst_type
-val norm_type_unif = Envir.norm_type
+val norm_type_match = Envir.subst_type_same
+val norm_type_unif = Envir.norm_type_same
 
 (* terms *)
 type term_type_normaliser = Type.tyenv -> Term_Normalisation.term_normaliser
-fun norm_term_types norm_type = map_types o norm_type
+fun norm_term_types norm_type = Term.map_types_same o norm_type
 
 type term_normaliser = Envir.env -> Term_Normalisation.term_normaliser
 
@@ -79,40 +83,36 @@ fun norm_comb_same beta_norm norm f t = (case norm f of
 fun norm_term_match1 beta_norm tenv : term Same.operation =
   let
     fun norm (Var v) = (case Envir.lookup1 tenv v of
-          SOME u => u
-        | NONE => raise Same.SAME)
+            SOME u => u
+          | NONE => raise Same.SAME)
       | norm (Abs (a, T, body)) = Abs (a, T, norm body)
       | norm (Abs abs_args $ t) = norm_abs_comb_same beta_norm norm abs_args t
       | norm (f $ t) = norm_comb_same beta_norm norm f t
       | norm _ = raise Same.SAME
   in norm end
 
-fun norm_term_match2 beta_norm (Envir.Envir {tenv, tyenv, ...}) : term Same.operation =
+fun norm_term_match2 norm_type beta_norm (Envir.Envir {tenv, tyenv, ...}) : term Same.operation =
   let
-    val normT = Envir.subst_type_same tyenv
+    val normT = norm_type tyenv
     fun norm (Const (a, T)) = Const (a, normT T)
       | norm (Free (a, T)) = Free (a, normT T)
-      | norm (v as Var (xi, T)) =
-          let
-            fun lookup v = (case Envir.lookup1 tenv (dest_Var v) of
-                SOME u => u
-              | NONE => raise Same.SAME)
-          in
-            (normT T |> (fn T => Same.commit lookup (Var (xi, T))))
-            handle Same.SAME => lookup v
-          end
+      | norm (Var (xi, T)) = (case Envir.lookup1 tenv (xi, T) of
+            SOME u => Same.commit (norm_term_types norm_type tyenv) u
+          | NONE => Var (xi, normT T))
       | norm (Abs args) = norm_abs_same2 normT norm args
       | norm (Abs abs_args $ t) = norm_abs_comb_same beta_norm norm abs_args t
       | norm (f $ t) = norm_comb_same beta_norm norm f t
       | norm _ = raise Same.SAME
   in norm end
 
-fun norm_term_match_same beta_norm (envir as Envir.Envir {tenv, tyenv, ...}) =
+fun norm_term_match_same beta_norm norm_type (envir as Envir.Envir {tenv, tyenv, ...}) =
   if Vartab.is_empty tyenv then norm_term_match1 beta_norm tenv
-  else norm_term_match2 beta_norm envir
+  else norm_term_match2 norm_type beta_norm envir
 
-fun norm_term_match env = Same.commit (norm_term_match_same false env)
-fun beta_norm_term_match env = Same.commit (norm_term_match_same true env)
+fun gen_norm_term_match norm_type env = norm_term_match_same false norm_type env
+val norm_term_match = gen_norm_term_match norm_type_match
+fun gen_beta_norm_term_match norm_type env = norm_term_match_same true norm_type env
+val beta_norm_term_match = gen_beta_norm_term_match norm_type_match
 
 (** unification **)
 val norm_term_types_unif = norm_term_types norm_type_unif
@@ -156,8 +156,20 @@ fun norm_term_unif_same beta_norm (envir as Envir.Envir {tenv, tyenv, ...}) =
   if Vartab.is_empty tyenv then norm_term_unif1 beta_norm tenv
   else norm_term_unif2 beta_norm envir
 
-fun norm_term_unif env = Same.commit (norm_term_unif_same false env)
-fun beta_norm_term_unif env = Same.commit (norm_term_unif_same true env)
+val norm_term_unif = norm_term_unif_same false
+val beta_norm_term_unif = norm_term_unif_same true
+
+val beta_head_unif = Envir.head_norm
+fun beta_weak_head_unif env =
+  let fun norm (Var v) = (case Envir.lookup env v of
+        SOME u => Same.commit (beta_weak_head_unif env) u
+      | NONE => raise Same.SAME)
+    | norm (Abs (_, _, body) $ t) = Same.commit norm (subst_bound (t, body))
+    | norm (f $ t) = (case norm f of
+        Abs (_, _, body) => Same.commit norm (subst_bound (t, body))
+      | nf => nf $ t)
+    | norm _ = raise Same.SAME
+  in norm end
 
 type thm_normaliser = Proof.context -> Envir.env -> thm -> thm
 type thm_type_normaliser = thm_normaliser
@@ -167,7 +179,7 @@ type thm_type_normaliser = thm_normaliser
 (*collect and normalise TVars of a term*)
 fun collect_norm_types norm_type ctxt tyenv t =
   let
-    val norm_type' = norm_type tyenv
+    val norm_type' = Same.commit (norm_type tyenv)
     fun prep_type_entry x = (x, Thm.ctyp_of ctxt (norm_type' (TVar x)))
   in
     fold_types (fold_atyps (fn TVar v => TVars.add (prep_type_entry v) | _ => I)) t
@@ -177,8 +189,8 @@ fun collect_norm_types norm_type ctxt tyenv t =
 (*collect and normalise Vars of a term*)
 fun collect_norm_terms norm_type norm_term ctxt (env as Envir.Envir {tyenv,...}) t =
   let
-    val norm_type' = norm_type tyenv
-    val norm_term' = norm_term env
+    val norm_type' = Same.commit (norm_type tyenv)
+    val norm_term' = Same.commit (norm_term env)
     fun prep_term_entry (x as (n, T)) = ((n, norm_type' T), Thm.cterm_of ctxt (norm_term' (Var x)))
   in
     fold_aterms (fn Var v => Vars.add (prep_term_entry v) | _ => I) t
@@ -186,10 +198,10 @@ fun collect_norm_terms norm_type norm_term ctxt (env as Envir.Envir {tyenv,...})
   end
 
 (*normalise types of a theorem*)
-fun norm_thm_types norm_types ctxt (Envir.Envir {tyenv, ...}) thm =
+fun norm_thm_types norm_type ctxt (Envir.Envir {tyenv, ...}) thm =
   let
     val prop = Thm.full_prop_of thm
-    val type_inst = collect_norm_types norm_types ctxt tyenv prop
+    val type_inst = collect_norm_types norm_type ctxt tyenv prop
     val inst = (type_inst, Vars.empty)
   in Thm.instantiate inst thm end
 

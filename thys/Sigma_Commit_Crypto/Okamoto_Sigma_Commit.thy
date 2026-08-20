@@ -120,11 +120,11 @@ proof-
     also have "... = \<^bold>g [^] y \<otimes> \<^bold>g [^] (e * fst w') \<otimes> g' [^] ya \<otimes> g' [^] (e * snd w')" 
       by (simp add: g'_def m_assoc nat_pow_mult)
     also have "... = \<^bold>g [^] y \<otimes> g' [^] ya \<otimes> \<^bold>g [^] (e * fst w') \<otimes> g' [^] (e * snd w')" 
-      by (smt add.commute g'_def generator_closed m_assoc nat_pow_closed nat_pow_mult nat_pow_pow)
+      by (smt (z3) add.commute g'_def generator_closed m_assoc nat_pow_closed nat_pow_mult nat_pow_pow)
     also have "... = \<^bold>g [^] y \<otimes> g' [^] ya \<otimes> ((\<^bold>g [^] fst w') [^] e \<otimes> (g' [^] snd w') [^] e)" 
       by (simp add: m_assoc mult.commute nat_pow_pow)
     also have "... =  \<^bold>g [^] y \<otimes> g' [^] ya \<otimes> ((\<^bold>g [^] fst w' \<otimes> g' [^] snd w') [^] e)"   
-      by (smt power_distrib g'_def generator_closed mult.commute nat_pow_closed nat_pow_mult nat_pow_pow)
+      by (smt (z3) power_distrib g'_def generator_closed mult.commute nat_pow_closed nat_pow_mult nat_pow_pow)
     ultimately show ?thesis by simp
   qed
   thus ?thesis 
@@ -153,7 +153,7 @@ next
     have "order \<G> * c * x1 - c * x1 > 0" using x1_neq_0 False 
       using prime_gt_1_nat prime_order by auto 
     thus ?thesis 
-      by (smt Groups.add_ac(2) add_diff_inverse_nat cong_add_lcancel_nat diff_is_0_eq le_simps(1) neq0_conv trans_less_add2 z1_eq zero_less_diff)
+      by (smt (z3) Groups.add_ac(2) add_diff_inverse_nat cong_add_lcancel_nat diff_is_0_eq le_simps(1) neq0_conv trans_less_add2 z1_eq zero_less_diff)
   qed
   thus ?thesis 
     by (simp add: r1 cong_def)
@@ -198,12 +198,12 @@ proof-
     by (simp add: pow_carrier_mod)
   also have "... = \<^bold>g [^] (z1 + (order \<G> * c * x1 - c * x1)) \<otimes> g' [^] (z2 + (order \<G> * c * x2 - c * x2))" 
     using h 
-    by (smt Nat.add_diff_assoc diff_zero le_simps(1) nat_0_less_mult_iff neq0_conv pow_distrib1 pow_distrib2 prime_gt_1_nat prime_order zero_less_diff)
+    by (smt (z3) Nat.add_diff_assoc diff_zero le_simps(1) nat_0_less_mult_iff neq0_conv pow_distrib1 pow_distrib2 prime_gt_1_nat prime_order zero_less_diff)
   also have "... =  \<^bold>g [^] z1 \<otimes> \<^bold>g [^] (order \<G> * c * x1 - c * x1) \<otimes> g' [^] z2 \<otimes> g' [^] (order \<G> * c * x2 - c * x2)"
     using nat_pow_mult 
     by (simp add: m_assoc) 
   also have "... = \<^bold>g [^] z1 \<otimes> g' [^] z2 \<otimes> \<^bold>g [^] (order \<G> * c * x1 - c * x1) \<otimes> g' [^] (order \<G> * c * x2 - c * x2)"
-    by (smt add.commute g'_def generator_closed m_assoc nat_pow_closed nat_pow_mult nat_pow_pow)
+    by (smt (z3) add.commute g'_def generator_closed m_assoc nat_pow_closed nat_pow_mult nat_pow_pow)
   also have "... = \<^bold>g [^] z1 \<otimes> g' [^] z2 \<otimes> \<^bold>g [^] ((order \<G> - 1) * c * x1) \<otimes> g' [^] ((order \<G> - 1) * c * x2)" 
     using pow_distrib1 pow_distrib2 by argo
   also have "... = \<^bold>g [^] z1 \<otimes> g' [^] z2 \<otimes> (\<^bold>g [^] (order \<G> - 1)) [^] (c * x1) \<otimes> (g' [^] ((order \<G> - 1))) [^] (c * x2)" 
@@ -299,7 +299,7 @@ proof-
   hence "[int z2 + int x * int z2' + int t * int e = int z1 + int x * int z1' + int t * int e'] (mod order \<G>)"
     using cong_int_iff by force
   hence "[int z1 + int x * int z1' - int z2 - int x * int z2' = int t * int e - int t * int e'] (mod order \<G>)"
-    by (smt cong_diff_iff_cong_0 cong_sym)
+    by (smt (z3) cong_diff_iff_cong_0 cong_sym)
   hence "[int z1 + int x * int z1' - int z2 - int x * int z2' = int t * (e - e')] (mod order \<G>)"
     using int_distrib(4) assms by (simp add: of_nat_diff)
   hence "[(int z1 + int x * int z1' - int z2 - int x * int z2') * fst (bezw (e - e') (order \<G>)) = int t * (e - e') * fst (bezw (e - e') (order \<G>))] (mod order \<G>)"
@@ -355,7 +355,7 @@ proof-
   hence "[int (fst z) + int x * int (snd z) + int t * int e' = int (fst z') + int x * int (snd z') + int t * int e] (mod order \<G>)"
     using cong_int_iff by force
   hence "[int (fst z) - int (fst z') + int x * int (snd z) - int x * int (snd z') =  int t * int e - int t  * int e'] (mod order \<G>)"
-    by (smt cong_diff_iff_cong_0)
+    by (smt (z3) cong_diff_iff_cong_0)
   hence "[int (fst z) - int (fst z') + int x * (int (snd z) - int (snd z')) =  int t * (int e -  int e')] (mod order \<G>)"
   proof -
     have "[int (fst z) + (int (x * snd z) - (int (fst z') + int (x * snd z'))) = int t * (int e - int e')] (mod int (order \<G>))"
@@ -386,7 +386,7 @@ proof-
             * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G> 
                =  int t * 1] (mod order \<G>)"
     using inverse gcd 
-    by (smt Num.of_nat_simps(5) Number_Theory_Aux.inverse cong_def mod_mult_right_eq more_arith_simps(6) of_nat_1)
+    by (smt (z3) Num.of_nat_simps(5) Number_Theory_Aux.inverse cong_def mod_mult_right_eq more_arith_simps(6) of_nat_1)
   hence "[((int (fst z) - int (fst z')) + (int x * (int (snd z) - int (snd z')))) 
             * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G> 
                = int t] (mod order \<G>)"
@@ -434,7 +434,7 @@ proof-
   hence "\<^bold>g [^] ((int (fst z) - int (fst z')) * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>) \<otimes> g' [^] ((((int (snd z) - int (snd z'))) 
             * fst (bezw ((e mod order \<G> - e' mod order \<G>) mod order \<G>) (order \<G>)) mod order \<G>))
                = \<^bold>g [^] t"
-    by (smt g'_def cyclic_group.generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) okamoto_axioms okamoto_def pow_generator_mod_int)
+    by (smt (z3) g'_def cyclic_group.generator_closed int_pow_int int_pow_pow mod_mult_right_eq more_arith_simps(11) okamoto_axioms okamoto_def pow_generator_mod_int)
   thus ?thesis using t by simp
 qed
 

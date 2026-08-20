@@ -162,7 +162,7 @@ proof (transfer)
   show "intersects_x_axis_cmat H1 = intersects_x_axis_cmat H2"
   proof-
     have "k \<noteq> 0 \<Longrightarrow> (Re A1)\<^sup>2 < (Re B1)\<^sup>2 \<longleftrightarrow> (k * Re A1)\<^sup>2 < (k * Re B1)\<^sup>2"
-      by (smt mult_strict_left_mono power2_eq_square semiring_normalization_rules(13) zero_less_power2)
+      by (smt (z3) mult_strict_left_mono power2_eq_square semiring_normalization_rules(13) zero_less_power2)
     thus ?thesis
       using * k
       by auto
@@ -284,7 +284,7 @@ proof-
         by (auto simp add: abs_if power2_eq_square)
       hence "abs x1 < 1 \<or> abs x2 < 1"
         using \<open>x1 * x2 = 1\<close>
-        by (smt mult_le_cancel_left1 mult_minus_right)
+        by (smt (z3) mult_le_cancel_left1 mult_minus_right)
       thus "\<exists>x \<in> unit_disc. x \<in> circline_set H \<inter> circline_set x_axis"
         using x_axis_intersection_equation[OF *(1-2), of x1]
         using x_axis_intersection_equation[OF *(1-2), of x2]
@@ -316,7 +316,7 @@ proof (transfer)
   show "intersects_y_axis_cmat H1 = intersects_y_axis_cmat H2"
   proof-
     have "k \<noteq> 0 \<Longrightarrow> (Re A1)\<^sup>2 < (Im B1)\<^sup>2 \<longleftrightarrow> (k * Re A1)\<^sup>2 < (k * Im B1)\<^sup>2"
-      by (smt mult_strict_left_mono power2_eq_square semiring_normalization_rules(13) zero_less_power2)
+      by (smt (z3) mult_strict_left_mono power2_eq_square semiring_normalization_rules(13) zero_less_power2)
     thus ?thesis
       using * k
       by auto
@@ -463,7 +463,7 @@ next
       using \<open>Re A \<noteq> 0\<close>
       by (subst real_sqrt_less_iff) auto
     also have "... =  sgn (Re B) * (Re B)"
-      by (smt mult_minus_right nonzero_eq_divide_eq real_sgn_eq real_sqrt_abs)
+      by (smt (z3) mult_minus_right nonzero_eq_divide_eq real_sgn_eq real_sqrt_abs)
     finally
     have 1: "sqrt((Re B)\<^sup>2 - (Re A)\<^sup>2) < sgn (Re B) * (Re B)"
       .
@@ -681,7 +681,7 @@ lemma intersects_x_axis_positive_intersects_x_axis [simp]:
   shows "intersects_x_axis H"
 proof-
   have "\<And> a aa. \<lbrakk> Re a \<noteq> 0; Re aa / Re a < - 1; \<not> (Re a)\<^sup>2 < (Re aa)\<^sup>2 \<rbrakk> \<Longrightarrow> aa = 0 \<and> a = 0"
-    by (smt less_divide_eq_1_pos one_less_power pos2 power2_minus power_divide zero_less_power2)
+    by (smt (z3) less_divide_eq_1_pos one_less_power pos2 power2_minus power_divide zero_less_power2)
   thus ?thesis
     using assms
     apply transfer
@@ -732,7 +732,7 @@ proof-
     using assms
     by (simp add: power_divide)
   hence "B/A > 1 \<or> B/A < -1"
-    by (smt one_power2 pos2 power2_minus power_0 power_strict_decreasing zero_power2)
+    by (smt (z3) one_power2 pos2 power2_minus power_0 power_strict_decreasing zero_power2)
   hence "-B / A > 0 \<longleftrightarrow> -B / A > 1"
     by auto
   ultimately
@@ -765,13 +765,13 @@ proof
       by auto
     have "(Re B)\<^sup>2 > (Re A)\<^sup>2"
       using **
-      by (smt divide_less_eq_1_neg divide_minus_left less_divide_eq_1_pos real_sqrt_abs real_sqrt_less_iff right_inverse_eq)
+      by (smt (z3) divide_less_eq_1_neg divide_minus_left less_divide_eq_1_pos real_sqrt_abs real_sqrt_less_iff right_inverse_eq)
     have "is_real A" "A \<noteq> 0"
       using hh hermitean_elems * \<open>Re A \<noteq> 0\<close> complex.expand[of A 0]
       by auto
     have "(cmod B)\<^sup>2 > (cmod A)\<^sup>2"
       using \<open>(Re B)\<^sup>2 > (Re A)\<^sup>2\<close> \<open>is_real A\<close>
-      by (smt cmod_power2 power2_less_0 zero_power2)
+      by (smt (z3) cmod_power2 power2_less_0 zero_power2)
     have ***: "0 < (- Re B + sgn (Re B) * sqrt ((Re B)\<^sup>2 - (Re A)\<^sup>2)) / Re A"
       using calc_intersect_x_axis_positive_lemma[of "Re A" "Re B"] ** \<open>(Re B)\<^sup>2 > (Re A)\<^sup>2\<close>
       by auto
@@ -979,7 +979,7 @@ lemma calc_x_axis_intersection_fun_mono:
 proof-
   have *: "sqrt(x1\<^sup>2 - 1) + sqrt(x2\<^sup>2 - 1) > 0"
     using assms
-    by (smt one_less_power pos2 real_sqrt_gt_zero)
+    by (smt (z3) one_less_power pos2 real_sqrt_gt_zero)
 
   have "sqrt(x1\<^sup>2 - 1) < x1"
     using real_sqrt_less_iff[of "x1\<^sup>2 - 1" "x1\<^sup>2"] \<open>x1 > 1\<close>
@@ -1021,7 +1021,7 @@ proof-
     case True
     hence "a1 < 0"
       using assms
-      by (smt divide_neg_pos)
+      by (smt (z3) divide_neg_pos)
     thus ?thesis
       using \<open>b1 > 0\<close> \<open>a1 < 0\<close>
       by (simp add: real_sqrt_divide field_simps)
@@ -1032,7 +1032,7 @@ proof-
       by (cases "b1 = 0") auto
     hence "a1 > 0"
       using assms
-      by (smt divide_pos_neg)
+      by (smt (z3) divide_pos_neg)
     thus ?thesis
       using \<open>b1 < 0\<close> \<open>a1 > 0\<close>
       by (simp add: real_sqrt_divide field_simps)
@@ -1045,7 +1045,7 @@ proof-
     case True
     hence "a2 < 0"
       using assms
-      by (smt divide_neg_pos)
+      by (smt (z3) divide_neg_pos)
     thus ?thesis
       using \<open>b2 > 0\<close> \<open>a2 < 0\<close>
       by (simp add: real_sqrt_divide field_simps)
@@ -1056,7 +1056,7 @@ proof-
       by (cases "b2 = 0") auto
     hence "a2 > 0"
       using assms
-      by (smt divide_pos_neg)
+      by (smt (z3) divide_pos_neg)
     thus ?thesis
       using \<open>b2 < 0\<close> \<open>a2 > 0\<close>
       by (simp add: real_sqrt_divide field_simps)

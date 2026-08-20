@@ -1201,7 +1201,7 @@ proof-
   proof fix x assume "x \<in> S"
     then have "(to_R1 x) \<in> carrier (Q\<^sub>p\<^bsup>1\<^esup>)"
       using assms
-      by (smt Collect_mono_iff gen_boolean_algebra_subset image_def is_semialgebraicE mem_Collect_eq semialg_sets_def Qp.to_R1_carrier)
+      by (smt (z3) Collect_mono_iff gen_boolean_algebra_subset image_def is_semialgebraicE mem_Collect_eq semialg_sets_def Qp.to_R1_carrier)
     then show "x \<in> carrier Q\<^sub>p"
       using assms
       by (metis nth_Cons_0 Qp.to_R_pow_closed)
@@ -1243,7 +1243,7 @@ lemma diff_is_univ_semialgebraic:
   shows "is_univ_semialgebraic (A - B)"
   using assms diff_is_semialgebraic[of 1 "((\<lambda>a. [a]) ` A)" "((\<lambda>a. [a]) ` B)"]
   unfolding is_univ_semialgebraic_def
-  by (smt Diff_subset subset_trans Qp.to_R1_diff)
+  by (smt (z3) Diff_subset subset_trans Qp.to_R1_diff)
 
 lemma finite_is_univ_semialgebraic:
   assumes "A \<subseteq> carrier Q\<^sub>p"
@@ -1358,9 +1358,9 @@ proof-
     using assms(3) assms(6) b0_def val_mult p_nonzero p_intpow_closed(1)
     by (metis Qp.m_lcomm Qp.one_closed Qp.r_one Qp_int_pow_nonzero p_intpow_inv'' val_fract val_p_int_pow)
   have A: "val a \<ge> k"
-    using k_def val_ord assms by (smt eint_ord_simps(1) not_nonzero_Qp)
+    using k_def val_ord assms by (smt (z3) eint_ord_simps(1) not_nonzero_Qp)
   have B: "val b \<ge> k"
-    using  k_def val_ord assms by (smt eint_ord_simps(1) not_nonzero_Qp)
+    using  k_def val_ord assms by (smt (z3) eint_ord_simps(1) not_nonzero_Qp)
   then have 2: "val a0 \<ge> 0"
     using A 1 assms k_def eint_minus_ineq eint_ord_code(5) local.eint_minus_ineq' by presburger
   have 3: "val a0 \<le> val b0"
@@ -1421,7 +1421,7 @@ proof-
         val_ring_ord_criterion  assms inc_of_nonzero inc_of_prod inc_of_sum inc_pow
         m_closed nat_inc_closed nat_pow_closed  not_nonzero_Zp
         numeral_2_eq_2 p_natpow_inc to_Zp_closed to_Zp_inc
-    by (smt Qp.nonzero_closed Qp.nonzero_memE(2) Zp.monom_term_car p_pow_nonzero(1) pow_closed to_Zp_zero zero_in_val_ring)
+    by (smt (z3) Qp.nonzero_closed Qp.nonzero_memE(2) Zp.monom_term_car p_pow_nonzero(1) pow_closed to_Zp_zero zero_in_val_ring)
   then have "(\<iota> y) \<in> carrier Q\<^sub>p \<and> \<one> \<oplus>\<^bsub>Q\<^sub>p\<^esub> (\<pp>[^](3::nat))\<otimes> (a[^](4::nat)) = ((\<iota> y)[^](2::nat))"
     using y_def inc_closed by blast
   then show ?thesis
@@ -1538,7 +1538,7 @@ next
             by (metis "1" \<open>y \<in> carrier Q\<^sub>p \<and> (a[^]2) \<oplus>\<^bsub>Q\<^sub>p\<^esub> \<pp> \<otimes> (b[^]2) = (y[^]2)\<close>)
           have A1: "(y[^](2::nat)) \<in> nonzero Q\<^sub>p"
             using y_def 0 1
-            by (smt F False Qp.nonzero_closed Qp_nat_pow_nonzero assms(2) assms(3) diff_ord_nonzero
+            by (smt (z3) F False Qp.nonzero_closed Qp_nat_pow_nonzero assms(2) assms(3) diff_ord_nonzero
                 local.monom_term_car not_nonzero_Qp p_nonzero p_times_square_not_square')
           have A2: "y \<in> nonzero Q\<^sub>p"
             using A1 Qp_nonzero_nat_pow pos2 y_def by blast
@@ -1581,7 +1581,7 @@ next
         by blast
       then have "(\<pp>[^](3::nat))\<otimes> (a[^](4::nat)) = (y[^](2::nat)) \<ominus>\<^bsub>Q\<^sub>p\<^esub> \<one>"
         using Qp.ring_simprules
-        by (smt Qp.nat_pow_closed assms p_natpow_closed(1))
+        by (smt (z3) Qp.nat_pow_closed assms p_natpow_closed(1))
       then have "ord ((\<pp>[^](3::nat))\<otimes> (a[^](4::nat))) = ord ((y[^](2::nat)) \<ominus>\<^bsub>Q\<^sub>p\<^esub> \<one>)"
         by presburger
       then have "3 + ord (a[^](4::nat)) = ord ((y[^](2::nat)) \<ominus>\<^bsub>Q\<^sub>p\<^esub> \<one>)"
@@ -1825,10 +1825,10 @@ proof
             then have "y = \<zero>"
               using y_def  Qp.nonzero_memI by blast
             then have "b [^] 4 \<oplus> \<pp> [^] 3 \<otimes> a [^] 4 = \<zero>"
-              by (smt "0" "1" A F0 False Qp.integral Qp.nat_pow_closed Qp.nonzero_closed
+              by (smt (z3) "0" "1" A F0 False Qp.integral Qp.nat_pow_closed Qp.nonzero_closed
                 Qp.nonzero_mult_closed Qp.nonzero_pow_nonzero Qp.pow_zero assms(1) diff_ord_nonzero not_nonzero_Qp p_nonzero pos2 y_def)
             then show False
-              by (smt "0" "1" A F0 F1 Qp.integral Qp.nat_pow_closed Qp.nonzero_mult_closed
+              by (smt (z3) "0" "1" A F0 F1 Qp.integral Qp.nat_pow_closed Qp.nonzero_mult_closed
                 Qp_nat_pow_nonzero assms(1) diff_ord_nonzero not_nonzero_Qp p_natpow_closed(1) p_nonzero y_def)
           qed
           then have 31: "ord ((b[^](4::nat)) \<oplus>\<^bsub>Q\<^sub>p\<^esub> (\<pp>[^](3::nat))\<otimes> (a[^](4::nat))) = 2* ord y"
@@ -1935,7 +1935,7 @@ lemma pair_id:
   assumes "length as = 2"
   shows "as = [as!0, as!1]"
   using assms
-  by (smt One_nat_def diff_Suc_1 length_Cons less_Suc0 less_SucE list.size(3)
+  by (smt (z3) One_nat_def diff_Suc_1 length_Cons less_Suc0 less_SucE list.size(3)
       nth_Cons' nth_equalityI numeral_2_eq_2)
 
 lemma Qp_val_semialg:
@@ -1961,7 +1961,7 @@ lemma val_relation_setE:
   assumes "as \<in> val_relation_set"
   shows "as!0 \<in> carrier Q\<^sub>p \<and> as!1 \<in> carrier Q\<^sub>p \<and> as = [as!0,as!1] \<and> val (as!1) \<le> val (as!0)"
   using assms  unfolding val_relation_set_def
-  by (smt cartesian_power_car_memE cartesian_power_car_memE' mem_Collect_eq one_less_numeral_iff pair_id pos2 semiring_norm(76))
+  by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' mem_Collect_eq one_less_numeral_iff pair_id pos2 semiring_norm(76))
 
 lemma val_relation_setI:
   assumes "as!0 \<in> carrier Q\<^sub>p"
@@ -1993,7 +1993,7 @@ proof
     assume "as \<in> basic_semialg_set 2 (2::nat) Qp_val_poly"
     then show "as \<in> val_relation_set"
       using val_relation_setI[of as]
-      by (smt cartesian_power_car_memE cartesian_power_car_memE' mem_Collect_eq
+      by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' mem_Collect_eq
           one_less_numeral_iff Qp_val_semialg basic_semialg_set_def
           val_relation_set_def padic_fields_axioms pair_id pos2 semiring_norm(76))
   qed
@@ -2235,7 +2235,7 @@ proof
       by (metis "0" "1" One_nat_def nth_Cons_0 nth_Cons_Suc)
     have 3: "is_poly_tuple n [g, f]"
       using assms
-      by (smt One_nat_def diff_Suc_1 Qp_is_poly_tupleI length_Suc_conv less_SucE less_one list.size(3) nth_Cons')
+      by (smt (z3) One_nat_def diff_Suc_1 Qp_is_poly_tupleI length_Suc_conv less_SucE less_one list.size(3) nth_Cons')
     then show "x \<in> poly_map n [g,f]  \<inverse>\<^bsub>n\<^esub> val_relation_set"
       using 0 1 2
       by blast
@@ -2693,7 +2693,7 @@ proof-
         by (metis Qp.to_R1_to_R Qp.to_R_pow_closed)
       have "(poly_map 1 [from_Qp_x P0] x) = [(Qp_ev (from_Qp_x P0) [y])]"
         unfolding poly_map_def poly_tuple_eval_def using x_closed
-        by (smt "20" One_nat_def length_Suc_conv list.size(3) nth_Cons_0 nth_map
+        by (smt (z3) "20" One_nat_def length_Suc_conv list.size(3) nth_Cons_0 nth_map
             poly_tuple_eval_closed poly_tuple_eval_def restrict_apply' Qp.to_R1_to_R y_def zero_less_Suc)
       then have "(poly_map 1 [from_Qp_x P0] x) = [P0 \<bullet> y]"
         by (metis "0" Qp_x_Qp_poly_eval y_def)
@@ -3116,7 +3116,7 @@ proof-
       using 0 1 2 3 cartesian_product_intersection[of "(basic_semialg_set n k a)" Q\<^sub>p n
                                               "(carrier (Q\<^sub>p\<^bsup>m\<^esup>))" m
                                               "(carrier (Q\<^sub>p\<^bsup>n\<^esup>))" "(basic_semialg_set m l b)"]
-      by (smt Collect_cong inf.absorb_iff1 inf.absorb_iff2)
+      by (smt (z3) Collect_cong inf.absorb_iff1 inf.absorb_iff2)
   qed
   then show ?thesis
     using Qp_times_basic_semialg_left_is_semialgebraic
@@ -3400,7 +3400,7 @@ next
     proof
       assume B: "ac m u = 1 \<and> val u = 0"
       then have 0: "val u = val \<one>"
-        by (smt A ac_def not_nonzero_Qp val_one val_ord zero_eint_def)
+        by (smt (z3) A ac_def not_nonzero_Qp val_one val_ord zero_eint_def)
       have 1: "ac m u = ac m \<one>"
         by (metis B Qp.one_nonzero ac_p ac_p_int_pow_factor angular_component_factors_x angular_component_p inc_of_one m_pos p_nonzero)
       have 2: "u \<in> nonzero Q\<^sub>p"
@@ -3589,7 +3589,7 @@ proof-
     using assms nth_power_fact[of n]
     by (metis less_imp_le_nat less_one linorder_neqE_nat nat_le_linear zero_less_iff_neq_zero)
   then have  m_def: "m > 0 \<and> ( \<forall> u \<in> carrier Q\<^sub>p. ac m u = 1 \<and> ord u = 0 \<longrightarrow> u \<in> P_set n)"
-    by (smt nonzero_ac_val_ord zero_eint_def)
+    by (smt (z3) nonzero_ac_val_ord zero_eint_def)
   have  "\<forall>x y. x \<in> nonzero Q\<^sub>p \<and> y \<in> nonzero Q\<^sub>p \<and> ac m x = ac m y \<and> ord x = ord y \<longrightarrow> pow_res n x = pow_res n y"
   proof
     fix x
@@ -3608,7 +3608,7 @@ proof-
           by (metis Qp.nonzero_closed Qp.nonzero_mult_closed local.fract_cancel_right nonzero_inverse_Qp not_nonzero_Qp zero_fract)
         have 3: "(x \<div> y) \<in> P_set n"
           using m_def 0 1 2 nonzero_def
-          by (smt Qp.nonzero_closed)
+          by (smt (z3) Qp.nonzero_closed)
         then obtain b where b_def: "b \<in> carrier Q\<^sub>p \<and> (b[^]n) = (x \<div> y)"
           using P_set_def
           by blast
@@ -4059,7 +4059,7 @@ proof-
     using assms ord_Zp_mult Zp.Units_nonzero zero_not_one
     by (metis Zp.zero_not_one)
   then show ?thesis
-    by (smt Zp.Units_closed Zp.Units_r_inv Zp.integral_iff Zp.nonzero_closed \<open>inv\<^bsub>Z\<^sub>p\<^esub> a \<in> nonzero Z\<^sub>p\<close> assms ord_Zp_one ord_pos)
+    by (smt (z3) Zp.Units_closed Zp.Units_r_inv Zp.integral_iff Zp.nonzero_closed \<open>inv\<^bsub>Z\<^sub>p\<^esub> a \<in> nonzero Z\<^sub>p\<close> assms ord_Zp_one ord_pos)
 qed
 
 lemma pow_res_nth_pow:
@@ -4466,7 +4466,7 @@ proof-
     using assms(1) y_def by blast
   have "(SOME x. x \<in> (c \<inter> \<O>\<^sub>p)) \<in> (c \<inter> \<O>\<^sub>p)"
     using P tfl_some
-    by (smt Int_def someI_ex)
+    by (smt (z3) Int_def someI_ex)
   then have 2: "x \<in> c"
     using c_def by blast
   thus "x \<in> nonzero Q\<^sub>p"
@@ -4609,7 +4609,7 @@ lemma pow_res_nat_pow:
   shows "pow_res n (a[^](k::nat)) = pow_res n (b[^]k)"
   apply(induction k)
   using assms apply (metis Group.nat_pow_0)
-  using assms pow_res_mult by (smt Qp.nat_pow_Suc2 Qp.nat_pow_closed)
+  using assms pow_res_mult by (smt (z3) Qp.nat_pow_Suc2 Qp.nat_pow_closed)
 
 lemma pow_res_mult':
   assumes "n > 0"
@@ -4807,7 +4807,7 @@ next
     using F_def by blast
   have 1: "finite F"
     using 0 False nat_mono[of 1 n] nat_numeral[] pow_res_classes_finite[of "nat n"] rev_finite_subset
-    by (smt assms nat_one_as_int)
+    by (smt (z3) assms nat_one_as_int)
   have 2: "are_univ_semialgebraic F"
     apply(rule are_univ_semialgebraicI) using 0 pow_res_classes_are_univ_semialgebraic
     by (metis (mono_tags) are_univ_semialgebraicE are_univ_semialgebraic_def assms  nat_mono nat_numeral subset_iff)
@@ -4823,7 +4823,7 @@ next
         using A ord_congruence_set_memE(1) by blast
       have 0: "pow_res (nat n) x \<in> F"
         using A pow_res_classes_def F_def
-        by (smt nonzero_def assms mem_Collect_eq nat_0_le ord_congruence_set_memE(1) pow_res_ord_cong)
+        by (smt (z3) nonzero_def assms mem_Collect_eq nat_0_le ord_congruence_set_memE(1) pow_res_ord_cong)
       have 1: "x \<in> pow_res (nat n) x" using False x_nonzero assms pow_res_refl[of x "nat n"]
         using Qp.nonzero_closed by blast
       show "x \<in> \<Union> F"
@@ -4980,7 +4980,7 @@ proof-
         using assms(3) by blast
       then have "pow_res n x \<in> F"
         using A assms(2) F_def pow_res_classes_def
-        by (smt mem_Collect_eq subsetD)
+        by (smt (z3) mem_Collect_eq subsetD)
       then have "pow_res n x \<subseteq> \<Union> F"
         by blast
       then show "x \<in> \<Union> F"
@@ -5022,7 +5022,7 @@ proof(cases "n = 1 \<and> p = 2")
         qed
         have 15: "{0..(1::int)} = {0, (1::int)}"
           using atLeastAtMostPlus1_int_conv [of 0 "0::int"]
-          by (smt atLeastAtMost_singleton insert_commute)
+          by (smt (z3) atLeastAtMost_singleton insert_commute)
         have 2: "carrier (Zp_res_ring n) = {0,(1::int)}"
           using "1" "15"
           by blast
@@ -5074,11 +5074,11 @@ next
     have F01: "\<zero>\<^bsub>Zp_res_ring n\<^esub> \<in> carrier (Zp_res_ring n)"
       using assms(1) cring.cring_simprules(2) padic_integers.R_cring padic_integers_axioms by blast
     have F02: "card (carrier (Zp_res_ring n)) = p \<and> finite (carrier (Zp_res_ring n))"
-      by (smt F01 True nat_eq_iff2 p_res_ring_zero p_residue_ring_car_memE(1) power_one_right residue_ring_card)
+      by (smt (z3) F01 True nat_eq_iff2 p_res_ring_zero p_residue_ring_car_memE(1) power_one_right residue_ring_card)
     have F03: "\<zero>\<^bsub>residue_ring (p ^ n)\<^esub> \<in> carrier (residue_ring (p ^ n)) "
       using F01 by blast
     have F04: "int (card (carrier (residue_ring (p ^ n)))) \<ge> int (card {\<zero>\<^bsub>residue_ring (p ^ n)\<^esub>}) "
-      by (smt F02 F03 nat_int of_nat_0_le_iff of_nat_1 of_nat_power p_res_ring_0 p_res_ring_zero
+      by (smt (z3) F02 F03 nat_int of_nat_0_le_iff of_nat_1 of_nat_power p_res_ring_0 p_res_ring_zero
           p_residue_ring_car_memE(1) power_increasing power_one_right residue_ring_card)
     have "card (carrier (residue_ring (p ^ n))) - 1 = p - 1"
       using F02 prime
@@ -5358,7 +5358,7 @@ proof(rule are_univ_semialgebraicI)
   have "(0::int) \<notin>(Units (Zp_res_ring n))"
     apply(rule ccontr)
     using 0 assms residues.cring[of "p ^ n"] unfolding residues_def
-      by (smt less_one not_gr_zero power_le_imp_le_exp power_less_imp_less_exp residue_UnitsE)
+      by (smt (z3) less_one not_gr_zero power_le_imp_le_exp power_less_imp_less_exp residue_UnitsE)
   fix x
   assume A: "x \<in> val_ring_constant_ac_sets n"
   then obtain k where k_def: "x = val_ring_constant_ac_set n k \<and> k \<in> Units (Zp_res_ring n)"
@@ -5398,7 +5398,7 @@ proof
          by (simp add: ab_def)
        have 2: "a \<in> {x \<in> carrier Q\<^sub>p. x \<noteq> \<zero> \<and> ac n x = k}"
          using ab_def nonzero_def
-         by (smt mem_Collect_eq)
+         by (smt (z3) mem_Collect_eq)
        have 3: "b \<in>  {a \<in> \<O>\<^sub>p. val a = 0 \<and> ac n a = k}"
          using ab_def
          by blast
@@ -5414,7 +5414,7 @@ proof
       using assms
       by (metis (no_types, lifting) ac_cong_set_def mem_Collect_eq subsetI Qp.to_R1_car_subset)
     have 1: "((\<lambda>a. [a]) ` val_ring_constant_ac_set n k) \<subseteq> carrier (Q\<^sub>p\<^bsup>1\<^esup>)"
-      by (smt val_ring_memE mem_Collect_eq subsetI Qp.to_R1_carrier Qp.to_R1_subset val_ring_constant_ac_set_def)
+      by (smt (z3) val_ring_memE mem_Collect_eq subsetI Qp.to_R1_carrier Qp.to_R1_subset val_ring_constant_ac_set_def)
     assume A: "x \<in> cartesian_product ((\<lambda>a. [a]) ` ac_cong_set n k) ((\<lambda>a. [a]) ` val_ring_constant_ac_set n k)"
     then have "length x = 2"
       using 0 1 A cartesian_product_closed[of "((\<lambda>a. [a]) ` ac_cong_set n k)" Q\<^sub>p 1 "((\<lambda>a. [a]) ` val_ring_constant_ac_set n k)" 1]
@@ -5469,10 +5469,10 @@ proof
   proof fix x assume A: "x \<in> ac_cong_set3 n"
     then have 0: "x \<in> (ac_cong_set2 n (ac n (x!0)))"
       unfolding ac_cong_set2_def ac_cong_set3_def
-      by (smt mem_Collect_eq nth_Cons_0)
+      by (smt (z3) mem_Collect_eq nth_Cons_0)
     have 1: "(ac n (x!0)) \<in> Units (Zp_res_ring n)"
       using A unfolding ac_cong_set3_def
-      by (smt ac_units assms mem_Collect_eq nth_Cons_0)
+      by (smt (z3) ac_units assms mem_Collect_eq nth_Cons_0)
     then show "x \<in> \<Union> (ac_cong_set2 n ` Units (Zp_res_ring n))"
       using 0
       by blast
@@ -5517,7 +5517,7 @@ proof
     then show "x \<in> ac_cong_set3 n"
       unfolding ac_cong_set3_def
       using k_def unfolding ac_cong_set2_def
-      by (smt mem_Collect_eq)
+      by (smt (z3) mem_Collect_eq)
   qed
 qed
 
@@ -5560,7 +5560,7 @@ lemma poly_tuple_pullback_eq_poly_map_vimage:
   shows "poly_map n fs  \<inverse>\<^bsub>n\<^esub> S = poly_tuple_pullback n S fs"
   unfolding poly_map_def poly_tuple_pullback_def evimage_def restrict_def
   using assms
-  by (smt vimage_inter_cong)
+  by (smt (z3) vimage_inter_cong)
 
 lemma permutation_is_semialgebraic:
   assumes "is_semialgebraic n S"
@@ -5631,7 +5631,7 @@ proof-
         by smt
         show "S \<subseteq> permute_list (fun_inv \<sigma>) ` permute_list \<sigma> ` S"
         using 0 assms permute_list_compose_inv[of \<sigma>]
-        by (smt "1" image_iff subset_eq)
+        by (smt (z3) "1" image_iff subset_eq)
     qed
   qed
   then show ?thesis using permutation_is_semialgebraic
@@ -5667,7 +5667,7 @@ definition flip where
 lemma flip_permutes:
 "flip permutes {0,1}"
  unfolding permutes_def flip_def
- by (smt mem_simps(1))
+ by (smt (z3) mem_simps(1))
 
 lemma flip_eval:
 "flip 0 = 1"
@@ -5688,7 +5688,7 @@ proof-
   proof- fix i::nat assume A: "i < 2"
     show "permute_list flip x ! i = [x!1, x!0] ! i"
       using 0 unfolding permute_list_def
-      by (smt flip_eval(1) flip_eval(2) length_Cons length_greater_0_conv list.simps(8) map_upt_Suc numeral_nat(7) upt_rec)
+      by (smt (z3) flip_eval(1) flip_eval(2) length_Cons length_greater_0_conv list.simps(8) map_upt_Suc numeral_nat(7) upt_rec)
   qed
   have "\<And>i. i < length x \<Longrightarrow> permute_list flip x ! i = [x!1, x!0] ! i"
   proof-
@@ -5866,7 +5866,7 @@ proof-
           proof- fix i::nat assume  a: "i < 2" show "a ! i = take 2 x ! i "
               apply(cases "i = 0")
                apply (metis a_def nth_Cons_0 nth_take zero_less_numeral)
-              by (smt "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
+              by (smt (z3) "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
           qed
           have 1: "a \<in> carrier (Q\<^sub>p\<^bsup>2\<^esup>)"
             apply(rule cartesian_power_car_memI')
@@ -5908,7 +5908,7 @@ proof-
           proof- fix i::nat assume  a: "i < 2" show "a ! i = take 2 x ! i "
               apply(cases "i = 0")
                apply (metis a_def nth_Cons_0 nth_take zero_less_numeral)
-              by (smt "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
+              by (smt (z3) "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
           qed
         show " x \<in> cartesian_product reverse_val_relation_set (carrier (Q\<^sub>p\<^bsup>1\<^esup>))"
           apply(rule cartesian_product_memI[of _ Q\<^sub>p 2 _ 1])
@@ -6129,7 +6129,7 @@ proof-
           proof- fix i::nat assume  a: "i < 2" show "a ! i = take 2 x ! i "
               apply(cases "i = 0")
                apply (metis a_def nth_Cons_0 nth_take zero_less_numeral)
-              by (smt "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
+              by (smt (z3) "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
           qed
            have 1: "a \<in> carrier (Q\<^sub>p\<^bsup>2\<^esup>)"
              using a_def 0  A unfolding mem_Collect_eq
@@ -6168,7 +6168,7 @@ proof-
           proof- fix i::nat assume  a: "i < 2" show "a ! i = take 2 x ! i "
               apply(cases "i = 0")
                apply (metis a_def nth_Cons_0 nth_take zero_less_numeral)
-              by (smt "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
+              by (smt (z3) "0" \<open>length (take 2 x) = min (length x) 2\<close> a_def linorder_neqE_nat min.commute min.strict_order_iff nth_take numeral_eq_iff one_less_numeral_iff pair_id pos2 rel_simps(22) rel_simps(48) rel_simps(9) semiring_norm(81))
           qed
         show " x \<in> cartesian_product reverse_val_relation_set (carrier (Q\<^sub>p\<^bsup>1\<^esup>))"
           apply(rule cartesian_product_memI[of _ Q\<^sub>p 2 _ 1])
@@ -6865,7 +6865,7 @@ lemma graph_mem_closed:
 proof(rule cartesian_power_car_memI')
   show "length x = m + 1"
     using assms graph_memE[of f m x]
-    by (smt Groups.add_ac(2) cartesian_power_car_memE fun_graph_def length_append_singleton mem_Collect_eq plus_1_eq_Suc)
+    by (smt (z3) Groups.add_ac(2) cartesian_power_car_memE fun_graph_def length_append_singleton mem_Collect_eq plus_1_eq_Suc)
   show "\<And>i. i < m + 1 \<Longrightarrow> x ! i \<in> carrier Q\<^sub>p"
   proof- fix i assume A: "i < m + 1"
     then show "x ! i \<in> carrier Q\<^sub>p"
@@ -7023,7 +7023,7 @@ proof-
     next
       case False
       then show ?thesis
-        by (smt A add.commute add.right_neutral add_diff_cancel_right' add_gr_0
+        by (smt (z3) A add.commute add.right_neutral add_diff_cancel_right' add_gr_0
             add_less_cancel_left append.simps(1) append.simps(2) assms last_to_first_def
             last_to_first_permutes less_SucE less_numeral_extra(1) list.size(3) list.size(4)
             nth_append permute_list_nth plus_1_eq_Suc)
@@ -7078,7 +7078,7 @@ lemma graph_swapE:
 proof-
   obtain y where y_def: "y \<in> graph n f \<and> x = permute_list (first_to_last (n+1)) y"
     using assms graph_swap_def
-    by (smt image_def mem_Collect_eq)
+    by (smt (z3) image_def mem_Collect_eq)
   then have "take n y \<in> carrier (Q\<^sub>p\<^bsup>n\<^esup>)"
     using assms(2) graph_memE(3)
     by blast
@@ -7108,7 +7108,7 @@ proof
       by presburger
     then have "b = f (take n x)"
       using 0
-      by (smt One_nat_def Qp.cring_axioms diagonal_def drop0 drop_Suc_Cons list.inject mem_Collect_eq take_Suc_Cons)
+      by (smt (z3) One_nat_def Qp.cring_axioms diagonal_def drop0 drop_Suc_Cons list.inject mem_Collect_eq take_Suc_Cons)
     then have "x = (take n x)@[f (take n x)]"
       by (metis append_take_drop_id b_def)
     then show "x \<in> graph n f" using graph_memI[of f n x]
@@ -7181,7 +7181,7 @@ lemma map_by_var_list_segment:
   using assms  eval_pvar[of  _ n as] Qp.cring_axioms length_map add.commute
         length_upt less_diff_conv less_imp_add_positive nth_map nth_upt
         trans_less_add2
-  by (smt le_add_diff_inverse2)
+  by (smt (z3) le_add_diff_inverse2)
 
 lemma map_by_var_list_segment_to_length:
   assumes "as \<in> carrier (Q\<^sub>p\<^bsup>n\<^esup>)"
@@ -7192,7 +7192,7 @@ lemma map_by_var_list_segment_to_length:
   using assms map_by_var_list_segment[of as n n i] list_segment_drop[of i as]  cartesian_power_car_memE[of as Q\<^sub>p n]
         map_nth[of ] nth_drop nth_map[of _ "[i..<n]" "(pvar Q\<^sub>p)" ] nth_map[of _ "map (pvar Q\<^sub>p) [i..<n]" "eval_at_point Q\<^sub>p as"]
   unfolding poly_map_def poly_tuple_eval_def var_list_segment_def restrict_def list_segment_def
-  by (smt add.commute add_eq_self_zero drop_map drop_upt le_Suc_ex le_refl)
+  by (smt (z3) add.commute add_eq_self_zero drop_map drop_upt le_Suc_ex le_refl)
 
 lemma map_tail_by_var_list_segment:
   assumes "as \<in> carrier (Q\<^sub>p\<^bsup>n\<^esup>)"
@@ -7440,7 +7440,7 @@ proof-
       unfolding is_poly_tuple_def g_def
       apply(rule subsetI)
        using set_map[of "\<lambda>i. Qp.indexed_const (b ! i)" "[0..<n]"]  1 unfolding 0
-       by (smt image_iff)
+       by (smt (z3) image_iff)
   qed
   have 2: "is_poly_tuple m (f@g)"
     using 0 1 Qp_is_poly_tuple_append assms(3) by blast
@@ -7492,7 +7492,7 @@ proof-
         using 3 assms by blast
       then show " x \<in> poly_tuple_eval (f @ g) \<inverse>\<^bsub>m\<^esub> cartesian_product A {b}"
         using A cartesian_product_memE
-        by (smt Un_upper1 assms(1) assms(2) cartesian_product_memI' evimageI2 in_mono insert_is_Un mk_disjoint_insert singletonI)
+        by (smt (z3) Un_upper1 assms(1) assms(2) cartesian_product_memI' evimageI2 in_mono insert_is_Un mk_disjoint_insert singletonI)
     qed
     show "poly_tuple_eval (f @ g) \<inverse>\<^bsub>m\<^esub> cartesian_product A {b} \<subseteq> A"
     proof(rule subsetI) fix x assume A: "x \<in> (poly_tuple_eval (f @ g) \<inverse>\<^bsub>m\<^esub> cartesian_product A {b})"
@@ -7509,10 +7509,10 @@ proof-
   proof
     show "A \<subseteq> poly_map m (f @ g) \<inverse>\<^bsub>m\<^esub> cartesian_product A {b}"
       unfolding poly_map_def evimage_def restrict_def using 4
-      by (smt IntI assms(1) evimageD in_mono subsetI vimageI)
+      by (smt (z3) IntI assms(1) evimageD in_mono subsetI vimageI)
     show "poly_map m (f @ g) \<inverse>\<^bsub>m\<^esub> cartesian_product A {b} \<subseteq> A"
       unfolding poly_map_def evimage_def restrict_def using 4
-      by (smt Int_iff evimageI2 subsetI vimage_eq)
+      by (smt (z3) Int_iff evimageI2 subsetI vimage_eq)
   qed
   have 6: "length (f @ g) = m + n"
     unfolding f_def g_def by simp
@@ -7565,7 +7565,7 @@ proof
       apply(rule partial_pullback_memI)
       using "1" apply blast
       using yt_def 0
-      by (smt Cons_eq_appendI add.right_neutral local.partial_image_def partial_image_eq partial_pullback_memE(1) self_append_conv2 Qp.to_R1_closed)
+      by (smt (z3) Cons_eq_appendI add.right_neutral local.partial_image_def partial_image_eq partial_pullback_memE(1) self_append_conv2 Qp.to_R1_closed)
   qed
   show "partial_pullback m \<xi> 1 (cartesian_product S (carrier (Q\<^sub>p\<^bsup>1\<^esup>))) \<subseteq> cartesian_product (partial_pullback m \<xi> 0 S) (carrier (Q\<^sub>p\<^bsup>1\<^esup>))"
   proof(rule subsetI) fix x assume A: "x \<in> partial_pullback m \<xi> 1 (cartesian_product S (carrier (Q\<^sub>p\<^bsup>1\<^esup>)))"
@@ -7674,7 +7674,7 @@ proof-
           using 1 2 3 by simp
         show "\<And>i. i < length x \<Longrightarrow> x ! i = (b @ a) ! i"
           unfolding 3 using 1 2 4 5
-          by (smt "0" add.commute add_diff_inverse_nat f_def f_permutes length_append nat_add_left_cancel_less nth_append permute_list_nth)
+          by (smt (z3) "0" add.commute add_diff_inverse_nat f_def f_permutes length_append nat_add_left_cancel_less nth_append permute_list_nth)
       qed
       show "x \<in> cartesian_product B A" unfolding 7 using ab_def unfolding cartesian_product_def by blast
     qed
@@ -7706,7 +7706,7 @@ proof-
           using 1 2 3 by simp
         show "\<And>i. i < length x \<Longrightarrow> x ! i = (b @ a) ! i"
           unfolding 3 using 1 2 4 5
-          by (smt "0" add.commute add_diff_inverse_nat f_def f_permutes length_append nat_add_left_cancel_less nth_append permute_list_nth)
+          by (smt (z3) "0" add.commute add_diff_inverse_nat f_def f_permutes length_append nat_add_left_cancel_less nth_append permute_list_nth)
       qed
       show "y \<in> permute_list f ` cartesian_product A B"
         using ab_def 7 cartesian_product_memI'[of _ Q\<^sub>p] unfolding 0
@@ -7739,17 +7739,17 @@ proof
   show "cartesian_product A {[]} \<subseteq> A"
     apply(rule subsetI)
     unfolding cartesian_product_def
-    by (smt append_Nil2 empty_iff insert_iff mem_Collect_eq)
+    by (smt (z3) append_Nil2 empty_iff insert_iff mem_Collect_eq)
   show "A \<subseteq> cartesian_product A {[]}"
     apply(rule subsetI)
     unfolding cartesian_product_def
-    by (smt append_Nil2 empty_iff insert_iff mem_Collect_eq)
+    by (smt (z3) append_Nil2 empty_iff insert_iff mem_Collect_eq)
   show "cartesian_product {[]} A = A"
   proof
     show "cartesian_product {[]} A \<subseteq> A"
     apply(rule subsetI)
     unfolding cartesian_product_def
-    by (smt append_self_conv2 bex_empty insert_compr mem_Collect_eq)
+    by (smt (z3) append_self_conv2 bex_empty insert_compr mem_Collect_eq)
   show "A \<subseteq> cartesian_product {[]} A"
     apply(rule subsetI)
     unfolding cartesian_product_def
@@ -7855,7 +7855,7 @@ proof(rule equalityI)
                                                 "carrier (Q\<^sub>p\<^bsup>k - n\<^esup>)" "k - n" n]
         using le_add1 by blast
       then show P: "x \<in> carrier (Q\<^sub>p\<^bsup>k+m\<^esup>)"
-        by (smt A Nat.add_diff_assoc2 add.commute add_diff_cancel_left' assms(2) le_add1 less_imp_le_nat subsetD)
+        by (smt (z3) A Nat.add_diff_assoc2 add.commute add_diff_cancel_left' assms(2) le_add1 less_imp_le_nat subsetD)
       have "take n x @ drop (n + (k - n)) x \<in> partial_pullback n g m S"
         using 0 A split_cartesian_product_memE[of x "n + m" "k - n" n "partial_pullback n g m S" "carrier (Q\<^sub>p\<^bsup>k - n\<^esup>)" Q\<^sub>p]
              le_add1 by blast
@@ -7905,7 +7905,7 @@ lemma graph_formula:
   assumes "g \<in> carrier (Q\<^sub>p\<^bsup>n\<^esup>) \<rightarrow> carrier Q\<^sub>p"
   shows "graph n g = {as \<in> carrier (Q\<^sub>p\<^bsup>Suc n\<^esup>). g (take n as) = as!n}"
   using assms graph_memI fun_graph_def[of Q\<^sub>p n g]
-  by (smt Collect_cong Suc_eq_plus1 graph_memE(1) graph_mem_closed mem_Collect_eq)
+  by (smt (z3) Collect_cong Suc_eq_plus1 graph_memE(1) graph_mem_closed mem_Collect_eq)
 
 definition restricted_graph where
 "restricted_graph n g S = {as \<in> carrier (Q\<^sub>p\<^bsup>Suc n\<^esup>). take n as \<in> S \<and> g (take n as) = as!n }"
@@ -8067,7 +8067,7 @@ proof-
   qed
   then show ?thesis
     using take_compose_closed[of g n k] assms comp_apply[of g "take n"] graph_formula[of "g \<circ> (take n)" k]
-   by (smt Collect_cong Suc_eq_plus1)
+   by (smt (z3) Collect_cong Suc_eq_plus1)
 qed
 
 lemma graph_memI':
@@ -8076,7 +8076,7 @@ lemma graph_memI':
   assumes "g (take n a) = a!n"
   shows "a \<in> graph n g"
   using assms fun_graph_def[of Q\<^sub>p n g]
-  by (smt cartesian_power_car_memE eq_imp_le lessI mem_Collect_eq take_Suc_conv_app_nth take_all)
+  by (smt (z3) cartesian_power_car_memE eq_imp_le lessI mem_Collect_eq take_Suc_conv_app_nth take_all)
 
 lemma graph_memI'':
   assumes "a \<in> carrier (Q\<^sub>p\<^bsup>n\<^esup>)"
@@ -8263,7 +8263,7 @@ proof
           less_add_same_cancel1 nth_take take_add take_drop zero_less_Suc)
     have 2: " g (take n (take (n + 2) x)) = (take (n + 2) x) ! (n + 1)"
       using A
-      by (smt add.assoc add.commute append_same_eq append_take_drop_id less_add_same_cancel1
+      by (smt (z3) add.assoc add.commute append_same_eq append_take_drop_id less_add_same_cancel1
           less_numeral_extra(1) nth_take one_add_one take_add take_drop)
     then have 3: "take (n + 2) x \<in> double_graph n f g"
       unfolding double_graph_def
@@ -8326,10 +8326,10 @@ proof
       by (metis le_add1 min.absorb1)
     then have 5: "f (take n x) = x ! n"
       using 0 double_graph_def[of n f g] 3
-      by (smt Suc_1 less_add_same_cancel1 mem_Collect_eq nth_take zero_less_Suc)
+      by (smt (z3) Suc_1 less_add_same_cancel1 mem_Collect_eq nth_take zero_less_Suc)
     have 6: "g (take n x) = x ! (n + 1) "
       using 0 double_graph_def[of n f g] 3 take_take[of n "n+2" x]
-      by (smt Suc_1 \<open>take n x = take n (take (n + 2) x)\<close> add_Suc_right lessI mem_Collect_eq nth_take)
+      by (smt (z3) Suc_1 \<open>take n x = take n (take (n + 2) x)\<close> add_Suc_right lessI mem_Collect_eq nth_take)
     have 7: " h [f (take n x), g (take n x)] = x ! (n + 2)"
       using 4 A comp_apply
       by (metis "1" "5" "6")
@@ -8359,7 +8359,7 @@ proof-
     using assms
     by (metis append_eq_conv_conj cartesian_power_car_memE)
   then show ?thesis unfolding k_graph_def using assms
-    by (smt append_eq_conv_conj cartesian_power_car_memE cartesian_power_car_memI'' length_append local.function_tuple_eval_closed mem_Collect_eq)
+    by (smt (z3) append_eq_conv_conj cartesian_power_car_memE cartesian_power_car_memI'' length_append local.function_tuple_eval_closed mem_Collect_eq)
 qed
 
 text\<open>composing a function with a function tuple\<close>
@@ -8958,7 +8958,7 @@ proof(rule permutes_I)
         using False tp_1_def
         by (simp add: tp_1_def)
       then show ?thesis
-        by (smt A False \<open>\<And>x. x \<notin> {..<i + j} \<Longrightarrow> tp_1 i j x = x\<close>
+        by (smt (z3) A False \<open>\<And>x. x \<notin> {..<i + j} \<Longrightarrow> tp_1 i j x = x\<close>
             add.commute add_diff_inverse_nat add_left_imp_eq
             less_diff_conv2 not_less tp_1_def
             padic_fields_axioms)
@@ -9030,7 +9030,7 @@ proof-
         then have "(tp_1 i j x) = x"
           by (meson tp_1_def trans_less_add1)
         then show ?thesis
-          by (smt A C D E False add.commute add_diff_inverse_nat append.assoc
+          by (smt (z3) A C D E False add.commute add_diff_inverse_nat append.assoc
               length_append nth_append_length_plus permute_list_nth)
       qed
     qed
@@ -9085,7 +9085,7 @@ proof
       using c_def cartesian_power_drop x_closed by blast
     have B: "a@((f b)#c) \<in> S"
       using A twisted_partial_pullback_memE'
-      by (smt a_closed a_def add.commute append_take_drop_id b_closed
+      by (smt (z3) a_closed a_def add.commute append_take_drop_id b_closed
           b_def c_closed c_def drop_drop)
     have  "permute_list (fun_inv (twisting_permutation n)) (a@((f b)#c)) = (f b)#(a@c)"
        using assms twisting_permutation_action'[of a n "f b" c]
@@ -9153,7 +9153,7 @@ proof
       using  as_def
       by force
     have B: "(tw m n) y = a@b@c" using y_eq tw_def[of n m] tp_1_permutation_action
-      by (smt a_closed b_closed c_closed tw_def)
+      by (smt (z3) a_closed b_closed c_closed tw_def)
     then have "x = a@(b@c)"
       by (simp add: y_def)
     then have "twisted_partial_image n m f x =  a@((f b)# c)"
@@ -9190,7 +9190,7 @@ proof
     qed
     then show "x \<in> twisted_partial_pullback n m l f S"
       unfolding twisted_partial_pullback_def using D
-      by (smt \<open>x = a @ b @ c\<close> a_closed append.assoc append_eq_conv_conj b_closed
+      by (smt (z3) \<open>x = a @ b @ c\<close> a_closed append.assoc append_eq_conv_conj b_closed
           c_closed cartesian_power_car_memE cartesian_power_concat(1) length_append
           list.inject local.partial_image_def twisted_partial_image_def
           twisted_partial_pullback_def twisted_partial_pullback_memI)
@@ -9412,7 +9412,7 @@ proof-
   then show ?thesis using assms pullback_is_semialg[of "n + l" Fs]
     using poly_tuple_pullback_eq_poly_map_vimage
     unfolding restrict_def evimage_def Fs_def
-    by (smt "4" Ex_list_of_length Fs_def Ps_def Qs_def \<open>is_poly_tuple (n + l) Fs\<close> add.commute
+    by (smt (z3) "4" Ex_list_of_length Fs_def Ps_def Qs_def \<open>is_poly_tuple (n + l) Fs\<close> add.commute
         add_diff_cancel_left' append_assoc diff_zero is_semialgebraic_closed le_add2 length_append
         not_add_less1 not_gr_zero padic_fields.is_semialgebraicE padic_fields_axioms var_list_segment_length zero_le)
 qed
@@ -10132,7 +10132,7 @@ proof-
               by blast
             then have 0: "Qp_invert (take 1 x) # drop 1 x = inv (x!0) # drop 1 x"
               unfolding Qp_invert_def
-              by (smt One_nat_def lessI nth_take)
+              by (smt (z3) One_nat_def lessI nth_take)
             have "drop 1 x \<in> carrier (Q\<^sub>p\<^bsup>k\<^esup>)"
               using \<open>x \<in> carrier (Q\<^sub>p\<^bsup>1+k\<^esup>)\<close> cartesian_power_drop by blast
             obtain a where a_def: "a = (x!0)"
@@ -10214,7 +10214,7 @@ proof-
                 by (metis a_nz)
               have 39:"((inv a)[^]m) [^] \<^bsub>Q\<^sub>p\<^esub> n \<otimes> (c[^]n) = (eval_at_point Q\<^sub>p ((inv a) # b) P)"
                 using 2  38 monoid.nat_pow_pow[of Q\<^sub>p "inv a" ] N_def
-                by (smt "3" Qp_int_nat_pow_pow a_closed a_nz inv_in_frac(3) of_nat_0_le_iff pow_nat)
+                by (smt (z3) "3" Qp_int_nat_pow_pow a_closed a_nz inv_in_frac(3) of_nat_0_le_iff pow_nat)
               have 310:"((((inv a)[^]m) \<otimes> c)[^]n) = (eval_at_point Q\<^sub>p ((inv a) # b) P)"
               proof-
                 have AA: "(inv a)[^]m \<in> carrier Q\<^sub>p"
@@ -11299,12 +11299,12 @@ proof-
     proof fix x assume A: "x \<in> B\<^bsub>int \<alpha>\<^esub>[\<zero>]"
       then have 0: "val x \<ge> \<alpha>"
         using assms c_ballE[of x \<alpha> \<zero>]
-        by (smt Qp.minus_closed Qp.r_right_minus_eq Qp_diff_diff)
+        by (smt (z3) Qp.minus_closed Qp.r_right_minus_eq Qp_diff_diff)
       have 1: "to_Zp x \<in> carrier Z\<^sub>p"
         using A 0 assms c_ballE(1) to_Zp_closed by blast
       have 2: "x \<in> \<O>\<^sub>p"
         using 0 A val_ringI c_ballE
-        by (smt Q\<^sub>p_def Zp_def \<iota>_def eint_ord_simps(1) of_nat_0 of_nat_le_0_iff val_ring_ord_criterion padic_fields_axioms val_ord' zero_in_val_ring)
+        by (smt (z3) Q\<^sub>p_def Zp_def \<iota>_def eint_ord_simps(1) of_nat_0 of_nat_le_0_iff val_ring_ord_criterion padic_fields_axioms val_ord' zero_in_val_ring)
       then have "val_Zp (to_Zp  x) \<ge> \<alpha>"
         using 0 1 A assms c_ballE[of x \<alpha> \<zero>] to_Zp_val by presburger
       then have "to_Zp x \<alpha> = 0"
@@ -11394,7 +11394,7 @@ next
     by (metis lessI less_Suc_eq_0_disj)
   then have "val_Zp a < eint (int \<alpha>)"
     using below_val_Zp_zero[of a n]
-    by (smt False assms eint_ile eint_ord_simps(1) eint_ord_simps(2) zero_below_val_Zp)
+    by (smt (z3) False assms eint_ile eint_ord_simps(1) eint_ord_simps(2) zero_below_val_Zp)
   then show ?thesis
     using ball_is_univ_semialgebraic[of "\<iota> a" \<alpha>] Qp.zero_closed  Qp_cong_set_as_ball'[of a \<alpha>] assms
          inc_closed by presburger

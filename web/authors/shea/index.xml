@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Daniel Shea</title>
+    <link>https://isa-afp.org/authors/shea/</link>
+    <description>AFP entries of Daniel Shea</description><item>
+  <title>SAT is Not Solvable in Constant Time</title>
+  <link>https://isa-afp.org/entries/SAT_Not_Const_Time.html</link>
+  <pubDate>Thu, 26 Mar 2026 00:00:00 +0000</pubDate>
+  <description>SAT is Not Solvable in Constant Time in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Logic/Computability</category>
+</item>
+
+  </channel>
+</rss>

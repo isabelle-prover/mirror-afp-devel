@@ -9,8 +9,6 @@ theory Tree_Automata_Class_Instances_Impl
    First_Order_Terms.Term_Impl
 begin
 
-declare [[code_del_allowed]]
-
 derive linorder ta_rule
 derive (compare) ccompare "term"
 derive ceq ta_rule
@@ -194,7 +192,6 @@ fun cproper_interval_FSet_Lex_Wrapper :: "'a FSet_Lex_Wrapper option \<Rightarro
 | "cproper_interval_FSet_Lex_Wrapper (Some A) None \<longleftrightarrow> (\<exists> Z. sorted_list_of_fset (ex A) < sorted_list_of_fset (ex Z))"
 | "cproper_interval_FSet_Lex_Wrapper (Some A) (Some B) \<longleftrightarrow> (\<exists> Z. sorted_list_of_fset (ex A) < sorted_list_of_fset (ex Z) \<and>
     sorted_list_of_fset (ex Z) < sorted_list_of_fset (ex B))"
-declare cproper_interval_FSet_Lex_Wrapper.simps [code del]
 
 lemma lt_of_comp_sorted_list [simp]:
   "ID ccompare = Some f \<Longrightarrow> lt_of_comp f X Z \<longleftrightarrow> sorted_list_of_fset (ex X) < sorted_list_of_fset (ex Z)"

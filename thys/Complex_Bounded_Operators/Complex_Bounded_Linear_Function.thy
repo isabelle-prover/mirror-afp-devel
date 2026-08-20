@@ -145,10 +145,10 @@ proof-
         have "cspan basisB = UNIV"
           using basisB_def is_generator_set  by auto
         hence "v \<in> cspan basisB"
-          by (smt iso_tuple_UNIV_I)
+          by (smt (z3) iso_tuple_UNIV_I)
         hence "\<exists>t s. v = (\<Sum>a\<in>t. s a *\<^sub>C a) \<and> finite t \<and> t \<subseteq> basisB"
           using complex_vector.span_explicit
-          by (smt mem_Collect_eq)
+          by (smt (z3) mem_Collect_eq)
         then obtain t s where b1: "v = (\<Sum>a\<in>t. s a *\<^sub>C a)" and b2: "finite t" and b3: "t \<subseteq> basisB"
           by blast
         have "v \<bullet>\<^sub>C x = (\<Sum>a\<in>t. s a *\<^sub>C a) \<bullet>\<^sub>C x"
@@ -3551,7 +3551,7 @@ proof intro_classes
       by transfer metis
     thus "A \<in> cspan (set ?basis)"
       unfolding canonical_basis_cblinfun_def
-      by (smt complex_vector.span_base complex_vector.span_scale list.set_intros(1))
+      by (smt (z3) complex_vector.span_base complex_vector.span_scale list.set_intros(1))
   qed
   thus "cspan (set ?basis) = UNIV" by auto
 
@@ -4708,7 +4708,7 @@ proof transfer
       by (metis \<open>f t = t \<bullet>\<^sub>C t\<close> norm_eq_sqrt_cinner norm_ge_zero real_div_sqrt)
   qed
   ultimately have \<open>Sup {(norm (f x)) / (norm x)| x. True} = norm t\<close>
-    by (smt cSup_eq_maximum mem_Collect_eq)
+    by (smt (z3) cSup_eq_maximum mem_Collect_eq)
   moreover have \<open>Sup {(norm (f x)) / (norm x)| x. True} = (SUP x. (norm (f x)) / (norm x))\<close>
     by (simp add: full_SetCompr_eq)
   ultimately show \<open>onorm f = norm t\<close>
@@ -4865,7 +4865,7 @@ lemma cblinfun_extension_apply:
   assumes "cblinfun_extension_exists S f"
     and "v \<in> S"
   shows "(cblinfun_extension S f) *\<^sub>V v = f v"
-  by (smt assms cblinfun_extension_def cblinfun_extension_exists_def tfl_some)
+  by (smt (z3) assms cblinfun_extension_def cblinfun_extension_exists_def tfl_some)
 
 lemma
   fixes f :: \<open>'a::complex_normed_vector \<Rightarrow> 'b::cbanach\<close>

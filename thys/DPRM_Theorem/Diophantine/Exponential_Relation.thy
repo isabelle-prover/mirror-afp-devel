@@ -116,7 +116,7 @@ proof -
           apply (rule exI[of _ "ks!0"], auto) 
           subgoal by (simp add: power2_eq_square)
           subgoal apply (rule exI[of _ "ks!1"], auto)
-            by (smt int_ops(7) mult_Suc of_nat_Suc of_nat_add power2_eq_square zmod_int) 
+            by (smt (z3) int_ops(7) mult_Suc of_nat_Suc of_nat_add power2_eq_square zmod_int) 
           done
         done
     next
@@ -152,10 +152,10 @@ proof -
               using prems
               unfolding exp_equations_def pushed_def params_def 
               using push_list_def push_push bg3 Exp_Matrices.alpha_nonnegative apply simp_all
-              subgoal using push_list_def by (smt Exp_Matrices.alpha_strictly_increasing int_nat_eq 
+              subgoal using push_list_def by (smt (z3) Exp_Matrices.alpha_strictly_increasing int_nat_eq 
                     nat_int numeral_Bit0 numeral_One of_nat_1 of_nat_add of_nat_power plus_1_eq_Suc 
                      power2_eq_square)
-              subgoal using push_list_def apply auto by (smt One_nat_def Suc_1 Suc_less_eq 
+              subgoal using push_list_def apply auto by (smt (z3) One_nat_def Suc_1 Suc_less_eq 
                       int_nat_eq less_Suc_eq nat_int numeral_3_eq_3 of_nat_add of_nat_mult zmod_int)
             done
           qed

@@ -507,7 +507,8 @@ lemma restrict_index_override[simp]: "restrict_index (restrict_index X T) S = re
 lemma compatible_restrict_index:
   assumes "compatible X Y"
   shows "compatible (restrict_index X S) (restrict_index Y S)"
-  using assms unfolding compatible_def by (transfer, auto)
+  by (metis (no_types, lifting) ext assms compatibleI compatible_source compatible_target
+      restrict_index_index restrict_index_source restrict_index_target)
 
 lemma modification_restrict_index:
   assumes "modification X Y" "S \<subseteq> proc_index X"

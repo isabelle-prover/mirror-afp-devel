@@ -10,7 +10,7 @@ while getopts "t:r:p" OPT
 do
     case "$OPT" in
       r)
-        VERSION="$OPTARG"
+        AFP_VERSION="$OPTARG"
         ;;
       t)
         ISABELLE_TOOL="$OPTARG"

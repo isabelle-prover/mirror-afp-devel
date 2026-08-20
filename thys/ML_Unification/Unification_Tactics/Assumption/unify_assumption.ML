@@ -34,6 +34,8 @@ end
 
 signature UNIFY_ASSUMPTION =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Unify_Assumption_Args.args
 
@@ -64,7 +66,7 @@ sig
   val setup_method : string option -> local_theory -> local_theory
 end
 
-functor Unify_Assumption(A :
+functor Unify_Assumption_Functor(A :
   sig
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Unify_Assumption_Args.args
@@ -93,7 +95,7 @@ val map_unifier = map_args o PA.map_unifier
 
 fun unify_assumption_tac ctxt = UAA.unify_assumption_tac (get_args (Context.Proof ctxt)) ctxt
 
-val binding = Binding.make (FI.prefix_id "uassm", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_arg_entries =
   let

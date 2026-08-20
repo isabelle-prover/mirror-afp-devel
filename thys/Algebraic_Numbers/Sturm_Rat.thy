@@ -24,7 +24,7 @@ proof(cases "p = 0")
   then show ?thesis by auto
 next
   case False
-  have "poly p x = content p * poly (primitive_part p) x"
+  have "poly p x = Polynomial.content p * poly (primitive_part p) x"
     by (metis content_times_primitive_part poly_smult)
   also have "\<dots> = 0 \<longleftrightarrow> poly (primitive_part p) x = 0" by (simp add: False)
   finally show ?thesis by auto

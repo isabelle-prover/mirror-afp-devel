@@ -1,0 +1,10 @@
+chapter AFP
+
+session Detour_Calculus = Path_Automation +
+  options [timeout = 300]
+  sessions
+    Winding_Number_Eval
+  theories
+    Detour_Calculus
+  document_files
+    "root.tex"

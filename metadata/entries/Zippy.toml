@@ -42,6 +42,7 @@ email = "kappelmann_email"
 kappelmann = "kappelmann_email"
 
 [history]
+2026-06-03 = "Fixed try0 integration of the zip method: all search strategies are now tried."
 
 [extra]
 

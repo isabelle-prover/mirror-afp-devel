@@ -42,9 +42,9 @@ fun map_opt_simpset use_ugly_rules =
     Simplifier.add_cong @{thm if_cong}
     #> Simplifier.add_cong @{thm split_cong}
     #> Simplifier.add_cong @{thm HOL.conj_cong}
-    #> (fn ctxt => ctxt addsimps @{thms triv_ex_apply}) (* fixme: should already be handled by HOL.ex_simps?*)
+    #> Simplifier.add_simps @{thms triv_ex_apply} (* fixme: should already be handled by HOL.ex_simps?*)
     #> (if use_ugly_rules then
-          (fn ctxt => ctxt addsimps [@{thm split_def}])
+          (Simplifier.add_simp @{thm split_def})
         else
            I)
 
@@ -208,7 +208,7 @@ let
       val new_prems = Simplifier.prems_of ctxt
         |> map (Local_Defs.fold ctxt defs)
         |> filter contains_new_frees
-    in (ctxt |> Simplifier.add_prems new_prems) addsimps new_prems end
+    in ctxt |> Simplifier.add_prems new_prems |> Simplifier.add_simps new_prems end
 
   val (varTs, rets, bdy) = dest_term ct;
 
@@ -263,7 +263,7 @@ local
 structure  Enabled = Proof_Data(type T = bool val init = K true);
 in
 fun c_fnptr_guard_simproc prog_info phase =
- Simplifier.make_simproc @{context} {name = "c_fnptr_guard_simproc", kind = Simproc, identifier = [],
+ Simplifier.make_simproc @{context} {name = "c_fnptr_guard_simproc", kind = Simplifier.Simproc, identifier = [],
     lhss = [Proof_Context.read_term_pattern @{context} "c_fnptr_guard ?P"],
     proc = fn phi => fn ctxt => fn ct =>
   if Enabled.get ctxt then
@@ -295,7 +295,7 @@ fun c_fnptr_guard_simproc prog_info phase =
 end
 
 fun L2_guarded_local_simproc prog_info phase orig_ctxt =
- Simplifier.make_simproc orig_ctxt {name = "L2_guarded_simproc", kind = Simproc, identifier = [],
+ Simplifier.make_simproc orig_ctxt {name = "L2_guarded_simproc", kind = Simplifier.Simproc, identifier = [],
    lhss =  [Proof_Context.read_term_pattern orig_ctxt "L2_guarded ?g ?c", 
             Proof_Context.read_term_pattern orig_ctxt "L2_seq_guard ?g ?c"],
    proc = fn phi => fn ctxt => fn ct =>
@@ -308,7 +308,9 @@ fun L2_guarded_local_simproc prog_info phase orig_ctxt =
        val ([s'], ctxt') = Utils.fix_variant_cfrees [("s", stateT)] ctxt
        val guard_ctxt = 
          if seq_guard then ctxt'
-         else (put_simpset (simpset_of orig_ctxt) ctxt') 
+         else
+            ctxt'
+            |> put_simpset (Simplifier.simpset_of orig_ctxt)
             |> Simplifier.add_proc (c_fnptr_guard_simproc prog_info phase)
             |> Simplifier.add_cong @{thm "HOL.conj_cong"}
 
@@ -324,7 +326,7 @@ fun L2_guarded_local_simproc prog_info phase orig_ctxt =
            \<^infer_instantiate>\<open>c=c and s'=s' in cterm \<open>run (c ()) s'\<close>\<close> ctxt''
          else
            \<^infer_instantiate>\<open>c=c and s'=s' in cterm \<open>run c s'\<close>\<close> ctxt''
-       val c_eq = run |> Simplifier.asm_full_rewrite (ctxt'' addsimps g'_eqs 
+       val c_eq = run |> Simplifier.asm_full_rewrite (ctxt'' |> Simplifier.add_simps g'_eqs 
          |> Utils.add_ariths g'_ariths) |> singleton (Proof_Context.export ctxt'' ctxt)            
        val g_eq' = singleton (Proof_Context.export ctxt' ctxt) g_eq
        val rule = if seq_guard then @{thm L2_seq_guard_cong_stop0} else @{thm L2_guarded_cong_stop'}
@@ -350,8 +352,9 @@ fun arg_simp n ctxt =
  *)
 fun gen_split_fixup_convs thms ctxt =
   Simplifier.asm_full_rewrite (
-    put_simpset HOL_ss ctxt
-    addsimps thms
+    ctxt
+    |> put_simpset HOL_ss
+    |> Simplifier.add_simps thms
     |> fold Simplifier.add_cong @{thms L2_split_fixups_congs})
 
 val fix_L2_while_loop_splits_conv = gen_split_fixup_convs @{thms L2_split_fixups}
@@ -399,7 +402,7 @@ fun mk_unbind_thm ctxt T =
     val unbind = Thm.instantiate (TVars.make [((("'a",0), @{sort c_type}), T)], Vars.empty) @{thm unbind}
     val ((_, [thm]), ctxt') = Variable.import false [unbind] ctxt 
     val unbind_inst = Utils.check_solve_sideconditions (K true) ctxt' thm (
-      asm_full_simp_tac (ctxt' addsimps (Named_Theorems.get ctxt' @{named_theorems recursive_records_split_all_eqs} )) 1)
+      asm_full_simp_tac (ctxt' |> Simplifier.add_simps (Named_Theorems.get ctxt' @{named_theorems recursive_records_split_all_eqs})) 1)
       |> Simpdata.mk_meta_cong ctxt'
       |> singleton (Proof_Context.export ctxt' ctxt) |> Drule.zero_var_indexes 
   in
@@ -545,7 +548,9 @@ fun unbind_proc ctxt f =
       val ((r, cargs), ctxt1) = the (exploded_record_value rT ctxt)
       val mark_f_r = Thm.apply f r |> fold_seq_condition_unfold_STOP ctxt1 
       val f_r = mark_f_r |> Thm.rhs_of
-      val simp_ctxt = ctxt1 addsimps @{thms L2_seq_gets_unfold L2_seq_L2_gets_const} delsimps @{thms L2_seq_condition_def}
+      val simp_ctxt = ctxt1
+        |> Simplifier.add_simps @{thms L2_seq_gets_unfold L2_seq_L2_gets_const}
+        |> Simplifier.del_simps @{thms L2_seq_condition_def}
         |> Prf_Data.map (map_field_fixes (fold Termset.insert (map Thm.term_of cargs)))
       val eq = Utils.timeit_msg 2 ctxt (fn _ => "unbind_proc rhs" ) (fn _ => Simplifier.rewrite simp_ctxt f_r)
       val rhs = Thm.rhs_of eq
@@ -571,7 +576,7 @@ fun unbind_conv ctxt cont ct =
         val rhs = Thm.rhs_of f_unbind_eq
         val {update_zeros, ...} = the (get_record_thms ctxt rT)
         (* We propagate the zero less aggressively *)
-        val ctxt1 = add_info (rn, info) ctxt addsimps (update_zeros )
+        val ctxt1 = ctxt |> add_info (rn, info) |> Simplifier.add_simps update_zeros
         val eq = Utils.timeit_msg 2 ctxt (fn _ => "unbind_conv simp" ) (fn _ =>  
           rhs |> (
           unfold_seq_condition ctxt then_conv 
@@ -823,13 +828,14 @@ let
     then RecursiveRecordPackage.get_no_congs_simpset (Proof_Context.theory_of ctxt) 
     else RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt)
 
-  val autocorres_record_ss = (merge_ss (AUTOCORRES_SIMPSET, record_ss))
+  val autocorres_record_ss = (Simplifier.merge_ss (AUTOCORRES_SIMPSET, record_ss))
   val size_simps = Named_Theorems.get ctxt @{named_theorems size_simps}
 
   val word_simps = @{thms WORD_values WORD_signed_to_unsigned [symmetric]}
-  val guarded_ctxt = put_simpset autocorres_record_ss ctxt 
-       addsimps (guard_simps @ word_simps) 
-       delsimps size_simps @ @{thms ptr_val.ptr_val_def}
+  val guarded_ctxt = ctxt 
+    |> Simplifier.put_simpset autocorres_record_ss 
+    |> Simplifier.add_simps (guard_simps @ word_simps) 
+    |> Simplifier.del_simps (size_simps @ @{thms ptr_val.ptr_val_def})
   (* normalise pointer accesses towards operations on the root pointer *)
   val h_val_fields = Named_Theorems.get ctxt @{named_theorems h_val_fields}
   val fl_ti_simps = Named_Theorems.get ctxt @{named_theorems fl_ti_simps}
@@ -892,7 +898,7 @@ let
           Simplifier.add_cong @{thm FUSE_cong} #>
           Simplifier.add_cong @{thm STOP_UNBIND_cong} #>
           Simplifier.add_cong @{thm L2_seq_condition_block_cong}) (* Only relevant in L2 *)
-      |> (fn ctxt => ctxt addsimps word_simps)
+      |> Simplifier.add_simps word_simps
 in
   basic_ss ctxt
 end
@@ -912,7 +918,7 @@ let
   val depth = strip_comb_depth_of_term (Thm.prop_of thm)
   (* Don't print out warning messages. *)
   val ctxt = ctxt |> Context_Position.set_visible false
-             |> Config.map simp_depth_limit (K (depth + 20))
+             |> Config.map Simplifier.simp_depth_limit (K (depth + 20))
 
   val final_conv = the_default (K Conv.all_conv) aux_conv
   val l2opt_conv =

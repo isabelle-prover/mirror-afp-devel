@@ -208,7 +208,7 @@ proof -
     also have "\<dots> = fps_nth bernoulli_fps n"
       by (rule residue_fps_expansion_over_power_at_0 [OF expansion])
     also have "\<dots> = of_real (bernoulli n / fact n)" 
-      by simp
+      by (simp add: of_real_bernoulli)
     also have "(\<Sum>k\<in>{-int m..m}-{0}. residue g (2 * pi * of_int k * \<i>)) = 
                  (\<Sum>k\<in>{-int m..m}-{0}. 1 / of_int k ^ n) / (2 * pi * \<i>) ^ n"
     proof (subst sum_divide_distrib, intro refl sum.cong, goal_cases)
@@ -418,15 +418,18 @@ proof -
   thus ?thesis by (simp only: sums_of_real_iff)
 qed
 
+lemma sgn_of_int: "sgn (of_int n) = (of_int (sgn n) :: 'a :: linordered_idom)"
+  by (auto simp: sgn_if)
+
 text \<open>
   We can now also easily determine the signs of Bernoulli numbers: the above formula 
   clearly shows that the signs of $B_{2n}$ alternate as $n$ increases, and we already know
   that $B_{2n+1} = 0$ for any positive $n$. A lot of other facts about the signs of
   Bernoulli numbers follow.
 \<close>
-corollary sgn_bernoulli_even:
+corollary sgn_bernoulli_num_even:
   assumes "n > 0"
-  shows   "sgn (bernoulli (2 * n)) = (-1) ^ Suc n"
+  shows   "sgn (bernoulli_num (2 * n)) = (-1) ^ Suc n"
 proof -
   have *: "(\<lambda>k. 1 / real (Suc k) ^ (2 * n)) sums
              ((- 1) ^ Suc n * bernoulli (2 * n) * (2 * pi) ^ (2 * n) / (2 * fact (2 * n)))"
@@ -440,15 +443,38 @@ proof -
     using * by (simp add: sums_iff)
   also have "sgn \<dots> = (-1) ^ Suc n * sgn (bernoulli (2 * n))"
     by (simp add: sgn_mult)
-  finally show ?thesis
+  finally have "sgn (bernoulli (2 * n) :: real) = (-1) ^ Suc n"
     by (simp add: minus_one_power_iff split: if_splits)
+  hence "real_of_int (sgn (bernoulli_num (2 * n))) = of_int ((-1) ^ Suc n)"
+    unfolding of_int_power
+    by (subst (asm) bernoulli_conv_num_denom) (auto simp: sgn_of_int bernoulli_denom_pos)
+  thus "sgn (bernoulli_num (2 * n)) = (-1) ^ Suc n"
+    by (subst (asm) of_int_eq_iff) auto
 qed
 
-corollary bernoulli_even_nonzero: "even n \<Longrightarrow> bernoulli n \<noteq> 0"
-  using sgn_bernoulli_even[of "n div 2"] by (cases "n = 0") (auto elim!: evenE)
+lemma sgn_bernoulli_even:
+  assumes "n > 0"
+  shows   "sgn (bernoulli (2 * n)) = ((-1) ^ Suc n :: 'a :: linordered_field)"
+proof -
+  have "sgn (bernoulli (2 * n) :: 'a) = of_int (sgn (bernoulli_num (2*n)))"
+    by (subst bernoulli_conv_num_denom) (auto simp: bernoulli_denom_pos sgn_of_int)
+  thus ?thesis
+    using assms by (simp add: sgn_bernoulli_num_even)
+qed
+
+corollary bernoulli_even_nonzero:
+  assumes "even n"
+  shows   "bernoulli n \<noteq> (0 :: 'a :: field_char_0)"
+proof (cases "n = 0")
+  case False
+  have "of_rat (bernoulli n) \<noteq> (0 :: 'a)"
+    using sgn_bernoulli_even[of "n div 2", where ?'a = rat] False assms by auto
+  thus ?thesis
+    by (simp add: of_rat_bernoulli)
+qed auto
 
 corollary sgn_bernoulli: 
-  "sgn (bernoulli n) = 
+  "sgn (bernoulli n :: 'a :: linordered_field) = 
      (if n = 0 then 1 else if n = 1 then -1 else if odd n then 0 else (-1) ^ Suc (n div 2))"
   using sgn_bernoulli_even [of "n div 2"] by (auto simp: bernoulli_odd_eq_0)
 
@@ -458,9 +484,20 @@ corollary bernoulli_zero_iff: "bernoulli n = 0 \<longleftrightarrow> odd n \<and
 corollary bernoulli'_zero_iff: "(bernoulli' n = 0) \<longleftrightarrow> (n \<noteq> 1 \<and> odd n)"
   by (auto simp: bernoulli'_def bernoulli_zero_iff)
 
-corollary bernoulli_pos_iff: "bernoulli n > 0 \<longleftrightarrow> n = 0 \<or> n mod 4 = 2"
+lemma bernoulli_num_eq_0_iff: "bernoulli_num n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
 proof -
-  have "bernoulli n > 0 \<longleftrightarrow> sgn (bernoulli n) = 1"
+  have "bernoulli_num n = 0 \<longleftrightarrow> real_of_int (bernoulli_num n) / real (bernoulli_denom n) = 0"
+    by auto
+  also have "real_of_int (bernoulli_num n) / real (bernoulli_denom n) = bernoulli n"
+    by (rule bernoulli_conv_num_denom [symmetric])
+  also have "bernoulli n = 0 \<longleftrightarrow> odd n \<and> n \<noteq> 1"
+    by (rule bernoulli_zero_iff)
+  finally show ?thesis .
+qed
+
+corollary bernoulli_pos_iff: "bernoulli n > (0 :: 'a :: linordered_field) \<longleftrightarrow> n = 0 \<or> n mod 4 = 2"
+proof -
+  have "bernoulli n > (0 :: 'a) \<longleftrightarrow> sgn (bernoulli n :: 'a) = 1"
     by (simp add: sgn_if)
   also have "\<dots> \<longleftrightarrow> n = 0 \<or> even n \<and> odd (n div 2)"
     by (subst sgn_bernoulli) auto
@@ -469,9 +506,9 @@ proof -
   finally show ?thesis .
 qed
 
-corollary bernoulli_neg_iff: "bernoulli n < 0 \<longleftrightarrow> n = 1 \<or> n > 0 \<and> 4 dvd n"
+corollary bernoulli_neg_iff: "(bernoulli n :: 'a :: linordered_field) < 0 \<longleftrightarrow> n = 1 \<or> n > 0 \<and> 4 dvd n"
 proof -
-  have "bernoulli n < 0 \<longleftrightarrow> sgn (bernoulli n) = -1"
+  have "(bernoulli n :: 'a) < 0 \<longleftrightarrow> sgn (bernoulli n :: 'a) = -1"
     by (simp add: sgn_if)
   also have "\<dots> \<longleftrightarrow> n = 1 \<or> n > 0 \<and> even n \<and> even (n div 2)"
     by (subst sgn_bernoulli) (auto simp: minus_one_power_iff)

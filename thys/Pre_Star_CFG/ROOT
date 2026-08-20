@@ -8,6 +8,7 @@ session Pre_Star_CFG = Context_Free_Grammar +
     Applications
     Applications_Example
     Finiteness
+    Finiteness_CNF
     Pre_Star_CNF
   document_files
     root.bib

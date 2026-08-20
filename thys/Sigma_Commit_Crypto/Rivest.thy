@@ -157,7 +157,7 @@ proof-
     then have gcd: "gcd (nat ((int a mod q - int a' mod q) mod q)) q = 1"
       by simp
     hence "[int a * int x1 - int a' * int x1 = int b'- int b] (mod q)"  
-      by (smt cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
+      by (smt (z3) cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
     hence "[int a mod q * int x1 - int a' mod q * int x1 = int b'- int b] (mod q)"  
     proof -
       have "[int x1 * (int a mod int q - int a' mod int q) = int x1 * (int a - int a')] (mod int q)"
@@ -199,7 +199,7 @@ proof-
     then have gcd: "gcd (nat ((int a' mod q - int a mod q) mod q)) q = 1"
       by simp
     have "[int b - int b' = int a' * int x1 - int a * int x1] (mod q)"
-      by (smt cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
+      by (smt (z3) cong_diff_iff_cong_0 cong_y1 cong_diff cong_diff)
     hence "[int b - int b' = int x1 * (int a' - int a)] (mod q)"
       using int_distrib mult.commute by metis
     hence "[int b - int b' = int x1 * (int a' mod q - int a mod q)] (mod q)"

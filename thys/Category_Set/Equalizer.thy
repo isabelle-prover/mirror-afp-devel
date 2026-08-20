@@ -89,7 +89,7 @@ proof -
     using assms(1) equalizer_def id_right_unit2 id_type by blast
 
   have "k' \<circ>\<^sub>c k : E' \<rightarrow> E' \<and> m' \<circ>\<^sub>c k' \<circ>\<^sub>c k = m'"
-    by (smt comp_associative2 comp_type k'_type k_type m'k_eq_m m_type mk_eq_m')
+    by (smt (z3) comp_associative2 comp_type k'_type k_type m'k_eq_m m_type mk_eq_m')
   then have k'k_eq_id: "k' \<circ>\<^sub>c k = id E'"
     using assms(2) equalizer_def id_right_unit2 id_type by blast
 
@@ -154,7 +154,7 @@ proof clarify
     using cfunc_type_def comp_associative f_type fm_gm g_type m_ga_mh m_type relation_h by auto
   then obtain z where "z: domain(h1) \<rightarrow> E \<and> m \<circ>\<^sub>c z = m \<circ>\<^sub>c h1 \<and> 
     (\<forall> j. j:domain(h1) \<rightarrow> E \<and>  m \<circ>\<^sub>c j = m \<circ>\<^sub>c h1 \<longrightarrow> j = z)"
-    using uniqueness by (smt cfunc_type_def codomain_comp domain_comp m_ga_mh m_type relation_ga)
+    using uniqueness by (smt (z3) cfunc_type_def codomain_comp domain_comp m_ga_mh m_type relation_ga)
   then show "h1 = h2"
     by (metis cfunc_type_def domain_comp m_ga_mh m_type relation_ga relation_h)
 qed
@@ -793,7 +793,7 @@ next
   then obtain xx where xx_assms: "xx : X \<rightarrow> X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X" "diagonal X = fibered_product_morphism X f f X \<circ>\<^sub>c xx"
     using assms(1) cfunc_type_def diagonal_type factors_through_def fibered_product_morphism_type by fastforce
   have eq1: "fibered_product_right_proj X f f X \<circ>\<^sub>c xx = id X"
-    by (smt assms(1) comp_associative2 diagonal_def fibered_product_morphism_type fibered_product_right_proj_def id_type right_cart_proj_cfunc_prod right_cart_proj_type xx_assms)
+    by (smt (z3) assms(1) comp_associative2 diagonal_def fibered_product_morphism_type fibered_product_right_proj_def id_type right_cart_proj_cfunc_prod right_cart_proj_type xx_assms)
 
   have eq2: "xx \<circ>\<^sub>c fibered_product_right_proj X f f X = id (X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X)"
   proof (rule one_separator[where X="X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X", where Y="X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X"])
@@ -805,7 +805,7 @@ next
     fix x
     assume x_type: "x \<in>\<^sub>c X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X"
     then obtain a where a_assms: "\<langle>a,a\<rangle> = fibered_product_morphism X f f X \<circ>\<^sub>c x" "a \<in>\<^sub>c X"
-      by (smt assms cfunc_prod_comp cfunc_prod_unique comp_type fibered_product_left_proj_def
+      by (smt (z3) assms cfunc_prod_comp cfunc_prod_unique comp_type fibered_product_left_proj_def
           fibered_product_morphism_type fibered_product_right_proj_def fibered_product_right_proj_type)
 
     have "(xx \<circ>\<^sub>c fibered_product_right_proj X f f X) \<circ>\<^sub>c x = xx \<circ>\<^sub>c right_cart_proj X X \<circ>\<^sub>c \<langle>a,a\<rangle>"
@@ -884,13 +884,13 @@ proof -
     have factorsthru: "\<langle>x,x\<rangle> factorsthru fibered_product_morphism X f f X"
       using assms(1) cfunc_type_def fxfx pair_factorsthru_fibered_product_morphism x_type  by auto
     then obtain xx where xx_assms: "xx : \<one> \<rightarrow> X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X" "\<langle>x,x\<rangle> = fibered_product_morphism X f f X \<circ>\<^sub>c xx"
-      by (smt assms(1) cfunc_type_def diag_on_elements diagonal_type domain_comp factors_through_def factorsthru fibered_product_morphism_type x_type)
+      by (smt (z3) assms(1) cfunc_type_def diag_on_elements diagonal_type domain_comp factors_through_def factorsthru fibered_product_morphism_type x_type)
       
     have projection_prop: "q0 \<circ>\<^sub>c ((fibered_product_left_proj X f f X)\<circ>\<^sub>c xx) = 
                                q1 \<circ>\<^sub>c ((fibered_product_right_proj X f f X)\<circ>\<^sub>c xx)"
       using q0_assms q1_assms xx_assms assms by (typecheck_cfuncs, simp add: comp_associative2)
     then have fun_fact: "x = ((fibered_product_left_proj X f f X) \<circ>\<^sub>c q1)\<circ>\<^sub>c (((fibered_product_left_proj X f f X)\<circ>\<^sub>c xx))"
-      by (smt assms(1) cfunc_type_def comp_associative2 fibered_product_left_proj_def
+      by (smt (z3) assms(1) cfunc_type_def comp_associative2 fibered_product_left_proj_def
           fibered_product_left_proj_type fibered_product_morphism_type fibered_product_right_proj_def
           fibered_product_right_proj_type id_left_unit2 left_cart_proj_cfunc_prod left_cart_proj_type
           q1_assms right_cart_proj_cfunc_prod right_cart_proj_type x_type xx_assms)
@@ -901,13 +901,13 @@ proof -
           fibered_product_morphism_type fibered_product_right_proj_def left_cart_proj_cfunc_prod
           left_cart_proj_type projection_prop right_cart_proj_cfunc_prod right_cart_proj_type x_type xx_assms(2))
     then show "q0 \<circ>\<^sub>c x = q1 \<circ>\<^sub>c x"      
-      by (smt assms(1) cfunc_type_def codomain_comp comp_associative fibered_product_left_proj_type
+      by (smt (z3) assms(1) cfunc_type_def codomain_comp comp_associative fibered_product_left_proj_type
           fun_fact id_left_unit2 q0_assms q1_assms xx_assms)
   qed
   then have "q0 = q1"
     by (metis assms(1) cfunc_type_def one_separator_contrapos q0_assms(1) q1_assms(1))
   then show "fibered_product_left_proj X f f X = fibered_product_right_proj X f f X"
-    by (smt assms(1) comp_associative2 fibered_product_left_proj_type fibered_product_right_proj_type
+    by (smt (z3) assms(1) comp_associative2 fibered_product_left_proj_type fibered_product_right_proj_type
         id_left_unit2 id_right_unit2 q0_assms q1_assms)
 qed
 

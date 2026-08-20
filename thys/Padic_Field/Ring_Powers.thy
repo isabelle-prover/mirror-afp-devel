@@ -129,7 +129,7 @@ lemma insert_at_index_closed:
   shows "(insert_at_index as a k) \<in> carrier (R\<^bsup>Suc n\<^esup>)"
   apply(rule cartesian_power_car_memI')
    apply (metis Groups.add_ac(2) assms(1) insert_at_index_length plus_1_eq_Suc)
-  by (smt R_list_length Suc_le_eq assms(1) assms(2) assms(3) assms(4) 
+  by (smt (z3) R_list_length Suc_le_eq assms(1) assms(2) assms(3) assms(4) 
       cartesian_power_car_memE' insert_at_index_eq insert_at_index_eq' 
       insert_at_index_eq'' less_Suc_eq less_Suc_eq_0_disj not_less_eq_eq)
 
@@ -295,7 +295,7 @@ lemma to_R1_finite:
   apply(rule finite.induct[of A])
   apply (simp add: assms(1))
    apply simp
-  by (smt card_insert_if finite_imageI image_iff image_insert list.inject)
+  by (smt (z3) card_insert_if finite_imageI image_iff image_insert list.inject)
 
 lemma to_R1_carrier:
 "to_R1` (carrier R)= carrier (R\<^bsup>1\<^esup>)"
@@ -404,7 +404,7 @@ proof
           by (metis A cartesian_power_car_memE cartesian_power_car_memE' le_add1 nat_add_left_cancel_less nth_drop)
     show "x \<in> cartesian_product (carrier (R\<^bsup>n\<^esup>)) (carrier (R\<^bsup>m\<^esup>))"
       using 0 1 
-      by (smt A cartesian_power_decomp cartesian_product_def mem_Collect_eq)
+      by (smt (z3) A cartesian_power_decomp cartesian_product_def mem_Collect_eq)
 qed
 
 
@@ -441,7 +441,7 @@ shows "take n a \<in> A"
   using assms unfolding cartesian_product_def  
   apply (smt append_eq_conv_conj cartesian_power_car_memE in_mono mem_Collect_eq)
   using assms unfolding cartesian_product_def  
-  by (smt append_eq_conv_conj cartesian_power_car_memE in_mono mem_Collect_eq)
+  by (smt (z3) append_eq_conv_conj cartesian_power_car_memE in_mono mem_Collect_eq)
 
 lemma cartesian_product_intersection:
   assumes "A \<subseteq> carrier (R\<^bsup>n\<^esup>)"
@@ -456,7 +456,7 @@ proof
     then show "x \<in> cartesian_product (A \<inter> C) (B \<inter> D)"
       using assms cartesian_product_memE[of x C D] cartesian_product_memE[of x A B] 
             cartesian_product_memI[of "A \<inter> C" R n "B \<inter> D" m x] 
-      by (smt Int_iff inf.coboundedI1)
+      by (smt (z3) Int_iff inf.coboundedI1)
   qed
   show "cartesian_product (A \<inter> C) (B \<inter> D) \<subseteq> cartesian_product A B \<inter> cartesian_product C D"
   proof fix x
@@ -602,7 +602,7 @@ proof
     apply(rule ccontr)
       using A cartesian_product_memE[of x "((carrier (R\<^bsup>n\<^esup>)) - A)" "(carrier (R\<^bsup>m\<^esup>))"]
               cartesian_product_memE[of x A "(carrier (R\<^bsup>m\<^esup>))"]
-      by (smt DiffD1 DiffD2 DiffI Diff_subset append_take_drop_id assms cartesian_product_closed')
+      by (smt (z3) DiffD1 DiffD2 DiffI Diff_subset append_take_drop_id assms cartesian_product_closed')
   qed
 qed
 
@@ -658,7 +658,7 @@ lemma cartesian_product_empty_right:
 proof
   show "cartesian_product A B \<subseteq> A"
     using assms unfolding cartesian_product_def
-    by (smt append_Nil2 mem_Collect_eq singletonD subsetI)
+    by (smt (z3) append_Nil2 mem_Collect_eq singletonD subsetI)
   show "A \<subseteq> cartesian_product A B"
     using assms unfolding cartesian_product_def 
     by blast
@@ -671,7 +671,7 @@ lemma cartesian_product_empty_left:
 proof
   show "cartesian_product A B \<subseteq> B"
     using assms unfolding cartesian_product_def
-    by (smt append.simps(1) mem_Collect_eq singletonD subsetI)
+    by (smt (z3) append.simps(1) mem_Collect_eq singletonD subsetI)
   show "B \<subseteq> cartesian_product A B"
     using assms unfolding cartesian_product_def
     by blast
@@ -695,7 +695,7 @@ lemma project_at_indices_closed:
   apply(rule cartesian_power_car_memI')
   using assms proj_at_index_list_length apply blast
     using assms project_at_indices_nth[of S] 
-    by (smt cartesian_power_car_memE cartesian_power_car_memE' indices_of_def lessThan_iff nth_elem_closed subsetD)
+    by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' indices_of_def lessThan_iff nth_elem_closed subsetD)
 
 lemma(in ring) ring_pow_proj_is_map:
   assumes "S \<subseteq> {..<n}"
@@ -852,7 +852,7 @@ qed
         thus "\<pi>\<^bsub>S'\<^esub> a ! i = y ! i"
           using 0 assms a_def project_at_indices_nth'[of S' a "nth_elem S' i"] set_rank_nth_elem_inv[of S' i]
                 nth_map[of i "[0..<n+m]"] 
-          by (smt "1" A add.left_neutral card.infinite diff_zero indices_of_def length_map length_upt lessThan_iff not_less0 nth_elem_closed nth_map nth_upt subsetD)
+          by (smt (z3) "1" A add.left_neutral card.infinite diff_zero indices_of_def length_map length_upt lessThan_iff not_less0 nth_elem_closed nth_map nth_upt subsetD)
       qed
       thus ?thesis 
         by (metis "20" assms(2) cartesian_power_car_memE nth_equalityI subsetD y_def)      
@@ -931,7 +931,7 @@ lemma splitting_permutation_case_3_unique:
   assumes "splitting_permutation l1 l2 i j = y"
   shows "j = y - l2"
   unfolding splitting_permutation_def 
-  by (smt Nat.le_diff_conv2 add_diff_cancel_left' add_diff_cancel_right' add_leD2 
+  by (smt (z3) Nat.le_diff_conv2 add_diff_cancel_left' add_diff_cancel_right' add_leD2 
       assms(2) assms(3) le_add1 le_diff_iff not_le splitting_permutation_def)
 
 lemma splitting_permutation_case_3_exists: 
@@ -1019,7 +1019,7 @@ proof-
     by blast 
   have 0: "length x = length y"
     using x_def y_def  assms splitting_permutation_permutes[of i l1 l2]
-    by (smt add.commute add.left_commute le_add_diff_inverse length_append 
+    by (smt (z3) add.commute add.left_commute le_add_diff_inverse length_append 
         length_drop length_permute_list length_take min.absorb2)
   have 1: "\<And>i. i < l1 + l2 \<Longrightarrow> x ! i = y ! i"
   proof- fix j assume A: "j < l1 + l2"
@@ -1029,7 +1029,7 @@ proof-
       apply(cases "i \<le> j \<and> j < l1")
        apply (smt "0" A add.left_commute append_take_drop_id assms(1) assms(2) assms(3) le_add_diff_inverse length_append length_permute_list length_take min.absorb2 nth_append nth_append_length_plus permute_list_nth splitting_permutation_def splitting_permutation_permutes x_def y_def)
       using x_def y_def assms
-    by (smt "0" A add.commute add_diff_cancel_left' add_diff_inverse_nat length_append length_permute_list length_take less_diff_conv min.absorb2 not_le nth_append permute_list_nth splitting_permutation_case_1_unique splitting_permutation_def splitting_permutation_permutes) 
+    by (smt (z3) "0" A add.commute add_diff_cancel_left' add_diff_inverse_nat length_append length_permute_list length_take less_diff_conv min.absorb2 not_le nth_append permute_list_nth splitting_permutation_case_1_unique splitting_permutation_def splitting_permutation_permutes) 
   qed
   have 2: "length x = l1 + l2"
      by (simp add: x_def assms(2) assms(3))
@@ -1056,7 +1056,7 @@ proof-
           ((take i a1) @ a2 @ (drop i a1))"
     by (metis permute_list_id)
   then show ?thesis using splitting_permutation_action permute_list_compose
-    by (smt \<open>scp_permutation l1 l2 i \<circ> splitting_permutation l1 l2 i = id\<close> assms(1) 
+    by (smt (z3) \<open>scp_permutation l1 l2 i \<circ> splitting_permutation l1 l2 i = id\<close> assms(1) 
         assms(2) assms(3) fun_inv_def length_append length_permute_list permutes_inv permutes_inv_o(1) scp_permutation_def splitting_permutation_permutes)
 qed
 
@@ -1191,7 +1191,7 @@ lemma split_cartesian_product_mem_length:
   shows "length a = l1 + l2"
   using assms unfolding split_cartesian_product_def 
   using cartesian_product_closed[of A R l1 B l2] scp_permutes[of i l1 l2]
-  by (smt cartesian_power_car_memE imageE in_mono length_permute_list scp_permutation_def)
+  by (smt (z3) cartesian_power_car_memE imageE in_mono length_permute_list scp_permutation_def)
 
 lemma split_cartesian_product_memE':
   assumes "a1@b@a2 \<in> split_cartesian_product l1 l2 i A B"
@@ -1221,7 +1221,7 @@ proof fix x
         assms(2) assms(3) split_cartesian_product_mem_length)
     using assms A unfolding split_cartesian_product_def 
     using cartesian_product_closed[of A R l1 B l2]
-    by (smt A cartesian_power_car_memE'' image_iff length_permute_list 
+    by (smt (z3) A cartesian_power_car_memE'' image_iff length_permute_list 
         scp_permutes set_permute_list split_cartesian_product_mem_length subsetD)
 qed
     
@@ -1461,7 +1461,7 @@ proof-
       then show "(partial_eval  R k n f a) x \<in> carrier R"
         using insert_at_index_closed[of x k R a n] assms ring_functions.function_ring_car_memE[of R]
         unfolding ring_functions_def 
-        by (smt A cartesian_power_car_memE funcset_carrier ring_pow_function_ring_car_memE(2))
+        by (smt (z3) A cartesian_power_car_memE funcset_carrier ring_pow_function_ring_car_memE(2))
         
     next
       case False
@@ -1497,10 +1497,10 @@ lemma fun_struct_maps:
 "struct_maps (R\<^bsup>n\<^esup>) R = carrier (Fun\<^bsub>n\<^esub> R)"
 proof
   show "struct_maps (R\<^bsup>n\<^esup>) R \<subseteq> carrier Fun\<^bsub>n\<^esub> R"
-    by (smt function_ring_car_memI struct_maps_memE(1) struct_maps_memE(2) subsetI)    
+    by (smt (z3) function_ring_car_memI struct_maps_memE(1) struct_maps_memE(2) subsetI)    
   show "carrier (Fun\<^bsub>n\<^esub> R) \<subseteq> struct_maps (R\<^bsup>n\<^esup>) R"
     using struct_maps_memI ring_functions.function_ring_car_memE
-  by (smt function_ring_car_mem_closed  ring_axioms ring_functions.function_ring_not_car ring_functions.intro subsetI)
+  by (smt (z3) function_ring_car_mem_closed  ring_axioms ring_functions.function_ring_not_car ring_functions.intro subsetI)
 qed
 
 lemma pullback_fun_closed:
@@ -1683,7 +1683,7 @@ proof
   assume x_def: "x \<in> fun_graph R n f"
   obtain a where a_def: "a \<in> carrier (R\<^bsup>n\<^esup>) \<and> x = a@[f a]"
     using x_def fun_graph_def 
-    by (smt mem_Collect_eq)
+    by (smt (z3) mem_Collect_eq)
   have f_closed: "f a \<in> carrier R"
     using assms function_ring_car_memE a_def 
     by blast 
@@ -1714,7 +1714,7 @@ lemma fun_graph_memE':
   shows "f (take n p) = p!n"
   using assms 
   unfolding fun_graph_def 
-  by (smt Cons_nth_drop_Suc append_take_drop_id assms(2) butlast_snoc cartesian_power_car_memE 
+  by (smt (z3) Cons_nth_drop_Suc append_take_drop_id assms(2) butlast_snoc cartesian_power_car_memE 
       drop_all graph_range last_snoc le_Suc_eq lessI mem_Collect_eq subsetD)
   
 text\<open>
@@ -1754,7 +1754,7 @@ next
   show ?thesis 
     apply(rule cartesian_power_car_memI)
      apply (metis "0" One_nat_def cartesian_power_car_memE list.size(4) partial_image_def)
-      by (smt "1" assms(3) cartesian_power_car_memE cartesian_power_car_memE' in_set_conv_nth 
+      by (smt (z3) "1" assms(3) cartesian_power_car_memE cartesian_power_car_memE' in_set_conv_nth 
       partial_image_def set_ConsD set_drop_subset subsetD subsetI) 
 qed
 
@@ -1923,7 +1923,7 @@ proof-
     unfolding coord_ring_def 
     by (simp add: R.Pring_car R.Pring_carrier_subset)
   have 1 : "poly_eval R UNIV (\<lambda>i. if i < length a then a ! i else \<zero>) p \<in> R.indexed_pset ({..<n}- UNIV) (carrier R)"
-    by (smt R.Pring_car R.closed_funI R.poly_eval_closed R.zero_closed assms(1) assms(2) cartesian_power_car_memE cartesian_power_car_memE' coord_ring_def)
+    by (smt (z3) R.Pring_car R.closed_funI R.poly_eval_closed R.zero_closed assms(1) assms(2) cartesian_power_car_memE cartesian_power_car_memE' coord_ring_def)
   hence 2: "poly_eval R UNIV (\<lambda>i. if i < length a then a ! i else \<zero>) p \<in>carrier (R[\<X>\<^bsub>n\<^esub>])"
     using 0 by blast 
   show ?thesis
@@ -1943,7 +1943,7 @@ proof-
     by (metis R.Pring_one coord_ring_def R.monom_add_mset R.one_mset_to_IP)    
   then show "total_eval R (\<lambda>i. if i < length a then a ! i else \<zero>) (pvar R i) = a ! i" 
     using assms R.total_eval_var[of "(\<lambda>i. (if i< length a then a ! i else \<zero>\<^bsub>R\<^esub>))" i ] 
-    by (smt cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI var_to_IP_def R.zero_closed)
+    by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI var_to_IP_def R.zero_closed)
 qed
 
 lemma eval_at_point_const:
@@ -1961,7 +1961,7 @@ lemma eval_at_point_add:
           eval_at_point R a A \<oplus>\<^bsub>R\<^esub> eval_at_point R a B"
   unfolding eval_at_point_def
   using R.total_eval_add[of A "{..<n}" B] 
-  by (smt assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)  
+  by (smt (z3) assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)  
   
 lemma eval_at_point_mult:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -1971,7 +1971,7 @@ lemma eval_at_point_mult:
           eval_at_point R a A \<otimes>\<^bsub>R\<^esub> eval_at_point R a B"
     unfolding eval_at_point_def
     using R.total_eval_mult[of A "{..<n}" B] 
-    by (smt assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
+    by (smt (z3) assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
     
 lemma eval_at_point_indexed_pmult:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -1992,7 +1992,7 @@ lemma eval_at_point_ring_hom:
   shows "ring_hom_ring (coord_ring R I) R (eval_at_point R a)"
   unfolding eval_at_point_def
   using R.total_eval_ring_hom 
-  by (smt assms cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
+  by (smt (z3) assms cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
   
 lemma eval_at_point_scalar_mult:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2002,7 +2002,7 @@ lemma eval_at_point_scalar_mult:
   using assms unfolding eval_at_point_def total_eval_def eval_in_ring_def
   using  R.poly_eval_scalar_mult[of k "(\<lambda>i. if i < length a then a ! i else \<zero>)" A "{..<n}" UNIV]  
         poly_scalar_mult_def
-  by (smt R.Pring_car cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
+  by (smt (z3) R.Pring_car cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def R.zero_closed)
 
 lemma eval_at_point_smult:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2021,14 +2021,14 @@ lemma eval_at_point_subtract:
         abelian_group.a_inv_closed[of "R[\<X>\<^bsub>n\<^esub>]" B]
   unfolding a_minus_def 
     abelian_group.a_inv_closed abelian_group.minus_minus abelian_group.r_neg1 abelian_groupE(1) abelian_groupE(4) coord_cring_cring cring_def eval_at_point_add eval_at_point_closed is_abelian_group ring_def 
-  by (smt MP.add.inv_closed MP.l_neg MP.r_zero MP.zero_closed R.add.inv_closed R.add.m_assoc R.l_neg R.r_zero R.zero_closed eval_at_point_add eval_at_point_closed)
+  by (smt (z3) MP.add.inv_closed MP.l_neg MP.r_zero MP.zero_closed R.add.inv_closed R.add.m_assoc R.l_neg R.r_zero R.zero_closed eval_at_point_add eval_at_point_closed)
 
 lemma eval_at_point_a_inv:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
   assumes "B \<in> carrier (coord_ring R  n)"
   shows "eval_at_point R a (\<ominus>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> B) = \<ominus>\<^bsub>R\<^esub> eval_at_point R a B"
   using assms eval_at_point_subtract[of a n "\<zero>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub>" B]
-  by (smt MP.add.inv_eq_1_iff MP.l_zero MP.minus_add MP.zero_closed R.is_abelian_group R.r_neg R.r_neg2 a_minus_def abelian_group.a_inv_closed abelian_groupE(4) eval_at_point_add eval_at_point_closed)
+  by (smt (z3) MP.add.inv_eq_1_iff MP.l_zero MP.minus_add MP.zero_closed R.is_abelian_group R.r_neg R.r_neg2 a_minus_def abelian_group.a_inv_closed abelian_groupE(4) eval_at_point_add eval_at_point_closed)
 
 lemma eval_at_point_nat_pow:
   assumes "a \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2068,7 +2068,7 @@ lemma point_to_eval_map_closed:
   assumes "as \<in> carrier (R\<^bsup>n\<^esup>)"
   shows "closed_fun R (point_to_eval_map R as)"
   using assms 
-  by (smt cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI R.zero_closed)  
+  by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI R.zero_closed)  
 
 lemma coord_partial_eval_hom:
   assumes "as \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2094,7 +2094,7 @@ lemma coord_partial_eval_closed:
   shows "coord_partial_eval R S as p \<in> carrier (Pring R I)"
   unfolding coord_partial_eval_def
   using R.poly_eval_closed[of "point_to_eval_map R as" p "{..<n}" S ] R.Pring_car[of I] R.Pring_carrier_subset  
-  by (smt R.Pring_car assms(2) assms(3) assms(4) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def subsetD R.zero_closed)  
+  by (smt (z3) R.Pring_car assms(2) assms(3) assms(4) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI coord_ring_def subsetD R.zero_closed)  
 
 lemma coord_partial_eval_add:
   assumes "as \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2144,7 +2144,7 @@ lemma coord_partial_eval_pvar':
   shows "coord_partial_eval R S as (pvar R i) = (pvar R i)"
   unfolding coord_partial_eval_def
   using R.poly_eval_index[of "point_to_eval_map R as" S i ]
-  by (smt assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI var_to_IP_def R.zero_closed)  
+  by (smt (z3) assms(1) assms(2) assms(3) cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI var_to_IP_def R.zero_closed)  
 
 (**************************************************************************************************)
 (**************************************************************************************************)
@@ -2436,7 +2436,7 @@ proof
             then have "(eval_at_poly R p0 x) = \<zero>"
               using C  affine_alg_set_memE by blast              
             then show ?thesis 
-              by (smt C D \<open>x \<in> carrier (R\<^bsup>n\<^esup>)\<close> assms(2) eval_at_point_closed R.semiring_axioms semiring.l_null subsetD)            
+              by (smt (z3) C D \<open>x \<in> carrier (R\<^bsup>n\<^esup>)\<close> assms(2) eval_at_point_closed R.semiring_axioms semiring.l_null subsetD)            
           next
             case False
             then have "x \<in> affine_alg_set R n bs"
@@ -2446,7 +2446,7 @@ proof
               using C affine_alg_set_memE by blast
             then show ?thesis 
               using C A False 
-              by (smt D \<open>x \<in> carrier (R\<^bsup>n\<^esup>)\<close> assms(1) eval_at_point_closed R.r_null subsetD)
+              by (smt (z3) D \<open>x \<in> carrier (R\<^bsup>n\<^esup>)\<close> assms(1) eval_at_point_closed R.r_null subsetD)
           qed 
         qed
       qed
@@ -2686,7 +2686,7 @@ lemma point_to_polys_closed:
   assumes "as \<in> carrier (R\<^bsup>n\<^esup>)"
   shows "set (point_to_polys as) \<subseteq> carrier (R[\<X>\<^bsub>n\<^esub>])"
   using assms point_to_polysE pvar_trans_closed 
-  by (smt cartesian_power_car_memE cartesian_power_car_memE' in_set_conv_nth point_to_polys_length subsetI)  
+  by (smt (z3) cartesian_power_car_memE cartesian_power_car_memE' in_set_conv_nth point_to_polys_length subsetI)  
 
 lemma point_to_polys_affine_alg_set:
   assumes "as \<in> carrier (R\<^bsup>n\<^esup>)"
@@ -2704,7 +2704,7 @@ proof
       assume A1: "i < n"
       show " x!i = as!i"
         using A0 
-        by (smt A1 affine_alg_set_closed affine_alg_set_memE assms cartesian_power_car_memE 
+        by (smt (z3) A1 affine_alg_set_closed affine_alg_set_memE assms cartesian_power_car_memE 
             cartesian_power_car_memE' nth_mem point_to_polysE point_to_polys_length
             pvar_trans_eval R.r_right_minus_eq subsetD)
     qed
@@ -3331,7 +3331,7 @@ proof
        using A 0 assms  
         apply (metis "2" "4" length_permute_list)
        using A 0 assms  
-       by (smt "2" in_set_conv_nth neq0_conv poly_tuple_evalE pushforward_by_pvar_list 
+       by (smt (z3) "2" in_set_conv_nth neq0_conv poly_tuple_evalE pushforward_by_pvar_list 
            pvar_list_is_poly_tuple pvar_list_length set_permute_list subset_iff y_def)
      then have 6: "poly_tuple_eval (permute_list \<sigma> (pvar_list R n)) x = y"
        using 4  assms pushforward_by_permuted_pvar_list[of \<sigma> n x] 
@@ -3529,7 +3529,7 @@ proof-
            eval_at_poly R p (poly_tuple_eval fs as) = eval_at_poly R (poly_compose n m fs p) as \<Longrightarrow>
            i \<in> {..<n} \<Longrightarrow> eval_at_poly R (p \<Otimes> i) (poly_tuple_eval fs as) = eval_at_poly R (poly_compose n m fs (p \<Otimes> i)) as"
       using assms poly_compose_indexed_pmult eval_at_point_indexed_pmult
-      by (smt R.Pring_car coord_ring_def eval_at_point_mult is_poly_tupleE lessThan_iff neq0_conv poly_compose_closed poly_tuple_evalE'' poly_tuple_eval_closed)
+      by (smt (z3) R.Pring_car coord_ring_def eval_at_point_mult is_poly_tupleE lessThan_iff neq0_conv poly_compose_closed poly_tuple_evalE'' poly_tuple_eval_closed)
 qed
 
 (**************************************************************************************************)
@@ -3584,7 +3584,7 @@ lemma poly_map_compose_closed:
   unfolding is_poly_tuple_def 
 proof fix y assume A: "y \<in> set (map (poly_compose n k gs) fs)"
   then obtain f where f_def: "f \<in> set fs \<and> y = poly_compose n k gs f"
-    by (smt in_set_conv_nth length_map nth_map)
+    by (smt (z3) in_set_conv_nth length_map nth_map)
   then show "y \<in> carrier (coord_ring R k)"
     using assms poly_compose_closed 
     by (metis in_set_conv_nth is_poly_tupleE )
@@ -3627,12 +3627,12 @@ proof(rule ext)
                   eval_at_point R (poly_map k gs x) (fs ! i)"
         unfolding pullback_def poly_map_def poly_tuple_eval_def 
         using assms True 
-        by (smt compose_eq nth_map poly_tuple_eval_closed poly_tuple_eval_def restrict_apply')
+        by (smt (z3) compose_eq nth_map poly_tuple_eval_closed poly_tuple_eval_def restrict_apply')
       have 4: "\<And>i. i < m \<Longrightarrow> 
             poly_map k (map (poly_compose n k gs) fs) x ! i = 
                   eval_at_point R (poly_map k gs x) (fs ! i)"       
         unfolding poly_map_def poly_tuple_eval_def using True assms 
-        by (smt "2" cring_coord_rings.is_poly_tuple_def cring_coord_rings_axioms neq0_conv 
+        by (smt (z3) "2" cring_coord_rings.is_poly_tuple_def cring_coord_rings_axioms neq0_conv 
             nth_map nth_mem poly_compose_eval poly_tuple_eval_def restrict_apply' subset_code(1))
       show ?thesis using 0 1 2 3 4 assms True 
         by (metis cartesian_power_car_memE nth_equalityI poly_map_closed)
@@ -3963,7 +3963,7 @@ proof-
   have LHS: "eval_at_poly R (Q \<otimes>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> pvar R i) a = eval_at_poly R Q a \<otimes> (a!i)"
     by (metis A0 A2 assms eval_at_point_indexed_pmult pvar_indexed_pmult)
   have RHS: "eval_at_poly R (Q \<otimes>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> pvar R i) (a @ b) = eval_at_poly R Q (a@b) \<otimes> ((a@b)!i)"
-    by (smt "0" A0 A2 add.commute eval_at_point_indexed_pmult le_add1 poly_ring_car_mono 
+    by (smt (z3) "0" A0 A2 add.commute eval_at_point_indexed_pmult le_add1 poly_ring_car_mono 
       pvar_indexed_pmult subsetD trans_less_add2)
   show "eval_at_poly R (Q \<otimes>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> pvar R i) a = eval_at_poly R (Q \<otimes>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> pvar R i) (a @ b)"   
   proof-
@@ -4037,7 +4037,7 @@ proof-
       by (meson in_set_takeD)
     then show "a \<in> carrier R"
       using assms unfolding diagonal_def using cartesian_power_car_memE'[of x] 
-      by (smt cartesian_power_car_memE in_set_conv_nth mem_Collect_eq)
+      by (smt (z3) cartesian_power_car_memE in_set_conv_nth mem_Collect_eq)
   qed
   show "\<And>i. i < m \<Longrightarrow> x!i = x!(i + m)"
   proof- fix i
@@ -4286,7 +4286,7 @@ lemma function_tuple_comp_closed:
   shows "function_tuple_comp R fs f \<in> carrier (R\<^bsup>m\<^esup>) \<rightarrow> carrier R"
   unfolding function_tuple_comp_def
   using assms 
-  by (smt Pi_iff comp_apply function_tuple_eval_closed function_tuple_eval_def)
+  by (smt (z3) Pi_iff comp_apply function_tuple_eval_closed function_tuple_eval_def)
 
 fun id_function_tuple where
 "id_function_tuple (R::('a,'b) partial_object_scheme) 0 = []"|
@@ -4706,7 +4706,7 @@ proof-
      (pvar R 0 [^]\<^bsub>coord_ring R (Suc (Suc n))\<^esub> n))"
     using 0 1 2 R.poly_eval_mult[of "pvar R (Suc n)" "{..<n+2}" " pvar R 0 [^]\<^bsub>coord_ring R (Suc (Suc n))\<^esub> n"
           "(point_to_eval_map R (\<zero> # as))" "{1..<n + 2}"] unfolding coord_ring_def  
-    by (smt R.Pring_mult cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI R.zero_closed)
+    by (smt (z3) R.Pring_mult cartesian_power_car_memE cartesian_power_car_memE' R.closed_funI R.zero_closed)
   have 4: "poly_eval R {1..<n + 2} (point_to_eval_map R (\<zero> # as))
      (pvar R (Suc n) \<otimes>\<^bsub>coord_ring R (Suc (Suc n))\<^esub> pvar R 0 [^]\<^bsub>coord_ring R (Suc (Suc n))\<^esub> n) = 
   (coord_const ((\<zero> # as)! (Suc n))) \<otimes>\<^bsub>coord_ring R (Suc (Suc n))\<^esub> 
@@ -4716,7 +4716,7 @@ proof-
           R.poly_eval_index[of "(point_to_eval_map R (\<zero> # as))" "{1..<n + 2}" "Suc n"]
      add_2_eq_Suc' atLeastLessThan_iff cartesian_power_car_memE le_neq_implies_less 
         less_Suc_eq not_less_eq_eq not_less_zero numeral_1_eq_Suc_0 numeral_One var_to_IP_def 
-    by (smt local.one_neq_zero)
+    by (smt (z3) local.one_neq_zero)
   have 5: "pvar R 0 [^]\<^bsub>coord_ring R (Suc (Suc n))\<^esub> n \<in> Pring_set R ({..<n + 2} - {1..<n + 2}) "
   proof-
     have "0 \<in> {..<n + 2} - {1..<n + 2}" by auto 
@@ -4803,7 +4803,7 @@ lemma ring_cfs_to_poly_decomp:
 proof-
   have LHS: "ring_cfs_to_poly R (Suc n) as = 
               coord_partial_eval R {1..<Suc n + 2} (\<zero> # as) (generic_poly R n \<oplus>\<^bsub>coord_ring R (Suc (Suc (Suc n)))\<^esub> generic_poly_lt R (Suc n))" 
-    by (smt add_2_eq_Suc' add_Suc_right generic_poly.simps(2) numeral_2_eq_2 numeral_3_eq_3 ring_cfs_to_poly_def)   
+    by (smt (z3) add_2_eq_Suc' add_Suc_right generic_poly.simps(2) numeral_2_eq_2 numeral_3_eq_3 ring_cfs_to_poly_def)   
   have LHS': "ring_cfs_to_poly R (Suc n) as = 
               coord_partial_eval R {1..<Suc n + 2} (\<zero> # as) (generic_poly R n) \<oplus>\<^bsub>coord_ring R (Suc (Suc (Suc n)))\<^esub> 
               coord_partial_eval R {1..<Suc n + 2} (\<zero> # as) (generic_poly_lt R (Suc n))" 
@@ -4998,7 +4998,7 @@ proof-
       unfolding ring_cfs_to_univ_poly_def ring_cfs_to_poly_def 
       using 3 4 5 UP_cring.IP_to_UP_indexed_const[of R "as!0" "0::nat"]
       unfolding coord_partial_eval_def 
-      by (smt "0" \<open>ring_cfs_to_univ_poly 0 as = to_polynomial R (as ! 0)\<close> generic_poly.simps(1) ring_cfs_to_univ_poly_def var_to_IP_def)     
+      by (smt (z3) "0" \<open>ring_cfs_to_univ_poly 0 as = to_polynomial R (as ! 0)\<close> generic_poly.simps(1) ring_cfs_to_univ_poly_def var_to_IP_def)     
     then show " deg R (ring_cfs_to_univ_poly 0 as) \<le> 0 \<and> (as ! 0 \<noteq> \<zero> \<longrightarrow> deg R (ring_cfs_to_univ_poly 0 as) = 0)"
       using  UP_cring.degree_to_poly[of R "as! 0"] 5  UP_cring_def[of R]
       using R.is_cring by presburger      
@@ -5101,7 +5101,7 @@ proof-
     by simp 
   have 1: "closed_fun R (point_to_eval_map R (\<zero> # as))"
     using assms 
-    by (smt cartesian_power_car_memE'' R.closed_funI nth_mem set_ConsD subset_code(1) R.zero_closed)    
+    by (smt (z3) cartesian_power_car_memE'' R.closed_funI nth_mem set_ConsD subset_code(1) R.zero_closed)    
   have 2: "(point_to_eval_map R (\<zero> # as) (1::nat)) = as!0"
     by (metis One_nat_def assms cartesian_power_car_memE impossible_Cons
       le_numeral_extra(4) linorder_neqE_nat nat_less_le nth_Cons_Suc)
@@ -5445,7 +5445,7 @@ lemma pre_to_univ_poly_hom_is_hom:
                         MP.indexed_const_ring_hom[of n "{..<n-1}"]
                         ring_hom_ring.homh[of R "coord_ring R (n - 1)" "coord_const"]
   unfolding ring_hom_ring_def[of R] 
-  by (smt MP.Pring_is_ring MP.indexed_const_ring_hom coord_ring_def pre_to_univ_poly_hom_def ring_hom_ring.homh ring_hom_ring_axioms_def)
+  by (smt (z3) MP.Pring_is_ring MP.indexed_const_ring_hom coord_ring_def pre_to_univ_poly_hom_def ring_hom_ring.homh ring_hom_ring_axioms_def)
   
 definition pre_to_univ_poly_var_ass :: 
   "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> (('a, nat) mvar_poly, nat) mvar_poly" where
@@ -5469,7 +5469,7 @@ proof fix j
     using pvar_closed[of "j-1" n] assms MP.indexed_const_closed R.Pring_is_cring Suc_diff_1 Suc_le_eq coord_ring_def R.is_cring pvar_closed neq0_conv not_le
       apply (metis MP.Pring_var_closed singletonI)
     using MP.Pring_is_ring[of "n-1" "{i}"] apply blast
-  by (smt MP.Pring_zero_closed MP.indexed_const_closed Suc_diff_1 Suc_le_eq le_eq_less_or_eq less_Suc_eq local.pvar_closed nat_induct) 
+  by (smt (z3) MP.Pring_zero_closed MP.indexed_const_closed Suc_diff_1 Suc_le_eq le_eq_less_or_eq less_Suc_eq local.pvar_closed nat_induct) 
 qed
 
 lemma pre_to_univ_poly_var_ass_closed': 
@@ -5615,7 +5615,7 @@ proof-
     have 03: "(total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda> i. coord_const x) (pre_to_univ_poly (Suc n) i (coord_const c))) = 
              coord_const c"    
       using 01 cring.total_eval_const[of "R[\<X>\<^bsub>n\<^esub>]" "coord_const c" ]
-      by (smt "02" MP.total_eval_const \<open>c \<in> carrier R\<close> coord_ring_def cring.indexed_const_closed R.is_cring)
+      by (smt (z3) "02" MP.total_eval_const \<open>c \<in> carrier R\<close> coord_ring_def cring.indexed_const_closed R.is_cring)
     show " eval_at_point R as (R.indexed_const c) =
          eval_at_point R a (total_eval (Pring R {..<n}) (\<lambda>i. R.indexed_const x) (pre_to_univ_poly (Suc n) i (R.indexed_const c))) "
       using assms 00 02 03 
@@ -5740,7 +5740,7 @@ proof-
         by blast
       show ?thesis using A1 cring.total_eval_mult[of _ "pre_to_univ_poly (Suc n) i p"] 
      
-          by (smt A20 A21 MP.closed_funI MP.total_eval_mult assms(4) coord_ring_def cring.indexed_const_closed R.is_cring)          
+          by (smt (z3) A20 A21 MP.closed_funI MP.total_eval_mult assms(4) coord_ring_def cring.indexed_const_closed R.is_cring)          
     qed
     have A3: "pre_to_univ_poly (Suc n) i p \<in> carrier (Pring (R[\<X>\<^bsub>n\<^esub>]) {i})"
       using 02 A ring_hom_ring.homh unfolding ring_hom_def
@@ -5777,7 +5777,7 @@ proof-
                   coord_const x"
         using cring.total_eval_var[of "R[\<X>\<^bsub>n\<^esub>]" "\<lambda>i. coord_const x"]
               unfolding coord_ring_def 
-        by (smt "01" \<open>\<And>i. \<lbrakk>cring (R [\<X>\<^bsub>n\<^esub>]); (\<lambda>i. R.indexed_const x) \<in> UNIV \<rightarrow> carrier (R [\<X>\<^bsub>n\<^esub>])\<rbrakk> \<Longrightarrow> total_eval (R [\<X>\<^bsub>n\<^esub>]) (\<lambda>i. R.indexed_const x) (mset_to_IP (R [\<X>\<^bsub>n\<^esub>]) {#i#}) = R.indexed_const x\<close> coord_ring_def cring_coord_rings.coord_cring_cring cring_coord_rings_axioms var_to_IP_def)            
+        by (smt (z3) "01" \<open>\<And>i. \<lbrakk>cring (R [\<X>\<^bsub>n\<^esub>]); (\<lambda>i. R.indexed_const x) \<in> UNIV \<rightarrow> carrier (R [\<X>\<^bsub>n\<^esub>])\<rbrakk> \<Longrightarrow> total_eval (R [\<X>\<^bsub>n\<^esub>]) (\<lambda>i. R.indexed_const x) (mset_to_IP (R [\<X>\<^bsub>n\<^esub>]) {#i#}) = R.indexed_const x\<close> coord_ring_def cring_coord_rings.coord_cring_cring cring_coord_rings_axioms var_to_IP_def)            
       then have T0: "eval_at_poly R (total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda>i. coord_const x) (pre_to_univ_poly (Suc n) i (pvar R j))) a
                  = x"
         using eval_at_point_const 
@@ -5800,7 +5800,7 @@ proof-
       then have "total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda>i. coord_const x) (pre_to_univ_poly (Suc n) i (pvar R j)) = 
                   pvar R j"
         using cring.total_eval_const[of "R[\<X>\<^bsub>n\<^esub>]"] 
-        by (smt Suc_less_eq True assms(1) coord_cring_cring less_trans_Suc local.pvar_closed)        
+        by (smt (z3) Suc_less_eq True assms(1) coord_cring_cring less_trans_Suc local.pvar_closed)        
       then have T0: "eval_at_poly R (total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda>i. coord_const x) (pre_to_univ_poly (Suc n) i (pvar R j))) a
                  = a!j"
         using eval_pvar
@@ -5819,7 +5819,7 @@ proof-
       then have "total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda>i. coord_const x) (pre_to_univ_poly (Suc n) i (pvar R j)) = 
                   pvar R (j-1)"
         using cring.total_eval_const[of "R[\<X>\<^bsub>n\<^esub>]"] 
-        by (smt A(2) F False Suc_less_SucD add_diff_inverse_nat coord_cring_cring 
+        by (smt (z3) A(2) F False Suc_less_SucD add_diff_inverse_nat coord_cring_cring 
             lessThan_iff less_one linorder_neqE_nat local.pvar_closed not_less0 plus_1_eq_Suc)                      
       then have T0: "eval_at_poly R (total_eval (R[\<X>\<^bsub>n\<^esub>]) (\<lambda>i. coord_const x) (pre_to_univ_poly (Suc n) i (pvar R j))) a
                  = a!(j-1)"
@@ -5881,7 +5881,7 @@ proof-
     unfolding coord_ring_def 
     apply(rule R.relabel_vars_is_morphism)
     using assms 
-    by (smt Pi_I Suc_eq_plus1 add_less_cancel_right lessThan_iff less_Suc_eq)
+    by (smt (z3) Pi_I Suc_eq_plus1 add_less_cancel_right lessThan_iff less_Suc_eq)
   then show ?thesis 
     unfolding pre_to_univ_poly_inv_hom_def
     by simp
@@ -5910,7 +5910,7 @@ lemma pre_to_univ_poly_inv_hom_pvar_0:
             pvar R j"
   unfolding pre_to_univ_poly_inv_hom_def coord_ring_def
   using R.relabel_vars_is_morphism(2)[of "\<lambda>j. if j < i then j else j + 1" "{..<n}" "{..< Suc n}" j]
-  by (smt Pi_I add.commute add_diff_cancel_left' assms(1) assms(2) 
+  by (smt (z3) Pi_I add.commute add_diff_cancel_left' assms(1) assms(2) 
       lessThan_iff less_Suc_eq less_trans_Suc not_less_eq plus_1_eq_Suc)
 
 lemma pre_to_univ_poly_inv_hom_pvar_1:
@@ -5921,7 +5921,7 @@ lemma pre_to_univ_poly_inv_hom_pvar_1:
             pvar R (j + 1)"
   unfolding pre_to_univ_poly_inv_hom_def 
   using assms R.relabel_vars_is_morphism(2)[of "\<lambda>j. if j < i then j else j + 1" "{..<n}" "{..< Suc n}" j]
-  by (smt Pi_I add.commute add_less_cancel_right diff_Suc_1 lessThan_iff less_Suc_eq not_le plus_1_eq_Suc) 
+  by (smt (z3) Pi_I add.commute add_less_cancel_right diff_Suc_1 lessThan_iff less_Suc_eq not_le plus_1_eq_Suc) 
  
 definition pre_to_univ_poly_inv_var_ass ::
   "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('a, nat) mvar_poly" where
@@ -5980,7 +5980,7 @@ proof-
                 MP.indexed_const n (coord_const c)"
       using A assms(1) diff_Suc_1 pre_to_univ_poly_is_hom(5) by presburger
     have 1: "(\<lambda>j. if j < i then j else j + 1) \<in> {..<n} \<rightarrow> {..<Suc n}"
-      by (smt Pi_I Suc_eq_plus1 add_less_cancel_right lessThan_iff less_Suc_eq)
+      by (smt (z3) Pi_I Suc_eq_plus1 add_less_cancel_right lessThan_iff less_Suc_eq)
     have 2: "pre_to_univ_poly_inv_hom (Suc n) i (coord_const c) = coord_const c"
       unfolding pre_to_univ_poly_inv_hom_def
       using 1 R.relabel_vars_is_morphism(3)[of "(\<lambda>j. if j < i then j else j + 1)" "{..<n}" "{..<Suc n}" c] 
@@ -6021,7 +6021,7 @@ proof-
            p \<oplus>\<^bsub>Pring R {..<Suc n}\<^esub> q"
       using 0 1 2 A pre_to_univ_poly_inv_is_hom[of i n] ring_hom_ring.homh ring_hom_add
       unfolding coord_ring_def      
-      by (smt assms(1))
+      by (smt (z3) assms(1))
   qed
   show "\<And>p ia.
        p \<in> carrier (Pring R {..<Suc n}) \<Longrightarrow>
@@ -6089,7 +6089,7 @@ proof-
             ring_hom_ring.homh[of _ _ "pre_to_univ_poly_inv (Suc n) i "] 
             ring_hom_mult[of "pre_to_univ_poly_inv (Suc n) i "]
       unfolding coord_ring_def 
-      by (smt assms(1) coord_ring_def diff_Suc_1 pre_to_univ_poly_is_hom(6))
+      by (smt (z3) assms(1) coord_ring_def diff_Suc_1 pre_to_univ_poly_is_hom(6))
   qed
 qed
 
@@ -6170,10 +6170,10 @@ proof-
         by (metis assms(1) diff_Suc_1)
       have 52: " pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n p) \<in> carrier (R [\<X>\<^bsub>Suc n\<^esub>])"
         using 51 ring_hom_closed[of "pre_to_univ_poly_inv (Suc n) i" ] 
-        by (smt "2" diff_Suc_1)
+        by (smt (z3) "2" diff_Suc_1)
       have 53: "  pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n Q) \<in> carrier (R [\<X>\<^bsub>Suc n\<^esub>]) "
         using 51 ring_hom_closed[of "pre_to_univ_poly_inv (Suc n) i" ] 
-        by (smt 3 diff_Suc_1)
+        by (smt (z3) 3 diff_Suc_1)
       show ?thesis using 50 51 52 53
       using pre_to_univ_poly_is_hom(1)[of i "Suc n"]
             ring_hom_add[of "pre_to_univ_poly (Suc n) i" "R [\<X>\<^bsub>Suc n\<^esub>]" "Pring (R [\<X>\<^bsub>Suc n - 1\<^esub>]) {i}"
@@ -6209,7 +6209,7 @@ proof-
                 pre_to_univ_poly (Suc n) i (pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n p)) \<otimes>\<^bsub>Pring (R [\<X>\<^bsub>n\<^esub>]) {i}\<^esub> 
                   pre_to_univ_poly (Suc n) i (pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n (pvar R j)))"
         using 2 3 ring_hom_mult
-        by (smt "0" A(1) A(2) MP.indexed_const_closed diff_Suc_1 local.pvar_closed ring_hom_closed)
+        by (smt (z3) "0" A(1) A(2) MP.indexed_const_closed diff_Suc_1 local.pvar_closed ring_hom_closed)
       have 5: "pre_to_univ_poly (Suc n) i (pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n (p \<otimes>\<^bsub>R [\<X>\<^bsub>n\<^esub>]\<^esub> pvar R j))) =
                 MP.indexed_const n p \<otimes>\<^bsub>Pring (R [\<X>\<^bsub>n\<^esub>]) {i}\<^esub> 
                   pre_to_univ_poly (Suc n) i (pre_to_univ_poly_inv (Suc n) i (MP.indexed_const n (pvar R j)))"
@@ -6406,7 +6406,7 @@ proof-
     by (metis "2" "5" comp_apply)
   hence 6: "(to_univ_poly (Suc n) i) (from_univ_poly (Suc n) i (to_polynomial (R[\<X>\<^bsub>n\<^esub>]) a)) = to_polynomial (R[\<X>\<^bsub>n\<^esub>]) a"
     using UP_cring.IP_to_UP_indexed_const[of "R[\<X>\<^bsub>n\<^esub>]"] 
-    by (smt UP_cring_def assms(2) coord_cring_cring)
+    by (smt (z3) UP_cring_def assms(2) coord_cring_cring)
   have 7: "(to_univ_poly (Suc n) i) (from_univ_poly (Suc n) i (up_ring.monom (UP (R [\<X>\<^bsub>n\<^esub>])) \<one>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> m)) = up_ring.monom (UP (R [\<X>\<^bsub>n\<^esub>])) \<one>\<^bsub>R[\<X>\<^bsub>n\<^esub>]\<^esub> m"
   proof-
     have 70: "pvar (R [\<X>\<^bsub>n\<^esub>]) i [^]\<^bsub>Pring (R [\<X>\<^bsub>n\<^esub>]) {i}\<^esub> m \<in> carrier (Pring (R [\<X>\<^bsub>n\<^esub>]) {i})"
@@ -6980,7 +6980,7 @@ lemma image_subset_iff_subset_evimage: "A \<subseteq> carrier (R\<^bsup>n\<^esup
 
 lemma evimage_const [simp]: "((\<lambda>x. c) \<inverse>\<^bsub>n\<^esub> A) = (if c \<in> A then carrier (R\<^bsup>n\<^esup>) else {})"
   unfolding evimage_def using vimage_const[of c A] 
-  by (smt Int_commute inf_bot_right inf_top.right_neutral)
+  by (smt (z3) Int_commute inf_bot_right inf_top.right_neutral)
 
 lemma evimage_if [simp]: "((\<lambda>x. if x \<in> B then c else d) \<inverse>\<^bsub>n\<^esub> A) =
    (if c \<in> A then (if d \<in> A then carrier (R\<^bsup>n\<^esup>) else B \<inter> carrier (R\<^bsup>n\<^esup>) )
@@ -6990,7 +6990,7 @@ unfolding evimage_def euminus_set_def using vimage_if[of B c d A]
 
 lemma evimage_inter_cong: "(\<And> w. w \<in> S \<Longrightarrow> f w = g w) \<Longrightarrow> f \<inverse>\<^bsub>n\<^esub> y \<inter> S = g \<inverse>\<^bsub>n\<^esub> y \<inter> S"
 unfolding evimage_def 
-  by (smt Int_assoc Int_commute vimage_inter_cong)
+  by (smt (z3) Int_assoc Int_commute vimage_inter_cong)
 
 lemma evimage_ident [simp]: "(\<lambda>x. x) \<inverse>\<^bsub>n\<^esub> Y = Y \<inter> carrier (R\<^bsup>n\<^esup>)"
 unfolding evimage_def 

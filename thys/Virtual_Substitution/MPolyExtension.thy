@@ -1,6 +1,6 @@
 section "Multivariate Polynomials Extension"
 theory MPolyExtension
-  imports Polynomials.Polynomials (*MPoly_Type_Efficient_Code*) Polynomials.MPoly_Type_Class_FMap
+  imports Polynomials.Polynomials (*MPoly_Type_Efficient_Code*) Polynomials.MPoly_Type_Class_Finite_Map
 begin
 
 subsection "Definition Lifting"

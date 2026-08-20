@@ -150,7 +150,7 @@ lemma co_test_reflexive:
 
 lemma co_test_transitive:
   "co_test x \<Longrightarrow> transitive x"
-  by (smt co_test_def sup_assoc le_iff_sup mult_left_one mult_left_zero mult_right_dist_sup mult_semi_associative)
+  by (smt (z3) co_test_def sup_assoc le_iff_sup mult_left_one mult_left_zero mult_right_dist_sup mult_semi_associative)
 
 lemma co_test_idempotent:
   "co_test x \<Longrightarrow> idempotent x"
@@ -693,7 +693,7 @@ lemma strong_up_closed_2:
 subclass lattice_ordered_pre_left_semiring_2
   apply unfold_locales
   apply (smt comp_up_closed dual_antitone dual_dist_comp_one dual_involutive dual_one mult_left_one mult_one_associative mult_semi_associative up_closed_def strong_up_closed_2)
-  by (smt dual_dist_comp_one dual_dist_inf dual_involutive eq_refl mult_one_associative mult_right_dist_sup)
+  by (smt (z3) dual_dist_comp_one dual_dist_inf dual_involutive eq_refl mult_one_associative mult_right_dist_sup)
 
 text \<open>AAMP Theorem 8\<close>
 
@@ -724,7 +724,7 @@ proof
   have "sup_distributive x"
     using 1 sup_dist_contact_def by auto
   hence "inf_distributive (x\<^sup>d)"
-    using 2 by (smt sup_distributive_def dual_dist_comp_one dual_dist_inf dual_involutive inf_distributive_def up_closed_def)
+    using 2 by (smt (z3) sup_distributive_def dual_dist_comp_one dual_dist_inf dual_involutive inf_distributive_def up_closed_def)
   thus "inf_dist_kernel (x\<^sup>d)"
     using 1 contact_kernel_dual sup_dist_contact_def inf_dist_kernel_def by blast
 next
@@ -734,7 +734,7 @@ next
   have "inf_distributive (x\<^sup>d)"
     using 3 inf_dist_kernel_def by auto
   hence "sup_distributive (x\<^sup>d\<^sup>d)"
-    using 4 by (smt inf_distributive_def sup_distributive_def dual_dist_sup dual_involutive strong_up_closed_2)
+    using 4 by (smt (z3) inf_distributive_def sup_distributive_def dual_dist_sup dual_involutive strong_up_closed_2)
   thus "sup_dist_contact x"
     using 3 contact_kernel_dual sup_dist_contact_def dual_involutive inf_dist_kernel_def by auto
 qed

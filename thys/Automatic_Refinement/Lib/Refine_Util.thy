@@ -595,7 +595,7 @@ ML \<open>
         val goal_ctxt = Variable.declare_term goal ctxt
         val rthm =
           Goal.prove_internal goal_ctxt [] (Thm.cterm_of ctxt goal)
-            (K (simp_tac (put_simpset HOL_basic_ss goal_ctxt addsimps @{thms conv_tag_def}) 1))
+            (K (simp_tac (goal_ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm conv_tag_def}) 1))
         |> Goal.norm_result ctxt
       in 
         fixup_vars ct rthm 

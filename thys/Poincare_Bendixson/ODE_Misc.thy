@@ -29,7 +29,7 @@ proof -
   define L' where "L' = max L 1"
   with L have "L' > 0" "\<And>x. x \<in> I \<Longrightarrow> dist (f x (v x)) (f x (w x)) \<le> L' * dist (v x) (w x)"
      apply (auto simp: lipschitz_on_def L'_def)
-    by (smt Un_iff image_eqI mult_right_mono zero_le_dist)
+    by (smt (z3) Un_iff image_eqI mult_right_mono zero_le_dist)
   then show ?thesis ..
 qed
 
@@ -164,7 +164,7 @@ proof -
       ultimately
       have "a0 \<le> a1"
         apply (intro a0_least) apply assumption apply assumption
-        by (smt atLeastAtMost_iff image_subset_iff)
+        by (smt (z3) atLeastAtMost_iff image_subset_iff)
       with \<open>a1<a0\<close> show False by simp
     qed
     then have "a0 = a" using \<open>a \<le> a0\<close> by simp
@@ -333,7 +333,7 @@ proof -
   have "{-d/2..d/2} \<subseteq> ball 0 d"
     using \<open>0 < d\<close> dist_norm mem_ball by auto
   thus ?thesis
-    by (smt \<open>0 < d\<close> \<open>ball 0 d \<subseteq> existence_ivl0 x\<close> divide_minus_left half_gt_zero order_trans)
+    by (smt (z3) \<open>0 < d\<close> \<open>ball 0 d \<subseteq> existence_ivl0 x\<close> divide_minus_left half_gt_zero order_trans)
 qed
 
 lemma open_existence_ivl':
@@ -502,7 +502,7 @@ proof -
       by (metis abs_norm_cancel cancel_comm_monoid_add_class.diff_cancel diff_zero half_gt_zero nf norm_zero)
     then have 
       t: "\<And>t. t \<in> {-a2<--<a2} \<Longrightarrow> norm(f (flow0 x t) - f (flow0 x 0)) \<le> norm(f x)/2"
-      by (smt open_segment_bound(2) open_segment_bound1 real_norm_def)
+      by (smt (z3) open_segment_bound(2) open_segment_bound1 real_norm_def)
     define a where "a = min a1 (a2/2)"
     have t1:"a > 0" unfolding a_def using \<open>a1 > 0\<close> \<open>a2 > 0\<close> by auto
     then have t3:"0 \<in>{-a--a}"
@@ -511,7 +511,7 @@ proof -
       using ODE_Auxiliarities.closed_segment_eq_real_ivl by auto
     then have t2:"{-a--a} \<subseteq> existence_ivl0 x" using a1 by auto
     have "{-a--a} \<subseteq> {-a2<--<a2}" unfolding a_def using \<open>a1 > 0\<close> \<open>a2 > 0\<close>
-      by (smt Diff_iff closed_segment_eq_real_ivl atLeastAtMost_iff empty_iff half_gt_zero insert_iff pos_half_less segment(1) subset_eq)
+      by (smt (z3) Diff_iff closed_segment_eq_real_ivl atLeastAtMost_iff empty_iff half_gt_zero insert_iff pos_half_less segment(1) subset_eq)
     then have t4:"\<And>t. t \<in> {-a--a} \<Longrightarrow> norm(f (flow0 x t) - f (flow0 x 0)) \<le> norm(f x)/2" using t by auto
     show ?thesis using t1 t2 t3 t4 that by auto
   qed
@@ -627,7 +627,7 @@ proof -
   from flow_in_closed_max_timeE[OF assms(1-4)] assms(5)
   obtain s where s: "0 \<le> s" "s < t" "flow0 x ` {0..s} \<subseteq> M"
     and s_max: "\<And>s'. 0 \<le> s' \<Longrightarrow> s' \<le> t \<Longrightarrow> flow0 x ` {0..s'} \<subseteq> M \<Longrightarrow> s' \<le> s"
-    by (smt atLeastAtMost_iff image_subset_iff)
+    by (smt (z3) atLeastAtMost_iff image_subset_iff)
   note s
   moreover
   have "flow0 x s \<notin> interior M"
@@ -722,7 +722,7 @@ proof -
   obtain d where "d>0" "g ` (ball x d) \<subseteq> ball (g x) ((g x)/2)"
     by (meson assms(2) continuous_at_ball half_gt_zero)
   then have "\<forall>y \<in> cball x (d/2). g y > 0"
-    by (smt assms(2) dist_norm image_subset_iff mem_ball mem_cball pos_half_less real_norm_def)
+    by (smt (z3) assms(2) dist_norm image_subset_iff mem_ball mem_cball pos_half_less real_norm_def)
   thus ?thesis
     using \<open>0 < d\<close> that half_gt_zero by blast
 qed

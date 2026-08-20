@@ -312,7 +312,7 @@ lemma mk_lhsv_thm:
       (* HT \<rightarrow> HT_mods *) 
       fun mk_HT_mods ctxt thm = let
         (* Local_Defs.unfold will destroy names of bound variables here!?, so using simplify! *)
-        fun simplified ctxt thms = simplify (Simplifier.clear_simpset ctxt addsimps thms)
+        fun simplified ctxt thms = simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
       
         val ctxt = Named_Simpsets.put @{named_simpset vcg_bb} ctxt
       in
@@ -358,7 +358,7 @@ lemma adjust_scope:
   shows "HT \<pi> (\<lambda>s. P (<<>|s>)) (SCOPE c) (\<lambda>s\<^sub>0 s. \<exists>l. Q (<<>|s\<^sub>0>) (<l|s>))"
   unfolding HT_def
   apply (clarsimp simp: wp_eq)  
-  by (smt HT_def assms combine_collapse combine_nest(1) wp_conseq)
+  by (smt (z3) HT_def assms combine_collapse combine_nest(1) wp_conseq)
 
   
 (* Forward assignment rule + renaming of assigned variable *)  
@@ -384,7 +384,7 @@ lemma adjust_scope_partial:
   shows "HT_partial \<pi> (\<lambda>s. P (<<>|s>)) (SCOPE c) (\<lambda>s\<^sub>0 s. \<exists>l. Q (<<>|s\<^sub>0>) (<l|s>))"
   unfolding HT_partial_def
   apply (clarsimp simp: wlp_eq)  
-  by (smt HT_partial_def assms combine_collapse combine_nest(1) wlp_conseq)
+  by (smt (z3) HT_partial_def assms combine_collapse combine_nest(1) wlp_conseq)
     
 
 definition "ADJUST_PRE_SCOPE P \<equiv> (\<lambda>s. P <<>|s>)"
@@ -579,7 +579,7 @@ ML \<open>structure IMP2_Parameters
       val retvs = IMP_Syntax.zip_with_ret_names imp_retvs
       
       val ctxt = Named_Simpsets.put @{named_simpset vcg_bb} ctxt
-      val ctxt = ctxt addsimps @{thms ADJUST_unfolds}
+      val ctxt = ctxt |> Simplifier.add_simps @{thms ADJUST_unfolds}
   
       val thm = thm
         |> fold_rev (uncurry (adjust_retv_rl ctxt)) retvs
@@ -732,7 +732,7 @@ ML \<open>structure Spec_Postprocessing
       (* Define *)
       val lhs = Free (Binding.name_of binding, fastype_of cmd)
       val eqn = Logic.mk_equals (lhs,cmd)
-      val ((lhs,(_,def_thm)),lthy) = Specification.definition (SOME (binding,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,[]),eqn) lthy
+      val ((lhs,(_,def_thm)),lthy) = Specification.definition {verbose = false} (SOME (binding,NONE,Mixfix.NoSyn)) [] [] ((Binding.empty,[]),eqn) lthy
       
       (* Fold definition in theorem *)
       val thm = Local_Defs.fold lthy [def_thm] thm

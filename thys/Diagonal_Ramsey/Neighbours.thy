@@ -6,13 +6,6 @@ theory Neighbours imports "Ramsey_Bounds.Ramsey_Bounds"
 
 begin
 
-abbreviation set_difference :: "['a set,'a set] \<Rightarrow> 'a set" (infixl \<open>\<setminus>\<close> 65)
-  where "A \<setminus> B \<equiv> A-B"
-
-lemma setdif_eq_iff: "\<lbrakk>A \<subseteq> C; B \<subseteq> C\<rbrakk> \<Longrightarrow> C \<setminus> A = C \<setminus> B \<longleftrightarrow> A = B"
-  by auto
-
-
 subsection \<open>Preliminaries on graphs\<close>
 
 context ulgraph

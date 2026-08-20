@@ -21,14 +21,14 @@ lemma lead_coeff_prod_mset:
 
 lemma content_normalize [simp]:
   fixes p :: "'a :: {factorial_semiring, idom_divide, semiring_gcd, normalization_semidom_multiplicative} poly"
-  shows "content (normalize p) = content p"
+  shows "Polynomial.content (normalize p) = Polynomial.content p"
 proof (cases "p = 0")
   case [simp]: False
-  have "content p = content (unit_factor p * normalize p)"
+  have "Polynomial.content p = Polynomial.content (unit_factor p * normalize p)"
     by simp
-  also have "\<dots> = content (unit_factor p) * content (normalize p)"
+  also have "\<dots> = Polynomial.content (unit_factor p) * Polynomial.content (normalize p)"
     by (rule content_mult)
-  also have "content (unit_factor p) = 1"
+  also have "Polynomial.content (unit_factor p) = 1"
     by (auto simp: unit_factor_poly_def)
   finally show ?thesis by simp
 qed auto
@@ -36,7 +36,7 @@ qed auto
 lemma rat_to_normalized_int_poly_exists:
   fixes p :: "rat poly"
   assumes "p \<noteq> 0"
-  obtains q lc where "p = Polynomial.smult lc (of_int_poly q)" "lc > 0" "content q = 1"
+  obtains q lc where "p = Polynomial.smult lc (of_int_poly q)" "lc > 0" "Polynomial.content q = 1"
 proof -
   define lc where "lc = fst (rat_to_normalized_int_poly p)"
   define q where "q = snd (rat_to_normalized_int_poly p)"
@@ -84,7 +84,7 @@ qed (use assms in auto)
 
 lemma squarefree_imp_coprime_pderiv:
   fixes p :: "'a :: {factorial_ring_gcd,semiring_gcd_mult_normalize,semiring_char_0} poly"
-  assumes "squarefree p" and "content p = 1"
+  assumes "squarefree p" and "Polynomial.content p = 1"
   shows   "Rings.coprime p (pderiv p)"
 proof (rule coprimeI_primes)
   fix d assume d: "prime d" "d dvd p" "d dvd pderiv p"
@@ -115,7 +115,7 @@ proof (rule coprimeI_primes)
     case True
     then obtain d' where [simp]: "d = [:d':]"
       by (elim degree_eq_zeroE)
-    from d have "d' dvd content p"
+    from d have "d' dvd Polynomial.content p"
       by (simp add: const_poly_dvd_iff_dvd_content)
     with assms and prime_imp_prime_elem[OF \<open>prime d\<close>] show False
       by (auto simp: prime_elem_const_poly_iff)
@@ -203,7 +203,7 @@ proof -
 qed
 
 lemma squarefree_of_int_polyI:
-  assumes "squarefree p" "content p = 1"
+  assumes "squarefree p" "Polynomial.content p = 1"
   shows   "squarefree (of_int_poly p :: 'a :: {field_char_0,field_gcd} poly)"
 proof -
   have "Rings.coprime p (pderiv p)"
@@ -462,7 +462,7 @@ lemma abs_prod_mset: "\<bar>prod_mset (A :: 'a :: idom_abs_sgn multiset)\<bar> =
   by (induction A) (auto simp: abs_mult)
 
 lemma content_1_imp_nonconstant_prime_factors:
-  assumes "content (p :: int poly) = 1" and "q \<in> prime_factors p"
+  assumes "Polynomial.content (p :: int poly) = 1" and "q \<in> prime_factors p"
   shows   "Polynomial.degree q > 0"
 proof -
   let ?d = "Polynomial.degree :: int poly \<Rightarrow> nat"
@@ -472,7 +472,7 @@ proof -
   define P2 where "P2 = filter_mset (\<lambda>p. ?d p > 0) P"
   have [simp]: "p \<noteq> 0"
     using assms by auto
-  have "1 = content (normalize p)"
+  have "1 = Polynomial.content (normalize p)"
     using assms by simp
   also have "normalize p = prod_mset P"
     unfolding P_def by (rule prod_mset_prime_factorization [symmetric]) auto
@@ -480,15 +480,15 @@ proof -
     by (induction P) auto
   also have "prod_mset \<dots> = prod_mset P1 * prod_mset P2"
     unfolding P1_def P2_def by (subst prod_mset.union) auto
-  also have "content \<dots> = content (prod_mset P1) * content (prod_mset P2)"
+  also have "Polynomial.content \<dots> = Polynomial.content (prod_mset P1) * Polynomial.content (prod_mset P2)"
     unfolding content_mult ..
   also have "image_mset id P1 = image_mset (\<lambda>q. [:?lc q:]) P1"
     by (intro image_mset_cong) (auto simp: P1_def elim!: degree_eq_zeroE)
   hence "P1 = image_mset (\<lambda>q. [:?lc q:]) P1"
     by simp
-  also have "content (prod_mset \<dots>) = \<bar>(\<Prod>q\<in>#P1. ?lc q)\<bar>"
+  also have "Polynomial.content (prod_mset \<dots>) = \<bar>(\<Prod>q\<in>#P1. ?lc q)\<bar>"
     by (simp add: content_prod_mset multiset.map_comp o_def abs_prod_mset)
-  finally have "\<bar>(\<Prod>q\<in>#P1. ?lc q)\<bar> * content (prod_mset P2) = 1" ..
+  finally have "\<bar>(\<Prod>q\<in>#P1. ?lc q)\<bar> * Polynomial.content (prod_mset P2) = 1" ..
   hence "\<bar>(\<Prod>q\<in>#P1. ?lc q)\<bar> dvd 1"
     unfolding dvd_def by metis
 

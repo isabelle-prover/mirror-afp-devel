@@ -6,19 +6,31 @@ theory Unification_Attributes
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>Setup of OF attribute with adjustable unifier.\<close>
+text \<open>Setup of attributes with adjustable unifier.\<close>
 
 ML\<open>
-\<^functor_instance>\<open>struct_name: Standard_Unify_OF
-  functor_name: Unify_OF
-  id: \<open>""\<close>
+\<^functor_instance>\<open>struct_name: Unify_OF
+  functor_name: Unify_OF_Functor
+  id: \<open>"uOF"\<close>
   more_args: \<open>val init_args = {
-    normalisers = SOME Standard_Mixed_Comb_Unification.norms_first_higherp_comb_unify,
-    unifier = SOME Standard_Mixed_Comb_Unification.first_higherp_comb_unify,
+    normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
+    unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify,
     mode = SOME (Unify_OF_Args.PM.key Unify_OF_Args.PM.fact)
   }\<close>\<close>
 \<close>
-local_setup \<open>Standard_Unify_OF.setup_attribute NONE\<close>
+local_setup \<open>Unify_OF.setup_attribute NONE\<close>
+
+ML\<open>
+\<^functor_instance>\<open>struct_name: Unify_THEN
+  functor_name: Unify_THEN_Functor
+  id: \<open>"uTHEN"\<close>
+  more_args: \<open>val init_args = {
+    normalisers = SOME Mixed_Comb_Unification.norms_fo_hop_comb_unify,
+    unifier = SOME Mixed_Comb_Unification.fo_hop_comb_unify,
+    mode = SOME (Unify_THEN_Args.PM.key Unify_THEN_Args.PM.fact)
+  }\<close>\<close>
+\<close>
+local_setup \<open>Unify_THEN.setup_attribute NONE\<close>
 
 paragraph \<open>Examples\<close>
 
@@ -38,7 +50,7 @@ lemma
   shows "PROP B"
   by (fact h2[uOF h1]) \<comment>\<open>the line below is equivalent\<close>
   (* by (fact h2[uOF h1 mode: fact]) *)
-  (* \<comment>\<open>Note: @{attribute OF} would not work in this case:\<close> *)
+  \<comment>\<open>Note: @{attribute OF} would not work in this case:\<close>
   (* thm h2[OF h1] *)
 
 lemma
@@ -65,6 +77,16 @@ lemma
   shows "PROP E"
   by (fact h1[uOF h2 unifier: First_Order_Unification.unify]) \<comment>\<open>the line below is equivalent\<close>
   (* supply [[uOF unifier: First_Order_Unification.unify]] by (fact h1[uOF h2]) *)
+
+text\<open>The attributes @{attribute uTHEN} works analogously:\<close>
+
+lemma
+  assumes rule: "\<And>B. (PROP A \<Longrightarrow> PROP B) \<Longrightarrow> PROP B"
+  and args: "PROP A \<Longrightarrow> PROP B" "PROP A \<Longrightarrow> PROP C"
+  shows "PROP B" "PROP C"
+  by (fact args[uTHEN rule])+ \<comment>\<open>Note: @{attribute THEN} would not work in this case:\<close>
+  (* by (fact args[THEN rule])+ *)
+
 end
 
 end

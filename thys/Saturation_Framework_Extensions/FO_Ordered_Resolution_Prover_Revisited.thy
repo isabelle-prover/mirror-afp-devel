@@ -441,7 +441,7 @@ proof -
     (\<lambda>C. (C, Processed)) ` Liminf_llist (lmap P_of_state Sts) \<union>
     (\<lambda>C. (C, Old)) ` Liminf_llist (lmap Q_of_state Sts)\<close>
     unfolding lclss_of_state_def using Liminf_llist_lmap_union Liminf_llist_lmap_image
-    by (smt Pair_inject Un_iff disjoint_iff_not_equal imageE inj_onI label.simps(1,3,5)
+    by (smt (z3) Pair_inject Un_iff disjoint_iff_not_equal imageE inj_onI label.simps(1,3,5)
         llist.map_cong)
  then show ?thesis
    unfolding lclss_of_state_def Liminf_state_def by auto

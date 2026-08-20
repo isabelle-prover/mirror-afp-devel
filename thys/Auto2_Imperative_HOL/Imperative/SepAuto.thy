@@ -444,11 +444,11 @@ lemma arrays_on_Ref_alloc [rewrite]: "arrays (snd (Ref.alloc x h)) t i = arrays 
   by (metis (no_types, lifting) Ref.alloc_def arrays_on_Ref_set select_convs(1) sndI surjective update_convs(3))
 
 lemma arrays_on_Array_alloc [rewrite]: "i < lim h \<Longrightarrow> arrays (snd (Array.alloc xs h)) t i = arrays h t i"
-  by (smt Array.alloc_def Array.set_def addr_of_array.simps fun_upd_apply less_or_eq_imp_le
+  by (smt (z3) Array.alloc_def Array.set_def addr_of_array.simps fun_upd_apply less_or_eq_imp_le
           linorder_not_less simps(1) snd_conv surjective update_convs(1) update_convs(3))
 
 lemma refs_on_Ref_alloc [rewrite]: "i < lim h \<Longrightarrow> refs (snd (Ref.alloc x h)) t i = refs h t i"
-  by (smt Ref.alloc_def Ref.set_def addr_of_ref.simps fun_upd_apply less_or_eq_imp_le
+  by (smt (z3) Ref.alloc_def Ref.set_def addr_of_ref.simps fun_upd_apply less_or_eq_imp_le
           linorder_not_less select_convs(2) simps(6) snd_conv surjective update_convs(3))
 
 setup \<open>add_rewrite_rule @{thm execute_new}\<close>

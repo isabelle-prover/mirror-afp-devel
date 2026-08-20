@@ -1,266 +1,266 @@
 [
  {
-  "link": "/topics/computer-science/",
+  "link": "../topics/computer-science/",
   "name": "Computer science"
  },
  {
-  "link": "/topics/computer-science/algorithms/",
+  "link": "../topics/computer-science/algorithms/",
   "name": "Computer science/Algorithms"
  },
  {
-  "link": "/topics/computer-science/algorithms/approximation/",
+  "link": "../topics/computer-science/algorithms/approximation/",
   "name": "Computer science/Algorithms/Approximation"
  },
  {
-  "link": "/topics/computer-science/algorithms/concurrent/",
+  "link": "../topics/computer-science/algorithms/concurrent/",
   "name": "Computer science/Algorithms/Concurrent"
  },
  {
-  "link": "/topics/computer-science/algorithms/distributed/",
+  "link": "../topics/computer-science/algorithms/distributed/",
   "name": "Computer science/Algorithms/Distributed"
  },
  {
-  "link": "/topics/computer-science/algorithms/geometry/",
+  "link": "../topics/computer-science/algorithms/geometry/",
   "name": "Computer science/Algorithms/Geometry"
  },
  {
-  "link": "/topics/computer-science/algorithms/graph/",
+  "link": "../topics/computer-science/algorithms/graph/",
   "name": "Computer science/Algorithms/Graph"
  },
  {
-  "link": "/topics/computer-science/algorithms/mathematical/",
+  "link": "../topics/computer-science/algorithms/mathematical/",
   "name": "Computer science/Algorithms/Mathematical"
  },
  {
-  "link": "/topics/computer-science/algorithms/online/",
+  "link": "../topics/computer-science/algorithms/online/",
   "name": "Computer science/Algorithms/Online"
  },
  {
-  "link": "/topics/computer-science/algorithms/optimization/",
+  "link": "../topics/computer-science/algorithms/optimization/",
   "name": "Computer science/Algorithms/Optimization"
  },
  {
-  "link": "/topics/computer-science/algorithms/quantum-computing/",
+  "link": "../topics/computer-science/algorithms/quantum-computing/",
   "name": "Computer science/Algorithms/Quantum computing"
  },
  {
-  "link": "/topics/computer-science/algorithms/randomized/",
+  "link": "../topics/computer-science/algorithms/randomized/",
   "name": "Computer science/Algorithms/Randomized"
  },
  {
-  "link": "/topics/computer-science/artificial-intelligence/",
+  "link": "../topics/computer-science/artificial-intelligence/",
   "name": "Computer science/Artificial intelligence"
  },
  {
-  "link": "/topics/computer-science/automata-and-formal-languages/",
+  "link": "../topics/computer-science/automata-and-formal-languages/",
   "name": "Computer science/Automata and formal languages"
  },
  {
-  "link": "/topics/computer-science/concurrency/",
+  "link": "../topics/computer-science/concurrency/",
   "name": "Computer science/Concurrency"
  },
  {
-  "link": "/topics/computer-science/concurrency/process-calculi/",
+  "link": "../topics/computer-science/concurrency/process-calculi/",
   "name": "Computer science/Concurrency/Process calculi"
  },
  {
-  "link": "/topics/computer-science/data-management-systems/",
+  "link": "../topics/computer-science/data-management-systems/",
   "name": "Computer science/Data management systems"
  },
  {
-  "link": "/topics/computer-science/data-structures/",
+  "link": "../topics/computer-science/data-structures/",
   "name": "Computer science/Data structures"
  },
  {
-  "link": "/topics/computer-science/functional-programming/",
+  "link": "../topics/computer-science/functional-programming/",
   "name": "Computer science/Functional programming"
  },
  {
-  "link": "/topics/computer-science/hardware/",
+  "link": "../topics/computer-science/hardware/",
   "name": "Computer science/Hardware"
  },
  {
-  "link": "/topics/computer-science/machine-learning/",
+  "link": "../topics/computer-science/machine-learning/",
   "name": "Computer science/Machine learning"
  },
  {
-  "link": "/topics/computer-science/networks/",
+  "link": "../topics/computer-science/networks/",
   "name": "Computer science/Networks"
  },
  {
-  "link": "/topics/computer-science/programming-languages/",
+  "link": "../topics/computer-science/programming-languages/",
   "name": "Computer science/Programming languages"
  },
  {
-  "link": "/topics/computer-science/programming-languages/compiling/",
+  "link": "../topics/computer-science/programming-languages/compiling/",
   "name": "Computer science/Programming languages/Compiling"
  },
  {
-  "link": "/topics/computer-science/programming-languages/lambda-calculi/",
+  "link": "../topics/computer-science/programming-languages/lambda-calculi/",
   "name": "Computer science/Programming languages/Lambda calculi"
  },
  {
-  "link": "/topics/computer-science/programming-languages/language-definitions/",
+  "link": "../topics/computer-science/programming-languages/language-definitions/",
   "name": "Computer science/Programming languages/Language definitions"
  },
  {
-  "link": "/topics/computer-science/programming-languages/logics/",
+  "link": "../topics/computer-science/programming-languages/logics/",
   "name": "Computer science/Programming languages/Logics"
  },
  {
-  "link": "/topics/computer-science/programming-languages/misc/",
+  "link": "../topics/computer-science/programming-languages/misc/",
   "name": "Computer science/Programming languages/Misc"
  },
  {
-  "link": "/topics/computer-science/programming-languages/static-analysis/",
+  "link": "../topics/computer-science/programming-languages/static-analysis/",
   "name": "Computer science/Programming languages/Static analysis"
  },
  {
-  "link": "/topics/computer-science/programming-languages/type-systems/",
+  "link": "../topics/computer-science/programming-languages/type-systems/",
   "name": "Computer science/Programming languages/Type systems"
  },
  {
-  "link": "/topics/computer-science/security/",
+  "link": "../topics/computer-science/security/",
   "name": "Computer science/Security"
  },
  {
-  "link": "/topics/computer-science/security/cryptography/",
+  "link": "../topics/computer-science/security/cryptography/",
   "name": "Computer science/Security/Cryptography"
  },
  {
-  "link": "/topics/computer-science/semantics-and-reasoning/",
+  "link": "../topics/computer-science/semantics-and-reasoning/",
   "name": "Computer science/Semantics and reasoning"
  },
  {
-  "link": "/topics/computer-science/system-description-languages/",
+  "link": "../topics/computer-science/system-description-languages/",
   "name": "Computer science/System description languages"
  },
  {
-  "link": "/topics/logic/",
+  "link": "../topics/logic/",
   "name": "Logic"
  },
  {
-  "link": "/topics/logic/computability/",
+  "link": "../topics/logic/computability/",
   "name": "Logic/Computability"
  },
  {
-  "link": "/topics/logic/general-logic/",
+  "link": "../topics/logic/general-logic/",
   "name": "Logic/General logic"
  },
  {
-  "link": "/topics/logic/general-logic/classical-first-order-logic/",
+  "link": "../topics/logic/general-logic/classical-first-order-logic/",
   "name": "Logic/General logic/Classical first-order logic"
  },
  {
-  "link": "/topics/logic/general-logic/classical-propositional-logic/",
+  "link": "../topics/logic/general-logic/classical-propositional-logic/",
   "name": "Logic/General logic/Classical propositional logic"
  },
  {
-  "link": "/topics/logic/general-logic/decidability-of-theories/",
+  "link": "../topics/logic/general-logic/decidability-of-theories/",
   "name": "Logic/General logic/Decidability of theories"
  },
  {
-  "link": "/topics/logic/general-logic/logics-of-knowledge-and-belief/",
+  "link": "../topics/logic/general-logic/logics-of-knowledge-and-belief/",
   "name": "Logic/General logic/Logics of knowledge and belief"
  },
  {
-  "link": "/topics/logic/general-logic/mechanization-of-proofs/",
+  "link": "../topics/logic/general-logic/mechanization-of-proofs/",
   "name": "Logic/General logic/Mechanization of proofs"
  },
  {
-  "link": "/topics/logic/general-logic/modal-logic/",
+  "link": "../topics/logic/general-logic/modal-logic/",
   "name": "Logic/General logic/Modal logic"
  },
  {
-  "link": "/topics/logic/general-logic/paraconsistent-logics/",
+  "link": "../topics/logic/general-logic/paraconsistent-logics/",
   "name": "Logic/General logic/Paraconsistent logics"
  },
  {
-  "link": "/topics/logic/general-logic/temporal-logic/",
+  "link": "../topics/logic/general-logic/temporal-logic/",
   "name": "Logic/General logic/Temporal logic"
  },
  {
-  "link": "/topics/logic/philosophical-aspects/",
+  "link": "../topics/logic/philosophical-aspects/",
   "name": "Logic/Philosophical aspects"
  },
  {
-  "link": "/topics/logic/proof-theory/",
+  "link": "../topics/logic/proof-theory/",
   "name": "Logic/Proof theory"
  },
  {
-  "link": "/topics/logic/rewriting/",
+  "link": "../topics/logic/rewriting/",
   "name": "Logic/Rewriting"
  },
  {
-  "link": "/topics/logic/set-theory/",
+  "link": "../topics/logic/set-theory/",
   "name": "Logic/Set theory"
  },
  {
-  "link": "/topics/mathematics/",
+  "link": "../topics/mathematics/",
   "name": "Mathematics"
  },
  {
-  "link": "/topics/mathematics/algebra/",
+  "link": "../topics/mathematics/algebra/",
   "name": "Mathematics/Algebra"
  },
  {
-  "link": "/topics/mathematics/analysis/",
+  "link": "../topics/mathematics/analysis/",
   "name": "Mathematics/Analysis"
  },
  {
-  "link": "/topics/mathematics/category-theory/",
+  "link": "../topics/mathematics/category-theory/",
   "name": "Mathematics/Category theory"
  },
  {
-  "link": "/topics/mathematics/combinatorics/",
+  "link": "../topics/mathematics/combinatorics/",
   "name": "Mathematics/Combinatorics"
  },
  {
-  "link": "/topics/mathematics/games-and-economics/",
+  "link": "../topics/mathematics/games-and-economics/",
   "name": "Mathematics/Games and economics"
  },
  {
-  "link": "/topics/mathematics/geometry/",
+  "link": "../topics/mathematics/geometry/",
   "name": "Mathematics/Geometry"
  },
  {
-  "link": "/topics/mathematics/graph-theory/",
+  "link": "../topics/mathematics/graph-theory/",
   "name": "Mathematics/Graph theory"
  },
  {
-  "link": "/topics/mathematics/measure-and-integration/",
+  "link": "../topics/mathematics/measure-and-integration/",
   "name": "Mathematics/Measure and integration"
  },
  {
-  "link": "/topics/mathematics/misc/",
+  "link": "../topics/mathematics/misc/",
   "name": "Mathematics/Misc"
  },
  {
-  "link": "/topics/mathematics/number-theory/",
+  "link": "../topics/mathematics/number-theory/",
   "name": "Mathematics/Number theory"
  },
  {
-  "link": "/topics/mathematics/order/",
+  "link": "../topics/mathematics/order/",
   "name": "Mathematics/Order"
  },
  {
-  "link": "/topics/mathematics/physics/",
+  "link": "../topics/mathematics/physics/",
   "name": "Mathematics/Physics"
  },
  {
-  "link": "/topics/mathematics/physics/quantum-information/",
+  "link": "../topics/mathematics/physics/quantum-information/",
   "name": "Mathematics/Physics/Quantum information"
  },
  {
-  "link": "/topics/mathematics/probability-theory/",
+  "link": "../topics/mathematics/probability-theory/",
   "name": "Mathematics/Probability theory"
  },
  {
-  "link": "/topics/mathematics/topology/",
+  "link": "../topics/mathematics/topology/",
   "name": "Mathematics/Topology"
  },
  {
-  "link": "/topics/tools/",
+  "link": "../topics/tools/",
   "name": "Tools"
  }
 ]

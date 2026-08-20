@@ -21,6 +21,10 @@ A closely related formalization is \<open>AFP/Pushdown_Systems\<close>where \<op
 definition pre_star :: "('n,'t)Prods \<Rightarrow> ('n,'t) syms set \<Rightarrow> ('n,'t) syms set" where
 "pre_star P L = {\<alpha>. \<exists>\<beta> \<in> L. P \<turnstile> \<alpha> \<Rightarrow>* \<beta>}"
 
+lemma pre_star_iff:
+  "u \<in> pre_star P L \<longleftrightarrow> (\<exists>v \<in> L. P \<turnstile> u \<Rightarrow>* v)"
+unfolding pre_star_def by blast
+
 
 subsection \<open>Definition on LTS as Fixpoint\<close>
 
@@ -167,7 +171,7 @@ next
     using \<open>q1 \<in> steps_lts T c' q\<close> \<open>q' \<in> steps_lts T w' q1\<close> Steps_lts_join by fast
   moreover have "P \<turnstile> (c#w) \<Rightarrow>* (c'@w')"
     using \<open>P \<turnstile> [c] \<Rightarrow>* c'\<close> \<open>P \<turnstile> w \<Rightarrow>* w'\<close>
-    by (metis (no_types, opaque_lifting) Cons_eq_appendI derives_append_decomp self_append_conv2)
+    by (metis (no_types, opaque_lifting) Cons_eq_appendI derives_appendD self_append_conv2)
   ultimately show ?case
     by blast
 qed

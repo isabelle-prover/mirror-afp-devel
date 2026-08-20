@@ -34,7 +34,7 @@ fun graph_aux_tac ctxt =
     (case subgoal of
       Const (@{const_name Trueprop}, _) $ (Const (@{const_name eqvt}, _) $ Free (f, _)) =>
         full_simp_tac (
-          ctxt addsimps [@{thm eqvt_def}, Proof_Context.get_thm ctxt (f ^ "_def")]) i
+          ctxt |> Simplifier.add_simps [@{thm eqvt_def}, Proof_Context.get_thm ctxt (f ^ "_def")]) i
     | _ => no_tac))
 \<close>
 

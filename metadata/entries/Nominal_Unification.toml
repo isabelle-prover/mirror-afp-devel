@@ -1,0 +1,43 @@
+title = "Nominal Unification"
+date = 2026-04-23
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = "This is an improved and updated formalisation of the nominal unification algorithm.  Nominal unification is a generalisation of the classic first-order unification to the practically important case of equations between terms involving binding operations. A simple, possibly capturing substitution of terms for variables solves such equations if it makes the equated terms alpha-equivalent, i.e.~equal up to renaming bound names. While nominal unification can be seen as equivalent to Miller's higher-order pattern unification (unification problems can be inter-coded), nominal unification has the advantage of involving only first-order syntax. This means in the presented formalisation we only need to reason about standard inductive datatypes and first-order operations. The main improvement of this development is a much simpler proof for establishing the equivalence relation properties for an inductive definition characterising when two terms are alpha-equivalent. In the original literature, this involved a clunky mutual induction over the size of terms involving three properties. Here we can separate the proofs and use just structural inductions. This results in a much smoother formalisation of the nominal unification algorithm."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.brandao]
+
+[authors.ammer]
+email = "ammer_email"
+
+[authors.sobrinho]
+
+[authors.rincion]
+
+[authors.urban]
+email = "urban_email"
+
+[authors.fernandezm]
+
+[authors.abdulaziz]
+email = "abdulaziz_email"
+
+[contributors]
+
+[notify]
+rincon = "rincon_email"
+abdulaziz = "abdulaziz_email"
+ammer = "ammer_email"
+urban = "urban_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -4,6 +4,21 @@
     <title>Computer science/Security/Cryptography</title>
     <link>https://isa-afp.org/topics/computer-science/security/cryptography/</link>
     <description>AFP entries in Cryptography</description><item>
+  <title>Polynomial Commitment Schemes</title>
+  <link>https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html</link>
+  <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Polynomial Commitment Schemes in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+</item>
+<item>
+  <title>Compressed Oracles</title>
+  <link>https://isa-afp.org/entries/Compressed_Oracles.html</link>
+  <pubDate>Wed, 31 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Compressed Oracles in the AFP</description>
+    <category>Computer science/Security/Cryptography</category>
+    <category>Mathematics/Physics/Quantum information</category>
+</item>
+<item>
   <title>The Oneway to Hiding Theorem</title>
   <link>https://isa-afp.org/entries/Oneway2Hiding.html</link>
   <pubDate>Fri, 27 Jun 2025 00:00:00 +0000</pubDate>

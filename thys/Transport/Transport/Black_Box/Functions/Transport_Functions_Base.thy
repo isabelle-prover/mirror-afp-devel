@@ -3,9 +3,12 @@ section \<open>Transport For Functions\<close>
 subsection \<open>Basic Setup\<close>
 theory Transport_Functions_Base
   imports
+    HOL_Syntax_Bundles_Base
     Monotone_Function_Relator
     Transport_Base
 begin
+
+unbundle no HOL_ascii_syntax
 
 paragraph \<open>Summary\<close>
 text \<open>Basic setup for closure proofs. We introduce locales for the syntax,
@@ -62,59 +65,90 @@ notation t1.Galois_left (infix \<open>\<lessapprox>\<^bsub>L1\<^esub>\<close> 50
 notation t1.unit (\<open>\<eta>\<^sub>1\<close>)
 notation t1.counit (\<open>\<epsilon>\<^sub>1\<close>)
 
-notation L2 (\<open>(\<le>\<^bsub>L2 (_) (_)\<^esub>)\<close> 50)
-notation R2 (\<open>(\<le>\<^bsub>R2 (_) (_)\<^esub>)\<close> 50)
+notation (input) L2 (\<open>('(\<le>(\<^bsub>L2 _ _\<^esub>)'))\<close>)
+notation (output) L2 (\<open>('(\<le>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>)'))\<close>)
+term "L2 x y"
+term "((x x' \<Colon> N) \<Rrightarrow> ((M x x')\<restriction>\<^bsub>P\<^esub>))"
 
-notation dfro1.right_infix (\<open>(_) \<le>\<^bsub>L2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
-notation dfro2.right_infix (\<open>(_) \<le>\<^bsub>R2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) R2 (\<open>('(\<le>(\<^bsub>R2 (_) (_)\<^esub>)'))\<close>)
+notation (output) R2 (\<open>('(\<le>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>)'))\<close>)
 
-notation dfro1.o.ge_right (\<open>(\<ge>\<^bsub>L2 (_) (_)\<^esub>)\<close> 50)
-notation dfro2.o.ge_right (\<open>(\<ge>\<^bsub>R2 (_) (_)\<^esub>)\<close> 50)
+notation (input) dfro1.right_infix (\<open>(_ \<le>(\<^bsub>L2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) dfro1.right_infix (\<open>(_ \<le>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (input) dfro2.right_infix (\<open>(_ \<le>(\<^bsub>R2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) dfro2.right_infix (\<open>(_ \<le>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 
-notation dfro1.ge_right_infix (\<open>(_) \<ge>\<^bsub>L2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
-notation dfro2.ge_right_infix (\<open>(_) \<ge>\<^bsub>R2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) dfro1.o.ge_right (\<open>('(\<ge>(\<^bsub>L2 (_) (_)\<^esub>)'))\<close>)
+notation (output) dfro1.o.ge_right (\<open>('(\<ge>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>)'))\<close>)
+notation (input) dfro2.o.ge_right (\<open>('(\<ge>(\<^bsub>R2 (_) (_)\<^esub>)'))\<close>)
+notation (output) dfro2.o.ge_right (\<open>('(\<ge>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>)'))\<close>)
 
-notation l2 (\<open>l2\<^bsub>(_) (_)\<^esub>\<close>)
-notation r2 (\<open>r2\<^bsub>(_) (_)\<^esub>\<close>)
+notation (input) dfro1.ge_right_infix (\<open>(_ \<ge>(\<^bsub>L2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) dfro1.ge_right_infix (\<open>(_ \<ge>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (input) dfro2.ge_right_infix (\<open>(_ \<ge>(\<^bsub>R2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) dfro2.ge_right_infix (\<open>(_ \<ge>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
+
+notation (input) l2 (\<open>l2\<^bsub>(_) (_)\<^esub>\<close>)
+notation (output) l2 (\<open>l2\<^bsub>('(_')) ('(_'))\<^esub>\<close>)
+notation (input) r2 (\<open>r2\<^bsub>(_) (_)\<^esub>\<close>)
+notation (output) r2 (\<open>r2\<^bsub>('(_')) ('(_'))\<^esub>\<close>)
 
 sublocale t2 : transport "(\<le>\<^bsub>L2 x (r1 x')\<^esub>)" "(\<le>\<^bsub>R2 (l1 x) x'\<^esub>)" "l2\<^bsub>x' x\<^esub>" "r2\<^bsub>x x'\<^esub>" for x x' .
 
-notation t2.left_Galois (\<open>(\<^bsub>L2 (_) (_)\<^esub>\<lessapprox>)\<close> 50)
-notation t2.right_Galois (\<open>(\<^bsub>R2 (_) (_)\<^esub>\<lessapprox>)\<close> 50)
+notation (input) t2.left_Galois (\<open>('((\<^bsub>L2 (_) (_)\<^esub>)\<lessapprox>'))\<close>)
+notation (output) t2.left_Galois (\<open>('((\<^bsub>L2 ('(_')) ('(_'))\<^esub>)\<lessapprox>'))\<close>)
+notation (input) t2.right_Galois (\<open>('((\<^bsub>R2 (_) (_)\<^esub>)\<lessapprox>'))\<close>)
+notation (output) t2.right_Galois (\<open>('((\<^bsub>R2 ('(_')) ('(_'))\<^esub>)\<lessapprox>'))\<close>)
 
 abbreviation "left2_Galois_infix y x x' y' \<equiv> (\<^bsub>L2 x x'\<^esub>\<lessapprox>) y y'"
-notation left2_Galois_infix (\<open>(_) \<^bsub>L2 (_) (_)\<^esub>\<lessapprox> (_)\<close> [51,51,51,51] 50)
+notation (input) left2_Galois_infix (\<open>(_ (\<^bsub>L2 (_) (_)\<^esub>)\<lessapprox> _)\<close> [51,0,0,51] 50)
+notation (output) left2_Galois_infix (\<open>(_ (\<^bsub>L2 ('(_')) ('(_'))\<^esub>)\<lessapprox> _)\<close> [51,0,0,51] 50)
 abbreviation "right2_Galois_infix y' x x' y \<equiv> (\<^bsub>R2 x x'\<^esub>\<lessapprox>) y' y"
-notation right2_Galois_infix (\<open>(_) \<^bsub>R2 (_) (_)\<^esub>\<lessapprox> (_)\<close> [51,51,51,51] 50)
+notation (input) right2_Galois_infix (\<open>(_ (\<^bsub>R2 (_) (_)\<^esub>)\<lessapprox> _)\<close> [51,0,0,51] 50)
+notation (output) right2_Galois_infix (\<open>(_ (\<^bsub>R2 ('(_')) ('(_'))\<^esub>)\<lessapprox> _)\<close> [51,0,0,51] 50)
 
-notation t2.ge_Galois_left (\<open>(\<greaterapprox>\<^bsub>L2 (_) (_)\<^esub>)\<close> 50)
-notation t2.ge_Galois_right (\<open>(\<greaterapprox>\<^bsub>R2 (_) (_)\<^esub>)\<close> 50)
+notation (input) t2.ge_Galois_left (\<open>('(\<greaterapprox>(\<^bsub>L2 (_) (_)\<^esub>)'))\<close>)
+notation (output) t2.ge_Galois_left (\<open>('(\<greaterapprox>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>)'))\<close>)
+notation (input) t2.ge_Galois_right (\<open>('(\<greaterapprox>(\<^bsub>R2 (_) (_)\<^esub>)'))\<close>)
+notation (output) t2.ge_Galois_right (\<open>('(\<greaterapprox>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>)'))\<close>)
 
 abbreviation (input) "ge_Galois_left_left2_infix y' x x' y \<equiv> (\<greaterapprox>\<^bsub>L2 x x'\<^esub>) y' y"
-notation ge_Galois_left_left2_infix (\<open>(_) \<greaterapprox>\<^bsub>L2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) ge_Galois_left_left2_infix (\<open>(_ \<greaterapprox>(\<^bsub>L2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) ge_Galois_left_left2_infix (\<open>(_ \<greaterapprox>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 abbreviation (input) "ge_Galois_left_right2_infix y x x' y' \<equiv> (\<greaterapprox>\<^bsub>R2 x x'\<^esub>) y y'"
-notation ge_Galois_left_right2_infix (\<open>(_) \<greaterapprox>\<^bsub>R2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) ge_Galois_left_right2_infix (\<open>(_ \<greaterapprox>(\<^bsub>R2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) ge_Galois_left_right2_infix (\<open>(_ \<greaterapprox>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 
-notation t2.right_ge_Galois (\<open>(\<^bsub>R2 (_) (_)\<^esub>\<greaterapprox>)\<close> 50)
-notation t2.left_ge_Galois (\<open>(\<^bsub>L2 (_) (_)\<^esub>\<greaterapprox>)\<close> 50)
+notation (input) t2.right_ge_Galois (\<open>('((\<^bsub>R2 (_) (_)\<^esub>)\<greaterapprox>'))\<close>)
+notation (output) t2.right_ge_Galois (\<open>('((\<^bsub>R2 ('(_')) ('(_'))\<^esub>)\<greaterapprox>'))\<close>)
+notation (input) t2.left_ge_Galois (\<open>('((\<^bsub>L2 (_) (_)\<^esub>)\<greaterapprox>'))\<close>)
+notation (output) t2.left_ge_Galois (\<open>('((\<^bsub>L2 ('(_')) ('(_'))\<^esub>)\<greaterapprox>'))\<close>)
 
 abbreviation "left2_ge_Galois_left_infix y x x' y' \<equiv> (\<^bsub>L2 x x'\<^esub>\<greaterapprox>) y y'"
-notation left2_ge_Galois_left_infix (\<open>(_) \<^bsub>L2 (_) (_)\<^esub>\<greaterapprox> (_)\<close> [51,51,51,51] 50)
+notation (input) left2_ge_Galois_left_infix (\<open>(_ (\<^bsub>L2 (_) (_)\<^esub>)\<greaterapprox> _)\<close> [51,0,0,51] 50)
+notation (output) left2_ge_Galois_left_infix (\<open>(_ (\<^bsub>L2 ('(_')) ('(_'))\<^esub>)\<greaterapprox> _)\<close> [51,0,0,51] 50)
 abbreviation "right2_ge_Galois_left_infix y' x x' y \<equiv> (\<^bsub>R2 x x'\<^esub>\<greaterapprox>) y' y"
-notation right2_ge_Galois_left_infix (\<open>(_) \<^bsub>R2 (_) (_)\<^esub>\<greaterapprox> (_)\<close> [51,51,51,51] 50)
+notation (input) right2_ge_Galois_left_infix (\<open>(_ (\<^bsub>R2 (_) (_)\<^esub>)\<greaterapprox> _)\<close> [51,0,0,51] 50)
+notation (output) right2_ge_Galois_left_infix (\<open>(_ (\<^bsub>R2 ('(_')) ('(_'))\<^esub>)\<greaterapprox> _)\<close> [51,0,0,51] 50)
 
-notation t2.Galois_right (\<open>(\<lessapprox>\<^bsub>R2 (_) (_)\<^esub>)\<close> 50)
-notation t2.Galois_left (\<open>(\<lessapprox>\<^bsub>L2 (_) (_)\<^esub>)\<close> 50)
+notation (input) t2.Galois_right (\<open>('(\<lessapprox>(\<^bsub>R2 (_) (_)\<^esub>)'))\<close>)
+notation (output) t2.Galois_right (\<open>('(\<lessapprox>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>)'))\<close>)
+notation (input) t2.Galois_left (\<open>('(\<lessapprox>(\<^bsub>L2 (_) (_)\<^esub>)'))\<close>)
+notation (output) t2.Galois_left (\<open>('(\<lessapprox>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>)'))\<close>)
 
 abbreviation (input) "Galois_left2_infix y' x x' y \<equiv> (\<lessapprox>\<^bsub>L2 x x'\<^esub>) y' y"
-notation Galois_left2_infix (\<open>(_) \<lessapprox>\<^bsub>L2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) Galois_left2_infix (\<open>(_ \<lessapprox>(\<^bsub>L2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) Galois_left2_infix (\<open>(_ \<lessapprox>(\<^bsub>L2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 abbreviation (input) "Galois_right2_infix y x x' y' \<equiv> (\<lessapprox>\<^bsub>R2 x x'\<^esub>) y y'"
-notation Galois_right2_infix (\<open>(_) \<lessapprox>\<^bsub>R2 (_) (_)\<^esub> (_)\<close> [51,51,51,51] 50)
+notation (input) Galois_right2_infix (\<open>(_ \<lessapprox>(\<^bsub>R2 (_) (_)\<^esub>) _)\<close> [51,0,0,51] 50)
+notation (output) Galois_right2_infix (\<open>(_ \<lessapprox>(\<^bsub>R2 ('(_')) ('(_'))\<^esub>) _)\<close> [51,0,0,51] 50)
 
 abbreviation "t2_unit x x' \<equiv> t2.unit x' x"
-notation t2_unit (\<open>\<eta>\<^bsub>2 (_) (_)\<^esub>\<close>)
+notation (input) t2_unit (\<open>\<eta>\<^bsub>2 (_) (_)\<^esub>\<close>)
+notation (output) t2_unit (\<open>\<eta>\<^bsub>2 ('(_')) ('(_'))\<^esub>\<close>)
 abbreviation "t2_counit x x' \<equiv> t2.counit x' x"
-notation t2_counit (\<open>\<epsilon>\<^bsub>2 (_) (_)\<^esub>\<close>)
+notation (input) t2_counit (\<open>\<epsilon>\<^bsub>2 (_) (_)\<^esub>\<close>)
+notation (output) t2_counit (\<open>\<epsilon>\<^bsub>2 ('(_')) ('(_'))\<^esub>\<close>)
 
 end
 
@@ -188,7 +222,7 @@ interpretation flip_inv :
 
 lemma flip_inv_right_eq_ge_left: "flip_inv.R = (\<ge>\<^bsub>L\<^esub>)"
   unfolding left_rel_eq_Dep_Fun_Rel flip_inv.right_rel_eq_Dep_Fun_Rel
-  by (simp only: rel_inv_Dep_Fun_Rel_rel_eq flip2_eq_rel_inv[symmetric, of "L2"])
+  by (simp only: flip: Dep_Fun_Rel_rel_inv_rel_inv_eq flip2_eq_rel_inv[of "L2"])
 
 interpretation flip : transport_Dep_Fun_Rel R1 L1 r1 l1 R2 L2 r2 l2 .
 
@@ -210,7 +244,7 @@ lemma left_rel2_unit_eqs_left_rel2I:
   using assms by (auto intro!: antisym)
 
 lemma left2_eq_if_bi_related_if_monoI:
-  assumes mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> (x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3) \<Rrightarrow> (\<le>)) L2"
+  assumes mono_L2: "((x1 x2 \<Colon> (\<ge>\<^bsub>L1\<^esub>)) \<Rightarrow> \<lparr>x3 x4 \<Colon> (\<le>\<^bsub>L1\<^esub>) | x1 \<le>\<^bsub>L1\<^esub> x3\<rparr> \<Rrightarrow> (\<le>)) L2"
   and "x1 \<le>\<^bsub>L1\<^esub> x2"
   and "x1 \<equiv>\<^bsub>L1\<^esub> x3"
   and "x2 \<equiv>\<^bsub>L1\<^esub> x4"

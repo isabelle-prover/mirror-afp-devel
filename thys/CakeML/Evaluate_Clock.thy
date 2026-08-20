@@ -65,7 +65,7 @@ next
     subgoal
       by (metis "*" fix_clock(1) fix_clock.simps prod.collapse prod.sel(2))
     subgoal
-      by (smt "*" "9.IH"(2) One_nat_def Suc_pred dec_clock dual_order.trans fix_clock(1) fix_clock.simps fst_conv le_imp_less_Suc nat_less_le prod.collapse)
+      by (smt (z3) "*" "9.IH"(2) One_nat_def Suc_pred dec_clock dual_order.trans fix_clock(1) fix_clock.simps fst_conv le_imp_less_Suc nat_less_le prod.collapse)
     subgoal
       by (metis "*" fix_clock(1) fix_clock.simps fst_conv prod.collapse)
     subgoal

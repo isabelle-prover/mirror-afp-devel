@@ -486,7 +486,7 @@ proof -
           assume "n1 \<noteq> 0"
           moreover then have "last ls1 = ( \<alpha>i1 (n1-1), h1 n1 )" using c11 by (cases n1, simp+)
           ultimately show "lst \<tau>'' = d" using c9 c11 qc12 lem_ftofs_len unfolding lst_def
-            by (smt last_ConsR list.distinct(1) list.size(3) snd_conv)
+            by (smt (z3) last_ConsR list.distinct(1) list.size(3) snd_conv)
         qed
         moreover have "lst \<sigma>'' = d"
         proof (cases "n2 = 0")
@@ -496,7 +496,7 @@ proof -
           assume "n2 \<noteq> 0"
           moreover then have "last ls2 = ( \<alpha>i2 (n2-1), h2 n2 )" using c15 by (cases n2, simp+)
           ultimately show "lst \<sigma>'' = d" using c13 c15 qc16 lem_ftofs_len unfolding lst_def
-            by (smt last_ConsR list.distinct(1) list.size(3) snd_conv)
+            by (smt (z3) last_ConsR list.distinct(1) list.size(3) snd_conv)
         qed
         moreover have "lst \<tau>' = lst \<tau>'' \<and> lst \<sigma>' = lst \<sigma>''" using d5 d6 by blast
         ultimately show ?thesis by metis

@@ -117,6 +117,42 @@ corollary bal_iff_bal_stk: "bal w \<longleftrightarrow> bal_stk [] w = ([],[])"
 using bal_if_bal_stk[of "[]"] bal_stk_if_bal by auto
 
 
+subsection "A rewriting approach: successively remove () pairs"
+
+inductive bal_rw :: "'a bracket list \<Rightarrow> 'a bracket list \<Rightarrow> bool"where
+"bal_rw (xs @ [Open a, Close a] @ ys) (xs @ ys)"
+
+abbreviation "bal_rws \<equiv> bal_rw^**"
+
+lemma bal_rw_cong: "bal_rw xs ys \<Longrightarrow> bal_rw (cs @ xs @ ds) (cs @ ys @ ds)"
+apply(induction rule: bal_rw.induct)
+by (metis bal_rw.intros append.assoc)
+
+lemma bal_rws_cong: "bal_rws xs ys \<Longrightarrow> bal_rws (cs @ xs @ ds) (cs @ ys @ ds)"
+apply(induction rule: rtranclp.induct)
+ apply blast
+by (meson bal_rw_cong rtranclp.rtrancl_into_rtrancl)
+
+lemma bal_rws_if_bal: "bal xs \<Longrightarrow> bal_rws (cs @ xs @ ds) (cs @ ds)"
+apply(induction arbitrary: cs ds rule: bal.induct)
+  apply simp
+ apply (metis append.assoc rtranclp_trans)
+by (metis (no_types, lifting) Cons_eq_append_conv append_Nil append_eq_append_conv2 bal_rw.intros
+      rtranclp.rtrancl_into_rtrancl)
+
+lemma bal_imp_if_bal_rw: "bal_rw xs ys \<Longrightarrow> bal ys \<Longrightarrow> bal xs"
+apply(induction rule: bal_rw.induct)
+  by (simp add: bal_insert_AB)
+
+lemma bal_imp_if_bal_rws: "bal_rws xs ys \<Longrightarrow> bal ys \<Longrightarrow> bal xs"
+apply(induction rule: rtranclp.induct)
+ apply blast
+by (metis bal_imp_if_bal_rw)
+
+corollary bal_rws_iff_bal: "bal_rws xs [] \<longleftrightarrow> bal xs"
+using bal_rws_if_bal[of _ "[]" "[]"] bal_imp_if_bal_rws[of _ "[]"] by auto
+
+
 subsection\<open>More properties of \<^const>\<open>bal\<close>, using \<^const>\<open>bal_stk\<close>\<close>
 
 theorem bal_append_inv: "bal (u @ v) \<Longrightarrow> bal u \<Longrightarrow> bal v"
@@ -175,6 +211,12 @@ proof-
   qed
   then show ?thesis using assms \<open>x = _\<close> by blast
 qed
+
+lemma not_bal_end_Open[simp]: "\<not> bal (w @ [Open a])"
+by (simp add: bal_iff_bal_stk bal_stk_append split: prod.splits)
+
+lemma bal_imp2_if_bal_rws: "bal_rw xs ys \<Longrightarrow> bal xs \<Longrightarrow> bal ys"
+by (metis bal2 bal_insert_bal_iff bal_rw.simps)
 
 
 subsection\<open>Dyck Language over an Alphabet\<close>

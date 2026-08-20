@@ -2,7 +2,7 @@
 subsection \<open>Homogenously Changed Goals Data\<close>
 theory Zippy_Instance_Hom_Changed_Goals_Data
   imports
-    Generic_Term_Index_Data
+    ML_Unification.Generic_Term_Index_Data
     Zippy_Instance
 begin
 

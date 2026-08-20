@@ -38,22 +38,22 @@ fun run_attribute (code, pos) (context, thm) =
       U.read "Context.>> (fn" @ context_internal @ U.read "=>" @
       U.read "let val" @ thm_internal @ U.read "= ML_Attribute.get_thm" @ context_internal @
       U.read "val" @ U.tuple [thm_internal, context_internal] @ U.read "=" @
-        U.read "Thm.apply_attribute" @ U.atomic code @ thm_internal @ context_internal @
+        U.read \<^unchecked_name>\<open>Thm.apply_attribute\<close> @ U.atomic code @ thm_internal @ context_internal @
       U.read "in ML_Attribute.put_thm" @ thm_internal @ context_internal @ U.read "end)"
     val context = ML_Context.expression pos code context
     val thm = get_thm context
   in (SOME context, SOME thm) end
 
 fun run_mixed_attribute (code, pos) =
-  let val code = U.read "Thm.mixed_attribute" @ U.atomic code
+  let val code = U.read \<^unchecked_name>\<open>Thm.mixed_attribute\<close> @ U.atomic code
   in run_attribute (code, pos) end
 
 fun run_declaration_attribute (code, pos) =
-  let val code = U.read "Thm.declaration_attribute" @ U.atomic code
+  let val code = U.read \<^unchecked_name>\<open>Thm.declaration_attribute\<close> @ U.atomic code
   in run_attribute (code, pos) end
 
 fun run_map_context (code, pos) =
-  let val code = U.read "Thm.declaration_attribute" @ (U.atomic (U.read "fn _ =>" @ U.atomic code))
+  let val code = U.read \<^unchecked_name>\<open>Thm.declaration_attribute\<close> @ (U.atomic (U.read "fn _ =>" @ U.atomic code))
   in run_attribute (code, pos) end
 
 fun run_rule_attribute (code, pos) =

@@ -772,6 +772,28 @@ qed
 end
 
 
+text \<open>
+  As a side effect, we also now know that the zeros of $\vartheta_{00}$ are all simple zeros.
+\<close>
+lemma jacobi_theta_00_simple_zero:
+  assumes "Im t > 0" "jacobi_theta_00 z t = 0"
+  shows   "zorder (\<lambda>z. jacobi_theta_00 z t) z = 1"
+proof -
+  interpret thetalike_function "\<lambda>z. jacobi_theta_00 z t"
+    by unfold_locales
+       (use assms(1) 
+        in \<open>auto simp: jacobi_theta_00_plus_quasiperiod jacobi_theta_00_left.plus_1 add_ac
+                 intro!: holomorphic_intros\<close>)
+  have "\<not>(\<forall>z. jacobi_theta_00 z t = 0)"
+    using jacobi_theta_00_0_left_nonzero assms(1) by blast
+  with assms(2) and zero_iff show ?thesis
+    by blast
+qed
+
+(* TODO: other jacobi_theta_xy *)
+
+
+
 subsection \<open>Theta inversion\<close>
 
 text \<open>

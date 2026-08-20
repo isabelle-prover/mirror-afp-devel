@@ -509,7 +509,7 @@ lemma real_arch_power:
   shows "\<exists> n. x^n \<le> y \<and> y < x^(n+1)"
 proof -
   define P::"nat \<Rightarrow> bool" where "P \<equiv> (\<lambda>n. y < x^n)"
-  obtain m where mdef: "y < x^m" using x1 real_arch_pow by auto
+  obtain m where mdef: "y < x^m" using x1 arch_pow by auto
   then have Pm: "P m" unfolding P_def by auto
   have "\<not> P 0" using y1 unfolding P_def by auto
   then have "\<exists>k<m. (\<forall>i\<le>k. \<not> P i) \<and> P (Suc k)"

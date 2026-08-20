@@ -639,7 +639,7 @@ proof
       hence \<open>(pats, rhs) |\<in>| irs'\<close>
         using \<open>(pats, rhs) |\<in>| irs\<close> \<open>(name, irs') |\<in>| rs\<close> inner
         unfolding \<open>irs = transform_irules irs'\<close> transform_irules_def
-        by (smt fBallE split_conv)
+        by (smt (z3) fBallE split_conv)
       thus ?thesis
         unfolding transform_irule_set_def
         using fbspec[OF inner \<open>(name, irs') |\<in>| rs\<close>, simplified]

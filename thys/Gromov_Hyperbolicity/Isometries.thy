@@ -1459,7 +1459,7 @@ next
     fix t::real assume t: "0 \<le> t" "t \<le> dist x0 y0"
     fix e:: real assume "e > 0"
     then obtain n::nat where n: "dist x0 y0/e < 2^n"
-      using one_less_numeral_iff real_arch_pow semiring_norm(76) by blast
+      using one_less_numeral_iff arch_pow semiring_norm(76) by blast
     define k where "k = floor (2^n * t/ dist x0 y0)"
     have "k \<le> 2^n * t/ dist x0 y0" unfolding k_def by auto
     also have "... \<le> 2^n" using t False by (auto simp add: algebra_simps divide_simps)
@@ -2530,7 +2530,7 @@ proof -
     at most $3/2\cdot C/\lambda$.\<close>
     case 4
     then have C: "C > 0" "lambda \<ge> 1" using quasi_isometry_onD[OF assms(1)] by auto
-    have "a < b" using 4 C by (smt divide_pos_pos)
+    have "a < b" using 4 C by (smt (z3) divide_pos_pos)
 
     have [mono_intros]: "1/lambda \<le> lambda" using C by (simp add: divide_simps mult_ge1_powers(1))
     define N where "N = floor((b-a)/(C/lambda)) - 2"

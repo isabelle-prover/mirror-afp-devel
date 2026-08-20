@@ -10,7 +10,7 @@ definition compl' where
 
 lemma comp'_sem:
   \<open>eval e f g (compl' p) \<longleftrightarrow> \<not> eval e f g p\<close>
-  by (smt compl'_def compl.simps(1) compl eval.simps(7) someI_ex)
+  by (smt (z3) compl'_def compl.simps(1) compl eval.simps(7) someI_ex)
 
 lemma comp'_sem_list: \<open>list_ex (\<lambda>p. \<not> eval e f g p) (map compl' ps) \<longleftrightarrow> list_ex (eval e f g) ps\<close>
   by (induct ps) (use comp'_sem in auto)

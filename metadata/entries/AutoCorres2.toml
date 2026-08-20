@@ -38,6 +38,7 @@ email = "kolanski_email"
 email = "schirmer_email1"
 
 [authors.sickert]
+email = "sickert_email1"
 
 [authors.sewell]
 

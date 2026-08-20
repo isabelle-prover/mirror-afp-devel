@@ -220,7 +220,7 @@ proof -
         subgoal
           using False X Y smooth_vector_field_def rough_vector_field_scaleR
           using extensional0_outside[OF _ ext0_lie_bracket(2)] extensional0_scaleR
-          by (smt (verit, del_insts) scaleR_cancel_right scaleR_fun_beta scaleR_zero_left)
+          by (smt (verit, del_insts) scaleR_cancel_right scaleR_apply scaleR_zero_left)
         using smooth_vector_fieldE(2) X Y extensional0_outside[OF _ ext0_lie_bracket(1)] by simp
     next
       case True hence f: "f\<in>diff_fun_space" by simp+

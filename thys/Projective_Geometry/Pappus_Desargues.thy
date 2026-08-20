@@ -80,7 +80,7 @@ lemma desargues_config_not_col_2:
 lemma desargues_config_not_col_3:
   assumes "desargues_config A B C A' B' C' M N P R"
   shows "\<not> col C C' B'"
-  by (smt assms col_line_eq_1 col_rot_CW desargues_config_def desargues_config_not_col_2 
+  by (smt (z3) assms col_line_eq_1 col_rot_CW desargues_config_def desargues_config_not_col_2 
       desargues_config_rot_CW distinct3_def meet_3_in_def meet_col_1 meet_col_2)
 
 lemma desargues_config_not_col_4:
@@ -183,7 +183,7 @@ proof-
   have "col X E M" if "\<not> incid A (line B' C')" and "\<not> incid C' (line A B)"
   proof-
     have f1:"distinct [C,C',R,Q,B,A]"
-      by (smt Q_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_ABB col_A_B_ABl 
+      by (smt (z3) Q_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_ABB col_A_B_ABl 
           col_A_B_lAB col_line_eq_2 col_rot_CW desargues_config_def desargues_config_not_col_12 
           desargues_config_not_col_2 desargues_config_not_col_3 desargues_config_not_col_7 
           desargues_config_not_col_9 distinct6_def incidA_lAB line_comm meet_3_col_1 meet_3_col_2) 
@@ -212,7 +212,7 @@ proof-
   have "col P X F" if "\<not> incid A (line B' C')" and "\<not> incid C' (line A B)"
   proof-
     have f1:"distinct [A',A,R,Q,B',C']"
-      by (smt Q_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_AAB col_A_B_ABl 
+      by (smt (z3) Q_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_AAB col_A_B_ABl 
           col_A_B_lAB col_line_eq_1 col_rot_CW desargues_config_def desargues_config_not_col_2 
           desargues_config_not_col_3 desargues_config_not_col_4 desargues_config_not_col_6 
           desargues_config_not_col_7 distinct6_def incidB_lAB meet_3_col_2 meet_3_col_3)
@@ -238,17 +238,17 @@ proof-
     have "col M N P" if "\<not> incid A (line B' C')" and "\<not> incid C' (line A B)"
     proof-
       have f1:"Q \<noteq> C' \<and> X \<noteq> E \<and> line Q C' \<noteq> line X E"
-        by (smt E_def Q_def X_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_ABB 
+        by (smt (z3) E_def Q_def X_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) col_ABB 
             col_A_B_ABl col_A_B_lAB col_line_eq_2 col_rot_CW desargues_config_def 
             desargues_config_not_col_10 desargues_config_not_col_2 desargues_config_not_col_8 
             incidB_lAB incid_C_AB line_comm meet_3_col_1 meet_3_col_2 meet_3_col_3) 
       have f2:"E \<noteq> A \<and> C' \<noteq> F \<and> line E A \<noteq> line C' F"
-        by (smt E_def F_def Q_def X_def \<open>\<lbrakk>\<not> incid A (line B' C'); \<not> incid C' (line A B)\<rbrakk> \<Longrightarrow> col X E M\<close> 
+        by (smt (z3) E_def F_def Q_def X_def \<open>\<lbrakk>\<not> incid A (line B' C'); \<not> incid C' (line A B)\<rbrakk> \<Longrightarrow> col X E M\<close> 
             assms(1) ax_uniqueness col_def desargues_config_def desargues_config_not_col_10 
             desargues_config_not_col_3 f1 incidA_lAB incidB_lAB incid_inter_left incid_inter_right 
             meet_in_def that(1))
       have f3:"Q \<noteq> A \<and> X \<noteq> F \<and> line Q A \<noteq> line X F"
-        by (smt F_def Q_def X_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) 
+        by (smt (z3) F_def Q_def X_def \<open>\<not> incid A (line B' C')\<close> \<open>\<not> incid C' (line A B)\<close> assms(1) 
             ax_uniqueness col_def desargues_config_def desargues_config_not_col_10 
             desargues_config_not_col_2 desargues_config_not_col_7 incidA_lAB incidB_lAB incid_inter_left 
             incid_inter_right meet_3_col_2 meet_3_col_3)
@@ -291,7 +291,7 @@ lemma lemma_2:
   assumes "desargues_config A B C A' B' C' M N P R" and "incid A (line B' C') \<or> incid C' (line A B)" 
     and "incid C (line A' B') \<or> incid B' (line A C)" and "incid B (line A' C') \<or> incid A' (line B C)"
   shows "col M N P \<or> triangle_circumscribes_triangle A B C A' B' C' \<or> triangle_circumscribes_triangle A' B' C' A B C"
-  by (smt assms ax_uniqueness col_def desargues_config_not_col_1 
+  by (smt (z3) assms ax_uniqueness col_def desargues_config_not_col_1 
       desargues_config_not_col_11 desargues_config_not_col_12 desargues_config_not_col_2 
       desargues_config_not_col_3 desargues_config_not_col_9 incidA_lAB incidB_lAB 
       triangle_circumscribes_triangle_def)
@@ -306,7 +306,7 @@ proof-
   have "col N S B'"
   proof-
     have f1:"distinct [R,C,C',P,B,A]"
-      by (smt assms(2) col_AAB col_line_eq_2 col_rot_CW desargues_config_def 
+      by (smt (z3) assms(2) col_AAB col_line_eq_2 col_rot_CW desargues_config_def 
           desargues_config_not_col_1 desargues_config_not_col_12 desargues_config_not_col_2 
           desargues_config_not_col_5 desargues_config_not_col_7 desargues_config_not_col_8 
           desargues_config_not_col_9 distinct6_def line_comm meet_3_col_1 meet_3_col_2 meet_col_1 
@@ -336,7 +336,7 @@ proof-
   have "col M T A'"
   proof-
     have f1:"distinct [R,C,C',P,A,B]"
-      by (smt assms(2) col_ABA col_line_eq_2 col_rot_CW desargues_config_def desargues_config_not_col_1 
+      by (smt (z3) assms(2) col_ABA col_line_eq_2 col_rot_CW desargues_config_def desargues_config_not_col_1 
           desargues_config_not_col_12 desargues_config_not_col_2 desargues_config_not_col_5 
           desargues_config_not_col_7 desargues_config_not_col_8 desargues_config_not_col_9 distinct6_def 
           line_comm meet_3_col_1 meet_3_col_2 meet_col_1 meet_col_2)
@@ -371,14 +371,14 @@ proof-
   then show "col M N P"
   proof-
     have f1:"S \<noteq> T \<and> B \<noteq> A \<and> line S T \<noteq> line B A"
-      by (smt T_def \<open>col N S B'\<close> assms(2) assms(3) ax_uniqueness col_AAB col_line_eq_2 col_rot_CW 
+      by (smt (z3) T_def \<open>col N S B'\<close> assms(2) assms(3) ax_uniqueness col_AAB col_line_eq_2 col_rot_CW 
           desargues_config_def desargues_config_not_col_10 desargues_config_not_col_7 
           desargues_config_not_col_9 incidB_lAB incid_inter_left incid_inter_right 
           line_comm meet_3_col_2 meet_3_col_3 meet_col_1 meet_col_2 triangle_circumscribes_triangle_def)
     have f2:"A \<noteq> B' \<and> T \<noteq> A' \<and> line A B' \<noteq> line T A'"
       by (smt (verit) S_def T_def assms(2) assms(3) col_A_B_ABl col_line_eq_2 desargues_config_def desargues_config_not_col_1 desargues_config_not_col_9 f1 incidA_lAB inter_comm line_comm meet_3_col_1 meet_col_2 projective_plane.col_def projective_plane_axioms triangle_circumscribes_triangle_def)
     have f3:"S \<noteq> B' \<and> B \<noteq> A'"
-      by (smt S_def assms(2) assms(3) ax_uniqueness col_A_B_ABl col_line_eq_2 col_rot_CW 
+      by (smt (z3) S_def assms(2) assms(3) ax_uniqueness col_A_B_ABl col_line_eq_2 col_rot_CW 
           desargues_config_def desargues_config_not_col_2 desargues_config_not_col_5 
           desargues_config_not_col_7 incidA_lAB incidB_lAB incid_inter_right inter_comm line_comm 
           meet_3_col_2 meet_in_def triangle_circumscribes_triangle_def)
@@ -461,7 +461,7 @@ qed
 theorem hessenberg_thereom:
   assumes "is_pappus"
   shows "desargues_prop"
-  by (smt are_perspective_from_line_def assms col_def desargues_prop_def pappus_desargues 
+  by (smt (z3) are_perspective_from_line_def assms col_def desargues_prop_def pappus_desargues 
       perspective_from_point_desargues_config)
 
 corollary pascal_desargues:

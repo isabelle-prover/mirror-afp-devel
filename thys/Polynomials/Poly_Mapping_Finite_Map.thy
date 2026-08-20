@@ -18,14 +18,6 @@ text \<open>In this theory, type @{typ "('a, 'b) poly_mapping"} is represented a
 
 subsection \<open>Utilities\<close>
 
-instantiation poly_mapping :: (type, "{equal, zero}") equal
-begin
-definition equal_poly_mapping::"('a, 'b) poly_mapping \<Rightarrow> ('a, 'b) poly_mapping \<Rightarrow> bool" where
-  "equal_poly_mapping p q \<equiv> (\<forall>t. lookup p t = lookup q t)"
-
-instance by standard (auto simp add: equal_poly_mapping_def poly_mapping_eqI)
-end
-
 definition "clearjunk0 m = fmfilter (\<lambda>k. fmlookup m k \<noteq> Some 0) m"
 
 definition "fmlookup_default d m x = (case fmlookup m x of Some v \<Rightarrow> v | None \<Rightarrow> d)"
@@ -128,7 +120,10 @@ lemma compute_uminus_pp[code]:
 
 lemma compute_equal_pp[code]:
   "equal_class.equal (Pm_fmap xs) (Pm_fmap ys) = fmpred (\<lambda>k v. lookup0 xs k = lookup0 ys k) (xs ++\<^sub>f ys)"
-  unfolding equal_poly_mapping_def by (simp only: PM_all_2)
+  apply (simp add: equal flip: PM_all_2)
+  apply transfer
+  apply auto
+  done
 
 lemma compute_map_pp[code]:
   "Poly_Mapping.map f (Pm_fmap xs) = Pm_fmap (fmmap (\<lambda>x. f x when x \<noteq> 0) xs)"

@@ -136,7 +136,7 @@ qed
 lemma identity_telescopic:
   fixes x :: \<open>_ \<Rightarrow> 'a::real_normed_vector\<close>
   assumes \<open>x \<longlonglongrightarrow> l\<close>
-  shows \<open>(\<lambda> N. sum (\<lambda> k. x (Suc k) - x k) {n..N}) \<longlonglongrightarrow> l - x n\<close>
+  shows \<open>(\<lambda>N. \<Sum>k = n..N. x (Suc k) - x k) \<longlonglongrightarrow> l - x n\<close>
   text\<open>
   Expression of a limit as a telescopic series.
   Explanation: If \<^term>\<open>x\<close> converges to \<^term>\<open>l\<close> then the sum \<^term>\<open>sum (\<lambda> k. x (Suc k) - x k) {n..N}\<close>

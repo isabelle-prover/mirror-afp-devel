@@ -16,7 +16,6 @@ sig
   include HAS_LOGGER
 
   type unif_hint = thm
-  val cdest_hint : unif_hint -> (cterm * cterm) list * (cterm * cterm)
   val cdest_hint_concl : unif_hint -> cterm * cterm
   val symmetric_hint : unif_hint -> unif_hint
   val pretty_hint : Proof.context -> unif_hint -> Pretty.T
@@ -46,7 +45,6 @@ structure UUtil = Unification_Util
 
 type unif_hint = thm
 
-val cdest_hint = Thm.cprop_of #> TUtil.strip_cimp #>> map Thm.dest_equals ##> Thm.dest_equals
 val cdest_hint_concl = Thm.cconcl_of #> Thm.dest_equals
 
 (*only flips the conclusion since unification calls for the premises should be symmetric*)
@@ -116,7 +114,7 @@ fun try_hint match norms hint unify binders ctxt (t1, t2) env = Seq.make (fn _ =
             (*instantiate the theorems*)
             val conv = #conv norms
             val lifted_hint_inst = UUtil.inst_norm_thm (#inst_thm norms) conv ctxt env_res lifted_hint
-            val inst_term = #inst_term norms env_res
+            val inst_term = Same.commit (#inst_term norms env_res)
             val mk_inst_cbinders = map (snd #> inst_term #> Thm.cterm_of ctxt)
             val norm_unif_thm = UUtil.inst_norm_thm (#inst_unif_thm norms) conv ctxt env_res
             fun forall_intr binders = fold Thm.forall_intr (mk_inst_cbinders binders) o norm_unif_thm
@@ -134,13 +132,13 @@ fun try_hint match norms hint unify binders ctxt (t1, t2) env = Seq.make (fn _ =
 type hint_retrieval = term Binders.binders -> Proof.context -> term * term -> Envir.env ->
   unif_hint Seq.seq
 
-fun try_hints get_hints match norms unif binders ctxt (t1, t2) env = Seq.make (fn _ =>
+fun try_hints get_hints match norms unif binders ctxt tp env = Seq.make (fn _ =>
   (@{log Logger.TRACE} ctxt (fn _ => Pretty.block [
       Pretty.str "Trying unification hints for ",
-      UUtil.pretty_unif_problem ctxt (t1, t2)
+      UUtil.pretty_unif_problem binders ctxt tp
     ] |> Pretty.string_of);
-  get_hints binders ctxt (t1, t2) env
-  |> Seq.maps (fn hint => try_hint match norms hint unif binders ctxt (t1, t2) env))
+  get_hints binders ctxt tp env
+  |> Seq.maps (fn hint => try_hint match norms hint unif binders ctxt tp env))
   |> Seq.pull)
 
 end

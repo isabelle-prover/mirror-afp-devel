@@ -579,7 +579,7 @@ proof-
           by (simp add: distrib_left)
         hence "[(r * \<alpha> * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G> * \<alpha>) 
                   = r * \<alpha> * s + r * \<alpha> * u1 + r * order \<G> * \<alpha> - r * s * \<alpha> + v1 * \<alpha>] (mod (order \<G>))" using distrib_right assms 
-          by (smt Groups.mult_ac(3) order_gt_0 Nat.add_diff_assoc2 add.commute diff_mult_distrib2 mult.commute mult_strict_mono order.strict_implies_order semiring_normalization_rules(25) zero_order(1))
+          by (smt (z3) Groups.mult_ac(3) order_gt_0 Nat.add_diff_assoc2 add.commute diff_mult_distrib2 mult.commute mult_strict_mono order.strict_implies_order semiring_normalization_rules(25) zero_order(1))
         hence "[(r * \<alpha> * ((s + u1) mod order \<G>) + (r * order \<G> - r * s + v1) mod order \<G> * \<alpha>) 
                   = r * \<alpha> * u1 + r * order \<G> * \<alpha> + v1 * \<alpha>] (mod (order \<G>))" by simp
         thus ?thesis
@@ -791,7 +791,7 @@ proof-
           using order_gt_0 by simp
         then show ?thesis
           using  cong_add cong_def mod_mult_right_eq 
-          by (smt mod_mod_trivial)
+          by (smt (z3) mod_mod_trivial)
       qed
       hence "[r * ((order \<G> * order \<G> - s * (nat ((fst (bezw t (order \<G>))) mod order \<G>)) + x) mod order \<G>) 
                   + (r * s * (nat ((fst (bezw t (order \<G>))) mod order \<G>)) + xa) mod order \<G>
@@ -1016,7 +1016,7 @@ proof(cases "(b0 \<otimes> (inv (h0 [^] r))) = \<one>") \<comment> \<open> The c
     by (simp add: nat_pow_mult nat_pow_pow)
   have z1_rewrite: "(b1 \<otimes> inv \<^bold>g) [^] u1 \<otimes> h1 [^] v1 \<otimes> \<one> = \<^bold>g [^] (r * \<alpha> * u1 +  v1 * \<alpha>) \<otimes> inv \<^bold>g [^] u1" 
     for u1 v1 :: nat 
-    by (smt \<alpha> b1_h1 pow_mult_distrib cyclic_group_commute generator_closed inv_closed m_assoc m_closed monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one) 
+    by (smt (z3) \<alpha> b1_h1 pow_mult_distrib cyclic_group_commute generator_closed inv_closed m_assoc m_closed monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one) 
   have z1_rewrite': "\<^bold>g [^] (r * \<alpha> * u1 + v1 * \<alpha>) \<otimes> \<^bold>g [^] s \<otimes>  inv \<^bold>g [^] u1 = (b1 \<otimes> inv \<^bold>g) [^] u1 \<otimes> h1 [^] v1 \<otimes> x1"
     for u1 v1 
     using assert_in_carrier cyclic_group_commute m_assoc s z1_rewrite by auto
@@ -1142,7 +1142,7 @@ next
       by (metis \<alpha> generator_closed mult.commute nat_pow_pow)
     have z0_rewrite: "b0 [^] u0 \<otimes> h0 [^] v0 \<otimes> \<one> = \<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] u0" 
       for u0 v0 :: nat 
-      by (smt \<alpha> \<open>b0 = \<^bold>g \<otimes> \<^bold>g [^] (r * \<alpha>)\<close> pow_mult_distrib cyclic_group_commute generator_closed m_assoc monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one)
+      by (smt (z3) \<alpha> \<open>b0 = \<^bold>g \<otimes> \<^bold>g [^] (r * \<alpha>)\<close> pow_mult_distrib cyclic_group_commute generator_closed m_assoc monoid_comm_monoidI mult.commute nat_pow_closed nat_pow_mult nat_pow_pow r_one)
     have z0_rewrite': "\<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] (u0 + s) =  \<^bold>g [^] (r * \<alpha> * u0 + v0 * \<alpha>) \<otimes> \<^bold>g [^] u0 \<otimes> \<^bold>g [^] s"
       for u0 v0
       by (simp add: add.assoc nat_pow_mult)

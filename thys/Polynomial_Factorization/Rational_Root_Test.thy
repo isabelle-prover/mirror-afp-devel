@@ -37,7 +37,7 @@ proof -
   let ?rp = "map_poly ?r"
   obtain a ip where rp: "rat_to_normalized_int_poly p = (a,ip)" by force
   from rat_to_normalized_int_poly[OF this] have p: "p = smult a (?rp ip)" and a00: "a \<noteq> 0" 
-    and cip: "p \<noteq> 0 \<Longrightarrow> content ip = 1" by auto
+    and cip: "p \<noteq> 0 \<Longrightarrow> Polynomial.content ip = 1" by auto
   let ?a0 = "coeff ip 0"
   let ?an = "coeff ip (degree ip)"
   let ?d0 = "df ?a0"

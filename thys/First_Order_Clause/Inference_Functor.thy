@@ -5,21 +5,16 @@ theory Inference_Functor
 begin
 
 lemma set_inference_not_empty [iff]: "set_inference \<iota> \<noteq> {}"
-  by(cases \<iota>) simp
+  by (cases \<iota>) simp 
 
-lemma finite_set_inference [intro]: "finite (set_inference \<iota>)"
-  by (metis inference.exhaust inference.set List.finite_set finite.simps finite_Un)
-
-global_interpretation inference_functor: finite_natural_functor where
-  map = map_inference and to_set = set_inference
-  by
-    unfold_locales
-    (auto simp: inference.map_comp inference.map_ident inference.set_map intro: inference.map_cong)
-
+(* TODO: Make this nicer *)
+setup "natural_functor_ignore @{type_name Inference_System.inference}"
+                                                                  
+setup natural_functor_setups
+  
 global_interpretation inference_functor: natural_functor_conversion where
   map = map_inference and to_set = set_inference and map_to = map_inference and
   map_from = map_inference and map' = map_inference and to_set' = set_inference
- by unfold_locales
-    (auto simp: inference.set_map inference.map_comp)
+  by unfold_locales (auto simp: inference.set_map inference.map_comp)
 
 end

@@ -133,7 +133,7 @@ lemma d_sup_left_absorb_mult:
 
 lemma d_sup_left_dist_mult:
   "d(x) \<squnion> d(y) * d(z) = (d(x) \<squnion> d(y)) * (d(x) \<squnion> d(z))"
-  by (smt sup_assoc d_commutative d_mult_idempotent d_mult_left_absorb_sup mult_left_dist_sup mult_right_dist_sup)
+  by (smt (z3) sup_assoc d_commutative d_mult_idempotent d_mult_left_absorb_sup mult_left_dist_sup mult_right_dist_sup)
 
 lemma d_order:
   "d(x) \<le> d(y) \<longleftrightarrow> d(x) = d(x) * d(y)"
@@ -318,7 +318,7 @@ lemma a_compl_intro:
 
 lemma kat_2:
   "y * a(z) \<le> a(x) * y \<Longrightarrow> d(x) * y * a(z) = bot"
-  by (smt a_export a_plus_left_lower_bound le_sup_iff d_d_shunting_zero d_export d_strict le_iff_sup mult_assoc)
+  by (smt (z3) a_export a_plus_left_lower_bound le_sup_iff d_d_shunting_zero d_export d_strict le_iff_sup mult_assoc)
 
 lemma kat_3:
   "d(x) * y * a(z) = bot \<Longrightarrow> d(x) * y = d(x) * y * d(z)"

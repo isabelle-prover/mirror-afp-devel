@@ -1,0 +1,12 @@
+chapter AFP
+
+session Modular_Forms (AFP) = Elliptic_Functions +
+  options [timeout = 1200]
+  sessions
+    Detour_Calculus
+  theories
+    Klein_J
+    Eisenstein_Derivative_Identities
+  document_files
+    "root.tex"
+    "root.bib"

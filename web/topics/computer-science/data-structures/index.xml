@@ -4,6 +4,35 @@
     <title>Computer science/Data structures</title>
     <link>https://isa-afp.org/topics/computer-science/data-structures/</link>
     <description>AFP entries in Data structures</description><item>
+  <title>Height Bounds for Height-Balanced Trees</title>
+  <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
+  <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Height Bounds for Height-Balanced Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Formalization of Weighted Sets</title>
+  <link>https://isa-afp.org/entries/Weighted_Set.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Weighted Sets in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Formalization of Countable Multisets</title>
+  <link>https://isa-afp.org/entries/Countable_Multiset.html</link>
+  <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Formalization of Countable Multisets in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>Workflow Net Fitness Measures</title>
+  <link>https://isa-afp.org/entries/Workflow_Net_Fitness_Measures.html</link>
+  <pubDate>Sat, 07 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Workflow Net Fitness Measures in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Formalizing Neural Networks</title>
   <link>https://isa-afp.org/entries/Neural_Networks.html</link>
   <pubDate>Sun, 09 Nov 2025 00:00:00 +0000</pubDate>

@@ -1,0 +1,14 @@
+chapter AFP
+
+session Fair_Games_Theorem = Doob_Convergence +
+  options [timeout = 600]
+  sessions
+  	Doob_Convergence
+  	Martingales
+  theories
+    Stopped_Value_Integration
+    Piecewise_Stopping_Time
+    Optional_Stopping
+
+  document_files
+    "root.tex"

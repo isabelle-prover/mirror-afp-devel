@@ -1,10 +1,11 @@
-(*<*)
-theory Expansion
-  imports Context_Free_Grammar.Context_Free_Grammar
-begin
-(*>*)
-
 section \<open>Expansion of Grammars\<close>
+
+theory Expansion
+  imports Context_Free_Grammar
+begin
+
+text \<open>This theory provides operations for expanding productions, that is,
+given \<open>A \<rightarrow> \<alpha>\<close>, replace \<open>A\<close> by \<open>\<alpha>\<close> on the rhs of another production.\<close>
 
 lemma conc_eq_empty_iff: "X @@ Y = {} \<longleftrightarrow> X = {} \<or> Y = {}"
   by auto
@@ -15,8 +16,7 @@ lemma Nts_syms_conc: "\<Union>(Nts_syms ` (X @@ Y)) =
 
 text \<open>We consider the set of admissible expansions of grammars.
 
-For a symbol,
-one option is not to expand it,
+For a symbol, one option is not to expand it,
 and the other option for (expandable) nonterminals is to expand to the all rhss.\<close>
 
 definition Expand_sym_ops :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) sym \<Rightarrow> ('n,'t) syms set set" where
@@ -48,24 +48,24 @@ next
   with Cons show ?case by (auto intro!: Expand_sym_ops_self)
 qed
 
-lemma Expand_sym_ops_Lang_of_Cons:
+lemma Expand_sym_ops_Langs_Cons:
   assumes U: "U \<in> Expand_sym_ops P X x" and X: "Lhss Q \<inter> X = {}"
-  shows "Lang_of (P \<union> Q) (x#xs) = Lang_of_set (P \<union> Q) U @@ Lang_of (P \<union> Q) xs"
+  shows "Langs (P \<union> Q) (x#xs) = Langs_set (P \<union> Q) U @@ Langs (P \<union> Q) xs"
 proof-
   { fix A assume "A \<in> X"
     with X have "A \<notin> Lhss Q" by auto
     then have "Rhss (P \<union> Q) A = Rhss P A" by (auto simp: Rhss_Un notin_Lhss_iff_Rhss)
-    with Lang_of_set_Rhss[of "P \<union> Q" A]
-    have "Lang_of_set (P \<union> Q) (Rhss P A) = Lang (P \<union> Q) A" by auto
+    with Langs_set_Rhss[of "P \<union> Q" A]
+    have "Langs_set (P \<union> Q) (Rhss P A) = Lang (P \<union> Q) A" by auto
   } note * = this
   from assms
   show ?thesis
-    by (auto simp: Expand_sym_ops_simps Lang_of_Cons * split: if_splits sym.splits)
+    by (auto simp: Expand_sym_ops_simps Langs_Cons * split: if_splits sym.splits)
 qed
 
-lemma Expand_syms_ops_Lang_of:
+lemma Expand_syms_ops_Langs:
   assumes U: "U \<in> Expand_syms_ops P L \<alpha>" and L: "Lhss Q \<inter> L = {}"
-  shows "Lang_of (P \<union> Q) \<alpha> = Lang_of_set (P \<union> Q) U"
+  shows "Langs (P \<union> Q) \<alpha> = Langs_set (P \<union> Q) U"
 proof (insert U, induction \<alpha> arbitrary: U)
   case Nil
   then show ?case by simp
@@ -76,11 +76,11 @@ next
       and V: "V \<in> Expand_sym_ops P L x"
       and W: "W \<in> Expand_syms_ops P L \<alpha>"
     by auto
-  show ?case by (simp add: U Cons.IH[OF W] Expand_sym_ops_Lang_of_Cons[OF V L] Lang_of_set_conc)
+  show ?case by (simp add: U Cons.IH[OF W] Expand_sym_ops_Langs_Cons[OF V L] Langs_set_conc)
 qed
 
 definition Expand :: "(('n,'t) syms \<Rightarrow> ('n,'t) syms set) \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
-"Expand f P = {(A,\<alpha>') |A \<alpha>'. \<exists>\<alpha>. (A,\<alpha>) \<in> P \<and> \<alpha>' \<in> f \<alpha>}"
+"Expand f P = (\<Union>(A,\<alpha>) \<in> P. \<Union>\<alpha>' \<in> f \<alpha>. {(A,\<alpha>')})"
 
 lemma Expand_eq_UN[code]:
   "Expand f P = (\<Union>(A,\<alpha>) \<in> P. Pair A ` f \<alpha>)"
@@ -108,17 +108,17 @@ definition Expand_ops :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> (('n,
 theorem Lang_Un_Expand:
   assumes f: "f \<in> Expand_ops P X" and X: "X \<inter> Lhss Q = {}"
   shows "Lang (P \<union> Expand f Q) = Lang (P \<union> Q)"
-  unfolding Lang_eq_iff_Lang_of_eq
-proof (safe intro!: ext elim!: Lang_ofE_deriven)
-  show "P \<union> Expand f Q \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> Lang_of (P \<union> Q) xs" for xs w n
+  unfolding Lang_eq_iff_Langs_eq
+proof (safe intro!: ext elim!: LangsE_deriven)
+  show "P \<union> Expand f Q \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> Langs (P \<union> Q) xs" for xs w n
   proof (induction n arbitrary: xs w rule: less_induct)
     case (less n)
     show ?case
     proof (cases "\<exists>A. Nt A \<in> set xs")
       case False
       with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
-      then show ?thesis by (auto simp: Lang_of_map_Tm)
+        by (metis (no_types, lifting) deriven_map_TmD destTm.cases ex_map_conv)
+      then show ?thesis by (auto simp: Langs_map_Tm)
     next
       case True
       then obtain ys zs A where xs: "xs = ys @ Nt A # zs" by (metis split_list) 
@@ -131,46 +131,46 @@ proof (safe intro!: ext elim!: Lang_ofE_deriven)
         and w: "w = v @ u @ t" by force
       from n have mn: "m < n" and ln: "l < n" and kn: "k < n" by auto
       with less.IH L\<delta> Lys Lzs
-      have u: "u \<in> Lang_of (P \<union> Q) \<delta>"
-        and v: "v \<in> Lang_of (P \<union> Q) ys"
-        and t: "t \<in> Lang_of (P \<union> Q) zs" by auto
+      have u: "u \<in> Langs (P \<union> Q) \<delta>"
+        and v: "v \<in> Langs (P \<union> Q) ys"
+        and t: "t \<in> Langs (P \<union> Q) zs" by auto
       show ?thesis
       proof (cases "(A,\<delta>) \<in> P")
         case True
-        have "Lang_of (P \<union> Q) \<delta> \<subseteq> Lang (P \<union> Q) A"
-          apply (rule Lang_of_prod_subset)
+        have "Langs (P \<union> Q) \<delta> \<subseteq> Lang (P \<union> Q) A"
+          apply (rule Langs_prod_subset)
           using True by simp
         with u v t
-        show ?thesis by (auto simp: xs w Lang_of_append Lang_of_Nt_Cons)
+        show ?thesis by (auto simp: xs w Langs_append Langs_Nt_Cons)
       next
         case False
         with A\<delta> obtain \<alpha> where AQ: "(A,\<alpha>) \<in> Q" and \<delta>: "\<delta> \<in> f \<alpha>" by (auto simp: Expand_def)
         from L\<delta>[unfolded \<delta>] less.IH[of l] n
-        have "u \<in> Lang_of (P \<union> Q) \<delta>" by auto
-        with \<delta> have "u \<in> Lang_of_set (P \<union> Q) (f \<alpha>)"
-          by (auto simp: Lang_of_def)
-        also have "\<dots> = Lang_of (P \<union> Q) \<alpha>"
-          apply (subst Expand_syms_ops_Lang_of)
+        have "u \<in> Langs (P \<union> Q) \<delta>" by auto
+        with \<delta> have "u \<in> Langs_set (P \<union> Q) (f \<alpha>)"
+          by (auto simp: Langs_def)
+        also have "\<dots> = Langs (P \<union> Q) \<alpha>"
+          apply (subst Expand_syms_ops_Langs)
           using f AQ X by (auto simp: Expand_ops_def)
         also have "\<dots> \<subseteq> Lang (P \<union> Q) A"
-          apply (rule Lang_of_prod_subset)
+          apply (rule Langs_prod_subset)
           using AQ by auto
         finally have u: "u \<in> Lang (P \<union> Q) A" by auto
         with v t
-        show ?thesis by (simp add: xs w Lang_of_append Lang_of_Nt_Cons)
+        show ?thesis by (simp add: xs w Langs_append Langs_Nt_Cons)
       qed
     qed
   qed
 next
-  show "P \<union> Q \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> Lang_of (P \<union> Expand f Q) xs" for xs w n
+  show "P \<union> Q \<turnstile> xs \<Rightarrow>(n) map Tm w \<Longrightarrow> w \<in> Langs (P \<union> Expand f Q) xs" for xs w n
   proof (induction n arbitrary: xs w rule: less_induct)
     case (less n)
     show ?case
     proof (cases "\<exists>A. Nt A \<in> set xs")
       case False
       with less.prems have "xs = map Tm w"
-        by (metis (no_types, lifting) deriven_from_TmsD destTm.cases ex_map_conv)
-      then show ?thesis by (auto simp: Lang_of_map_Tm)
+        by (metis (no_types, lifting) deriven_map_TmD destTm.cases ex_map_conv)
+      then show ?thesis by (auto simp: Langs_map_Tm)
     next
       case True
       then obtain ys zs A where xs: "xs = ys @ Nt A # zs" by (metis split_list) 
@@ -183,17 +183,17 @@ next
         and w: "w = v @ u @ t" by force
       from n have mn: "m < n" and ln: "l < n" and kn: "k < n" by auto
       with R\<alpha> Rys Rzs
-      have u: "u \<in> Lang_of (P \<union> Expand f Q) \<alpha>"
-        and v: "v \<in> Lang_of (P \<union> Expand f Q) ys"
-        and t: "t \<in> Lang_of (P \<union> Expand f Q) zs" by (auto simp: less.IH)
+      have u: "u \<in> Langs (P \<union> Expand f Q) \<alpha>"
+        and v: "v \<in> Langs (P \<union> Expand f Q) ys"
+        and t: "t \<in> Langs (P \<union> Expand f Q) zs" by (auto simp: less.IH)
       show ?thesis
       proof (cases "(A,\<alpha>) \<in> P")
         case True
         then have "(A,\<alpha>) \<in> P \<union> Expand f Q" by simp
-        from Lang_of_prod_subset[OF this] u
+        from Langs_prod_subset[OF this] u
         have "u \<in> Lang (P \<union> Expand f Q) A" by auto
         with v w t
-        show ?thesis by (auto simp: xs w Lang_of_append Lang_of_Nt_Cons)
+        show ?thesis by (auto simp: xs w Langs_append Langs_Nt_Cons)
       next
         case False
         with A\<alpha> have A\<alpha>Q: "(A,\<alpha>) \<in> Q" by simp
@@ -202,12 +202,12 @@ next
         have Lhss: "Lhss (Expand f Q) \<inter> X = {}" by auto
         from X A\<alpha>Q have Rhss: "f \<alpha> \<subseteq> Rhss (Expand f Q) A"
           by (auto simp: Rhss_def Expand_def)
-        from u Expand_syms_ops_Lang_of[OF f\<alpha> Lhss]
-        have "u \<in> Lang_of_set (P \<union> Expand f Q) (f \<alpha>)" by auto
+        from u Expand_syms_ops_Langs[OF f\<alpha> Lhss]
+        have "u \<in> Langs_set (P \<union> Expand f Q) (f \<alpha>)" by auto
         also have "\<dots> \<subseteq> Lang (P \<union> Expand f Q) A" using Rhss
-          by (auto simp flip: Lang_of_set_Rhss simp: Rhss_Un)
+          by (auto simp flip: Langs_set_Rhss simp: Rhss_Un)
         finally have "u \<in> \<dots>".
-        with v t show ?thesis by (simp add: xs w Lang_of_append Lang_of_Nt_Cons)
+        with v t show ?thesis by (simp add: xs w Langs_append Langs_Nt_Cons)
       qed
     qed
   qed
@@ -218,6 +218,7 @@ corollary Lang_Expand_Un:
   shows "Lang (Expand f Q \<union> P) = Lang (Q \<union> P)"
   using Lang_Un_Expand[OF assms] by (simp add: ac_simps)
 
+
 subsection \<open>Instances\<close>
 
 text \<open>For symbols, we just provide a function to expand it.\<close>
@@ -227,6 +228,10 @@ definition Expand_sym :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'
 
 lemma Expand_sym_ops: "Expand_sym P L x \<in> Expand_sym_ops P L x"
   by (auto simp: Expand_sym_def Expand_sym_ops_simps split: sym.splits)
+
+lemma finite_Expand_sym: "finite Q \<Longrightarrow> finite (Expand_sym Q X x)"
+  by (auto simp: Expand_sym_def finite_Rhss split: sym.splits)
+
 
 subsubsection \<open>Expanding all nonterminals\<close>
 
@@ -247,6 +252,9 @@ lemma Expand_all_syms_ops: "Expand_all_syms P X \<alpha> \<in> Expand_syms_ops P
 
 lemma Expand_all_ops: "Expand_all_syms P X \<in> Expand_ops P X"
   by (auto simp: Expand_ops_def Expand_all_syms_ops)
+
+lemma finite_Expand_all_syms: "finite Q \<Longrightarrow> finite (Expand_all_syms Q X \<alpha>)"
+  by (induction \<alpha>) (auto simp: finite_Expand_sym intro: finite_conc_if)
 
 abbreviation Expand_all :: "('n,'t) Prods \<Rightarrow> 'n set \<Rightarrow> ('n,'t) Prods \<Rightarrow> ('n,'t) Prods" where
   "Expand_all P X Q \<equiv> Expand (Expand_all_syms P X) Q"
@@ -318,8 +326,7 @@ proof-
   finally show ?thesis.
 qed
 
-text \<open>One can remove a non-recursive part of grammar by expanding others
-with respect to it.\<close>
+text \<open>One can remove a non-recursive part of grammar by expanding others with respect to it.\<close>
 
 lemma Lang_Expand_all_idem:
   assumes PP: "Rhs_Nts P \<inter> Lhss P = {}"
@@ -334,32 +341,32 @@ proof-
   finally show ?thesis.
 qed
 
-lemma Lang_of_Expand_all_idem:
+lemma Langs_Expand_all_idem:
   assumes PP: "Rhs_Nts P \<inter> Lhss P = {}" and PQ: "Lhss P \<inter> Lhss Q = {}"
     and AP: "Nts_syms \<alpha> \<inter> Lhss P = {}"
-  shows "Lang_of (Expand_all P (Lhss P) Q) \<alpha> = Lang_of (P \<union> Q) \<alpha>"
+  shows "Langs (Expand_all P (Lhss P) Q) \<alpha> = Langs (P \<union> Q) \<alpha>"
   apply (insert AP, induction \<alpha>)
   using Lang_Expand_all_idem[OF PP PQ]
-  by (simp_all split: sym.splits add: Lang_of_Cons)
+  by (simp_all split: sym.splits add: Langs_Cons)
 
 lemma Lang_Expand_all_idem_new:
   assumes PP: "Rhs_Nts P \<inter> Lhss P = {}" and PQ: "Lhss P \<inter> Lhss Q = {}"
     and AP: "A \<in> Lhss P"
-  shows "Lang_of_set (Expand_all P (Lhss P) Q) (Rhss P A) = Lang (P \<union> Q) A"
+  shows "Langs_set (Expand_all P (Lhss P) Q) (Rhss P A) = Lang (P \<union> Q) A"
     (is "?l = ?r")
 proof-
-  have "\<alpha> \<in> Rhss P A \<Longrightarrow> Lang_of (Expand_all P (Lhss P) Q) \<alpha> = Lang_of (P \<union> Q) \<alpha>" for \<alpha>
-    apply (rule Lang_of_Expand_all_idem[OF PP PQ])
+  have "\<alpha> \<in> Rhss P A \<Longrightarrow> Langs (Expand_all P (Lhss P) Q) \<alpha> = Langs (P \<union> Q) \<alpha>" for \<alpha>
+    apply (rule Langs_Expand_all_idem[OF PP PQ])
     using PP by (auto simp: Rhss_def Rhs_Nts_def)
-  then have "?l = Lang_of_set (P \<union> Q) (Rhss P A)" by auto
+  then have "?l = Langs_set (P \<union> Q) (Rhss P A)" by auto
   moreover have "Rhss P A = Rhss (P \<union> Q) A" using AP PQ by (auto simp: Rhss_def dest: in_LhssI)
-  ultimately show ?thesis by (simp add: Lang_of_set_Rhss)
+  ultimately show ?thesis by (simp add: Langs_set_Rhss)
 qed
 
 lemma Lang_idem_Un_via_Expand_all:
   assumes PP: "Rhs_Nts P \<inter> Lhss P = {}" and PQ: "Lhss P \<inter> Lhss Q = {}"
   shows "Lang (P \<union> Q) A =
-    (if A \<in> Lhss P then Lang_of_set (Expand_all P (Lhss P) Q) (Rhss P A)
+    (if A \<in> Lhss P then Langs_set (Expand_all P (Lhss P) Q) (Rhss P A)
      else Lang (Expand_all P (Lhss P) Q) A)"
   using Lang_Expand_all_idem[OF assms] Lang_Expand_all_idem_new[OF assms]
   by auto
@@ -367,7 +374,7 @@ lemma Lang_idem_Un_via_Expand_all:
 corollary Lang_Un_idem_via_Expand_all:
   assumes PQ: "Lhss P \<inter> Lhss Q = {}" and QQ: "Rhs_Nts Q \<inter> Lhss Q = {}"
   shows "Lang (P \<union> Q) A =
-    (if A \<in> Lhss Q then Lang_of_set (Expand_all Q (Lhss Q) P) (Rhss Q A)
+    (if A \<in> Lhss Q then Langs_set (Expand_all Q (Lhss Q) P) (Rhss Q A)
      else Lang (Expand_all Q (Lhss Q) P) A)"
   using Lang_idem_Un_via_Expand_all[of Q P A] assms by (auto simp: ac_simps)
 

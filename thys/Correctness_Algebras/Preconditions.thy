@@ -92,7 +92,7 @@ lemma pre_import_equiv:
 
 lemma pre_import_equiv_mult:
   "-p*-q \<le> x\<guillemotleft>-s \<longleftrightarrow> -p*-q \<le> -q*x\<guillemotleft>-s"
-  by (smt leq_def pre_closed sub_assoc sub_mult_closed pre_import)
+  by (smt (z3) leq_def pre_closed sub_assoc sub_mult_closed pre_import)
 
 proposition pre_test_promote: "-p\<guillemotleft>-q = -p\<guillemotleft>-p*-q" nitpick [expect=genuine,card=2] oops
 proposition pre_test: "-p\<guillemotleft>-q = --p\<squnion>-q" nitpick [expect=genuine,card=2] oops

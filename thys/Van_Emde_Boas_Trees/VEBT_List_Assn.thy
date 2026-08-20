@@ -286,7 +286,8 @@ lemma subst_not_in:
 lemma listI_assn_subst: 
   assumes "i\<notin>I "" i<length xs "
   shows "listI_assn (insert i I) A (xs[i:=x1]) (xsi[i := x2]) = A x1 x2 * listI_assn I A xs xsi" 
-  by (smt (z3) assms(1) assms(2) length_list_update listI_assn_def listI_assn_insert nth_list_update_eq pure_false star_false_left star_false_right subst_not_in)
+  by (smt (verit, best) assms(1,2) length_list_update listI_assn_def listI_assn_insert
+      nth_list_update_eq pure_false star_false_left star_false_right subst_not_in)
 
 lemma extract_pre_list_assn_lengthD: "h \<Turnstile> list_assn A xs xsi \<Longrightarrow> length xsi = length xs"
   by (metis list_assn_aux_ineq_len mod_false)

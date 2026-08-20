@@ -182,7 +182,7 @@ proof-
   let ?T = "triangle_linear a b c"
   have "integral_mat_bij (matrix ?T)" (is "integral_mat_bij ?T_mat")
     by (simp add: assms(2) elem_triangle_integral_mat_bij triangle_linear_def)
-  then have "abs (det ?T_mat) = 1"
+  then have "abs (matrix_det ?T_mat) = 1"
     using integral_mat_bij_det_pm1 by fastforce
   thus ?thesis
     using S_def assms(2) triangle_measure_integral_of_det elem_triangle_def by force

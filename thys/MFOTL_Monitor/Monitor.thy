@@ -228,12 +228,12 @@ primrec meval :: "nat \<Rightarrow> ts \<Rightarrow> 'a MFOTL.database \<Rightar
 definition mstep :: "'a MFOTL.database \<times> ts \<Rightarrow> 'a mstate \<Rightarrow> (nat \<times> 'a tuple) set \<times> 'a mstate" where
   "mstep tdb st =
      (let (xs, m) = meval (mstate_n st) (snd tdb) (fst tdb) (mstate_m st)
-     in (\<Union> (set (map (\<lambda>(i, X). (\<lambda>v. (i, v)) ` X) (List.enumerate (mstate_i st) xs))),
+     in (\<Union> (set (map (\<lambda>(i, X). (\<lambda>v. (i, v)) ` X) (indexed_from (mstate_i st) xs))),
       \<lparr>mstate_i = mstate_i st + length xs, mstate_m = m, mstate_n = mstate_n st\<rparr>))"
 
 lemma mstep_alt: "mstep tdb st =
      (let (xs, m) = meval (mstate_n st) (snd tdb) (fst tdb) (mstate_m st)
-     in (\<Union>(i, X) \<in> set (List.enumerate (mstate_i st) xs). \<Union>v \<in> X. {(i,v)},
+     in (\<Union>(i, X) \<in> set (indexed_from (mstate_i st) xs). \<Union>v \<in> X. {(i,v)},
       \<lparr>mstate_i = mstate_i st + length xs, mstate_m = m, mstate_n = mstate_n st\<rparr>))"
   unfolding mstep_def
   by (auto split: prod.split)
@@ -1456,8 +1456,8 @@ proof -
     using that by (auto simp: list_all2_conv_all_nth
       dest!: spec[of _ "(i - progress \<sigma> \<phi> (plen \<pi>))"])
   ultimately show ?thesis
-    using assms(4) unfolding mstep_def Let_def
-    by (auto simp: in_set_enumerate_eq list_all2_conv_all_nth progress_mono le_imp_diff_is_add
+    using assms(4)
+    by (auto simp: in_set_indexed_from_eq mstep_def list_all2_conv_all_nth progress_mono le_imp_diff_is_add
       elim!: in_qtableE in_qtableI intro!: bexI[of _ "(i, Vs ! (i - progress \<sigma> \<phi> (plen \<pi>)))"])
 qed
 

@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formalization of Countable Multisets - Archive of Formal Proofs</title>
+    <meta name="description" content="Formalization of Countable Multisets in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formalization of Countable Multisets in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formalization of Countable Multisets">
+    <meta property="og:url" content="https://isa-afp.org/entries/Countable_Multiset.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormalization of <span class='first'>C</span>ountable <span class='first'>M</span>ultisets
+  </h1>
+  <div>
+      <p><a href="../authors/rabing/">Mathias Schack Rabing</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hdGhpYXNyYWJpbmciXSwiaG9zdCI6WyJvdXRsb29rIiwiY29tIl19">📧</a> and <a href="../authors/traytel/">Dmitriy Traytel</a> <a href="https://traytel.bitbucket.io/">🌐</a>
+      </p>
+      <p class="date">June 13, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">We define countable multisets as a generalization of finite multisets. Countable multisets are equivalently represented as functions from elements to extended natural numbers ($\mathbb{N} \cup \{\infty\}$) returning non-zero values for countably many elements, or as quotients of lazy lists modulo infinitary permutations. We register countable multisets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes. We further define the subtype of countably infinite multisets and register it as a BNF, too.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>A first complete version of the proofs was manually written by the authors. LLMs (GPT 5.4, Claude Sonnet 4.6) were used to convert messy apply-style proofs to canonical Isar. All the lemma statements remained unchanged during this refactoring.
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-structures/">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Session Countable_Multiset</h3>
+      <ul>
+          <li><a href="../thys/Countable_Multiset/Infinite_Sums_Enat.html">Infinite_Sums_Enat</a></li>
+          <li><a href="../thys/Countable_Multiset/Countable_Multiset.html">Countable_Multiset</a></li>
+          <li><a href="../thys/Countable_Multiset/Countably_Infinite_Multiset.html">Countably_Infinite_Multiset</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Coinductive.html">Coinductive</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Countable_Multiset/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Countable_Multiset/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Countable_Multiset/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Countable_Multiset-AFP</p>
+        <pre id="copy-text">@article{Countable_Multiset-AFP,
+  author  = {Mathias Schack Rabing and Dmitriy Traytel},
+  title   = {Formalization of Countable Multisets},
+  journal = {Archive of Formal Proofs},
+  month   = {June},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Countable_Multiset.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Countable_Multiset-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

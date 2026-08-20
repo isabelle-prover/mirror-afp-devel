@@ -49,8 +49,13 @@ structure Nano_Json_Type : NANO_JSON_TYPE = struct
                  val exp = #exp rat
                  fun numerator_of _ [] = 0
                    | numerator_of c (x::xs) = x*pow(10,c) + (numerator_of (c+1) xs)
-                 val numerator_abs = numerator_of 0 (rev digits)
-                 val denominator = pow(10, (List.length digits - exp))  
+                 val denominator = if 0 <= (List.length digits - exp)  
+                                   then pow(10, (List.length digits - exp)) 
+                                   else 1
+                 val scaling = if (List.length digits - exp <0 )  
+                                   then pow(10, exp - (List.length digits)) 
+                                   else 1
+                 val numerator_abs = scaling * (numerator_of 0 (rev digits))
                in
                  (if sign then ~ numerator_abs else numerator_abs, denominator)
                end
@@ -107,7 +112,7 @@ structure Nano_Json_Type : NANO_JSON_TYPE = struct
       | mk_number _  @{typ "nat"} (INTEGER i)            = if i >= 0 then HOLogic.mk_number @{typ "nat"} i
                                                                 else error "mk_number: JSON contains negative number and target is nat."
       | mk_number _ @{typ "int"} (REAL r)             = error (String.concat["mk_number: JSON contains real number and target is nat or int: ", 
-     IEEEReal.toString  r])
+     IEEEReal.toString r])
       | mk_number verbose (Type("Real.real",[])) (INTEGER i) = term_of_real verbose (Real.toDecimal (Real.fromInt i))
       | mk_number verbose (Type("Real.real",[])) (REAL r)    = term_of_real verbose r
 
@@ -117,7 +122,7 @@ structure Nano_Json_Type : NANO_JSON_TYPE = struct
                                                  ) 
       | mk_number _ @{typ "String.literal"} n  = (case n of 
                                                  (INTEGER i) => HOLogic.mk_literal (Int.toString i |> fix_tilde_sign)
-                                               | (REAL r)    => HOLogic.mk_literal (IEEEReal.toString r |> fix_tilde_sign) 
+                                               | (REAL r)    => HOLogic.mk_literal (IEEEReal.toString  r |> fix_tilde_sign) 
                                                  )
 
       | mk_number _ _ _ = error "mk_number: type not supported"

@@ -15,7 +15,7 @@ begin
 
 declare map_filter_map_filter [code_unfold del]
 
-declare enumerate_eq_zip [code]
+declare indexed_from_eq_zip [code]
 
 declare foldr_conv_foldl [code]
 

@@ -588,7 +588,7 @@ qed
 
 lemma test_comp_test_inf:
   "(x \<sqinter> 1) * y * (z \<sqinter> 1) = (x \<sqinter> 1) * y \<sqinter> y * (z \<sqinter> 1)"
-  by (smt comp_right_one comp_right_subdist_inf coreflexive_comp_top_inf inf.left_commute inf.orderE inf_le2 mult_assoc)
+  by (smt (z3) comp_right_one comp_right_subdist_inf coreflexive_comp_top_inf inf.left_commute inf.orderE inf_le2 mult_assoc)
 
 lemma test_comp_test_top:
   "y \<sqinter> (x \<sqinter> 1) * top * (z \<sqinter> 1) = (x \<sqinter> 1) * y * (z \<sqinter> 1)"
@@ -596,7 +596,7 @@ proof -
   have "\<forall>u v . (v \<sqinter> u\<^sup>T)\<^sup>T = v\<^sup>T \<sqinter> u"
     using conv_dist_inf by auto
   thus ?thesis
-    by (smt conv_dist_comp conv_involutive coreflexive_comp_top_inf inf.cobounded2 inf.left_commute inf.sup_monoid.add_commute symmetric_one_closed mult_assoc symmetric_top_closed)
+    by (smt (z3) conv_dist_comp conv_involutive coreflexive_comp_top_inf inf.cobounded2 inf.left_commute inf.sup_monoid.add_commute symmetric_one_closed mult_assoc symmetric_top_closed)
 qed
 
 lemma coreflexive_idempotent:
@@ -2206,7 +2206,7 @@ lemma point_in_vector_or_pseudo_complement:
 proof (rule disjCI)
   assume "\<not>(p \<le> -v)"
   hence "top * (p \<sqinter> --v) = top"
-    by (smt assms bijective_regular regular_closed_inf regular_closed_p shunting_1_pp tarski vector_complement_closed vector_inf_closed vector_mult_closed)
+    by (smt (z3) assms bijective_regular regular_closed_inf regular_closed_p shunting_1_pp tarski vector_complement_closed vector_inf_closed vector_mult_closed)
   thus "p \<le> --v"
     by (metis assms(1) epm_3 inf.absorb_iff1 inf.cobounded1 inf_top.right_neutral)
 qed

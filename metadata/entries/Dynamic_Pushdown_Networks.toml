@@ -1,0 +1,35 @@
+title = "Dynamic Pushdown Networks"
+date = 2025-12-23
+topics = [
+  "Computer science",
+  "Computer science/Concurrency",
+  "Computer science/Automata and formal languages",
+  "Computer science/Programming languages/Static analysis",
+]
+abstract = """
+We present a formalization of Dynamic Pushdown Networks (DPNs) and the automata based algorithm for computing backward reachability sets using Isabelle/HOL. 
+  Dynamic pushdown networks are an abstract model for multithreaded, interprocedural programs with dynamic thread creation that was presented by Bouajjani, Müller-Olm and Touili in 2005. 
+
+  We formalize the notion of a DPN in Isabelle and describe the algorithm for computing the $pre^*$-set from a regular set of configurations, and prove its correctness. We first give a nondeterministic description of the algorithm, from that we then infer a deterministic one, from which we can generate executable code using Isabelle's code-generation tool."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.lammich]
+email = "lammich_email"
+
+[contributors]
+
+[notify]
+lammich = "lammich_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/11539452_36",
+]
+pubs = []

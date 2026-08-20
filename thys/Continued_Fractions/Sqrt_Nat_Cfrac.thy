@@ -803,7 +803,7 @@ proof -
       using red_assoc_begin(1) red_assoc_begin(2) by auto
     hence "cfrac_nth (cfrac_of_real (real D' + sqrt (real D))) (Suc n') =
           cfrac_nth (cfrac_of_real (sqrt (real D))) (Suc n')"
-      by (simp add: cfrac_tl_of_real frac_add_of_nat Ints_add_left_cancel flip: cfrac_nth_tl)
+      by (simp add: cfrac_tl_of_real frac_add_of_nat flip: cfrac_nth_tl)
     thus ?thesis using x'_nz[of 0]
       by (simp add: x'_0 sqrt_cfrac Suc)
   qed

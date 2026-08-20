@@ -72,7 +72,7 @@ proof (unfold equiv_rel_on_def, safe)
     fix x
     assume x_type: "x \<in>\<^sub>c X"
     then show "\<langle>x,x\<rangle> \<in>\<^bsub>X \<times>\<^sub>c X\<^esub> (X \<^bsub>f\<^esub>\<times>\<^sub>c\<^bsub>f\<^esub> X, fibered_product_morphism X f f X)"
-      by (smt assms comp_type diag_on_elements diagonal_type fibered_product_morphism_monomorphism
+      by (smt (z3) assms comp_type diag_on_elements diagonal_type fibered_product_morphism_monomorphism
           fibered_product_morphism_type pair_factorsthru_fibered_product_morphism relative_member_def2)
   qed
 
@@ -193,7 +193,7 @@ proof clarify
 
   then obtain z where "z: E \<rightarrow> codomain(k) \<and> z \<circ>\<^sub>c m  = k \<circ>\<^sub>c m \<and>
     (\<forall> j. j:E \<rightarrow> codomain(k) \<and>  j \<circ>\<^sub>c m = k \<circ>\<^sub>c m \<longrightarrow> j = z)"
-    using uniqueness by (smt cfunc_type_def codomain_comp comp_associative domain_comp f_type g_type m_k_mh m_type relation_k relation_h)
+    using uniqueness by (smt (z3) cfunc_type_def codomain_comp comp_associative domain_comp f_type g_type m_k_mh m_type relation_k relation_h)
 
   then show "k = h"
     by (metis cfunc_type_def codomain_comp m_k_mh m_type relation_k relation_h)

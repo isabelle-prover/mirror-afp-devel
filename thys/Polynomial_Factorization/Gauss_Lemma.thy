@@ -6,15 +6,15 @@
 (*TODO: Rename! *)
 section \<open>Gauss Lemma\<close>
 
-text \<open>We formalized Gauss Lemma, that the content of a product of two polynomials $p$ and $q$
+text \<open>We formalized Gauss Lemma, that the Polynomial.content of a product of two polynomials $p$ and $q$
   is the product of the contents of $p$ and $q$. As a corollary we provide an algorithm
   to convert a rational factor of an integer polynomial into an integer factor.
   
   In contrast to the theory on unique factorization domains -- where Gauss Lemma is also proven 
    in a more generic setting --
   we are here in an executable setting and do not use the unspecified $some-gcd$ function.
-  Moreover, there is a slight difference in the definition of content: in this theory it is only
-  defined for integer-polynomials, whereas in the UFD theory, the content is defined for 
+  Moreover, there is a slight difference in the definition of Polynomial.content: in this theory it is only
+  defined for integer-polynomials, whereas in the UFD theory, the Polynomial.content is defined for 
   polynomials in the fraction field.\<close>
 
 theory Gauss_Lemma
@@ -26,7 +26,7 @@ imports
 begin
 
 lemma primitive_part_alt_def:
-  "primitive_part p = sdiv_poly p (content p)"
+  "primitive_part p = sdiv_poly p (Polynomial.content p)"
   by (simp add: primitive_part_def sdiv_poly_def)
 
 definition common_denom :: "rat list \<Rightarrow> int \<times> int list" where
@@ -44,11 +44,11 @@ definition rat_to_int_poly :: "rat poly \<Rightarrow> int \<times> int poly" whe
 
 definition rat_to_normalized_int_poly :: "rat poly \<Rightarrow> rat \<times> int poly" where
   "rat_to_normalized_int_poly p \<equiv> if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
-    \<Rightarrow> (of_int (content q) / of_int s, primitive_part q)"
+    \<Rightarrow> (of_int (Polynomial.content q) / of_int s, primitive_part q)"
 
 lemma rat_to_normalized_int_poly_code[code]:
   "rat_to_normalized_int_poly p = (if p = 0 then (1,0) else case rat_to_int_poly p of (s,q)
-    \<Rightarrow> let c = content q in (of_int c / of_int s, sdiv_poly q c))"
+    \<Rightarrow> let c = Polynomial.content q in (of_int c / of_int s, sdiv_poly q c))"
     unfolding Let_def rat_to_normalized_int_poly_def primitive_part_alt_def ..
 
 lemma common_denom: assumes cd: "common_denom xs = (dd,ys)"
@@ -105,23 +105,23 @@ proof -
     by (intro poly_eqI, auto simp: field_simps coeff_map_poly)
 qed
 
-lemma content_ge_0_int: "content p \<ge> (0 :: int)"
+lemma content_ge_0_int: "Polynomial.content p \<ge> (0 :: int)"
   unfolding content_def
   by (cases "coeffs p", auto)
 
 lemma abs_content_int[simp]: fixes p :: "int poly"
-  shows "abs (content p) = content p" using content_ge_0_int[of p] by auto
+  shows "abs (Polynomial.content p) = Polynomial.content p" using content_ge_0_int[of p] by auto
 
 lemma content_smult_int: fixes p :: "int poly" 
-  shows "content (smult a p) = abs a * content p" by simp
+  shows "Polynomial.content (smult a p) = abs a * Polynomial.content p" by simp
 
 lemma normalize_non_0_smult: "\<exists> a. (a :: 'a :: semiring_gcd) \<noteq> 0 \<and> smult a (primitive_part p) = p"
-  by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "content p"], auto)
+  by (cases "p = 0", rule exI[of _ 1], simp, rule exI[of _ "Polynomial.content p"], auto)
 
 lemma rat_to_normalized_int_poly: assumes "rat_to_normalized_int_poly p = (d,q)"
-  shows "p = smult d (map_poly of_int q)" "d > 0" "p \<noteq> 0 \<Longrightarrow> content q = 1" "degree q = degree p"
+  shows "p = smult d (map_poly of_int q)" "d > 0" "p \<noteq> 0 \<Longrightarrow> Polynomial.content q = 1" "degree q = degree p"
 proof -
-  have "p = smult d (map_poly of_int q) \<and> d > 0 \<and> (p \<noteq> 0 \<longrightarrow> content q = 1)"
+  have "p = smult d (map_poly of_int q) \<and> d > 0 \<and> (p \<noteq> 0 \<longrightarrow> Polynomial.content q = 1)"
   proof (cases "p = 0")
     case True
     thus ?thesis using assms unfolding rat_to_normalized_int_poly_def
@@ -130,7 +130,7 @@ proof -
     case False
     hence p0: "p \<noteq> 0" by auto
     obtain s r where id: "rat_to_int_poly p = (s,r)" by force
-    let ?cr = "rat_of_int (content r)"
+    let ?cr = "rat_of_int (Polynomial.content r)"
     let ?s = "rat_of_int s"
     let ?q = "map_poly rat_of_int q"
     from rat_to_int_poly[OF id] have p: "p = smult (inverse ?s) (map_poly of_int r)"
@@ -138,32 +138,32 @@ proof -
     let ?q = "map_poly rat_of_int q"
     from p0 assms[unfolded rat_to_normalized_int_poly_def id split]
     have d: "d = ?cr / ?s" and q: "q = primitive_part r" by auto
-    from content_times_primitive_part[of r, folded q] have qr: "smult (content r) q = r" .
+    from content_times_primitive_part[of r, folded q] have qr: "smult (Polynomial.content r) q = r" .
     have "smult d ?q = smult (?cr / ?s) ?q"
       unfolding d by simp
     also have "?cr / ?s = ?cr * inverse ?s" by (rule divide_inverse)
     also have "\<dots> = inverse ?s * ?cr" by simp
     also have "smult (inverse ?s * ?cr) ?q = smult (inverse ?s) (smult ?cr ?q)" by simp
-    also have "smult ?cr ?q = map_poly of_int (smult (content r) q)" by (simp add: hom_distribs)
+    also have "smult ?cr ?q = map_poly of_int (smult (Polynomial.content r) q)" by (simp add: hom_distribs)
     also have "\<dots> = map_poly of_int r" unfolding qr ..
     finally have pq: "p = smult d ?q" unfolding p by simp
     from p p0 have r0: "r \<noteq> 0" by auto
     from content_eq_zero_iff[of r] content_ge_0_int[of r] r0 have cr: "?cr > 0" by linarith
     with s have d0: "d > 0" unfolding d by auto
-    from content_primitive_part[OF r0] have cq: "content q = 1" unfolding q .
+    from content_primitive_part[OF r0] have cq: "Polynomial.content q = 1" unfolding q .
     from pq d0 cq show ?thesis by auto
   qed
-  thus p: "p = smult d (map_poly of_int q)" and d: "d > 0" and "p \<noteq> 0 \<Longrightarrow> content q = 1" by auto
+  thus p: "p = smult d (map_poly of_int q)" and d: "d > 0" and "p \<noteq> 0 \<Longrightarrow> Polynomial.content q = 1" by auto
   show "degree q = degree p" unfolding p smult_as_map_poly
     by (rule sym, subst map_poly_map_poly, force+, rule degree_map_poly, insert d, auto)
 qed
 
 lemma content_dvd_1:
-  "content g = 1" if "content f = (1 :: 'a :: semiring_gcd)" "g dvd f" 
+  "Polynomial.content g = 1" if "Polynomial.content f = (1 :: 'a :: semiring_gcd)" "g dvd f" 
 proof -
-  from \<open>g dvd f\<close> have "content g dvd content f"
+  from \<open>g dvd f\<close> have "Polynomial.content g dvd Polynomial.content f"
     by (rule content_dvd_contentI)
-  with \<open>content f = 1\<close> show ?thesis
+  with \<open>Polynomial.content f = 1\<close> show ?thesis
     by simp
 qed
 
@@ -178,12 +178,12 @@ next
   from p0 c have cp0: "?cp \<noteq> 0" by auto
   from dvd obtain r where prod: "?cp = q * r" unfolding dvd_def by auto
   from prod cp0 have q0: "q \<noteq> 0" and r0: "r \<noteq> 0" by auto
-  let ?c = "content :: int poly \<Rightarrow> int"
+  let ?c = "Polynomial.content :: int poly \<Rightarrow> int"
   let ?n = "primitive_part :: int poly \<Rightarrow> int poly"
   let ?pn = "\<lambda> p. smult (?c p) (?n p)"
   have cq: "(?c q = 0) = False" using content_eq_zero_iff q0 by auto
   from prod have id1: "?cp = ?pn q * ?pn r" unfolding content_times_primitive_part by simp
-  from arg_cong[OF this, of content, unfolded content_smult_int content_mult
+  from arg_cong[OF this, of Polynomial.content, unfolded content_smult_int content_mult
     content_primitive_part[OF r0] content_primitive_part[OF q0], symmetric]
     p0[folded content_eq_zero_iff] c
   have "abs c dvd ?c q * ?c r" unfolding dvd_def by auto
@@ -233,7 +233,7 @@ lemma irreducible\<^sub>d_as_irreducible:
 
 
 lemma rat_to_int_factor_content_1: fixes p :: "int poly" 
-  assumes cp: "content p = 1"
+  assumes cp: "Polynomial.content p = 1"
   and pgh: "map_poly rat_of_int p = g * h"
   and g: "rat_to_normalized_int_poly g = (r,rg)"
   and h: "rat_to_normalized_int_poly h = (s,sh)"
@@ -245,9 +245,9 @@ proof -
   from p have rp0: "?rp p \<noteq> 0" by simp
   with pgh have g0: "g \<noteq> 0" and h0: "h \<noteq> 0" by auto
   from rat_to_normalized_int_poly[OF g] g0 
-  have r: "r > 0" "r \<noteq> 0" and g: "g = smult r (?rp rg)" and crg: "content rg = 1" by auto
+  have r: "r > 0" "r \<noteq> 0" and g: "g = smult r (?rp rg)" and crg: "Polynomial.content rg = 1" by auto
   from rat_to_normalized_int_poly[OF h] h0 
-  have s: "s > 0" "s \<noteq> 0" and h: "h = smult s (?rp sh)" and csh: "content sh = 1" by auto
+  have s: "s > 0" "s \<noteq> 0" and h: "h = smult s (?rp sh)" and csh: "Polynomial.content sh = 1" by auto
   let ?irs = "inverse (r * s)"
   from r s have irs0: "?irs \<noteq> 0" by (auto simp: field_simps)
   have "?rp (rg * sh) = ?rp rg * ?rp sh" by (simp add: hom_distribs)
@@ -294,7 +294,7 @@ proof -
   then obtain irs where irs: "?irs = ?r irs" unfolding Ints_def by blast
   from id[unfolded irs, folded hom_distribs, unfolded of_int_poly_hom.eq_iff]
   have p: "rg * sh = smult irs p" by auto
-  have "content (rg * sh) = 1" unfolding content_mult crg csh by auto
+  have "Polynomial.content (rg * sh) = 1" unfolding content_mult crg csh by auto
   from this[unfolded p content_smult_int cp] have "abs irs = 1" by simp
   hence "abs ?irs = 1" using irs by auto
   with r s have "?irs = 1" by auto
@@ -305,7 +305,7 @@ qed
 lemma rat_to_int_factor_explicit: fixes p :: "int poly" 
   assumes pgh: "map_poly rat_of_int p = g * h"
   and g: "rat_to_normalized_int_poly g = (r,rg)"
-  shows "\<exists> r. p = rg * smult (content p) r"
+  shows "\<exists> r. p = rg * smult (Polynomial.content p) r"
 proof -
   show ?thesis
   proof (cases "p = 0")
@@ -319,9 +319,9 @@ proof -
     let ?rp = "map_poly ?r"
     define q where "q = primitive_part p"
     from content_times_primitive_part[of p, folded q_def] content_eq_zero_iff[of p] p
-      obtain a where a: "a \<noteq> 0" and pq: "p = smult a q" and acp: "content p = a" by metis
+      obtain a where a: "a \<noteq> 0" and pq: "p = smult a q" and acp: "Polynomial.content p = a" by metis
     from a pq p have ra: "?r a \<noteq> 0" and q0: "q \<noteq> 0" by auto
-    from content_primitive_part[OF p, folded q_def] have cq: "content q = 1" by auto
+    from content_primitive_part[OF p, folded q_def] have cq: "Polynomial.content q = 1" by auto
     obtain s sh where h: "rat_to_normalized_int_poly (smult (inverse (?r a)) h) = (s,sh)" by force
     from arg_cong[OF pgh[unfolded pq], of "smult (inverse (?r a))"] ra
     have "?rp q = g * smult (inverse (?r a)) h" by (auto simp: hom_distribs)
@@ -342,20 +342,20 @@ proof(cases "p = 0")
     by (metis True degree_0 mult_hom.hom_zero mult_zero_left rat_to_normalized_int_poly(4) surj_pair)
 next
   case False
-  obtain r rg where ri: "rat_to_normalized_int_poly (smult (1 / of_int (content p)) g) = (r,rg)" by force
+  obtain r rg where ri: "rat_to_normalized_int_poly (smult (1 / of_int (Polynomial.content p)) g) = (r,rg)" by force
   obtain q qh where ri2: "rat_to_normalized_int_poly h = (q,qh)" by force
   show ?thesis
   proof (intro exI conjI)
-    have "of_int_poly (primitive_part p) = smult (1 / of_int (content p)) (g * h)"
+    have "of_int_poly (primitive_part p) = smult (1 / of_int (Polynomial.content p)) (g * h)"
       apply (auto simp: primitive_part_def pgh[symmetric] smult_map_poly map_poly_map_poly o_def intro!: map_poly_cong)
       by (metis (no_types, lifting) content_dvd_coeffs div_by_0 dvd_mult_div_cancel floor_of_int nonzero_mult_div_cancel_left of_int_hom.hom_zero of_int_mult)
-    also have "\<dots> = smult (1 / of_int (content p)) g * h" by simp
+    also have "\<dots> = smult (1 / of_int (Polynomial.content p)) g * h" by simp
     finally have "of_int_poly (primitive_part p) = \<dots>".
     note main = rat_to_int_factor_content_1[OF _ this ri ri2, simplified, OF False]
-    show "p = smult (content p) rg * qh" by (simp add: main[symmetric])
+    show "p = smult (Polynomial.content p) rg * qh" by (simp add: main[symmetric])
     from ri2 show "degree qh = degree h" by (fact rat_to_normalized_int_poly)
     from rat_to_normalized_int_poly(4)[OF ri] False
-    show "degree (smult (content p) rg) = degree g" by auto
+    show "degree (smult (Polynomial.content p) rg) = degree g" by auto
   qed
 qed
 
@@ -407,11 +407,11 @@ proof -
   with irreducible\<^sub>d_int_rat[OF ip] show ?thesis by auto
 qed
 
-lemma dvd_content_dvd: assumes dvd: "content f dvd content g" "primitive_part f dvd primitive_part g"
+lemma dvd_content_dvd: assumes dvd: "Polynomial.content f dvd Polynomial.content g" "primitive_part f dvd primitive_part g"
   shows "f dvd g" 
 proof -
-  let ?cf = "content f" let ?nf = "primitive_part f" 
-  let ?cg = "content g" let ?ng = "primitive_part g" 
+  let ?cf = "Polynomial.content f" let ?nf = "primitive_part f" 
+  let ?cg = "Polynomial.content g" let ?ng = "primitive_part g" 
   have "f dvd g = (smult ?cf ?nf dvd smult ?cg ?ng)" 
     unfolding content_times_primitive_part by auto
   from dvd(1) obtain ch where cg: "?cg = ?cf * ch" unfolding dvd_def by auto
@@ -431,7 +431,7 @@ lemma primitive_part_smult_int: fixes f :: "int poly" shows
   "primitive_part (smult d f) = smult (sgn d) (primitive_part f)" 
 proof (cases "d = 0 \<or> f = 0")
   case False
-  obtain cf where cf: "content f = cf" by auto
+  obtain cf where cf: "Polynomial.content f = cf" by auto
   with False have 0: "d \<noteq> 0" "f \<noteq> 0" "cf \<noteq> 0" by auto
   show ?thesis 
   proof (rule poly_eqI, unfold primitive_part_alt_def coeff_sdiv_poly content_smult_int coeff_smult cf)

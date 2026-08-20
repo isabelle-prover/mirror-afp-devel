@@ -1,6 +1,7 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 theory Zip_HOL
   imports
+    Zip_Pure
     Cases_Tactics_HOL
     Extended_Blast_Data
     ML_Unification.ML_Unification_HOL_Setup
@@ -8,7 +9,6 @@ theory Zip_HOL
     Zippy_Instance_Classical
     Zippy_Instance_Induction
     Zippy_Instance_Subst
-    Zip_Pure
 begin
 
 subsubsection \<open>Simplifier\<close>
@@ -116,7 +116,7 @@ local open Zippy
 in
 \<^functor_instance>\<open>struct_name: Subst
   functor_name: Zippy_Instance_Subst_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "subst"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>
     structure Z = Zippy
@@ -153,12 +153,9 @@ declare [[zip_init_gc \<open>
       |> Tac_AAM.Tac.zSOME_GOAL_FOCUS
       |> arr)
     val retrieval = Data.TI.content #> Library.K
-    fun lookup_goal ctxt = retrieval (Data.get_index (Context.Proof ctxt))
-      #> List.map (apsnd (transfer_data (Proof_Context.theory_of ctxt)))
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt =>
-      Data.TI.content (Data.get_index (Context.Proof ctxt))
-      |> List.map (snd #> transfer_data (Proof_Context.theory_of ctxt))
-      |> map_index (fn (i, data) =>
+      Data.retrieve (Data.TI.content #> Library.K) Term.dummy (Context.Proof ctxt)
+      |> map_index (fn (i, (_, data)) =>
         cons_nth_action Util.exn meta ztac ctxt i data focus >>> Up4.morph)
       |> ZB.update_zipper3)
     fun init _ focus z = Node.cons3 Util.exn meta [(focus, cons_actions)] z
@@ -180,9 +177,8 @@ declare [[zip_init_gc \<open>
       |> Tac_AAM.Tac.zSOME_GOAL_FOCUS
       |> arr)
     fun cons_actions focus = Ctxt.with_ctxt (fn ctxt =>
-      Data.TI.content (Data.get_index (Context.Proof ctxt))
-      |> List.map (snd #> transfer_data (Proof_Context.theory_of ctxt))
-      |> map_index (fn (i, data) =>
+      Data.retrieve (Data.TI.content #> Library.K) Term.dummy (Context.Proof ctxt)
+      |> map_index (fn (i, (_, data)) =>
         cons_nth_action Util.exn meta ztac ctxt i data focus >>> Up4.morph)
       |> ZB.update_zipper3)
     fun init _ focus z = Node.cons3 Util.exn meta [(focus, cons_actions)] z
@@ -204,8 +200,7 @@ local open Zippy
     structure Ctxt = Ctxt
     fun mk_init_args cost = {
       simp = SOME true,
-      match = SOME (can Seq.hd oooo Type_Unification.e_unify Unification_Util.unify_types
-        (Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match)),
+      match = SOME (can Seq.hd oooo Type_Unification.e_unify Mixed_Unification.fo_hop_match_type_unify),
       empty_action = SOME (Library.K Zippy.PAction.disable_action),
       default_update = SOME Zip.Run.init_gpos,
       mk_cud = SOME Zippy.Result_Action.copy_update_data_empty_changed,
@@ -221,7 +216,7 @@ in
 \<^functor_instance>\<open>struct_name: Cases
   functor_name: Zippy_Instance_Cases_Data
   FI_struct_name: FI_Cases_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "cases"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>open Base_Args
     val init_args = mk_init_args Cost.MEDIUM
@@ -230,7 +225,7 @@ structure Cases = Cases.Cases_Data
 \<^functor_instance>\<open>struct_name: Induction
   functor_name: Zippy_Instance_Induction_Data
   FI_struct_name: FI_Induction_Data
-  id: \<open>FI.id\<close>
+  id: \<open>FI.prefix_id "induct"\<close>
   path: \<open>FI.long_name\<close>
   more_args: \<open>open Base_Args
     val init_args = mk_init_args Cost.HIGH
@@ -253,8 +248,7 @@ declare [[zip_init_gc \<open>
       |> Tac_AAM.Tac.zSOME_GOAL_FOCUS
       |> arr)
     val opt_default_update_action = NONE
-    fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => Data.get (Context.Proof ctxt)
-      |> List.map (transfer_data (Proof_Context.theory_of ctxt))
+    fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => Data.get_datas (Context.Proof ctxt)
       |> map_index (fn (i, data) =>
         cons_nth_action Util.exn meta ztac opt_default_update_action ctxt i data focus >>> Up4.morph)
       |> ZB.update_zipper3)
@@ -270,8 +264,7 @@ declare [[zip_init_gc \<open>let open Zippy Zip.Induction; open ZLPC MU; open SC
       |> Tac_AAM.Tac.zSOME_GOAL_FOCUS
       |> arr)
     val opt_default_update_action = NONE
-    fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => Data.get (Context.Proof ctxt)
-      |> List.map (transfer_data (Proof_Context.theory_of ctxt))
+    fun cons_actions focus = Ctxt.with_ctxt (fn ctxt => Data.get_datas (Context.Proof ctxt)
       |> map_index (fn (i, data) =>
         cons_nth_action Util.exn meta ztac opt_default_update_action ctxt i data focus >>> Up4.morph)
       |> ZB.update_zipper3)

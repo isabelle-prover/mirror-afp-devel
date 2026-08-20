@@ -84,7 +84,7 @@ lemma beta_preserves_typ_of1: "typ_of1 Ts r = Some T \<Longrightarrow> r \<right
 proof (induction Ts r arbitrary: s T rule: typ_of1.induct)
   case (4 Ts T body)
   then show ?case 
-    by (smt beta_cases(3) typ_of1.simps(4) typ_of_Abs_body_typ')
+    by (smt (z3) beta_cases(3) typ_of1.simps(4) typ_of_Abs_body_typ')
 next
   case (5 Ts f u)
   from this obtain argT where argT: "typ_of1 Ts u = Some argT" and "typ_of1 Ts f = Some (argT \<rightarrow> T)"
@@ -139,7 +139,7 @@ lemma beta_norm_imp_beta_reds: assumes "beta_norm t = Some t'" shows "t \<righta
   using assms proof (induction arbitrary: t t' rule: beta_norm.fixp_induct)
   case 1
   then show ?case 
-    by (smt Option.is_none_def ccpo.admissibleI chain_fun flat_lub_def flat_ord_def fun_lub_def 
+    by (smt (z3) Option.is_none_def ccpo.admissibleI chain_fun flat_lub_def flat_ord_def fun_lub_def 
         insertCI is_none_code(2) mem_Collect_eq option.lub_upper subsetI)
 next
   case 2

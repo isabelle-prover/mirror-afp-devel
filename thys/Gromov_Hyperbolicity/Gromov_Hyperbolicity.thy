@@ -136,7 +136,7 @@ unfolding Gromov_product_at_def by auto
 lemma Gromov_product_at_diff:
   "\<bar>Gromov_product_at x y z - Gromov_product_at a b c\<bar> \<le> dist x a + dist y b + dist z c"
 unfolding Gromov_product_at_def abs_le_iff apply (auto simp add: divide_simps)
-by (smt dist_commute dist_triangle4)+
+by (smt (z3) dist_commute dist_triangle4)+
 
 lemma Gromov_product_at_diff1:
   "\<bar>Gromov_product_at a x y - Gromov_product_at b x y\<bar> \<le> dist a b"

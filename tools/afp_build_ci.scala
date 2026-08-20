@@ -4,8 +4,7 @@ CI jobs for AFP build.
  */
 package afp
 
-
-import isabelle.*
+import isabelle._
 import isabelle.find_facts.Find_Facts
 
 
@@ -42,21 +41,8 @@ object AFP_Build_CI {
     options: Options,
     val store: Store,
     val mail_system: Option[Build_CI.Mail_System],
-    val afp: AFP_Structure,
   ) {
-    lazy val entries = afp.load_entries()
-    lazy val entry_sessions: Map[Metadata.Entry.Name, List[String]] =
-      entries.values.map(entry => entry.name -> afp.entry_sessions(entry.name).map(_.name)).toMap
-
-    def session_entry(session_name: String): Option[Metadata.Entry.Name] = {
-      val entry = entry_sessions.find { case (_, sessions) => sessions.contains(session_name) }
-      entry.map { case (name, _) => name }
-    }
-
-    val isabelle_path = Path.explode("$ISABELLE_HOME")
-    val isabelle_id =
-      if (Mercurial.Hg_Sync.ok(isabelle_path)) File.read(isabelle_path + Mercurial.Hg_Sync.PATH_ID)
-      else Mercurial.self_repository().id()
+    lazy val afp = AFP_Structure.load()
 
     def website_dir: Path = Path.explode(options.string("afp_ci_website_dir"))
 
@@ -68,8 +54,8 @@ object AFP_Build_CI {
   }
 
   object Context {
-    def apply(options: Options, afp: AFP_Structure = AFP_Structure()): Context =
-      new Context(options, Store(options), Build_CI.Mail_System.try_open(options), afp)
+    def apply(options: Options): Context =
+      new Context(options, Store(options), Build_CI.Mail_System.try_open(options))
   }
 
 
@@ -84,11 +70,15 @@ object AFP_Build_CI {
     for (mail_system <- context.mail_system if !results.ok) {
       progress.echo(Build_CI.section("NOTIFICATIONS"))
 
+      def relevant_failure(session: String, result: Process_Result): Boolean =
+        if (result.ok || result.interrupted || results.cancelled(session)) false
+        else results.deps.sessions_structure(session).imports.forall(results(_).ok)
+
       for {
         session <- results.sessions
         result = results(session)
-        if !result.ok && !result.interrupted && !results.cancelled(session)
-        entry <- context.session_entry(session)
+        if relevant_failure(session, result)
+        entry <- context.afp.perhaps_session_entry(session)
       } {
         val subject = "Build of AFP entry " + entry + " failed"
         val content = """
@@ -99,8 +89,8 @@ You are receiving this mail because you are the maintainer of that AFP entry.
 The following information might help you with resolving the problem.
 
 """ + if_proper(url, "Build log: " + url.get + "\n") + """
-Isabelle ID:  """ + context.isabelle_id + """
-AFP ID:       """ + context.afp.hg_id + """
+Isabelle ID:  """ + Isabelle_System.isabelle_id() + """
+AFP ID:       """ + AFP.hg_id() + """
 Timeout?      """ + result.timeout + """
 Exit code:    """ + result.rc + """
 
@@ -112,7 +102,7 @@ Last 50 lines from stderr (if available):
 
 """ + result.err_lines.takeRight(50).mkString("\n") + "\n"
 
-        val recipients = context.entries.get(entry).map(_.notifies).getOrElse(Nil)
+        val recipients = entry.metadata.notifies
         if (recipients.isEmpty) progress.echo("Entry " + entry + ": no maintainers specified")
         else {
           val to = recipients.map(mail => Mail.address(mail.address))
@@ -129,17 +119,18 @@ Last 50 lines from stderr (if available):
   ): Unit = {
     val entry_status =
       for {
-        (entry, sessions) <- results.sessions.groupBy(context.session_entry).toList
+        (entry, sessions) <- results.sessions.groupBy(context.afp.perhaps_session_entry).toList
         entry <- entry
         session_status = sessions.map(Status.from_results(results, _))
-      } yield JSON.Object("entry" -> entry, "status" -> Status.merge(session_status.toList).str)
+      } yield
+        JSON.Object("entry" -> entry.name, "status" -> Status.merge(session_status.toList).str)
 
     val status_json =
       JSON.Object(
         "entries" -> entry_status,
         "build_data" -> (JSON.Object(
-          "isabelle_id" -> context.isabelle_id,
-          "afp_id" -> context.afp.hg_id,
+          "isabelle_id" -> Isabelle_System.isabelle_id(),
+          "afp_id" -> AFP.hg_id(),
           "time" -> Date.Format.default(progress.start)) ++
           url.map(url => "url" -> url.toString)))
 
@@ -151,34 +142,33 @@ Last 50 lines from stderr (if available):
 
       val output_dir = dir + Path.basic("output")
 
-      AFP_Site_Gen.afp_site_gen(output_dir, afp = context.afp, status_file = Some(status_file),
-        progress = progress)
+      AFP_Site_Gen.afp_site_gen(output_dir, status_file = Some(status_file), progress = progress)
 
       val release_dir = dir + Path.basic("release")
       Isabelle_System.make_directory(release_dir)
 
       progress.echo("Packing tars...")
-      for ((name, _) <- context.entries) {
-        val archive = release_dir + Path.basic("afp-" + name + "-current.tar.gz")
-        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(name),
-          dir = context.afp.thys_dir).check
+      for (entry <- context.afp.entry_list) {
+        val archive = release_dir + Path.basic("afp-" + entry.name + "-current.tar.gz")
+        Isabelle_System.gnutar("-czf " + File.bash_path(archive) + " " + Bash.string(entry.name),
+          dir = AFP_Structure.thys_dir).check
       }
 
       using(context.open_ssh()) { ssh =>
         val rsync_context = Rsync.Context(ssh = ssh)
 
         val website_source = File.standard_path(output_dir)
-        Rsync.exec(rsync_context, clean = true, args = List("--", Url.direct_path(website_source),
+        rsync_context.exec(clean = true, args = List("--", Url.direct_path(website_source),
           rsync_context.target(context.website_dir))).check
 
         val release_source = File.standard_path(release_dir)
-        Rsync.exec(rsync_context, args = List("--", Url.direct_path(release_source),
+        rsync_context.exec(args = List("--", Url.direct_path(release_source),
           rsync_context.target(context.website_dir + Path.basic("release")))).check
 
         val browser_info_source = File.standard_path(context.store.presentation_dir)
         val browser_info_dir = context.website_dir + Path.basic("browser_info")
         ssh.make_directory(browser_info_dir)
-        Rsync.exec(rsync_context, args = List("--", Url.direct_path(browser_info_source),
+        rsync_context.exec(args = List("--", Url.direct_path(browser_info_source),
           rsync_context.target(browser_info_dir + Path.basic("current")))).check
       }
     }
@@ -233,6 +223,7 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val context = Context(options)
+          notify_failed(context, url, results, progress)
           sitegen(context, url, results, progress)
         }
       },
@@ -259,8 +250,7 @@ Last 50 lines from stderr (if available):
           progress: Progress
         ): Unit = {
           val dirs = AFP.main_dirs(Some(AFP.BASE))
-          val afp = AFP_Structure(options)
-          val database = "afp-" + afp.hg_id
+          val database = "afp-" + AFP.hg_id()
           val find_facts_options =
             List(
               Options.Spec.eq("find_facts_database_name", database),

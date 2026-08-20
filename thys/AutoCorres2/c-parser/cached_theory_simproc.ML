@@ -275,7 +275,7 @@ fun add_ss ctxt thms ss =
   let 
     val _ = Utils.verbose_msg 3 ctxt (fn _ => "caching: " ^ string_of_thms ctxt thms)
   in
-    (Simplifier.put_simpset ss ctxt) addsimps thms |> Simplifier.simpset_of 
+    ss |> Simplifier.simpset_map ctxt (Simplifier.add_simps thms) 
   end
 
 fun add_cache ctxt thms = (change_cache_ss (add_ss ctxt thms) ctxt; thms) 
@@ -326,7 +326,7 @@ fun assume_addsimps derive asms goal ctxt =
     val derived_thms = derive ctxt' thms
     val _ = Utils.verbose_msg 5 ctxt (fn _ => "derived: " ^ string_of_thms ctxt' derived_thms)
   in
-    (Thm.cterm_of ctxt' goal, ctxt' addsimps thms @ derived_thms)
+    (Thm.cterm_of ctxt' goal, ctxt' |> Simplifier.add_simps (thms @ derived_thms))
   end
  
 fun gen_asm_simproc (aux,  add, derive_asms) unfold augment asms ct =

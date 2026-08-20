@@ -3,7 +3,7 @@
 *)
 signature LOGGING_ANTIQUOTATION =
 sig
-  val show_log_pos: bool Config.T
+  val show_log_pos : bool Config.T
 end
 
 structure Logging_Antiquotation : LOGGING_ANTIQUOTATION =
@@ -19,9 +19,9 @@ val log =
       let
         val (_, pos) = Token.name_of_src ts
         val ctxt_internal = Util.internal_name "ctxt"
-        val show_log_pos =
-          \<^if_none>\<open>Util.spaces ["Config.get", ctxt_internal, " Logging_Antiquotation.show_log_pos"]\<close>
-          show_log_pos_opt
+        val show_log_pos = show_log_pos_opt
+          |> \<^if_none>\<open>Util.spaces [\<^unchecked_name>\<open>Config.get\<close>, ctxt_internal,
+            \<^unchecked_name>\<open>Logging_Antiquotation.show_log_pos\<close>]\<close>
         val additional_info = Util.spaces [
             "if", ML_Syntax.atomic show_log_pos,
             "then",
@@ -41,7 +41,7 @@ val log =
       in pair (K ("", code)) end
   in
     ML_Antiquotation.declaration @{binding "log"}
-      (Scan.optional Parse.embedded "Logger.INFO"
+      (Scan.optional Parse.embedded \<^unchecked_name>\<open>Logger.INFO\<close>
         -- Scan.optional Parse.embedded "logger" (*works in particular if structure implements HAS_LOGGER*)
         -- Scan.option Parse.embedded
         |> Scan.lift)

@@ -41,7 +41,7 @@ fun compile_zfun x thy =
   let open Syntax;
       val ctx = (Named_Target.theory_init thy)
       val f = check_term ctx (zfun_body (compile_zfun_decl ctx x))
-  in Local_Theory.exit_global (snd (Specification.definition NONE [] [] ((Binding.empty, []), f) ctx))
+  in Local_Theory.exit_global (snd (Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), f) ctx))
   end;
 
 open HOLogic;

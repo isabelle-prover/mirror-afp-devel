@@ -208,7 +208,8 @@ proof -
   moreover then have "(\<^bsub>R1\<^esub>\<lessapprox>) = (\<greaterapprox>\<^bsub>L1\<^esub>)"
     by (subst rel_inv_eq_iff_eq[symmetric]) simp
   ultimately show ?thesis using assms unfolding left_rel_eq_comp
-    by (subst symmetric_iff_rel_inv_eq_self) (simp add: rel_comp_assoc)
+    by (subst symmetric_iff_rel_inv_eq_self)
+    (simp add: rel_comp_assoc flip: rel_inv_comp_rel_inv_eq)
 qed
 
 lemma partial_equivalence_rel_leftI:

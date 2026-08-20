@@ -1396,7 +1396,7 @@ proof -
   have "(-e \<sqinter> f) * (e \<sqinter> f\<^sup>T) = bot"
     using assms forests_bot_1 conv_dist_inf by simp
   thus ?thesis
-    by (smt assms(1) comp_associative comp_inf.semiring.mult_not_zero conv_complement conv_dist_comp conv_dist_inf conv_involutive dedekind_1 inf.cobounded2 inf.sup_monoid.add_commute le_bot mult_right_zero p_antitone_iff pseudo_complement semiring.mult_not_zero symmetric_top_closed top.extremum)
+    by (smt (z3) assms(1) comp_associative comp_inf.semiring.mult_not_zero conv_complement conv_dist_comp conv_dist_inf conv_involutive dedekind_1 inf.cobounded2 inf.sup_monoid.add_commute le_bot mult_right_zero p_antitone_iff pseudo_complement semiring.mult_not_zero symmetric_top_closed top.extremum)
 qed
 
 lemma forests_bot_3:
@@ -1405,7 +1405,7 @@ lemma forests_bot_3:
     shows "x * (-e \<sqinter> f) \<sqinter> y * (e \<sqinter> f) = bot"
 proof -
   have "(e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"
-    using assms forests_bot_1 conv_dist_inf conv_complement by (smt conv_dist_comp conv_involutive conv_order coreflexive_bot_closed coreflexive_symmetric)
+    using assms forests_bot_1 conv_dist_inf conv_complement by (smt (z3) conv_dist_comp conv_involutive conv_order coreflexive_bot_closed coreflexive_symmetric)
   hence "y * (e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"
     by (simp add: comp_associative)
   hence 1: "x \<sqinter> y * (e \<sqinter> f) * (-e \<sqinter> f\<^sup>T) = bot"

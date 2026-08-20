@@ -1,6 +1,8 @@
 (* 
 Author:     Bruno Philipp, TU München
 Author:     Tobias Nipkow
+
+TODO: use ABC_Words? But sorted plays no role below, so no gain?
 *)
 
 section \<open>\<open>a\<^sup>nb\<^sup>nc\<^sup>n\<close> is Not Context-Free\<close>

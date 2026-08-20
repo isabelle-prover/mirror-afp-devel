@@ -193,7 +193,7 @@ proof -
   also have "... \<le> n(x\<^sup>\<omega>) * top \<squnion> x * x\<^sup>\<star> * bot \<squnion> x * bot \<squnion> n(x\<^sup>\<omega>) * top"
     by (metis sup_assoc sup_right_isotone n_n_top_split_n_top omega_unfold)
   also have "... = x * x\<^sup>\<star> * bot \<squnion> n(x\<^sup>\<omega>) * top"
-    by (smt sup_assoc sup_commute sup_left_top sup_bot_right mult_assoc mult_left_dist_sup)
+    by (smt (z3) sup_assoc sup_commute sup_left_top sup_bot_right mult_assoc mult_left_dist_sup)
   also have "... \<le> x\<^sup>\<star> * bot \<squnion> n(x\<^sup>\<omega>) * top"
     by (metis sup_left_isotone mult_left_isotone star.left_plus_below_circ)
   finally have "x\<^sup>\<star> * n(x\<^sup>\<omega>) * top \<le> x\<^sup>\<star> * bot \<squnion> n(x\<^sup>\<omega>) * top"
@@ -218,7 +218,7 @@ proof -
   also have "... \<le> n(y\<^sup>\<star> * bot \<squnion> n(y\<^sup>\<omega>) * top \<squnion> y\<^sup>\<star> * z)"
     using n_isotone semiring.add_right_mono n_split_omega_sup_zero by blast
   also have "... = n(y\<^sup>\<omega>) \<squnion> n(y\<^sup>\<star> * z)"
-    by (smt sup_assoc sup_commute sup_bot_right mult_left_dist_sup n_dist_n_add)
+    by (smt (z3) sup_assoc sup_commute sup_bot_right mult_left_dist_sup n_dist_n_add)
   finally show ?thesis
     by (simp add: order.antisym n_isotone)
 qed
@@ -261,7 +261,7 @@ lemma n_mult_omega_L_star_zero:
   "y * x\<^sup>\<star> * bot \<squnion> n(y * x\<^sup>\<omega>) * L = y * x\<^sup>\<star> * bot \<squnion> y * n(x\<^sup>\<omega>) * L"
   apply (rule order.antisym)
   apply (simp add: n_mult_omega_L_below_zero)
-  by (smt sup_assoc sup_commute sup_bot_left sup_right_isotone mult_assoc mult_left_dist_sup n_n_L_split_n_L)
+  by (smt (z3) sup_assoc sup_commute sup_bot_left sup_right_isotone mult_assoc mult_left_dist_sup n_n_L_split_n_L)
 
 text \<open>AACP Theorem 8.11\<close>
 
@@ -305,13 +305,13 @@ lemma n_omega_L_star_star:
 
 lemma n_Omega_left_unfold:
   "1 \<squnion> x * x\<^sup>\<Omega> = x\<^sup>\<Omega>"
-  by (smt Omega_def sup_assoc sup_commute mult_assoc mult_left_dist_sup n_omega_L_star star.circ_left_unfold)
+  by (smt (z3) Omega_def sup_assoc sup_commute mult_assoc mult_left_dist_sup n_omega_L_star star.circ_left_unfold)
 
 lemma n_Omega_left_slide:
   "(x * y)\<^sup>\<Omega> * x \<le> x * (y * x)\<^sup>\<Omega>"
 proof -
   have "(x * y)\<^sup>\<Omega> * x \<le> x * y * n((x * y)\<^sup>\<omega>) * L \<squnion> (x * y)\<^sup>\<star> * x"
-    by (smt Omega_def sup_commute sup_left_isotone mult_assoc mult_right_dist_sup mult_right_isotone n_L_below_L n_omega_L_star)
+    by (smt (z3) Omega_def sup_commute sup_left_isotone mult_assoc mult_right_dist_sup mult_right_isotone n_L_below_L n_omega_L_star)
   also have "... \<le> x * (y * bot \<squnion> n(y * (x * y)\<^sup>\<omega>) * L) \<squnion> (x * y)\<^sup>\<star> * x"
     by (metis mult_right_isotone n_n_L_split_n_L sup_commute sup_right_isotone mult_assoc)
   also have "... = x * (y * x)\<^sup>\<Omega>"
@@ -328,7 +328,7 @@ proof -
   have "n((x\<^sup>\<star> * y)\<^sup>\<omega>) * L \<le> (x\<^sup>\<star> * y)\<^sup>\<star> \<squnion> x\<^sup>\<star> * (y * n((x\<^sup>\<star> * y)\<^sup>\<omega>) * L)"
     by (metis n_omega_L_below mult_assoc)
   also have "... \<le> (x\<^sup>\<star> * y)\<^sup>\<star> \<squnion> x\<^sup>\<star> * y * bot \<squnion> x\<^sup>\<star> * n((y * x\<^sup>\<star>)\<^sup>\<omega>) * L"
-    by (smt sup_assoc sup_right_isotone mult_assoc mult_left_dist_sup mult_right_isotone n_n_L_split_n_L omega_slide)
+    by (smt (z3) sup_assoc sup_right_isotone mult_assoc mult_left_dist_sup mult_right_isotone n_n_L_split_n_L omega_slide)
   also have "... = (x\<^sup>\<star> * y)\<^sup>\<star> \<squnion> x\<^sup>\<star> * n((y * x\<^sup>\<star>)\<^sup>\<omega>) * L"
     by (metis sup_commute le_iff_sup star.circ_sub_dist_1 zero_right_mult_decreasing)
   also have "... \<le> x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star> \<squnion> x\<^sup>\<star> * n((y * x\<^sup>\<star>)\<^sup>\<omega>) * L"
@@ -340,9 +340,9 @@ proof -
   finally have 2: "n((x\<^sup>\<star> * y)\<^sup>\<omega>) * L \<le> x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega>"
     .
   have "n((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L \<le> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star> \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star> * y * n(x\<^sup>\<omega>) * L"
-    by (smt sup_assoc sup_commute mult_left_one mult_right_dist_sup n_mult_omega_L_below star.circ_mult star.circ_slide)
+    by (smt (z3) sup_assoc sup_commute mult_left_one mult_right_dist_sup n_mult_omega_L_below star.circ_mult star.circ_slide)
   also have "... = n(x\<^sup>\<omega>) * L * (y * x\<^sup>\<Omega>)\<^sup>\<star> \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<Omega>)\<^sup>\<star>"
-    by (smt Omega_def sup_assoc mult_L_sup_star mult_assoc mult_left_dist_sup L_mult_star)
+    by (smt (z3) Omega_def sup_assoc mult_L_sup_star mult_assoc mult_left_dist_sup L_mult_star)
   also have "... \<le> x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega>"
     by (simp add: Omega_def mult_isotone)
   finally have 3: "n((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L \<le> x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega>"
@@ -352,7 +352,7 @@ proof -
   hence 4: "(x \<squnion> y)\<^sup>\<Omega> \<le> x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega>"
     using 1 2 3 by simp
   have 5: "x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega> \<le> n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * n((y * x\<^sup>\<Omega>)\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<Omega>)\<^sup>\<star>"
-    by (smt Omega_def sup_assoc sup_left_isotone mult_assoc mult_left_dist_sup mult_right_dist_sup mult_right_isotone n_L_below_L)
+    by (smt (z3) Omega_def sup_assoc sup_left_isotone mult_assoc mult_left_dist_sup mult_right_dist_sup mult_right_isotone n_L_below_L)
   have "n(x\<^sup>\<omega>) * L \<le> n((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L"
     by (metis sup_commute sup_ge1 mult_left_isotone n_isotone star.circ_loop_fixpoint)
   hence 6: "n(x\<^sup>\<omega>) * L \<le> (x \<squnion> y)\<^sup>\<Omega>"
@@ -364,7 +364,7 @@ proof -
   also have "... \<le> x\<^sup>\<star> \<squnion> n((x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<star>)\<^sup>\<star> * y * n(x\<^sup>\<omega>) * L) * L"
     using omega_slide semiring.distrib_left sup_mono zero_right_mult_decreasing mult_assoc by fastforce
   also have "... \<le> x\<^sup>\<star> \<squnion> n((x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * n(x\<^sup>\<omega>) * L) * L"
-    by (smt sup_right_divisibility sup_right_isotone mult_left_isotone n_isotone star.circ_mult)
+    by (smt (z3) sup_right_divisibility sup_right_isotone mult_left_isotone n_isotone star.circ_mult)
   also have "... \<le> x\<^sup>\<star> \<squnion> n((x \<squnion> y)\<^sup>\<omega>) * L"
     by (metis sup_right_isotone mult_assoc mult_left_isotone mult_right_isotone n_L_decreasing n_isotone omega_decompose)
   also have "... \<le> (x \<squnion> y)\<^sup>\<Omega>"
@@ -372,11 +372,11 @@ proof -
   finally have 7: "x\<^sup>\<star> * n((y * x\<^sup>\<Omega>)\<^sup>\<omega>) * L \<le> (x \<squnion> y)\<^sup>\<Omega>"
     .
   have "x\<^sup>\<star> * (y * x\<^sup>\<Omega>)\<^sup>\<star> \<le> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * n(x\<^sup>\<omega>) * L"
-    by (smt Omega_def sup_right_isotone mult_L_sup_star mult_assoc mult_left_dist_sup mult_left_isotone star.left_plus_below_circ star_slide)
+    by (smt (z3) Omega_def sup_right_isotone mult_L_sup_star mult_assoc mult_left_dist_sup mult_left_isotone star.left_plus_below_circ star_slide)
   also have "... \<le> (x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<star> \<squnion> n((x\<^sup>\<star> * y)\<^sup>\<star> * x\<^sup>\<omega>) * L"
     by (simp add: n_mult_omega_L_star)
   also have "... \<le> (x \<squnion> y)\<^sup>\<Omega>"
-    by (smt Omega_def sup_commute sup_right_isotone mult_left_isotone n_right_upper_bound omega_decompose star.circ_sup)
+    by (smt (z3) Omega_def sup_commute sup_right_isotone mult_left_isotone n_right_upper_bound omega_decompose star.circ_sup)
   finally have "n(x\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * n((y * x\<^sup>\<Omega>)\<^sup>\<omega>) * L \<squnion> x\<^sup>\<star> * (y * x\<^sup>\<Omega>)\<^sup>\<star> \<le> (x \<squnion> y)\<^sup>\<Omega>"
     using 6 7 by simp
   hence "x\<^sup>\<Omega> * (y * x\<^sup>\<Omega>)\<^sup>\<Omega> \<le> (x \<squnion> y)\<^sup>\<Omega>"
@@ -423,7 +423,7 @@ proof -
   also have "... = x\<^sup>\<star> * n(x) * top \<squnion> (1 \<squnion> x\<^sup>\<star> * n(x) * top * (x\<^sup>\<star> * n(x) * top)\<^sup>\<star>) * x\<^sup>\<omega>"
     by (simp add: star_left_unfold_equal)
   also have "... \<le> x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * n(x) * top"
-    by (smt sup_mono sup_least mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone order_refl top_greatest sup.cobounded2)
+    by (smt (z3) sup_mono sup_least mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone order_refl top_greatest sup.cobounded2)
   also have "... \<le> x\<^sup>\<omega> \<squnion> n(x\<^sup>\<omega>) * top"
     using 2 by simp
   finally have 3: "C (y\<^sup>\<omega>) \<le> x\<^sup>\<omega> \<squnion> n(x\<^sup>\<omega>) * top"
@@ -544,7 +544,7 @@ proof -
   have "\<kappa> (\<lambda>x . y * x \<squnion> z) = y\<^sup>\<star> * z \<squnion> n(y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * z) * L"
     using apx.least_fixpoint_char omega_loop_nu star_loop_mu loop_apx_least_fixpoint by auto
   thus ?thesis
-    by (smt n_dist_omega_star sup_assoc mult_right_dist_sup sup_commute le_iff_sup n_L_decreasing)
+    by (smt (z3) n_dist_omega_star sup_assoc mult_right_dist_sup sup_commute le_iff_sup n_L_decreasing)
 qed
 
 text \<open>AACP Theorem 8.15\<close>

@@ -37,7 +37,7 @@ lemma ruleI[intro]:
 using assms by simp
 
 lemma split_rule_fst: "fst (split_rule r) = head (fst r)"
-unfolding head_def by (smt prod.case_eq_if prod.collapse prod.inject split_rule.simps)
+unfolding head_def by (smt (z3) prod.case_eq_if prod.collapse prod.inject split_rule.simps)
 
 locale rules = constants C_info "heads_of rs" for C_info and rs :: "rule fset" +
   assumes all_rules: "fBall rs rule"

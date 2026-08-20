@@ -5078,7 +5078,7 @@ fn _ => fn ctxt => fn ct =>
     val ys = dest_union_right Y
     val _ = if member cterm_eq ys X then () else raise Match
     val lhs = \<^infer_instantiate>\<open>X = X and Y = Y in cterm "Y - X"\<close> ctxt
-    val eq = lhs |> Simplifier.asm_full_rewrite (ctxt addsimps @{thms Un_Diff Diff_triv Union_assoc})
+    val eq = lhs |> Simplifier.asm_full_rewrite (ctxt |> Simplifier.add_simps @{thms Un_Diff Diff_triv Union_assoc})
     val rhs = Thm.rhs_of eq
   in
     if cterm_eq (lhs, rhs) then 

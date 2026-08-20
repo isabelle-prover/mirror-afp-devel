@@ -1,0 +1,46 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{wasysym}
+\usepackage[only,bigsqcap]{stmaryrd}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Algebra of Iterative Constructions}
+\author{Kevin Batz \and Benjamin Lucien Kaminski \and Lucas Kehrer \and Gerwin Klein \and Henning Urbat \and Todd Schmid}
+\maketitle
+
+\begin{abstract}
+Fixed points are a recurring theme in computer science and are often constructed
+as limits of suitably seeded fixed point iterations. This entry formalises an
+instance of the algebra of iterative constructions (AIC) from the paper ``The
+Algebra of Iterative Constructions''.
+
+AIC is a purely algebraic approach to reasoning about fixed point iterations of
+continuous endomaps on complete lattices. AIC allows derivations of constructive
+fixed point theorems via equational logic and avoids explicit computations with
+indices. We demonstrate the applicability of AIC by providing algebraic proofs
+of several well- and less-well-known fixed point theorems: Among others, we
+prove the \emph{Tarski-Kantorovich principle} -- a generalization of the
+\emph{Kleene fixed point theorem} -- as well as a fixed point-theoretic
+generalization of $k$-induction.
+
+We moreover improve upon a recent generalization of the Tarski-Kantorovich
+principle due to Olszewski for obtaining pre- and postfixed points from
+lattice-theoretic limit inferiors and limit superiors trough iterating an
+endomap on an \emph{arbitrary} seed element: We identify sufficient continuity
+conditions on the endomaps so that these limits become \emph{proper} fixed
+points.
+\end{abstract}
+
+\input{session}
+
+\end{document}

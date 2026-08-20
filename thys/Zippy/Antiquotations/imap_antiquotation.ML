@@ -78,6 +78,8 @@ end
 
 signature IMAP_ANTIQUOTATION =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = IMap_Antiquotation_Args.config_args
 
@@ -117,7 +119,7 @@ sig
   val setup_antiquotation : theory -> theory
 end
 
-functor IMap_Antiquotation(
+functor IMap_Antiquotation_Functor(
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : IMap_Antiquotation_Args.config_args
   ) : IMAP_ANTIQUOTATION =
@@ -155,7 +157,7 @@ val map_stop = map_config_args o PCA.map_stop
 fun mk_code_config_args entries f = IAA.PA_entries_from_PCA_entries entries f |> IAA.mk_code
 fun mk_code f ctxt = mk_code_config_args (get_config_args (Context.Proof ctxt)) f ctxt
 
-val binding = Binding.make (FI.prefix_id "imap", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_config_args =
   let

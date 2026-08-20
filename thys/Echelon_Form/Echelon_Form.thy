@@ -731,7 +731,7 @@ lemma det_bezout_matrix:
   assumes ib: "is_bezout_ext bezout"
   and a_less_b: "a < b"
   and aj: "A $ a $ j \<noteq> 0"
-  shows "det (bezout_matrix A a b j bezout) = 1"
+  shows "matrix_det (bezout_matrix A a b j bezout) = 1"
 proof -
   let ?B = "bezout_matrix A a b j bezout"
   let ?a = "(A $ a $ j)"
@@ -767,7 +767,7 @@ proof -
     have qb_not_0: "q *(-?b) \<noteq> 0"
       by (metis d_not_0 mult_cancel_left1 neg_equal_0_iff_equal 
           no_zero_divisors p0 pa_bq_d q_not_0 right_minus)
-    have "det (interchange_rows ?B a b) = (\<Prod>i\<in>UNIV. (interchange_rows ?B a b) $ i $ i)"
+    have "matrix_det (interchange_rows ?B a b) = (\<Prod>i\<in>UNIV. (interchange_rows ?B a b) $ i $ i)"
     proof (rule det_upperdiagonal)
       fix i ja::'rows assume ja_i: "ja<i"
       show "interchange_rows (bezout_matrix A a b j bezout) a b $ i $ ja = 0"    
@@ -808,15 +808,15 @@ proof -
       qed
       finally show ?thesis unfolding f_def .
     qed
-    finally have det_inter_1: "det (interchange_rows ?B a b) = - 1" .
-    have "det (bezout_matrix A a b j bezout) = - 1 * det (interchange_rows ?B a b)"
+    finally have det_inter_1: "matrix_det (interchange_rows ?B a b) = - 1" .
+    have "matrix_det (bezout_matrix A a b j bezout) = - 1 * matrix_det (interchange_rows ?B a b)"
       unfolding det_interchange_rows using a_not_b by auto
     thus ?thesis unfolding det_inter_1 by simp
   next
     case False
     define mult_b_dp where "mult_b_dp = mult_row ?B b (d * p)"
     define sum_ab where "sum_ab = row_add mult_b_dp b a ?b"
-    have "det (sum_ab) = prod (\<lambda>i. sum_ab $ i $ i) UNIV"
+    have "matrix_det (sum_ab) = prod (\<lambda>i. sum_ab $ i $ i) UNIV"
     proof (rule det_upperdiagonal)
       fix i j::'rows 
       assume j_less_i: "j < i"
@@ -854,8 +854,8 @@ proof -
         using pib ap_bq_d semiring_normalization_rules(16) by auto
       finally show ?thesis unfolding f_def .
     qed
-    finally have "det (sum_ab) = d * p" .
-    moreover have "det (sum_ab) = d * p * det ?B"
+    finally have "matrix_det (sum_ab) = d * p" .
+    moreover have "matrix_det (sum_ab) = d * p * matrix_det ?B"
       unfolding sum_ab_def
       unfolding det_row_add'[OF not_sym[OF a_not_b]]
       unfolding mult_b_dp_def unfolding det_mult_row ..
@@ -2839,7 +2839,7 @@ next
         rule conjI, rule invertible_mult)
       show "P ** bezout_matrix A i (from_nat (Suc n)) j bezout ** A 
         = bezout_iterate A (Suc n) i j bezout" using P unfolding b by (metis matrix_mul_assoc)
-      have "det (bezout_matrix A i (from_nat (Suc n)) j bezout) = 1" 
+      have "matrix_det (bezout_matrix A i (from_nat (Suc n)) j bezout) = 1" 
       proof (rule det_bezout_matrix[OF ib])
         show "i < from_nat (Suc n)"
           using i_le_n from_nat_mono[of "to_nat i" "Suc n"] Suc.prems(2)

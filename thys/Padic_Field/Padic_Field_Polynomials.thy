@@ -387,7 +387,7 @@ lemma gauss_norm_pderiv:
   apply(rule gauss_norm_geqI)
   using UPQ.pderiv_closed assms apply blast
   using gauss_normE pderiv_cfs val_of_add_pow
-  by (smt UPQ.cfs_closed assms dual_order.trans)
+  by (smt (z3) UPQ.cfs_closed assms dual_order.trans)
 
 (**************************************************************************************************)
 (**************************************************************************************************)
@@ -877,7 +877,7 @@ proof-
             case True
             then have "p x = q x"
               unfolding px using q_def A
-              by (smt UPQ.ltrm_closed UPQ.P.add.right_cancel UPQ.coeff_of_sum_diff_degree0 UPQ.deg_ltrm UPQ.trunc_cfs UPQ.trunc_closed UPQ.trunc_simps(1) less_eq_Suc_le nat_neq_iff not_less_eq_eq)
+              by (smt (z3) UPQ.ltrm_closed UPQ.P.add.right_cancel UPQ.coeff_of_sum_diff_degree0 UPQ.deg_ltrm UPQ.trunc_cfs UPQ.trunc_closed UPQ.trunc_simps(1) less_eq_Suc_le nat_neq_iff not_less_eq_eq)
             then show ?thesis using A
               by blast
           next
@@ -973,7 +973,7 @@ proof-
       using 0 by linarith
     then have "val_Zp (to_Zp (g \<bullet> b)) < n"
       using P1 P0
-      by (smt below_val_Zp_zero eint_ile eint_ord_simps(1) eint_ord_simps(2) nonzero_imp_ex_nonzero_res residue_of_zero(2) zero_below_val_Zp)
+      by (smt (z3) below_val_Zp_zero eint_ile eint_ord_simps(1) eint_ord_simps(2) nonzero_imp_ex_nonzero_res residue_of_zero(2) zero_below_val_Zp)
     then show ?thesis using 2
       by (metis to_Zp_val)
   qed
@@ -1712,7 +1712,7 @@ proof-
           unfolding UP_cring_def using Zp.R_cring apply auto[1]
           using to_Zp_poly_closed' 8 q_closed apply blast
           unfolding to_Zp_poly_def using 4 6
-          by (smt diff_commute diff_diff_cancel less_one less_or_eq_imp_le linorder_neqE_nat to_Zp_zero zero_less_diff)
+          by (smt (z3) diff_commute diff_diff_cancel less_one less_or_eq_imp_le linorder_neqE_nat to_Zp_zero zero_less_diff)
         have 12: "(to_Zp_poly q) \<in> carrier (UP Z\<^sub>p)"
           apply(rule to_Zp_poly_closed', rule q_closed) using 8 by blast
         have 13: "deg Z\<^sub>p (to_Zp_poly q) < n"

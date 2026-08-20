@@ -760,17 +760,17 @@ text \<open>
       and the ``$1$-side'', which we regard as the output, occurs on the left.
     \<close>
 
-    definition tuple         (\<open>\<langle>_ \<lbrakk>_, _\<rbrakk> _\<rangle>\<close>)
+    definition pbtuple         (\<open>\<langle>_ \<lbrakk>_, _\<rbrakk> _\<rangle>\<close>)
     where "\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> \<equiv> if commutative_square f g h k then
                            THE l. \<p>\<^sub>0[f, g] \<cdot> l = k \<and> \<p>\<^sub>1[f, g] \<cdot> l = h
                          else null"
 
-    lemma tuple_in_hom [intro]:
+    lemma pbtuple_in_hom [intro]:
     assumes "commutative_square f g h k"
     shows "\<guillemotleft>\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> : dom h \<rightarrow> f \<down>\<down> g\<guillemotright>"
     proof
       have 1: "\<p>\<^sub>0[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = k \<and> \<p>\<^sub>1[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = h"
-        unfolding tuple_def
+        unfolding pbtuple_def
         using assms universal theI [of "\<lambda>l. \<p>\<^sub>0[f, g] \<cdot> l = k \<and> \<p>\<^sub>1[f, g] \<cdot> l = h"]
         apply simp
         by meson
@@ -789,25 +789,25 @@ text \<open>
         by (metis seqE)
     qed
 
-    lemma tuple_extensionality:
+    lemma pbtuple_extensionality:
     assumes "\<not> commutative_square f g h k"
     shows "\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = null"
-      unfolding tuple_def
+      unfolding pbtuple_def
       using assms by simp
 
-    lemma tuple_simps [simp]:
+    lemma pbtuple_simps [simp]:
     assumes "commutative_square f g h k"
     shows "arr \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle>" and "dom \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = dom h" and "cod \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = f \<down>\<down> g"
-      using assms tuple_in_hom apply blast
-      using assms tuple_in_hom apply blast
-      using assms tuple_in_hom by blast
+      using assms pbtuple_in_hom apply blast
+      using assms pbtuple_in_hom apply blast
+      using assms pbtuple_in_hom by blast
 
-    lemma prj_tuple [simp]:
+    lemma prj_pbtuple [simp]:
     assumes "commutative_square f g h k"
     shows "\<p>\<^sub>0[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = k" and "\<p>\<^sub>1[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = h"
     proof -
       have 1: "\<p>\<^sub>0[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = k \<and> \<p>\<^sub>1[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = h"
-        unfolding tuple_def
+        unfolding pbtuple_def
         using assms universal theI [of "\<lambda>l. \<p>\<^sub>0[f, g] \<cdot> l = k \<and> \<p>\<^sub>1[f, g] \<cdot> l = h"]
         apply simp
         by meson
@@ -815,7 +815,7 @@ text \<open>
       show "\<p>\<^sub>1[f, g] \<cdot> \<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> = h" using 1 by simp
     qed
 
-    lemma tuple_prj:
+    lemma pbtuple_prj:
     assumes "cospan f g" and "seq \<p>\<^sub>1[f, g] h"
     shows "\<langle>\<p>\<^sub>1[f, g] \<cdot> h \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g] \<cdot> h\<rangle> = h"
     proof -
@@ -827,20 +827,20 @@ text \<open>
       moreover have "\<p>\<^sub>1[f, g] \<cdot> \<langle>\<p>\<^sub>1[f, g] \<cdot> h \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g] \<cdot> h\<rangle> = \<p>\<^sub>1[f, g] \<cdot> h"
         using assms 1 by simp
       ultimately show ?thesis
-        unfolding tuple_def
+        unfolding pbtuple_def
         using assms 1 universal [of f g "\<p>\<^sub>1[f, g] \<cdot> h" "\<p>\<^sub>0[f, g] \<cdot> h"]
               theI_unique [of "\<lambda>l. \<p>\<^sub>0[f, g] \<cdot> l = \<p>\<^sub>0[f, g] \<cdot> h \<and> \<p>\<^sub>1[f, g] \<cdot> l = \<p>\<^sub>1[f, g] \<cdot> h" h]
         by auto
     qed
 
-    lemma tuple_prj_spc [simp]:
+    lemma pbtuple_prj_spc [simp]:
     assumes "cospan f g"
     shows "\<langle>\<p>\<^sub>1[f, g] \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g]\<rangle> = f \<down>\<down> g"
     proof -
       have "\<langle>\<p>\<^sub>1[f, g] \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g]\<rangle> = \<langle>\<p>\<^sub>1[f, g] \<cdot> (f \<down>\<down> g) \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g] \<cdot> (f \<down>\<down> g)\<rangle>"
         using assms comp_arr_dom by simp
       thus ?thesis
-        using assms tuple_prj by simp
+        using assms pbtuple_prj by simp
     qed
 
     lemma prj_joint_monic:
@@ -849,11 +849,11 @@ text \<open>
     shows "h = h'"
     proof -
       have "h = \<langle>\<p>\<^sub>1[f, g] \<cdot> h \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g] \<cdot> h\<rangle>"
-        using assms tuple_prj [of f g h] by simp
+        using assms pbtuple_prj [of f g h] by simp
       also have "... = \<langle>\<p>\<^sub>1[f, g] \<cdot> h' \<lbrakk>f, g\<rbrakk> \<p>\<^sub>0[f, g] \<cdot> h'\<rangle>"
         using assms by simp
       also have "... = h'"
-        using assms tuple_prj [of f g h'] by simp
+        using assms pbtuple_prj [of f g h'] by simp
       finally show ?thesis by blast
     qed
 
@@ -868,7 +868,7 @@ text \<open>
       have "inverse_arrows \<p>\<^sub>0[\<mu>, \<nu>] \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle>"
       proof
         show 1: "ide (\<p>\<^sub>0[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle>)"
-          using assms comp_arr_dom comp_cod_arr prj_tuple(1) by simp
+          using assms comp_arr_dom comp_cod_arr prj_pbtuple(1) by simp
         show "ide (\<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>])"
         proof -
           have "\<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>] = (\<mu> \<down>\<down> \<nu>)"
@@ -878,7 +878,7 @@ text \<open>
               have "\<p>\<^sub>0[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>] = (\<p>\<^sub>0[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle>) \<cdot> \<p>\<^sub>0[\<mu>, \<nu>]"
                 using assms 1 comp_reduce by blast
               also have "... = \<p>\<^sub>0[\<mu>, \<nu>] \<cdot> (\<mu> \<down>\<down> \<nu>)"
-                using assms prj_tuple(1) pullback_commutes comp_arr_dom comp_cod_arr by simp
+                using assms prj_pbtuple(1) pullback_commutes comp_arr_dom comp_cod_arr by simp
               finally show ?thesis by blast
             qed
             moreover have "\<p>\<^sub>1[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>] = \<p>\<^sub>1[\<mu>, \<nu>] \<cdot> (\<mu> \<down>\<down> \<nu>)"
@@ -886,7 +886,7 @@ text \<open>
               have "\<p>\<^sub>1[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>] = (\<p>\<^sub>1[\<mu>, \<nu>] \<cdot> \<langle>\<nu> \<lbrakk>\<mu>, \<nu>\<rbrakk> dom \<nu>\<rangle>) \<cdot> \<p>\<^sub>0[\<mu>, \<nu>]"
                 using assms(2) comp_assoc by simp
               also have "... = \<nu> \<cdot> \<p>\<^sub>0[\<mu>, \<nu>]"
-                using assms comp_arr_dom comp_cod_arr prj_tuple(2) by fastforce
+                using assms comp_arr_dom comp_cod_arr prj_pbtuple(2) by fastforce
               also have "... = \<mu> \<cdot> \<p>\<^sub>1[\<mu>, \<nu>]"
                 using assms pullback_commutes commutative_square_def by simp
               also have "... = \<p>\<^sub>1[\<mu>, \<nu>] \<cdot> (\<mu> \<down>\<down> \<nu>)"
@@ -905,7 +905,7 @@ text \<open>
       thus ?thesis by auto
     qed
 
-    lemma comp_tuple_arr:
+    lemma comp_pbtuple_arr:
     assumes "commutative_square f g h k" and "seq h l"
     shows "\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> \<cdot> l = \<langle>h \<cdot> l \<lbrakk>f, g\<rbrakk> k \<cdot> l\<rangle>"
     proof -
@@ -926,7 +926,7 @@ text \<open>
         finally show ?thesis by blast
       qed
       moreover have "seq \<p>\<^sub>1[f, g] (\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> \<cdot> l)"
-        using assms tuple_in_hom prj1_in_hom by fastforce
+        using assms pbtuple_in_hom prj1_in_hom by fastforce
       ultimately show ?thesis
         using assms prj_joint_monic [of f g "\<langle>h \<lbrakk>f, g\<rbrakk> k\<rangle> \<cdot> l" "\<langle>h \<cdot> l \<lbrakk>f, g\<rbrakk> k \<cdot> l\<rangle>"]
         by auto

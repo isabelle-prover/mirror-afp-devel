@@ -205,12 +205,12 @@ proof-
   qed
   have "unit_triangle' = convex hull {?a, ?b, ?c}" by (simp add: insert_commute)
   then have "?A ` unit_triangle = unit_triangle'" using triangle_affine_img[of ?a ?b ?c] by argo
-  moreover have "abs (det (matrix ?L)) = 1"
+  moreover have "abs (matrix_det (matrix ?L)) = 1"
   proof-
     have "matrix ?L = transpose (vector [?b - ?a, ?c - ?a])"
       unfolding triangle_linear_def
       by (simp add: triangle_mat_def)
-    also have "det ... = det (vector [?b - ?a, ?c - ?a])" using det_transpose by blast
+    also have "matrix_det ... = matrix_det (vector [?b - ?a, ?c - ?a])" using det_transpose by blast
     also have "... = (?b - ?a)$1 * (?c - ?a)$2 - (?c - ?a)$1 * (?b - ?a)$2"
       using det_2 by (metis mult.commute vector_2(1) vector_2(2))
     finally show ?thesis by simp

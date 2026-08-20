@@ -407,7 +407,7 @@ val l1_merge_assignments_simproc =
     in
       if is_some l1 andalso l1 = l2 then
         let
-          val record_ss = merge_ss (RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt), 
+          val record_ss = Simplifier.merge_ss (RecursiveRecordPackage.get_simpset (Proof_Context.theory_of ctxt), 
                   Record.get_simpset (Proof_Context.theory_of ctxt))
           val state_simprocs = @{code_simprocs "state_simp"}
           val ([stmt], ctxt') = ctxt

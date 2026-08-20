@@ -224,10 +224,9 @@ fun recover_mutual_eqvt eqvt_thm all_orig_fdefs parts ctxt (fname, _, _, args, _
     val p = Free (p, \<^Type>\<open>perm\<close>)
 
     val simpset =
-      put_simpset HOL_basic_ss ctxt'' addsimps
-      @{thms permute_sum.simps[symmetric] Pair_eqvt[symmetric] sum.sel} @
-      [(cond MRS eqvt_thm) RS @{thm sym}] @
-      [inl_perm, inr_perm, simp]
+      ctxt'' |> put_simpset HOL_basic_ss |> Simplifier.add_simps
+      (@{thms permute_sum.simps [symmetric] Pair_eqvt [symmetric] sum.sel} @
+      [(cond MRS eqvt_thm) RS @{thm sym}] @ [inl_perm, inr_perm, simp])
     val goal_lhs = mk_perm p (list_comb (f, args))
     val goal_rhs = list_comb (f, map (mk_perm p) args)
   in
@@ -272,7 +271,7 @@ fun mutual_induct_rules ctxt induct all_f_defs (Mutual {n, ST, parts, ...}) =
     val induct_inst =
       Thm.forall_elim (cert case_exp) induct
       |> full_simplify (put_simpset Sum_Tree.sumcase_split_ss ctxt)
-      |> full_simplify (put_simpset HOL_basic_ss ctxt addsimps all_f_defs)
+      |> full_simplify (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps all_f_defs)
 
     fun project rule (MutualPart {cargTs, i, ...}) k =
       let
@@ -379,7 +378,7 @@ fun mk_partial_rules_mutual ctxt inner_cont (m as Mutual {parts, fqgars, ...}) p
     fun mk_meqvts fqgar sum_psimp =
       in_context ctxt fqgar (recover_mutual_eqvt eqvt all_orig_fdefs parts) sum_psimp
 
-    val rew_simpset = put_simpset HOL_basic_ss ctxt addsimps all_f_defs
+    val rew_simpset = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps all_f_defs
     val mpsimps = map2 mk_mpsimp fqgars psimps
     val minducts = mutual_induct_rules ctxt simple_pinduct all_f_defs m
     val mtermination = full_simplify rew_simpset termination
@@ -474,8 +473,8 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
       |> all x |> all y
 
     val simp_thms = @{thms sum.sel sum.inject sum.case sum.distinct o_apply}
-    fun simpset0 goal_ctxt = put_simpset HOL_basic_ss goal_ctxt addsimps simp_thms
-    fun simpset1 goal_ctxt = put_simpset HOL_ss goal_ctxt addsimps simp_thms
+    fun simpset0 goal_ctxt = goal_ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps simp_thms
+    fun simpset1 goal_ctxt = goal_ctxt |> put_simpset HOL_ss |> Simplifier.add_simps simp_thms
 
     val inj_thm = Goal.prove lthy3 [] [] goal_inj
       (fn {context = goal_ctxt, ...} =>
@@ -484,7 +483,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
 
     fun aux_tac goal_ctxt thm =
       resolve_tac goal_ctxt [Variable.gen_all goal_ctxt thm] THEN_ALL_NEW
-      asm_full_simp_tac (simpset1 goal_ctxt addsimps [inj_thm])
+      asm_full_simp_tac (goal_ctxt |> simpset1 |> Simplifier.add_simp inj_thm)
 
     val iff1_thm = Goal.prove lthy3 [] [] goal_iff1
       (fn {context = goal_ctxt, ...} =>
@@ -502,7 +501,7 @@ fun prepare_nominal_function_mutual config defname fixes eqss lthy =
         HEADGOAL (EVERY' ((map (resolve_tac goal_ctxt o single) @{thms ext ext iffI}) @
           [eresolve_tac goal_ctxt [iff2_thm], eresolve_tac goal_ctxt [iff1_thm]])))
 
-    val tac = HEADGOAL (simp_tac (put_simpset HOL_basic_ss lthy3 addsimps [iff_thm]))
+    val tac = HEADGOAL (simp_tac (lthy3 |> put_simpset HOL_basic_ss |> Simplifier.add_simp iff_thm))
     val goalstate' =
       case (SINGLE tac) goalstate of
         NONE => error "auxiliary equivalence proof failed"

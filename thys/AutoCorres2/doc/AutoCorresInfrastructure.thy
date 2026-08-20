@@ -1712,7 +1712,7 @@ local_setup \<open> fn lthy0 =>
  let
 
   val ((trm, (def_name, def_thm)), lthy1) = lthy0 |>
-        Specification.definition (SOME (Binding.name "F", NONE, NoSyn))
+        Specification.definition {verbose = false} (SOME (Binding.name "F", NONE, NoSyn))
             [] [] (Binding.empty_atts, @{prop "F = G + M"})
   \<comment> \<open>lthy1 is now the auxiliary context. Here @{term F} aka. \<open>trm\<close> is not an abbreviation but
   acutally a fixed variable in that auxiliary context. \<close>

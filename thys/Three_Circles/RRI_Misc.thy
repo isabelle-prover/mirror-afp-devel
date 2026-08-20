@@ -395,7 +395,7 @@ proof (induction d arbitrary: p rule: less_induct)
             hence "degree y = 0" using hdeg by auto
             then obtain y' where 4: "y = [:y':]" using degree_0_iff by auto
             moreover from hdeg obtain a b where 5:"c = [:a, b:]" and 6: "b \<noteq> 0"
-              by (meson degree_eq_oneE)
+              by (meson degree1_coeffs)
             from 1 2 5 6 have "x' = inverse b" by (auto simp: field_simps)
             moreover from 3 4 5 6 have "y' = inverse b" by (auto simp: field_simps)
             ultimately have "x = y" using 2 4 by presburger
@@ -512,7 +512,7 @@ proof (auto simp add: reciprocal_poly_def)
         length (replicate (p - degree P) (0::'a) @ rev (coeffs P))"
     by (metis degree_Poly reciprocal_poly_def rev_append rev_replicate)
   thus "degree (Poly (replicate (p - degree P) 0 @ rev (coeffs P))) \<le> p" 
-    by (smt Suc_le_mono add_Suc_right coeffs_Poly degree_0 hP le_SucE le_SucI 
+    by (smt (z3) Suc_le_mono add_Suc_right coeffs_Poly degree_0 hP le_SucE le_SucI 
         le_add_diff_inverse2 le_zero_eq length_append length_coeffs_degree
         length_replicate length_rev length_strip_while_le reciprocal_0
         reciprocal_poly_def rev_append rev_replicate)

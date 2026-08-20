@@ -1,0 +1,9 @@
+chapter AFP
+
+session Mostowski_Collapse = ZF +
+  options [timeout = 300]
+  theories
+    Mostowski_Collapse
+  document_files
+    "root.tex"
+    "root.bib"

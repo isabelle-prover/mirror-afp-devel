@@ -294,7 +294,7 @@ let
 
   fun mk_committee_pref_thms app =
     let
-      val ctxt'' = ctxt' addsimps (w_def_list @ @{thms strongly_preferred_def committee_preference_def})
+      val ctxt'' = ctxt' |> Simplifier.add_simps (w_def_list @ @{thms strongly_preferred_def committee_preference_def})
       val n = Array.length committees
       val app' = decode_approval_list app
       fun mk' (c1, c2) =
@@ -331,7 +331,7 @@ let
         |> group
         |> filter (fn (_, n) => n >= 2)
         |> map fst
-      val ctxt'' = ctxt addsimps w_def_list
+      val ctxt'' = ctxt |> Simplifier.add_simps w_def_list
 
       (*
         Returns a list of all committees that are forbidden for the given profile due to

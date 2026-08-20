@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Asad Ahmed</title>
+    <link>https://isa-afp.org/authors/ahmeda/</link>
+    <description>AFP entries of Asad Ahmed</description><item>
+  <title>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Isabelle-Solidity.html</link>
+  <pubDate>Wed, 25 Feb 2026 00:00:00 +0000</pubDate>
+  <description>Isabelle/Solidity - A shallow Embedding of Solidity in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Semantics and reasoning</category>
+    <category>Computer science/Programming languages</category>
+    <category>Tools</category>
+</item>
+
+  </channel>
+</rss>

@@ -1,10 +1,10 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 theory Zippy_Actions
   imports
+    ML_Unification.ML_Identifiers
     ML_Priority_Queues
     Zippy_Actions_Base
     Zippy_Enums
-    Zippy_Identifiers
 begin
 
 ML_file\<open>zippy_paction_mixin_base.ML\<close>

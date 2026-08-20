@@ -15,11 +15,7 @@ lemma frac_floor: "\<lfloor>x\<rfloor> = x - frac x"
   by (simp add: frac_def)
 
 lemma frac_ceil: "\<lceil>x\<rceil> = x + frac (- x)"
-  apply (cases "x = real_of_int \<lfloor>x\<rfloor>")
-  unfolding ceiling_altdef apply simp
-   apply (metis Ints_minus Ints_of_int)
-  apply (simp add: frac_neg frac_floor)
-  done
+  by (simp add: ceiling_def frac_def)
 
 lemma floor_pow2_lim: "(\<lambda>n. \<lfloor>2^n * T\<rfloor> / 2 ^ n) \<longlonglongrightarrow> T"
 proof (intro LIMSEQ_I)
@@ -146,7 +142,7 @@ proof -
     proof -
       assume *: "\<And>n. 1 \<le> 2 ^ n * T \<Longrightarrow> thesis"
       obtain n where "2 ^ n > 1/T"
-        using real_arch_pow by fastforce
+        using arch_pow[of 2] by fastforce
       then have "2 ^ n * T \<ge> 1"
         using \<open>T > 0\<close> by (simp add: field_simps)
       then show ?thesis
@@ -353,7 +349,7 @@ proof (rule subsetI)
   then have "k * 2 ^ (m - n) \<in> {0 .. \<lfloor>2^m * T\<rfloor>}"
   proof -
     have "k / 2 ^ n \<le> \<lfloor>2^m * T\<rfloor> / 2 ^ m"
-      by (smt floor_pow2_mono[THEN monoD, OF \<open>n \<le> m\<close>] k(2) divide_right_mono of_int_le_iff zero_le_power)
+      by (smt (z3) floor_pow2_mono[THEN monoD, OF \<open>n \<le> m\<close>] k(2) divide_right_mono of_int_le_iff zero_le_power)
     then have "k / 2 ^ n * 2 ^ m \<le> \<lfloor>2^m * T\<rfloor>"
       by (simp add: field_simps)
     moreover have "k / 2 ^ n * 2 ^ m = k * 2 ^ (m - n)"

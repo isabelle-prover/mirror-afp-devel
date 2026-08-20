@@ -39,12 +39,12 @@ lemma inf_pres_iso:
 lemma Sup_sup_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Sup_dual f \<Longrightarrow> sup_dual f"
-  by (smt comp_eq_elim image_empty image_insert inf_Inf sup_Sup)
+  by (smt (z3) comp_eq_elim image_empty image_insert inf_Inf sup_Sup)
 
 lemma Inf_inf_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"
   shows "Inf_dual f \<Longrightarrow> inf_dual f"
-  by (smt comp_eq_elim image_empty image_insert inf_Inf sup_Sup)
+  by (smt (z3) comp_eq_elim image_empty image_insert inf_Inf sup_Sup)
 
 lemma Sup_bot_dual: 
   fixes f :: "'a::complete_lattice \<Rightarrow> 'b::complete_lattice"

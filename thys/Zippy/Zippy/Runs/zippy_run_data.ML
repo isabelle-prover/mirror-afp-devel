@@ -12,14 +12,14 @@ end
 
 structure Zippy_Run_Data_Args : ZIPPY_RUN_DATA_ARGS =
 struct
-structure MCU = ML_Code_Util
+structure PU = Parse_Util
 
 @{parse_entries (struct) PA [init, exec, post]}
 
 val parsers = {
-  init = SOME MCU.parse_code,
-  exec = SOME MCU.parse_code,
-  post = SOME MCU.parse_code}
+  init = SOME (PU.nonempty_code (K "initialisation function must not be empty")),
+  exec = SOME (PU.nonempty_code (K "execution function must not be empty")),
+  post = SOME (PU.nonempty_code (K "postprocessing function must not be empty"))}
 end
 
 signature ZIPPY_RUN_DATA =
@@ -153,7 +153,7 @@ val parse_attribute = Parse_Util.position parse_arg_entries >> attribute
 
 val setup_attribute = Attrib.local_setup binding
   (Parse.!!! parse_attribute |> Scan.lift) o
-  the_default ("configure exec data " ^ enclose "(" ")" FI.long_name)
+  the_default ("configure run data " ^ enclose "(" ")" FI.long_name)
 
 val parse_context_update = Scan.lift parse_attribute
   :|-- (fn attr => Scan.depend (fn context =>

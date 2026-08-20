@@ -457,7 +457,7 @@ lemma right_left:
 
 lemma left_right: 
  "associate_left A B C \<circ>\<^sub>c associate_right A B C = id ((A \<times>\<^sub>c B) \<times>\<^sub>c C)"
-    by (smt associate_left_ap associate_right_def cfunc_cross_prod_def cfunc_prod_unique comp_type id_cross_prod id_domain id_left_unit2 left_cart_proj_type right_cart_proj_type)
+    by (smt (z3) associate_left_ap associate_right_def cfunc_cross_prod_def cfunc_prod_unique comp_type id_cross_prod id_domain id_left_unit2 left_cart_proj_type right_cart_proj_type)
 
 lemma product_associates:
   "A \<times>\<^sub>c (B \<times>\<^sub>c C)  \<cong> (A \<times>\<^sub>c B) \<times>\<^sub>c C"

@@ -26,15 +26,15 @@ val simp_rhs = Simplifier.rewrite #> Conversion_Util.rhs_conv #> Conversion_Util
 (*simplifies the generated definition of a transported term*)
 fun simp_transported_def ctxt simps y_def =
   let
-    val ctxt = ctxt addsimps simps
+    val ctxt = ctxt |> Simplifier.add_simps simps
     val y_def_eta_expanded = Util.equality_eta_expand ctxt "x" y_def
   in apply2 (simp_rhs ctxt) (y_def, y_def_eta_expanded) end
 
 (* resolution setup *)
 
 val any_unify_trp_hints_resolve_tac = Unify_Resolve_Base.unify_resolve_any_tac
-  Transport_Mixed_Comb_Unification.norms_first_higherp_comb_unify
-  Transport_Mixed_Comb_Unification.first_higherp_comb_unify
+  Transport_Mixed_Comb_Unification.norms_fo_hop_comb_unify
+  Transport_Mixed_Comb_Unification.fo_hop_comb_unify
 
 fun get_theorems_tac f get_theorems ctxt = f (get_theorems ctxt) ctxt
 val get_theorems_resolve_tac = get_theorems_tac any_unify_trp_hints_resolve_tac
@@ -83,7 +83,7 @@ val _ = Theory.setup (
 (* blackbox prover *)
 
 (*first derives the PER equivalence, then looks for registered domain lemmas.*)
-fun unfold_tac thms ctxt = simp_tac (clear_simpset ctxt addsimps thms)
+fun unfold_tac thms ctxt = simp_tac (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps thms)
 val unfold_transport_defs_tac = get_theorems_tac unfold_tac Transport_Defs.get
 
 fun transport_prover ctxt i =
@@ -128,7 +128,7 @@ fun transport_relator_rewrite ctxt thm =
   let
     val transport_defs = Transport_Defs.get ctxt
     val transport_relator_rewrites = Transport_Relator_Rewrites.get ctxt
-    val ctxt = (clear_simpset ctxt) addsimps transport_relator_rewrites
+    val ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps transport_relator_rewrites
   in
     Local_Defs.fold ctxt transport_defs thm
     |> Simplifier.rewrite_thm (false, false, false) per_simp_prover ctxt
@@ -191,7 +191,7 @@ fun note_facts attrs (binding, mixfix) ctxt related_thm y binding_thms_attribs =
     fun prepare_fact (suffix, thm, attribs) =
       let
         val binding = (Util.add_suffix binding suffix, [])
-        val ctxt = (clear_simpset ctxt) addsimps transport_defs
+        val ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps transport_defs
         val folded_thm =
           (*fold definition of transported term*)
           Local_Defs.fold ctxt [y_def] thm
@@ -317,11 +317,8 @@ val _ =
 
 (* experimental white-box prover *)
 
-val any_match_resolve_related_tac =
-  let
-    val norms = Mixed_Unification.norms_first_higherp_match
-    val match = Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match
-  in Unify_Resolve_Base.unify_resolve_any_tac norms match end
+val any_match_resolve_related_tac = Unify_Resolve_Base.unify_resolve_any_tac
+  Mixed_Unification.norms_fo_hop_match Mixed_Unification.fo_hop_match
 
 val related_comb_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_combI}
 val related_lambda_tac = any_match_resolve_related_tac @{thms related_Fun_Rel_lambdaI}

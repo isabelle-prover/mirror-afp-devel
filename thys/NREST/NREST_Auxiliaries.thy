@@ -71,7 +71,7 @@ next
 qed
 
 lemma SUP_eq_None_iff: "(\<Squnion>f \<in> X. f x) = None \<longleftrightarrow> X={} \<or> (\<forall>f\<in>X. f x = None)"
-  by (smt SUP_bot_conv(2) SUP_empty Sup_empty empty_Sup)
+  by (smt (z3) SUP_bot_conv(2) SUP_empty Sup_empty empty_Sup)
 
 lemma SUP_eq_Some_iff:
   "(\<Squnion>f \<in> X. f x) = Some t \<longleftrightarrow> (\<exists>f\<in>X. f x \<noteq> None) \<and> (t=Sup {t' | f t'. f\<in>X \<and> f x = Some t' })"

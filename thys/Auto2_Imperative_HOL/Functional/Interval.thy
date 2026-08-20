@@ -28,7 +28,7 @@ instance proof
   show b: "x \<le> x"
     by (simp add: int_less_eq)
   show c: "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z"
-    by (smt int_less_eq dual_order.trans less_trans)
+    by (smt (z3) int_less_eq dual_order.trans less_trans)
   show d: "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
     using int_less_eq a interval.expand int_less by fastforce
   show e: "x \<le> y \<or> y \<le> x"
@@ -55,7 +55,7 @@ instance proof
   show b: "x \<le> x"
     by (simp add: iint_less_eq)
   show c: "x \<le> y \<Longrightarrow> y \<le> z \<Longrightarrow> x \<le> z"
-    by (smt iint_less_eq dual_order.trans less_trans)
+    by (smt (z3) iint_less_eq dual_order.trans less_trans)
   show d: "x \<le> y \<Longrightarrow> y \<le> x \<Longrightarrow> x = y"
     using a idx_interval.expand iint_less iint_less_eq by auto
   show e: "x \<le> y \<or> y \<le> x"

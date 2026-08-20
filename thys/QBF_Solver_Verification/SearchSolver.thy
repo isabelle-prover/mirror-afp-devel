@@ -757,7 +757,7 @@ qed auto
 lemma pcnf_semantics_eq_if_free_vars_eq:
   assumes "\<forall>x \<in> set (pcnf_free_variables pcnf). I(x) = J(x)"
   shows "pcnf_semantics I pcnf = pcnf_semantics J pcnf"
-  using assms semantics_eq_if_free_vars_eq qbf_semantics_eq_pcnf_semantics by simp
+  using assms semantics_eq_if_free_vars_eq pcnf_semantics_eq_qbf_semantics by simp
 
 (* Interpretation value of assigned variables does not matter *)
 lemma x_notin_assign_P_x:
@@ -790,7 +790,7 @@ proof -
   let ?pre = "ExistentialFirst (x, xs) qs"
   have "satisfiable (convert (?pre, matrix))
        = (\<exists>I. pcnf_semantics I (?pre, matrix))"
-    using satisfiable_def qbf_semantics_eq_pcnf_semantics by simp
+    using satisfiable_def pcnf_semantics_eq_qbf_semantics by simp
   also have "... =
        (\<exists>I. pcnf_semantics (I(x := True)) (prefix_pop ?pre, matrix) \<or>
             pcnf_semantics (I(x := False)) (prefix_pop ?pre, matrix))"
@@ -812,7 +812,7 @@ proof -
   also have "... \<longleftrightarrow>
     satisfiable (convert (pcnf_assign (P x) (?pre, matrix))) \<or>
     satisfiable (convert (pcnf_assign (N x) (?pre, matrix)))"
-    using satisfiable_def qbf_semantics_eq_pcnf_semantics by simp
+    using satisfiable_def pcnf_semantics_eq_qbf_semantics by simp
   finally show ?thesis .
 qed
 
@@ -826,7 +826,7 @@ theorem sat_ex_first_iff_assign_disj_sat:
     [convert (pcnf_assign (P x) (ExistentialFirst (x, xs) qs, matrix)),
      convert (pcnf_assign (N x) (ExistentialFirst (x, xs) qs, matrix))])"
   using assms sat_ex_first_iff_one_assign_sat satisfiable_def
-    qbf_semantics_eq_pcnf_semantics by auto
+    pcnf_semantics_eq_qbf_semantics by auto
 
 (* A pcnf starting with an universal is satisfiable
   iff the conjunction of both possible assignments is. 
@@ -841,7 +841,7 @@ proof -
   let ?pre = "UniversalFirst (y, ys) qs"
   have "satisfiable (convert (?pre, matrix))
        = (\<exists>I. pcnf_semantics I (?pre, matrix))"
-    using satisfiable_def qbf_semantics_eq_pcnf_semantics by simp
+    using satisfiable_def pcnf_semantics_eq_qbf_semantics by simp
   also have "... =
     (\<exists>I. pcnf_semantics (I(y := True)) (prefix_pop ?pre, matrix) \<and>
          pcnf_semantics (I(y := False)) (prefix_pop ?pre, matrix))"
@@ -862,7 +862,7 @@ proof -
   also have "... =
     (\<exists>I. qbf_semantics I (convert (pcnf_assign (P y) (?pre, matrix))) \<and>
          qbf_semantics I (convert (pcnf_assign (N y) (?pre, matrix))))"
-      using qbf_semantics_eq_pcnf_semantics by blast
+      using pcnf_semantics_eq_qbf_semantics by blast
   also have "... =
     satisfiable (Conj
       [convert (pcnf_assign (P y) (?pre, matrix)),
@@ -1232,15 +1232,15 @@ qed
 lemma pcnf_semantics_disj_eq_add_ex:
   "pcnf_semantics (I(y := True)) pcnf \<or> pcnf_semantics (I(y := False)) pcnf
   \<longleftrightarrow> pcnf_semantics I (add_existential_to_front y pcnf)"
-  using convert_add_ex qbf_semantics_eq_pcnf_semantics qbf_semantics_substitute_eq_assign by simp
+  using convert_add_ex pcnf_semantics_eq_qbf_semantics qbf_semantics_substitute_eq_assign by simp
 
 lemma pcnf_semantics_conj_eq_add_all:
   "pcnf_semantics (I(y := True)) pcnf \<and> pcnf_semantics (I(y := False)) pcnf
   \<longleftrightarrow> pcnf_semantics I (add_universal_to_front y pcnf)"
-  using convert_add_all qbf_semantics_eq_pcnf_semantics qbf_semantics_substitute_eq_assign by simp
+  using convert_add_all pcnf_semantics_eq_qbf_semantics qbf_semantics_substitute_eq_assign by simp
 
 theorem pcnf_cleanse_preserves_semantics:
-  "pcnf_semantics I pcnf = pcnf_semantics I (pcnf_cleanse pcnf)"
+  "pcnf_semantics I (pcnf_cleanse pcnf) = pcnf_semantics I pcnf"
 proof (induction pcnf arbitrary: I rule: pcnf_cleanse.induct)
   case (2 y ys qs matrix)
   hence 0: "pcnf_semantics I (prefix_pop (UniversalFirst (y, ys) qs), matrix) =
@@ -1534,14 +1534,14 @@ proof (induction pcnf rule: search.induct)
   proof (cases "[] \<in> set matrix")
     case True
     then show ?thesis
-      using false_if_empty_clause_in_matrix qbf_semantics_eq_pcnf_semantics satisfiable_def by simp
+      using false_if_empty_clause_in_matrix pcnf_semantics_eq_qbf_semantics satisfiable_def by simp
   next
     case 2: False
     then show ?thesis
     proof (cases "matrix = []")
       case True
       then show ?thesis
-        using true_if_matrix_empty qbf_semantics_eq_pcnf_semantics satisfiable_def by simp
+        using true_if_matrix_empty pcnf_semantics_eq_qbf_semantics satisfiable_def by simp
     next
       case 3: False
       then show ?thesis
@@ -1674,7 +1674,7 @@ proof -
   have "satisfiable (convert pcnf)
        = satisfiable (convert (pcnf_cleanse (pcnf_existential_closure pcnf)))"
     using pcnf_sat_iff_ex_close_sat pcnf_cleanse_preserves_semantics
-      qbf_semantics_eq_pcnf_semantics satisfiable_def by simp
+      pcnf_semantics_eq_qbf_semantics satisfiable_def by simp
   moreover have "pcnf_free_variables (pcnf_cleanse (pcnf_existential_closure pcnf)) = []"
     using pcnf_ex_closure_no_free cleanse_free_vars_inv set_empty by metis
   moreover have "cleansed_p (pcnf_cleanse (pcnf_existential_closure pcnf))"

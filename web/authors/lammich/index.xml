@@ -4,6 +4,16 @@
     <title>Peter Lammich</title>
     <link>https://isa-afp.org/authors/lammich/</link>
     <description>AFP entries of Peter Lammich</description><item>
+  <title>Dynamic Pushdown Networks</title>
+  <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
+  <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Dynamic Pushdown Networks in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
   <title>Parallel Shear Sort</title>
   <link>https://isa-afp.org/entries/Parallel_Shear_Sort.html</link>
   <pubDate>Tue, 17 Sep 2024 00:00:00 +0000</pubDate>

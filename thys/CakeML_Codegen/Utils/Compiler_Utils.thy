@@ -913,8 +913,8 @@ apply (rule fmap.map_cong)
 apply (auto simp: fmran'_def f_inv_into_f dest!: assms)
 done
 
-lemma set_of_map_upd: "set_of_map (map_upd k v m) = set_of_map (map_drop k m) \<union> {(k, v)}"
-unfolding set_of_map_def map_upd_def map_drop_def map_filter_def
+lemma graph_map_upd: "Map.graph (map_upd k v m) = Map.graph (map_drop k m) \<union> {(k, v)}"
+unfolding Map.graph_def map_upd_def map_drop_def map_filter_def
 by (auto split: if_splits)
 
 lemma map_drop_delete: "map_drop k (map_of ps) = map_of (AList.delete k ps)"
@@ -924,31 +924,31 @@ apply (rule arg_cong[where f = "map_of"])
 apply (rule filter_cong[OF refl])
 by auto
 
-lemma set_of_map_map_of: "set_of_map (map_of xs) = set (AList.clearjunk xs)"
+lemma graph_map_of: "Map.graph (map_of xs) = set (AList.clearjunk xs)"
 proof (induction xs rule: clearjunk.induct)
   case (2 p ps)
 
   (* honourable mention: int-e on IRC, but it's way to short to understand what's going on *)
-  have ?case by (simp add: 2[symmetric] delete_conv) (auto simp: set_of_map_def)
+  have ?case by (simp add: 2[symmetric] delete_conv) (auto simp: Map.graph_def)
 
   obtain k v where "p = (k, v)"
     by (cases p) auto
-  have "set_of_map (map_of (p # ps)) = set_of_map (map_upd k v (map_of ps))"
+  have "Map.graph (map_of (p # ps)) = Map.graph (map_upd k v (map_of ps))"
     unfolding \<open>p = _\<close> map_upd_def by simp
-  also have "\<dots> = set_of_map (map_drop k (map_of ps)) \<union> {(k, v)}"
-    by (rule set_of_map_upd)
-  also have "\<dots> = set_of_map (map_of (AList.delete k ps)) \<union> {(k, v)}"
+  also have "\<dots> = Map.graph (map_drop k (map_of ps)) \<union> {(k, v)}"
+    by (rule graph_map_upd)
+  also have "\<dots> = Map.graph (map_of (AList.delete k ps)) \<union> {(k, v)}"
     by (simp only: map_drop_delete)
   also have "\<dots> =  set (AList.clearjunk (AList.delete k ps)) \<union> {(k, v)}"
     using 2 unfolding \<open>p = _\<close> by simp
   also have "\<dots> = set (AList.clearjunk (p # ps))"
     unfolding \<open>p = _\<close> by simp
   finally show ?case .
-qed (simp add: set_of_map_def)
+qed (simp add: Map.graph_def)
 
 lemma fset_of_fmap_code[code]: "fset_of_fmap (fmap_of_list x) = fset_of_list (AList.clearjunk x)"
 including fmap.lifting and fset.lifting
-  by transfer (rule set_of_map_map_of)
+  by transfer (rule graph_map_of)
 
 lemma distinct_sorted_list_of_fmap[simp, intro]: "distinct (sorted_list_of_fmap m)"
 unfolding sorted_list_of_fmap_def

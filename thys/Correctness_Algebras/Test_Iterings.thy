@@ -84,11 +84,11 @@ lemma ite_context_false:
 
 lemma ite_context_import:
   "-p * (x \<lhd> -q \<rhd> y) = -p * (x \<lhd> -p * -q \<rhd> y)"
-  by (smt ite_def mult_assoc tests_dual.sup_complement_intro tests_dual.sub_sup_demorgan tests_dual.sup_idempotent mult_left_dist_sup)
+  by (smt (z3) ite_def mult_assoc tests_dual.sup_complement_intro tests_dual.sub_sup_demorgan tests_dual.sup_idempotent mult_left_dist_sup)
 
 lemma ite_conjunction:
   "(x \<lhd> -q \<rhd> y) \<lhd> -p \<rhd> y = x \<lhd> -p * -q \<rhd> y"
-  by (smt sup_assoc sup_commute ite_def mult_assoc tests_dual.sub_sup_demorgan mult_left_dist_sup mult_right_dist_sup tests_dual.inf_complement_intro)
+  by (smt (z3) sup_assoc sup_commute ite_def mult_assoc tests_dual.sub_sup_demorgan mult_left_dist_sup mult_right_dist_sup tests_dual.inf_complement_intro)
 
 lemma ite_disjunction:
   "x \<lhd> -p \<rhd> (x \<lhd> -q \<rhd> y) = x \<lhd> -p \<squnion> -q \<rhd> y"
@@ -157,9 +157,9 @@ lemma split_merge_loops:
     shows "(-p \<squnion> -q) \<star> (x \<lhd> -p \<rhd> y) = (-p \<star> x) * (-q \<star> y)"
 proof -
   have "-p \<squnion> -q \<star> (x \<lhd> -p \<rhd> y) = (-p * x \<squnion> --p * -q * y)\<^sup>\<circ> * --p * --q"
-    by (smt ite_def mult_assoc sup_commute tests_dual.inf_demorgan while_def wnf_lemma_5)
+    by (smt (z3) ite_def mult_assoc sup_commute tests_dual.inf_demorgan while_def wnf_lemma_5)
   thus ?thesis
-    by (smt assms circ_sup_1 circ_slide import_test mult_assoc preserves_equation sub_comm while_context_false while_def)
+    by (smt (z3) assms circ_sup_1 circ_slide import_test mult_assoc preserves_equation sub_comm while_context_false while_def)
 qed
 
 lemma assigns_same:
@@ -223,7 +223,7 @@ lemma preserves_import_ite:
     shows "z * (x \<lhd> -p \<rhd> y) = z * x \<lhd> -p \<rhd> z * y"
 proof -
   have 1: "-p * z * (x \<lhd> -p \<rhd> y) = -p * (z * x \<lhd> -p \<rhd> z * y)"
-    by (smt assms ite_context_true mult_assoc preserves_equation_test)
+    by (smt (z3) assms ite_context_true mult_assoc preserves_equation_test)
   have "--p * z * (x \<lhd> -p \<rhd> y) = --p * (z * x \<lhd> -p \<rhd> z * y)"
     by (smt (z3) assms ite_context_false mult_assoc preserves_equation_test)
   thus ?thesis
@@ -282,21 +282,21 @@ lemma while_else_norm:
 
 lemma while_while_pre_norm:
   "-p \<star> x * (-q \<star> y) = -p \<rhd> x * (-p \<squnion> -q \<star> (y \<lhd> -q \<rhd> x))"
-  by (smt sup_commute circ_sup_1 circ_left_unfold circ_slide it_def ite_def mult_assoc mult_left_one mult_right_dist_sup tests_dual.inf_demorgan while_def wnf_lemma_5)
+  by (smt (z3) sup_commute circ_sup_1 circ_left_unfold circ_slide it_def ite_def mult_assoc mult_left_one mult_right_dist_sup tests_dual.inf_demorgan while_def wnf_lemma_5)
 
 text \<open>Theorem 7.2\<close>
 
 lemma while_while_norm:
   "assigns z (-p) (-r) \<Longrightarrow> preserves x (-r) \<Longrightarrow> preserves y (-r) \<Longrightarrow> z * (-p \<star> x * (-q \<star> y)) = z * (-r \<rhd> x) * (-r * (-p \<squnion> -q) \<star> (y \<lhd> -q \<rhd> x))"
-  by (smt tests_dual.double_negation tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite while_it_norm while_while_pre_norm)
+  by (smt (z3) tests_dual.double_negation tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite while_it_norm while_while_pre_norm)
 
 lemma while_seq_replace:
   "assigns z (-p) (-q) \<Longrightarrow> z * (-p \<star> x * z) * y = z * (-q \<star> x * z) * y"
-  by (smt assigns_def circ_slide mult_assoc tests_dual.wnf_lemma_1 tests_dual.wnf_lemma_2 tests_dual.wnf_lemma_3 tests_dual.wnf_lemma_4 while_def)
+  by (smt (z3) assigns_def circ_slide mult_assoc tests_dual.wnf_lemma_1 tests_dual.wnf_lemma_2 tests_dual.wnf_lemma_3 tests_dual.wnf_lemma_4 while_def)
 
 lemma while_ite_replace:
   "assigns z (-p) (-q) \<Longrightarrow> z * (x \<lhd> -p \<rhd> y) = z * (x \<lhd> -q \<rhd> y)"
-  by (smt assigns_def ite_def mult_assoc mult_left_dist_sup sub_comm tests_dual.wnf_lemma_1 tests_dual.wnf_lemma_3)
+  by (smt (z3) assigns_def ite_def mult_assoc mult_left_dist_sup sub_comm tests_dual.wnf_lemma_1 tests_dual.wnf_lemma_3)
 
 lemma while_post_norm_an:
   assumes "preserves y (-p)"
@@ -305,11 +305,11 @@ proof -
   have "-p * (-p * x * (--p * y \<squnion> -p))\<^sup>\<circ> * --p = -p * x * ((--p * y \<squnion> -p) * -p * x)\<^sup>\<circ> * (--p * y \<squnion> -p) * --p"
     by (metis circ_slide_1 while_def mult_assoc while_context_true)
   also have "... = -p * x * (--p * y * bot \<squnion> -p * x)\<^sup>\<circ> * --p * y"
-    by (smt assms sup_bot_right mult_assoc tests_dual.sup_complement tests_dual.sup_idempotent mult_left_zero mult_right_dist_sup preserves_equation_test sub_comm)
+    by (smt (z3) assms sup_bot_right mult_assoc tests_dual.sup_complement tests_dual.sup_idempotent mult_left_zero mult_right_dist_sup preserves_equation_test sub_comm)
   finally have "-p * (-p * x * (--p * y \<squnion> -p))\<^sup>\<circ> * --p = -p * x * (-p * x)\<^sup>\<circ> * --p * y"
     by (metis circ_sup_mult_zero sup_commute mult_assoc)
   thus ?thesis
-    by (smt circ_left_unfold tests_dual.double_negation it_def ite_def mult_assoc mult_left_one mult_right_dist_sup while_def)
+    by (smt (z3) circ_left_unfold tests_dual.double_negation it_def ite_def mult_assoc mult_left_one mult_right_dist_sup while_def)
 qed
 
 lemma while_post_norm:
@@ -329,17 +329,17 @@ proof -
   have "z * --p * --q * (x1 \<lhd> -q \<rhd> x2) * (-q * -p \<squnion> -r \<star> (y1 \<lhd> -q * -p \<rhd> y2)) = z * --p * --q * x2 * --q * (--q * (-q * -p \<squnion> -r) \<star> (y1 \<lhd> -q * -p \<rhd> y2))"
     by (smt (verit, del_insts) assms(3-5) tests_dual.double_negation ite_context_false mult_assoc tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_equation_test preserves_ite preserves_while_context)
   also have "... = z * --p * --q * x2 * --q * (--q * -r \<star> --q * y2)"
-    by (smt sup_bot_left tests_dual.double_negation ite_conjunction ite_context_false mult_assoc tests_dual.sup_complement mult_left_dist_sup mult_left_zero while_import_condition_2)
+    by (smt (z3) sup_bot_left tests_dual.double_negation ite_conjunction ite_context_false mult_assoc tests_dual.sup_complement mult_left_dist_sup mult_left_zero while_import_condition_2)
   also have "... = z * --p * --q * x2 * (-r \<star> y2)"
     by (metis assms(4,5) mult_assoc preserves_equation_test preserves_test_neg preserves_while_context while_import_condition_2)
   finally have 1: "z * --p * --q * (x1 \<lhd> -q \<rhd> x2) * (-q * -p \<squnion> -r \<star> (y1 \<lhd> -q * -p \<rhd> y2)) = z * --p * --q * (x1 \<lhd> -q \<rhd> x2) * (-p \<squnion> -r \<star> (y1 \<lhd> -p \<rhd> y2))"
-    by (smt assms(6,7) ite_context_false mult_assoc preserves_equation_test sub_comm while_ite_context_false)
+    by (smt (z3) assms(6,7) ite_context_false mult_assoc preserves_equation_test sub_comm while_ite_context_false)
   have "z * -p * -q * (x1 \<lhd> -q \<rhd> x2) * (-q * -p \<squnion> -r \<star> (y1 \<lhd> -q * -p \<rhd> y2)) = z * -p * -q * (x1 \<lhd> -q \<rhd> x2) * -q * (-q * (-p \<squnion> -r) \<star> -q * (y1 \<lhd> -p \<rhd> y2))"
     by (smt (verit, del_insts) assms(2-5) tests_dual.double_negation ite_context_import mult_assoc tests_dual.sub_sup_demorgan tests_dual.sup_idempotent mult_left_dist_sup tests_dual.inf_demorgan preserves_equation_test preserves_ite preserves_while_context while_import_condition_2)
   hence "z * -p * -q * (x1 \<lhd> -q \<rhd> x2) * (-q * -p \<squnion> -r \<star> (y1 \<lhd> -q * -p \<rhd> y2)) = z * -p * -q * (x1 \<lhd> -q \<rhd> x2) * (-p \<squnion> -r \<star> (y1 \<lhd> -p \<rhd> y2))"
-    by (smt assms(2-5) tests_dual.double_negation mult_assoc tests_dual.sub_sup_demorgan tests_dual.sup_idempotent preserves_equation_test preserves_ite preserves_while_context while_import_condition_2)
+    by (smt (z3) assms(2-5) tests_dual.double_negation mult_assoc tests_dual.sub_sup_demorgan tests_dual.sup_idempotent preserves_equation_test preserves_ite preserves_while_context while_import_condition_2)
   thus ?thesis
-    using 1 by (smt assms(1) assigns_def mult_assoc mult_left_dist_sup mult_right_dist_sup while_ite_replace)
+    using 1 by (smt (z3) assms(1) assigns_def mult_assoc mult_left_dist_sup mult_right_dist_sup while_ite_replace)
 qed
 
 text \<open>Theorem 7.3\<close>
@@ -364,23 +364,23 @@ proof -
   have "x1 * z1 * z2 * (-r1 \<star> y1 * z1) * x2 * (-r2 \<star> y2) = x1 * z1 * z2 * (-q \<star> y1 * z1) * x2 * (-r2 \<star> y2)"
     using assms(1,5) mult_assoc while_seq_replace by auto
   also have "... = x1 * z1 * z2 * (-q \<star> y1 * z1 * (1 \<lhd> -q \<rhd> x2 * (-r2 \<star> y2)) \<lhd> -q \<rhd> x2 * (-r2 \<star> y2))"
-    by (smt assms(2,3) mult_assoc preserves_mult preserves_while while_post_norm)
+    by (smt (z3) assms(2,3) mult_assoc preserves_mult preserves_while while_post_norm)
   also have "... = x1 * z1 * (z2 * (-q \<star> y1 * z1 * (1 \<lhd> -q \<rhd> x2) * (--q * -r2 \<star> y2)) \<lhd> -q \<rhd> z2 * x2 * (-r2 \<star> y2))"
-    by (smt assms(2-4) assigns_same mult_assoc preserves_import_ite while_else_norm)
+    by (smt (z3) assms(2-4) assigns_same mult_assoc preserves_import_ite while_else_norm)
   also have "... = x1 * z1 * (z2 * (-r \<rhd> y1 * z1 * (1 \<lhd> -q \<rhd> x2)) * (-r * (-q \<squnion> -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -q \<rhd> z2 * x2 * (-r2 \<star> y2))"
-    by (smt assms(6-10) tests_dual.double_negation tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite preserves_mult preserves_one while_while_norm wnf_lemma_8)
+    by (smt (z3) assms(6-10) tests_dual.double_negation tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite preserves_mult preserves_one while_while_norm wnf_lemma_8)
   also have "... = x1 * z1 * z2 * ((-r \<rhd> y1 * z1 * (1 \<lhd> -q \<rhd> x2)) * (-r * (-q \<squnion> -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -r \<rhd> x2 * (-r2 \<star> y2))"
-    by (smt assms(4,6) mult_assoc preserves_import_ite while_ite_replace)
+    by (smt (z3) assms(4,6) mult_assoc preserves_import_ite while_ite_replace)
   also have "... = x1 * z1 * z2 * (-r * (y1 * z1 * (1 \<lhd> -q \<rhd> x2)) * (-r * (-q \<squnion> -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -r \<rhd> x2 * (-r2 \<star> y2))"
-    by (smt mult_assoc it_context_true ite_import_true)
+    by (smt (z3) mult_assoc it_context_true ite_import_true)
   also have "... = x1 * z1 * z2 * (-r * (y1 * z1 * (1 \<lhd> -q \<rhd> x2)) * -r * (-r * (-q \<squnion> -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -r \<rhd> x2 * (-r2 \<star> y2))"
     using 1 by (simp add: preserves_equation_test)
   also have "... = x1 * z1 * z2 * (-r * (y1 * z1 * (1 \<lhd> -q \<rhd> x2)) * -r * (-q \<squnion> -r2 \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -r \<rhd> x2 * (-r2 \<star> y2))"
     using 2 by (smt (z3) tests_dual.sba_dual.sub_sup_closed mult_assoc preserves_while_context)
   also have "... = x1 * z1 * z2 * (y1 * z1 * (1 \<lhd> -q \<rhd> x2) * (-q \<squnion> -r2 \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2)) \<lhd> -q \<rhd> x2 * (-r2 \<star> y2))"
-    by (smt assms(6-9) tests_dual.double_negation ite_import_true mult_assoc tests_dual.sup_idempotent preserves_equation_test preserves_ite preserves_one while_ite_replace)
+    by (smt (z3) assms(6-9) tests_dual.double_negation ite_import_true mult_assoc tests_dual.sup_idempotent preserves_equation_test preserves_ite preserves_one while_ite_replace)
   also have "... = x1 * z1 * z2 * (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -r \<rhd> x2) * ((-r * (-q \<squnion> -r2) \<squnion> --r * -r2) \<star> ((y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -q \<rhd> y2) \<lhd> -r \<rhd> y2))"
-    by (smt assms(6-10) tests_dual.double_negation mult_assoc tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite preserves_mult preserves_one while_ite_norm)
+    by (smt (z3) assms(6-10) tests_dual.double_negation mult_assoc tests_dual.sub_sup_demorgan tests_dual.inf_demorgan preserves_ite preserves_mult preserves_one while_ite_norm)
   also have "... = x1 * z1 * z2 * (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -r \<rhd> x2) * ((-r * (-q \<squnion> -r2) \<squnion> --r * -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -r * -q \<rhd> y2))"
     using ite_conjunction by simp
   also have "... = x1 * z1 * z2 * (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -r \<rhd> x2) * ((-r * -q \<squnion> -r2) \<star> (y1 * z1 * (1 \<lhd> -q \<rhd> x2) \<lhd> -r * -q \<rhd> y2))"

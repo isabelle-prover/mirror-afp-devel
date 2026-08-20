@@ -1,7 +1,11 @@
 chapter AFP
 
-session "FOL-Fitting" = "HOL-Library" +
+session "FOL-Fitting" = HOL +
   options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories [document = false]
+    "HOL-Library.Countable"
   theories
     FOL_Fitting
   document_files

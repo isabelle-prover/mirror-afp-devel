@@ -419,7 +419,7 @@ lemma nth_dec_above:
   assumes "length xs = i" "length ys = j" "k \<notin> {i..<i+j}"
   shows "nth_default 0 (xs @ zs) (dec_above i j k) = (nth_default 0 (xs @ ys @ zs)) k"
   using assms dec_above_def nth_append add.commute
-  by (smt add_diff_cancel_left add_le_cancel_left add_strict_increasing append_Nil2 atLeastLessThan_iff le_add_diff_inverse length_append length_greater_0_conv less_imp_le_nat not_less nth_default_append)
+  by (smt (z3) add_diff_cancel_left add_le_cancel_left add_strict_increasing append_Nil2 atLeastLessThan_iff le_add_diff_inverse length_append length_greater_0_conv less_imp_le_nat not_less nth_default_append)
 
 lemma insertion_lowerPoly:
   assumes i_notin: "vars p \<inter> {i..<i+j} = {}"
@@ -671,7 +671,7 @@ lemma lift_vars_monom : "vars (liftPoly i j ((MPoly_Type.monom m a)::real mpoly)
 proof(cases "a=0")
   case True
   then show ?thesis
-    by (smt MPolyExtension.monom_zero add.left_neutral add_diff_cancel_right' image_empty liftPoly_add vars_monom_single_cases)
+    by (smt (z3) MPolyExtension.monom_zero add.left_neutral add_diff_cancel_right' image_empty liftPoly_add vars_monom_single_cases)
 next
   case False
   have h1: "vars (liftPoly i j (MPoly_Type.monom m a)) = keys (lowerPowers i j m)"
@@ -741,7 +741,7 @@ next
     unfolding MPolyExtension.coeff_add
     unfolding h4 h5
     unfolding monomials_add_disjoint[OF h1]
-    by (smt IntE coeff_eq_zero_iff disjoint_iff_not_equal finite_monomials h1 higherPowers_lowerPowers imageE monomials_liftPoly monomials_lowerPoly plus_fun_apply sum.IH(1) sum.IH(2) sum.cong sum.union_disjoint
+    by (smt (z3) IntE coeff_eq_zero_iff disjoint_iff_not_equal finite_monomials h1 higherPowers_lowerPowers imageE monomials_liftPoly monomials_lowerPoly plus_fun_apply sum.IH(1) sum.IH(2) sum.cong sum.union_disjoint
         )
 qed
 lemma lift_insertion : " \<forall>init.

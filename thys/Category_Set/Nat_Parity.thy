@@ -241,12 +241,12 @@ qed
 
 lemma is_odd_nth_even_false:
   "is_odd \<circ>\<^sub>c nth_even = \<f> \<circ>\<^sub>c \<beta>\<^bsub>\<nat>\<^sub>c\<^esub>"
-  by (smt NOT_true_is_false NOT_type comp_associative2 is_even_def2 is_even_nth_even_true
+  by (smt (z3) NOT_true_is_false NOT_type comp_associative2 is_even_def2 is_even_nth_even_true
       is_odd_not_is_even nth_even_def2 terminal_func_type true_func_type)
 
 lemma is_even_nth_odd_false:
   "is_even \<circ>\<^sub>c nth_odd = \<f> \<circ>\<^sub>c \<beta>\<^bsub>\<nat>\<^sub>c\<^esub>"
-  by (smt NOT_true_is_false NOT_type comp_associative2 is_odd_def2 is_odd_nth_odd_true
+  by (smt (z3) NOT_true_is_false NOT_type comp_associative2 is_odd_def2 is_odd_nth_odd_true
       is_even_not_is_odd nth_odd_def2 terminal_func_type true_func_type)
 
 lemma EXISTS_zero_nth_even:

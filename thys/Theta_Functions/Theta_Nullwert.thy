@@ -30,18 +30,23 @@ abbreviation jacobi_theta_nw_01 :: "'a :: {real_normed_field, banach} \<Rightarr
   "jacobi_theta_nw_01 q \<equiv> jacobi_theta_nome_01 1 q"
 
 
+text \<open>
+  The function $\vartheta_{11}(0, q)$ is identically zero and therefore uninteresting. However,
+  the derivative of $\vartheta_{11}$ at $z = 0$ \<^emph>\<open>is\<close> interesting. We will call it $\vartheta_1'$.
+  Note that we have a normalization factor of $\frac{1}{i}$. This is a bit arbitrary, but it is
+  the one that leads to the ``right'' identities for $\vartheta_1'$ on
+  NIST~\cite[Section~20.4]{nist}.
+\<close>
+definition jacobi_theta_nw_11' :: "complex \<Rightarrow> complex" where
+  "jacobi_theta_nw_11' q \<equiv> deriv (\<lambda>z. jacobi_theta_nome_11 z q) 1 / \<i>"
+
+
 bundle jacobi_theta_nw_notation
 begin
 notation jacobi_theta_nw_10 ("\<theta>\<^sub>2")
 notation jacobi_theta_nw_00 ("\<theta>\<^sub>3")
 notation jacobi_theta_nw_01 ("\<theta>\<^sub>4")
-end
-
-bundle no_jacobi_theta_nw_notation
-begin
-no_notation jacobi_theta_nw_10 ("\<theta>\<^sub>2")
-no_notation jacobi_theta_nw_00 ("\<theta>\<^sub>3")
-no_notation jacobi_theta_nw_01 ("\<theta>\<^sub>4")
+notation jacobi_theta_nw_11' ("\<theta>\<^sub>1''")
 end
 
 unbundle jacobi_theta_nw_notation
@@ -130,6 +135,33 @@ lemma jacobi_theta_00_nw_nonzero_real: "\<bar>q::real\<bar> < 1 \<Longrightarrow
         jacobi_theta_10_nw_nonzero_complex[of "of_real q"]
   by (simp_all add: jacobi_theta_nw_00_of_real jacobi_theta_nw_01_of_real
                     jacobi_theta_nw_10_of_real)
+
+lemma has_field_derivative_jacobi_theta_nw_11:
+  assumes "norm q < 1"
+  shows   "((\<lambda>z. jacobi_theta_nome_11 z q) has_field_derivative (\<i> * \<theta>\<^sub>1' q)) (at 1 within A)"
+proof -
+  have "((\<lambda>z. jacobi_theta_nome_11 z q) has_field_derivative
+           deriv (\<lambda>z. jacobi_theta_nome_11 z q) 1) (at 1 within A)"
+    using assms by (intro analytic_derivI jacobi_theta_nome_11_analytic') auto
+  also have "deriv (\<lambda>z. jacobi_theta_nome_11 z q) 1 = \<i> * \<theta>\<^sub>1' q"
+    by (simp add: jacobi_theta_nw_11'_def)
+  finally show ?thesis
+    by simp
+qed
+
+lemma jacobi_theta_nw_11'_0 [simp]: "\<theta>\<^sub>1' 0 = 0"
+proof -
+  have "\<i> * \<theta>\<^sub>1' 0 = 0"
+  proof (rule DERIV_unique)
+    show "((\<lambda>z. jacobi_theta_nome_11 z 0) has_field_derivative 0) (at 1)"
+      by auto
+  next
+    show "((\<lambda>z. jacobi_theta_nome_11 z 0) has_field_derivative \<i> * \<theta>\<^sub>1' 0) (at 1)"
+      by (rule has_field_derivative_jacobi_theta_nw_11) auto
+  qed
+  thus ?thesis
+    by simp
+qed
 
 
 subsection \<open>The Maclaurin series of $\vartheta_3$ and $\vartheta_4$\<close>
@@ -658,12 +690,342 @@ next
 qed
 
 
+subsection \<open>The nullwert derivative of $\vartheta_{11}$\<close>
+
+text \<open>
+  From the definition of $\vartheta_{11}$, we directly get the following series representation for
+  $\vartheta_1'$:
+  \[\vartheta_1'(q) = q^{1/4} \sum_{n=-\infty}^\infty (-1)^n (2n+1) q^{n(n+1)}\]
+\<close>
+lemma has_sum_jacobi_theta_nw_11'_aux1:
+  fixes q :: complex
+  defines "c \<equiv> q powr (1/4)"
+  assumes q: "norm q < 1"
+  shows "((\<lambda>n. c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) UNIV"
+proof -
+  define f where "f = (\<lambda>z. (-((q*z) ^ 2), -1/z^2))"
+  define g where "g = (\<lambda>(a,b). ramanujan_theta a b :: complex)"
+  define h where "h = (\<lambda>n (a,b). a powi (n * (n + 1) div 2) * b powi (n * (n - 1) div 2) :: complex)"
+  define h' where "h' = (\<lambda>n z. (-1) powi n * q powi (n*(n+1)) * z powi (2*n))"
+
+  define r where "r = (1/2::real)"
+  have r: "r > 0" "r < 1"
+    by (auto simp: r_def)
+
+  define B where "B = f ` cball 1 r"
+  have "compact B"
+    using r unfolding B_def f_def by (intro compact_continuous_image continuous_intros) auto
+  moreover have "norm (a * b) < 1" if "(a, b) \<in> B" for a b
+    using that q unfolding B_def
+    by (auto simp: f_def power_mult_distrib norm_power abs_square_less_1)
+  ultimately have "uniform_limit B (\<lambda>X z. \<Sum>n\<in>X. h n z) g finite_sets_at_top"
+    unfolding h_def g_def using uniform_limit_ramanujan_theta[of B]
+    by (auto simp: case_prod_unfold)
+  hence "uniform_limit (cball 1 r) (\<lambda>X z. \<Sum>n\<in>X. h n (f z)) (\<lambda>z. g (f z)) finite_sets_at_top"
+    by (rule uniform_limit_compose[of _ B]) (auto simp: B_def)
+  also have "?this \<longleftrightarrow> uniform_limit (cball 1 r) (\<lambda>X z. \<Sum>n\<in>X. h' n z) (\<lambda>z. g (f z)) finite_sets_at_top"
+  proof (intro uniform_limit_cong eventually_finite_subsets_at_top_weakI ballI sum.cong refl)
+    fix z :: complex and n :: int
+    assume z: "z \<in> cball 1 r"
+    with r have [simp]: "z \<noteq> 0"
+      by auto
+    have "h n (f z) = (q\<^sup>2 * (-z\<^sup>2)) powi (n * (n + 1) div 2) * (- (1 / z\<^sup>2)) powi (n * (n - 1) div 2)"
+      using q by (simp add: h_def f_def power_mult_distrib)
+    also have "\<dots> = q powi (n * (n + 1)) * ((-z\<^sup>2) powi (n*(n+1) div 2) * 
+                      (- (1 / z\<^sup>2)) powi (n * (n - 1) div 2))"
+      by (subst power_int_mult_distrib) (auto simp: power_int_power)
+    also have "(-z\<^sup>2) powi (n*(n+1) div 2) = (-z\<^sup>2) powi (n*(n-1) div 2 + n)"
+      by (cases "even n") (auto elim!: evenE oddE simp: algebra_simps)
+    also have "\<dots> * (- (1 / z\<^sup>2)) powi (n * (n - 1) div 2) =
+                ((-z\<^sup>2) * (-(1/z\<^sup>2))) powi (n * (n - 1) div 2) * (-z\<^sup>2) powi n"
+      by (subst power_int_mult_distrib) (auto simp: power_int_add)
+    also have "\<dots> = (-1) powi n * z powi (2*n)"
+      by (simp add: power_int_minus_left power_int_power)
+    finally show "h n (f z) = h' n z"
+      by (simp add: h'_def)
+  qed
+  finally have lim: "uniform_limit (cball 1 r) (\<lambda>X z. \<Sum>n\<in>X. h' n z) (\<lambda>z. g (f z)) finite_sets_at_top" .
+
+  have lim': "((\<lambda>n. h' n 1) has_sum (g (f 1))) UNIV"
+    using tendsto_uniform_limitI[OF lim, of 1] r by (simp add: has_sum_def)
+
+  define d where "d = (\<lambda>n z. 2 * (-1) powi n * of_int n * z powi (2*n-1) * q powi (n*(n+1)))"
+  have ev: "\<forall>\<^sub>F X in finite_sets_at_top.
+                continuous_on (cball 1 r) (\<lambda>z. \<Sum>n\<in>X. h' n z) \<and>
+                (\<forall>z\<in>ball 1 r. ((\<lambda>z. \<Sum>n\<in>X. h' n z) has_field_derivative
+                (\<Sum>n\<in>X. d n z)) (at z))"
+  proof (intro eventually_finite_subsets_at_top_weakI ballI conjI, goal_cases)
+    case 1
+    thus ?case using r q by (auto intro!: continuous_intros simp: h'_def)
+  next
+    case (2 X z)
+    hence "z \<noteq> 0" using r by auto
+    thus ?case
+      unfolding h'_def using r q by (auto intro!: derivative_eq_intros simp: d_def mult_ac)
+  qed
+
+  obtain D where D:
+    "\<And>z. z \<in> ball 1 r \<Longrightarrow> ((\<lambda>z. g (f z)) has_field_derivative D z) (at z)"
+    "\<And>z. z \<in> ball 1 r \<Longrightarrow> ((\<lambda>n. d n z) has_sum D z) UNIV"
+    by (rule has_complex_derivative_uniform_limit[OF ev lim])
+       (use r in \<open>auto simp: has_sum_def\<close>)
+
+  have "((\<lambda>n. c * (h' n 1 + d n 1)) has_sum (c * (g (f 1) + D 1))) UNIV"
+    by (intro has_sum_cmult_right has_sum_add lim' D) (use r in auto)
+  also have "c * (g (f 1) + D 1) = \<theta>\<^sub>1' q"
+  proof (rule DERIV_unique)
+    have "((\<lambda>z. c * z * g (f z)) has_field_derivative (c * (g (f 1) + D 1))) (at 1)"
+      by (rule derivative_eq_intros D(1) refl | use r in \<open>simp; fail\<close>)+
+         (simp_all add: c_def algebra_simps)?
+    also have "?this \<longleftrightarrow> ((\<lambda>z. -\<i> * jacobi_theta_nome_11 z q) has_field_derivative (c * (g (f 1) + D 1))) (at 1)"
+    proof (rule DERIV_cong_ev)
+      have "eventually (\<lambda>z. z \<in> ball 1 r) (nhds (1::complex))"
+        by (rule eventually_nhds_in_open) (use r in auto)
+      thus "eventually (\<lambda>z. c * z * g (f z) = -\<i> * jacobi_theta_nome_11 z q) (nhds 1)"
+        by eventually_elim
+           (auto simp: power2_eq_square mult_ac g_def f_def c_def
+                       jacobi_theta_nome_11_def jacobi_theta_nome_def)
+    qed auto
+    finally show "((\<lambda>z. (-\<i>) * jacobi_theta_nome_11 z q) has_field_derivative c * (g (f 1) + D 1)) (at 1)" .
+  next
+    show "((\<lambda>z. (-\<i>) * jacobi_theta_nome_11 z q) has_field_derivative \<theta>\<^sub>1' q) (at 1)"
+      by (rule derivative_eq_intros refl has_field_derivative_jacobi_theta_nw_11)+
+         (use q in \<open>auto simp: mult_ac\<close>)
+  qed
+  also have "(\<lambda>n. c * (h' n 1 + d n 1)) =
+               (\<lambda>n. c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)))"
+    by (simp add: h'_def d_def algebra_simps)
+  finally show ?thesis .
+qed
+
+text \<open>
+  We can also derive the following slightly simpler series:
+  \[\vartheta_1'(q) = 2q^{1/4} \sum_{n=-\infty}^\infty (-1)^n n q^{n(n+1)}\]
+  The two are equivalent since their difference is
+  \[q^{1/4} \sum_{n=-\infty}^\infty (-1)^n q^{n(n+1)}\]
+  which clearly vanishes due to its symmetry under $n \mapsto -n-1$.
+\<close>
+lemma has_sum_jacobi_theta_nw_11'_aux1':
+  fixes q :: complex
+  defines "c \<equiv> 2 * q powr (1/4)"
+  assumes q: "norm q < 1"
+  shows "((\<lambda>n. c * (-1) powi n * of_int n * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) UNIV"
+proof (cases "q = 0")
+  case [simp]: True
+  have "((\<lambda>n. c * (-1) powi n * of_int n * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) UNIV \<longleftrightarrow>
+        ((\<lambda>n. c * (-1) powi n * of_int n * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) {-1}"
+    by (rule has_sum_cong_neutral) auto
+  thus ?thesis
+    by (simp add: has_sum_finite_iff c_def)
+next
+  case [simp]: False
+  have *: "((\<lambda>n. q powr (1/4) * ((-1) powi n * q powi (n * (n + 1)))) has_sum 0) UNIV"
+    using has_sum_cmult_right[OF has_sum_jacobi_theta_nome_11'[of q 1], of "q powr (1/4)"] q
+    by (cases "q = 0") auto
+  show "((\<lambda>n. c * (-1) powi n * of_int n * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) UNIV"
+    using has_sum_diff[OF has_sum_jacobi_theta_nw_11'_aux1[OF q] *]
+    by (simp add: field_simps c_def)
+qed
+
+lemma has_sum_jacobi_theta_nw_11'_aux2:
+  fixes q :: complex
+  defines "c \<equiv> q powr (1/4)"
+  assumes q: "norm q < 1" "q \<noteq> 0"
+  shows "((\<lambda>n. (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1))) has_sum (\<theta>\<^sub>1' q / c)) UNIV"
+proof -
+  from q have [simp]: "c \<noteq> 0"
+    by (auto simp: c_def)
+  have "((\<lambda>n. inverse c * (c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)))) 
+           has_sum (inverse c * \<theta>\<^sub>1' q)) UNIV"
+    unfolding c_def by (intro has_sum_cmult_right has_sum_jacobi_theta_nw_11'_aux1) fact+
+  also have "(\<lambda>n. inverse c * (c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)))) =
+             (\<lambda>n. (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)))"
+    by (simp add: mult_ac fun_eq_iff)
+  also have "inverse c * \<theta>\<^sub>1' q = \<theta>\<^sub>1' q / c"
+    by (simp add: field_simps)
+  finally show ?thesis .
+qed
+
+lemma has_sum_jacobi_theta_nw_11'_aux2':
+  fixes q :: complex
+  defines "c \<equiv> 2 * q powr (1/4)"
+  assumes q: "norm q < 1" "q \<noteq> 0"
+  shows "((\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1))) has_sum (\<theta>\<^sub>1' q / c)) UNIV"
+proof -
+  from q have [simp]: "c \<noteq> 0"
+    by (auto simp: c_def)
+  have "((\<lambda>n. inverse c * (c * (-1) powi n * of_int n * q powi (n * (n + 1)))) 
+           has_sum (inverse c * \<theta>\<^sub>1' q)) UNIV"
+    unfolding c_def by (intro has_sum_cmult_right has_sum_jacobi_theta_nw_11'_aux1') fact+
+  also have "(\<lambda>n. inverse c * (c * (-1) powi n * of_int n * q powi (n * (n + 1)))) =
+             (\<lambda>n. (-1) powi n * of_int n * q powi (n * (n + 1)))"
+    by (simp add: mult_ac fun_eq_iff)
+  also have "inverse c * \<theta>\<^sub>1' q = \<theta>\<^sub>1' q / c"
+    by (simp add: field_simps)
+  finally show ?thesis .
+qed
+
+lemma has_sum_jacobi_theta_nw_11':
+  fixes q :: complex
+  assumes q: "norm q < 1"
+  shows "((\<lambda>n. (-1) powi n * (2 * of_int n + 1) * q powr ((of_int n + 1 / 2)\<^sup>2)) has_sum \<theta>\<^sub>1' q) UNIV"
+proof (cases "q = 0")
+  case True
+  thus ?thesis
+    using has_sum_jacobi_theta_nw_11'_aux1[of 0] by auto
+next
+  case [simp]: False
+  define c where "c = q powr (1/4)"
+  have "((\<lambda>n. c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1))) has_sum \<theta>\<^sub>1' q) UNIV"
+    unfolding c_def by (rule has_sum_jacobi_theta_nw_11'_aux1) fact+
+  also have "(\<lambda>n. c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1))) =
+             (\<lambda>n. (-1) powi n * (2 * of_int n + 1) * q powr ((of_int n + 1 / 2)\<^sup>2))"
+  proof
+    fix n :: int
+    have "c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)) =
+           (-1) powi n * (2 * of_int n + 1) * (q powr (1/4) * q powi (n * (n + 1)))"
+      by (simp add: c_def mult_ac)
+    also have "q powr (1/4) * q powi (n * (n + 1)) = q powr (1/4) * q powr (of_int (n*(n+1)))"
+      by (subst complex_powr_of_int) auto
+    also have "\<dots> = q powr (of_int (n*(n+1)) + 1/4)"
+      by (subst powr_add) (auto simp: mult_ac)
+    also have "complex_of_int (n*(n+1)) + 1/4 = (of_int n + 1 / 2) ^ 2"
+      by (simp add: power2_eq_square algebra_simps)
+    finally show "c * (-1) powi n * (2 * of_int n + 1) * q powi (n * (n + 1)) = 
+                  (-1) powi n * (2 * of_int n + 1) * q powr ((of_int n + 1 / 2)\<^sup>2)" .
+  qed
+  finally show ?thesis .
+qed
+
+
 subsection \<open>Identities\<close>
 
 text \<open>
   Lastly, we derive a variety of identities between the different theta functions.
 \<close>
 
+text \<open>
+  Using the Jacobi triple product three times and simplifying the result a bit, we obtain
+  the following identity:
+  \[\vartheta_2(q) \vartheta_3(q) \vartheta_4(q) = 2 q^{1/4} \varphi(q^2)^3\]
+\<close>
+lemma jacobi_theta_nw_10_00_01_conv_euler_phi:
+  assumes q: "norm (q :: complex) < 1"
+  shows   "\<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q  = 2 * q powr (1/4) * euler_phi (q\<^sup>2) ^ 3"
+proof (cases "q = 0")
+  case False
+  include qpochhammer_inf_notation
+  have "\<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q = q powr (1/4) * (q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> ^ 3 *
+          ((-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * (-1 ; q\<^sup>2)\<^sub>\<infinity> * ((-q ; q\<^sup>2)\<^sub>\<infinity> * (q ; q\<^sup>2)\<^sub>\<infinity>) ^ 2)" using q False
+    by (simp add: jacobi_theta_nome_00_def jacobi_theta_nome_01_def jacobi_theta_nome_10_def
+                  jacobi_theta_nome_triple_product_complex mult_ac eval_nat_numeral)
+  also have "(-q ; q\<^sup>2)\<^sub>\<infinity> * (q ; q\<^sup>2)\<^sub>\<infinity> = (q^2 ; q^4)\<^sub>\<infinity>"
+    using qpochhammer_inf_square[of "q ^ 2" q] q
+    by (simp add: norm_power abs_square_less_1 mult_ac)
+  also have "(-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * (-1 ; q\<^sup>2)\<^sub>\<infinity> = 2 * (-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> ^ 2"
+    by (subst (2) qpochhammer_inf_mult_q) 
+       (use q in \<open>auto simp: norm_power abs_square_less_1 simp flip: power2_eq_square\<close>)
+  also have "q powr (1/4) * (q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> ^ 3 * (2 * (-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity>\<^sup>2 * (q\<^sup>2 ; q ^ 4)\<^sub>\<infinity>\<^sup>2) =
+             2 * q powr (1/4) * (q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * ((q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * (-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * (q\<^sup>2 ; q ^ 4)\<^sub>\<infinity>) ^ 2"
+    by (simp add: mult_ac eval_nat_numeral)
+  also have "(q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> * (-q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity> = (q ^ 4 ; q ^ 4)\<^sub>\<infinity>"
+    using qpochhammer_inf_square[of "q ^ 2" "q ^ 2"] q
+    by (simp add: norm_power abs_square_less_1 mult_ac)
+  also have "(q ^ 4 ; q ^ 4)\<^sub>\<infinity> * (q\<^sup>2 ; q ^ 4)\<^sub>\<infinity> = (q\<^sup>2 ; q\<^sup>2)\<^sub>\<infinity>"
+    using prod_qpochhammer_inf_group[of "q ^ 2" 2 "q ^ 2"] q
+    by (simp add: norm_power abs_square_less_1) (simp add: eval_nat_numeral mult_ac)?
+  finally show "\<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q  = 2 * q powr (1 / 4) * euler_phi (q ^ 2) ^ 3"
+    by (simp add: eval_nat_numeral mult_ac euler_phi_def)
+qed auto
+
+text \<open>
+  Combining this with Jacobi's identity for $\varphi(q)^3$ and comparing the result with the 
+  series expansion for $\vartheta_1'$, we obtain the following identity for $\vartheta_1'$:
+  \[\vartheta_1'(q) = \vartheta_2(q)\vartheta_3(q)\vartheta_4(q)\]
+\<close>
+theorem jacobi_theta_nw_10_00_01_conv_11':
+  assumes q: "norm (q :: complex) < 1"
+  shows   "\<theta>\<^sub>1' q = \<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q"
+proof -
+  have "((\<lambda>n. 2 * q powr (1/4) * ((-1) powi n * of_int n * q powi (n * (n + 1)))) has_sum \<theta>\<^sub>1' q) UNIV"
+    using has_sum_jacobi_theta_nw_11'_aux1'[of q] q by (simp add: mult_ac)
+  moreover have "((\<lambda>n. 2 * q powr (1/4) * ((-1) powi n * of_int n * q powi (n * (n + 1)))) has_sum 
+          2* q powr (1/4) * euler_phi (q\<^sup>2) ^ 3) UNIV"
+    using has_sum_euler_phi_cube_complex[of "q ^ 2"] q
+    by (intro has_sum_cmult_right) (simp_all add: norm_power abs_square_less_1 power_int_power)
+  ultimately have "\<theta>\<^sub>1' q = 2 * q powr (1/4) * euler_phi (q\<^sup>2) ^ 3"
+    by (rule has_sum_unique)
+  also have "\<dots> = \<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q"
+    by (subst jacobi_theta_nw_10_00_01_conv_euler_phi) (use q in \<open>simp_all add: mult_ac\<close>)
+  finally show ?thesis .
+qed
+
+text \<open>
+  An equivalent identity for $\frac{\text{d}}{\text{d}z} \vartheta_11(z;\tau)$ also follows from
+  this. However, we need analytic continuation in order to deal with the branch cuts.
+\<close>
+lemma deriv_jacobi_theta_11_at_0:
+  assumes t: "Im t > 0"
+  shows   "deriv (\<lambda>z. jacobi_theta_11 z t) 0 =
+             -of_real pi * jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t"
+proof -
+  include jacobi_theta_nw_notation
+  define A where "A = {t. Re t > -1} \<inter> {t. Re t < 1} \<inter> {t. Im t > 0}"
+  define f where "f = (\<lambda>t. deriv (\<lambda>z. jacobi_theta_11 z t) 0)"
+  define g where "g = (\<lambda>t. -of_real pi * jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t)"
+
+  have ana: "f analytic_on {t. Im t > 0}"
+    unfolding f_def by (rule analytic_deriv_jacobi_theta_11_left)
+
+  have "f t = g t"
+  proof (rule analytic_continuation_open[where f = f])
+    show "f holomorphic_on {t. Im t > 0}"
+      using ana by (simp add: analytic_on_open open_halfspace_Im_gt)
+    show "g holomorphic_on {t. Im t > 0}"
+      unfolding g_def by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+    have "\<i> \<in> A"
+      by (auto simp: A_def)
+    thus "A \<noteq> {}"
+      by blast
+    show "open A"
+      unfolding A_def by (intro open_Int open_halfspace_Im_gt open_halfspace_Re_gt open_halfspace_Re_lt)
+    show "open {t. Im t > 0}" "connected {t. Im t > 0}"
+      by (auto simp: open_halfspace_Im_gt connected_halfspace_Im_gt)
+    show "A \<subseteq> {t. Im t > 0}" and "t \<in> {t. Im t > 0}"
+      using t by (auto simp: A_def)
+  next
+    fix t assume t: "t \<in> A"
+    define q where "q = to_nome t"
+    have q: "norm q < 1"
+      using t by (auto simp: q_def norm_to_nome A_def)
+
+    note [derivative_intros] = has_field_derivative_jacobi_theta_nw_11
+    have "(((\<lambda>z. jacobi_theta_nome_11 z q) \<circ> to_nome) has_field_derivative 
+             (\<i> * \<theta>\<^sub>1' q) * (pi * \<i>)) (at 0)"
+      using q by (intro DERIV_chain) (auto intro!: derivative_eq_intros)
+    also have "?this \<longleftrightarrow> ((\<lambda>z. jacobi_theta_11 z t) has_field_derivative (-pi * \<theta>\<^sub>1' q)) (at 0)"
+    proof (rule DERIV_cong_ev)
+      have "eventually (\<lambda>z. z \<in> {z. Re z > -1} \<inter> {z. Re z < 1}) (nhds 0)"
+        by (intro eventually_nhds_in_open open_Int open_halfspace_Re_gt open_halfspace_Re_lt) auto
+      thus "\<forall>\<^sub>F z in nhds 0. ((\<lambda>z. jacobi_theta_nome_11 z q) \<circ> to_nome) z =
+                              jacobi_theta_11 z t"
+        by eventually_elim (use t in \<open>auto simp: jacobi_theta_11_conv_nome q_def A_def\<close>)
+    qed (auto simp: algebra_simps)
+    also have "\<theta>\<^sub>1' q = \<theta>\<^sub>2 q * \<theta>\<^sub>3 q * \<theta>\<^sub>4 q"
+      using jacobi_theta_nw_10_00_01_conv_11'[of q] q by simp
+    also have "\<dots> = jacobi_theta_10 0 t * jacobi_theta_00 0 t * jacobi_theta_01 0 t" using t
+      by (simp add: q_def jacobi_theta_10_conv_nome jacobi_theta_00_conv_nome
+                    jacobi_theta_01_conv_nome A_def)
+    finally show "f t = g t"
+      unfolding f_def g_def by (intro DERIV_imp_deriv) (auto simp: algebra_simps)
+  qed
+  thus ?thesis
+    by (simp add: f_def g_def)
+qed
+
+text \<open>
+  Next, we focus on some identities between $\vartheta_2$, $\vartheta_3$, and $\vartheta_4$.
+\<close>
 theorem jacobi_theta_nw_00_plus_01_complex: "\<theta>\<^sub>3 q + \<theta>\<^sub>4 q = 2 * \<theta>\<^sub>3 (q ^ 4 :: complex)"
 proof (cases "norm q < 1")
   case q: True
@@ -871,6 +1233,39 @@ proof (cases "norm q < 1")
   thus ?thesis
     by Groebner_Basis.algebra
 qed auto
+
+unbundle jacobi_theta_notation
+
+lemma jacobi_theta_xy_0_pow4_complex:
+  assumes "Im t > 0"
+  shows   "\<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4 = \<theta>\<^sub>0\<^sub>0(0; t) ^ 4"
+proof (rule analytic_continuation_open[where f = "\<lambda>t. \<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4"])
+  define A where "A = {z. Im z > 0} \<inter> {z. Re z > -1} \<inter> {z. Re z < 1}"
+  show "(\<lambda>t. \<theta>\<^sub>1\<^sub>0(0 ; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0 ; t) ^ 4) holomorphic_on {z. Im z > 0}"
+    by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+  show "(\<lambda>t. \<theta>\<^sub>0\<^sub>0(0; t) ^ 4) holomorphic_on {z. Im z > 0}"
+    by (auto intro!: holomorphic_intros open_halfspace_Im_gt)
+  have "\<i> \<in> A"
+    by (auto simp: A_def)
+  thus "A \<noteq> {}"
+    by blast
+  show "connected {z. Im z > 0}" "open {z. Im z > 0}"
+    by (auto simp: connected_halfspace_Im_gt open_halfspace_Im_gt)
+  show "open A"
+    unfolding A_def by (intro open_Int open_halfspace_Im_gt open_halfspace_Re_gt open_halfspace_Re_lt)
+  show "A \<subseteq> {z. Im z > 0}"
+    by (auto simp: A_def)
+  show "t \<in> {z. Im z > 0}"
+    using assms by auto
+  show "\<theta>\<^sub>1\<^sub>0(0; t) ^ 4 + \<theta>\<^sub>0\<^sub>1(0; t) ^ 4 = \<theta>\<^sub>0\<^sub>0(0; t) ^ 4" if t: "t \<in> A" for t
+  proof -
+    define q where "q = to_nome t"
+    show ?thesis
+      using jacobi_theta_nw_pow4_complex[of q] t
+      by (auto simp: jacobi_theta_00_conv_nome jacobi_theta_01_conv_nome 
+                     jacobi_theta_10_conv_nome A_def q_def)
+  qed
+qed
 
 lemma jacobi_theta_nw_pow4_real: "q \<ge> 0 \<Longrightarrow> \<theta>\<^sub>2 q ^ 4 + \<theta>\<^sub>4 q ^ 4 = (\<theta>\<^sub>3 q ^ 4 :: real)"
   by (subst of_real_eq_iff [where ?'a = complex, symmetric],
@@ -1182,5 +1577,8 @@ lemma jacobi_theta_nw_10_pos:
   assumes "x \<in> {0<..<1}"
   shows   "\<theta>\<^sub>2 x > (0::real)"
   using strict_mono_onD[OF strict_mono_jacobi_theta_nw_10, of 0 x] assms by simp
+
+unbundle no jacobi_theta_notation
+unbundle no jacobi_theta_nw_notation
 
 end

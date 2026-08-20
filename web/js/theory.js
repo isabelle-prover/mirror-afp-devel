@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Dynamic loading of HTML presentation for theories.
+ */
 
 const BROWSER_INFO = '/browser_info/current/'
 const CLASS_LOADER = 'loader'
@@ -10,12 +13,30 @@ const ID_THEORY = 'theory'
 
 function target(base, href) {
   const url = new URL(href, base)
-  const is_not_theory =
-    !url.pathname.startsWith(BROWSER_INFO) ||
-    strip_prefix(url.pathname, BROWSER_INFO).split('/').length > 3
+  if (!url.pathname.startsWith(BROWSER_INFO)) return url.href
+  else {
+    const path = perhaps_unsuffix(".html", perhaps_unprefix(BROWSER_INFO, url.pathname))
 
-  if (is_not_theory) return url.href
-  else return href
+    const name_parts = path.split('/')
+    if (name_parts.length !== 3) return url.href
+    else {
+      const [chapter, session, theory] = name_parts
+      const theory_parts = theory.split('.')
+
+      function thy_href(session, theory) {
+        const path = '../' + session + '/' + theory + '.html'
+        if (url.hash === '') return path
+        else return path + url.hash
+      }
+
+      if (theory_parts.length === 1) return thy_href(session, theory)
+      else if (theory_parts.length !== 2) return url.href
+      else {
+        const [static_session , theory] = theory_parts
+        return thy_href(static_session, theory)
+      }
+    }
+  }
 }
 
 
@@ -55,6 +76,8 @@ const load_theory = async () => {
 
     const thy_pre = Array(...thy_body.getElementsByTagName("pre"))[0]
     document.getElementById("spinner").replaceWith(thy_pre)
+    const id = location.hash.slice(1)
+    if (id) document.getElementById(id)?.scrollIntoView()
   }
 }
 

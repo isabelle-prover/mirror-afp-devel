@@ -123,16 +123,16 @@ proof -
     finally show ?thesis .
   qed
 
-  obtain p where p: "prime p" "qmultiplicity (int p) (bernoulli_rat n / of_nat n) > 0"
+  obtain p where p: "prime p" "qmultiplicity (int p) (bernoulli n / of_nat n) > 0"
   proof -
-    obtain a b where ab: "quotient_of (bernoulli_rat n / of_nat n) = (a, b)"
+    obtain a b where ab: "quotient_of (bernoulli n / of_nat n) = (a, b)"
       using prod.exhaust by blast
     have "b > 0"
       using ab quotient_of_denom_pos by blast
-    have eq': "of_int a / of_int b = (bernoulli_rat n / of_nat n :: rat)"
+    have eq': "of_int a / of_int b = (bernoulli n / of_nat n :: rat)"
       using ab quotient_of_div by simp
     also have "(of_rat \<dots> :: real) = bernoulli n / n"
-      by (simp add: of_rat_divide bernoulli_rat_conv_bernoulli)
+      by (simp add: of_rat_divide of_rat_bernoulli)
     finally have eq: "real_of_rat (rat_of_int a / rat_of_int b) = bernoulli n / real n" .
 
     have [simp]: "a \<noteq> 0"
@@ -163,14 +163,14 @@ proof -
         using ab p by (meson not_coprimeI not_prime_unit prime_nat_int_transfer)
       hence "multiplicity p b = 0"
         by (intro not_dvd_imp_multiplicity_0) auto
-      ultimately show "qmultiplicity (int p) (bernoulli_rat n / of_nat n) > 0"
+      ultimately show "qmultiplicity (int p) (bernoulli n / of_nat n) > 0"
         using \<open>b > 0\<close> p unfolding eq'[symmetric] by (subst qmultiplicity_divide_of_int) auto
     qed fact+
   qed
   hence "qmultiplicity p (of_int (N n) / of_int (int (D n * n))) > 0"
-    by (simp add: N_def D_def bernoulli_rat_def)
+    by (simp add: N_def D_def bernoulli_conv_num_denom)
   hence "multiplicity (int p) (N n) > 0"
-    unfolding bernoulli_rat_def using p
+    unfolding bernoulli_conv_num_denom using p
     by (subst (asm) qmultiplicity_divide_of_int)
        (use \<open>n \<ge> 36\<close> \<open>even n\<close> in \<open>simp_all add: N_def D_def bernoulli_num_eq_0_iff\<close>)
   hence "p dvd N n"
@@ -213,24 +213,24 @@ proof -
     thus "r \<in> {2..p-3}"
       by auto
 
-    have "bernoulli_rat r / of_nat r = (0 :: rat) \<or> 
-            qmultiplicity p (bernoulli_rat r / of_nat r) > 0"
+    have "bernoulli r / of_nat r = (0 :: rat) \<or> 
+            qmultiplicity p (bernoulli r / of_nat r) > 0"
     proof (rule qcong_qmultiplicity_pos_transfer)
-      show "qmultiplicity p (bernoulli_rat n / of_nat n) > 0"
+      show "qmultiplicity p (bernoulli n / of_nat n) > 0"
         using p by simp
     next
       have "[n = r] (mod (p - 1))"
         by (auto simp: Cong.cong_def r_def)
-      thus "[bernoulli_rat n / of_nat n = bernoulli_rat r / of_nat r] (qmod p)"
+      thus "[bernoulli n / of_nat n = bernoulli r / of_nat r] (qmod p)"
         using p(1) \<open>even n\<close> \<open>even r\<close> \<open>n \<ge> _\<close> \<open>r > 0\<close> \<open>\<not>(p-1) dvd n\<close> unfolding D_def N_def
         by (intro kummer_congruence'_prime) auto
     qed
-    moreover have "bernoulli_rat r / of_nat r \<noteq> (0 :: rat)"
-      using \<open>even r\<close> \<open>r > 0\<close> by (auto simp: bernoulli_rat_eq_0_iff)
-    ultimately have "qmultiplicity p (bernoulli_rat r / of_nat r) > 0"
+    moreover have "bernoulli r / of_nat r \<noteq> (0 :: rat)"
+      using \<open>even r\<close> \<open>r > 0\<close> by (auto simp: bernoulli_zero_iff)
+    ultimately have "qmultiplicity p (bernoulli r / of_nat r) > 0"
       by simp
     hence "qmultiplicity p (of_int (N r) / of_int (int (D r * r))) > 0"
-      by (simp add: bernoulli_rat_def N_def D_def)
+      by (simp add: bernoulli_conv_num_denom N_def D_def)
     hence "multiplicity (int p) (N r) > 0"
       by (subst (asm) qmultiplicity_divide_of_int)
          (use \<open>r > 0\<close> \<open>even r\<close> \<open>prime p\<close> in \<open>simp_all add: N_def D_def bernoulli_num_eq_0_iff\<close>)

@@ -635,7 +635,7 @@ fun guess_binding_of_thm ctxt thm =
   let
     val name = #1 (Thm.derivation_name thm)
     val facts_space = Facts.space_of (Proof_Context.facts_of_fact ctxt name)
-    val pos = \<^try>\<open>Name_Space.the_entry facts_space name |> #pos
+    val pos = \<^try>\<open>Name_Space.the_entry_pos facts_space name
               catch _ => Position.thread_data ()\<close>
   in
     Binding.make (name, pos)

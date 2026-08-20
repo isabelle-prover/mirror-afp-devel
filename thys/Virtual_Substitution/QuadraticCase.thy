@@ -131,7 +131,7 @@ proof -
     by (simp add: real_sqrt_power_even)
   have h3 : "(odd i \<and> (i mod 2 = 1)) \<Longrightarrow> ((SQ^(i div 2)) * real (i mod 2) * sqrt SQ + SQ ^ (i div 2) * (1 - real (i mod 2))) = (sqrt SQ) ^ i"
     using detGreater0 apply auto
-    by (smt One_nat_def add_Suc_right mult.commute nat_arith.rule0 odd_two_times_div_two_succ power.simps(2) power_mult real_sqrt_pow2)
+    by (smt (z3) One_nat_def add_Suc_right mult.commute nat_arith.rule0 odd_two_times_div_two_succ power.simps(2) power_mult real_sqrt_pow2)
   show ?thesis
     using h1 h2 h3
     by linarith 
@@ -241,7 +241,7 @@ proof -
     using degree_one by auto
   have h1 : "\<forall>i<deg+1. MPoly_Type.degree (f i) var \<le> 1"
     using f_def degree_mult h1a h1b h1c h1d
-    by (smt ExecutiblePolyProps.degree_one add.right_neutral mult.commute mult_eq_0_iff nat_le_linear not_one_le_zero)
+    by (smt (z3) ExecutiblePolyProps.degree_one add.right_neutral mult.commute mult_eq_0_iff nat_le_linear not_one_le_zero)
   have h2a : "\<forall>i. MPoly_Type.degree (Const (1 - real (i mod 2))) var = 0"
     using degree_const by blast
   have h2 : "\<forall>i<deg+1. MPoly_Type.degree (g i) var = 0"
@@ -277,13 +277,13 @@ proof-
   have h2 : "(Av + Bv * sqrt Cv = 0) \<Longrightarrow> (Av^2 = Bv^2 * Cv)"
     using h2a h2b h2c h2d by blast
   have h3a : "(Av*Bv > 0) \<Longrightarrow> (Av + Bv * sqrt Cv \<noteq> 0)"
-    by (smt detGreat0 mult_nonneg_nonneg real_sqrt_ge_zero zero_less_mult_iff)
+    by (smt (z3) detGreat0 mult_nonneg_nonneg real_sqrt_ge_zero zero_less_mult_iff)
   have h3 : "(Av + Bv * sqrt Cv = 0) \<Longrightarrow> (Av*Bv\<le> 0)"
     using h3a by linarith
   have h4 : "(Av * Bv \<le> 0 \<and> Av\<^sup>2 = Bv\<^sup>2 * Cv) \<Longrightarrow> (Av + Bv * sqrt Cv = 0)"
     apply(cases "Av>0")
      apply (metis detGreat0 h2a h2c h2d mult_minus_left not_le power2_eq_iff real_sqrt_lt_0_iff zero_less_mult_iff)
-    by (smt h2a real_sqrt_abs real_sqrt_mult zero_less_mult_iff)
+    by (smt (z3) h2a real_sqrt_abs real_sqrt_mult zero_less_mult_iff)
   show ?thesis
     apply(simp add: hA hB h1 insertion_add insertion_mult insertion_var lLength)
     using h2 h3 h4 by blast
@@ -380,9 +380,9 @@ proof-
     using h5a h5b by linarith
   have h6 : "Av\<ge>0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av + Bv * sqrt Cv < 0) =
     (Av < 0 \<and> Bv\<^sup>2 * Cv < Av\<^sup>2 \<or> Bv \<le> 0 \<and> (Av < 0 \<or> Av\<^sup>2 < Bv\<^sup>2 * Cv))"
-    by (smt detGreat0 mult_nonneg_nonneg real_sqrt_ge_zero)
+    by (smt (z3) detGreat0 mult_nonneg_nonneg real_sqrt_ge_zero)
   have h7a : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av < -Bv * sqrt Cv) \<Longrightarrow> (Bv\<^sup>2 * Cv < Av\<^sup>2)"
-    by (smt mult_minus_left real_sqrt_abs real_sqrt_le_mono real_sqrt_mult)
+    by (smt (z3) mult_minus_left real_sqrt_abs real_sqrt_le_mono real_sqrt_mult)
   have h7b : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Bv\<^sup>2 * Cv < Av\<^sup>2) \<Longrightarrow> (Av < -Bv * sqrt Cv)"
     by (metis abs_of_nonneg abs_real_def add.commute less_eq_real_def mult.assoc mult_minus_left power2_eq_square real_add_less_0_iff real_sqrt_less_iff real_sqrt_mult real_sqrt_mult_self)
   have h7 : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av + Bv * sqrt Cv < 0) =
@@ -472,15 +472,15 @@ proof-
   have h3 : "Av=0 \<Longrightarrow> Bv=0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
     by simp
   have h4 : "Av<0 \<Longrightarrow> Bv\<le>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
-    by (smt detGreat0 real_sqrt_ge_zero zero_less_mult_iff)
+    by (smt (z3) detGreat0 real_sqrt_ge_zero zero_less_mult_iff)
   have h5 : "Av=0 \<Longrightarrow> Bv\<le>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
-    by (smt detGreat0 real_sqrt_ge_zero zero_less_mult_iff)
+    by (smt (z3) detGreat0 real_sqrt_ge_zero zero_less_mult_iff)
   have h6 : "Av\<ge>0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
-    by (smt detGreat0 mult_nonneg_nonneg mult_pos_pos real_sqrt_gt_0_iff real_sqrt_zero zero_le_power2 zero_less_mult_pos zero_less_power2)
+    by (smt (z3) detGreat0 mult_nonneg_nonneg mult_pos_pos real_sqrt_gt_0_iff real_sqrt_zero zero_le_power2 zero_less_mult_pos zero_less_power2)
   have h7a : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) \<Longrightarrow> Bv\<^sup>2 * Cv \<le> Av\<^sup>2"
-    by (smt real_sqrt_abs real_sqrt_less_mono real_sqrt_mult)
+    by (smt (z3) real_sqrt_abs real_sqrt_less_mono real_sqrt_mult)
   have h7b : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow>  Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) "
-    by (smt real_sqrt_abs real_sqrt_less_mono real_sqrt_mult)
+    by (smt (z3) real_sqrt_abs real_sqrt_less_mono real_sqrt_mult)
   have h7 : "Av<0 \<Longrightarrow> Bv>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
     using h7a h7b by linarith
   have h8c : "(-Bv * sqrt Cv)^2 = Bv\<^sup>2 * Cv"
@@ -489,7 +489,7 @@ proof-
     using detGreat0 h8c power_both_sides by smt 
   have h8b : "Av>0 \<Longrightarrow> Bv\<le>0  \<Longrightarrow>   Av\<^sup>2 \<le> Bv\<^sup>2 * Cv \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) "
     using detGreat0 h8c power_both_sides
-    by (smt mult_minus_left real_sqrt_ge_zero zero_less_mult_iff) 
+    by (smt (z3) mult_minus_left real_sqrt_ge_zero zero_less_mult_iff) 
   have h8 : "Av>0 \<Longrightarrow> Bv\<le>0 \<Longrightarrow> (Av + Bv * sqrt Cv \<le> 0) = (Av \<le> 0 \<and> Bv\<^sup>2 * Cv \<le> Av\<^sup>2 \<or> Bv \<le> 0 \<and> Av\<^sup>2 \<le> Bv\<^sup>2 * Cv)"
     using h8a h8b by linarith
   show ?thesis

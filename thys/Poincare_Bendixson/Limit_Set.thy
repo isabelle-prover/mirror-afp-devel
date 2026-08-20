@@ -202,7 +202,7 @@ lemma \<alpha>_limit_set_eq:
   shows "\<alpha>_limit_set x = (INF \<tau> \<in> {..0}. closure (flow0 x ` {..\<tau>}))"
   using rev.\<omega>_limit_set_eq[of x, OF assms[folded infinite_rev_existence_ivl0_rewrites]]
   unfolding \<alpha>_limit_set_eq_rev rev_flow_image_eq image_uminus_atLeast 
-  by (smt INT_extend_simps(10) Sup.SUP_cong image_uminus_atMost)
+  by (smt (z3) INT_extend_simps(10) Sup.SUP_cong image_uminus_atMost)
 
 lemma \<alpha>_limit_set_closed:
   shows "closed (\<alpha>_limit_set x)"
@@ -274,7 +274,7 @@ proof -
   from seq_compactE[OF props(2) this]
   obtain r l where "l \<in> K" "strict_mono r" "(flow0 x \<circ> real \<circ> r) \<longlonglongrightarrow> l" by blast
   then have "\<omega>_limit_point x l" unfolding \<omega>_limit_point_def using props(1)
-    by (smt comp_def filterlim_sequentially_iff_filterlim_real filterlim_subseq tendsto_at_top_eq_left)
+    by (smt (z3) comp_def filterlim_sequentially_iff_filterlim_real filterlim_subseq tendsto_at_top_eq_left)
   thus ?thesis unfolding \<omega>_limit_set_def by auto
 qed
 
@@ -375,13 +375,13 @@ proof clarsimp
       show False using a b disj by force
     qed
     thus "\<exists>n>mpre. flow0 x n \<notin> A \<and> flow0 x n \<notin> B"
-      by (smt \<open>mpre < m\<close> a(1) atLeastAtMost_iff)
+      by (smt (z3) \<open>mpre < m\<close> a(1) atLeastAtMost_iff)
   qed
   from frequently_at_topE'[OF this filterlim_real_sequentially]
   obtain s where s: "\<forall>i. flow0 x (s i) \<notin> A \<and> flow0 x (s i) \<notin> B"
     "strict_mono s" "\<And>n. real n \<le> s n" by blast
   then have "\<forall>n. (flow0 x \<circ> s) n \<in> K"
-    by (smt atLeast_iff comp_apply flowimg image_subset_iff of_nat_0_le_iff trapped_forward_def x(2))
+    by (smt (z3) atLeast_iff comp_apply flowimg image_subset_iff of_nat_0_le_iff trapped_forward_def x(2))
   from seq_compactE[OF props(2) this]
   obtain r l where r: "l \<in> K" "strict_mono r" "(flow0 x \<circ> s \<circ> r) \<longlonglongrightarrow> l" by blast
   have "filterlim s at_top sequentially"

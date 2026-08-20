@@ -1,0 +1,30 @@
+title = "Swap Distance"
+date = 2026-01-22
+topics = [
+  "Mathematics/Combinatorics",
+]
+abstract = """
+<p>Given two lists that are permutations of one another, the <em>swap distance</em> (also known as the <em>Kendall tau distance</em>) is the minimum number of swap operations of adjacent elements required to make the two lists the same.</p>
+<p>Equivalently, the swap distance of two finite linear orders $\\preceq$ and $\\unlhd$ is the number of disagreements of the two orders, i.e. of pairs $(x,y)$ such that $x\\prec y$ and $y\\lhd x$.</p>
+<p>This article defines these two notions of swap distance as well as their equivalence under the obvious isomorphism between lists and linear orders given by interpreting a list as a <em>ranking</em> of elements in descending order.</p>
+<p>An efficient $O(n\\log n)$ algorithm to compute the swap distance is also provided via the connection to the number of inversions of a list, for which an efficient algorithm is already available in the AFP.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

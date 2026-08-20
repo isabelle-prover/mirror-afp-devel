@@ -1,3 +1,6 @@
+(* Kirstin Peters, TU Berlin, 2015 concerning the reduction semantics and
+   Kirstin Peters, University of Augsburg, 2026 for the labelled semantics *)
+
 theory CombinedCriteria
   imports DivergenceReflection SuccessSensitiveness FullAbstraction OperationalCorrespondence
 begin
@@ -5,12 +8,12 @@ begin
 section \<open>Combining Criteria\<close>
 
 text \<open>So far we considered the effect of single criteria on encodings. Often the quality of an
-        encoding is prescribed by a set of different criteria. In the following we analyse the
-        combined effect of criteria. This way we can compare criteria as well as identify side
-        effects that result from combinations of criteria. We start with some technical lemmata. To
-        combine the effect of different criteria we combine the conditions they induce. If their
-        effect can be described by a predicate on the pairs of the relation, as in the case of
-        success sensitiveness or divergence reflection, combining the effects is simple.\<close>
+      encoding is prescribed by a set of different criteria. In the following we analyse the
+      combined effect of criteria. This way we can compare criteria as well as identify side
+      effects that result from combinations of criteria. We start with some technical lemmata. To
+      combine the effect of different criteria we combine the conditions they induce. If their
+      effect can be described by a predicate on the pairs of the relation, as in the case of
+      success sensitiveness or divergence reflection, combining the effects is simple.\<close>
 
 lemma (in encoding) criterion_iff_source_target_relation_impl_indRelR:
   fixes Cond :: "('procS \<Rightarrow> 'procT) \<Rightarrow> bool"
@@ -69,8 +72,8 @@ lemma (in encoding) combine_conditions_on_sets_and_pairs_of_relations:
     by blast
 
 text \<open>We mapped several criteria on conditions on relations that relate at least all source terms
-        and their literal translations. The following lemmata help us to combine such conditions by
-        switching to the witness indRelR.\<close>
+      and their literal translations. The following lemmata help us to combine such conditions by
+      switching to the witness indRelR.\<close>
 
 lemma (in encoding) combine_conditions_on_relations_indRelR:
   fixes RelA RelB   :: "(('procS, 'procT) Proc \<times>('procS, 'procT) Proc) set"
@@ -154,9 +157,9 @@ qed
 subsection \<open>Divergence Reflection and Success Sensitiveness\<close>
 
 text \<open>We combine results on divergence reflection and success sensitiveness to analyse their
-        combined effect on an encoding function. An encoding is success sensitive and reflects
-        divergence iff there exists a relation that relates source terms and their literal
-        translations that reflects divergence and respects success.\<close>
+      combined effect on an encoding function. An encoding is success sensitive and reflects
+      divergence iff there exists a relation that relates source terms and their literal
+      translations that reflects divergence and respects success.\<close>
 
 lemma (in encoding_wrt_barbs) WSS_DR_iff_source_target_rel:
   fixes success :: "'barbs"
@@ -209,10 +212,10 @@ qed
 subsection \<open>Adding Operational Correspondence\<close>
 
 text \<open>The effect of operational correspondence includes conditions (TRel is included,
-        transitivity) that require a witness like indRelRTPO. In order to combine operational
-        correspondence with success sensitiveness, we show that if the encoding and TRel (weakly)
-        respects barbs than indRelRTPO (weakly) respects barbs. Since success is only a specific
-        kind of barbs, the same holds for success sensitiveness.\<close>
+      transitivity) that require a witness like indRelRTPO. In order to combine operational
+      correspondence with success sensitiveness, we show that if the encoding and TRel (weakly)
+      respects barbs than indRelRTPO (weakly) respects barbs. Since success is only a specific
+      kind of barbs, the same holds for success sensitiveness.\<close>
 
 lemma (in encoding_wrt_barbs) enc_and_TRel_impl_indRelRTPO_weakly_respects_success:
   fixes success :: "'barbs"
@@ -1140,7 +1143,7 @@ next
     by blast
   ultimately show "operational_corresponding TRel \<and> preorder TRel
    \<and> weak_reduction_bisimulation TRel Target
-   \<and> enc_weakly_respects_barbs \<and> rel_weakly_respects_barbs TRel TWB 
+   \<and> enc_weakly_respects_barbs \<and> rel_weakly_respects_barbs TRel TWB
    \<and> enc_weakly_respects_barb_set {success} \<and> rel_weakly_respects_barb_set TRel TWB {success}"
     by fast
 qed
@@ -1659,7 +1662,7 @@ next
 qed
 
 text \<open>Next we also add divergence reflection to operational correspondence and success
-        sensitiveness.\<close>
+      sensitiveness.\<close>
 
 lemma (in encoding) enc_and_TRelimpl_indRelRTPO_reflect_divergence:
   fixes TRel    :: "('procT \<times> 'procT) set"
@@ -1691,7 +1694,7 @@ proof auto
     hence "T2 \<longmapsto>(Target)\<omega>"
       by (simp add: STCal_divergent(2))
     ultimately have "T1 \<longmapsto>(Target)\<omega>"
-        using trelRD
+      using trelRD
       by blast
     thus "TargetTerm T1 \<longmapsto>(STCal Source Target)\<omega>"
       by (simp add: STCal_divergent(2))
@@ -1701,6 +1704,50 @@ proof auto
        and "R \<longmapsto>(STCal Source Target)\<omega> \<Longrightarrow> Q \<longmapsto>(STCal Source Target)\<omega>"
        and "Q \<longmapsto>(STCal Source Target)\<omega> \<Longrightarrow> P \<longmapsto>(STCal Source Target)\<omega>"
     thus "P \<longmapsto>(STCal Source Target)\<omega>"
+      by simp
+  qed
+qed
+
+lemma (in encodingLS) enc_and_TRelimpl_indRelRTPO_reflect_divergenceLS:
+  fixes TRel    :: "('procT \<times> 'procT) set"
+  assumes encRD:  "enc_reflects_divergence"
+      and trelRD: "rel_reflects_divergenceLS TRel Target"
+  shows "rel_reflects_divergenceLS (indRelRTPO TRel) (STLCal Source Target)"
+proof auto
+  fix P Q
+  assume "P \<lesssim>\<lbrakk>\<cdot>\<rbrakk>RT<TRel> Q" and "Q \<rightarrow>(STLCal Source Target)\<omega>"
+  thus "P \<rightarrow>(STLCal Source Target)\<omega>"
+  proof induct
+    case (encR S)
+    assume "TargetTerm (\<lbrakk>S\<rbrakk>) \<rightarrow>(STLCal Source Target)\<omega>"
+    hence "\<lbrakk>S\<rbrakk> \<rightarrow>(Target)\<omega>"
+      by (simp add: STLCal_divergent(2))
+    with encRD have "S \<rightarrow>(Source)\<omega>"
+      by simp
+    thus "SourceTerm S \<rightarrow>(STLCal Source Target)\<omega>"
+      by (simp add: STLCal_divergent(1))
+  next
+    case (source S)
+    assume "SourceTerm S \<rightarrow>(STLCal Source Target)\<omega>"
+    thus "SourceTerm S \<rightarrow>(STLCal Source Target)\<omega>"
+      by simp
+  next
+    case (target T1 T2)
+    assume "(T1, T2) \<in> TRel"
+    moreover assume "TargetTerm T2 \<rightarrow>(STLCal Source Target)\<omega>"
+    hence "T2 \<rightarrow>(Target)\<omega>"
+      by (simp add: STLCal_divergent(2))
+    ultimately have "T1 \<rightarrow>(Target)\<omega>"
+      using trelRD
+      by blast
+    thus "TargetTerm T1 \<rightarrow>(STLCal Source Target)\<omega>"
+      by (simp add: STLCal_divergent(2))
+  next
+    case (trans P Q R)
+    assume "R \<rightarrow>(STLCal Source Target)\<omega>"
+       and "R \<rightarrow>(STLCal Source Target)\<omega> \<Longrightarrow> Q \<rightarrow>(STLCal Source Target)\<omega>"
+       and "Q \<rightarrow>(STLCal Source Target)\<omega> \<Longrightarrow> P \<rightarrow>(STLCal Source Target)\<omega>"
+    thus "P \<rightarrow>(STLCal Source Target)\<omega>"
       by simp
   qed
 qed
@@ -1734,8 +1781,8 @@ proof (rule iffI, (erule conjE)+)
   from Rel_def have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
     by (simp add: indRelRTPO_to_TRel(4)[where TRel="TRel"])
   from Rel_def have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
-      using indRelRTPO_to_TRel(2)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete (TRel\<^sup>*)"
      and "operational_sound (TRel\<^sup>*)"
@@ -1743,14 +1790,14 @@ proof (rule iffI, (erule conjE)+)
      and "\<forall>P Q Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
   with Rel_def have B5: "weak_reduction_bisimulation Rel (STCal Source Target)"
-      using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
+    using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
   from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
-      using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
+    using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
   from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
-      using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
         \<and> (\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel)
@@ -1784,7 +1831,7 @@ next
     by blast
   hence "operational_corresponding (TRel\<^sup>*)
         \<and> weak_reduction_bisimulation (TRel\<^sup>+) Target"
-      using OC_iff_weak_reduction_bisimulation[where TRel="TRel"]
+    using OC_iff_weak_reduction_bisimulation[where TRel="TRel"]
     by auto
   moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                  \<and> rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}
@@ -1801,13 +1848,13 @@ next
       by simp
     moreover assume "TP \<longmapsto>(Calculus TWB)* TP'" and "TP'\<down><TWB>success"
     hence "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TQ\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   next
     fix TP TQ TQ'
@@ -1816,22 +1863,103 @@ next
       by simp
     moreover assume "TQ \<longmapsto>(Calculus TWB)* TQ'" and "TQ'\<down><TWB>success"
     hence "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TP\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   qed
   moreover from C2 C7 have "rel_reflects_divergence TRel Target"
-      using STCal_divergent(2)
+    using STCal_divergent(2)
     by blast
   ultimately show "operational_corresponding (TRel\<^sup>*)
    \<and> weak_reduction_bisimulation (TRel\<^sup>+) Target
    \<and> enc_weakly_respects_barb_set {success} \<and> rel_weakly_respects_barb_set TRel TWB {success}
    \<and> enc_reflects_divergence \<and> rel_reflects_divergence TRel Target"
+    by fast
+qed
+
+lemma (in encodingLS_encL) OC_DR_iff_source_target_rel_encL:
+  fixes TRel    :: "('procT \<times> 'procT) set"
+  shows "(operational_corresponding_encL (TRel\<^sup>*)
+          \<and> weak_labelled_bisimulation (TRel\<^sup>+) Target
+          \<and> enc_reflects_divergence \<and> rel_reflects_divergenceLS TRel Target)
+         = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+            \<and> (\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel)
+            \<and> (\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+)
+            \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*)
+            \<and> weak_labelled_bisimulation_encL Rel
+            \<and> rel_reflects_divergenceLS Rel (STLCal Source Target))"
+proof (rule iffI, (erule conjE)+)
+  assume A1: "rel_reflects_divergenceLS TRel Target" and A2: "enc_reflects_divergence"
+  define Rel where "Rel = indRelRTPO TRel"
+  hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+    by (simp add: indRelRTPO.encR)
+  from Rel_def have B2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+    by (simp add: indRelRTPO.target)
+  from Rel_def have B3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+    by (simp add: indRelRTPO_to_TRel(4)[where TRel="TRel"])
+  from Rel_def have B4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    by simp
+  assume "operational_complete_encL (TRel\<^sup>*)"
+     and "operational_sound_encL (TRel\<^sup>*)"
+     and "weak_labelled_simulation (TRel\<^sup>+) Target"
+     and "\<forall>P Q \<alpha> Q'. (P, Q) \<in> TRel\<^sup>+ \<and> Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* Q' \<longrightarrow>
+          (\<exists>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel\<^sup>+)"
+  with Rel_def have B5: "weak_labelled_bisimulation_encL Rel"
+    using OC_iff_indRelRTPO_is_weak_labelled_bisimulation_encL[where TRel="TRel"]
+    by simp
+  from Rel_def A1 A2 have B6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergenceLS[where TRel="TRel"]
+    by blast
+  show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+        \<and> (\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel)
+        \<and> (\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+)
+        \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*)
+        \<and> weak_labelled_bisimulation_encL Rel
+        \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using B1 B2 B3 B4 B5 B6 by blast
+next
+  assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+          \<and> (\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel)
+          \<and> (\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+)
+          \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*)
+          \<and> weak_labelled_bisimulation_encL Rel
+          \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+  then obtain Rel where C1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+   and C2: "\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel"
+   and C3: "\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+"
+   and C4: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*"
+   and C5: "weak_labelled_bisimulation_encL Rel"
+   and C6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    by auto
+  from C1 C2 C3 C4 C5 have "\<exists>Rel.(\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+   \<and> (\<forall>T1 T2. (T1, T2) \<in> TRel \<longrightarrow> (TargetTerm T1, TargetTerm T2) \<in> Rel)
+   \<and> (\<forall>T1 T2. (TargetTerm T1, TargetTerm T2) \<in> Rel \<longrightarrow> (T1, T2) \<in> TRel\<^sup>+)
+   \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel\<^sup>*)
+   \<and> weak_labelled_bisimulation_encL Rel"
+    by blast
+  hence "operational_corresponding_encL (TRel\<^sup>*)
+        \<and> weak_labelled_bisimulation (TRel\<^sup>+) Target"
+    using OC_iff_weak_labelled_bisimulation_encL[where TRel="TRel"]
+    by auto
+  moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+                 \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using C1 C6 by blast
+  hence "enc_reflects_divergence"
+    using divergence_reflection_iff_source_target_rel_reflects_divergence
+    by blast
+  moreover from C2 C6 have "rel_reflects_divergenceLS TRel Target"
+    using STLCal_divergent(2)
+    by blast
+  ultimately show "operational_corresponding_encL (TRel\<^sup>*)
+   \<and> weak_labelled_bisimulation (TRel\<^sup>+) Target
+   \<and> enc_reflects_divergence \<and> rel_reflects_divergenceLS TRel Target"
     by fast
 qed
 
@@ -1857,40 +1985,40 @@ proof (rule iffI, (erule conjE)+)
      and A5: "rel_reflects_divergence TRel Target" and A6: "enc_reflects_divergence"
      and A7: "preorder TRel"
   from A7 have A8: "TRel\<^sup>+ = TRel"
-      using trancl_id[of TRel]
-      unfolding preorder_on_def
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
     by blast
   from A7 have A9: "TRel\<^sup>* = TRel"
-      using reflcl_trancl[of TRel] trancl_id[of TRel]
-      unfolding preorder_on_def refl_on_def
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
     by auto
   define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
   from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
-      using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+     using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
   from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
-      using indRelRTPO_to_TRel(2)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete TRel" and "weakly_operational_sound TRel" and "preorder TRel"
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q'
           \<longrightarrow> (\<exists>P'' Q''. P \<longmapsto>Target* P'' \<and> Q' \<longmapsto>Target* Q'' \<and> (P'', Q'') \<in> TRel)"
   with Rel_def A8 A9 have B4: "weak_reduction_correspondence_simulation Rel (STCal Source Target)"
-      using WOC_iff_indRelRTPO_is_reduction_correspondence_simulation[where TRel="TRel"]
+    using WOC_iff_indRelRTPO_is_reduction_correspondence_simulation[where TRel="TRel"]
     by simp
   from Rel_def A7 have B5: "preorder Rel"
-      using indRelRTPO_is_preorder[where TRel="TRel"]
-      unfolding preorder_on_def
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
     by simp
   from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
-      using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
+    using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
             and success="success"]
     by blast
   from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
-      using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
         \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -1920,14 +2048,14 @@ next
     by blast
   hence "weakly_operational_corresponding TRel \<and> preorder TRel
          \<and> weak_reduction_correspondence_simulation TRel Target"
-      using WOC_wrt_preorder_iff_reduction_correspondence_simulation[where TRel="TRel"]
+    using WOC_wrt_preorder_iff_reduction_correspondence_simulation[where TRel="TRel"]
     by simp
   moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                  \<and> rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}
                  \<and> rel_reflects_divergence Rel (STCal Source Target)"
     apply (rule exI) using C1 C6 C7 by blast
   hence "enc_weakly_respects_barb_set {success} \<and> enc_reflects_divergence"
-      using WSS_DR_iff_source_target_rel
+    using WSS_DR_iff_source_target_rel
     by simp
   moreover have "rel_weakly_respects_barb_set TRel TWB {success}"
   proof auto
@@ -1937,13 +2065,13 @@ next
       by simp
     moreover assume "TP \<longmapsto>(Calculus TWB)* TP'" and "TP'\<down><TWB>success"
     hence "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TQ\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   next
     fix TP TQ TQ'
@@ -1952,23 +2080,110 @@ next
       by simp
     moreover assume "TQ \<longmapsto>(Calculus TWB)* TQ'" and "TQ'\<down><TWB>success"
     hence "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TP\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   qed
   moreover from C2 C7 have "rel_reflects_divergence TRel Target"
-      using STCal_divergent(2)
+    using STCal_divergent(2)
     by blast
   ultimately
   show "weakly_operational_corresponding TRel \<and> preorder TRel
    \<and> weak_reduction_correspondence_simulation TRel Target
    \<and> enc_weakly_respects_barb_set {success} \<and> rel_weakly_respects_barb_set TRel TWB {success}
    \<and> enc_reflects_divergence \<and> rel_reflects_divergence TRel Target"
+    by fast
+qed
+
+lemma (in encodingLS_encL) WOC_DR_wrt_preorder_iff_source_target_rel_encL:
+  fixes TRel    :: "('procT \<times> 'procT) set"
+  shows "(weakly_operational_corresponding_encL TRel \<and> preorder TRel
+          \<and> weak_labelled_correspondence_simulation TRel Target
+          \<and> enc_reflects_divergence \<and> rel_reflects_divergenceLS TRel Target)
+         = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+            \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+            \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+            \<and> weak_labelled_correspondence_simulation_encL Rel \<and> preorder Rel
+            \<and> rel_reflects_divergenceLS Rel (STLCal Source Target))"
+proof (rule iffI, (erule conjE)+)
+  assume A1: "rel_reflects_divergenceLS TRel Target" and A2: "enc_reflects_divergence"
+     and A3: "preorder TRel"
+  from A3 have A4: "TRel\<^sup>+ = TRel"
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
+    by blast
+  from A3 have A5: "TRel\<^sup>* = TRel"
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
+    by auto
+  define Rel where "Rel = indRelRTPO TRel"
+  hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+    by (simp add: indRelRTPO.encR)
+  from Rel_def A4 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+     using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+    by (auto simp add: indRelRTPO.target)
+  from Rel_def A5 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    by simp
+  assume "operational_complete_encL TRel" and "weakly_operational_sound_encL TRel"
+     and "preorder TRel" and "weak_labelled_simulation TRel Target"
+     and "\<forall>P Q \<alpha> Q'. (P, Q) \<in> TRel \<and> Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* Q' \<longrightarrow>
+          (\<exists>P'' Q''. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* P'' \<and> Q' \<rightarrow>Target* Q'' \<and> (P'', Q'') \<in> TRel)"
+  with Rel_def A4 A5 have B4: "weak_labelled_correspondence_simulation_encL Rel"
+    using WOC_iff_indRelRTPO_is_labelled_correspondence_simulation_encL[where TRel="TRel"]
+    by simp
+  from Rel_def A3 have B5: "preorder Rel"
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
+    by simp
+  from Rel_def A1 A2 have B6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergenceLS[where TRel="TRel"]
+    by blast
+  show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+        \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+        \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+        \<and> weak_labelled_correspondence_simulation_encL Rel \<and> preorder Rel
+        \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using B1 B2 B3 B4 B5 B6 by blast
+next
+  assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+          \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+          \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+          \<and> weak_labelled_correspondence_simulation_encL Rel \<and> preorder Rel
+          \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+  then obtain Rel where C1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+   and C2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+   and C3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+   and C4: "weak_labelled_correspondence_simulation_encL Rel"
+   and C5: "preorder Rel" and C6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    by auto
+  from C1 C2 C3 C4 C5 have "\<exists>Rel.(\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+   \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+   \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel) \<and> preorder Rel
+   \<and> weak_labelled_correspondence_simulation_encL Rel"
+    by blast
+  hence "weakly_operational_corresponding_encL TRel \<and> preorder TRel
+         \<and> weak_labelled_correspondence_simulation TRel Target"
+    using WOC_wrt_preorder_iff_labelled_correspondence_simulation_encL[where TRel="TRel"]
+    by simp
+  moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+                 \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using C1 C6 by blast
+  hence "enc_reflects_divergence"
+    using divergence_reflection_iff_source_target_rel_reflects_divergence
+    by presburger
+  moreover from C2 C6 have "rel_reflects_divergenceLS TRel Target"
+    using STLCal_divergent(2)
+    by blast
+  ultimately show "weakly_operational_corresponding_encL TRel \<and> preorder TRel \<and>
+                   weak_labelled_correspondence_simulation TRel Target \<and> enc_reflects_divergence \<and>
+                   rel_reflects_divergenceLS TRel Target"
     by fast
 qed
 
@@ -1993,39 +2208,39 @@ proof (rule iffI, (erule conjE)+)
      and A5: "rel_reflects_divergence TRel Target" and A6: "enc_reflects_divergence"
      and A7: "preorder TRel"
   from A7 have A8: "TRel\<^sup>+ = TRel"
-      using trancl_id[of TRel]
-      unfolding preorder_on_def
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
     by blast
   from A7 have A9: "TRel\<^sup>* = TRel"
-      using reflcl_trancl[of TRel] trancl_id[of TRel]
-      unfolding preorder_on_def refl_on_def
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
     by auto
   define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
   from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
-      using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+    using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
   from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
-      using indRelRTPO_to_TRel(2)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "operational_complete TRel" and "operational_sound TRel" and "preorder TRel"
      and "weak_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target* Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target* P' \<and> (P', Q') \<in> TRel)"
   with Rel_def A8 A9 have B4: "weak_reduction_bisimulation Rel (STCal Source Target)"
-      using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
+    using OC_iff_indRelRTPO_is_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
   from Rel_def A7 have B5: "preorder Rel"
-      using indRelRTPO_is_preorder[where TRel="TRel"]
-      unfolding preorder_on_def
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
     by simp
   from Rel_def A1 A2 A3 A4 have B6: "rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}"
-      using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
-            and success="success"]
+    using enc_and_TRel_impl_indRelRTPO_weakly_respects_success[where TRel="TRel"
+          and success="success"]
     by blast
   from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
-      using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
         \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -2054,14 +2269,14 @@ next
    \<and> weak_reduction_bisimulation Rel (STCal Source Target)"
     by blast
   hence "operational_corresponding TRel \<and> preorder TRel \<and> weak_reduction_bisimulation TRel Target"
-      using OC_wrt_preorder_iff_weak_reduction_bisimulation[where TRel="TRel"]
+    using OC_wrt_preorder_iff_weak_reduction_bisimulation[where TRel="TRel"]
     by simp
   moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                  \<and> rel_weakly_respects_barb_set Rel (STCalWB SWB TWB) {success}
                  \<and> rel_reflects_divergence Rel (STCal Source Target)"
     apply (rule exI) using C1 C6 C7 by blast
   hence "enc_weakly_respects_barb_set {success} \<and> enc_reflects_divergence"
-      using WSS_DR_iff_source_target_rel
+    using WSS_DR_iff_source_target_rel
     by simp
   moreover have "rel_weakly_respects_barb_set TRel TWB {success}"
   proof auto
@@ -2071,13 +2286,13 @@ next
       by simp
     moreover assume "TP \<longmapsto>(Calculus TWB)* TP'" and "TP'\<down><TWB>success"
     hence "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TQ\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   next
     fix TP TQ TQ'
@@ -2086,22 +2301,109 @@ next
       by simp
     moreover assume "TQ \<longmapsto>(Calculus TWB)* TQ'" and "TQ'\<down><TWB>success"
     hence "TargetTerm TQ\<Down><STCalWB SWB TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
     ultimately have "TargetTerm TP\<Down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TP\<Down><TWB>success"
-        using STCalWB_reachesBarbST
+      using STCalWB_reachesBarbST
       by blast
   qed
   moreover from C2 C7 have "rel_reflects_divergence TRel Target"
-      using STCal_divergent(2)
+    using STCal_divergent(2)
     by blast
   ultimately
   show "operational_corresponding TRel \<and> preorder TRel \<and> weak_reduction_bisimulation TRel Target
    \<and> enc_weakly_respects_barb_set {success} \<and> rel_weakly_respects_barb_set TRel TWB {success}
    \<and> enc_reflects_divergence \<and> rel_reflects_divergence TRel Target"
+    by fast
+qed
+
+lemma (in encodingLS_encL) OC_DR_wrt_preorder_iff_source_target_rel_encL:
+  fixes TRel :: "('procT \<times> 'procT) set"
+  shows "(operational_corresponding_encL TRel \<and> preorder TRel
+          \<and> weak_labelled_bisimulation TRel Target
+          \<and> enc_reflects_divergence \<and> rel_reflects_divergenceLS TRel Target)
+         = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+            \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+            \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+            \<and> weak_labelled_bisimulation_encL Rel \<and> preorder Rel
+            \<and> rel_reflects_divergenceLS Rel (STLCal Source Target))"
+proof (rule iffI, (erule conjE)+)
+  assume A1: "rel_reflects_divergenceLS TRel Target" and A2: "enc_reflects_divergence"
+     and A3: "preorder TRel"
+  from A3 have A4: "TRel\<^sup>+ = TRel"
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
+    by blast
+  from A3 have A5: "TRel\<^sup>* = TRel"
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
+    by auto
+  define Rel where "Rel = indRelRTPO TRel"
+  hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+    by (simp add: indRelRTPO.encR)
+  from Rel_def A4 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+    using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+    by (auto simp add: indRelRTPO.target)
+  from Rel_def A5 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    by simp
+  assume "operational_complete_encL TRel" and "operational_sound_encL TRel" and "preorder TRel"
+     and "weak_labelled_simulation TRel Target"
+     and "\<forall>P Q \<alpha> Q'. (P, Q) \<in> TRel \<and> Q \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* Q' \<longrightarrow>
+          (\<exists>P'. P \<midarrow>\<Zcat>\<alpha>\<rightarrow>Target* P' \<and> (P', Q') \<in> TRel)"
+  with Rel_def A4 A5 have B4: "weak_labelled_bisimulation_encL Rel"
+    using OC_iff_indRelRTPO_is_weak_labelled_bisimulation_encL[where TRel="TRel"]
+    by simp
+  from Rel_def A3 have B5: "preorder Rel"
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
+    by simp
+  from Rel_def A1 A2 have B6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergenceLS[where TRel="TRel"]
+    by blast
+  show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+        \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+        \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+        \<and> weak_labelled_bisimulation_encL Rel \<and> preorder Rel
+        \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using B1 B2 B3 B4 B5 B6 by blast
+next
+  assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+          \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+          \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+          \<and> weak_labelled_bisimulation_encL Rel \<and> preorder Rel
+          \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+  from this obtain Rel where C1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+   and C2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+   and C3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+   and C4: "weak_labelled_bisimulation_encL Rel" and C5: "preorder Rel"
+   and C6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    by auto
+  from C1 C2 C3 C4 C5 have "\<exists>Rel.(\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+   \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+   \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel) \<and> preorder Rel
+   \<and> weak_labelled_bisimulation_encL Rel"
+    by blast
+  hence "operational_corresponding_encL TRel \<and> preorder TRel \<and>
+         weak_labelled_bisimulation TRel Target"
+    using OC_wrt_preorder_iff_weak_labelled_bisimulation_encL[where TRel="TRel"]
+    by simp
+  moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+                 \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using C1 C5 C6 by blast
+  hence "enc_reflects_divergence"
+    using divergence_reflection_iff_source_target_rel_reflects_divergence
+    by blast
+  moreover from C2 C6 have "rel_reflects_divergenceLS TRel Target"
+    using STLCal_divergent(2)
+    by blast
+  ultimately show "operational_corresponding_encL TRel \<and> preorder TRel \<and>
+                   weak_labelled_bisimulation TRel Target \<and> enc_reflects_divergence \<and>
+                   rel_reflects_divergenceLS TRel Target"
     by fast
 qed
 
@@ -2125,38 +2427,38 @@ proof (rule iffI, (erule conjE)+)
      and A5: "rel_reflects_divergence TRel Target" and A6: "enc_reflects_divergence"
      and A7: "preorder TRel"
   from A7 have A8: "TRel\<^sup>+ = TRel"
-      using trancl_id[of TRel]
-      unfolding preorder_on_def
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
     by blast
   from A7 have A9: "TRel\<^sup>* = TRel"
-      using reflcl_trancl[of TRel] trancl_id[of TRel]
-      unfolding preorder_on_def refl_on_def
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
     by auto
   define Rel where "Rel = indRelRTPO TRel"
   hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
     by (simp add: indRelRTPO.encR)
   from Rel_def A8 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
-      using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+    using indRelRTPO_to_TRel(4)[where TRel="TRel"]
     by (auto simp add: indRelRTPO.target)
   from Rel_def A9 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
-      using indRelRTPO_to_TRel(2)[where TRel="TRel"]
-            trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
     by simp
   assume "strongly_operational_complete TRel" and "strongly_operational_sound TRel"
      and "preorder TRel" and "strong_reduction_simulation TRel Target"
      and "\<forall>P Q Q'. (P, Q) \<in> TRel \<and> Q \<longmapsto>Target Q' \<longrightarrow> (\<exists>P'. P \<longmapsto>Target P' \<and> (P', Q') \<in> TRel)"
   with Rel_def A8 A9 have B4: "strong_reduction_bisimulation Rel (STCal Source Target)"
-      using SOC_iff_indRelRTPO_is_strong_reduction_bisimulation[where TRel="TRel"]
+    using SOC_iff_indRelRTPO_is_strong_reduction_bisimulation[where TRel="TRel"]
     by simp
   from Rel_def A7 have B5: "preorder Rel"
-      using indRelRTPO_is_preorder[where TRel="TRel"]
-      unfolding preorder_on_def
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
     by simp
   from Rel_def A1 A2 A3 A4 have B6: "rel_respects_barb_set Rel (STCalWB SWB TWB) {success}"
-      using enc_and_TRel_impl_indRelRTPO_respects_success[where TRel="TRel" and success="success"]
+    using enc_and_TRel_impl_indRelRTPO_respects_success[where TRel="TRel" and success="success"]
     by blast
   from Rel_def A5 A6 have B7: "rel_reflects_divergence Rel (STCal Source Target)"
-      using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergence[where TRel="TRel"]
     by blast
   show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
         \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
@@ -2186,14 +2488,14 @@ next
     by blast
   hence "strongly_operational_corresponding TRel \<and> preorder TRel
          \<and> strong_reduction_bisimulation TRel Target"
-      using SOC_wrt_preorder_iff_strong_reduction_bisimulation[where TRel="TRel"]
+    using SOC_wrt_preorder_iff_strong_reduction_bisimulation[where TRel="TRel"]
     by simp
   moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
                  \<and> rel_respects_barb_set Rel (STCalWB SWB TWB) {success}
                  \<and> rel_reflects_divergence Rel (STCal Source Target)"
     apply (rule exI) using C1 C6 C7 by blast
   hence "enc_respects_barb_set {success} \<and> enc_reflects_divergence"
-      using SS_DR_iff_source_target_rel
+    using SS_DR_iff_source_target_rel
     by simp
   moreover have "rel_respects_barb_set TRel TWB {success}"
   proof auto
@@ -2203,13 +2505,13 @@ next
       by simp
     moreover assume "TP\<down><TWB>success"
     hence "TargetTerm TP\<down><STCalWB SWB TWB>success"
-        using STCalWB_hasBarbST
+      using STCalWB_hasBarbST
       by blast
     ultimately have "TargetTerm TQ\<down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TQ\<down><TWB>success"
-        using STCalWB_hasBarbST
+      using STCalWB_hasBarbST
       by blast
   next
     fix TP TQ
@@ -2218,22 +2520,108 @@ next
       by simp
     moreover assume "TQ\<down><TWB>success"
     hence "TargetTerm TQ\<down><STCalWB SWB TWB>success"
-        using STCalWB_hasBarbST
+      using STCalWB_hasBarbST
       by blast
     ultimately have "TargetTerm TP\<down><STCalWB SWB TWB>success"
-        using C6
+      using C6
       by blast
     thus "TP\<down><TWB>success"
-        using STCalWB_hasBarbST
+      using STCalWB_hasBarbST
       by blast
   qed
   moreover from C2 C7 have "rel_reflects_divergence TRel Target"
-      using STCal_divergent(2)
+    using STCal_divergent(2)
     by blast
   ultimately show "strongly_operational_corresponding TRel \<and> preorder TRel
    \<and> strong_reduction_bisimulation TRel Target
    \<and> enc_respects_barb_set {success} \<and> rel_respects_barb_set TRel TWB {success}
    \<and> enc_reflects_divergence \<and> rel_reflects_divergence TRel Target"
+    by fast
+qed
+
+lemma (in encodingLS_encL) SOC_DR_wrt_preorder_iff_source_target_rel_encL:
+  fixes TRel    :: "('procT \<times> 'procT) set"
+  shows "(strongly_operational_corresponding_encL TRel \<and> preorder TRel
+          \<and> strong_labelled_bisimulation TRel Target
+          \<and> enc_reflects_divergence \<and> rel_reflects_divergenceLS TRel Target)
+         = (\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+            \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+            \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+            \<and> strong_labelled_bisimulation_encL Rel \<and> preorder Rel
+            \<and> rel_reflects_divergenceLS Rel (STLCal Source Target))"
+proof (rule iffI, (erule conjE)+)
+  assume A1: "rel_reflects_divergenceLS TRel Target" and A2: "enc_reflects_divergence"
+     and A3: "preorder TRel"
+  from A3 have A4: "TRel\<^sup>+ = TRel"
+    using trancl_id[of TRel]
+    unfolding preorder_on_def
+    by blast
+  from A3 have A5: "TRel\<^sup>* = TRel"
+    using reflcl_trancl[of TRel] trancl_id[of TRel]
+    unfolding preorder_on_def refl_on_def
+    by auto
+  define Rel where "Rel = indRelRTPO TRel"
+  hence B1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+    by (simp add: indRelRTPO.encR)
+  from Rel_def A4 have B2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+    using indRelRTPO_to_TRel(4)[where TRel="TRel"]
+    by (auto simp add: indRelRTPO.target)
+  from Rel_def A5 have B3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+    using indRelRTPO_to_TRel(2)[where TRel="TRel"]
+          trans_closure_of_TRel_refl_cond[where TRel="TRel"]
+    by simp
+  assume "strongly_operational_complete_encL TRel" and "strongly_operational_sound_encL TRel"
+     and "preorder TRel" and "strong_labelled_simulation TRel Target"
+     and "\<forall>P Q \<alpha> Q'. (P, Q) \<in> TRel \<and> Q \<midarrow>\<alpha>\<rightarrow>Target Q' \<longrightarrow> (\<exists>P'. P \<midarrow>\<alpha>\<rightarrow>Target P' \<and> (P', Q') \<in> TRel)"
+  with Rel_def A4 A5 have B4: "strong_labelled_bisimulation_encL Rel"
+    using SOC_iff_indRelRTPO_is_strong_labelled_bisimulation_encL[where TRel="TRel"]
+    by simp
+  from Rel_def A3 have B5: "preorder Rel"
+    using indRelRTPO_is_preorder[where TRel="TRel"]
+    unfolding preorder_on_def
+    by simp
+  from Rel_def A1 A2 have B6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    using enc_and_TRelimpl_indRelRTPO_reflect_divergenceLS[where TRel="TRel"]
+    by blast
+  show "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+        \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+        \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+        \<and> strong_labelled_bisimulation_encL Rel \<and> preorder Rel
+        \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using B1 B2 B3 B4 B5 B6 by blast
+next
+  assume "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+          \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+          \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel)
+          \<and> strong_labelled_bisimulation_encL Rel \<and> preorder Rel
+          \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+  then obtain Rel where C1: "\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel"
+   and C2: "TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}"
+   and C3: "\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel"
+   and C4: "strong_labelled_bisimulation_encL Rel" and C5: "preorder Rel"
+   and C6: "rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    by auto
+  from C1 C2 C3 C4 C5 have "\<exists>Rel.(\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+   \<and> TRel = {(T1, T2). (TargetTerm T1, TargetTerm T2) \<in> Rel}
+   \<and> (\<forall>S T. (SourceTerm S, TargetTerm T) \<in> Rel \<longrightarrow> (\<lbrakk>S\<rbrakk>, T) \<in> TRel) \<and> preorder Rel
+   \<and> strong_labelled_bisimulation_encL Rel"
+    by blast
+  hence "strongly_operational_corresponding_encL TRel \<and> preorder TRel
+         \<and> strong_labelled_bisimulation TRel Target"
+    using SOC_wrt_preorder_iff_strong_labelled_bisimulation_encL[where TRel="TRel"]
+    by simp
+  moreover have "\<exists>Rel. (\<forall>S. (SourceTerm S, TargetTerm (\<lbrakk>S\<rbrakk>)) \<in> Rel)
+                 \<and> rel_reflects_divergenceLS Rel (STLCal Source Target)"
+    apply (rule exI) using C1 C6 by blast
+  hence "enc_reflects_divergence"
+    using divergence_reflection_iff_source_target_rel_reflects_divergence
+    by blast
+  moreover from C2 C6 have "rel_reflects_divergenceLS TRel Target"
+    using STLCal_divergent(2)
+    by blast
+  ultimately show "strongly_operational_corresponding_encL TRel \<and> preorder TRel \<and>
+                   strong_labelled_bisimulation TRel Target \<and> enc_reflects_divergence \<and>
+                   rel_reflects_divergenceLS TRel Target"
     by fast
 qed
 

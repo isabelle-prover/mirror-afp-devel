@@ -630,7 +630,7 @@ next
 next
   case (5 a b)
   have "\<exists>d\<ge>0. 0 < x + d \<and> d < y" if "x \<le> 0" "0 < x + y" for x y :: 'a
-    using that by (smt add.right_inverse add_less_cancel_left leD le_less_trans linear neg_0_le_iff_le time_class.dense)
+    using that by (smt (z3) add.right_inverse add_less_cancel_left leD le_less_trans linear neg_0_le_iff_le time_class.dense)
   with 5 that show ?case 
     by (auto simp: dbm_entry_le_iff DBM.add)
 next
@@ -1017,11 +1017,11 @@ proof -
   qed
   subgoal for i j k
     using \<open>canonical M n\<close> \<open>M 0 0 \<le> 0\<close>
-    by (smt M_k_0 S_cases add_increasing Orderings.order.trans)
+    by (smt (z3) M_k_0 S_cases add_increasing Orderings.order.trans)
   apply (use \<open>canonical M n\<close> in simp; fail)+
   subgoal for i j k
     using \<open>canonical M n\<close> \<open>M 0 0 \<le> 0\<close>
-    by (smt M_k_0 S_cases add_increasing Orderings.order.trans)
+    by (smt (z3) M_k_0 S_cases add_increasing Orderings.order.trans)
    apply (use \<open>canonical M n\<close> in simp_all)
   done
 qed
@@ -1568,7 +1568,7 @@ lemma pre_reset_diag:
 lemma free_canonical':
   "canonical (free n (M :: (_ :: time) DBM) x) n \<or> check_diag n (uncurry (free n M x))"
   if "canonical M n \<or> check_diag n (uncurry M)" "x \<le> n"
-  by (smt check_diag_def check_diag_free dbm_entry_le_iff(5) free_canonical leI
+  by (smt (z3) check_diag_def check_diag_free dbm_entry_le_iff(5) free_canonical leI
           order_mono_setup.refl order_trans that uncurry_apply
      )
 

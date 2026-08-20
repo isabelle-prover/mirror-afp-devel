@@ -52,7 +52,7 @@ qed
 
 lemma lagrange_basis_poly_1: 
   "poly (lagrange_basis_poly (map fst xs_ys) x) x = 1"
-  unfolding lagrange_basis_poly_def Let_def poly_prod_list
+  unfolding lagrange_basis_poly_def Let_def poly_prod_list_eq
   by (rule prod_list_neutral, auto)
   (metis field_class.field_inverse mult.commute right_diff_distrib right_minus_eq)
 
@@ -63,7 +63,7 @@ proof -
   let ?xs = "filter (\<lambda>c. c\<noteq>x) (map fst xs_ys)"
   have mem: "?f x' \<in> set (map ?f ?xs)" using assms by auto
   show ?thesis
-    unfolding lagrange_basis_poly_def Let_def poly_prod_list prod_list_map_remove1[OF mem]
+    unfolding lagrange_basis_poly_def Let_def poly_prod_list_eq prod_list_map_remove1[OF mem]
     by simp
 qed
 
@@ -75,7 +75,8 @@ proof -
   {
     fix x y
     assume xy: "(x,y) \<in> set xs_ys"
-    show "poly p x = y" unfolding p lagrange_interpolation_poly_def Let_def poly_sum_list map_map o_def
+    show "poly p x = y" 
+      unfolding p lagrange_interpolation_poly_def Let_def poly_sum_list_eq map_map o_def
     proof (subst sum_list_map_remove1[OF xy], unfold split poly_smult lagrange_basis_poly_1,
       subst sum_list_neutral)
       fix v

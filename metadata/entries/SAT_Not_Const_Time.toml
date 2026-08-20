@@ -1,0 +1,27 @@
+title = "SAT is Not Solvable in Constant Time"
+date = 2026-03-26
+topics = [
+  "Computer science/Automata and formal languages",
+  "Logic/Computability",
+]
+abstract = "This entry establishes that the Boolean Satisfiability Problem (SAT) cannot be decided by a deterministic Turing machine in constant time \\(O(1)\\). The core of the argument rests on an indistinguishability invariant: a Turing machine bounded by constant time \\(C\\) can only ever read the first \\(C+1\\) cells of its input tape. Consequently, any language decided in constant time must be a prefix language. We then show that SAT is not uniquely determined by any finite prefix, yielding the impossibility result."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.shea]
+email = "shea_email"
+
+[contributors]
+
+[notify]
+shea = "shea_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

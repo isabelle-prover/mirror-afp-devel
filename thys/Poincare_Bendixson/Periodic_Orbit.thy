@@ -39,7 +39,7 @@ lemma closed_orbit_recurrence_times_nonempty:
   shows " {T \<in> existence_ivl0 x. T > 0 \<and> flow0 x T = x} \<noteq> {}"
   apply auto
   using assms(1) unfolding closed_orbit_def
-  by (smt recurrence_time_flip_sign)
+  by (smt (z3) recurrence_time_flip_sign)
 
 lemma closed_orbit_recurrence_times_bdd_below:
   shows "bdd_below {T \<in> existence_ivl0 x. T > 0 \<and> flow0 x T = x}"
@@ -51,7 +51,7 @@ lemma closed_orbit_period_nonneg:
   shows "period x \<ge> 0"
   unfolding period_def
   using assms(1) unfolding closed_orbit_def apply (auto intro!:cInf_greatest)
-  by (smt recurrence_time_flip_sign)
+  by (smt (z3) recurrence_time_flip_sign)
 
 lemma closed_orbit_in_domain:
   assumes "closed_orbit x"
@@ -66,7 +66,7 @@ proof -
   obtain Tp where "Tp \<noteq> 0" "Tp \<in> existence_ivl0 x" "flow0 x Tp = x" using assms
     unfolding closed_orbit_def by blast
   then obtain T where T: "T > 0" "T \<in> existence_ivl0 x" "flow0 x T = x"
-    by (smt recurrence_time_flip_sign)
+    by (smt (z3) recurrence_time_flip_sign)
   have apos: "real n * T \<in> existence_ivl0 x \<and> flow0 x (real n * T) = x" for n
   proof (induction n)
     case 0
@@ -103,7 +103,7 @@ proof -
       obtain k where "- real k * T < t"
         by (metis T(1) add.inverse_inverse ex_less_of_nat_mult mult.commute mult_minus_right neg_less_iff_less)
       then have "t \<in> existence_ivl0 x" using aneg
-        by (smt apos atLeastAtMost_iff calculation(2) local.existence_ivl_trans' local.ivl_subset_existence_ivl mult_minus_left subset_eq)
+        by (smt (z3) apos atLeastAtMost_iff calculation(2) local.existence_ivl_trans' local.ivl_subset_existence_ivl mult_minus_left subset_eq)
     }
     ultimately show "t \<in> existence_ivl0 x" by blast
   qed
@@ -162,7 +162,7 @@ proof -
   then have "t = q * (-T) - r"  by auto
   then have "t = (q+(1::nat)) * (-T) + (T-r)" by (simp add: distrib_right)
   thus ?thesis using qr(2-3)
-    by (smt \<open>t = real q * - T - r\<close> that) 
+    by (smt (z3) \<open>t = real q * - T - r\<close> that) 
 qed
 
 lemma recurrence_time_restricts_compact_flow:
@@ -201,7 +201,7 @@ lemma closed_orbitI:
   assumes "flow0 y t = flow0 y t'"
   shows "closed_orbit y"
   unfolding closed_orbit_def
-  by (smt assms local.existence_ivl_reverse local.existence_ivl_trans local.flow_trans local.flows_reverse)
+  by (smt (z3) assms local.existence_ivl_reverse local.existence_ivl_trans local.flow_trans local.flows_reverse)
 
 (* TODO: can be considerably generalized *)
 lemma flow0_image_UNIV:
@@ -242,7 +242,7 @@ proof -
   obtain Tp where "Tp \<noteq> 0" "Tp \<in> existence_ivl0 x" "flow0 x Tp = x" using assms
     unfolding closed_orbit_def by blast
   then obtain T where T: "T > 0" "T \<in> existence_ivl0 x" "flow0 x T = x"
-    by (smt recurrence_time_flip_sign)
+    by (smt (z3) recurrence_time_flip_sign)
   thus ?thesis using  recurrence_time_multiples T that by blast 
 qed
 
@@ -259,7 +259,7 @@ proof -
   obtain Tp where "Tp \<noteq> 0" "Tp \<in> existence_ivl0 x" "flow0 x Tp = x" using assms
     unfolding closed_orbit_def by blast
   then obtain T where T: "T \<in> existence_ivl0 x" "T > 0" "flow0 x T = x"
-    by (smt recurrence_time_flip_sign)
+    by (smt (z3) recurrence_time_flip_sign)
   from recurrence_time_restricts_compact_flow[OF this]
   have feq: "flow0 x ` UNIV = flow0 x ` {0..T}" .
   have "continuous_on {0..T} (flow0 x)"
@@ -354,7 +354,7 @@ proof (rule ccontr)
     have "flow0 x ` UNIV = flow0 x ` {u..v}"  using uv(1-2) assms(2) by blast
     then have "flow0 x t \<in> flow0 x ` {u..v}" by auto
     moreover have "u = t \<or> flow0 x t \<notin> flow0 x ` {u..v}" using assms(3)
-      by (smt atLeastAtMost_iff image_iff uv(1) uv(2))
+      by (smt (z3) atLeastAtMost_iff image_iff uv(1) uv(2))
     ultimately have False using uv assms(3)
       by force
   }
@@ -365,7 +365,7 @@ proof (rule ccontr)
       by (metis assms(2) subset_iff uv(1) uv(2) uv(3))
     then have "flow0 x t \<in> flow0 x ` {v..u}" by auto
     moreover have "v = t \<or> flow0 x t \<notin> flow0 x ` {v..u}" using assms(3)
-      by (smt atLeastAtMost_iff image_iff uv(1) uv(2))
+      by (smt (z3) atLeastAtMost_iff image_iff uv(1) uv(2))
     ultimately have False using uv assms(3) by force
   }
   ultimately show False by blast
@@ -452,7 +452,7 @@ proof -
     fix t1 t2
     assume t12: "t1 > 0" "flow0 x t1 = x" "t2 > 0" "flow0 x t2 = x" "dist t2 t1 < r"
     then have fx: "flow0 x (t1-t2) = x"
-      by (smt a1 assms closed_orbit_global_existence existence_ivl_zero general.existence_ivl_initial_time_iff local.flow_trans periodic_orbit_def)
+      by (smt (z3) a1 assms closed_orbit_global_existence existence_ivl_zero general.existence_ivl_initial_time_iff local.flow_trans periodic_orbit_def)
     have "dist (t1-t2) 0 < r" using t12(5)
       by (simp add: dist_norm) 
     thus "t2 = t1" using r fx

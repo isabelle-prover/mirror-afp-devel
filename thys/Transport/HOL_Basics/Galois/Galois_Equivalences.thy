@@ -59,7 +59,7 @@ corollary galois_equivalence_right_left_iff_galois_equivalence_left_right:
 
 lemma galois_equivalence_rel_inv_eq_galois_equivalence [simp]:
   "((\<ge>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>L\<^esub>) \<equiv>\<^sub>G (\<le>\<^bsub>R\<^esub>))"
-  by (intro ext) auto
+  by (intro ext) force
 
 lemma inflationary_on_unit_if_reflexive_on_if_galois_equivalence:
   fixes P :: "'a \<Rightarrow> bool"

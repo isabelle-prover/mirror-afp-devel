@@ -236,7 +236,7 @@ proof-
       and "Z = inter (line B A) (line D E)" 
     have "col X Y Z" if "distinct [B,A,C,D,E,F]" and "line A C \<noteq> line E F" and "line C D \<noteq> line B F" 
       and "line B A \<noteq> line D E" and "line B C = line E F"
-      by (smt X_def Y_def ax_uniqueness col_ABA col_rot_CW distinct6_def incidB_lAB incid_inter_left 
+      by (smt (z3) X_def Y_def ax_uniqueness col_ABA col_rot_CW distinct6_def incidB_lAB incid_inter_left 
           incid_inter_right line_comm that(1) that(2) that(3) that(5))
     have "col X Y Z" if "distinct [B,A,C,D,E,F]" and "line A C \<noteq> line E F" and "line C D \<noteq> line B F" 
       and "line B A \<noteq> line D E" and "line C D = line A F"
@@ -257,29 +257,29 @@ proof-
         by auto
           (* Below we take care of a few degenerate cases *)
       have "col X Y Z" if "P = Q"
-        by (smt P_def Q_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_ABA col_def 
+        by (smt (z3) P_def Q_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_ABA col_def 
             distinct6_def incidA_lAB incidB_lAB incid_inter_left inter_comm that)
       have "col X Y Z" if "P = R"
-        by (smt P_def R_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> \<open>line A C \<noteq> line E F\<close> 
+        by (smt (z3) P_def R_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> \<open>line A C \<noteq> line E F\<close> 
             \<open>line C D \<noteq> line B F\<close> col_2cycle col_A_B_ABl col_rot_CW distinct6_def incidA_lAB 
             incidB_lAB incid_inter_left incid_inter_right that uniq_inter)
       have "col X Y Z" if "P = A"
-        by (smt P_def Q_def R_def X_def Y_def Z_def \<open>P = Q \<Longrightarrow> col X Y Z\<close> \<open>P = R \<Longrightarrow> col X Y Z\<close> 
+        by (smt (z3) P_def Q_def R_def X_def Y_def Z_def \<open>P = Q \<Longrightarrow> col X Y Z\<close> \<open>P = R \<Longrightarrow> col X Y Z\<close> 
             \<open>col P Q R\<close> \<open>line B C \<noteq> line E F\<close> ax_uniqueness col_def incidA_lAB incid_inter_left 
             incid_inter_right line_comm that)
       have "col X Y Z" if "P = C"
-        by (smt P_def Q_def R_def X_def Y_def Z_def \<open>P = R \<Longrightarrow> col X Y Z\<close> \<open>col P Q R\<close> 
+        by (smt (z3) P_def Q_def R_def X_def Y_def Z_def \<open>P = R \<Longrightarrow> col X Y Z\<close> \<open>col P Q R\<close> 
             \<open>line A C \<noteq> line E F\<close> ax_uniqueness col_def incidA_lAB incid_inter_left 
             incid_inter_right line_comm that)
       have "col X Y Z" if "P = W"
-        by (smt P_def Q_def R_def W_def X_def Y_def Z_def \<open>P = C \<Longrightarrow> col X Y Z\<close> \<open>P = Q \<Longrightarrow> col X Y Z\<close> 
+        by (smt (z3) P_def Q_def R_def W_def X_def Y_def Z_def \<open>P = C \<Longrightarrow> col X Y Z\<close> \<open>P = Q \<Longrightarrow> col X Y Z\<close> 
             \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_def distinct6_def incidB_lAB 
             incid_inter_left incid_inter_right line_comm that) 
       have "col X Y Z" if "Q = R"
-        by (smt Q_def R_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_A_B_lAB 
+        by (smt (z3) Q_def R_def X_def Y_def Z_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_A_B_lAB 
             col_rot_CW distinct6_def incidB_lAB incid_inter_right inter_comm line_comm that)
       have "col X Y Z" if "Q = A"
-        by (smt P_def Q_def R_def X_def Y_def Z_def \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> 
+        by (smt (z3) P_def Q_def R_def X_def Y_def Z_def \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> 
             \<open>line C D \<noteq> line B F\<close> ax_uniqueness col_ABA col_def distinct6_def incidA_lAB incidB_lAB 
             incid_inter_left incid_inter_right that)
       have "col X Y Z" if "Q = C"
@@ -288,18 +288,18 @@ proof-
       have "col X Y Z" if "Q = W"
         by (metis Q_def W_def X_def Z_def col_ABA line_comm that)
       have "col X Y Z" if "R = A"
-        by (smt P_def Q_def R_def W_def X_def Y_def \<open>P = W \<Longrightarrow> col X Y Z\<close> \<open>Q = A \<Longrightarrow> col X Y Z\<close> 
+        by (smt (z3) P_def Q_def R_def W_def X_def Y_def \<open>P = W \<Longrightarrow> col X Y Z\<close> \<open>Q = A \<Longrightarrow> col X Y Z\<close> 
             \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_ABA col_def col_rot_CW distinct6_def 
             incidA_lAB incidB_lAB incid_inter_right inter_comm that)
       have "col X Y Z" if "R = C"
-        by (smt P_def Q_def R_def X_def Y_def Z_def \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> 
+        by (smt (z3) P_def Q_def R_def X_def Y_def Z_def \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> 
             \<open>line A C \<noteq> line E F\<close> ax_uniqueness col_def distinct6_def incidA_lAB incidB_lAB 
             incid_inter_left inter_comm that)
       have "col X Y Z" if "R = W"
         by (metis R_def W_def \<open>R = A \<Longrightarrow> col X Y Z\<close> \<open>R = C \<Longrightarrow> col X Y Z\<close> \<open>line C D \<noteq> line A F\<close> 
             ax_uniqueness incidA_lAB incidB_lAB incid_inter_left incid_inter_right that)
       have "col X Y Z" if "A = W"
-        by (smt P_def Q_def R_def W_def X_def Y_def Z_def \<open>P = R \<Longrightarrow> col X Y Z\<close> \<open>Q = A \<Longrightarrow> col X Y Z\<close> 
+        by (smt (z3) P_def Q_def R_def W_def X_def Y_def Z_def \<open>P = R \<Longrightarrow> col X Y Z\<close> \<open>Q = A \<Longrightarrow> col X Y Z\<close> 
             \<open>col P Q R\<close> \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_def distinct6_def incidA_lAB 
             incidB_lAB incid_inter_left incid_inter_right that)
       have "col X Y Z" if "C = W"
@@ -322,7 +322,7 @@ proof-
           (* We can resume our proof with the non-degenerate case *)
       have f2:"inter (line P C) (line A Q) = B" if
         "C \<notin> line_ext (line E F)" and "A \<notin> line_ext (line D E)" and "line B C \<noteq> line A B"
-        by (smt CollectI P_def Q_def ax_uniqueness incidA_lAB incidB_lAB incid_inter_left 
+        by (smt (z3) CollectI P_def Q_def ax_uniqueness incidA_lAB incidB_lAB incid_inter_left 
             incid_inter_right line_ext_def that(1) that(2) that(3))
           (* Again, we need to take care of a few particular cases *)
       have "col X Y Z" if "line E F = line A F"
@@ -336,7 +336,7 @@ proof-
           (* We resume the general case *)
       have f3:"inter (line P W) (line A R) = F" if "line E F \<noteq> line A F" and "A \<notin> line_ext (line C D)"
         and "inter (line B C) (line E F) \<noteq> inter (line A C) (line E F)"
-        by (smt CollectI P_def R_def W_def ax_uniqueness incidA_lAB incidB_lAB incid_inter_left 
+        by (smt (z3) CollectI P_def R_def W_def ax_uniqueness incidA_lAB incidB_lAB incid_inter_left 
             incid_inter_right line_ext_def that(1) that(2) that(3))
           (* Once again, first we need to handle a particular case, namely C \<in> AF, then 
             we resume the general case *)
@@ -351,13 +351,13 @@ proof-
         and  "C \<notin> line_ext (line E F)" and "A \<notin> line_ext (line D E)" and "line B C \<noteq> line A B"
         and "line E F \<noteq> line A F" and "A \<notin> line_ext (line C D)"
         and "inter (line B C) (line E F) \<noteq> inter (line A C) (line E F)"
-        by (smt R_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_line_ext_1 distinct6_def f1 f2 f3 
+        by (smt (z3) R_def \<open>distinct [B,A,C,D,E,F]\<close> ax_uniqueness col_line_ext_1 distinct6_def f1 f2 f3 
             incidA_lAB incidB_lAB incid_inter_left that(1) that(2) that(3) that(5) that(6) that(7))
       then have "inter (line Q W) (line C D) = inter (line C D) (line B F)" if "distinct [P,Q,R,A,C,W]"
         and  "C \<notin> line_ext (line E F)" and "A \<notin> line_ext (line D E)" and "line B C \<noteq> line A B"
         and "line E F \<noteq> line A F" and "A \<notin> line_ext (line C D)"
         and "inter (line B C) (line E F) \<noteq> inter (line A C) (line E F)"
-        by (smt W_def \<open>distinct [B,A,C,D,E,F]\<close> \<open>line C D \<noteq> line B F\<close> ax_uniqueness distinct6_def f2 
+        by (smt (z3) W_def \<open>distinct [B,A,C,D,E,F]\<close> \<open>line C D \<noteq> line B F\<close> ax_uniqueness distinct6_def f2 
             incidA_lAB incidB_lAB incid_inter_left incid_inter_right inter_line_ext_2 that(1) that(2) 
             that(3) that(5) that(6) that(7))
       moreover have "inter (line C D) (line B F) \<in> line_ext (line Q W)" if "distinct [P,Q,R,A,C,W]"
@@ -402,7 +402,7 @@ lemma is_pascal_under_alternate_vertices:
 lemma col_inter:
   assumes "distinct [A,B,C,D,E,F]" and "col A B C" and "col D E F"
   shows "inter (line B C) (line E F) = inter (line A B) (line D E)"
-  by (smt assms ax_uniqueness col_def distinct6_def incidA_lAB incidB_lAB)
+  by (smt (z3) assms ax_uniqueness col_def distinct6_def incidA_lAB incidB_lAB)
 
 lemma pascal_pappus1:
   assumes "pascal_prop"
@@ -422,7 +422,7 @@ and "a6 = is_a_proper_intersec R A C' A' C"
     using assms is_pascal_under_alternate_vertices that(1) that(2) that(3) that(4) that(5) that(6) 
     by blast
   then have "col P Q R" if a1 a2 a3 a4 a5 a6
-    by (smt a1_def a4_def a5_def a6_def ax_uniqueness col_def distinct6_def incidB_lAB incid_inter_left 
+    by (smt (z3) a1_def a4_def a5_def a6_def ax_uniqueness col_def distinct6_def incidB_lAB incid_inter_left 
         incid_inter_right is_a_proper_intersec_def is_pascal_def line_comm that(1) that(2) that(3) 
         that(4) that(5) that(6))
   show "is_pappus1 A B C A' B' C' P Q R"

@@ -1,0 +1,19 @@
+chapter AFP
+
+session Dynamic_Pushdown_Networks = HOL +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+    "Automatic_Refinement"
+    "Program-Conflict-Analysis"
+  theories [document=false]
+    DPN_Setup
+  theories 
+    DPN
+    DPN_impl
+    DPN_implEx
+  document_files
+    "root.bib"
+    "root.tex"
+
+

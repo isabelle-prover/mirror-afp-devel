@@ -30,7 +30,7 @@ lemma top_unique:
   "x \<squnion> -x = y \<squnion> -y"
 proof -
   have "x \<squnion> -x = y \<squnion> -(--y \<squnion> -x) \<squnion> -(--y \<squnion> --x)"
-    by (smt associative commutative huntington)
+    by (smt (z3) associative commutative huntington)
   thus ?thesis
     by (metis associative huntington)
 qed
@@ -362,7 +362,7 @@ proof
     proof -
       fix x y z
       have "- (y \<sqinter> z \<squnion> x) = - (- (- y \<squnion> z) \<squnion> - (- y \<squnion> - z) \<squnion> x) \<squnion> - (x \<squnion> - - z)"
-        using 1437 2530 6113 by (smt commutative inf_def)
+        using 1437 2530 6113 by (smt (z3) commutative inf_def)
       thus "x \<squnion> y \<sqinter> z = (x \<squnion> y) \<sqinter> (x \<squnion> z)"
         using 12 1122 by (metis commutative inf_def)
     qed
@@ -484,11 +484,11 @@ proof
     have 2: "\<forall>x y. y \<squnion> (y \<squnion> x) = y \<squnion> x"
       using 1 by (metis ba1_complement)
     hence "\<forall>x. --x = x"
-      by (smt ba1_associative ba1_commutative ba1_complement)
+      by (smt (z3) ba1_associative ba1_commutative ba1_complement)
     hence "\<forall>x y. y \<squnion> -(y \<squnion> -x) = y \<squnion> x"
-      by (smt ba1_associative ba1_commutative ba1_complement)
+      by (smt (z3) ba1_associative ba1_commutative ba1_complement)
     thus "\<And>x y. x = -(-x \<squnion> y) \<squnion> -(-x \<squnion> - y)"
-      using 2 by (smt ba1_commutative ba1_complement)
+      using 2 by (smt (z3) ba1_commutative ba1_complement)
   qed
 qed
 
@@ -535,7 +535,7 @@ begin
 subclass boolean_algebra_1
 proof
   show "\<And>x y z. x \<squnion> (y \<squnion> z) = x \<squnion> y \<squnion> z"
-    by (smt ba2_associative_commutative ba2_complement)
+    by (smt (z3) ba2_associative_commutative ba2_complement)
   show "\<And>x y. x \<squnion> y = y \<squnion> x"
     by (metis ba2_associative_commutative ba2_complement)
   show "\<And>x y z. (x \<squnion> - y = z \<squnion> - z) = (x \<squnion> y = x)"
@@ -647,7 +647,7 @@ proof
   show "\<And>x y. x \<squnion> - x = y \<squnion> - y"
     by (simp add: top_unique)
   show "\<And>x y. x \<squnion> - (x \<squnion> y) = x \<squnion> - y"
-    using 3 4 by (smt h_ba1.ba1_ba2.ba2_associative_commutative h_ba1.ba1_complement)
+    using 3 4 by (smt (z3) h_ba1.ba1_ba2.ba2_associative_commutative h_ba1.ba1_complement)
 qed
 
 end
@@ -688,7 +688,7 @@ lemma complement_1:
 
 lemma sup_right_zero_var:
   "-x \<squnion> (-y \<squnion> --y) = -z \<squnion> --z"
-  by (smt complement_1 sub_associative sub_sup_closed top_unique)
+  by (smt (z3) complement_1 sub_associative sub_sup_closed top_unique)
 
 lemma sup_right_unit_idempotent:
   "-x \<squnion> -x = -x \<squnion> -(-y \<squnion> --y)"
@@ -696,7 +696,7 @@ lemma sup_right_unit_idempotent:
 
 lemma sup_idempotent[simp]:
   "-x \<squnion> -x = -x"
-  by (smt complement_1 double_negation sub_associative sup_right_unit_idempotent)
+  by (smt (z3) complement_1 double_negation sub_associative sup_right_unit_idempotent)
 
 lemma complement_2:
   "-x = -(-(-x \<squnion> -y) \<squnion> -(-x \<squnion> --y))"
@@ -1289,7 +1289,7 @@ proof
   show "\<And>x y. - x \<squnion> - y = - y \<squnion> - x"
     by (simp add: sba1_commutative)
   show "\<And>x y. - x = - (- - x \<squnion> - y) \<squnion> - (- - x \<squnion> - - y)"
-    by (smt sba1_bot_unique sba1_commutative sba1_double_complement sba1_export sba1_idempotent)
+    by (smt (z3) sba1_bot_unique sba1_commutative sba1_double_complement sba1_export sba1_idempotent)
   thus "\<And>x y. - x \<squnion> - y = - - (- x \<squnion> - y)"
     by (metis sba1_double_complement sba1_export)
 qed
@@ -1362,7 +1362,7 @@ text \<open>Theorem 11.2\<close>
 subclass subset_boolean_algebra_extended
 proof
   show "top = (THE x. \<forall>y. x = - y \<squnion> - - y)"
-    by (smt ba_bot ba_bot_def ba_top sub_sup_closed the_equality)
+    by (smt (z3) ba_bot ba_bot_def ba_top sub_sup_closed the_equality)
   thus "bot = - (THE x. \<forall>y. x = - y \<squnion> - - y)"
     using ba_bot_def ba_top_def by force
   show "\<And>x y. - x \<sqinter> - y = - (- - x \<squnion> - - y)"
@@ -1677,7 +1677,7 @@ qed
 
 lemma il_sub_inf_right_isotone_var:
   "(x \<sqinter> y) \<squnion> (x \<sqinter> z) \<le> x \<sqinter> (y \<squnion> z)"
-  by (smt il_associative il_commutative il_idempotent il_less_eq il_sub_inf_right_isotone)
+  by (smt (z3) il_associative il_commutative il_idempotent il_less_eq il_sub_inf_right_isotone)
 
 lemma il_sub_inf_left_isotone:
   "x \<le> y \<Longrightarrow> x \<sqinter> z \<le> y \<sqinter> z"
@@ -1689,7 +1689,7 @@ lemma il_sub_inf_left_isotone_var:
 
 lemma sup_left_isotone:
   "x \<le> y \<Longrightarrow> x \<squnion> z \<le> y \<squnion> z"
-  by (smt il_associative il_commutative il_idempotent il_less_eq)
+  by (smt (z3) il_associative il_commutative il_idempotent il_less_eq)
 
 lemma sup_right_isotone:
   "x \<le> y \<Longrightarrow> z \<squnion> x \<le> z \<squnion> y"
@@ -1830,7 +1830,7 @@ lemma test_absorb_3:
 
 lemma test_absorb_4:
   "test x \<Longrightarrow> test y \<Longrightarrow> (x \<squnion> y) \<sqinter> x = x"
-  by (smt il_inf_right_dist_sup test_inf_idempotent il_commutative il_less_eq test_inf_left_below)
+  by (smt (z3) il_inf_right_dist_sup test_inf_idempotent il_commutative il_less_eq test_inf_left_below)
 
 lemma test_import_1:
   assumes "test x"
@@ -1840,9 +1840,9 @@ proof -
   have "x \<squnion> (!x \<sqinter> y) = x \<squnion> ((y \<squnion> !y) \<sqinter> x) \<squnion> (!x \<sqinter> y)"
     by (simp add: assms(2) neg_char)
   also have "... = x \<squnion> (!y \<sqinter> x) \<squnion> (x \<sqinter> y) \<squnion> (!x \<sqinter> y)"
-    by (smt assms il_associative il_commutative il_inf_right_dist_sup test_inf_commutative)
+    by (smt (z3) assms il_associative il_commutative il_inf_right_dist_sup test_inf_commutative)
   also have "... = x \<squnion> ((x \<squnion> !x) \<sqinter> y)"
-    by (smt calculation il_associative il_commutative il_idempotent il_inf_right_dist_sup)
+    by (smt (z3) calculation il_associative il_commutative il_idempotent il_inf_right_dist_sup)
   also have "... = x \<squnion> y"
     by (simp add: assms(1) neg_char)
   finally show ?thesis
@@ -1881,7 +1881,7 @@ lemma test_inf:
   "test x \<Longrightarrow> test y \<Longrightarrow> test z \<Longrightarrow> z \<le> x \<sqinter> y \<longleftrightarrow> z \<le> x \<and> z \<le> y"
   apply (rule iffI)
   using dual_order.trans test_inf_left_below test_inf_right_below apply blast
-  by (smt il_less_eq il_sub_inf_right_isotone test_absorb_4)
+  by (smt (z3) il_less_eq il_sub_inf_right_isotone test_absorb_4)
 
 lemma test_shunting:
   assumes "test x"
@@ -2006,7 +2006,7 @@ proof (rule order.antisym)
   have "top \<le> x \<squnion> y \<squnion> !(x \<squnion> y)"
     by (simp add: assms(3) neg_char)
   hence "top \<sqinter> !x \<le> y \<squnion> !(x \<squnion> y)"
-    by (smt assms(1) assms(3) il_commutative il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone il_unit_bot neg_char test_sub_identity)
+    by (smt (z3) assms(1) assms(3) il_commutative il_inf_right_dist_sup il_inf_right_unit il_sub_inf_right_isotone il_unit_bot neg_char test_sub_identity)
   thus "!x \<sqinter> !y \<le> !(x \<squnion> y)"
     by (simp add: assms(1) assms(2) neg_involutive neg_test test_shunting)
 qed
@@ -2242,7 +2242,7 @@ proof (rule order.antisym)
   also have "... = (!x \<sqinter> y) \<squnion> (d (x \<sqinter> y) \<sqinter> x \<sqinter> y)"
     by (metis d1_eq il_inf_associative)
   also have "... = (!x \<sqinter> y) \<squnion> (d (x \<sqinter> y) \<sqinter> y)"
-    using 1 by (smt calculation d1_eq il_associative il_commutative il_inf_associative il_inf_right_dist_sup il_less_eq il_sub_inf_right_isotone_var)
+    using 1 by (smt (z3) calculation d1_eq il_associative il_commutative il_inf_associative il_inf_right_dist_sup il_less_eq il_sub_inf_right_isotone_var)
   also have "... = (!x \<squnion> d (x \<sqinter> y)) \<sqinter> y"
     by (simp add: il_inf_right_dist_sup)
   finally have "y \<le> (!x \<squnion> d (x \<sqinter> y)) \<sqinter> y"
@@ -3286,7 +3286,7 @@ proof
   show "\<And>x y. - (x \<squnion> y) = - (- - x \<squnion> - - y)"
     by (metis l15 l4)
   show "\<And>x y. - x \<squnion> - (- x \<squnion> y) = - x \<squnion> - y"
-    by (smt l11 l15 il_inf_right_dist_sup il_unit_bot l6 l7)
+    by (smt (z3) l11 l15 il_inf_right_dist_sup il_unit_bot l6 l7)
 qed
 
 lemma aa_test:

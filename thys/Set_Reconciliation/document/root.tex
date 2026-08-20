@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{A Set Reconciliation Algorithm}
+\author{Paul Hofmeier and Emin Karayel}
+\maketitle
+
+\begin{abstract}
+This entry formally verifies the set reconciliation algorithm with nearly optimal communication
+complexity, due to Y.~Minsky \emph{et~al.}\ \cite{minsky}.
+The algorithm allows two communication partners, who have a similar pair of sets to reconcile them
+while using messages of nearly optimal size, proportional to a bound on the maximum symmetric
+difference between the sets. 
+
+The formalization also introduces an optimization, which reduces the communication complexity even
+further compared to the original publication.
+\end{abstract}
+
+\tableofcontents
+
+% generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

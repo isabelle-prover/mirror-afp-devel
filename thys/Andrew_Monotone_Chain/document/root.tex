@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Andrew's Monotone Chain Convex Hull Algorithm}
+\author{Arthur Freitas Ramos\\
+David Barros Hulak\\
+Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes the executable core of Andrew's monotone chain
+convex hull algorithm~\cite{Andrew1979}.  The algorithm sorts planar points
+lexicographically, removes duplicates, computes lower and upper hull chains by
+a stack scan that removes non-left turns, and concatenates the two chains with
+their repeated endpoints removed.  The formalization proves the stack-scan
+turn invariant, subset and distinctness properties for the computed chains,
+ordered-chain facts for the lower and upper scans, a distinctness criterion for
+the final concatenation, length bounds, support-function invariants for the
+lower and upper scans, and the real-coordinate theorem that the computed output
+has the same convex hull as the input.  The final correctness theorem states
+the specification explicitly: the returned vertices are input points, every
+input point lies in the convex hull of the returned vertices, and the returned
+vertices have exactly the same convex hull as the input.  It also proves
+irredundancy of the returned vertex set: deleting any returned point changes
+the convex hull of the returned set.  The executable algorithm is polymorphic
+over ordered integral domains because the scan only uses lexicographic ordering
+and signs of orientation determinants; the geometric theorem is stated for real
+coordinates because the convexity and separating-hyperplane libraries use real
+vector spaces.  Thus the integer examples exercise the executable code, while
+the real examples instantiate the geometric correctness theorem.  The
+support-function argument shows that points removed by a scan are dominated in
+the relevant support directions; a separating hyperplane theorem then yields
+convex-hull coverage, and strict supporting directions expose each returned
+vertex for the irredundancy result.  The
+development proves functional correctness, but does not formalize the
+asymptotic running time.  AI assistance was used for proof engineering.  The
+final definitions, statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

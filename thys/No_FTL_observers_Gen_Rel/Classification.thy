@@ -738,7 +738,7 @@ proof -
         proof -
           { assume lhs: "sqr tdiff > sNorm2 sdiff"
             { assume "\<not> insideRegularCone x p"
-              hence options: "onRegularCone x p \<or> outsideRegularCone x p" 
+              hence "options": "onRegularCone x p \<or> outsideRegularCone x p" 
                 using lemClassification xnotp by blast
   
               { assume "onRegularCone x p"
@@ -753,7 +753,7 @@ proof -
               }
               hence notIn: "\<not>outsideRegularCone x p" by blast
   
-              hence "False" using notOn options by blast
+              hence "False" using notOn "options" by blast
             }
             hence "insideRegularCone x p" by blast
           }
@@ -764,7 +764,7 @@ proof -
         proof -
           { assume lhs: "sqr tdiff < sNorm2 sdiff"
             { assume "\<not> outsideRegularCone x p"
-              hence options: "onRegularCone x p \<or> insideRegularCone x p" 
+              hence "options": "onRegularCone x p \<or> insideRegularCone x p" 
                 using lemClassification xnotp by blast
   
               { assume "onRegularCone x p"
@@ -779,7 +779,7 @@ proof -
               }
               hence notIn: "\<not>insideRegularCone x p" by blast
   
-              hence "False" using notOn options by blast
+              hence "False" using notOn "options" by blast
             }
             hence "outsideRegularCone x p" by blast
           }
@@ -791,7 +791,7 @@ proof -
         proof -
           { assume lhs: "sqr tdiff = sNorm2 sdiff"
             { assume "\<not> onRegularCone x p"
-              hence options: "outsideRegularCone x p \<or> insideRegularCone x p" 
+              hence "options": "outsideRegularCone x p \<or> insideRegularCone x p" 
                 using lemClassification xnotp by blast
   
               { assume "outsideRegularCone x p"
@@ -806,7 +806,7 @@ proof -
               }
               hence notIn: "\<not>insideRegularCone x p" by blast
   
-              hence "False" using notOut options by blast
+              hence "False" using notOut "options" by blast
             }
             hence "onRegularCone x p" by blast
           }

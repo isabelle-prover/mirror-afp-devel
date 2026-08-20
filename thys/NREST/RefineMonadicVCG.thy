@@ -92,7 +92,7 @@ ML \<open>
       case dest_case ctxt case_term of
         NONE => no_tac
       | SOME (arg,case_thms) => let 
-            val stac = asm_full_simp_tac (put_simpset HOL_basic_ss ctxt addsimps case_thms) 
+            val stac = asm_full_simp_tac (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps case_thms) 
           in 
           (*CHANGED o stac
           ORELSE'*)
@@ -337,7 +337,7 @@ lemma whileT_rule''':
             subgoal 
               by (metis diff_is_0_eq' leI less_option_Some option.simps(3) zero_enat_def) 
             subgoal 
-              by (smt Nat.add_diff_assoc enat_ile enat_ord_code(1) idiff_enat_enat leI le_add_diff_inverse2 nat_le_iff_add option.simps(3)) 
+              by (smt (z3) Nat.add_diff_assoc enat_ile enat_ord_code(1) idiff_enat_enat leI le_add_diff_inverse2 nat_le_iff_add option.simps(3)) 
             subgoal 
               using dual_order.trans by blast 
           done

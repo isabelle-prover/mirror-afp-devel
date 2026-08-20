@@ -5,7 +5,7 @@ Authors: Kaan Taskin
 section \<open>Pumping Lemma for Strongly Right-Linear Grammars\<close>
 
 theory Pumping_Lemma_Regular
-imports NDA_rlin2 "List_Power.List_Power"
+imports NDA_rlin2
 begin
 
 text \<open>The proof is on the level of strongly right-linear grammars.

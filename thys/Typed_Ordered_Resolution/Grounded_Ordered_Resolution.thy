@@ -16,12 +16,12 @@ locale grounded_ordered_resolution_calculus =
   term_from_ground = "term_from_ground :: 't\<^sub>G \<Rightarrow> 't" and id_subst = "id_subst :: 'subst" +
 
   grounded_selection_function where
-  select = select and atom_subst = "(\<cdot>t)" and atom_vars = "term.vars" and
-  atom_from_ground = "term.from_ground" and atom_to_ground = "term.to_ground" and
-  is_ground_instance = is_ground_instance
+  select = select and atom_subst = "(\<cdot>t)" and atom_vars = term.vars and
+  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground and
+  atom_is_ground = term.is_ground and is_ground_instance = is_ground_instance
   for
     select :: "'t select" and
-    welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
+    welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 sublocale ground: ground_ordered_resolution_calculus where
@@ -41,7 +41,7 @@ abbreviation is_inference_ground_instance_one_premise where
       \<iota>\<^sub>G = inference.to_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V> \<gamma> \<and>
       \<V> = \<V>' \<and>
-      infinite_variables_per_type \<V>"
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>)"
 
 abbreviation is_inference_ground_instance_two_premises where
   "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
@@ -52,9 +52,9 @@ abbreviation is_inference_ground_instance_two_premises where
       inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
-      infinite_variables_per_type \<V>\<^sub>1 \<and>
-      infinite_variables_per_type \<V>\<^sub>2 \<and>
-      infinite_variables_per_type \<V>\<^sub>3"
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>1) \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>2) \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>3)"
 
 abbreviation is_inference_ground_instance where
   "is_inference_ground_instance \<iota> \<iota>\<^sub>G \<gamma> \<equiv>
@@ -133,7 +133,9 @@ sublocale lifting:
 proof (unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
-    using obtain_infinite_variables_per_type_on''[of "{}"]
+    using 
+      obtain_infinite_variables_per_type_on'[of "{}"]
+      infinite_variables 
     by auto
 next
   fix bottom
@@ -180,7 +182,7 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_ordered_resolution_calculus.inference_ground_instances
-      (\<odot>) apply_subst (\<cdot>t) term.vars term.to_ground (\<prec>\<^sub>t) id_subst term.from_ground select\<^sub>G welltyped"
+      (\<odot>) apply_subst (\<cdot>t) term.vars term.is_ground term.to_ground (\<prec>\<^sub>t) id_subst term.from_ground select\<^sub>G welltyped"
 
 sublocale
   lifting_intersection

@@ -32,17 +32,16 @@ function fail()
 
 ## process command line
 
-eval "BUILD_OPTS=($AFP_BUILD_OPTIONS)"
+export ISABELLE_BUILD_OPTIONS="$AFP_BUILD_OPTIONS"
 
-BUILD_OPTS["${#BUILD_OPTS[@]}"]="-d"
-BUILD_OPTS["${#BUILD_OPTS[@]}"]="$AFP"
+declare -a BUILD_ARGS=(-v -d "$AFP")
 
 while getopts "A" OPT
 do
   case "$OPT" in
     A)
-      BUILD_OPTS["${#BUILD_OPTS[@]}"]="-g"
-      BUILD_OPTS["${#BUILD_OPTS[@]}"]="AFP"
+      BUILD_ARGS["${#BUILD_ARGS[@]}"]="-g"
+      BUILD_ARGS["${#BUILD_ARGS[@]}"]="AFP"
       ;;
     \?)
       usage
@@ -55,5 +54,4 @@ shift $(($OPTIND - 1))
 
 ## main
 
-exec "$ISABELLE_TOOL" build "${BUILD_OPTS[@]}" "$@"
-
+exec "$ISABELLE_TOOL" build "${BUILD_ARGS[@]}" "$@"

@@ -1,0 +1,67 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{url}
+
+\isabellestyle{it}
+\isafoldtag{proof}
+\renewcommand{\isastyle}{\isastyleminor}
+\renewcommand{\isacharunderscore}{\_}
+\renewcommand{\isacharunderscorekeyword}{\_}
+\emergencystretch=3em
+
+\begin{document}
+
+\title{The Erd\H{o}s--Ginzburg--Ziv Theorem}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+  We formalize the Erd\H{o}s--Ginzburg--Ziv theorem for integer multisets: every
+  multiset of at least $2n-1$ integers contains a submultiset of cardinality
+  $n$ whose sum is divisible by $n$. The proof is split into a prime-modulus
+  argument over residue multisets and a strong-induction argument for the
+  general case, following the classical theorem of Erd\H{o}s, Ginzburg, and
+  Ziv~\cite{ErdosGinzburgZiv1961}. AI assistance was used for proof
+  engineering. The final definitions, statements, and proofs are checked by
+  Isabelle.
+\end{abstract}
+
+\section{Introduction}
+
+The Erd\H{o}s--Ginzburg--Ziv theorem is a classical result in additive number
+theory. In the form formalized here, every multiset of at least $2n-1$
+integers contains an $n$-element submultiset whose sum is congruent to $0$
+modulo $n$.
+
+This Isabelle/HOL development separates the finite combinatorial arguments from
+the induction on the modulus. The prime case is handled on residue multisets
+modulo $p$ by sorting the nontrivial case and reducing the final choice to a
+subset-sum problem over $\mathbb{Z}/p\mathbb{Z}$. The general case factors a
+composite modulus as $n = mp$, extracts many prime-sized zero-sum blocks, and
+applies strong induction to the multiset of block sums divided by $p$.
+
+\section{Organization}
+
+The session is split into three main theories:
+\begin{itemize}
+\item \texttt{EGZ\_Basics} develops modular translations and subset-sum coverage.
+\item \texttt{EGZ\_Prime} proves the prime-modulus theorem.
+\item \texttt{Erdos\_Ginzburg\_Ziv} derives the full theorem for arbitrary
+positive moduli.
+\end{itemize}
+
+\tableofcontents
+
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

@@ -435,12 +435,12 @@ lemma totalI1 :
 lemma totalI2:
   assumes "recfn 2 f" and "\<And>x y. eval f [x, y] \<down>"
   shows "total f"
-  using assms totalI[of f] by (smt length_0_conv length_Suc_conv numeral_2_eq_2)
+  using assms totalI[of f] by (smt (z3) length_0_conv length_Suc_conv numeral_2_eq_2)
 
 lemma totalI3:
   assumes "recfn 3 f" and "\<And>x y z. eval f [x, y, z] \<down>"
   shows "total f"
-  using assms totalI[of f] by (smt length_0_conv length_Suc_conv numeral_3_eq_3)
+  using assms totalI[of f] by (smt (z3) length_0_conv length_Suc_conv numeral_3_eq_3)
 
 lemma totalI4:
   assumes "recfn 4 f" and "\<And>w x y z. eval f [w, x, y, z] \<down>"
@@ -451,7 +451,7 @@ proof (rule totalI[of f])
   then have "length xs = Suc (Suc (Suc (Suc 0)))"
     using assms(1) by simp
   then obtain w x y z where "xs = [w, x, y, z]"
-    by (smt Suc_length_conv length_0_conv)
+    by (smt (z3) Suc_length_conv length_0_conv)
   then show "eval f xs \<down>" using assms(2) by simp
 qed
 

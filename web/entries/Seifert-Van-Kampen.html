@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Classical Seifert–van Kampen Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="The Classical Seifert–van Kampen Theorem in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Classical Seifert–van Kampen Theorem in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Classical Seifert–van Kampen Theorem">
+    <meta property="og:url" content="https://isa-afp.org/entries/Seifert-Van-Kampen.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>C</span>lassical <span class='first'>S</span>eifert–van <span class='first'>K</span>ampen <span class='first'>T</span>heorem
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a>
+      </p>
+      <p class="date">May 9, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry formalizes a quotient-oriented proof of the classical
+Seifert–van Kampen theorem in Isabelle/HOL. For open subsets U
+and V of a topological space with x0 ∈ U ∩ V and path-connected
+intersection, it proves that the fundamental group of U ∪ V at x0
+is in bijection with the carrier-based amalgamated free product of
+the fundamental groups of U and V over the fundamental group
+of U ∩ V. The development also provides reusable infrastructure
+for explicit path homotopies, pushout-style quotients, free-product
+words, carrier-based amalgamated free products, and the abstract
+encode/decode interface used to organize the final argument. AI
+assistance was used for proof engineering. The final definitions,
+statements, and proofs are checked by Isabelle.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Codex with gpt 5.5 on xhigh was used to help with proof engineering.</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/topology/">Mathematics/Topology</a></li>
+      </ul>
+      <h3>Session Seifert-Van-Kampen</h3>
+      <ul>
+          <li><a href="../thys/Seifert-Van-Kampen/Equivalence_Quotients.html">Equivalence_Quotients</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Free_Product_Words.html">Free_Product_Words</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Amalgamated_Free_Product.html">Amalgamated_Free_Product</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Carrier_Amalgamated_Free_Product.html">Carrier_Amalgamated_Free_Product</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Carrier_Group_Scaffold.html">Carrier_Group_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Carrier_Amalgamated_Free_Product_Eval.html">Carrier_Amalgamated_Free_Product_Eval</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Explicit_Path_Homotopy_Scaffold.html">Explicit_Path_Homotopy_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Fundamental_Group_Scaffold.html">Fundamental_Group_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Explicit_Fundamental_Group_Scaffold.html">Explicit_Fundamental_Group_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Pushout_Scaffold.html">Pushout_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Seifert_Van_Kampen_Scaffold.html">Seifert_Van_Kampen_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Classical_Seifert_Van_Kampen.html">Classical_Seifert_Van_Kampen</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Binary_Sum_Topology.html">Binary_Sum_Topology</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Topological_Pushout_Scaffold.html">Topological_Pushout_Scaffold</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Topological_Seifert_Van_Kampen.html">Topological_Seifert_Van_Kampen</a></li>
+          <li><a href="../thys/Seifert-Van-Kampen/Seifert_Van_Kampen.html">Seifert_Van_Kampen</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Seifert-Van-Kampen/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Seifert-Van-Kampen/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Seifert-Van-Kampen/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Seifert-Van-Kampen-AFP</p>
+        <pre id="copy-text">@article{Seifert-Van-Kampen-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {The Classical Seifert–van Kampen Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Seifert-Van-Kampen.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Seifert-Van-Kampen-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

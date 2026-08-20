@@ -533,7 +533,7 @@ qed
 lemma same_on_vars_clause:
   assumes "\<forall>v \<in> vars_cls S. \<sigma> v = \<tau> v"
   shows "subst_cls S \<sigma> = subst_cls S \<tau>"
-  by (smt assms image_eqI image_mset_cong2 mem_simps(9) same_on_vars_lit set_image_mset
+  by (smt (z3) assms image_eqI image_mset_cong2 mem_simps(9) same_on_vars_lit set_image_mset
       subst_cls_def vars_cls_def)
 
 lemma same_on_lits_clause:

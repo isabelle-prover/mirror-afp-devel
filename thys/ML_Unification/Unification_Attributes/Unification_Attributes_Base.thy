@@ -5,9 +5,12 @@ theory Unification_Attributes_Base
 begin
 
 paragraph \<open>Summary\<close>
-text \<open>OF attribute with adjustable unifier.\<close>
+text \<open>Attributes with adjustable unifier.\<close>
 
-ML_file\<open>unify_of_base.ML\<close>
-ML_file\<open>unify_of.ML\<close>
+ML_file\<open>unify_OF_base.ML\<close>
+ML_file\<open>unify_OF.ML\<close>
+
+ML_file\<open>unify_THEN_base.ML\<close>
+ML_file\<open>unify_THEN.ML\<close>
 
 end

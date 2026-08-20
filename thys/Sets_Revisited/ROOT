@@ -1,0 +1,9 @@
+chapter AFP
+
+session Sets_Revisited = Category3 +
+  options [timeout = 600, names_unique = false]
+  theories
+    SetsCat_Interps
+  document_files
+    "root.bib"
+    "root.tex"

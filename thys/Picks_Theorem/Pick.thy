@@ -2304,7 +2304,7 @@ lemma flip_function:
   defines "g \<equiv> (\<lambda>v. vector [v$1, -v$2])::(real^2 \<Rightarrow> real^2)"
   shows "inj f" "f = g"
 proof-
-  have "det M = M$1$1 * M$2$2 - M$1$2 * M$2$1" using det_2 by blast
+  have "matrix_det M = M$1$1 * M$2$2 - M$1$2 * M$2$1" using det_2 by blast
   thus "inj f" by (simp add: inj_matrix_vector_mult invertible_det_nz f_def M_def)
 
   have "\<And>x. f x = g x"
@@ -4169,7 +4169,7 @@ proof-
   let ?x = "(b - a)"
   let ?e = "norm (b - a) *\<^sub>R ((vector [1, 0])::(real^2))"
   have "norm ?x = norm ?e" by (simp add: e1e2_basis(1))
-  then obtain f where f: "orthogonal_transformation f \<and> det(matrix f) = 1 \<and> f ?x = ?e"
+  then obtain f where f: "orthogonal_transformation f \<and> matrix_det(matrix f) = 1 \<and> f ?x = ?e"
     using rotation_exists by (metis two_le_card)
 
   have bij: "bij f \<and> linear f"

@@ -1,0 +1,16 @@
+chapter AFP
+
+session Sorted_Rewriting = Sorted_Terms +
+  options [timeout = 600]
+  theories
+    Binary_Relations_More
+    Sorted_Terms_More
+    Sorted_Rewriting
+    Conditional_Rewriting
+    Constrained_Rewriting
+    Ints_Logic
+    Test_Sorted_Rewriting
+  document_files
+    "root.tex"
+    "root.bib"
+

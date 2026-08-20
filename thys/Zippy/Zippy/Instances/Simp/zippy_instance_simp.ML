@@ -7,7 +7,7 @@ sig
 
   structure Simp :
   sig
-    val gen_data : @{ParaT_args encl: "(" ")"} Exn.ME.exn -> Zippy_Identifier.id -> string ->
+    val gen_data : @{ParaT_args encl: "(" ")"} Exn.ME.exn -> Identifier.id -> string ->
       (Proof.context -> int -> tactic) -> (Proof.context -> int -> tactic) ->
       ((Base_Data.GCS.goal_pos * Base_Data.GCS.gcpos list) list ->
         (@{ParaT_args} @{AllT_args} ZLPC.Z1.zipper) emorph) ->
@@ -23,9 +23,7 @@ functor Zippy_Instance_Simp(
     structure Z : ZIPPY_INSTANCE_TACTIC
     structure Ctxt : ZIPPY_CTXT_STATE_MIXIN
     sharing type Ctxt.M.t = Z.M.t
-  )
-  : ZIPPY_INSTANCE_SIMP
-  =
+  ) : ZIPPY_INSTANCE_SIMP =
 struct
 open Z
 

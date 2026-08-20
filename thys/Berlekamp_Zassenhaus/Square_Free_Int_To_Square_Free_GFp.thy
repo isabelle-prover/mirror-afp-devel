@@ -31,8 +31,8 @@ proof -
     note q = rat_to_normalized_int_poly(1)[OF norm]
     from dvd obtain k where rf: "?r f = q * (q * k)" unfolding dvd_def by (auto simp: ac_simps)
     from rat_to_int_factor_explicit[OF this norm] obtain s where 
-      f: "f = q' * smult (content f) s" by auto
-    let ?s = "smult (content f) s" 
+      f: "f = q' * smult (Polynomial.content f) s" by auto
+    let ?s = "smult (Polynomial.content f) s" 
     from arg_cong[OF f, of ?r] c0 
     have "?r f = q * (smult (inverse c) (?r ?s))" 
       by (simp add: field_simps q hom_distribs)
@@ -48,7 +48,7 @@ proof -
 qed
 
 lemma content_free_unit:
-  assumes "content (p::'a::{idom,semiring_gcd} poly) = 1"
+  assumes "Polynomial.content (p::'a::{idom,semiring_gcd} poly) = 1"
   shows "p dvd 1 \<longleftrightarrow> degree p = 0"
   by (insert assms, auto dest!:degree0_coeffs simp: normalize_1_iff poly_dvd_1)
 
@@ -62,13 +62,13 @@ proof (cases "degree f = 0")
 next
   case False note deg = this
   define pp where "pp = primitive_part f" 
-  define c where "c = content f"
+  define c where "c = Polynomial.content f"
   from sf have f0: "f \<noteq> 0" unfolding square_free_def by auto
   hence c0: "c \<noteq> 0" unfolding c_def by auto
   have f: "f = smult c pp" unfolding c_def pp_def unfolding content_times_primitive_part[of f] ..
   from sf[unfolded f] c0 have sf': "square_free pp" by (metis dvd_smult smult_0_right square_free_def)  
   from deg[unfolded f] c0 have deg': "\<And> x. degree pp > 0 \<or> x" by auto
-  from content_primitive_part[OF f0] have cp: "content pp = 1" unfolding pp_def .
+  from content_primitive_part[OF f0] have cp: "Polynomial.content pp = 1" unfolding pp_def .
   let ?p' = "pderiv pp" 
   {
     assume "resultant pp ?p' = 0" 
@@ -77,8 +77,8 @@ next
       by (blast elim: not_coprimeE) 
     from r(1) obtain k where "pp = r * k" ..
     from pos_zmult_eq_1_iff_lemma[OF arg_cong[OF this, 
-      of content, unfolded content_mult cp, symmetric]] content_ge_0_int[of r]
-    have cr: "content r = 1" by auto
+      of Polynomial.content, unfolded content_mult cp, symmetric]] content_ge_0_int[of r]
+    have cr: "Polynomial.content r = 1" by auto
     with r(3) content_free_unit have dr: "degree r \<noteq> 0" by auto
     let ?r = "map_poly rat_of_int"
     from r(1) have dvd: "?r r dvd ?r pp" unfolding dvd_def by (auto simp: hom_distribs)

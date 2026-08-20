@@ -56,7 +56,7 @@ The AFP deals with this by synchronizing such updates with Isabelle releases:
 *   In the background, the archive maintainers evolve all entries to be up to date with the current Isabelle development version. Authors can contribute changes to this version which is available as a [Heptapod mercurial repository](https://foss.heptapod.net/isa-afp/afp-devel/) or as tar.gz package on the [download page](/download).
 *   When a new Isabelle version is released, the above mentioned development version of AFP is frozen and turns into the main version displayed on the front page. Older versions (including the original submission) of all entries are archived and remain accessible.
 
-Significant changes of an entry should be recorded in the metadata of the entry using the keyword "extra-history". The resulting web page should look [something like this](https://www.isa-afp.org/entries/JinjaThreads.html).
+Significant changes of an entry should be recorded in the metadata of the entry using the keyword "extra-history". The resulting web page should look [something like this](https://isa-afp.org/entries/JinjaThreads.html).
 
 ## Monotonicity
 

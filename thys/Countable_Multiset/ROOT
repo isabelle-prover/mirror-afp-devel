@@ -1,0 +1,18 @@
+chapter AFP
+
+session Countable_Multiset = Coinductive +
+  options [timeout = 600]
+  sessions
+    "HOL-Library"
+  theories [document = false]
+    "HOL-Library.Extended_Nat"
+    "HOL-Library.Countable_Set"
+    "HOL-Library.Countable_Set_Type"
+    "Coinductive.Coinductive_List"
+    "HOL-Library.BNF_Corec"
+  theories
+    Countable_Multiset
+    Countably_Infinite_Multiset
+    Infinite_Sums_Enat
+  document_files
+    "root.tex"

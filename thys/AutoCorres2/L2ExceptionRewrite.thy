@@ -1025,21 +1025,23 @@ fun smash_unit_vars ctxt = SUBGOAL (fn (t, i) =>
  end)
 
 local
-  val ss = simpset_of (put_simpset HOL_basic_ss @{context}
-             addsimps @{thms HOL.simp_thms
+  val ss =
+    HOL_basic_ss
+    |> Simplifier.simpset_map \<^context>
+      (Simplifier.add_simps @{thms HOL.simp_thms
                surj_def rel_project_conv rel_Nonlocal_conv Product_Type.prod.case c_exntype.case
                rel_liftE_apply rel_sum_eq_apply
                if_True if_False
                Product_Type.prod.inject c_exntype.inject List.list.inject String.char.inject c_exntype.distinct
                sum.map_ident  unit_convs}
-             |> Simplifier.add_cong @{thm if_cong})
+      #> Simplifier.add_cong @{thm if_cong})
 in
 fun clarsimp_solve_tac ctxt i =
   let
     val more_simps = Named_Theorems.get ctxt @{named_theorems rel_spec_monad_rewrite_simps}
   in
     CHANGED (TRY (smash_unit_vars ctxt i)
-      THEN clarsimp_tac (put_simpset ss ctxt addsimps more_simps) i
+      THEN clarsimp_tac (ctxt |> put_simpset ss |> Simplifier.add_simps more_simps) i
       THEN (REPEAT (resolve_tac ctxt @{thms TrueI refl gen_unit_eq conjI} i)))
   end
 end
@@ -1116,8 +1118,8 @@ fun norm_synthesis_var ctxt = SUBGOAL (fn (t,i) => fn st =>
 
 fun norm_resolve_split_thm rules_name ctxt =
   let 
-    val simp_ctxt = Simplifier.put_simpset HOL_basic_ss ctxt
-         addsimps @{thms 
+    val simp_ctxt = ctxt |> Simplifier.put_simpset HOL_basic_ss
+         |> Simplifier.add_simps @{thms 
             HOL.simp_thms if_True if_False
             c_exntype.case_distrib [where h=from_xval] 
             Product_Type.prod.case_distrib[where h=from_xval] 
@@ -1250,7 +1252,7 @@ lemma case_Nonlocal_Inl: "((case e of Nonlocal x \<Rightarrow> Inl x | _ \<Right
 method_setup resolve_split = \<open>
   Scan.succeed (fn ctxt => 
     let
-      val simp_ctxt = (ctxt |> Simplifier.clear_simpset) addsimps @{thms 
+      val simp_ctxt = ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms 
         from_xval_simps 
         if_distrib [where f = from_xval]}
     in
@@ -1311,8 +1313,8 @@ fun abstract_try_catch ctxt t =
   let
     val goal = \<^infer_instantiate>\<open>t = t in prop (schematic) \<open>t = a\<close>\<close> ctxt
     val thm = Goal.prove ctxt [] [] goal (fn {prems, context,...}  =>
-        simp_tac ((Simplifier.add_cong @{thm c_exntype.case_cong} (put_simpset HOL_basic_ss context))
-           addsimps @{thms cond_return1 cond_return2 if_c_exntype_cases rel_spec_monad_eq_conv [symmetric]}) 1 THEN
+        simp_tac (context |> put_simpset HOL_basic_ss |> Simplifier.add_cong @{thm c_exntype.case_cong}
+           |> Simplifier.add_simps @{thms cond_return1 cond_return2 if_c_exntype_cases rel_spec_monad_eq_conv [symmetric]}) 1 THEN
         resolve_tac context @{thms rel_spec_monad_rel_xvalI} 1 THEN
         rel_spec_monad_L2_rewrite_tac context [] THEN
         print_unsolved_tac "abstract_try_catch: unfinished goal" ctxt
@@ -1324,7 +1326,7 @@ fun abstract_try_catch ctxt t =
 
 fun abstract_try_catch_conv ctxt ct =
   case abstract_try_catch ctxt (Thm.term_of ct) of
-    SOME eq => mk_meta_eq (Simplifier.simplify (Simplifier.clear_simpset ctxt addsimps @{thms from_xval_simps}) eq)
+    SOME eq => mk_meta_eq (Simplifier.simplify (ctxt |> Simplifier.clear_simpset |> Simplifier.add_simps @{thms from_xval_simps}) eq)
   | NONE => (warning ("abstract_try_catch_conv: failed to convert to nested exceptions." ^
      @{make_string} ct); Conv.all_conv ct)
 
@@ -1349,7 +1351,7 @@ fun project_used_components_conv ctxt ct =
     val trace = print_unsolved_tac "project_used_components_conv: unfinished goal"
   in
     case rel_spec_monad_conv trace @{thm rel_project_eqI} ctxt (Thm.term_of ct) of
-      SOME eq => eq |> rhs_conv (Simplifier.rewrite (put_simpset HOL_basic_ss ctxt addsimps
+      SOME eq => eq |> rhs_conv (Simplifier.rewrite (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps
         (Utils.get_rules ctxt @{named_theorems L2opt}))) \<comment>\<open>get rid of now unused result values, e.g. \<open>L2_unknown\<close>\<close>
     | NONE => (warning ("project_used_components failed on: " ^ @{make_string} ct); Conv.all_conv ct)
   end

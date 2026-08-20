@@ -17,7 +17,7 @@ lemma (in MC_syntax) emeasure_suntil_geometric:
   assumes "\<And>t. AE \<omega> in T t. \<not> (P \<sqinter> (HLD X \<sqinter> nxt (HLD X suntil P))) \<omega>"
   shows "emeasure (T s) {\<omega>\<in>space (T s). (HLD X suntil P) \<omega>} = r / (1 - p)"
 proof (subst emeasure_suntil_disj)
-  let ?F = "\<lambda>F s. emeasure (T s) {\<omega> \<in> space (T s). P \<omega>} + \<integral>\<^sup>+ t. F t * indicator X t \<partial>K s"
+  let ?F = "\<lambda>F s. emeasure (T s) {\<omega> \<in> space (T s). P \<omega>} + (\<integral>\<^sup>+ t. F t * indicator X t \<partial>K s)"
   let ?f = "\<lambda>x. ennreal r + ennreal p * x"
 
   have "mono ?F" "mono ?f"

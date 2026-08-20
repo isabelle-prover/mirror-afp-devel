@@ -1187,9 +1187,9 @@ proof -
     unfolding K_def
     by (simp add: K_def measure_pmf.nn_integral_fst[symmetric] * distr_id' sets_exponential)
   also have "\<dots> = ennreal (exp (- t * escape_rate s) * of_bool (s = s'')) +
-      (\<integral>\<^sup>+u. indicator {0<..t} u * \<integral>\<^sup>+s'. p s' s'' (t - u) \<partial>J s \<partial>exponential (escape_rate s))"
+      (\<integral>\<^sup>+u. indicator {0<..t} u * (\<integral>\<^sup>+s'. p s' s'' (t - u) \<partial>J s) \<partial>exponential (escape_rate s))"
     using \<open>0\<le>t\<close> by (simp add: nn_integral_add nn_integral_cmult ennreal_indicator ennreal_mult emeasure_exponential_Ioi escape_rate_pos)
-  also have "(\<integral>\<^sup>+u. indicator {0<..t} u * \<integral>\<^sup>+s'. p s' s'' (t - u) \<partial>J s \<partial>exponential (escape_rate s)) =
+  also have "(\<integral>\<^sup>+u. indicator {0<..t} u * (\<integral>\<^sup>+s'. p s' s'' (t - u) \<partial>J s) \<partial>exponential (escape_rate s)) =
       (\<integral>\<^sup>+u. indicator {0<..t} u *\<^sub>R (LINT s'|J s. p s' s'' (t - u)) \<partial>exponential (escape_rate s))"
     by (simp add: measure_pmf.integrable_const_bound[of _ 1] nn_integral_eq_integral ennreal_mult ennreal_indicator)
   also have "\<dots> = (LINT u:{0<..t}|exponential (escape_rate s). (LINT s'|J s. p s' s'' (t - u)))"
@@ -1436,8 +1436,9 @@ proof -
     apply (rule measurable_compose_countable'[OF _ measurable_fst])
     apply (auto simp: DTMC.countable_acc)
     done
-  also have "\<dots> = (\<integral>\<^sup>+z. \<integral>\<^sup>+ \<omega>. of_bool (trace_in {z} t x \<omega>) * \<integral>\<^sup>+\<omega>'. of_bool (trace_in {y} t' z \<omega>')
-    \<partial>K.lim_stream (0, z) \<partial>K.lim_stream (0, x) \<partial>count_space (DTMC.acc``{x}))"
+  also have "\<dots> = (\<integral>\<^sup>+z. \<integral>\<^sup>+ \<omega>. of_bool (trace_in {z} t x \<omega>) *
+                   (\<integral>\<^sup>+\<omega>'. of_bool (trace_in {y} t' z \<omega>') \<partial>K.lim_stream (0, z))
+                  \<partial>K.lim_stream (0, x) \<partial>count_space (DTMC.acc``{x}))"
     apply (subst LA.Fubini')
     apply (subst measurable_split_conv)
     apply (rule measurable_compose_countable'[OF _ measurable_fst])

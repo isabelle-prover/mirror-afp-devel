@@ -104,7 +104,7 @@ structure Init_Goal_Cluster = Zippy_Update_Goal_Cluster_Mixin(
   structure UGC = \<^functor_instance>\<open>
     functor_name: Zippy_Update_Goal_Cluster_Mixin_Base
     id: \<open>FI.prefix_id "init_gc"\<close>
-    path: \<open>FI.struct_op "Run.Init_Goal_Cluster"\<close>
+    path: \<open>FI.struct_op \<^unchecked_name>\<open>Run.Init_Goal_Cluster\<close>\<close>
     more_args: \<open>open Goals_Pos
       structure M = Z
       structure Log = Logging.Update_Goal_Cluster\<close>\<close>

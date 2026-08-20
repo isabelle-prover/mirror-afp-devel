@@ -1263,7 +1263,7 @@ proof -
         assume "i \<in> {j + 4..n - 2}"
         hence "0 < i - j" by simp
         from f_nonneg[of i] have "(- 1)^(i - j) * ?f i j \<le> ?f i j"
-          by (smt minus_one_mult_self mult_cancel_right1 pos_zmult_eq_1_iff_lemma zero_less_mult_iff)
+          by (smt (z3) minus_one_mult_self mult_cancel_right1 pos_zmult_eq_1_iff_lemma zero_less_mult_iff)
         also from \<open>0 < i - j\<close> have "\<dots> \<le> int (cc i) gchoose (i - j)" by (rule ie1)
         finally show "(- 1)^(i - j) * ?f i j \<le> int (cc i) gchoose (i - j)" .
       qed

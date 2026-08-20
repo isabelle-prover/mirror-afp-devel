@@ -351,7 +351,7 @@ next
     by auto
   ultimately obtain ml_v\<^sub>1 ml_v\<^sub>2 where "ml_vs = [ml_v\<^sub>2, ml_v\<^sub>1]"
     using app1(1)
-    by (smt list_all2_shortcircuit_rval list_all2_Cons1 list_all2_Nil)
+    by (smt (z3) list_all2_shortcircuit_rval list_all2_Cons1 list_all2_Nil)
 
   have "is_cupcake_exp exp\<^sub>1" "is_cupcake_exp exp\<^sub>2"
     using app1 unfolding \<open>exps = _\<close> by (auto dest: related_exp_is_cupcake)

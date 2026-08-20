@@ -13,8 +13,9 @@ imports HintikkaTheory
 begin
 (*>*)
 
-section    \<open>Maximal Hintikka  \<close>
-text   \<open>This theory formalises maximality of Hintikka sets according to Smullyan's textbook \cite{Smullyan}. Specifically, following \cite{Fitting} (page 55) this theory formalises 
+section \<open>Maximal Hintikka  \<close>
+text \<open>This theory formalises maximality of Hintikka sets according to Smullyan's textbook \cite{Smullyan}.
+ Specifically, following \cite{Fitting} (page 55) this theory formalises 
 the fact that if $\mathcal {C}$ is a propositional consistence property closed by subsets, and $M$ 
 a maximal set belonging to $\mathcal{C}$ then $M$ is a Hintikka set.
 \<close> 
@@ -160,8 +161,8 @@ proof-
         (\<forall>F. \<not>.\<not>.F \<in> M \<longrightarrow> F \<in> M) \<and>
         (\<forall>F. FormulaAlpha F \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<and> Comp2 F \<in> M) \<and>
         (\<forall>F. FormulaBeta F \<and> F \<in> M \<longrightarrow> Comp1 F \<in> M \<or> Comp2 F \<in> M)"
-    by (meson consistProp_axioms consistenceEq ext_HintikkaP1 ext_HintikkaP2 ext_HintikkaP3 ext_HintikkaP4 ext_HintikkaP5 ext_HintikkaP6
-        hip1 hip2)
+    by (meson consistProp_axioms consistenceEq ext_HintikkaP1 ext_HintikkaP2 ext_HintikkaP3 
+        ext_HintikkaP4 ext_HintikkaP5 ext_HintikkaP6 hip1 hip2)
   thus ?thesis
     using HintikkaEq HintikkaP_def by auto
 qed   

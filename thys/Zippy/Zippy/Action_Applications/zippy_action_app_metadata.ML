@@ -49,7 +49,7 @@ val metadata = Metadata
 
 fun eq_metadata (m1 as Metadata {progress = progress1, cost = cost1},
   m2 as Metadata {progress = progress2, cost = cost2}) =
-  pointer_eq (m1, m2) orelse progress1 = progress2 orelse eq_cost (cost1, cost2)
+  pointer_eq (m1, m2) orelse (progress1 = progress2 andalso eq_cost (cost1, cost2))
 fun pretty_metadata (Metadata {progress, cost}) = SpecCheck_Show_Base.record [
     ("progress", P.pretty progress),
     ("cost", pretty_cost cost)

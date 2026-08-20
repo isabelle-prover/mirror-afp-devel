@@ -29,11 +29,11 @@ locale nonground_order_generic =
   pos_to_mset = pos_to_mset and restriction = "range term.from_ground" +
 
   clause: nonground_term_based_order_lifting where
-  less = "(\<prec>\<^sub>l)" and sub_subst = literal.subst and sub_vars = literal.vars and
-  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and
-  map = image_mset and to_set = set_mset and to_ground_map = image_mset and
-  from_ground_map = image_mset and ground_map = image_mset and to_set_ground = set_mset and
-  to_mset = "\<lambda>x. x" +
+  less = "(\<prec>\<^sub>l)" and sub_subst = literal.subst and sub_vars = literal.vars and 
+  sub_is_ground = literal.is_ground and sub_to_ground = literal.to_ground and
+  sub_from_ground = literal.from_ground and map = image_mset and to_set = set_mset and
+  to_ground_map = image_mset and from_ground_map = image_mset and ground_map = image_mset and
+  to_set_ground = set_mset and to_mset = "\<lambda>x. x" +
 
   "term": nonground_term_order +
 
@@ -125,10 +125,10 @@ lemma obtain_strictly_maximal_literal:
 proof-
 
   have grounding_not_empty: "C \<cdot> \<gamma> \<noteq> {#}"
-    using is_strictly_maximal_not_empty[OF ground_strictly_maximal].
+    using is_strictly_maximal_not_empty[OF ground_strictly_maximal] .
 
   have l\<^sub>G_in_grounding: "l\<^sub>G \<in># C \<cdot> \<gamma>"
-    using strictly_maximal_in_clause[OF ground_strictly_maximal].
+    using strictly_maximal_in_clause[OF ground_strictly_maximal] .
 
   obtain l where
     l_in_C: "l \<in># C" and
@@ -141,7 +141,7 @@ proof-
   proof(cases "is_strictly_maximal l C")
     case True
     show ?thesis
-      using that[OF True l\<^sub>G].
+      using that[OF True l\<^sub>G] .
   next
     case False
 
@@ -247,9 +247,6 @@ lemma unique_strictly_maximal_in_ground_clause:
     "l = l'"
   using assms unique_maximal_in_ground_clause
   by blast
-
- (* TODO: order.order *)
-thm literal.order.order.strict_iff_order
 
 abbreviation ground_is_maximal where
   "ground_is_maximal l\<^sub>G C\<^sub>G \<equiv> is_maximal (literal.from_ground l\<^sub>G) (clause.from_ground C\<^sub>G)"
@@ -358,10 +355,10 @@ locale context_compatible_nonground_order_generic =
 
   clause.order: subst_update_stable_multiset_extension where 
   less = "(\<prec>\<^sub>l)" and sub_subst = literal.subst and sub_vars = literal.vars and
-  sub_to_ground = literal.to_ground and sub_from_ground = literal.from_ground and
-  map = image_mset and to_set = set_mset and to_ground_map = image_mset and
-  from_ground_map = image_mset and ground_map = image_mset and to_set_ground = set_mset and
-  to_mset = "\<lambda>x. x" and base_vars = term.vars and base_less = less\<^sub>t and
-  base_subst = "(\<cdot>t)"
+  sub_is_ground = literal.is_ground and sub_to_ground = literal.to_ground and
+  sub_from_ground = literal.from_ground and map = image_mset and to_set = set_mset and
+  to_ground_map = image_mset and from_ground_map = image_mset and ground_map = image_mset and
+  to_set_ground = set_mset and to_mset = "\<lambda>x. x" and base_vars = term.vars and base_less = less\<^sub>t and
+  base_subst = "(\<cdot>t)" and base_is_ground = term.is_ground
 
 end

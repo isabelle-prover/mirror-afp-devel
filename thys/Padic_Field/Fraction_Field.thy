@@ -110,7 +110,7 @@ proof-
   proof-    
    have "\<exists> r s. (r \<in> carrier R \<and> s \<in> S \<and> (a = (r |\<^bsub>rel\<^esub> s)))" 
      using rel_def assms(3) assms(1) set_eq_class_of_rng_of_frac_def rec_rng_of_frac_def  
-     by (smt mem_Collect_eq mem_Sigma_iff partial_object.select_convs(1))     
+     by (smt (z3) mem_Collect_eq mem_Sigma_iff partial_object.select_convs(1))     
    then obtain r s where "r \<in> carrier R \<and> s \<in> S \<and> (a = (r |\<^bsub>rel\<^esub> s))" 
      by blast
    hence "a = class_of\<^bsub>rel\<^esub> (r, s)" 
@@ -180,7 +180,7 @@ proof-
         rng_to_rng_of_frac_def simp_in_frac by auto
   qed
   thus "(rng_to_rng_of_frac(denom a)) \<otimes>\<^bsub>rec_rng_of_frac\<^esub> a = rng_to_rng_of_frac (numer a)"
-    by (smt "5" assms(3) cring.cring_simprules(14) crng_rng_of_frac ring_hom_closed rng_to_rng_of_frac_is_ring_hom subset subsetD)    
+    by (smt (z3) "5" assms(3) cring.cring_simprules(14) crng_rng_of_frac ring_hom_closed rng_to_rng_of_frac_is_ring_hom subset subsetD)    
 qed
 
 lemma(in eq_obj_rng_of_frac) frac_zero:
@@ -414,7 +414,7 @@ lemma(in eq_obj_rng_of_frac) fraction_one':
   assumes "a \<in> S"
   shows "fraction a a = \<one>\<^bsub>rec_rng_of_frac\<^esub>"  
   using assms fraction_def fraction_one one_closed simp_in_frac subset 
-  by (smt mem_Sigma_iff partial_object.select_convs(1) r_one rel_def subsetD)
+  by (smt (z3) mem_Sigma_iff partial_object.select_convs(1) r_one rel_def subsetD)
   
 lemma(in eq_obj_rng_of_frac) fraction_closed:
   assumes "domain R"
@@ -524,7 +524,7 @@ proof-
   have "inc (a \<ominus> b) = (inc a) \<oplus>\<^bsub>Frac R\<^esub> (inc (\<ominus> b))" 
     using inc_is_hom by (simp add: ring_hom_add assms(1) assms(2) minus_eq) 
   hence "inc (a \<ominus> b) = \<zero>\<^bsub>Frac R\<^esub>" using assms inc_is_hom 
-    by (smt Frac_def add.inv_closed eq_obj_rng_of_frac.rng_rng_of_frac
+    by (smt (z3) Frac_def add.inv_closed eq_obj_rng_of_frac.rng_rng_of_frac
         eq_obj_rng_of_frac_nonzero local.ring_axioms r_neg ring_hom_add ring_hom_zero) 
   thus ?thesis 
     by (meson abelian_group.minus_to_eq assms(1) assms(2) domain_frac.inc_inj1 domain_frac_axioms is_abelian_group minus_closed)   
@@ -735,7 +735,7 @@ lemma(in domain_frac) frac_uminus:
   shows "\<ominus>\<^bsub>Frac R\<^esub> (frac a b) = frac (\<ominus> a) b" 
 proof-
   have "frac (\<ominus> a) b \<oplus>\<^bsub>Frac R\<^esub> (frac a b) = frac (((\<ominus> a)\<otimes>b) \<oplus> (a \<otimes>b)) (b\<otimes>b)"
-    using frac_add  by (smt Localization.submonoid.subset add.inv_closed
+    using frac_add  by (smt (z3) Localization.submonoid.subset add.inv_closed
         assms(1) assms(2) m_comm nonzero_is_submonoid subsetCE) 
   hence "frac (\<ominus> a) b \<oplus>\<^bsub>Frac R\<^esub> (frac a b) = frac (b \<otimes>((\<ominus> a) \<oplus> a)) (b\<otimes>b)" 
     by (metis (no_types, lifting) add.inv_closed  assms(1) assms(2)
@@ -743,7 +743,7 @@ proof-
   hence "frac (\<ominus> a) b \<oplus>\<^bsub>Frac R\<^esub> (frac a b) = (frac \<zero> (b \<otimes>b))"  
     using Localization.submonoid.subset assms(1) assms(2) l_neg nonzero_is_submonoid by fastforce 
   hence "frac (\<ominus> a) b \<oplus>\<^bsub>Frac R\<^esub> (frac a b) = (frac \<zero> \<one>) \<otimes>\<^bsub>Frac R\<^esub>  (frac \<zero> (b \<otimes>b))"
-    using frac_mult    by (smt Localization.submonoid.m_closed Localization.submonoid.one_closed
+    using frac_mult    by (smt (z3) Localization.submonoid.m_closed Localization.submonoid.one_closed
         Localization.submonoid.subset assms(2) l_one nonzero_is_submonoid r_null subsetCE zero_closed) 
   hence "frac (\<ominus> a) b \<oplus>\<^bsub>Frac R\<^esub> (frac a b) = \<zero>\<^bsub>Frac R\<^esub> \<otimes>\<^bsub>Frac R\<^esub>  (frac \<zero> (b \<otimes>b))" 
     using Frac_def eq_obj_rng_of_frac.fraction_zero' eq_obj_rng_of_frac_nonzero 
@@ -854,16 +854,16 @@ proof-
     by (metis (no_types, lifting) Localization.submonoid.subset assms(1) 
         assms(2) assms(3) assms(4) m_comm nonzero_is_submonoid subsetCE)
   hence "(frac a  \<one>) = (frac (c \<otimes> b) d)"
-    by (smt assms(1) assms(2) frac_cancel_r l_one mem_Collect_eq nonzero_def one_closed zero_not_one)
+    by (smt (z3) assms(1) assms(2) frac_cancel_r l_one mem_Collect_eq nonzero_def one_closed zero_not_one)
   hence "(\<iota> d) \<otimes>\<^bsub>Frac R\<^esub>(frac a  \<one>) =(\<iota> d) \<otimes>\<^bsub>Frac R\<^esub> (frac (c \<otimes> b) d)"
     by auto
   hence "(frac (a \<otimes> d) \<one>) =(frac ((c \<otimes> b)\<otimes> d) d)"
     using i_mult    
-    by (smt Localization.submonoid.m_closed Localization.submonoid.subset assms(1) assms(2) assms(3)
+    by (smt (z3) Localization.submonoid.m_closed Localization.submonoid.subset assms(1) assms(2) assms(3)
         assms(4) cring_simprules(27) cring_simprules(6) local.one_not_zero m_comm
         mem_Collect_eq nonzero_def nonzero_is_submonoid)
   hence "(frac (a \<otimes> d) \<one>) =(frac (c \<otimes> b) \<one>)" 
-    by (smt Localization.submonoid.subset assms(2) assms(3) assms(4) cring_simprules(5)
+    by (smt (z3) Localization.submonoid.subset assms(2) assms(3) assms(4) cring_simprules(5)
         cring_simprules(6) frac_one i_mult inc_equation inc_is_hom nonzero_is_submonoid
         r_one ring_hom_mult ring_hom_one subsetCE)
   thus ?thesis using assms

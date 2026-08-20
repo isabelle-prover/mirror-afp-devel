@@ -53,7 +53,7 @@ val mk_list_type = U.mk_type_app "list"
 val mk_keys_sig = U.mk_val_sig keys_name (mk_list_type mk_key_type)
 
 fun mk_keys_struct ks = U.mk_val_struct
-  keys_name (U.mk_app ["List.map", key_name, U.mk_list ks])
+  keys_name (U.mk_app [\<^unchecked_name>\<open>List.map\<close>, key_name, U.mk_list ks])
 
 val key_to_string_name = "key_to_string"
 
@@ -67,7 +67,7 @@ val mk_key_to_string_struct = U.mk_fun_cases
 
 val keys_strings_name = internal_param "keys_strings"
 val mk_keys_strings_struct = U.mk_val_struct
-  keys_strings_name (U.mk_app ["List.map", key_to_string_name, keys_name])
+  keys_strings_name (U.mk_app [\<^unchecked_name>\<open>List.map\<close>, key_to_string_name, keys_name])
 
 val key_from_string_name = "key_from_string"
 
@@ -214,7 +214,7 @@ val mk_the_value_struct =
       (U.spaces ["error (\"No data for key \\\"\" ^", key_to_string_name, kparam, "^ \"\\\".\")"])
   end
 
-fun mk_comp f g = U.mk_app ["General.o", U.mk_tuple [f, g]]
+fun mk_comp f g = U.mk_app [\<^unchecked_name>\<open>General.o\<close>, U.mk_tuple [f, g]]
 
 fun mk_map_struct k =
   let val fparam = internal_param "f"

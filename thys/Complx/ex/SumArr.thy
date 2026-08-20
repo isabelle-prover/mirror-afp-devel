@@ -372,7 +372,7 @@ proof -
   unfolding tarr_inv_def array_length_def array_nth_def array_in_bound_def
     sumarr_in_lock1_def sumarr_in_lock2_def
   apply (tactic "PARALLEL_ALLGOALS ((TRY' o SOLVED')
-          (clarsimp_tac (@{context} addsimps
+          (clarsimp_tac (@{context} |> Simplifier.add_simps
                 @{thms local_postcond_def global_sum_def ex_in_conv[symmetric]}) 
           THEN_ALL_NEW fast_force_tac
              (@{context} addSDs @{thms less_2_cases}

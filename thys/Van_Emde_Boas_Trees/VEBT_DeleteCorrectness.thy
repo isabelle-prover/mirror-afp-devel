@@ -298,7 +298,7 @@ next
                         then obtain maxi where "Some maxi = vebt_maxt (?newlist ! maxs)" using 
                             \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close>
                             empty_Collect_eq  maxt_corr_help_empty set_vebt'_def valid_member_both_member_options 
-                          by (smt (z3) VEBT_Member.vebt_member.simps(2) \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close> vebt_maxt.elims minNull.simps(1) min_Null_member valid_member_both_member_options)
+                          by fastforce
                         then show ?thesis 
                           by (smt (verit) "9" False True \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close> option.sel high_inv low_inv maxbmo maxt_member member_bound mult.commute newmaassm)
                       qed
@@ -404,6 +404,16 @@ next
           case False
           hence notemp:"\<exists> z. both_member_options ?newnode z" 
             using not_min_Null_member by auto
+
+          obtain maxi where "vebt_maxt (?newlist ! ?h) = Some maxi"
+            by (metis (full_types) False VEBT_internal.minNull.simps(1,4) hlist vebt_maxt.elims)
+          then have "both_member_options (?newlist ! ?h) maxi"
+            using maxbmo by metis
+          then have "both_member_options ?newnode maxi"
+            by (simp only: hlist)
+          then have "both_member_options (treeList ! ?h) maxi"
+            using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
+
           let ?newma = "(if x = ma then
                                                     ?h * 2^(deg div 2) + the( vebt_maxt (?newlist ! ?h))
                                                             else ma)"
@@ -444,15 +454,10 @@ next
             assume aampt:"mi = ?newma"
             show "(\<forall> t \<in> set ?newlist. \<nexists> y. both_member_options t y)"
             proof(cases "x = ma")
-              case True 
-              obtain maxi where " vebt_maxt (?newlist ! ?h) = Some maxi" 
-                by (metis False VEBT_Member.vebt_member.simps(2) hlist vebt_maxt.elims minNull.simps(1) nnvalid notemp valid_member_both_member_options)
-              hence "both_member_options ?newnode maxi" 
-                using hlist maxbmo by auto
-              hence "both_member_options (treeList ! ?h) maxi" 
-                using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
-              hence False 
-                by (metis "9" True \<open>both_member_options ?newnode maxi\<close> \<open>vebt_maxt (?newlist ! high x n) = Some maxi\<close> aampt option.sel high_inv hlbound low_inv member_bound nnvalid not_less_iff_gr_or_eq valid_member_both_member_options yhelper)       
+              case True
+              hence False
+                using \<open>both_member_options (treeList ! ?h) maxi\<close>
+                by (metis "9" \<open>both_member_options ?newnode maxi\<close> \<open>vebt_maxt (?newlist ! high x n) = Some maxi\<close> aampt option.sel high_inv hlbound low_inv member_bound nnvalid not_less_iff_gr_or_eq valid_member_both_member_options yhelper)       
               then show ?thesis by blast
             next
               case False
@@ -464,12 +469,6 @@ next
           proof(cases "x = ma")
             case True
             hence "x = ma" by simp
-            obtain maxi where " vebt_maxt (?newlist ! ?h) = Some maxi" 
-              by (metis empty_Collect_eq hlist maxt_corr_help_empty nnvalid notemp option.exhaust set_vebt'_def valid_member_both_member_options)
-            hence "both_member_options ?newnode maxi" 
-              using hlist maxbmo by auto
-            hence "both_member_options (treeList ! ?h) maxi" 
-              using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
             hence "maxi < 2^n"
               using \<open>both_member_options?newnode maxi\<close> member_bound nnvalid valid_member_both_member_options by blast
             show ?thesis
@@ -504,12 +503,9 @@ next
                     thus " both_member_options (?newlist ! i) (low ?newma n)"
                     proof(cases "x = ma")
                       case True
-                      obtain maxi where "vebt_maxt (?newlist ! ?h) = Some maxi"
-                        by (metis Collect_empty_eq both_member_options_equiv_member hlist maxt_corr_help_empty nnvalid not_Some_eq notemp set_vebt'_def) 
-                      hence "both_member_options (?newlist ! ?h) maxi" 
-                        using maxbmo by blast
                       then show ?thesis
-                        by (smt (verit) "9" True \<open>vebt_maxt (?newlist ! high x n) = Some maxi\<close> option.sel high_inv hlist low_inv maxt_member member_bound newmaassm nnvalid)
+                        using \<open>both_member_options (?newlist ! ?h) maxi\<close>
+                        by (smt (verit) "9" \<open>vebt_maxt (?newlist ! high x n) = Some maxi\<close> option.sel high_inv hlist low_inv maxt_member member_bound newmaassm nnvalid)
                     next
                       case False
                       then show ?thesis 
@@ -538,10 +534,6 @@ next
                       proof(cases "x = ma")
                         case True
                         hence "x= ma" by simp
-                        obtain maxi where "vebt_maxt (?newlist ! ?h) = Some maxi"
-                          by (metis Collect_empty_eq both_member_options_equiv_member hlist maxt_corr_help_empty nnvalid not_Some_eq notemp set_vebt'_def) 
-                        hence "both_member_options (?newlist ! ?h) maxi" 
-                          using maxbmo by blast
                         have "high y n \<le> ?h" 
                           by (metis "7b" True assumption div_le_mono high_def nothlist yassm)
                         then show ?thesis
@@ -1345,7 +1337,9 @@ next
               hence "\<exists> y. both_member_options (?newlist ! maxs) y"
                 using "4" bb \<open>both_member_options summary maxs\<close> nothlist by presburger
               then obtain maxi where "Some maxi = vebt_maxt (?newlist ! maxs)" 
-                by (smt (z3) VEBT_Member.vebt_member.simps(2) \<open>invar_vebt (?newlist ! maxs) n\<close> vebt_maxt.elims minNull.simps(1) min_Null_member valid_member_both_member_options)
+                by (metis \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close>
+                    maxt_corr_help_empty member_correct minNullmin min_Null_member mint_corr_help_empty ninNullc nnvalid
+                    option.exhaust set_vebt_set_vebt'_valid valid_member_both_member_options)
               then show ?thesis 
                 by (smt (verit, best) "6" "9" \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> bb option.sel high_inv less_le_trans low_inv maxbmo maxt_member member_bound mult.commute not_less_iff_gr_or_eq nothlist verit_comp_simplify1(3) yhelper)
             qed
@@ -1397,7 +1391,9 @@ next
                         hence "\<exists> y. both_member_options (?newlist ! maxs) y"
                           using "4" bb \<open>both_member_options summary maxs\<close> nothlist by presburger
                         then obtain maxi where "Some maxi = vebt_maxt (?newlist ! maxs)" 
-                          by (smt (z3) VEBT_Member.vebt_member.simps(2) \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close> vebt_maxt.elims minNull.simps(1) min_Null_member valid_member_both_member_options)
+                          by (metis \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close>
+                              maxt_corr_help_empty member_correct minNullmin min_Null_member mint_corr_help_empty ninNullc nnvalid
+                              not_None_eq set_vebt_set_vebt'_valid valid_member_both_member_options)
                         then show ?thesis 
                           by (smt (verit) "9" True \<open>Some maxs = vebt_maxt (vebt_delete summary (high x n))\<close> \<open>invar_vebt (treeList[high x n := vebt_delete (treeList ! high x n) (low x n)] ! maxs) n\<close> option.sel high_inv low_inv maxbmo maxt_member member_bound mult.commute newmaassm option.distinct(1))
                       qed
@@ -1503,6 +1499,17 @@ next
           case False
           hence notemp:"\<exists> z. both_member_options ?newnode z" 
             using not_min_Null_member by auto
+
+          obtain maxi :: nat where "vebt_maxt (?newlist ! ?h) = Some maxi"
+            using False
+            by (metis (full_types) VEBT_internal.minNull.simps(1,4) hlist vebt_maxt.elims)
+          then have "both_member_options (?newlist ! ?h) maxi"
+            using maxbmo by blast
+          then have "both_member_options ?newnode maxi" 
+            by (simp only: hlist)
+          then have "both_member_options (treeList ! ?h) maxi" 
+            using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
+
           let ?newma = "(if x = ma then
                                                     ?h * 2^(deg div 2) + the( vebt_maxt (?newlist ! ?h))
                                                             else ma)"
@@ -1543,14 +1550,9 @@ next
             assume aampt:"mi = ?newma"
             show "(\<forall> t \<in> set ?newlist. \<nexists> y. both_member_options t y)"
             proof(cases "x = ma")
-              case True 
-              obtain maxi where " vebt_maxt (?newlist ! ?h) = Some maxi" 
-                by (metis False VEBT_Member.vebt_member.simps(2) hlist vebt_maxt.elims minNull.simps(1) nnvalid notemp valid_member_both_member_options)
-              hence "both_member_options ?newnode maxi" 
-                using hlist maxbmo by auto
-              hence "both_member_options (treeList ! ?h) maxi" 
-                using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
-              hence False 
+              case True
+              hence False
+                using \<open>both_member_options (treeList ! ?h) maxi\<close>
                 by (metis "9" True \<open>both_member_options ?newnode maxi\<close> \<open>vebt_maxt ( ?newlist ! high x n) = Some maxi\<close> aampt option.sel high_inv hlbound low_inv member_bound nnvalid not_less_iff_gr_or_eq valid_member_both_member_options yhelper)       
               then show ?thesis by blast
             next
@@ -1563,12 +1565,6 @@ next
           proof(cases "x = ma")
             case True
             hence "x = ma" by simp
-            obtain maxi where " vebt_maxt (?newlist ! ?h) = Some maxi" 
-              by (metis False VEBT_Member.vebt_member.simps(2) hlist vebt_maxt.elims minNull.simps(1) nnvalid notemp valid_member_both_member_options)
-            hence "both_member_options ?newnode maxi" 
-              using hlist maxbmo by auto
-            hence "both_member_options (treeList ! ?h) maxi" 
-              using "0" \<open>treeList ! high x n \<in> set treeList\<close> dele_bmo_cont_corr by blast
             hence "maxi < 2^n"
               using \<open>both_member_options?newnode maxi\<close> member_bound nnvalid valid_member_both_member_options by blast
             show ?thesis
@@ -1603,11 +1599,8 @@ next
                     thus " both_member_options (?newlist ! i) (low ?newma n)"
                     proof(cases "x = ma")
                       case True
-                      obtain maxi where "vebt_maxt (?newlist ! ?h) = Some maxi"
-                        by (metis Collect_empty_eq both_member_options_equiv_member hlist maxt_corr_help_empty nnvalid not_Some_eq notemp set_vebt'_def) 
-                      hence "both_member_options (?newlist ! ?h) maxi" 
-                        using maxbmo by blast
                       then show ?thesis
+                        using \<open>both_member_options (?newlist ! ?h) maxi\<close>
                         by (smt (verit) "9" True \<open>vebt_maxt (?newlist ! high x n) = Some maxi\<close> option.sel high_inv hlist low_inv maxt_member member_bound newmaassm nnvalid)
                     next
                       case False
@@ -1637,10 +1630,6 @@ next
                       proof(cases "x = ma")
                         case True
                         hence "x= ma" by simp
-                        obtain maxi where "vebt_maxt (?newlist ! ?h) = Some maxi"
-                          by (metis Collect_empty_eq both_member_options_equiv_member hlist maxt_corr_help_empty nnvalid not_Some_eq notemp set_vebt'_def) 
-                        hence "both_member_options (?newlist ! ?h) maxi" 
-                          using maxbmo by blast
                         have "high y n \<le> ?h" 
                           by (metis "7b" True assumption div_le_mono high_def nothlist yassm)
                         then show ?thesis
@@ -1822,7 +1811,11 @@ next
                 hence "\<exists> y. both_member_options (?newlist ! maxs) y"
                   using "4" bb \<open>both_member_options summary maxs\<close> nothprolist by presburger
                 then obtain maxi where "Some maxi = vebt_maxt (?newlist ! maxs)" 
-                  by (smt (z3) VEBT_Member.vebt_member.simps(2) \<open>invar_vebt (?newlist ! maxs) n\<close> vebt_maxt.elims minNull.simps(1) min_Null_member valid_member_both_member_options)
+                  by (metis
+                      \<open>invar_vebt (treeList [high (summin * 2 ^ n + lx) n := vebt_delete (treeList ! high (summin * 2 ^ n + lx) n) (low (summin * 2 ^ n + lx) n)] ! maxs) n\<close>
+                      both_member_options_equiv_member buildup_gives_empty buildup_gives_valid buildup_nothing_in_leaf
+                      buildup_nothing_in_min_max deg_not_0 maxt_corr_help_empty mem_Collect_eq
+                      member_valid_both_member_options option.exhaust set_vebt'_def)
                 hence "maxs = high ?xn n \<and> both_member_options (?newlist ! maxs) (low ?xn n)"
                   by (smt (verit) "9" False True \<open>Some maxs = vebt_maxt (vebt_delete summary ?h)\<close> \<open>invar_vebt (?newlist ! maxs) n\<close> aampt option.sel high_inv low_inv maxbmo maxt_member member_bound mult.commute)
                 hence False 

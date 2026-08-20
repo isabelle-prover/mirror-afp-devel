@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Kevin Batz</title>
+    <link>https://isa-afp.org/authors/batz/</link>
+    <description>AFP entries of Kevin Batz</description><item>
+  <title>The Algebra of Iterative Constructions</title>
+  <link>https://isa-afp.org/entries/Iteration_Algebra.html</link>
+  <pubDate>Wed, 29 Apr 2026 00:00:00 +0000</pubDate>
+  <description>The Algebra of Iterative Constructions in the AFP</description>
+    <category>Logic/General logic/Modal logic</category>
+</item>
+
+  </channel>
+</rss>

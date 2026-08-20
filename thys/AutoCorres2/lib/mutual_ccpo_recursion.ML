@@ -579,7 +579,7 @@ fun mutual_ccpo_fixed_point (fs : functional list) ctxt =
     val functional = tuple_of_btree raw_functionals |> absfree recF
 
     val cleanup_simps = Named_Theorems.get ctxt @{named_theorems fixed_point_cleanup_simps}
-    val cleanup_ss = simpset_map ctxt (fn ctxt => ctxt addsimps cleanup_simps) HOL_basic_ss;
+    val cleanup_ss = HOL_basic_ss |> Simplifier.simpset_map ctxt (Simplifier.add_simps cleanup_simps);
 
 val _ = TRACE ("prove mono thm ")
 
@@ -640,7 +640,7 @@ val _ = TRACE "strong induction"
           (fn {context, prems, ...} =>
             let
               fun simp_tac ctxt =
-                full_simp_tac ((put_simpset cleanup_ss ctxt) addsimps (map Thm.symmetric defs)) 1
+                full_simp_tac (ctxt |> put_simpset cleanup_ss |> Simplifier.flip_simps defs) 1
             in
               cut_tac induct' 1 THEN
               SOLVED (simp_tac context) THEN

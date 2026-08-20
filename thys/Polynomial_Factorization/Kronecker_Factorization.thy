@@ -87,16 +87,16 @@ proof -
 qed
 
 lemma rat_to_normalized_int_poly_of_int: assumes "rat_to_normalized_int_poly (map_poly of_int p) = (c,q)"
-  shows "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = primitive_part p"
+  shows "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (Polynomial.content p) \<and> q = primitive_part p"
 proof -
   obtain d r where ri: "rat_to_int_poly (map_poly rat_of_int p) = (d,r)" by force
   from rat_to_int_poly_of_int[OF ri]
     assms[unfolded rat_to_normalized_int_poly_def ri split] 
-  show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (content p) \<and> q = primitive_part p" 
+  show "c \<in> \<int>" "p \<noteq> 0 \<Longrightarrow> c = of_int (Polynomial.content p) \<and> q = primitive_part p" 
     by (auto split: if_splits)
 qed
 
-lemma dvd_poly_int_content_1: assumes c_x: "content x = 1"
+lemma dvd_poly_int_content_1: assumes c_x: "Polynomial.content x = 1"
   shows "(x dvd y) = (map_poly rat_of_int x dvd map_poly of_int y)"
 proof -
   let ?r = "rat_of_int"
@@ -120,9 +120,10 @@ proof -
       hence x0: "x \<noteq> 0" by simp
       from dvd obtain z where prod: "?rp y = ?rp x * z" unfolding dvd_def by auto
       obtain cx xx where x: "rat_to_normalized_int_poly (?rp x) = (cx, xx)" by force
-      from rat_to_int_factor_explicit[OF prod x] obtain z where y: "y = xx * smult (content y) z" by auto
+      from rat_to_int_factor_explicit[OF prod x] 
+      obtain z where y: "y = xx * smult (Polynomial.content y) z" by auto
       from rat_to_normalized_int_poly[OF x] rx0 have xx: "?rp x = smult cx (?rp xx)" 
-        and cxx: "content xx = 1" and cx0: "cx > 0" by auto
+        and cxx: "Polynomial.content xx = 1" and cx0: "cx > 0" by auto
       obtain cn cd where quot: "quotient_of cx = (cn,cd)" by force
       from quotient_of_div[OF quot] have cx: "cx = ?r cn / ?r cd" by auto
       from quotient_of_denom_pos[OF quot] have cd0: "cd > 0" by auto
@@ -130,19 +131,21 @@ proof -
       from arg_cong[OF xx, of "smult (?r cd)"] have "smult (?r cd) (?rp x) = smult (?r cn) (?rp xx)"
         unfolding cx using cd0 by (auto simp: field_simps)
       from this have id: "smult cd x = smult cn xx" by (fold hom_distribs, unfold of_int_poly_hom.eq_iff)
-      from arg_cong[OF this, of content, unfolded content_smult_int cxx] cn0 cd0 
-      have cn: "cn = cd * content x" by auto
+      from arg_cong[OF this, of Polynomial.content, unfolded content_smult_int cxx] cn0 cd0 
+      have cn: "cn = cd * Polynomial.content x" by auto
       from quotient_of_coprime[OF quot, unfolded cn] cd0 have "cd = 1" by auto
       with cx have cx: "cx = ?r cn" by auto
       from xx[unfolded this] have x: "x = smult cn xx" by (fold hom_distribs, simp)
-      from arg_cong[OF this, of content, unfolded content_smult_int c_x cxx] cn0 have "cn = 1" by auto
+      from arg_cong[OF this, of Polynomial.content, unfolded content_smult_int c_x cxx] cn0 
+      have "cn = 1" 
+        by auto
       with x have xx: "xx = x" by auto
       show "x dvd y" using y[unfolded xx] unfolding dvd_def by blast
     qed
   qed
 qed
 
-lemma content_x_minus_const_int[simp]: "content [: c, 1 :] = (1 :: int)"
+lemma content_x_minus_const_int[simp]: "Polynomial.content [: c, 1 :] = (1 :: int)"
   unfolding content_def by auto
 
 lemma length_upto_add_nat[simp]: "length [a .. a + int n] = Suc n"
@@ -224,7 +227,7 @@ proof -
     with dvd dg show ?thesis unfolding gq by auto
   qed note main = this
   thus "degree q \<ge> 1" "degree q \<le> bnd" by auto
-  from content_times_primitive_part[of p] have "p = smult (content p) P" unfolding P_def by auto
+  from content_times_primitive_part[of p] have "p = smult (Polynomial.content p) P" unfolding P_def by auto
   with main show "q dvd p" by (metis dvd_smult)
 qed
 
@@ -284,7 +287,7 @@ proof -
     define q where "q = (if poly q' 0 > 0 then q' else -q')"
     from qq have q': "1 \<le> degree q'" "degree q' \<le> bnd" unfolding q'_def by auto
     hence q: "1 \<le> degree q" "degree q \<le> bnd" unfolding q_def by auto
-    from dvd have "qq dvd (smult (content p) P)" 
+    from dvd have "qq dvd (smult (Polynomial.content p) P)" 
       using content_times_primitive_part[of p] unfolding P_def by simp
     from dvd_smult_int[OF _ this] dp have "q' dvd P" unfolding q'_def
       by force

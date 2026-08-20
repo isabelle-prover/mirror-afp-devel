@@ -54,15 +54,11 @@ structure RefineG_Transfer = struct
     val merge = Simplifier.merge_ss
   )
 
-  fun post_simps_op f a context = let
-    val ctxt = Context.proof_of context
-    fun do_it ss = simpset_of (f (put_simpset ss ctxt, a))
-  in
-    Post_Simp.map do_it context
-  end
+  fun post_simps_op f a context =
+    Post_Simp.map (Simplifier.simpset_map (Context.proof_of context) (f a)) context
     
-  val add_post_simps = post_simps_op (op addsimps)
-  val del_post_simps = post_simps_op (op delsimps)
+  val add_post_simps = post_simps_op Simplifier.add_simps
+  val del_post_simps = post_simps_op Simplifier.del_simps
 
   fun get_post_ss ctxt = let
     val ss = Post_Simp.get (Context.Proof ctxt)
@@ -95,7 +91,7 @@ structure RefineG_Transfer = struct
 
   fun transfer_tac thms ctxt i st = let 
     val thms = thms @ transfer.get ctxt;
-    val ss = put_simpset HOL_basic_ss ctxt addsimps @{thms nested_case_prod_simp}
+    val ss = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simp @{thm nested_case_prod_simp}
   in
     REPEAT_DETERM1 (
       COND (has_fewer_prems (Thm.nprems_of st)) no_tac (
@@ -135,7 +131,7 @@ structure RefineG_Transfer = struct
 
   fun get_post_simp_rules context = Context.proof_of context
       |> get_post_ss
-      |> simpset_of 
+      |> Simplifier.simpset_of 
       |> Simplifier.dest_simps
       |> map #2
 

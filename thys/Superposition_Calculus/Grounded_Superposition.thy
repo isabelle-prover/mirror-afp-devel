@@ -12,20 +12,24 @@ begin
 
 locale grounded_superposition_calculus =
   superposition_calculus where select = select and welltyped = welltyped and
-  from_ground_context_map = from_ground_context_map and id_subst = "id_subst :: 'subst" +
+  term_from_ground = "term_from_ground :: 't\<^sub>G \<Rightarrow> 't" and id_subst = "id_subst :: 'subst" +
+
   grounded_selection_function where
   select = select and atom_subst = "(\<cdot>a)" and atom_vars = atom.vars and
-  atom_to_ground = atom.to_ground and atom_from_ground = atom.from_ground and
-  is_ground_instance = is_ground_instance
-  for
-    select :: "'t atom select" and
-    welltyped :: "('v :: infinite, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool" and
-    from_ground_context_map :: "('t\<^sub>G \<Rightarrow> 't) \<Rightarrow> 'c\<^sub>G \<Rightarrow> 'c"
+  atom_is_ground = atom.is_ground and atom_to_ground = atom.to_ground and
+  atom_from_ground = atom.from_ground and is_ground_instance = is_ground_instance
+for
+  select :: "'t atom select" and
+  welltyped :: "('v, 'ty) var_types \<Rightarrow> 't \<Rightarrow> 'ty \<Rightarrow> bool"
 begin
 
 sublocale ground: ground_superposition_calculus where
   less\<^sub>t = "(\<prec>\<^sub>t\<^sub>G)" and select = select\<^sub>G and compose_context = compose_ground_context and 
-  apply_context = apply_ground_context and hole = ground_hole
+  apply_context = apply_ground_context and hole = ground_hole and subterms = ground_subterms and
+  fun_sym = ground_fun_sym and extra = ground_extra and subterms\<^sub>l = ground_subterms\<^sub>l and
+  subcontext = ground_subcontext and subterms\<^sub>r = ground_subterms\<^sub>r and Fun = GFun and
+  More = GMore and fun_sym\<^sub>c = ground_fun_sym\<^sub>c and extra\<^sub>c = ground_extra\<^sub>c and size = ground_size and
+  hole_position = ground_hole_position and context_at = ground_context_at and size\<^sub>c = ground_size\<^sub>c
 rewrites
   "multiset_extension.multiset_extension (\<prec>\<^sub>t\<^sub>G) ground.literal_to_mset = (\<prec>\<^sub>l\<^sub>G)" and
   "multiset_extension.multiset_extension (\<prec>\<^sub>l\<^sub>G) (\<lambda>x. x) = (\<prec>\<^sub>c\<^sub>G)" and
@@ -40,10 +44,9 @@ abbreviation is_inference_ground_instance_one_premise where
       inference.is_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V> \<gamma> \<and>
-      weakly_welltyped_clause \<V> D \<and>
-      weakly_welltyped_clause \<V> C \<and>
-      \<V> = \<V>' \<and>
-      infinite_variables_per_type \<V>"
+      clause.weakly_welltyped \<V>' D \<and>
+      clause.weakly_welltyped \<V> C \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>)"
 
 abbreviation is_inference_ground_instance_two_premises where
   "is_inference_ground_instance_two_premises D E C \<iota>\<^sub>G \<gamma> \<rho>\<^sub>1 \<rho>\<^sub>2 \<equiv>
@@ -54,12 +57,12 @@ abbreviation is_inference_ground_instance_two_premises where
       inference.is_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       \<iota>\<^sub>G = inference.to_ground (Infer [D \<cdot> \<rho>\<^sub>2, E \<cdot> \<rho>\<^sub>1] C \<cdot>\<iota> \<gamma>) \<and>
       type_preserving_on (clause.vars C) \<V>\<^sub>3 \<gamma> \<and>
-      weakly_welltyped_clause \<V>\<^sub>1 E \<and>
-      weakly_welltyped_clause \<V>\<^sub>2 D \<and>
-      weakly_welltyped_clause \<V>\<^sub>3 C \<and>
-      infinite_variables_per_type \<V>\<^sub>1 \<and>
-      infinite_variables_per_type \<V>\<^sub>2 \<and>
-      infinite_variables_per_type \<V>\<^sub>3"
+      clause.weakly_welltyped \<V>\<^sub>1 E \<and>
+      clause.weakly_welltyped \<V>\<^sub>2 D \<and>
+      clause.weakly_welltyped \<V>\<^sub>3 C \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>1) \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>2) \<and>
+      (term.exists_nonground \<longrightarrow> infinite_variables_per_type \<V>\<^sub>3)"
 
 abbreviation is_inference_ground_instance where
   "is_inference_ground_instance \<iota> \<iota>\<^sub>G \<gamma> \<equiv>
@@ -96,7 +99,7 @@ lemma ground_inference\<^sub>_concl_in_ground_instances:
   shows "concl_of \<iota>\<^sub>G \<in> uncurried_ground_instances (concl_of \<iota>)"
 proof -
   obtain "premises" C \<V> where
-    \<iota>: "\<iota> = Infer premises (C, \<V>)"
+    \<iota>: "\<iota> = Infer premises (\<V>, C)"
     using Calculus.inference.exhaust
     by (metis prod.collapse)
 
@@ -138,7 +141,9 @@ sublocale lifting:
 proof (unfold_locales; (intro impI typed_tiebreakers.wfp typed_tiebreakers.transp)?)
 
   show "\<bottom>\<^sub>F \<noteq> {}"
-    using obtain_infinite_variables_per_type_on''[of "{}"]
+    using 
+      obtain_infinite_variables_per_type_on'[of "{}"]
+      infinite_variables 
     by auto
 next
   fix bottom
@@ -146,7 +151,7 @@ next
 
   then show "uncurried_ground_instances bottom \<noteq> {}"
     unfolding ground_instances_def
-    by fastforce
+    by auto
 next
   fix bottom
   assume "bottom \<in> \<bottom>\<^sub>F"
@@ -168,7 +173,7 @@ next
 
   ultimately show "C \<in> \<bottom>\<^sub>F"
     unfolding ground_instances_def
-    by blast
+    by auto
 next
   fix \<iota> :: "('t, 'v, 'ty) typed_clause inference"
 
@@ -187,8 +192,8 @@ begin
 abbreviation grounded_inference_ground_instances where
   "grounded_inference_ground_instances select\<^sub>G \<equiv>
     grounded_superposition_calculus.inference_ground_instances
-      (\<odot>) apply_subst (\<cdot>t) term.to_ground term.from_ground apply_ground_context term.vars (\<prec>\<^sub>t)
-      id_subst select\<^sub>G welltyped"
+      (\<odot>) apply_subst (\<cdot>t) term.is_ground term.to_ground apply_ground_context term.vars (\<prec>\<^sub>t)
+      id_subst term.from_ground select\<^sub>G welltyped"
 
 sublocale
   lifting_intersection

@@ -764,7 +764,7 @@ text\<open>beamer support\<close>
 (* Under development *)
 
 doc_class frame =
-  options :: string
+  "options" :: string
   frametitle :: string
   framesubtitle :: string
 

@@ -120,7 +120,7 @@ proof -
     note * = Inf_in[OF F, simplified]
     show ?thesis
       apply (rule iffI)
-      subgoal by (smt False Inf_in assms enat.inject enat_ord_simps(1) finite_imageI imageE image_is_empty le_INF_iff order_refl)
+      subgoal by (smt (z3) False Inf_in assms enat.inject enat_ord_simps(1) finite_imageI imageE image_is_empty le_INF_iff order_refl)
       subgoal by clarsimp (meson INF_greatest INF_lower antisym enat_ord_simps(1))
       done
   qed

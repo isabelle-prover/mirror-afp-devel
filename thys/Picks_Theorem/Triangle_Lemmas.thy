@@ -113,7 +113,7 @@ proof-
   let ?m_12 = "(c - a)$1"
   let ?m_21 = "(b - a)$2"
   let ?m_22 = "(c - a)$2"
-  have "det ?M = ?m_11*?m_22 - ?m_12*?m_21"
+  have "matrix_det ?M = ?m_11*?m_22 - ?m_12*?m_21"
     unfolding triangle_mat_def
     by (metis det_2 det_transpose mult.commute vector_2(1) vector_2(2))
   moreover have "?m_11*?m_22 \<noteq> ?m_12*?m_21"
@@ -164,7 +164,7 @@ proof-
     }
     ultimately show False by fastforce
   qed
-  ultimately have "det ?M \<noteq> 0" by linarith
+  ultimately have "matrix_det ?M \<noteq> 0" by linarith
   thus ?thesis by (simp add: L_def inj_matrix_vector_mult invertible_det_nz triangle_linear_def)
 qed
 
@@ -185,23 +185,25 @@ lemma triangle_linear_integrable:
   fixes a b c :: "real^2"
   assumes "S \<in> lmeasurable"
   defines "T \<equiv> triangle_linear a b c"
-  shows "(\<lambda>x. abs (det (matrix (T)))) integrable_on S" (is "(\<lambda>x. ?c) integrable_on S")
+  shows "(\<lambda>x. abs (matrix_det (matrix (T)))) integrable_on S" (is "(\<lambda>x. ?c) integrable_on S")
   using integrable_on_const[of S ?c] assms(1) by blast
 
 lemma measure_differentiable_image_eq_affine:
   fixes a b c :: "real^2"
   defines "A \<equiv> triangle_affine a b c" and "T \<equiv> triangle_linear a b c"
   assumes "S \<in> lmeasurable" and "\<not> collinear {a, b, c}"
-  shows "measure lebesgue (A ` S) = integral S (\<lambda>x. abs (det (matrix T)))"
+  shows "measure lebesgue (A ` S) = integral S (\<lambda>x. abs (matrix_det (matrix T)))"
 proof-
   have "\<And>x. x \<in> S \<Longrightarrow> (A has_derivative T) (at x within S)"
     using triangle_affine_der A_def T_def assms(3) by blast
   moreover have "inj_on A S"
     using A_def assms(3) assms(4) triangle_affine_inj inj_on_subset by blast
-  moreover have "(\<lambda>x. abs (det (matrix (T)))) integrable_on S"
+  moreover have "(\<lambda>x. abs (matrix_det (matrix (T)))) integrable_on S"
     by (simp add: T_def assms(3) triangle_linear_integrable)
   ultimately show ?thesis
-    using measure_differentiable_image_eq[of _ _ "\<lambda>x. T"] assms(3) by blast 
+    using measure_differentiable_image_eq[of _ _ "\<lambda>x. T"] assms(3)
+    by (metis T_def eucl_det_conv_matrix_det fmeasurableD matrix_vector_mul_linear
+        triangle_linear_def) 
 qed
 
 lemma triangle_affine_img:
@@ -310,7 +312,7 @@ lemma triangle_measure_integral_of_det:
   defines "S \<equiv> convex hull {a, b, c}"
   assumes "\<not> collinear {a, b, c}"
   shows "measure lebesgue S =
-          integral unit_triangle (\<lambda>(x::real^2). abs (det (matrix (triangle_linear a b c))))"
+          integral unit_triangle (\<lambda>(x::real^2). abs (matrix_det (matrix (triangle_linear a b c))))"
 proof-
   let ?A = "triangle_affine a b c"
   let ?T = "triangle_linear a b c"
@@ -323,7 +325,7 @@ proof-
   then have "measure lebesgue S = measure lebesgue (?A ` unit_triangle)" by blast
   moreover have
     "measure lebesgue (?A ` unit_triangle)
-      = integral unit_triangle (\<lambda>(x::real^2). abs (det (matrix ?T)))"
+      = integral unit_triangle (\<lambda>(x::real^2). abs (matrix_det (matrix ?T)))"
     using measure_differentiable_image_eq_affine[OF lmeasurable_S assms(2)] by auto
   ultimately show ?thesis by auto
 qed

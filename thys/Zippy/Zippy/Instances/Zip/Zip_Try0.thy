@@ -7,40 +7,49 @@ theory Zip_Try0
 begin
 
 subsubsection \<open>Try0 Integration\<close>
+ML\<open>
 
+\<close>
 ML \<open>
 structure Zip =
 struct open Zip
 structure Try0 =
 struct
-  local val method_name = FI.id
+  local open Context_Parsers
+    val method_name = FI.id
+    val clasimp_parser_id = "clasimp"
+    val _ = @{assert} (Parsers_Data.Table.defined
+      (Parsers_Data.get_table (Context.Proof @{context})) (Identifier.make NONE clasimp_parser_id))
   in
-  fun add_run_config exec s =
+  fun name exec = method_name ^ "_" ^ exec
+  fun run_config exec = implode_space
+    ["run exec:", Zip.FI.struct_op (ML_Syntax_Util.mk_struct_access exec "all'")]
+  fun method_with_config_clasimp config = implode_space [method_name, config,
+    parsers_separator, clasimp_parser_id]
+  fun command_update_config config method_with_config s =
     let
-      val (pfx, sfx) = first_field method_name s |> the
-        |> apfst (fn pfx => (not (String.isSuffix "(" pfx) ? suffix "(") pfx)
+      val (pfx, sfx) = first_field method_with_config s |> the
+        |>> (fn pfx => (not (String.isSuffix "(" pfx) ? suffix "(") pfx)
       val (mid, sfxs) = Substring.full sfx |> (if String.isSuffix "]" sfx
         then Substring.splitr (not o equal #"[")
-          #> apfst (Substring.trimr 1) #> apsnd (single #> cons (Substring.full "["))
+          #>> (Substring.trimr 1) ##> (single #> cons (Substring.full "["))
         else rpair [])
-      val (mid, close_parenth) = Substring.splitr (equal #")") mid |> apsnd (K ")")
-      val config_prefix = if Substring.isEmpty mid then ""
-        else Zip.Context_Parsers.parsers_separator ^ " "
-      val exec = Zip.FI.struct_op (ML_Syntax_Util.mk_struct_access exec "all'")
-      val run_config = implode [config_prefix, "run exec: ", exec]
+      val (mid, close_parenth) = Substring.splitr (equal #")") mid ||> (K ")")
+      val config_pfx = if Substring.isEmpty mid then "" else parsers_separator ^ " "
+      val config = implode [config_pfx, config]
     in
-      implode [pfx, method_name, Substring.string mid, " ", run_config, close_parenth]
-      ^ Substring.concat sfxs
+      implode [pfx, method_name, Substring.string mid, " ", config, close_parenth,
+        Substring.concat sfxs]
     end
-  fun gen_register (name, update_command)=
-    Try0.register_proof_method name {run_if_auto_try = true}
-    (Option.map (fn {command, time, state,...} =>
-      {name = name, command = update_command command, time = time, state = state})
-      ooo Try0_Util.apply_raw_named_method method_name true Try0_Util.full_attrs
-      (Try0_HOL.silence_methods
-      #> Context.proof_map (Logger.set_log_levels Logger.root Logger.OFF)))
-  val mk_registrations = map (fn exec => (method_name ^ "_" ^ exec, add_run_config exec))
-    #> cons (method_name, I)
+  fun gen_register (name, (method, update_command)) = Try0.register_proof_method name
+    {run_if_auto_try = true} (Option.map (fn {command, time, state,...} =>
+        {name = name, command = update_command method command, time = time, state = state})
+      ooo Try0_Util.apply_raw_named_method method true
+        Try0_Util.full_attrs (Try0_HOL.silence_methods
+          #> Context.proof_map (Logger.set_log_levels Logger.root Logger.OFF)))
+  val mk_registrations = cons (method_name, (method_name, K I)) o
+    map (fn exec => let val config = run_config exec
+      in (name exec, (method_with_config_clasimp config, command_update_config config)) end)
 end
 end
 end

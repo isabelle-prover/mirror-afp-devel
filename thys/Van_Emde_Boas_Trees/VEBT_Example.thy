@@ -47,17 +47,20 @@ begin
         by (metis (mono_tags, lifting) GreatestI_ex_nat zero_le_numeral)
       subgoal 
         by (metis (no_types, lifting) Greatest_equality le_eq_less_or_eq)
-      apply sep_auto
-      subgoal 
-        apply (auto simp: is_pred_in_set_def)
+      subgoal for x xa xb
+        apply sep_auto
         subgoal
-          by (smt (z3) GreatestI_nat le_neq_implies_less less_eq_nat.simps(1))
-        subgoal
-          by (smt (z3) GreatestI_nat mult.right_neutral nat_less_le power_eq_0_iff power_mono_iff)
-        subgoal
-          by (metis (no_types, lifting) Greatest_le_nat less_imp_le)
-      done
-      apply sep_auto
+          apply (auto simp: is_pred_in_set_def)
+          subgoal
+            by (metis (mono_tags, lifting) GreatestI_nat le_eq_less_or_eq)
+          subgoal
+            by (metis (mono_tags, lifting) GreatestI_ex_nat bot_nat_0.not_eq_extremum le_eq_less_or_eq)
+          subgoal
+            by (metis (no_types, lifting) Greatest_le_nat less_imp_le)
+          done
+        done
+      subgoal
+        by sep_auto
     done
 
 subsection \<open>Time Bound Reasoning\<close>

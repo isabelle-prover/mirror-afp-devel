@@ -57,7 +57,7 @@ proof(induction n rule: nat_less_induct)
   then show ?case
     apply (cases n)
      apply (auto simp: map_poly_homo_polyadd map_poly_homo_polymul)
-    by (smt Suc_less_eq div2_less_self even_Suc odd_Suc_div_two map_poly_homo_polymul that)
+    by (smt (z3) Suc_less_eq div2_less_self even_Suc odd_Suc_div_two map_poly_homo_polymul that)
 qed
 
 lemmas map_poly_homo_polyarith = map_poly_homo_polyadd map_poly_homo_polyneg map_poly_homo_polysub map_poly_homo_polymul map_poly_homo_polypow

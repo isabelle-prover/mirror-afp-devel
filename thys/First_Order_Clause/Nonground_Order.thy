@@ -17,7 +17,7 @@ sublocale restricted_term_order_lifting where
   by unfold_locales
 
 sublocale literal: nonground_term_based_order_lifting where
-  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and
+  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and sub_is_ground = term.is_ground and
   sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and map = map_literal and
   to_set = set_literal and to_ground_map = map_literal and from_ground_map = map_literal and 
   ground_map = map_literal and to_set_ground = set_literal and to_mset = literal_to_mset
@@ -37,9 +37,10 @@ notation literal.order.less\<^sub>G (infix "\<prec>\<^sub>l\<^sub>G" 50)
 notation literal.order.less_eq\<^sub>G (infix "\<preceq>\<^sub>l\<^sub>G" 50)
 
 sublocale nonground_order_generic where
-  atom_subst = "(\<cdot>t)" and atom_vars = term.vars and atom_from_ground = term.from_ground and
-  atom_to_ground = term.to_ground and neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and
-  ground_neg_to_mset = neg_to_mset and ground_pos_to_mset = pos_to_mset
+  atom_subst = "(\<cdot>t)" and atom_vars = term.vars and atom_is_ground = term.is_ground and
+  atom_from_ground = term.from_ground and  atom_to_ground = term.to_ground and 
+  neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and ground_neg_to_mset = neg_to_mset and 
+  ground_pos_to_mset = pos_to_mset
   by unfold_locales auto
 
 end
@@ -50,17 +51,19 @@ locale context_compatible_nonground_order =
 begin
 
 sublocale literal.order: subst_update_stable_multiset_extension where
-  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and
+  less = less\<^sub>t and sub_subst = "(\<cdot>t)" and sub_vars = term.vars and sub_is_ground = term.is_ground and
   sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and map = map_literal and
   to_set = set_literal and to_ground_map = map_literal and from_ground_map = map_literal and 
   ground_map = map_literal and to_set_ground = set_literal and to_mset = literal_to_mset and
-  base_less = less\<^sub>t and base_subst = "(\<cdot>t)" and base_vars = term.vars
+  base_less = less\<^sub>t and base_subst = "(\<cdot>t)" and base_vars = term.vars and
+  base_is_ground = term.is_ground
   by unfold_locales
 
 sublocale context_compatible_nonground_order_generic where
-  atom_subst = "(\<cdot>t)" and atom_vars = term.vars and atom_from_ground = term.from_ground and
-  atom_to_ground = term.to_ground and neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and
-  ground_neg_to_mset = neg_to_mset and ground_pos_to_mset = pos_to_mset
+  atom_subst = "(\<cdot>t)" and atom_vars = term.vars and atom_is_ground = term.is_ground and 
+  atom_from_ground = term.from_ground and atom_to_ground = term.to_ground and
+  neg_to_mset = neg_to_mset and pos_to_mset = pos_to_mset and ground_neg_to_mset = neg_to_mset and
+  ground_pos_to_mset = pos_to_mset
   by unfold_locales
 
 end

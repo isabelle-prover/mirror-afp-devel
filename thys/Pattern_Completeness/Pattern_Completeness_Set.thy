@@ -261,7 +261,7 @@ text \<open>A function to compute for a variable $x$ all substitution that insta
   determines from where to start the numbering of variables.\<close>
 
 definition \<tau>c :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> 'f \<times> 's list \<Rightarrow> ('f,nat \<times> 's)subst" where 
-  "\<tau>c n x = (\<lambda>(f,ss). subst x (Fun f (map Var (zip [n ..< n + length ss] ss))))"
+  "\<tau>c n x = (\<lambda>(f, ss). subst x (Fun f (map Var (indexed_from n ss))))"
 
 text \<open>Compute the list of conflicting variables (Some list), or detect a clash (None)\<close>
 fun conflicts :: "('f,'v\<times>'s)term \<Rightarrow> ('f,'v\<times>'s)term \<Rightarrow> ('v\<times>'s) list option" where 
@@ -859,11 +859,12 @@ next
     fix \<tau>
     assume tau: "\<tau> \<in> \<tau>s n x" 
     from tau[unfolded \<tau>s_def \<tau>c_def, simplified]
-    obtain f sorts where f: "f : sorts \<rightarrow> snd x in C" and \<tau>: "\<tau> = subst x (Fun f (map Var (zip [n..<n + length sorts] sorts)))" by auto
+    obtain f sorts where f: "f : sorts \<rightarrow> snd x in C"
+      and \<tau>: "\<tau> = subst x (Fun f (map Var (indexed_from n sorts)))" by auto
     let ?i = "length sorts" 
-    let ?xs = "zip [n..<n + length sorts] sorts" 
+    let ?xs = "indexed_from n sorts" 
     from C_sub_S[OF f] have sS: "?s \<in> S" and xs: "snd ` set ?xs \<subseteq> S" 
-      unfolding set_conv_nth set_zip by auto
+      by (auto simp add: nth_indexed_from_eq set_conv_nth set_zip)
     {
       fix mp y
       assume mp: "mp \<in> pp"  and "y \<in> tvars_match (subst_left \<tau> ` mp)"
@@ -1585,11 +1586,11 @@ next
             by (auto simp: ys arg[symmetric])
         qed
       qed
-      define \<tau> where "\<tau> = subst x (Fun f (map Var (zip [n..<n + ?l] \<sigma>s)))"
+      define \<tau> where "\<tau> = subst x (Fun f (map Var (indexed_from n \<sigma>s)))"
       have "\<tau> :\<^sub>s \<V> |` tvars_pat pp \<rightarrow> \<T>(C,{x : \<iota> in \<V>. \<iota> \<in> S})"
-        using Fun_hastypeI[OF f, of "{x : \<iota> in \<V>. \<iota> \<in> S}" "map Var (zip [n..<n + ?l] \<sigma>s)"] \<sigma>sS wfpp
+        using Fun_hastypeI[OF f, of "{x : \<iota> in \<V>. \<iota> \<in> S}" "map Var (indexed_from n \<sigma>s)"] \<sigma>sS wfpp
         by (auto intro!: sorted_mapI
-            simp: \<tau>_def subst_def len[symmetric] list_all2_conv_all_nth hastype_restrict wf_pat_iff)
+            simp: \<tau>_def subst_def list_all2_conv_all_nth hastype_restrict wf_pat_iff nth_indexed_from_eq simp flip: len)
       from wf_pat_subst[OF this]
       have wf2: "wf_pat (subst_pat_problem_set \<tau> pp)".
       from f have "\<tau> \<in> \<tau>s n x" unfolding \<tau>s_def \<tau>_def \<tau>c_def using len[symmetric] by auto
@@ -1621,8 +1622,9 @@ next
             finally show ?thesis by simp
           next
             case True
-            show ?thesis unfolding True \<tau>_def subst_simps \<sigma>x eval_term.simps map_map o_def term.simps
-              by (intro conjI refl nth_equalityI, auto simp: len \<sigma>'_def)
+            have \<open>ts = map \<sigma>' (indexed_from n \<sigma>s)\<close>
+              by (rule nth_equalityI) (simp_all add: len nth_indexed_from_eq \<sigma>'_def)
+            with True \<sigma>x show ?thesis by (simp add: \<tau>_def o_def)
           qed
         qed  
         also have "\<dots> = li \<cdot> \<mu>" using match by simp
@@ -1637,15 +1639,16 @@ next
       fix \<tau>
       assume "\<tau> \<in> \<tau>s n x"
       from this[unfolded \<tau>s_def \<tau>c_def, simplified]
-      obtain f \<iota>s where f: "f : \<iota>s \<rightarrow> snd x in C" and \<tau>: "\<tau> = subst x (Fun f (map Var (zip [n..<n + length \<iota>s] \<iota>s)))" by auto
+      obtain f \<iota>s where f: "f : \<iota>s \<rightarrow> snd x in C" and \<tau>: "\<tau> = subst x (Fun f (map Var (indexed_from n \<iota>s)))"
+        by auto
       let ?i = "length \<iota>s" 
-      let ?xs = "zip [n..<n + length \<iota>s] \<iota>s"
+      let ?xs = "indexed_from n \<iota>s"
       have i: "?i \<le> m" by (rule m[OF f])
       have "\<forall>\<iota> \<in> set \<iota>s. \<iota> \<in> S" using C_sub_S f by blast 
       with Fun_hastypeI[OF f, of "{x : \<iota> in \<V>. \<iota> \<in> S}" "map Var ?xs"] wfpp
       have "\<tau> :\<^sub>s \<V> |` tvars_pat pp \<rightarrow> \<T>(C,{x : \<iota> in \<V>. \<iota> \<in> S})"
         by (auto intro!: sorted_mapI
-            simp: \<tau> subst_def hastype_restrict list_all2_conv_all_nth wf_pat_iff)
+            simp: \<tau> subst_def hastype_restrict list_all2_conv_all_nth wf_pat_iff nth_indexed_from_eq)
       note def2 = def[OF wf_pat_subst[OF this]]
       show "pat_complete C (subst_pat_problem_set \<tau> pp)" unfolding def2
       proof (intro allI impI)
@@ -1655,7 +1658,7 @@ next
         from f have f: "f : \<iota>s \<rightarrow> snd x in C" by (simp add: fun_hastype_def)
         with sorted_mapD[OF cg] set_mp[OF sortsS]
         have "Fun f (map \<sigma> ?xs) : snd x in \<T>(C)" 
-          by (auto intro!: Fun_hastypeI simp: list_all2_conv_all_nth)
+          by (auto intro!: Fun_hastypeI simp: list_all2_conv_all_nth nth_indexed_from_eq)
         with sorted_mapD[OF cg]
         have cg: "\<sigma>' :\<^sub>s {x : \<iota> in \<V>. \<iota> \<in> S} \<rightarrow> \<T>(C)" by (auto intro!: sorted_mapI simp: \<sigma>'_def)
         from complete[unfolded def[OF wfpp], rule_format, OF this] 

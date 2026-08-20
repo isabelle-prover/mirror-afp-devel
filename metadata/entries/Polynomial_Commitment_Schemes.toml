@@ -1,0 +1,27 @@
+title = "Polynomial Commitment Schemes"
+date = 2026-07-13
+topics = [
+  "Computer science/Security/Cryptography",
+]
+abstract = "This entry formalizes polynomial commitment schemes (PCSs) and the security proofs of two variants of the Kate–Zaverucha–Goldberg (KZG) construction. We define an abstract PCS interface and games for correctness, polynomial binding, evaluation binding, hiding, and knowledge soundness. We also formalize symmetric pairings, the DL, $t$-DL, $t$-SDH, and $t$-BSDH assumptions, and the Algebraic Group Model (AGM) of Fuchsbauer, Kiltz, and Loss using a constraint-programming-inspired approach. Based on these definitions, we verify correctness, polynomial binding, evaluation binding, and knowledge soundness for the standard and batched KZG constructions, as well as weak evaluation hiding for the standard KZG. The security proofs are carried out in the CryptHOL framework and follow Shoup's sequence-of-games approach with machine-checked game transitions."
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.rothmann]
+email = "rothmann_email"
+
+[contributors]
+
+[notify]
+rothmann = "rothmann_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

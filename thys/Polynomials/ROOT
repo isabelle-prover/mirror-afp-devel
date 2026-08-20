@@ -11,7 +11,7 @@ session Polynomials = "Abstract-Rewriting" +
     "Abstract-Rewriting.SN_Order_Carrier"
     "HOL-Library.AList"
   theories
-    MPoly_Type_Class_FMap
+    MPoly_Type_Class_Finite_Map
     MPoly_Type_Class_OAlist
     MPoly_PM
     MPoly_Type_Univariate

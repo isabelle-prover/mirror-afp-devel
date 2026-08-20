@@ -92,7 +92,7 @@ next
   have aux: "submatrix A I J $$ (a, b) = A $$(pick I a, pick J b)"
   proof (rule submatrix_index)
     have "card {i. i < dim_row A \<and> i \<in> I} = k"
-      by (smt A_carrier Ik carrier_matD(1) equalityI mem_Collect_eq r subsetI)
+      by (smt (z3) A_carrier Ik carrier_matD(1) equalityI mem_Collect_eq r subsetI)
     moreover have "card {i. i < dim_col A \<and> i \<in> J} = k"
       by (metis (no_types, lifting) A_carrier Jk c carrier_matD(2) carrier_mat_def
          equalityI mem_Collect_eq subsetI)
@@ -850,7 +850,7 @@ proof (rule Gcd_greatest)
     have *: "P' * P * A = P' * (P * A)"
       by (meson A P P' assoc_mult_mat)
     have " P' * (P * A * Q) * Q' =  P' * P * A * Q * Q'"
-      by (smt A P P' Q assoc_mult_mat mult_carrier_mat)
+      by (smt (z3) A P P' Q assoc_mult_mat mult_carrier_mat)
     also have "... =  P' * P * (A * Q * Q')"
       using A P P' Q Q' f1 * by auto
     also have "... = A * Q * Q'" using P'P A P' unfolding inverts_mat_def by auto

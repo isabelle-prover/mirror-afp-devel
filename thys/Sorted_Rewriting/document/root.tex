@@ -1,0 +1,110 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{amssymb}
+
+\usepackage{authblk}
+
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Sorted Rewriting, Conditional Rewriting, and Logically Constrained Rewriting}
+\author{Akihisa Yamada}
+\affil{National Institute of Advanced Industrial Science and Technology, Japan}
+
+\maketitle
+
+\begin{abstract}
+This entry provides various materials for sorted term rewrite systems (sorted TRSs),
+(sorted) conditional TRSs (CTRSs),
+and
+logically constrained TRSs (LCTRSs).
+For (C)TRSs we formalize
+the fundamental result that the rewrite steps induced by a (C)TRS is the least rewrite relation that models the (C)TRS.
+For LCTRSs we simply formulate logics as sorted algebras with the bool sort and logical symbols which are interpreted as expected.
+This allows us to define rewrite steps of LCTRSs as rewrite steps of an (infinite) TRS.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+\section{Introduction}
+
+This entry provides various materials needed for
+\emph{logically constrained term rewrite systems} (LCTRS)~\cite{KopN13},
+a term rewrite system (TRS) where rules come with constraints
+which are interpreted in a background logic.
+
+Building upon the IsaFoR (Isabelle Formalization of Rewriting~\cite{ThiemannS09})
+formalizations of unsorted terms \cite{First_Order_Terms-AFP}
+and sorted terms \cite{Sorted_Terms-AFP},
+we start with formalizing sorted TRSs.
+Here we formalize fundamental results such as that the rewrite relation induced by a sorted TRS is the least rewrite relation which models the TRS.
+We also formalize (sorted) conditional TRSs (CTRSs) and the fundamental result that
+the many-step reduction is the least rewrite preorder which models the CTRS.
+
+As LCTRSs require \emph{logics}, we provide a light-weight and rewriting-oriented formalization of logics.
+While it is standard to treat logical symbols and function symbols differently---cf.\@ the IsaFoL (Isabelle Formalization of Logics) entry~\cite{Abstract_Completeness-AFP}---%
+in this development we consider a logic just as a sorted algebra where the signature contains logic symbols
+and their interpretations are as expected.
+This became possible thanks to the formalization of sorted terms, and
+is crucial for LCTRSs since the formalism allows logical symbols to appear inside terms.
+
+We also provide means to extend an algebra with another algebra,
+and to extend an algebra with logic.
+This allows us to build concrete logics modularly:
+we define algebras for natural numbers and
+integers, and obtain corresponding logics by extending these algebras
+with a pure Bool logic.
+
+
+
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=~/Projekte/ay/Isabelle_Logic/thys/document/root.tex%:%

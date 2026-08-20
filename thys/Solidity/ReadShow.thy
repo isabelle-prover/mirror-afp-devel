@@ -123,7 +123,7 @@ lemma digit_of_nat_nat_of_digit_id:
 
 definition 
   nat_implode :: \<open>'a::{numeral,power,zero} list \<Rightarrow> 'a\<close> where
- \<open>nat_implode n = foldr (+) (map (\<lambda> (p,d) \<Rightarrow> 10 ^ p * d) (enumerate 0 (rev n))) 0\<close>
+ \<open>nat_implode n = foldr (+) (map (\<lambda> (p,d) \<Rightarrow> 10 ^ p * d) (indexed_from 0 (rev n))) 0\<close>
 
 
 declare nat_implode_def [solidity_symbex]
@@ -208,22 +208,11 @@ value \<open>nat_explode (Suc 21)\<close>
 
 
 lemma nat_implode_append: 
- \<open>nat_implode (a@[b]) = (1*b + foldr (+) (map (\<lambda>(p, y). 10 ^ p * y) (enumerate (Suc 0) (rev a))) 0 )\<close>
+ \<open>nat_implode (a@[b]) = (1*b + foldr (+) (map (\<lambda>(p, y). 10 ^ p * y) (indexed_from (Suc 0) (rev a))) 0 )\<close>
   by(simp add:nat_implode_def)
 
-lemma enumerate_suc: \<open>enumerate (Suc n) l = map (\<lambda> (a,b). (a+1::nat,b)) (enumerate n l)\<close>
-proof (induction \<open>l\<close>)
-  case Nil
-  then show ?case by simp
-next
-  case (Cons a x) note * = this
-  then show ?case apply(simp only:enumerate_simps)
-    
-    apply(simp only:\<open>enumerate (Suc n) x = map (\<lambda>a. case a of (a, b) \<Rightarrow> (a + 1, b)) (enumerate n x)\<close>[symmetric])
-    apply(simp)
-    using *
-    by (metis apfst_conv cond_case_prod_eta enumerate_Suc_eq)
-qed
+lemma indexed_from_Suc_eq': \<open>indexed_from (Suc n) l = map (\<lambda> (a,b). (a+1::nat,b)) (indexed_from n l)\<close>
+  by (auto simp add: indexed_from_Suc_eq)
 
 lemma mult_assoc_aux1: 
  \<open>(\<lambda>(p, y). 10 ^ p * y) \<circ> (\<lambda>(a, y). (Suc a, y)) = (\<lambda>(p, y). (10::nat) * (10 ^ p) * y)\<close>
@@ -275,11 +264,11 @@ next
         apply(simp del:nat_explode'.simps rev_rev_ident)
         apply(fold nat_explode_def)
         apply(simp only:nat_implode_append)
-        apply(simp add:enumerate_suc)
+        apply(simp add:indexed_from_Suc_eq')
         apply(simp only:mult_assoc_aux1) 
         using mult_assoc_aux2 apply(simp)
         using fold_map_transfer[of \<open>\<lambda>(p, y). 10 ^ p * y\<close> 
-                                   \<open>(enumerate 0 (rev (nat_explode (n div 10))))\<close>, simplified]
+                                   \<open>(indexed_from 0 (rev (nat_explode (n div 10))))\<close>, simplified]
         apply(simp) apply(fold nat_implode_def) using ** 
         by simp
       qed

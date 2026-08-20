@@ -1,0 +1,57 @@
+title = "Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)"
+date = 2026-07-13
+topics = [
+  "Logic/General logic",
+  "Logic/General logic/Classical first-order logic",
+  "Computer science/Programming languages/Logics",
+  "Computer science/Semantics and reasoning",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+We develop, in Isabelle/HOL, three embeddings of monadic second-order logic
+(MSO) into classical higher-order logic side by side: a <em>deep</em> embedding
+(an inductive datatype with an explicit satisfaction relation), a
+<em>maximal-shallow</em> embedding, and a <em>minimal-shallow</em> embedding
+&mdash; the last a locale parametrised by an interpretation and by first- and
+second-order assignments. The enabling ingredient is a <em>two-sorted</em>
+capture-avoiding substitution apparatus (predication, substitution, alphabetic
+renaming, and a substitution lemma, developed once for each binder namespace),
+in which each binder is transparent for the other. Faithfulness of all three
+embeddings is mechanised and automated.
+
+The central result is a fully mechanised two-sorted downward
+L&ouml;wenheim&ndash;Skolem theorem. Its corollary identifies range-relative
+validity with the general (Henkin-style) reading of MSO, while comprehension
+witnesses that the standard reading is strictly stronger; an
+elementary-substructure refinement recovers the standard reading from the
+minimal embedding as well, so the two readings become one device under two
+interpretation classes. We further exercise the embeddings on classical MSO
+landmarks: Boolean closure and graph operations hold under the standard (full
+second-order) reading and fail under the general one, making the dichotomy
+concrete, while reachability and 2-colorability are non-theorems, refuted
+throughout with <tt>nitpick</tt> countermodels."""
+license = "bsd"
+note = ""
+creation_note = "Generative AI use: The authors used generative AI assistants (Anthropic’s Claude family of models) to draft and shorten prose, to propose and shorten some proofs (in particular parts of the two- sorted Löwenheim–Skolem construction), and to maintain the LaTeX presentation of this entry. The mathematical content, the theory development, and the design choices are the authors’; all text and proofs in the final entry have been verified by the authors, who take full responsibility for the content."
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[authors.kirchner]
+email = "kirchner_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+kirchner = "kirchner_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

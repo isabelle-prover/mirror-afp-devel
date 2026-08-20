@@ -79,7 +79,7 @@ fun subst_mod_mult_ac ctxt eq_thm ct =
     val is_empty = not (Option.isSome factors_t')
     val t' = mk_mult' lhs (Option.map term_of_factor_tree factors_t')
     fun tac {context: Proof.context, ...} =
-      HEADGOAL (Simplifier.simp_tac (put_simpset HOL_ss context addsimps @{thms "mult_ac"}))
+      HEADGOAL (Simplifier.simp_tac (context |> put_simpset HOL_ss |> Simplifier.add_simps @{thms mult_ac}))
     val eq_thm1 = Goal.prove ctxt [] [] (Logic.mk_equals (t, t')) tac
     val thm = if is_empty then trans_thm OF [eq_thm, eq_thm1] else lift_thm OF [eq_thm, eq_thm1]
   in

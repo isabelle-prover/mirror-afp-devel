@@ -170,7 +170,7 @@ struct
       end)
 
     fun sturm_tac ctxt keep_goal = SELECT_GOAL
-       (prune_params_tac ctxt
+       (Simplifier.prune_params_tac ctxt
         THEN TRY (Object_Logic.full_atomize_tac ctxt 1)
         THEN TRY (EqSubst.eqsubst_tac ctxt [1] @{thms sturm_imp_conv} 1)
         THEN TRY (convert_meta_spec_tac ctxt 1)

@@ -1,0 +1,12 @@
+chapter AFP
+
+session Rankings = HOL +
+  options [timeout = 900]
+  sessions
+    "List-Index"
+    Randomised_Social_Choice
+  theories
+    Rankings
+    Topological_Sortings_Rankings
+  document_files
+    root.tex

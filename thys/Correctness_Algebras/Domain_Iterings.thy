@@ -22,7 +22,7 @@ lemma d_top:
 
 lemma mult_domain_top:
   "x * d(y) * top \<le> d(x * y) * top"
-  by (smt d_mult_d d_restrict_equals mult_assoc mult_right_isotone top_greatest)
+  by (smt (z3) d_mult_d d_restrict_equals mult_assoc mult_right_isotone top_greatest)
 
 lemma domain_meet_domain:
   "d(x \<sqinter> d(y) * z) \<le> d(y)"
@@ -114,7 +114,7 @@ lemma l20:
   "x \<le> y \<longleftrightarrow> x \<le> y \<squnion> L \<and> x \<le> y \<squnion> d(y * bot) * top"
   apply (rule iffI)
   apply (simp add: le_supI1)
-  by (smt sup_commute sup_inf_distrib1 l13 le_iff_sup meet_domain_top)
+  by (smt (z3) sup_commute sup_inf_distrib1 l13 le_iff_sup meet_domain_top)
 
 lemma l21:
   "d(x * bot) * L \<le> x * bot \<sqinter> L"
@@ -207,7 +207,7 @@ lemma mult_L_circ:
 
 lemma mult_L_circ_mult_below:
   "(x * L)\<^sup>\<circ> * y \<le> y \<squnion> x * L"
-  by (smt sup_right_isotone l40 mult_L_circ mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone)
+  by (smt (z3) sup_right_isotone l40 mult_L_circ mult_assoc mult_left_one mult_right_dist_sup mult_right_isotone)
 
 lemma circ_L:
   "L\<^sup>\<circ> = L \<squnion> 1"
@@ -248,7 +248,7 @@ proof (rule order.antisym)
   also have "... \<le> x * L \<squnion> y * (y\<^sup>\<star> \<squnion> y\<^sup>\<star> * x * L)"
     by (metis sup_left_isotone l40 mult_assoc mult_right_isotone)
   also have "... \<le> x * L \<squnion> y * y\<^sup>\<star> \<squnion> y\<^sup>\<star> * x * L"
-    by (smt sup_assoc sup_commute sup_ge2 mult_assoc mult_left_dist_sup star.circ_loop_fixpoint)
+    by (smt (z3) sup_assoc sup_commute sup_ge2 mult_assoc mult_left_dist_sup star.circ_loop_fixpoint)
   also have "... \<le> x * L \<squnion> y\<^sup>\<star> \<squnion> y\<^sup>\<star> * x * L"
     by (meson order_refl star.left_plus_below_circ sup_mono)
   also have "... = y\<^sup>\<star> \<squnion> y\<^sup>\<star> * x * L"
@@ -327,7 +327,7 @@ lemma d_omega_export:
   "d(y) * x \<le> x * d(y) \<Longrightarrow> d(y) * x\<^sup>\<omega> = (d(y) * x)\<^sup>\<omega>"
   apply (rule order.antisym)
   apply (simp add: d_preserves_equation omega_simulation)
-  by (smt le_iff_sup mult_left_dist_sup omega_simulation_2 omega_slide)
+  by (smt (z3) le_iff_sup mult_left_dist_sup omega_simulation_2 omega_slide)
 
 lemma d_omega_import:
   "d(y) * x \<le> x * d(y) \<Longrightarrow> d(y) * x\<^sup>\<omega> = d(y) * (d(y) * x)\<^sup>\<omega>"

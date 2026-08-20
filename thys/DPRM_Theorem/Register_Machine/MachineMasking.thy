@@ -33,7 +33,7 @@ lemma d_geom_series:
 proof-
   have "D q c b = (2^c - 1) *  E q b" by (auto simp: E_def D_def sum_distrib_left sum_distrib_right)
   moreover have "b \<ge> 2" using assms by fastforce
-  ultimately show ?thesis by (smt e_geom_series mult.left_commute mult_cancel_left)
+  ultimately show ?thesis by (smt (z3) e_geom_series mult.left_commute mult_cancel_left)
 qed
 
 (* [D] 4.21 *)
@@ -46,7 +46,7 @@ lemma f_geom_series:
 proof-
   have "F q c b = 2^c *  E q b" by (auto simp: E_def F_def sum_distrib_left sum_distrib_right)
   moreover have "b \<ge> 2" using assms by fastforce
-  ultimately show ?thesis by (smt e_geom_series mult.left_commute mult_cancel_left)
+  ultimately show ?thesis by (smt (z3) e_geom_series mult.left_commute mult_cancel_left)
 qed
 
 (* AUX LEMMAS *)
@@ -132,7 +132,7 @@ next
 
   have xb: "\<forall>t. x t < 2^Suc c - Suc 0"
     using xlt
-    by (smt Suc_pred leI le_imp_less_Suc less_SucE less_trans n_less_m_mult_n numeral_2_eq_2 
+    by (smt (z3) Suc_pred leI le_imp_less_Suc less_SucE less_trans n_less_m_mult_n numeral_2_eq_2 
         power.simps(2) zero_less_numeral zero_less_power)
   have yb: "y < 2^c"
     using ylt b B_def leI order_trans by fastforce
@@ -151,7 +151,7 @@ next
     using mask_linear[where ?t = "Suc c * Suc q"] sumxlt sumylt Suc.IH b B_def
     apply auto
     apply (smt mask mask_conversed_shift power_Suc power_mult power_mult_distrib)
-    by (smt mask mask_linear power_Suc power_mult power_mult_distrib)
+    by (smt (z3) mask mask_linear power_Suc power_mult power_mult_distrib)
   finally show ?case using mask_linear Suc.IH B_def
     by (metis (no_types, lifting) b mask mask_conversed_shift power_mult)
 qed
@@ -174,7 +174,7 @@ proof -
   have "x && 2^c \<preceq> 2^c" by (simp add: lm0245)
   hence "x && 2^c \<le> 2^c" by (simp add: masks_leq)
   hence h: "x && 2^c < 2^Suc c"
-    by (smt Suc_lessD le_neq_implies_less lessI less_trans_Suc n_less_m_mult_n numeral_2_eq_2 
+    by (smt (z3) Suc_lessD le_neq_implies_less lessI less_trans_Suc n_less_m_mult_n numeral_2_eq_2 
         power_Suc zero_less_power)
   have "\<forall>t. (x && 2^c) \<exclamdown> t = (nth_bit x t) * (nth_bit (2^c) t)"
     using bitAND_digit_mult by auto
@@ -292,7 +292,7 @@ lemma dmask_aux0:
   shows "(2 ^ x - Suc 0) div 2 = 2 ^ (x - 1) - Suc 0"
 proof -
   have 0: "(2^x - Suc 0) div 2 = (2^x - 2) div 2"
-    by (smt Suc_diff_Suc Suc_pred assms dvd_power even_Suc even_Suc_div_two nat_power_eq_Suc_0_iff
+    by (smt (z3) Suc_diff_Suc Suc_pred assms dvd_power even_Suc even_Suc_div_two nat_power_eq_Suc_0_iff
             neq0_conv numeral_2_eq_2 zero_less_diff zero_less_power)
     (* can do manual parity distinction *)
   moreover have divides: "(2::nat) dvd 2^x"
@@ -303,7 +303,7 @@ proof -
   moreover have "... = 2 ^ (x - 1) - Suc 0"
     by (simp add: Suc_leI assms power_diff)
   ultimately have 1: "(2 ^ x - Suc 0) div 2 = 2 ^ (x - 1) - Suc 0"
-     by (smt One_nat_def)
+     by (smt (z3) One_nat_def)
   thus ?thesis by simp
 qed
 
@@ -525,7 +525,7 @@ proof -
     using bitAND_linear_sum[of "\<lambda>t. R ic p l t + 2^c - 1" "c" "\<lambda>t. 2^c"]
           cells_bounded b_def B_def a1 a2
     apply auto
-    by (smt One_nat_def Suc_less_eq Suc_pred a1 add.commute add_gr_0 l mult_2 
+    by (smt (z3) One_nat_def Suc_less_eq Suc_pred a1 add.commute add_gr_0 l mult_2 
         nat_add_left_cancel_less power_Suc zero_less_numeral zero_less_power)
   also have "... = (\<Sum>t = 0..q. (R ic p l t + 2^c - 1) * b^t) && f"
     by (auto simp: f_def F_def)
@@ -629,7 +629,7 @@ proof -
       hence "nth_digit (\<Sum>k\<le>M. SKe ic p b q k) t b = (if t\<le>q then (\<Sum>k\<le>M. S ic p k t) else 0)"
         using `c>0` aux_bound_2 h2 unfolding SKe_def
         using nth_digit_gen_power_series[of "\<lambda>t. (\<Sum>k\<le>M. S ic p k t)" "c" "q" "t"]
-        by (smt B_def Groups.mult_ac(2) assms(7) aux_bound_1 b_def le_less_trans sum.cong)
+        by (smt (z3) B_def Groups.mult_ac(2) assms(7) aux_bound_1 b_def le_less_trans sum.cong)
       hence "nth_digit (\<Sum>k\<le>M. SKe ic p b q k) t b \<le> (if t\<le>q then 1 else 0)"
         using aux_bound_1 by auto
     } thus ?thesis by auto
@@ -639,7 +639,7 @@ proof -
   ultimately have "\<forall>t. \<forall>i<Suc c. nth_digit (\<Sum>k\<le>M. SKe ic p b q k) t b \<exclamdown> i
                           \<le> nth_digit e t b \<exclamdown> i" 
     using aux_lt_implies_mask linorder_neqE_nat e_aux
-    by (smt One_nat_def le_0_eq le_SucE less_or_eq_imp_le nat_zero_less_power_iff
+    by (smt (z3) One_nat_def le_0_eq le_SucE less_or_eq_imp_le nat_zero_less_power_iff
             numeral_2_eq_2 zero_less_Suc)
 
   hence "\<forall>t. \<forall>i<Suc c. (\<Sum>k\<le>M. SKe ic p b q k) \<exclamdown> (Suc c * t + i) \<le> e \<exclamdown> (Suc c * t + i)"

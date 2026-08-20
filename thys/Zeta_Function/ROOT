@@ -18,6 +18,7 @@ session Zeta_Function = Dirichlet_Series +
   theories
     Zeta_Function
     Zeta_Laurent_Expansion
+    Riemann_Xi
     Hadjicostas_Chapman
   document_files
     "root.tex"

@@ -160,7 +160,7 @@ next
   proof(cases "ic=c")
     case True
     then show ?thesis
-      by (smt choose_smaller_in_sort class_les_irrefl class_les_trans insert.IH insert.prems(2) 
+      by (smt (z3) choose_smaller_in_sort class_les_irrefl class_les_trans insert.IH insert.prems(2) 
           insert.prems(3) insert_iff insert_subset normalize_sort_removed_elem_irrelevant' sort_ex_def)
   next
     case False
@@ -258,7 +258,7 @@ proof (rule ccontr)
     from this obtain c where c: "c \<in> normalize_sort cs s1" "c \<notin> normalize_sort cs s2"
       by blast
     from this obtain c' where c': "c' \<in> normalize_sort cs s2" "class_les cs c' c"
-      by (smt \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
+      by (smt (z3) \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
           sort_leq_def wf_subclass_loc.class_leq_antisym wf_subclass_loc.class_leq_trans wf_subclass_loc_axioms)
     then show ?thesis
     proof(cases "c' \<in> normalize_sort cs s1")
@@ -269,7 +269,7 @@ proof (rule ccontr)
     next
       case False
       from False c' obtain c'' where c'': "c'' \<in> normalize_sort cs s1" "class_les cs c'' c'"
-      by (smt \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
+      by (smt (z3) \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
           sort_leq_def wf_subclass_loc.class_leq_antisym wf_subclass_loc.class_leq_trans wf_subclass_loc_axioms)
       hence "class_les cs c'' c"
         using c'(2) class_les_trans by blast
@@ -283,7 +283,7 @@ proof (rule ccontr)
     from this obtain c where c: "c \<in> normalize_sort cs s2" "c \<notin> normalize_sort cs s1"
       by blast
     from this obtain c' where c': "c' \<in> normalize_sort cs s1" "class_les cs c' c"
-      by (smt \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
+      by (smt (z3) \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
           sort_leq_def wf_subclass_loc.class_leq_antisym wf_subclass_loc.class_leq_trans wf_subclass_loc_axioms)
     then show ?thesis
     proof(cases "c' \<in> normalize_sort cs s2")
@@ -294,7 +294,7 @@ proof (rule ccontr)
     next
       case False
       from False c' obtain c'' where c'':"c''\<in> normalize_sort cs s2" "class_les cs c'' c'"
-      by (smt \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
+      by (smt (z3) \<open>sort_leq cs s1 s2\<close> \<open>sort_leq cs s2 s1\<close> class_les_def mem_Collect_eq normalize_sort_def 
           sort_leq_def wf_subclass_loc.class_leq_antisym wf_subclass_loc.class_leq_trans wf_subclass_loc_axioms)
       hence "class_les cs c'' c"
         using c'(2) class_les_trans by blast

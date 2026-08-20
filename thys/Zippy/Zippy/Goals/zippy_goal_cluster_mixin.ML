@@ -6,8 +6,7 @@ sig
   include ZIPPY_GOAL_CLUSTER_MIXIN_BASE
   val get_state : @{AllT_args} L.container -> GC.GCS.state
   val get_goals : @{AllT_args} L.container -> term list
-  val get_stripped_goals : @{AllT_args} L.container ->
-    ((string * typ) list * (term list * term)) list
+  val get_stripped_goals : @{AllT_args} L.container -> Term_Util.subgoal list
   val get_ngoals : @{AllT_args} L.container -> int
   val has_meta_vars : @{AllT_args} L.container -> bool
 end

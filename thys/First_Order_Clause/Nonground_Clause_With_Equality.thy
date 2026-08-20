@@ -15,7 +15,7 @@ sublocale atom: term_based_lifting where
   sub_subst = "(\<cdot>t)" and sub_vars = term.vars and map = map_uprod and to_set = set_uprod and
   sub_to_ground = term.to_ground and sub_from_ground = term.from_ground and
   to_ground_map = map_uprod and from_ground_map = map_uprod and ground_map = map_uprod and
-  to_set_ground = set_uprod
+  to_set_ground = set_uprod and sub_is_ground = term.is_ground
   by unfold_locales
 
 (* TODO: *)
@@ -39,6 +39,7 @@ lemma atom_to_ground_term_to_ground [simp]:
 
 lemma atom_is_ground_term_is_ground [simp]:
   "atom.is_ground (Upair t\<^sub>1 t\<^sub>2) \<longleftrightarrow> term.is_ground t\<^sub>1 \<and> term.is_ground t\<^sub>2"
+  using atom.is_ground_def 
   by simp
 
 lemma obtain_from_atom_subst:
@@ -47,13 +48,13 @@ lemma obtain_from_atom_subst:
   where "a = Upair t\<^sub>1 t\<^sub>2" "t\<^sub>1' = t\<^sub>1 \<cdot>t \<sigma>" "t\<^sub>2' = t\<^sub>2 \<cdot>t \<sigma>"
   using assms
   unfolding atom.subst_def
-  by(cases a) force
+  by (cases a) force
 
 subsection \<open>Nonground Literals\<close>
 
 sublocale nonground_clause_generic where 
   atom_vars = atom.vars and atom_subst = "(\<cdot>a)" and atom_to_ground = atom.to_ground and
-  atom_from_ground = atom.from_ground
+  atom_from_ground = atom.from_ground and atom_is_ground = atom.is_ground
   by unfold_locales
 
 lemma obtain_from_pos_literal_subst:
@@ -80,7 +81,7 @@ lemma uprod_literal_subst_eq_literal_subst: "map_uprod_literal (\<lambda>t. t \<
 
 lemma uprod_literal_vars_eq_literal_vars: "\<Union> (term.vars ` uprod_literal_to_set l) = literal.vars l"
   unfolding literal.vars_def atom.vars_def
-  by(cases l) simp_all
+  by (cases l) simp_all
 
 lemma uprod_literal_from_ground_eq_literal_from_ground:
   "map_uprod_literal term.from_ground l\<^sub>G = literal.from_ground l\<^sub>G"
@@ -95,10 +96,11 @@ sublocale uprod_literal: term_based_lifting where
   to_set = uprod_literal_to_set and sub_to_ground = term.to_ground and
   sub_from_ground = term.from_ground and to_ground_map = map_uprod_literal and
   from_ground_map = map_uprod_literal and ground_map = map_uprod_literal and
-  to_set_ground = uprod_literal_to_set
+  to_set_ground = uprod_literal_to_set and sub_is_ground = term.is_ground
 rewrites
   uprod_literal_subst [simp]: "\<And>l \<sigma>. uprod_literal.subst l \<sigma> = literal.subst l \<sigma>" and
   uprod_literal_vars [simp]: "\<And>l. uprod_literal.vars l = literal.vars l" and
+  uprod_literal_is_ground [simp]: "\<And>l. uprod_literal.is_ground l \<longleftrightarrow> literal.is_ground l" and
   uprod_literal_from_ground [simp]: "\<And>l\<^sub>G. uprod_literal.from_ground l\<^sub>G = literal.from_ground l\<^sub>G" and
   uprod_literal_to_ground [simp]:"\<And>l. uprod_literal.to_ground l = literal.to_ground l"
 proof unfold_locales
@@ -108,7 +110,7 @@ proof unfold_locales
     to_set = uprod_literal_to_set and sub_to_ground = term.to_ground and
     sub_from_ground = term.from_ground and to_ground_map = map_uprod_literal and
     from_ground_map = map_uprod_literal and ground_map = map_uprod_literal and
-    to_set_ground = uprod_literal_to_set
+    to_set_ground = uprod_literal_to_set and sub_is_ground = term.is_ground
     by unfold_locales
 
   fix l and \<sigma>
@@ -123,11 +125,15 @@ proof unfold_locales
 
   fix l\<^sub>G 
   show "from_ground l\<^sub>G = literal.from_ground l\<^sub>G"
-    unfolding from_ground_def literal.from_ground_def atom.from_ground_def..
+    unfolding from_ground_def literal.from_ground_def atom.from_ground_def ..
 
   fix l
   show "to_ground l = literal.to_ground l"
     unfolding to_ground_def literal.to_ground_def atom.to_ground_def ..
+
+  show "is_ground l = literal.is_ground l"
+    unfolding atom.is_ground_def literal.is_ground_def is_ground_def 
+    by simp
 qed
 
 subsection \<open>Nonground Clauses\<close>

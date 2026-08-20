@@ -1174,7 +1174,7 @@ proof -
     qed
     include no_library_syntax
     have 3: thesis if "a = Le x" "b = \<infinity>" for x :: 't
-      by (smt 3(2) Le_le_LtI Lt_le_LeI add.inverse_inverse any_le_inf intro neg_0_less_iff_less
+      by (smt (z3) 3(2) Le_le_LtI Lt_le_LeI add.inverse_inverse any_le_inf intro neg_0_less_iff_less
           non_trivial_neg not_less order_trans sum_gt_neutral_dest that(2))
     have 4: thesis if "a = Lt x" "b = \<infinity>" for x :: 't
       by (metis that \<open>0 < a + b\<close> add.inverse_inverse dbm_less_eq_simps(2) dbm_less_simps(2) intro leI
@@ -1421,11 +1421,11 @@ definition apx where
 
 lemma apx_widens:
   "[M]\<^bsub>v,n\<^esub> \<subseteq> apx l ([M]\<^bsub>v,n\<^esub>)" if "canonical_dbm M"
-  by (smt apx_def extra_widens someI_ex that)
+  by (smt (z3) apx_def extra_widens someI_ex that)
 
 lemma apx_abs:
   "apx l ([M]\<^bsub>v,n\<^esub>) \<subseteq> \<alpha> l ([M]\<^bsub>v,n\<^esub>)" if "canonical_dbm M"
-  by (smt apx_def extra_\<alpha> someI_ex that)
+  by (smt (z3) apx_def extra_\<alpha> someI_ex that)
 
 lemma \<alpha>_V:
   "\<alpha> l Z \<subseteq> V" if "Z \<subseteq> V"
@@ -1457,7 +1457,7 @@ qed
 lemma apx_ex:
   assumes "canonical_dbm M"
   shows "\<exists>M'. apx l ([M]\<^bsub>v,n\<^esub>) = [extra l M']\<^bsub>v,n\<^esub> \<and> canonical_dbm M'"
-  using assms unfolding apx_def by (smt someI_ex)
+  using assms unfolding apx_def by (smt (z3) someI_ex)
 
 lemma vabstr'_apx:
   assumes "vabstr' Z M" "Z \<subseteq> V"

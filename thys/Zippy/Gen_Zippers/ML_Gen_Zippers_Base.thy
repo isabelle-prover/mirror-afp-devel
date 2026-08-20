@@ -65,7 +65,7 @@ struct
     ParaT.map_args (K paraT_args)
     #> ZipperT.map_args (K zipperT_args)
     #> AllT.map_args (K (paraT_args @ zipperT_args))
-    #> Standard_IMap_Antiquotation.map_stop (K (length zipperT_args))
+    #> IMap_Antiquotation.map_stop (K (length zipperT_args))
   fun setup_zipper_args' (opt_ParaT_nargs, opt_ParaT_arg) (opt_nzippers, opt_zipperT_arg) context =
     let
       val ParaT_nargs = \<^if_none>\<open>ParaT.nargs context\<close> opt_ParaT_nargs

@@ -1,0 +1,11 @@
+chapter AFP
+
+session "Nagata-Factoriality" = "HOL-Computational_Algebra" +
+  options [timeout = 600]
+  sessions
+    "Localization_Ring"
+  theories
+    Nagata_Factoriality
+  document_files
+    "root.bib"
+    "root.tex"

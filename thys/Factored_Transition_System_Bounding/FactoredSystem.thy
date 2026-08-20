@@ -958,7 +958,7 @@ lemma lemma_1_i:
 lemma lemma_1_ii:
   "last ` ((#) s ` state_set (state_list (state_succ s a) as))
   = last ` state_set (state_list (state_succ s a) as)"
-  by (smt NIL_NOTIN_stateset image_cong image_image last_ConsR)
+  by (smt (z3) NIL_NOTIN_stateset image_cong image_image last_ConsR)
 
 lemma lemma_1:
   fixes as :: "(('a, 'b) fmap \<times> ('a, 'b) fmap) list" and PPROB
@@ -2158,7 +2158,7 @@ proof -
         using calculation(2, 3, 5)
         by auto
       ultimately show ?thesis
-        by (smt "1" "2" C assms domIff fmlookup_add fmsubset.rep_eq map_le_def)
+        by (smt (z3) "1" "2" C assms domIff fmlookup_add fmsubset.rep_eq map_le_def)
     next
       case False
       moreover have "fmlookup (s0 ++\<^sub>f s1) a = fmlookup s0 a"
@@ -2166,7 +2166,7 @@ proof -
       ultimately show ?thesis proof (cases "a |\<in>| fmdom s0")
         case True
         have "a |\<notin>| fmdom (s1 ++\<^sub>f s0)"
-          by (smt "1" "2" C UnE assms dom_map_add fmadd.rep_eq fmsubset.rep_eq map_add_def
+          by (smt (z3) "1" "2" C UnE assms dom_map_add fmadd.rep_eq fmsubset.rep_eq map_add_def
               map_add_dom_app_simps(1) map_le_def)
         then show ?thesis
           using 3 by blast
@@ -2735,7 +2735,7 @@ next
     }
     then have i: "fmlookup (fst a) \<subseteq>\<^sub>m fmlookup ?f"
       using P3(4) 1(2)
-      by (smt domIff fmdom'_notD fmsubset.rep_eq map_le_def mem_Collect_eq)
+      by (smt (z3) domIff fmdom'_notD fmsubset.rep_eq map_le_def mem_Collect_eq)
     {
       fix v
       assume P3_2: "v \<in> dom (fmlookup (fst a))"
@@ -2768,7 +2768,7 @@ lemma as_needed_asses_submap_exec_i:
   using assms
   unfolding action_needed_asses_def action_needed_vars_def
   using fmdom'_notI fmlookup_restrict_set
-  by (smt mem_Collect_eq)
+  by (smt (z3) mem_Collect_eq)
 
 \<comment> \<open>NOTE added lemma.\<close>
 \<comment> \<open>TODO refactor.\<close>

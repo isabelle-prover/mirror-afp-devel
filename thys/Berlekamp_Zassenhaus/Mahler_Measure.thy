@@ -556,7 +556,7 @@ proof -
     obtain m i where mi: "m = n div 2" "i = n mod 2" by auto
     have nmi: "n = 2 * m + i" "i < 2" "0 < (2 :: nat)" "1 < (2 :: nat)" unfolding mi by auto
     have "(2 :: nat) \<noteq> 0" by auto
-    show "coeff f n = coeff (g \<circ>\<^sub>p monom 1 2) n + (if 1 \<le> n then 1 * coeff (h \<circ>\<^sub>p monom 1 2) (n - 1) else 0)" 
+    show "coeff f n = coeff (g \<circ>\<^sub>p monom 1 2) n + (if n < 1 then 0 else 1 * coeff (h \<circ>\<^sub>p monom 1 2) (n - 1))" 
     proof (cases "i = 1")
       case True
       hence id1: "2 * m + i - 1 = 2 * m + 0" by auto

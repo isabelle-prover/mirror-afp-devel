@@ -6,12 +6,14 @@ documents. Text mining: applications and theory, 1(1-20), 10-1002.
  */
 package afp
 
+import scala.language.unsafeNulls
 
-import isabelle.*
 
 import java.io.{BufferedReader, InputStreamReader}
 
 import scala.util.matching.Regex
+
+import isabelle._
 
 
 object Rake {
@@ -39,7 +41,7 @@ object Rake {
   def separate_words(text: String): List[String] = {
     for {
       word_raw <- word_delimiters.split(text).toList
-      word = word_raw.strip.toLowerCase
+      word = Word.lowercase(word_raw.strip)
       if word.nonEmpty && word.length >= min_chars && !number.matches(word)
     } yield word
   }
@@ -69,7 +71,7 @@ object Rake {
       sentence <- sentence_delimiters.split(stripped_text)
       phrase <- stop_words.split(sentence)
       if !phrase.isBlank
-    } yield phrase.strip().toLowerCase
+    } yield Word.lowercase(phrase.strip())
 
     val word_scores = calculate_word_scores(phrases.toList)
 

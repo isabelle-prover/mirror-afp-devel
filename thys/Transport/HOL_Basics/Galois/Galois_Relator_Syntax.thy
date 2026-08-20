@@ -11,10 +11,14 @@ abbreviation (input) "ge_Galois_infix y R r L x \<equiv> ge_Galois R r L y x"
 
 bundle galois_rel_Galois_syntax
 begin
-  notation galois_rel.Galois (\<open>'((\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>)')\<close>)
-  notation Galois_infix (\<open>(_) (\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>) (_)\<close> [51,51,51,51,51] 50)
-  notation ge_Galois (\<open>'((\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>)')\<close>)
-  notation ge_Galois_infix (\<open>(_) (\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>) (_)\<close> [51,51,51,51,51] 50)
+  notation (input) galois_rel.Galois (\<open>'((\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>)')\<close>)
+  notation (output) galois_rel.Galois (\<open>'((\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>('(_')) ('(_'))\<^esub>)')\<close>)
+  notation (input) Galois_infix (\<open>_ (\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>(_) (_)\<^esub>) _\<close> [51,0,0,51] 50)
+  notation (output) Galois_infix (\<open>_ (\<^bsub>_\<^esub>)\<lessapprox>(\<^bsub>('(_')) ('(_'))\<^esub>) _\<close> [51,0,0,51] 50)
+  notation (input) ge_Galois (\<open>'((\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>)')\<close>)
+  notation (output) ge_Galois (\<open>'((\<^bsub>('(_')) ('(_'))\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>)')\<close>)
+  notation (input) ge_Galois_infix (\<open>_ (\<^bsub>(_) (_)\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>) _\<close>  [51,0,0,51] 50)
+  notation (output) ge_Galois_infix (\<open>_ (\<^bsub>('(_')) ('(_'))\<^esub>)\<greaterapprox>(\<^bsub>_\<^esub>) _\<close>  [51,0,0,51] 50)
 end
 
 end

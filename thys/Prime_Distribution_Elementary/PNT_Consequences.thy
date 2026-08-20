@@ -14,7 +14,6 @@ imports
   Moebius_Mu_Sum
   Lcm_Nat_Upto
   Primorial
-  Primes_Omega
 begin
 
 text \<open>
@@ -167,7 +166,7 @@ proof -
     have "P = {p. prime p \<and> real p \<le> c * x} - {p. prime p \<and> real p \<le> x}"
       by (auto simp: P_def)
     also have "card \<dots> = card {p. prime p \<and> real p \<le> c * x} - card {p. prime p \<and> real p \<le> x}"
-      using \<open>x < c * x\<close> by (subst card_Diff_subset) (auto intro: finite_primes_le)
+      using \<open>x < c * x\<close> by (subst card_Diff_subset) (auto intro: finite_primes_le_real)
     also have "real \<dots> = \<pi> (c * x) - \<pi> x"
       using \<pi>_mono[of x "c * x"] \<open>x < c * x\<close>
       by (subst of_nat_diff) (auto simp: primes_pi_def prime_sum_upto_def)
@@ -1093,7 +1092,7 @@ proof -
     finally have bound2: "(\<Prod>p\<in>Pr2. 1 - 1 / p) \<ge> lb2 n" unfolding lb2_def .
 
     have "(\<Prod>p | prime p \<and> real p \<le> ln n. inverse (1 - 1 / p)) \<ge> (\<Prod>p\<in>Pr1. inverse (1 - 1 / p))"
-      using \<open>n > 2\<close> by (intro prod_mono2) (auto intro: finite_primes_le  dest: prime_gt_1_nat                                                simp: in_prime_factors_iff field_simps)
+      using \<open>n > 2\<close> by (intro prod_mono2) (auto intro: finite_primes_le_real dest: prime_gt_1_nat                                                simp: in_prime_factors_iff field_simps)
     hence "inverse (\<Prod>p | prime p \<and> real p \<le> ln n. 1 - 1 / p) \<ge> inverse (\<Prod>p\<in>Pr1. 1 - 1 / p)"
       by (subst (1 2) prod_inversef [symmetric]) auto
     hence bound1: "(\<Prod>p\<in>Pr1. 1 - 1 / p) \<ge> lb1 n" unfolding lb1_def

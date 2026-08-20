@@ -1,0 +1,45 @@
+title = "The Chevalley-Warning Theorem"
+date = 2026-07-13
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+This development formalizes the Chevalley--Warning theorem for finite fields:
+if finitely many multivariate polynomials over a finite field have total
+degree sum strictly smaller than the number of variables, then the number of
+their common zeros is divisible by the characteristic.  Polynomials are represented by finite sparse
+term lists, and the proof follows the standard finite-field power-sum argument.
+AI assistance was used for proof engineering.  The final definitions,
+statements, and proofs are checked by Isabelle"""
+license = "bsd"
+note = ""
+creation_note = """
+Codex with gpt 5.5 on extra high was used to help with proof engineering
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

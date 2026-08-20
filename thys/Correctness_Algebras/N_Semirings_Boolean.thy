@@ -302,7 +302,7 @@ lemma an_preserves_equation:
 
 lemma wnf_lemma_1:
   "(n(p * L) * n(q * L) \<squnion> an(p * L) * an(r * L)) * n(p * L) = n(p * L) * n(q * L)"
-  by (smt sup_commute an_n_def n_sup_left_absorb_mult n_sup_right_dist_mult n_export n_mult_commutative n_mult_complement_intro_n)
+  by (smt (z3) sup_commute an_n_def n_sup_left_absorb_mult n_sup_right_dist_mult n_export n_mult_commutative n_mult_complement_intro_n)
 
 lemma wnf_lemma_2:
   "(n(p * L) * n(q * L) \<squnion> an(r * L) * an(q * L)) * n(q * L) = n(p * L) * n(q * L)"
@@ -318,7 +318,7 @@ lemma wnf_lemma_4:
 
 lemma wnf_lemma_5:
   "n(p \<squnion> q) * (n(q) * x \<squnion> an(q) * y) = n(q) * x \<squnion> an(q) * n(p) * y"
-  by (smt sup_bot_right mult_assoc mult_left_dist_sup n_an_mult_commutative n_complement_bot n_dist_sup n_mult_right_absorb_sup)
+  by (smt (z3) sup_bot_right mult_assoc mult_left_dist_sup n_an_mult_commutative n_complement_bot n_dist_sup n_mult_right_absorb_sup)
 
 definition ani :: "'a \<Rightarrow> 'a"
   where "ani x \<equiv> an(x) * L"
@@ -595,7 +595,7 @@ proof -
   have "n(an(x\<^sup>\<star>) * x\<^sup>\<omega>) \<le> an(x)"
     using an_star_left_unfold an_case_split_right an_mult_left_upper_bound n_export_an by fastforce
   thus ?thesis
-    by (smt an_star_invariant le_iff_sup mult_assoc mult_right_dist_sup n_isotone n_order omega_unfold)
+    by (smt (z3) an_star_invariant le_iff_sup mult_assoc mult_right_dist_sup n_isotone n_order omega_unfold)
 qed
 
 lemma ani_omega_below_ani_star:

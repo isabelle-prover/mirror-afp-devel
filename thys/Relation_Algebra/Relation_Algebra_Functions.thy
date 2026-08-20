@@ -187,7 +187,7 @@ by (metis order.eq_iff is_map_def p_fun_def_var total_def_var_2)
 text \<open>Finally we prove miscellaneous properties of functions.\<close>
 
 lemma ss_422iii: "is_p_fun y \<Longrightarrow> (x \<cdot> z ; y\<^sup>\<smile>) ; y = x ; y \<cdot> z"
-(* by (smt antisym comp_assoc inf_commute maddux_17 meet_iso mult_isol mult_oner mult_subdistr_var order_trans is_p_fun_def) *)
+(* by (smt (z3) antisym comp_assoc inf_commute maddux_17 meet_iso mult_isol mult_oner mult_subdistr_var order_trans is_p_fun_def) *)
 proof (rule order.antisym)
   assume "is_p_fun y"
   show "x ; y \<cdot> z \<le> (x \<cdot> z ; y\<^sup>\<smile>) ; y"

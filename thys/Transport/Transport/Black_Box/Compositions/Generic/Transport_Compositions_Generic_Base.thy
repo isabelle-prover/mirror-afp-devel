@@ -124,7 +124,7 @@ lemma ge_left_rel_eq_left_rel_inv_if_galois_prop [simp]:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1" "((\<le>\<^bsub>R1\<^esub>) \<unlhd> (\<le>\<^bsub>L1\<^esub>)) r1 l1"
   shows "(\<ge>\<^bsub>L\<^esub>) = transport_comp.L (\<ge>\<^bsub>L1\<^esub>) (\<ge>\<^bsub>R1\<^esub>) l1 r1 (\<ge>\<^bsub>L2\<^esub>)"
   using assms unfolding left_rel_eq_comp inv.left_rel_eq_comp
-  by (simp add: rel_comp_assoc)
+  by (simp add: rel_comp_assoc flip: rel_inv_comp_rel_inv_eq)
 
 corollary left_rel_inv_iff_left_rel_if_galois_prop [iff]:
   assumes "((\<le>\<^bsub>L1\<^esub>) \<unlhd> (\<le>\<^bsub>R1\<^esub>)) l1 r1" "((\<le>\<^bsub>R1\<^esub>) \<unlhd> (\<le>\<^bsub>L1\<^esub>)) r1 l1"

@@ -1,0 +1,27 @@
+title = "Euler's Exponential Series as an Infinite Polynomial"
+date = 2026-06-08
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = "In this formalisation, we reconstruct Euler's derivation of the power series for the exponential function as expounded in his famous Introductio in analysin infinitorum, first published in 1748. Using nonstandard analysis, we mechanize his mixture of infinitesimal and infinite `algebraic' reasoning in the proof assistant Isabelle. In so doing, we demonstrate that the gist of his arguments can be reconstructed formally, with Isabelle and nonstandard analysis shoring up crucial aspects of his reasoning that some historians have qualified as being ``more a matter of faith than science''."
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.fleuriot]
+email = "fleuriot_email"
+
+[contributors]
+
+[notify]
+fleuriot = "fleuriot_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

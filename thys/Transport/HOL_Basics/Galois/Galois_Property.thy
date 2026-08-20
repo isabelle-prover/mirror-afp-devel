@@ -40,13 +40,9 @@ lemma galois_prop_left_rel_right_iff_left_right_rel:
   shows "x \<le>\<^bsub>L\<^esub> r y \<longleftrightarrow> l x \<le>\<^bsub>R\<^esub> y"
   using assms by blast
 
-lemma rel_inv_galois_prop_eq_galois_prop_rel_inv [simp]:
-  "((\<le>\<^bsub>R\<^esub>) \<unlhd> (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<unlhd> (\<ge>\<^bsub>R\<^esub>))"
+lemma galois_prop_rel_inv_eq_rel_inv_galois_prop [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<unlhd> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<unlhd> (\<le>\<^bsub>L\<^esub>))\<inverse>"
   by (intro ext) blast
-
-corollary galois_prop_rel_inv_iff_galois_prop [iff]:
-  "((\<ge>\<^bsub>L\<^esub>) \<unlhd> (\<ge>\<^bsub>R\<^esub>)) f g \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<unlhd> (\<le>\<^bsub>L\<^esub>)) g f"
-  by auto
 
 end
 

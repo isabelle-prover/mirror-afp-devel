@@ -24,7 +24,7 @@ qed
 lemma (in comm_ring_hom) similar_mat_hom:
   "similar_mat A B \<Longrightarrow> similar_mat (mat\<^sub>h A) (mat\<^sub>h B)"
   using similar_mat_wit_hom[of A B C D for C D]
-  by (smt similar_mat_def)
+  by (smt (z3) similar_mat_def)
 
 context field_hom
 begin

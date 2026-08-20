@@ -50,11 +50,12 @@ sig
   val finish_cluster_statesqs : Proof.context -> state Seq.seq list -> gclusters -> state Seq.seq
 end
 
-functor Zippy_Goal_Clusters(UF : IMPERATIVE_UNION_FIND) : ZIPPY_GOAL_CLUSTERS =
+functor Zippy_Goal_Clusters_Functor(UF : IMPERATIVE_UNION_FIND) : ZIPPY_GOAL_CLUSTERS =
 struct
 
 structure UF = UF
 structure GU = General_Util
+structure TU = Tactic_Util
 structure TS = Zippy_Thm_State
 structure Show = SpecCheck_Show_Base
 
@@ -158,9 +159,9 @@ val meta_vars = get_state #> TS.meta_vars
 
 fun finish_cluster_state_tac cluster_state ctxt =
   let
-    val norms = Mixed_Unification.norms_first_higherp_match
-    val match = Mixed_Unification.first_higherp_e_match Unification_Combinator.fail_match
-      |> Unification_Combinator.flip_match
+    val norms = Mixed_Unification.norms_fo_hop_match
+    val match = Mixed_Unification.fo_hop_match |> Unification_Combinator.flip_match
+    val (op ORELSE') = (op Tactic_Util.ORELSE') (*default ORELSE' is not lazy*)
   in
     Unify_Resolve_Base.unify_resolve_tac norms match cluster_state ctxt
     (*Note: above matcher and match in Thm.bicompose are incomplete. As a last resort, we use the
@@ -198,4 +199,4 @@ end
 
 end
 
-structure Standard_Zippy_Goal_Clusters = Zippy_Goal_Clusters(Imperative_Union_Find)
+structure Zippy_Goal_Clusters = Zippy_Goal_Clusters_Functor(Imperative_Union_Find)

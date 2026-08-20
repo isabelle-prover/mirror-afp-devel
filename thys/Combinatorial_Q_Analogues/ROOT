@@ -1,12 +1,11 @@
 chapter AFP
 
-session Combinatorial_Q_Analogues (AFP) = "HOL-Complex_Analysis" +
+session Combinatorial_Q_Analogues (AFP) = Lambert_Series +
   options [timeout = 900]
   sessions
     "HOL-Computational_Algebra"
     "HOL-Number_Theory"
     Gauss_Sums
-    Lambert_Series
   theories
     More_Infinite_Products
     Q_Analogues

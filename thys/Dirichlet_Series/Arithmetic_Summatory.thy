@@ -20,13 +20,19 @@ definition sum_upto :: "(nat \<Rightarrow> 'a :: comm_monoid_add) \<Rightarrow> 
 lemma sum_upto_altdef: "sum_upto f x = (\<Sum>i\<in>{0<..nat \<lfloor>x\<rfloor>}. f i)"
   unfolding sum_upto_def
   by (cases "x \<ge> 0"; intro sum.cong refl) (auto simp: le_nat_iff le_floor_iff)
+
+lemma sum_upto_1 [simp]: "sum_upto f 1 = f 1"
+proof -
+  have "{0<..Suc 0} = {1}" by auto
+  thus ?thesis by (simp add: sum_upto_altdef)
+qed
+
+lemma sum_upto_cong [cong]:
+  "(\<And>n. n > 0 \<Longrightarrow> real n \<le> x \<Longrightarrow> f n = f' n) \<Longrightarrow> x = x' \<Longrightarrow> sum_upto f x = sum_upto f' x'"
+  unfolding sum_upto_def by (intro sum.cong) auto
     
 lemma sum_upto_0 [simp]: "sum_upto f 0 = 0"
   by (simp add: sum_upto_altdef)
-
-lemma sum_upto_cong [cong]:
-  "(\<And>n. n > 0 \<Longrightarrow> f n = f' n) \<Longrightarrow> n = n' \<Longrightarrow> sum_upto f n = sum_upto f' n'"
-  by (simp add: sum_upto_def)
 
 lemma finite_Nats_le_real [simp,intro]: "finite {n. 0 < n \<and> real n \<le> x}"
 proof (rule finite_subset)
@@ -102,6 +108,153 @@ proof -
     by (intro ext) (simp_all add: sum_upto_altdef)
   finally show ?thesis using that[of c] by blast
 qed
+
+lemma sum_upto_divisor_sum1:
+  "sum_upto (\<lambda>n. \<Sum>d | d dvd n. f d :: real) x = sum_upto (\<lambda>n. f n * floor (x / n)) x"
+proof -
+  have "sum_upto (\<lambda>n. \<Sum>d | d dvd n. f d :: real) x =
+          sum_upto (\<lambda>n. f n * real (nat (floor (x / n)))) x"
+    using sum_upto_dirichlet_prod[of f "\<lambda>_. 1" x]
+    by (simp add: dirichlet_prod_def sum_upto_altdef)
+  also have "\<dots> = sum_upto (\<lambda>n. f n * floor (x / n)) x"
+    unfolding sum_upto_def by (intro sum.cong) auto
+  finally show ?thesis .
+qed
+
+lemma sum_upto_divisor_sum2:
+  "sum_upto (\<lambda>n. \<Sum>d | d dvd n. f d :: real) x = sum_upto (\<lambda>n. sum_upto f (x / n)) x"
+  using sum_upto_dirichlet_prod[of "\<lambda>_. 1" f x] by (simp add: dirichlet_prod_altdef1)
+
+lemma ln_fact_conv_sum_mangoldt:
+  "sum_upto (\<lambda>n. mangoldt n * \<lfloor>x / real n\<rfloor>) x = ln (fact (nat \<lfloor>x\<rfloor>))"
+proof -
+  have "sum_upto (\<lambda>n. mangoldt n * of_int \<lfloor>x / real n\<rfloor>) x =
+          sum_upto (\<lambda>n. \<Sum>d | d dvd n. mangoldt d :: real) x"
+    using sum_upto_divisor_sum1[of mangoldt x] by auto
+  also have "\<dots> = sum_upto (\<lambda>n. of_real (ln (real n))) x"
+    by (intro sum_upto_cong mangoldt_sum refl) auto
+  also have "\<dots> = (\<Sum>n\<in>{0<..nat \<lfloor>x\<rfloor>}. ln n)"
+    by (simp add: sum_upto_altdef)
+  also have "\<dots> = ln (\<Prod>{0<..nat \<lfloor>x\<rfloor>})"
+    unfolding of_nat_prod by (subst ln_prod) auto
+  also have "{0<..nat \<lfloor>x\<rfloor>} = {1..nat \<lfloor>x\<rfloor>}" by auto
+  also have "\<Prod>\<dots> = fact (nat \<lfloor>x\<rfloor>)"
+    by (simp add: fact_prod)
+  finally show ?thesis by simp
+qed
+
+
+subsection \<open>Generalised Dirichlet products\<close>
+
+(* TODO: Move to Dirichlet_Series *)
+
+definition dirichlet_prod' :: "(nat \<Rightarrow> 'a :: comm_semiring_1) \<Rightarrow> (real \<Rightarrow> 'a) \<Rightarrow> real \<Rightarrow> 'a" where
+  "dirichlet_prod' f g x = sum_upto (\<lambda>m. f m * g (x / real m)) x"
+
+lemma dirichlet_prod'_one_left:
+  "dirichlet_prod' (\<lambda>n. if n = 1 then 1 else 0) f x = (if x \<ge> 1 then f x else 0)"
+proof -
+  have  "dirichlet_prod' (\<lambda>n. if n = 1 then 1 else 0) f x =
+           (\<Sum>i | 0 < i \<and> real i \<le> x. (if i = Suc 0 then 1 else 0) * f (x / real i))"
+    by (simp add: dirichlet_prod'_def sum_upto_def)
+  also have "\<dots> = (\<Sum>i\<in>(if x \<ge> 1 then {1::nat} else {}). f x)"
+    by (intro sum.mono_neutral_cong_right) (auto split: if_splits)
+  also have "\<dots> = (if x \<ge> 1 then f x else 0)"
+    by simp
+  finally show ?thesis .
+qed
+
+lemma dirichlet_prod'_cong:
+  assumes "\<And>n. n > 0 \<Longrightarrow> real n \<le> x \<Longrightarrow> f n = f' n"
+  assumes "\<And>y. y \<ge> 1 \<Longrightarrow> y \<le> x \<Longrightarrow> g y = g' y"
+  assumes "x = x'"
+  shows   "dirichlet_prod' f g x = dirichlet_prod' f' g' x'"
+  unfolding dirichlet_prod'_def 
+  by (intro sum_upto_cong assms, (subst assms | simp add: assms field_simps)+)
+
+(* 2.21 *)
+lemma dirichlet_prod'_assoc:
+  "dirichlet_prod' f (\<lambda>y. dirichlet_prod' g h y) x = dirichlet_prod' (dirichlet_prod f g) h x"
+proof -
+  have "dirichlet_prod' f (\<lambda>y. dirichlet_prod' g h y) x =
+          (\<Sum>m | m > 0 \<and> real m \<le> x. \<Sum>n | n > 0 \<and> real n \<le> x / m. f m * g n * h (x / (m * n)))"
+    by (simp add: algebra_simps dirichlet_prod'_def dirichlet_prod_def
+                  sum_upto_def sum_distrib_left sum_distrib_right)
+  also have "\<dots> = (\<Sum>(m,n)\<in>(SIGMA m:{m. m > 0 \<and> real m \<le> x}. {n. n > 0 \<and> real n \<le> x / m}).
+                     f m * g n * h (x / (m * n)))"
+    by (subst sum.Sigma) auto
+  also have "\<dots> = (\<Sum>(mn, m)\<in>(SIGMA mn:{mn. mn > 0 \<and> real mn \<le> x}. {m. m dvd mn}).
+                    f m * g (mn div m) * h (x / mn))"
+    by (rule sum.reindex_bij_witness[of _ "\<lambda>(mn, m). (m, mn div m)" "\<lambda>(m, n). (m * n, m)"])
+       (auto simp: case_prod_unfold field_simps dest: dvd_imp_le)
+  also have "\<dots> = dirichlet_prod' (dirichlet_prod f g) h x"
+    by (subst sum.Sigma [symmetric])
+       (simp_all add: dirichlet_prod'_def dirichlet_prod_def sum_upto_def
+                      algebra_simps sum_distrib_left sum_distrib_right)
+  finally show ?thesis .
+qed
+
+(* 2.22 *)
+lemma dirichlet_prod'_inversion1:
+  assumes "\<forall>x\<ge>1. g x = dirichlet_prod' a f x" "x \<ge> 1"
+          "dirichlet_prod a ainv = (\<lambda>n. if n = 1 then 1 else 0)"
+  shows   "f x = dirichlet_prod' ainv g x"
+proof -
+  have "dirichlet_prod' ainv g x = dirichlet_prod' ainv (dirichlet_prod' a f) x"
+    using assms by (intro dirichlet_prod'_cong) auto
+  also have "\<dots> = dirichlet_prod' (\<lambda>n. if n = 1 then 1 else 0) f x"
+    using assms by (simp add: dirichlet_prod'_assoc dirichlet_prod_commutes)
+  also have "\<dots> = f x"
+    using assms by (subst dirichlet_prod'_one_left) auto
+  finally show ?thesis ..
+qed
+
+lemma dirichlet_prod'_inversion2:
+  assumes "\<forall>x\<ge>1. f x = dirichlet_prod' ainv g x" "x \<ge> 1"
+          "dirichlet_prod a ainv = (\<lambda>n. if n = 1 then 1 else 0)"
+  shows   "g x = dirichlet_prod' a f x"
+proof -
+  have "dirichlet_prod' a f x = dirichlet_prod' a (dirichlet_prod' ainv g) x"
+    using assms by (intro dirichlet_prod'_cong) auto
+  also have "\<dots> = dirichlet_prod' (\<lambda>n. if n = 1 then 1 else 0) g x"
+    using assms by (simp add: dirichlet_prod'_assoc dirichlet_prod_commutes)
+  also have "\<dots> = g x"
+    using assms by (subst dirichlet_prod'_one_left) auto
+  finally show ?thesis ..
+qed
+
+lemma dirichlet_prod'_inversion:
+  assumes "dirichlet_prod a ainv = (\<lambda>n. if n = 1 then 1 else 0)"
+  shows   "(\<forall>x\<ge>1. g x = dirichlet_prod' a f x) \<longleftrightarrow> (\<forall>x\<ge>1. f x = dirichlet_prod' ainv g x)"
+  using dirichlet_prod'_inversion1[of g a f _ ainv] dirichlet_prod'_inversion2[of f ainv g _ a]
+        assms by blast
+
+lemma dirichlet_prod'_inversion':
+  assumes "a 1 * y = 1"
+  defines "ainv \<equiv> dirichlet_inverse a y"
+  shows   "(\<forall>x\<ge>1. g x = dirichlet_prod' a f x) \<longleftrightarrow> (\<forall>x\<ge>1. f x = dirichlet_prod' ainv g x)"
+  unfolding ainv_def
+  by (intro dirichlet_prod'_inversion dirichlet_prod_inverse assms)
+
+(* 3.11 *)
+lemma dirichlet_prod'_floor_conv_sum_upto:
+  "dirichlet_prod' f (\<lambda>x. real_of_int (floor x)) x = sum_upto (\<lambda>n. sum_upto f (x / n)) x"
+proof -
+  have [simp]: "sum_upto (\<lambda>_. 1 :: real) x = real (nat \<lfloor>x\<rfloor>)" for x
+    by (simp add: sum_upto_altdef)
+  show ?thesis
+    using sum_upto_dirichlet_prod[of "\<lambda>n. 1::real" f] sum_upto_dirichlet_prod[of f "\<lambda>n. 1::real"]
+    by (simp add: dirichlet_prod'_def dirichlet_prod_commutes)
+qed
+
+(* 2.23 *)
+lemma dirichlet_prod_inversion_completely_multiplicative:
+  fixes a :: "nat \<Rightarrow> 'a :: comm_ring_1"
+  assumes "completely_multiplicative_function a"
+  shows   "(\<forall>x\<ge>1. g x = dirichlet_prod' a f x) \<longleftrightarrow>
+             (\<forall>x\<ge>1. f x = dirichlet_prod' (\<lambda>n. moebius_mu n * a n) g x)"
+  by (intro dirichlet_prod'_inversion ext completely_multiplicative_imp_moebius_mu_inverse assms)
+
 
 
 subsection \<open>The Hyperbola method\<close>
@@ -199,5 +352,101 @@ lemma hyperbola_method_sqrt:
              sum_upto (\<lambda>n. sum_upto f (x / real n) * g n) (sqrt x) -
              sum_upto f (sqrt x) * sum_upto g (sqrt x)"
   using assms hyperbola_method[of "sqrt x" "sqrt x" x] by simp
+
+
+subsection \<open>A weighted sum of the Möbius \<open>\<mu>\<close> function\<close>
+
+(* TODO: Move to Dirichlet_Series? *)
+
+lemma sum_upto_moebius_times_floor_linear:
+  "sum_upto (\<lambda>n. moebius_mu n * \<lfloor>x / real n\<rfloor>) x = (if x \<ge> 1 then 1 else 0)"
+proof -
+  have "real_of_int (sum_upto (\<lambda>n. moebius_mu n * \<lfloor>x / real n\<rfloor>) x) =
+          sum_upto (\<lambda>n. moebius_mu n * of_int \<lfloor>x / real n\<rfloor>) x"
+    by (simp add: sum_upto_def)
+  also have "\<dots> = sum_upto (\<lambda>n. \<Sum>d | d dvd n. moebius_mu d :: real) x"
+    using sum_upto_divisor_sum1[of moebius_mu x] by auto
+  also have "\<dots> = sum_upto (\<lambda>n. if n = 1 then 1 else 0) x"
+    by (intro sum_upto_cong sum_moebius_mu_divisors' refl)
+  also have "\<dots> = real_of_int (if x \<ge> 1 then 1 else 0)"
+    by (auto simp: sum_upto_def)
+  finally show ?thesis unfolding of_int_eq_iff .
+qed
+
+(* 3.13 *)
+context
+  fixes M :: "real \<Rightarrow> real"
+  defines "M \<equiv> (\<lambda>x. sum_upto (\<lambda>n. moebius_mu n / n) x)"
+begin
+
+lemma abs_sum_upto_moebius_mu_over_n_less:
+  assumes x: "x \<ge> 2"
+  shows   "\<bar>M x\<bar> < 1"
+proof -
+  have "x * sum_upto (\<lambda>n. moebius_mu n / n) x - sum_upto (\<lambda>n. moebius_mu n * frac (x / n)) x =
+          sum_upto (\<lambda>n. moebius_mu n * (x / n - frac (x / n))) x"
+    by (subst mult.commute[of x])
+       (simp add: sum_upto_def sum_distrib_right sum_subtractf ring_distribs)
+  also have "(\<lambda>n. x / real n - frac (x / real n)) = (\<lambda>n. of_int (floor (x / real n)))"
+    by (simp add: frac_def)
+  also have "sum_upto (\<lambda>n. moebius_mu n * real_of_int \<lfloor>x / real n\<rfloor>) x =
+               real_of_int (sum_upto (\<lambda>n. moebius_mu n * \<lfloor>x / real n\<rfloor>) x)"
+    by (simp add: sum_upto_def)
+  also have "\<dots> = 1"
+    using x by (subst sum_upto_moebius_times_floor_linear) auto
+  finally have eq: "x * M x = 1 + sum_upto (\<lambda>n. moebius_mu n * frac (x / n)) x"
+    by (simp add: M_def)
+
+  have "x * \<bar>M x\<bar> = \<bar>x * M x\<bar>"
+    using x by (simp add: abs_mult)
+  also note eq
+  also have "\<bar>1 + sum_upto (\<lambda>n. moebius_mu n * frac (x / n)) x\<bar> \<le>
+               1 + \<bar>sum_upto (\<lambda>n. moebius_mu n * frac (x / n)) x\<bar>"
+    by linarith
+  also have "\<bar>sum_upto (\<lambda>n. moebius_mu n * frac (x / n)) x\<bar> \<le>
+               sum_upto (\<lambda>n. \<bar>moebius_mu n * frac (x / n)\<bar>) x"
+    unfolding sum_upto_def by (rule sum_abs)
+  also have "\<dots> \<le> sum_upto (\<lambda>n. frac (x / n)) x"
+    unfolding sum_upto_def by (intro sum_mono) (auto simp: moebius_mu_def abs_mult)
+  also have "\<dots> = (\<Sum>n\<in>{0<..nat \<lfloor>x\<rfloor>}. frac (x / n))"
+    by (simp add: sum_upto_altdef)
+  also have "{0<..nat \<lfloor>x\<rfloor>} = insert 1 {1<..nat \<lfloor>x\<rfloor>}"
+    using x by (auto simp: le_nat_iff le_floor_iff)
+  also have "(\<Sum>n\<in>\<dots>. frac (x / n)) = frac x + (\<Sum>n\<in>{1<..nat \<lfloor>x\<rfloor>}. frac (x / n))"
+    by (subst sum.insert) auto
+  also have "(\<Sum>n\<in>{1<..nat \<lfloor>x\<rfloor>}. frac (x / n)) < (\<Sum>n\<in>{1<..nat \<lfloor>x\<rfloor>}. 1)"
+    using x by (intro sum_strict_mono frac_lt_1) auto
+  also have "\<dots> = nat \<lfloor>x\<rfloor> - 1" by simp
+  also have "1 + (frac x + real (nat \<lfloor>x\<rfloor> - 1)) = x"
+    using x by (subst of_nat_diff) (auto simp: le_nat_iff le_floor_iff frac_def)
+  finally have "x * \<bar>M x\<bar> < x * 1" by simp
+  with x show "\<bar>M x\<bar> < 1"
+    by (subst (asm) mult_less_cancel_left_pos) auto
+qed 
+
+lemma sum_upto_moebius_mu_over_n_eq:
+  assumes "x < 2"
+  shows   "M x = (if x \<ge> 1 then 1 else 0)"
+proof (cases "x \<ge> 1")
+  case True
+  have "M x = (\<Sum>n\<in>{n. n > 0 \<and> real n \<le> x}. moebius_mu n / n)"
+    by (simp add: M_def sum_upto_def)
+  also from assms True have "{n. n > 0 \<and> real n \<le> x} = {1}"
+    by auto
+  thus ?thesis using True by (simp add: M_def sum_upto_def)
+next
+  case False
+  have "M x = (\<Sum>n\<in>{n. n > 0 \<and> real n \<le> x}. moebius_mu n / n)"
+    by (simp add: M_def sum_upto_def)
+  also from False have "{n. n > 0 \<and> real n \<le> x} = {}"
+    by auto
+  finally show ?thesis using False by (simp add: M_def)
+qed
+
+lemma abs_sum_upto_moebius_mu_over_n_le: "\<bar>M x\<bar> \<le> 1"
+  using sum_upto_moebius_mu_over_n_eq[of x] abs_sum_upto_moebius_mu_over_n_less[of x]
+  by (cases "x < 2") auto
+
+end
 
 end

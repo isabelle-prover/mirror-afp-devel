@@ -13,10 +13,6 @@ suitable automata/languages. This happens behind the scenes via code equations.\
 
 text\<open>These lemmas link @{const pre_star} to different properties of context-free grammars:\<close>
 
-lemma pre_star_term:
-  "x \<in> pre_star P L \<longleftrightarrow> (\<exists>w. w \<in> L \<and> P \<turnstile> x \<Rightarrow>* w)"
-  unfolding pre_star_def by blast
-
 lemma pre_star_word:
   "[Nt S] \<in> pre_star P (map Tm ` L) \<longleftrightarrow> (\<exists>w. w \<in> L \<and> w \<in> Lang P S)"
   unfolding Lang_def pre_star_def by blast
@@ -91,7 +87,7 @@ lemma cfg_Lang_univ: "P \<turnstile> [Nt X] \<Rightarrow>* map Tm \<beta> \<Long
 proof -
   assume "P \<turnstile> [Nt X] \<Rightarrow>* map Tm \<beta>"
   moreover have "Nt X \<in> Syms P"
-    using Syms_def calculation derives_start1 by fastforce
+    using Syms_def calculation derives_Nt_map_TmD by fastforce
   ultimately have "set (map Tm \<beta>) \<subseteq> Syms P"
     using cfg_derives_Syms by force
   moreover have "\<And>t. (t \<in> Tms P) \<longleftrightarrow> Tm t \<in> Syms P"
@@ -134,15 +130,7 @@ proof -
 qed
 
 
-subsection\<open>Useless Variables\<close>
-
-definition is_reachable_from :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> bool"
-    ("(2_ \<turnstile>/ (_/ \<Rightarrow>\<^sup>? / _))" [50, 0, 50] 50) where
-  "(P \<turnstile> X \<Rightarrow>\<^sup>? Y) = (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt X] \<Rightarrow>* (\<alpha>@[Nt Y]@\<beta>))"
-
-\<comment>\<open>\<open>X \<in> V\<close> is useful, iff \<open>V\<close> can be reached from \<open>S\<close> and it is productive:\<close>
-definition is_useful :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> 'n \<Rightarrow> bool" where
-  "is_useful P S X = (P \<turnstile> S \<Rightarrow>\<^sup>? X \<and> Lang P X \<noteq> {})"
+subsection\<open>Reachable Variables\<close>
 
 definition pre_star_reachable_auto :: "('n, 't) Prods \<Rightarrow> 'n \<Rightarrow> (nat, ('n, 't) sym) auto" where
   "pre_star_reachable_auto P X = (
@@ -152,11 +140,11 @@ definition pre_star_reachable_auto :: "('n, 't) Prods \<Rightarrow> 'n \<Rightar
 
 theorem pre_star_reachable:
   fixes P :: "('n, 't) Prods"
-  shows "(P \<turnstile> S \<Rightarrow>\<^sup>? X) \<longleftrightarrow> [Nt S] \<in> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P }"
+  shows "reachable P S X \<longleftrightarrow> [Nt S] \<in> pre_star P { \<alpha>@[Nt X]@\<beta> | \<alpha> \<beta>. set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P }"
 proof -
   define L where "L \<equiv> { (\<alpha>::('n, 't) syms)@[Nt X]@\<beta> | \<alpha> \<beta>. set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P }"
-  have "[Nt S] \<in> pre_star P L  \<longleftrightarrow> (\<exists>w. w \<in> L \<and> P \<turnstile> [Nt S] \<Rightarrow>* w)"
-    by (simp add: pre_star_term)
+  have "[Nt S] \<in> pre_star P L  \<longleftrightarrow> (\<exists>w \<in> L. P \<turnstile> [Nt S] \<Rightarrow>* w)"
+    by (simp add: pre_star_iff)
   also have "... \<longleftrightarrow> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt S] \<Rightarrow>* (\<alpha>@[Nt X]@\<beta>) \<and> set \<alpha> \<subseteq> Syms P \<and> set \<beta> \<subseteq> Syms P)"
     unfolding L_def by blast
   also have "... \<longleftrightarrow> (\<exists>\<alpha> \<beta>. P \<turnstile> [Nt S] \<Rightarrow>* (\<alpha>@[Nt X]@\<beta>))"
@@ -171,12 +159,12 @@ proof -
       by blast
   qed
   finally show ?thesis
-    by (simp add: is_reachable_from_def L_def)
+    by (auto simp add: reachable_def L_def dest: split_list)
 qed
 
 lemma pre_star_reachable_code[code]:
   fixes P :: "('n, 't) prods"
-  shows "(set P \<turnstile> S \<Rightarrow>\<^sup>? X) = ([Nt S] \<in> Lang_auto (pre_star_auto (set P) (cps_auto (Nt X) (Syms (set P)))))"
+  shows "reachable (set P) S X = ([Nt S] \<in> Lang_auto (pre_star_auto (set P) (cps_auto (Nt X) (Syms (set P)))))"
 proof -
   define M :: "(nat, ('n, 't) sym) auto" where [simp]: "M \<equiv> cps_auto (Nt X) (Syms (set P))"
   have "finite (Syms (set P))"

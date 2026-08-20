@@ -54,7 +54,7 @@ proof -
 (Bet A B C \<or> Bet B C A \<or> Bet C A B)"
     using upper_dim by blast
   then show ?thesis using upper_dim_implies_all_coplanar
-    by (smt Tarski_neutral_dimensionless.not_col_permutation_2 Tarski_neutral_dimensionless_axioms all_coplanar_axiom_def all_coplanar_implies_upper_dim coplanar_perm_9 ncop__ncol os__coplanar ts__coplanar upper_dim_implies_not_one_side_two_sides)
+    by (smt (z3) Tarski_neutral_dimensionless.not_col_permutation_2 Tarski_neutral_dimensionless_axioms all_coplanar_axiom_def all_coplanar_implies_upper_dim coplanar_perm_9 ncop__ncol os__coplanar ts__coplanar upper_dim_implies_not_one_side_two_sides)
 qed
 
 lemma per2__col:

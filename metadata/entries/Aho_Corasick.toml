@@ -1,0 +1,40 @@
+title = "Aho-Corasick String Matching"
+date = 2026-05-04
+topics = [
+  "Computer science/Algorithms",
+]
+abstract = """
+This development formalizes the Aho-Corasick multi-pattern string matching
+algorithm over lists.  The verified executable reference automaton uses the
+canonical Aho-Corasick state: after reading a text prefix, the state is the
+longest suffix of that prefix that is also a pattern prefix.  The development
+also proves a state-only transition theorem, a fold-based scan invariant, and
+a recursive failure-link transition refining the canonical transition, together
+with equivalent state-carrying and failure-link search procedures.  The main
+theorem shows that the search procedure reports exactly the pattern occurrences
+ending at each text position."""
+license = "bsd"
+note = ""
+creation_note = "Codex with Gpt 5.5 on xhigh was used to help with proof engineering. Proof manually checked by the authors."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

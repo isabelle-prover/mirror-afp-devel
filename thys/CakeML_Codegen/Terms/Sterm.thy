@@ -266,7 +266,7 @@ proof goal_cases
         apply (auto simp: list_all_iff ffUnion_alt_def fset_of_list_elem closed_except_def)
         apply (drule ffUnion_least_rev)
         apply auto
-        by (smt case_prod_conv fbspec fimageI fminusI fset_of_list_elem fset_rev_mp)
+        by (smt (z3) case_prod_conv fbspec fimageI fminusI fset_of_list_elem fset_rev_mp)
     next
       case 2
       then show ?case

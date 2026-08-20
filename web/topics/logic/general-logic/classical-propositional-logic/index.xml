@@ -4,6 +4,13 @@
     <title>Logic/General logic/Classical propositional logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/classical-propositional-logic/</link>
     <description>AFP entries in Classical propositional logic</description><item>
+  <title>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF</title>
+  <link>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</link>
+  <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>
+  <description>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF in the AFP</description>
+    <category>Logic/General logic/Classical propositional logic</category>
+</item>
+<item>
   <title>Compactness Theorem for Propositional Logic and Combinatorial Applications</title>
   <link>https://isa-afp.org/entries/Prop_Compactness.html</link>
   <pubDate>Mon, 19 Aug 2024 00:00:00 +0000</pubDate>

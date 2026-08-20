@@ -47,10 +47,10 @@ subsection \<open>Bernoulli Numbers and Bernoulli Polynomials\<close>
 
 declare sum.cong [fundef_cong]
 
-fun bernoulli :: "nat \<Rightarrow> real"
+fun bernoulli :: "nat \<Rightarrow> 'a :: field_char_0"
 where
-  "bernoulli 0 = (1::real)"
-| "bernoulli (Suc n) =  (-1 / (n + 2)) * (\<Sum>k \<le> n. ((n + 2 choose k) * bernoulli k))"
+  "bernoulli 0 = 1"
+| "bernoulli (Suc n) =  (-1 / (of_nat n + 2)) * (\<Sum>k \<le> n. (of_nat (n + 2 choose k) * bernoulli k))"
   
 declare bernoulli.simps[simp del]
   
@@ -58,6 +58,17 @@ lemmas bernoulli_0 [simp] = bernoulli.simps(1)
 lemmas bernoulli_Suc = bernoulli.simps(2)
 lemma bernoulli_1 [simp]: "bernoulli 1 = -1/2" by (simp add: bernoulli_Suc)
 lemma bernoulli_Suc_0 [simp]: "bernoulli (Suc 0) = -1/2" by (simp add: bernoulli_Suc)
+
+lemma of_rat_bernoulli: "of_rat (bernoulli n) = bernoulli n"
+  by (induction n rule: bernoulli.induct) 
+     (auto simp: bernoulli_Suc of_rat_minus of_rat_sum of_rat_divide of_rat_mult of_rat_add)
+
+(* TODO: Move *)
+lemma of_real_of_rat: "of_real (of_rat x) = (of_rat x :: 'a :: real_field)"
+  by (cases x) (auto simp: of_rat_rat)
+
+lemma of_real_bernoulli: "of_real (bernoulli n) = (bernoulli n :: 'a :: real_field)"
+  by (metis of_rat_bernoulli of_real_of_rat)
 
     
 text \<open>
@@ -67,7 +78,7 @@ text \<open>
   $B_1^{+} = \frac{1}{2}$. Both conventions have their justification, since a number of theorems 
   are easier to state with one than the other.
 \<close>
-definition bernoulli' where
+definition bernoulli' :: "nat \<Rightarrow> 'a :: field_char_0" where
   "bernoulli' n = (if n = 1 then 1/2 else bernoulli n)"
   
 lemma bernoulli'_0 [simp]: "bernoulli' 0 = 1" by (simp add: bernoulli'_def)
@@ -84,6 +95,12 @@ lemma bernoulli'_conv_bernoulli: "n \<noteq> 1 \<Longrightarrow> bernoulli' n = 
 lemma bernoulli_conv_bernoulli'_if: 
     "n \<noteq> 1 \<Longrightarrow> bernoulli n = (if n = 1 then -1/2 else bernoulli' n)"
   by (simp add: bernoulli'_def)
+
+lemma of_rat_bernoulli': "of_rat (bernoulli' n) = bernoulli' n"
+  by (auto simp: bernoulli'_def of_rat_bernoulli of_rat_divide)
+
+lemma of_real_bernoulli': "of_real (bernoulli' n) = (bernoulli' n :: 'a :: real_field)"
+  by (metis of_rat_bernoulli' of_real_of_rat)
 
 lemma bernoulli_in_Rats: "bernoulli n \<in> \<rat>"
 proof (induction n rule: less_induct)
@@ -102,8 +119,7 @@ lemma bernpoly_altdef:
   "bernpoly n = (\<lambda>x. \<Sum>k\<le>n. of_nat (n choose k) * of_real (bernoulli (n - k)) * x ^ k)"
 proof
   fix x :: 'a
-  have "bernpoly n x = (\<Sum>k\<le>n. of_nat (n choose (n - k)) * 
-          of_real (bernoulli (n - k)) * x ^ (n - (n - k)))"
+  have "bernpoly n x = (\<Sum>k\<le>n. of_nat (n choose (n - k)) * of_real (bernoulli (n - k)) * x ^ (n - (n - k)))"
     unfolding bernpoly_def by (rule sum.reindex_bij_witness[of _ "\<lambda>k. n - k" "\<lambda>k. n - k"]) simp_all
   also have "\<dots> = (\<Sum>k\<le>n. of_nat (n choose k) * of_real (bernoulli (n - k)) * x ^ k)"
     by (intro sum.cong refl) (simp_all add: binomial_symmetric [symmetric])
@@ -111,14 +127,14 @@ proof
 qed
 
 lemma bernoulli_Suc': 
-  "bernoulli (Suc n) = -1/(real n + 2) * (\<Sum>k\<le>n. real (n + 2 choose (k + 2)) * bernoulli (n - k))" 
+  "bernoulli (Suc n) = -1/(of_nat n + 2) * (\<Sum>k\<le>n. of_nat (n + 2 choose (k + 2)) * bernoulli (n - k))" 
 proof -
-  have "bernoulli (Suc n) = - 1 / (real n + 2) * (\<Sum>k\<le>n. real (n + 2 choose k) * bernoulli k)"
+  have "bernoulli (Suc n) = - 1 / (of_nat n + 2) * (\<Sum>k\<le>n. of_nat (n + 2 choose k) * bernoulli k)"
     unfolding bernoulli.simps ..
-  also have "(\<Sum>k\<le>n. real (n + 2 choose k) * bernoulli k) = 
-               (\<Sum>k\<le>n. real (n + 2 choose (n - k)) * bernoulli (n - k))"
+  also have "(\<Sum>k\<le>n. of_nat (n + 2 choose k) * bernoulli k) = 
+               (\<Sum>k\<le>n. of_nat (n + 2 choose (n - k)) * bernoulli (n - k))"
     by (rule sum.reindex_bij_witness[of _ "\<lambda>k. n - k" "\<lambda>k. n - k"]) simp_all
-  also have "\<dots> = (\<Sum>k\<le>n. real (n + 2 choose (k + 2)) * bernoulli (n - k))"
+  also have "\<dots> = (\<Sum>k\<le>n. of_nat (n + 2 choose (k + 2)) * bernoulli (n - k))"
     by (intro sum.cong refl, subst binomial_symmetric) simp_all
   finally show ?thesis .
 qed
@@ -126,22 +142,16 @@ qed
 
 subsection \<open>Basic Observations on Bernoulli Polynomials\<close>
 
-lemma bernpoly_0 [simp]: "bernpoly n 0 = (of_real (bernoulli n) :: 'a :: real_algebra_1)"
-proof (cases n)
-  case 0
-  then show "bernpoly n 0 = of_real (bernoulli n)"
-    unfolding bernpoly_def bernoulli.simps by auto
-next
-  case (Suc n')
-  have "(\<Sum>k\<le>n'. of_nat (Suc n' choose k) * of_real (bernoulli k) * 0 ^ (Suc n' - k)) = (0::'a)"
-  proof (intro sum.neutral ballI)
-    fix k assume "k \<in> {..n'}"
-    thus "of_nat (Suc n' choose k) * of_real (bernoulli k) * (0::'a) ^ (Suc n' - k) = 0"
-      by (cases "Suc n' - k") auto
-  qed
-  with Suc show ?thesis
-    unfolding bernpoly_def by simp
-qed 
+lemma bernpoly_0 [simp]: "bernpoly n 0 = of_real (bernoulli n)"
+proof -
+  have "bernpoly n 0 = (\<Sum>k\<le>n. of_nat (n choose k) * of_real (bernoulli (n - k)) * 0 ^ k :: 'a)"
+    by (simp add: bernpoly_altdef)
+  also have "\<dots> = (\<Sum>k\<in>{0}. of_nat (n choose k) * of_real (bernoulli (n - k)) * 0 ^ k)"
+    by (rule sum.mono_neutral_right) (auto simp: power_0_left)
+  also have "\<dots> = of_real (bernoulli n)"
+    by simp
+  finally show ?thesis .
+qed
 
 lemma continuous_on_bernpoly [continuous_intros]: 
   "continuous_on A (bernpoly n :: 'a \<Rightarrow> 'a :: real_normed_algebra_1)"
@@ -169,20 +179,27 @@ lemmas has_field_derivative_bernpoly' [derivative_intros] =
   DERIV_chain'[OF _ has_field_derivative_bernpoly]    
 
 lemma sum_binomial_times_bernoulli:
-  "(\<Sum>k\<le>n. ((Suc n) choose k) * bernoulli k) = (if n = 0 then 1 else 0)"
+  "(\<Sum>k\<le>n. of_nat ((Suc n) choose k) * bernoulli k) = (if n = 0 then 1 else 0)"
 proof (cases n)
   case (Suc m)
-  then show ?thesis
-    by (simp add: bernoulli_Suc)
-       (simp add: field_simps add_2_eq_Suc'[symmetric] del: add_2_eq_Suc add_2_eq_Suc')
-qed simp_all
+  have "(\<Sum>k\<le>n. of_nat (Suc n choose k) * bernoulli k :: 'a) =
+          (\<Sum>k\<le>m. of_nat (m + 2 choose k) * bernoulli k) * 
+          (1 - of_nat (m + 2 choose Suc m) / of_nat (m + 2))"
+    by (simp add: Suc bernoulli_Suc algebra_simps flip: add_2_eq_Suc')
+  also have "of_nat (m + 2 choose Suc m) = (of_nat (m + 2) :: 'a)"
+    by (simp add: eval_nat_numeral)
+  also have "\<dots> / \<dots> = 1"
+    by (metis of_nat_0 of_nat_eq_iff one_eq_divide_iff zero_eq_add_iff_both_eq_0 zero_neq_numeral)
+  finally show ?thesis
+    by (simp add: Suc)
+qed auto
   
 lemma sum_binomial_times_bernoulli':
-  "(\<Sum>k<n. real (n choose k) * bernoulli k) = (if n = 1 then 1 else 0)"
+  "(\<Sum>k<n. of_nat (n choose k) * bernoulli k :: 'a :: field_char_0) = (if n = 1 then 1 else 0)"
 proof (cases n)
   case (Suc m)
-  have "(\<Sum>k<n. real (n choose k) * bernoulli k) =
-           (\<Sum>k\<le>m. real (Suc m choose k) * bernoulli k)"
+  have "(\<Sum>k<n. of_nat (n choose k) * bernoulli k :: 'a) =
+           (\<Sum>k\<le>m. of_nat (Suc m choose k) * bernoulli k)"
     unfolding Suc lessThan_Suc_atMost ..
   also have "\<dots> = (if n = 1 then 1 else 0)" 
     by (subst sum_binomial_times_bernoulli) (simp add: Suc)
@@ -198,8 +215,8 @@ lemma sum_unroll:
   by (cases n) (simp_all add: add_ac)
 
 lemma bernoulli_unroll:
-  "n > 0 \<Longrightarrow> bernoulli n = - 1 / (real n + 1) * (\<Sum>k\<le>n - 1. real (n + 1 choose k) * bernoulli k)"
-by (cases n) (simp add: bernoulli_Suc)+
+  "n > 0 \<Longrightarrow> bernoulli n = - 1 / (of_nat n + 1) * (\<Sum>k\<le>n - 1. of_nat (n + 1 choose k) * bernoulli k)"
+  by (cases n) (simp add: bernoulli_Suc)+
 
 lemmas bernoulli_unroll_all = binomial_unroll bernoulli_unroll sum_unroll bernpoly_def
 
@@ -254,7 +271,9 @@ lemma bernpoly_1:
   assumes "n \<noteq> 1"
   shows   "bernpoly n 1 = of_real (bernoulli n)"
 proof -
-  have "bernpoly n 1 = bernoulli n"
+  have "bernpoly n 1 = (of_real (bernpoly n 1) :: 'a)"
+    by (simp add: bernpoly_altdef)
+  also have "bernpoly n 1 = (bernoulli n :: real)"
   proof (cases "n \<ge> 2")
     case False
     with assms have "n = 0" by auto
@@ -264,9 +283,8 @@ proof -
     with diff_bernpoly[of n 0] show ?thesis
       by (simp add: power_0_left bernpoly_0)
   qed
-  hence "bernpoly n (of_real 1) = of_real (bernoulli n)"
-    by (simp only: bernpoly_of_real)
-  thus ?thesis by simp
+  finally show ?thesis
+    by simp
 qed
   
 lemma bernpoly_1': "bernpoly n 1 = of_real (bernoulli' n)"

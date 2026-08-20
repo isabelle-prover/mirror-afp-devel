@@ -10,7 +10,7 @@ definition "Refl_Rel R x y \<equiv> R x x \<and> R y y \<and> R x y"
 
 open_bundle Refl_Rel_syntax
 begin
-notation Refl_Rel (\<open>(_\<^sup>\<oplus>)\<close> [1000])
+notation Refl_Rel (\<open>_\<^sup>\<oplus>\<close> [1000])
 end
 
 lemma Refl_RelI [intro]:
@@ -54,7 +54,7 @@ corollary Refl_Rel_eq_self_iff_reflexive_on:
 lemma Refl_Rel_Refl_Rel_eq [simp]: "(R\<^sup>\<oplus>)\<^sup>\<oplus> = R\<^sup>\<oplus>"
   by (intro ext) auto
 
-lemma rel_inv_Refl_Rel_eq [simp]: "(R\<^sup>\<oplus>)\<inverse> = (R\<inverse>)\<^sup>\<oplus>"
+lemma Refl_Rel_rel_inv_eq [simp]: "(R\<inverse>)\<^sup>\<oplus> = (R\<^sup>\<oplus>)\<inverse>"
   by (intro ext iffI Refl_RelI rel_invI) auto
 
 lemma Refl_Rel_transitive_onI [intro]:
@@ -122,8 +122,7 @@ corollary Refl_Rel_app_rightI:
   and "(S \<Rightarrow> R) f"
   shows "R\<^sup>\<oplus> x (f y)"
 proof -
-  from assms have "(R\<inverse>)\<^sup>\<oplus> (f y) x" by (intro Refl_Rel_app_leftI[where ?S="S\<inverse>"])
-    (auto 5 0 simp flip: rel_inv_Refl_Rel_eq)
+  from assms have "(R\<inverse>)\<^sup>\<oplus> (f y) x" by (intro Refl_Rel_app_leftI[where ?S="S\<inverse>"]) auto
   then show ?thesis by blast
 qed
 
@@ -157,7 +156,7 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
   rewrites "((\<ge>\<^bsub>R\<^esub>) \<Rightarrow> (\<ge>\<^bsub>L\<^esub>)) \<equiv> ((\<le>\<^bsub>R\<^esub>) \<Rightarrow> (\<le>\<^bsub>L\<^esub>))"
   and "\<And>R. (R\<inverse>)\<^sup>\<oplus> \<equiv> (R\<^sup>\<oplus>)\<inverse>"
   and "\<And>R S f g. (R\<inverse> \<^sub>h\<unlhd> S\<inverse>) f g \<equiv> (S \<unlhd>\<^sub>h R) g f"
-  by (simp_all add: galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right
+  by (simp_all add: galois_prop.half_galois_prop_left_rel_inv_eq_rel_inv_half_galois_prop_right
     mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 lemma half_galois_prop_right_Refl_Rel_right_leftI:

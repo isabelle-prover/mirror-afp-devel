@@ -775,7 +775,7 @@ proof-
       qed
       then have "(\<Sum>j<m. c (j + n)) \<le> 2*c n" for m
         using c_pos[of n] 
-        by (smt divide_le_eq_1_pos divide_pos_pos nonzero_mult_div_cancel_left zero_less_power)
+        by (smt (z3) divide_le_eq_1_pos divide_pos_pos nonzero_mult_div_cancel_left zero_less_power)
       moreover have "summable (\<lambda>j. c (j + n))" 
         using \<open>summable c\<close> by (simp add: summable_iff_shift)
       ultimately show ?thesis using suminf_le_const[of "\<lambda>j. c (j+n)" "2*c n"] by auto

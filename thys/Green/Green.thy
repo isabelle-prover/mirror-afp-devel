@@ -1129,7 +1129,7 @@ proof -
                             (\<lambda>x. integral (cbox (g2 x) (g1 x)) (\<lambda>y. if (x, y) \<in> Dy_pair then partial_vector_derivative (\<lambda>a. F a \<bullet> i) j (x, y) else 0)) x =
                                       (\<lambda>x. integral (cbox (g2 x) (g1 x)) (\<lambda>y. partial_vector_derivative (\<lambda>a. F a \<bullet> i) j (x, y))) x"
       apply (simp add: Dy_def)
-      by (smt Henstock_Kurzweil_Integration.integral_cong atLeastAtMost_iff)
+      by (smt (z3) Henstock_Kurzweil_Integration.integral_cong atLeastAtMost_iff)
     show ?thesis
       using gauge_integral_Fubini_curve_bounded_region_x
         [OF f_lesbegue_integrable x_axis_gauge_integrable x_axis_integral_measurable arg arg2]
@@ -1140,7 +1140,7 @@ proof -
   have 5: "(integral Dy_pair (\<lambda>a. (?F_b' a))
         = integral (cbox a b) (\<lambda>x. F(x, g1(x))  \<bullet> i - F(x, g2(x))  \<bullet> i))"
     using 4 Henstock_Kurzweil_Integration.integral_cong partial_deriv_one_d_integrable integrable_def
-    by (smt integral_unique)
+    by (smt (z3) integral_unique)
   show "(line_integral F {i} gamma1) + (line_integral F {i} gamma2) -
           (line_integral F {i} gamma3) - (line_integral F {i} gamma4)
         = (integral Dy_pair (\<lambda>a. - (?F_b' a)))"
@@ -1252,7 +1252,7 @@ proof -
     by (auto simp add: mult.commute)
   then show "line_integral_exists F {j} gamma3" by auto
   have "continuous_on (cbox a b) (\<lambda>x. F(g2(x), x) \<bullet> j)"
-    by (smt Collect_mono_iff continuous_on_compose2 continuous_on_eq field_cont_on_gamma4_image g2_path_continuous line_is_pair_img)
+    by (smt (z3) Collect_mono_iff continuous_on_compose2 continuous_on_eq field_cont_on_gamma4_image g2_path_continuous line_is_pair_img)
   then have 6: "(\<lambda>x. F(g2(x), x)  \<bullet> j) integrable_on (cbox a b)"
     using integrable_continuous by blast
   have g1_scale_i_contin: "continuous_on (cbox a b) (\<lambda>x. (g1 x, 0))"
@@ -1289,7 +1289,7 @@ proof -
     by (auto simp add: mult.commute)
   then show "line_integral_exists F {j} gamma1" by auto
   have "continuous_on (cbox a b) (\<lambda>x. F(g1(x), x) \<bullet> j)"
-    by (smt Collect_mono_iff continuous_on_compose2 continuous_on_eq field_cont_on_gamma2_image g1_path_continuous line_is_pair_img)
+    by (smt (z3) Collect_mono_iff continuous_on_compose2 continuous_on_eq field_cont_on_gamma2_image g1_path_continuous line_is_pair_img)
   then have 7: "(\<lambda>x. F(g1(x), x) \<bullet> j) integrable_on (cbox a b)"
     using integrable_continuous [of "a" "b" "(\<lambda>x. F(g1(x), x) \<bullet> j)"]
     by auto
@@ -1341,7 +1341,7 @@ proof -
                       (\<lambda>x. integral (cbox (g2 x) (g1 x)) (\<lambda>y. if (y, x) \<in> Dx_pair then partial_vector_derivative (\<lambda>a. F a \<bullet> j) i (y, x) else 0)) x =
                       (\<lambda>x. integral (cbox (g2 x) (g1 x)) (\<lambda>y. partial_vector_derivative (\<lambda>a. F a \<bullet> j) i (y, x))) x"
       apply (clarsimp simp: Dx_def)
-      by (smt Henstock_Kurzweil_Integration.integral_cong atLeastAtMost_iff)
+      by (smt (z3) Henstock_Kurzweil_Integration.integral_cong atLeastAtMost_iff)
     show ?thesis
       using gauge_integral_Fubini_curve_bounded_region_y
         [OF f_lesbegue_integrable y_axis_gauge_integrable y_axis_integral_measurable arg arg2]
@@ -1352,7 +1352,7 @@ proof -
   have "((integral Dx_pair (\<lambda>a. (?F_a' a)))
         = integral (cbox a b) (\<lambda>x. F(g1(x), x) \<bullet> j - F(g2(x), x) \<bullet> j))"
     using 4 Henstock_Kurzweil_Integration.integral_cong partial_deriv_one_d_integrable integrable_def
-    by (smt integral_unique)
+    by (smt (z3) integral_unique)
   then have "integral Dx_pair (\<lambda>a. - (?F_a' a))
               = - integral (cbox a b) (\<lambda>x. F(g1(x), x) \<bullet> j - F(g2(x), x) \<bullet> j)"
     using partial_deriv_integrable and integral_neg by auto
@@ -1820,7 +1820,7 @@ proof -
         "b \<in> {0..1}"
         "subpath a b \<gamma>' = \<gamma>"
         using hv_props oneCube
-        by (smt case_prodE split_conv)
+        by (smt (z3) case_prodE split_conv)
       obtain x y1 y2 where horiz_edge_def: "(k',\<gamma>') = (k', (\<lambda>t::real. ((1 - t) * (y2) + t * y1, x::real)))"
         using valid_typeII_div kp_gammap
         by (auto simp add: typeII_twoCube_def two_chain_horizontal_boundary_def horizontal_boundary_def)
@@ -2564,7 +2564,7 @@ proof -
         "b \<in> {0..1}"
         "subpath a b \<gamma>' = \<gamma>"
         using hv_props oneCube
-        by (smt case_prodE split_conv)
+        by (smt (z3) case_prodE split_conv)
       obtain x y1 y2 where vert_edge_def: "(k',\<gamma>') = (k', (\<lambda>t::real. (x::real, (1 - t) * (y2) + t * y1)))"
         using valid_typeI_div kp_gammap
         by (auto simp add: typeI_twoCube_def two_chain_vertical_boundary_def vertical_boundary_def)
@@ -2593,7 +2593,7 @@ proof -
                (\<Sum>x\<in>two_chain_horizontal_boundary two_chain. case x of (k, g) \<Rightarrow> of_int k * line_integral F {i} g)"
       using hv_props(1) hv_props(3) hv_props(5) sum_zero_set hor_vert_finite(2) eq_integrals
       apply(auto simp add: one_chain_line_integral_def)
-      by (smt Un_commute sum_zero_set)
+      by (smt (z3) Un_commute sum_zero_set)
   qed
   then have "one_chain_line_integral F {i} \<gamma> =
              one_chain_line_integral F {i} (two_chain_boundary two_chain)"
@@ -2805,12 +2805,12 @@ proof -
         if "(k,g) \<in> one_chain_typeI" for k g
       proof -
         have "line_integral F {i, j} g = line_integral F {i} g + line_integral F {j} g"
-          by (smt that disjoint_insert(2) finite.emptyI finite.insertI R2.i_is_x_axis inf_bot_right insert_absorb insert_commute insert_is_Un R2.j_is_y_axis line_integral_sum_gen(1) one_chain_i_integrals one_chain_j_integrals prod.case_eq_if singleton_inject snd_conv)
+          by (smt (z3) that disjoint_insert(2) finite.emptyI finite.insertI R2.i_is_x_axis inf_bot_right insert_absorb insert_commute insert_is_Un R2.j_is_y_axis line_integral_sum_gen(1) one_chain_i_integrals one_chain_j_integrals prod.case_eq_if singleton_inject snd_conv)
         then show "k * line_integral F {i, j} g = k * line_integral F {i} g + k * line_integral F {j} g"
           by (simp add: distrib_left)
       qed
       then show ?thesis
-        using 0 by (smt sum.cong split_cong)
+        using 0 by (smt (z3) sum.cong split_cong)
     qed
     show "(\<Sum>(k::int, g)\<in>one_chain_typeI. k * line_integral F {i, j} g) =
           (\<Sum>(k, g)\<in>one_chain_typeI. k * line_integral F {i} g) + (\<Sum>(k::int, g)\<in>one_chain_typeI. k * line_integral F {j} g) \<and>
@@ -3053,7 +3053,7 @@ proof -
           by (simp add: distrib_left)
       qed
       then show ?thesis
-        using 0  by (smt sum.cong split_cong)
+        using 0  by (smt (z3) sum.cong split_cong)
     qed
     show "(\<Sum>(k::int, g)\<in>one_chain_typeI. k * line_integral F {i, j} g) =
           (\<Sum>(k, g)\<in>one_chain_typeI. k * line_integral F {i} g) + (\<Sum>(k::int, g)\<in>one_chain_typeI. k * line_integral F {j} g) \<and>

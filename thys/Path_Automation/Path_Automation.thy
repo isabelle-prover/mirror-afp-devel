@@ -1028,7 +1028,7 @@ fun tac' {context = ctxt, ...} =
     val intros = Named_Theorems.get ctxt intros
     val simps = Named_Theorems.get ctxt simps
     val unfolds = Named_Theorems.get ctxt unfolds
-    val ctxt' = put_simpset HOL_basic_ss ctxt addsimps simps
+    val ctxt' = ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps simps
   in
     Local_Defs.unfold_tac ctxt unfolds
     THEN HEADGOAL (

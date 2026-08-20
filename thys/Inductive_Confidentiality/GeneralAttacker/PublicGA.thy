@@ -364,15 +364,16 @@ structure Public =
 struct
 
 val analz_image_freshK_ss =
-  simpset_of (@{context}
-    delsimps @{thms image_insert image_Un}
-    delsimps @{thms imp_disjL}    (*reduces blow-up*)
-    addsimps @{thms analz_image_freshK_simps})
+  \<^context>
+  |> Simplifier.del_simps @{thms image_insert image_Un}
+  |> Simplifier.del_simps @{thms imp_disjL}    (*reduces blow-up*)
+  |> Simplifier.add_simps @{thms analz_image_freshK_simps}
+  |> Simplifier.simpset_of
 
 (*Tactic for possibility theorems*)
 fun possibility_tac ctxt =
     REPEAT (*omit used_Says so that Nonces start from different traces!*)
-    (ALLGOALS (simp_tac (ctxt delsimps [@{thm used_Says}]))
+    (ALLGOALS (simp_tac (ctxt |> Simplifier.del_simp @{thm used_Says}))
      THEN
      REPEAT_FIRST (eq_assume_tac ORELSE' 
                    resolve_tac ctxt [refl, conjI, @{thm Nonce_supply}]))

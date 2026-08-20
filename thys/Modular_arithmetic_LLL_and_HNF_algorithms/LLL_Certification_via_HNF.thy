@@ -56,7 +56,7 @@ proof -
   have P_A_P1_H1: "P * A = P1 * H1" using P1_H1 P2_H2 unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) case_prod_conv)
   hence "A = inv_P * (P1 * H1)"
-    by (smt A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
+    by (smt (z3) A P inv_P_P inv_P assoc_mult_mat carrier_matD(1) inverts_mat_def left_mult_one_mat)
   hence A_inv_P_P1_H1: "A = (inv_P * P1) * H1" using P P1_H1 assoc_mult_mat inv_P H1 P1 by auto
   have invertible_inv_P_P1: "invertible_mat (inv_P * P1)"
     by (rule invertible_mult_JNF[OF inv_P P1 invertible_inv_P inv_P1])   
@@ -80,13 +80,13 @@ corollary HNF_A_eq_HNF_PA':
   shows "H1 = H2" 
 proof -
   have H1: "H1 \<in> carrier_mat n n"
-    by (smt P1_H1 A P carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P1_H1 A P carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have H2: "H2 \<in> carrier_mat n n"
-    by (smt P2_H2 A carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P2_H2 A carrier_matD index_mult_mat is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have HNF_H1: "Hermite_JNF associates res H1" 
-    by (smt P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P1_H1 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have HNF_H2: "Hermite_JNF associates res H2"
-    by (smt P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
+    by (smt (z3) P2_H2 is_sound_HNF_def prod.sel(2) sound_HNF split_beta)
   have sound_HNF1: "\<exists>P1. P1 \<in> carrier_mat n n \<and> invertible_mat P1 \<and> (P * A) = P1 * H1"
     using sound_HNF P1_H1 unfolding is_sound_HNF_def Let_def
     by (metis (mono_tags, lifting) P carrier_matD(1) index_mult_mat(2) old.prod.simps(2))
@@ -130,7 +130,7 @@ proof -
     from inv_P obtain P' where PP': "inverts_mat P P'" and P'P: "inverts_mat P' P"
       using invertible_mat_def by blast
     let ?RAT = "of_int_hom.mat_hom :: int mat \<Rightarrow> rat mat"
-    have det_RAT_fs_init: "det (?RAT (mat_of_rows n fs_init)) \<noteq> 0"
+    have det_RAT_fs_init: "Determinant.det (?RAT (mat_of_rows n fs_init)) \<noteq> 0"
     proof (rule gs.lin_indpt_rows_imp_det_not_0)
       show "?RAT (mat_of_rows n fs_init) \<in> carrier_mat n n"
         using len map_carrier_mat mat_of_rows_carrier(1) mn by blast
@@ -141,15 +141,15 @@ proof -
       show "distinct (Matrix.rows (?RAT (mat_of_rows n fs_init)))"
         using rw cof_vec_space.lin_indpt_list_def lin_dep by auto
     qed
-    hence d: "det (?RAT (mat_of_rows n fs_init)) dvd 1" using dvd_field_iff by blast
+    hence d: "Determinant.det (?RAT (mat_of_rows n fs_init)) dvd 1" using dvd_field_iff by blast
     hence inv_RAT_fs_init: "invertible_mat (?RAT (mat_of_rows n fs_init))"
       using invertible_iff_is_unit_JNF by (metis mn len map_carrier_mat mat_of_rows_carrier(1))
     have "invertible_mat (?RAT P)"
       by (metis P dvd_field_iff inv_P invertible_iff_is_unit_JNF map_carrier_mat 
           not_is_unit_0 of_int_hom.hom_0 of_int_hom.hom_det)
-    have "det (?RAT (mat_of_rows n fs_init)) = det (?RAT P) * det (?RAT (mat_of_rows n gs))"
+    have "Determinant.det (?RAT (mat_of_rows n fs_init)) = Determinant.det (?RAT P) * Determinant.det (?RAT (mat_of_rows n gs))"
       by (metis Determinant.det_mult P fs_P_gs gs_carrier of_int_hom.hom_det of_int_hom.hom_mult)
-    hence "det (?RAT (mat_of_rows n gs)) \<noteq> 0" using d by auto 
+    hence "Determinant.det (?RAT (mat_of_rows n gs)) \<noteq> 0" using d by auto 
     thus "invertible_mat (?RAT (mat_of_rows n gs))"
       by (meson dvd_field_iff gs_carrier invertible_iff_is_unit_JNF map_carrier_mat)
     show "\<exists>P1. P1 \<in> carrier_mat n n \<and> invertible_mat P1 \<and> P * mat_of_rows n gs = P1 * H1"
@@ -177,7 +177,7 @@ proof -
     from inv_P obtain P' where PP': "inverts_mat P P'" and P'P: "inverts_mat P' P"
       using invertible_mat_def by blast
     let ?RAT = "of_int_hom.mat_hom :: int mat \<Rightarrow> rat mat"
-    have det_RAT_fs_init: "det (?RAT (mat_of_rows n fs_init)) \<noteq> 0"
+    have det_RAT_fs_init: "Determinant.det (?RAT (mat_of_rows n fs_init)) \<noteq> 0"
     proof (rule gs.lin_indpt_rows_imp_det_not_0)
       show "?RAT (mat_of_rows n fs_init) \<in> carrier_mat n n"
         using len map_carrier_mat mat_of_rows_carrier(1) mn by blast
@@ -188,15 +188,15 @@ proof -
       show "distinct (Matrix.rows (?RAT (mat_of_rows n fs_init)))"
         using rw cof_vec_space.lin_indpt_list_def lin_dep by auto
     qed
-    hence d: "det (?RAT (mat_of_rows n fs_init)) dvd 1" using dvd_field_iff by blast
+    hence d: "Determinant.det (?RAT (mat_of_rows n fs_init)) dvd 1" using dvd_field_iff by blast
     hence inv_RAT_fs_init: "invertible_mat (?RAT (mat_of_rows n fs_init))"
       using invertible_iff_is_unit_JNF by (metis mn len map_carrier_mat mat_of_rows_carrier(1))
     have "invertible_mat (?RAT P)"
       by (metis P dvd_field_iff inv_P invertible_iff_is_unit_JNF map_carrier_mat 
           not_is_unit_0 of_int_hom.hom_0 of_int_hom.hom_det)
-    have "det (?RAT (mat_of_rows n fs_init)) = det (?RAT P) * det (?RAT (mat_of_rows n gs))"
+    have "Determinant.det (?RAT (mat_of_rows n fs_init)) = Determinant.det (?RAT P) * Determinant.det (?RAT (mat_of_rows n gs))"
       by (metis Determinant.det_mult P fs_P_gs gs_carrier of_int_hom.hom_det of_int_hom.hom_mult)
-    hence "det (?RAT (mat_of_rows n gs)) \<noteq> 0" using d by auto 
+    hence "Determinant.det (?RAT (mat_of_rows n gs)) \<noteq> 0" using d by auto 
     thus "invertible_mat (?RAT (mat_of_rows n gs))"
       by (meson dvd_field_iff gs_carrier invertible_iff_is_unit_JNF map_carrier_mat)
   qed
@@ -242,7 +242,7 @@ proof -
       unfolding Matrix.rows_def by auto
     show "gs.lin_indpt_list (map (map_vec rat_of_int) (rows F))"
     proof -
-      have det_RAT_F: "det (?RAT F) \<noteq> 0"         
+      have det_RAT_F: "Determinant.det (?RAT F) \<noteq> 0"         
         by (metis inv_F_Q carrier_mat_triv invertible_iff_is_unit_JNF 
             invertible_mat_def not_is_unit_0 square_mat.simps)
       have d_RAT_F: "distinct (rows (?RAT F))"
@@ -253,7 +253,7 @@ proof -
             and i: "i<dim_row (?RAT F)" and j: "j<dim_row (?RAT F)" 
             and i_not_j: "i\<noteq>j"
           unfolding Matrix.rows_def distinct_conv_nth by auto
-        have "det (?RAT F) = 0" using ij i j i_not_j
+        have "Determinant.det (?RAT F) = 0" using ij i j i_not_j
           by (metis Determinant.det_def Determinant.det_identical_rows carrier_mat_triv)
         thus False using inv_F_Q
           by (metis carrier_mat_triv invertible_iff_is_unit_JNF invertible_mat_def 

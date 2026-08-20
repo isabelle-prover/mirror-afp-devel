@@ -153,7 +153,7 @@ fun define_channels (params, binding) typesyn channels thy =
       |> Class.instantiation ([dt_name], params, @{sort ev_eq})
       |> Local_Theory.begin_nested
       |> snd
-      |> Function_Fun.add_fun [(Binding.name fun_name, NONE, NoSyn)]
+      |> Function_Fun.add_fun {verbose = false} [(Binding.name fun_name, NONE, NoSyn)]
            (map (fn t => ((Binding.empty_atts, t), [], [])) eqs) Function_Fun.fun_config
       |> Local_Theory.end_nested
       |> Class.prove_instantiation_exit (fn ctxt => proof ctxt);
@@ -188,7 +188,7 @@ fun define_chanset binding channel_constrs (name, chans) thy  =
   in
       thy
       |> Named_Target.theory_init
-      |> Specification.definition (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
+      |> Specification.definition {verbose = false} (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
           [] [] (Binding.empty_atts, chanset_eq)
       |> snd |> Local_Theory.exit_global
   end;
@@ -220,7 +220,7 @@ fun define_nameset binding (rec_binding, alphabet) (ns_binding, names) thy  =
   in
       thy
       |> Named_Target.theory_init
-      |> Specification.definition (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
+      |> Specification.definition {verbose = false} (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
           [] [] (Binding.empty_atts, nameset_eq)
       |> snd |> Local_Theory.exit_global
   end;
@@ -243,7 +243,7 @@ fun define_schema binding (ex_binding, expr) (alph_bind, alpha, state) thy =
   in
     thy
     |> Named_Target.theory_init
-    |> Specification.definition (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
+    |> Specification.definition {verbose = false} (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
         [] [] (Binding.empty_atts, sc_eq)
     |> snd
     |> Local_Theory.exit_global
@@ -264,7 +264,7 @@ fun define_action binding (ex_binding, expr) alph_bind chan_bind thy =
   in
     thy
     |> Named_Target.theory_init
-    |> Specification.definition (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
+    |> Specification.definition {verbose = false} (SOME (Binding.qualify_name true binding base_name, NONE, NoSyn))
         [] [] (Binding.empty_atts, action_eq)
     |> snd
     |> Local_Theory.exit_global

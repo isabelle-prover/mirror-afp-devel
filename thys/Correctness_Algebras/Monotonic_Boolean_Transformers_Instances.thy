@@ -218,13 +218,13 @@ sublocale post_mbt_algebra < mbta: pre_post_spec_Hd where box = "\<lambda>x y . 
     hence "?pt * post ?qt \<le> x * ?qt * top * post ?qt \<sqinter> post ?qt"
       by (metis mbta.mult_left_isotone wpt_def inf_comp mult.left_neutral)
     thus "?pt * post ?qt \<le> x"
-      by (smt mbta.top_left_zero mult.assoc post_2 order_trans)
+      by (smt (z3) mbta.top_left_zero mult.assoc post_2 order_trans)
   next
     let ?pt = "neg_assert p"
     let ?qt = "neg_assert q"
     assume "?pt * post ?qt \<le> x"
     thus "?pt \<le> wpt (x * ?qt)"
-      by (smt mbta.a_d_closed post_1 mult_assoc mbta.diamond_left_isotone wpt_def)
+      by (smt (z3) mbta.a_d_closed post_1 mult_assoc mbta.diamond_left_isotone wpt_def)
   qed
   by (simp add: mbta_dual.mult_right_dist_sup)
 
@@ -237,22 +237,22 @@ proof
   proof
     assume "wpb (x ^ o * ?qt) \<le> ?pt"
     hence "?pt ^ o * post (?qt ^ o) \<le> (x * (?qt ^ o) * top \<sqinter> 1) * post (?qt ^ o)"
-      by (smt wpb_def dual_le dual_comp dual_dual dual_one dual_sup dual_top mbta.mult_left_isotone)
+      by (smt (z3) wpb_def dual_le dual_comp dual_dual dual_one dual_sup dual_top mbta.mult_left_isotone)
     thus "?pt ^ o * post (?qt ^ o) \<le> x"
-      by (smt inf_comp mult_assoc top_comp mult.left_neutral post_2 order_trans)
+      by (smt (z3) inf_comp mult_assoc top_comp mult.left_neutral post_2 order_trans)
   next
     assume 1: "?pt ^ o * post (?qt ^ o) \<le> x"
     have "?pt ^ o = ?pt ^ o * post (?qt ^ o) * (?qt ^ o) * top \<sqinter> 1"
       by (metis assert_iff_assume assertion_prop dual_dual mult_assoc neg_assumption post_1)
     thus "wpb (x ^ o * ?qt) \<le> ?pt"
-      using 1 by (smt dual_comp dual_dual dual_le dual_one dual_sup dual_top wpb_def mbta.diamond_left_isotone)
+      using 1 by (smt (z3) dual_comp dual_dual dual_le dual_one dual_sup dual_top wpb_def mbta.diamond_left_isotone)
   qed
   show "post 1 * top = top"
     by (simp add: mbta.Hd_total)
   have "x * ?qt * bot \<sqinter> (post 1 * neg_assume ?qt) = (x * neg_assume ?qt ^ o * top \<sqinter> post 1) * neg_assume ?qt"
     by (simp add: assume_bot mbta_dual.mult_right_dist_sup mult_assoc)
   also have "... \<le> x * neg_assume ?qt ^ o"
-    by (smt assumption_assertion_absorb dual_comp dual_dual mbta.mult_left_isotone mult.right_neutral mult_assoc neg_assumption post_2)
+    by (smt (z3) assumption_assertion_absorb dual_comp dual_dual mbta.mult_left_isotone mult.right_neutral mult_assoc neg_assumption post_2)
   also have "... \<le> x"
     by (metis dual_comp dual_dual dual_le mbta.mult_left_sub_dist_sup_left mult.right_neutral neg_assume_def sup.commute)
   finally show "x * ?qt * bot \<sqinter> (post 1 * neg_assume ?qt) \<le> x"
@@ -280,16 +280,16 @@ proof
     also have "... = ?pt ^ o"
       by (simp add: mbta.diamond_a_export post_1)
     finally show "?pt \<le> wpt (x ^ o * ?qt)"
-      by (smt dual_comp dual_dual dual_le dual_neg_top dual_one dual_sup dual_top wpt_def)
+      by (smt (z3) dual_comp dual_dual dual_le dual_neg_top dual_one dual_sup dual_top wpt_def)
   qed
   show "post 1 ^ o * bot = bot"
     by (metis dual_comp dual_top mbta.Hd_total)
   have "x ^ o * ?qt ^ o * bot \<sqinter> (post 1 * neg_assert ?qt ^ o) \<le> x ^ o * neg_assert ?qt * neg_assert ?qt ^ o"
     by (smt (verit, del_insts) bot_comp inf.commute inf_comp inf_top_left mbta.mult_left_isotone mult.left_neutral mult_assoc neg_assert_def post_2)
   also have "... \<le> x ^ o"
-    by (smt assert_iff_assume assumption_assertion_absorb dual_comp dual_dual le_comp mbta.a_below_one mult_assoc neg_assertion mult_1_right)
+    by (smt (z3) assert_iff_assume assumption_assertion_absorb dual_comp dual_dual le_comp mbta.a_below_one mult_assoc neg_assertion mult_1_right)
   finally show "x \<le> x * ?qt * top \<squnion> post 1 ^ o * neg_assert ?qt"
-    by (smt dual_comp dual_dual dual_inf dual_le dual_top)
+    by (smt (z3) dual_comp dual_dual dual_inf dual_le dual_top)
 qed
 
 sublocale post_mbt_algebra < mbta_pre_dual: pre_post_spec_Hd where box = "\<lambda>x y . neg_assume (x * neg_assume y)" and d = "\<lambda>x . (x * bot) \<squnion> 1" and diamond = "\<lambda>x y . (x * y * bot) \<squnion> 1" and less = greater and less_eq = greater_eq and sup = inf and pre = "\<lambda>x y . wpb (x * y)" and pre_post = "\<lambda>p q . p * (post (q ^ o) ^ o)" and uminus = neg_assume and bot = top and Hd = "post 1 ^ o" and top = bot and Z = top
@@ -303,11 +303,11 @@ sublocale post_mbt_algebra < mbta_pre_dual: pre_post_spec_Hd where box = "\<lamb
     let ?qt = "neg_assume q"
     assume "wpb (x * ?qt) \<le> ?pt"
     hence "?pt ^ o * post (?qt ^ o) \<le> (x ^ o * ?qt ^ o * top \<sqinter> 1) * post (?qt ^ o)"
-      by (smt dual_comp dual_dual dual_le dual_one dual_sup dual_top le_comp_right wpb_def)
+      by (smt (z3) dual_comp dual_dual dual_le dual_one dual_sup dual_top le_comp_right wpb_def)
     also have "... \<le> x ^ o"
       using mbta_dual.mult_right_dist_sup post_2 by force
     finally show "x \<le> ?pt * post (?qt ^ o) ^ o"
-      by (smt dual_comp dual_dual dual_le)
+      by (smt (z3) dual_comp dual_dual dual_le)
   next
     let ?pt = "neg_assume p"
     let ?qt = "neg_assume q"
@@ -474,7 +474,7 @@ proof (unfold_locales, rule impI)
   let ?qt = "neg_assert q"
   assume "neg_assert ?pt * ?qt \<le> x * ?qt * top \<sqinter> 1"
   hence "?qt * top \<le> x ^ \<mho> * ?pt * top"
-    by (smt mbta.Omega_induct mbta.d_def mbta.d_mult_top mbta.mult_left_isotone mbta.shunting_top_1 mult.assoc)
+    by (smt (z3) mbta.Omega_induct mbta.d_def mbta.d_mult_top mbta.mult_left_isotone mbta.shunting_top_1 mult.assoc)
   thus "mbta_fix.aL * ?qt \<le> x ^ \<mho> * ?pt * top \<sqinter> 1"
     by (smt (z3) inf.absorb_iff1 inf.sup_monoid.add_commute inf_comp inf_le2 inf_left_commute inf_top_left mbta_fix.aL_one_circ mbta_pre_dual.top_left_zero mult_1_left neg_assert_def mult.assoc)
 qed
@@ -504,7 +504,7 @@ proof (unfold_locales, rule impI)
   hence "(x * ?qt * bot \<sqinter> ?pt) * bot \<le> ?qt * bot"
     using mbta.mult_left_isotone by blast
   hence "x ^ \<omega> * ?pt * bot \<squnion> 1 \<le> ?qt"
-    by (smt bot_comp inf_comp sup_left_isotone mbta_dual.a_d_closed mult_assoc omega_least)
+    by (smt (z3) bot_comp inf_comp sup_left_isotone mbta_dual.a_d_closed mult_assoc omega_least)
   thus "x ^ \<omega> * ?pt * bot \<squnion> 1 \<le> mbta_pre_dual.aL * ?qt"
     by (simp add: mbta_pre_dual.aL_one_circ)
 qed
@@ -539,7 +539,7 @@ sublocale complete_mbt_algebra < mbta: diamond_hoare_valid where box = "\<lambda
       apply (metis assertion_continuous mbta.test_expression_test mult_continuous neg_assertion sup_continuous)
       by (metis assertion_continuous dual_star_continuous mbta.test_expression_test mult_continuous neg_assertion)
     thus "x * complete_tests.Sum Sup t = complete_tests.Sum Sup (\<lambda>n. x * t n)"
-      using 1 by (smt continuous_dist_ascending_chain SUP_cong mbta.Sum_range)
+      using 1 by (smt (z3) continuous_dist_ascending_chain SUP_cong mbta.Sum_range)
   qed
   using wpt_def by auto
 
@@ -554,9 +554,9 @@ proof
     let ?qt = "neg_assume q"
     assume "?qt \<le> ?pt * neg_assume (x * neg_assume ?qt)"
     also have "... \<le> x ^ o * ?qt \<squnion> ?pt"
-      by (smt assumption_sup_comp_eq sup_left_isotone mbta.zero_right_mult_decreasing mbta_dual.pre_def neg_assume_def neg_assumption sup.commute sup.left_commute sup.left_idem wpb_def)
+      by (smt (z3) assumption_sup_comp_eq sup_left_isotone mbta.zero_right_mult_decreasing mbta_dual.pre_def neg_assume_def neg_assumption sup.commute sup.left_commute sup.left_idem wpb_def)
     finally show "?qt \<sqinter> mbta_dual.aL \<le> neg_assume (x ^ \<omega> * neg_assume ?pt)"
-      by (smt dual_dual dual_omega_def dual_omega_greatest le_infI1 mbta_dual.a_d_closed mbta_dual.d_isotone mbta_dual.pre_def wpb_def)
+      by (smt (z3) dual_dual dual_omega_def dual_omega_greatest le_infI1 mbta_dual.a_d_closed mbta_dual.d_isotone mbta_dual.pre_def wpb_def)
   qed
   show "whiledo.aL (\<lambda>p x. (p * x) ^ \<omega> * neg_assume p) (\<lambda>x y. wpb (x ^ o * y)) 1 = top \<or> whiledo.aL (\<lambda>p x. (p * x) ^ \<omega> * neg_assume p) (\<lambda>x y. wpb (x ^ o * y)) 1 = 1"
     using mbta_dual.L_def mbta_dual.aL_one_circ mbta_dual.a_top by auto
@@ -572,7 +572,7 @@ proof
       apply (metis assumption_continuous mbta_dual.test_expression_test mult_continuous neg_assumption inf_continuous)
       by (metis assumption_continuous omega_continuous mbta_dual.test_expression_test mult_continuous neg_assumption)
     thus "x * complete_tests.Prod Sup t = complete_tests.Prod Sup (\<lambda>n. x * t n)"
-      using 1 by (smt ord.descending_chain_def ascending_chain_def continuous_dist_ascending_chain SUP_cong mbta_dual.Prod_range)
+      using 1 by (smt (z3) ord.descending_chain_def ascending_chain_def continuous_dist_ascending_chain SUP_cong mbta_dual.Prod_range)
   qed
   show "(wpb (x ^ o * q) \<le> p) = (neg_assume (x * neg_assume q) \<le> p)"
     by (simp add: mbta_dual.pre_def)
@@ -596,7 +596,7 @@ sublocale complete_mbt_algebra < mbta_pre_fix_dual: diamond_hoare_valid where bo
       apply (metis assumption_co_continuous mbta_dual.test_expression_test mult_co_continuous neg_assumption inf_co_continuous)
       by (metis assumption_co_continuous star_co_continuous mbta_dual.test_expression_test mult_co_continuous neg_assumption)
     thus "x * complete_tests.Sum Inf t = complete_tests.Sum Inf (\<lambda>n. x * t n)"
-      using 1 by (smt descending_chain_def ord.ascending_chain_def co_continuous_dist_descending_chain INF_cong mbta_dual.Sum_range)
+      using 1 by (smt (z3) descending_chain_def ord.ascending_chain_def co_continuous_dist_descending_chain INF_cong mbta_dual.Sum_range)
   qed
   using wpb_def by auto
 
@@ -617,7 +617,7 @@ proof
     finally have "(x ^ o) ^ \<omega> * ?pt * top \<le> ?qt * top"
       using mbta.mult_left_isotone omega_least by blast
     hence "neg_assert (x ^ \<mho> * neg_assert ?pt) \<le> ?qt"
-      by (smt dual_omega_def inf_mono mbta.d_a_closed mbta.d_def mbta_pre.pre_def order_refl wpt_def mbta.a_d_closed)
+      by (smt (z3) dual_omega_def inf_mono mbta.d_a_closed mbta.d_def mbta_pre.pre_def order_refl wpt_def mbta.a_d_closed)
     thus "neg_assert (x ^ \<mho> * neg_assert ?pt) \<le> ?qt \<squnion> mbta_pre_fix.aL"
       using le_supI1 by blast
   qed
@@ -635,7 +635,7 @@ proof
       apply (metis assertion_co_continuous mbta.test_expression_test mult_co_continuous neg_assertion sup_co_continuous)
       by (metis assertion_co_continuous dual_omega_co_continuous mbta.test_expression_test mult_co_continuous neg_assertion)
     thus "x * complete_tests.Prod Inf t = complete_tests.Prod Inf (\<lambda>n. x * t n)"
-      using 1 by (smt descending_chain_def co_continuous_dist_descending_chain INF_cong mbta.Prod_range)
+      using 1 by (smt (z3) descending_chain_def co_continuous_dist_descending_chain INF_cong mbta.Prod_range)
   qed
   show "(p \<le> wpt (x ^ o * q)) = (p \<le> neg_assert (x * neg_assert q))"
     by (simp add: mbta_pre.pre_def)

@@ -1380,12 +1380,12 @@ proof -
   thus ?thesis by (rule bigoI)
 qed
 
-definition stirling_sum where
+definition stirling_sum :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a ::{real_div_algebra, comm_ring_1}" where
   "stirling_sum j m x = 
      (-1) ^ j * (\<Sum>k = 1..<m. (of_real (bernoulli (Suc k)) * pochhammer (of_nat k) j / (of_nat k *
                                  of_nat (Suc k))) * inverse x ^ (k + j))"
   
-definition stirling_sum' where
+definition stirling_sum' :: "nat \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> 'a :: {real_div_algebra, comm_ring_1}" where
   "stirling_sum' j m x = 
      (-1) ^ (Suc j) * (\<Sum>k\<le>m. (of_real (bernoulli' k) * 
        pochhammer (of_nat (Suc k)) (j - 1) * inverse x ^ (k + j)))"
@@ -1438,7 +1438,7 @@ lemma has_field_derivative_stirling_sum'_real [derivative_intros]:
 proof (cases j)
   case (Suc j')
   from assms have [simp]: "x \<noteq> 0" by auto
-  define c where "c = (\<lambda>n. (-1) ^ Suc j * (bernoulli' n) * pochhammer (of_nat (Suc n)) j')"
+  define c where "c = (\<lambda>n. (-1) ^ Suc j * (bernoulli' n) * pochhammer (of_nat (Suc n)) j' :: real)"
   define T where "T = (\<lambda>n x. c n * inverse x ^ (j + n))"
   define T' where "T' = (\<lambda>n x. - (of_nat (j + n)) * c n * inverse x ^ (Suc (j + n)))"
   have "((\<lambda>x. \<Sum>k\<le>m. T k x) has_field_derivative (\<Sum>k\<le>m. T' k x)) (at x)" using assms Suc
@@ -1793,7 +1793,7 @@ proof -
            "\<forall>s::complex. s \<notin> \<real>\<^sub>\<le>\<^sub>0 \<longrightarrow>
                ln_Gamma s = (s - 1 / 2) * ln s - s + ln (2 * pi) / 2 +
                (\<Sum>k=1..<m. bernoulli (k+1) / (k * (k+1) * s ^ k)) - R s"
-      by (auto simp add: R_def algebra_simps)
+      by (auto simp add: R_def algebra_simps of_real_bernoulli)
     show "\<forall>s. s \<noteq> 0 \<and> \<bar>Arg s\<bar> \<le> \<alpha> \<longrightarrow> cmod (R s) \<le> c / real m / cmod s ^ m"
     proof (safe, goal_cases)
       case (1 s)

@@ -262,12 +262,10 @@ lemma rlexp_syms_insts:
   assumes "\<forall>A \<in> Nts_syms w. v (\<gamma>' A) = L A"
     shows "eval (rlexp_syms w) v = inst_syms L w"
 proof -
-  have "\<forall>i < length w. eval (rlexp_sym (w!i)) v = inst_sym L (w!i)"
-  proof (rule allI, rule impI)
-    fix i
-    assume "i < length w"
-    then show "eval (rlexp_sym (w ! i)) v = inst_sym L (w ! i)"
-      proof (induction "w!i")
+  have "eval (rlexp_sym (w!i)) v = inst_sym L (w!i)" if as: "i < length w" for i
+  proof -
+    from as show "eval (rlexp_sym (w ! i)) v = inst_sym L (w ! i)"
+    proof (induction "w!i")
       case (Nt A)
       with assms have "v (\<gamma>' A) = L A" unfolding Nts_syms_def by force
       with rlexp_sym_inst_Nt Nt show ?case by metis
@@ -302,19 +300,15 @@ proof -
     with ** insts'_vars have "x \<in> \<gamma>' ` Nts_syms w" by auto
     with *** show "x \<in> \<gamma>' ` Nts P" unfolding Nts_def Rhss_def by blast
   qed
-  moreover have "\<forall>v L. (\<forall>A \<in> Nts P. v (\<gamma>' A) = L A) \<longrightarrow> eval eq v = subst_lang P L A"
-  proof (rule allI | rule impI)+
-    fix v :: "nat \<Rightarrow> 'a lang" and L :: "'n \<Rightarrow> 'a lang"
-    assume state_L: "\<forall>A \<in> Nts P. v (\<gamma>' A) = L A"
-    have "\<forall>w \<in> Rhss P A. eval (rlexp_syms w) v = inst_syms L w"
-    proof
-      fix w
-      assume "w \<in> Rhss P A"
-      with state_L Nts_Nts_syms have "\<forall>A \<in> Nts_syms w. v (\<gamma>' A) = L A" by fast
-      from rlexp_syms_insts[OF this] show "eval (rlexp_syms w) v = inst_syms L w" by blast
+  moreover have "eval eq v = subst_lang P L A" if state_L: "\<forall>A \<in> Nts P. v (\<gamma>' A) = L A" for v L
+  proof -
+    have "eval (rlexp_syms w) v = inst_syms L w" if w: "w \<in> Rhss P A" for w
+    proof -
+      from w state_L Nts_Nts_syms have "\<forall>A \<in> Nts_syms w. v (\<gamma>' A) = L A" by fast
+      from rlexp_syms_insts[OF this] show ?thesis by blast
     qed
     then have "subst_lang P L A = (\<Union>f \<in> ?Insts. eval f v)" unfolding subst_lang_def by auto
-    with * show "eval eq v = subst_lang P L A" by auto
+    with * show ?thesis by auto
   qed
   ultimately show ?thesis by auto
 qed
@@ -470,10 +464,12 @@ lemma min_sol_min_sol_comm:
   assumes "min_sol_ineq_sys sys sol"
     shows "min_sol_ineq_sys_comm sys sol"
 unfolding min_sol_ineq_sys_comm_def proof
+
   from assms show "solves_ineq_sys_comm sys sol"
     unfolding min_sol_ineq_sys_def min_sol_ineq_sys_comm_def solves_ineq_sys_def
       solves_ineq_sys_comm_def solves_ineq_comm_def by (simp add: parikh_img_mono)
-  show " \<forall>sol'. solves_ineq_sys_comm sys sol' \<longrightarrow> (\<forall>x. \<Psi> (sol x) \<subseteq> \<Psi> (sol' x))"
+
+  show "\<forall>sol'. solves_ineq_sys_comm sys sol' \<longrightarrow> (\<forall>x. \<Psi> (sol x) \<subseteq> \<Psi> (sol' x))"
   proof (rule allI, rule impI)
     fix sol'
     assume "solves_ineq_sys_comm sys sol'"

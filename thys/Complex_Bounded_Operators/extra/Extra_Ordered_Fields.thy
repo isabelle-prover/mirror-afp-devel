@@ -600,7 +600,7 @@ lemma zero_less_divide_1_iff [simp]:
 
 lemma divide_le_0_1_iff [simp]:
   "1 / a \<le> 0 \<longleftrightarrow> a \<le> 0"
-  by (smt local.abs_0 local.abs_1 local.abs_divide local.abs_neg local.abs_nn
+  by (smt (z3) local.abs_0 local.abs_1 local.abs_divide local.abs_neg local.abs_nn
       local.divide_cancel_left local.le_minus_iff local.minus_divide_right local.zero_neq_one)
 
 lemma divide_less_0_1_iff [simp]:
@@ -740,7 +740,7 @@ proof intro_classes
   next
     case False
     thus ?thesis
-      by (smt nice_ordered_field_class.frac_less2 that(1) that(3))
+      by (smt (z3) nice_ordered_field_class.frac_less2 that(1) that(3))
   qed
   thus "inverse a \<le> inverse b \<Longrightarrow> 0 < a \<Longrightarrow> b \<le> a" unfolding defs ri
     by (auto simp: power2_eq_square)

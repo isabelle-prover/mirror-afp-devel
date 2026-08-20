@@ -244,9 +244,10 @@ ML \<open>
       end
 
       fun trans_tac ctxt = let
-        val ss = put_simpset HOL_basic_ss ctxt
-          addsimps @{thms APP_def PROTECT_def ANNOT_def}
-          addsimps get_post_rules ctxt
+        val ss = ctxt
+          |> put_simpset HOL_basic_ss 
+          |> Simplifier.add_simps @{thms APP_def PROTECT_def ANNOT_def}
+          |> Simplifier.add_simps (get_post_rules ctxt)
         val trans_opt_tac = 
           resolve_tac ctxt @{thms autoref_REMOVE_INTERNAL_EQ} 
           THEN' 

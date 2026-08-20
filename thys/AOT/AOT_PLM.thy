@@ -933,7 +933,7 @@ class AOT_Term_id = AOT_Term +
 
 instance \<kappa> :: AOT_Term_id
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>\<down>\<close> for \<kappa> \<kappa>'
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<kappa> = \<kappa>'\<close>
@@ -946,7 +946,7 @@ proof
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<kappa> = \<kappa>' \<rightarrow> \<kappa>'\<down>\<close> for \<kappa> \<kappa>'
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<kappa> = \<kappa>'\<close>
@@ -962,7 +962,7 @@ qed
 
 instance rel :: (AOT_\<kappa>s) AOT_Term_id
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close>
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<Pi> = \<Pi>'\<close>
@@ -970,7 +970,7 @@ proof
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<Pi> = \<Pi>' \<rightarrow> \<Pi>'\<down>\<close> for \<Pi> \<Pi>' :: \<open><'a>\<close>
     proof(rule "\<rightarrow>I")
       AOT_assume \<open>\<Pi> = \<Pi>'\<close>
@@ -981,7 +981,7 @@ qed
 
 instance \<o> :: AOT_Term_id
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<phi> \<psi>
     AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<phi>\<down>\<close>
     proof(rule "\<rightarrow>I")
@@ -990,7 +990,7 @@ proof
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<phi> \<psi>
     AOT_show \<open>\<phi> = \<psi> \<rightarrow> \<psi>\<down>\<close>
     proof(rule "\<rightarrow>I")
@@ -1002,7 +1002,7 @@ qed
 
 instance prod :: (AOT_Term_id, AOT_Term_id) AOT_Term_id
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<tau> \<tau>' :: \<open>'a\<times>'b\<close>
     AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>\<down>\<close>
     proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
@@ -1015,7 +1015,7 @@ proof
     qed
   }
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<tau> \<tau>' :: \<open>'a\<times>'b\<close>
     AOT_show \<open>\<tau> = \<tau>' \<rightarrow> \<tau>'\<down>\<close>
     proof (induct \<tau>; induct \<tau>'; rule "\<rightarrow>I")
@@ -1235,7 +1235,7 @@ class AOT_Term_id_2 = AOT_Term_id + assumes "id-eq:1": \<open>[v \<Turnstile> \<
 
 instance \<kappa> :: AOT_Term_id_2
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x
     {
       AOT_assume \<open>O!x\<close>
@@ -1259,7 +1259,7 @@ qed
 
 instance rel :: ("{AOT_\<kappa>s,AOT_Term_id_2}") AOT_Term_id_2
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix F :: "<'a> AOT_var"
     AOT_have 0: \<open>[\<lambda>x\<^sub>1...x\<^sub>n [F]x\<^sub>1...x\<^sub>n] = F\<close>
       by (simp add: "lambda-predicates:3"[axiom_inst])
@@ -1273,7 +1273,7 @@ qed
 
 instance \<o> :: AOT_Term_id_2
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix p
     AOT_have 0: \<open>[\<lambda> p] = p\<close>
       by (simp add: "lambda-predicates:3[zero]"[axiom_inst])
@@ -1287,7 +1287,7 @@ qed
 
 instance prod :: (AOT_Term_id_2, AOT_Term_id_2) AOT_Term_id_2
 proof
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<alpha> :: \<open>('a\<times>'b) AOT_var\<close>
     AOT_show \<open>\<alpha> = \<alpha>\<close>
     proof (induct)
@@ -1780,7 +1780,7 @@ syntax arbitrary_actualization :: \<open>\<phi>' \<Rightarrow> \<phi>' \<Rightar
 
 notepad
 begin
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix \<phi>
     AOT_have \<open>ARBITRARY_ACTUALIZATION(\<^bold>\<A>\<phi> \<equiv> \<phi>, \<^bold>\<A>(\<^bold>\<A>\<phi> \<equiv> \<phi>))\<close>
       using AOT_PLM.arbitrary_actualization.intros by metis
@@ -2606,7 +2606,7 @@ AOT_theorem "KBasic:4": \<open>\<box>(\<phi> \<equiv> \<psi>) \<equiv> (\<box>(\
 proof -
   AOT_have \<theta>: \<open>\<box>((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>)) \<equiv> (\<box>(\<phi> \<rightarrow> \<psi>) & \<box>(\<psi> \<rightarrow> \<phi>))\<close>
     by (fact "KBasic:3")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>(\<phi> \<equiv> \<psi>) \<equiv> ((\<phi> \<rightarrow> \<psi>) & (\<psi> \<rightarrow> \<phi>))\<close>
       by (fact "conventions:3"[THEN "\<equiv>Df"])
   }
@@ -2642,7 +2642,7 @@ proof (rule "\<rightarrow>I"; drule "\<or>E"(1); (rule "\<rightarrow>I")?)
 next
   AOT_assume \<open>\<box>\<not>\<phi> & \<box>\<not>\<psi>\<close>
   AOT_hence 0: \<open>\<box>(\<not>\<phi> & \<not>\<psi>)\<close> using "KBasic:3"[THEN "\<equiv>E"(2)] by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>(\<not>\<phi> & \<not>\<psi>) \<rightarrow> (\<phi> \<equiv> \<psi>)\<close>
       by (metis "&E"(1) "&E"(2) "deduction-theorem" "\<equiv>I" "reductio-aa:1")
   }
@@ -2685,7 +2685,7 @@ AOT_theorem "KBasic:14": \<open>\<diamond>\<box>\<phi> \<equiv> \<not>\<box>\<di
   by (meson "RE\<diamond>" "KBasic:11" "KBasic:12" "\<equiv>E"(6) "oth-class-taut:3:a")
 AOT_theorem "KBasic:15": \<open>(\<box>\<phi> \<or> \<box>\<psi>) \<rightarrow> \<box>(\<phi> \<or> \<psi>)\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<phi> \<rightarrow> (\<phi> \<or> \<psi>)\<close> and \<open>\<psi> \<rightarrow> (\<phi> \<or> \<psi>)\<close>
       by (auto simp: "Disjunction Addition"(1) "Disjunction Addition"(2))
   }
@@ -2721,7 +2721,7 @@ AOT_theorem "rule-sub-lem:1:d":
   assumes \<open>for arbitrary \<alpha>: \<^bold>\<turnstile>\<^sub>\<box> \<box>(\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
   shows \<open>\<^bold>\<turnstile>\<^sub>\<box> \<forall>\<alpha> \<psi>{\<alpha>} \<equiv> \<forall>\<alpha> \<chi>{\<alpha>}\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>\<alpha> (\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>})\<close>
       using "qml:2"[axiom_inst, THEN "\<rightarrow>E", OF assms] "\<forall>I" by fast
     AOT_hence 0: \<open>\<psi>{\<alpha>} \<equiv> \<chi>{\<alpha>}\<close> for \<alpha> using "\<forall>E" by blast
@@ -2833,7 +2833,7 @@ proof
       by (simp add: RN "rule-sub-lem:1:g")
   next
     case (AOT_subst_\<o>_by_def \<Theta> \<Xi>)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_have \<open>\<Xi>{\<psi>} \<equiv> \<Xi>{\<chi>}\<close>
         using AOT_subst_\<o>_by_def by simp
       AOT_thus \<open>\<Theta>{\<psi>} \<equiv> \<Theta>{\<chi>}\<close>
@@ -3030,7 +3030,7 @@ val reversed = case reversed of SOME _ => true | _ => false
 val simpThms = [@{thm AOT_subst_cond_\<o>_def}, @{thm AOT_subst_cond_fun_def}]
 in
 resolve_tac ctxt [getSubstThm ctxt reversed phi p q] 1
-THEN simp_tac (ctxt addsimps simpThms) 1
+THEN simp_tac (ctxt |> Simplifier.add_simps simpThms) 1
 THEN (REPEAT (resolve_tac ctxt [@{thm allI}] 1))
 THEN (TRY (resolve_tac ctxt thms 1))
 end
@@ -3059,7 +3059,7 @@ val simpThms = [@{thm AOT_subst_cond_\<o>_def},
 val substCondThm = Goal.prove ctxt [] [] substCond
   (fn {context=ctxt, prems=prems} =>
       (SUBGOAL (fn (trm,int) =>
-        auto_tac (ctxt addsimps simpThms)) 1))
+        auto_tac (ctxt |> Simplifier.add_simps simpThms)) 1))
 val substThm = substCondThm RSN (2,@{thm AOT_subst})
 in
 resolve_tac ctxt [substThm RS
@@ -3094,7 +3094,7 @@ val simpThms = [@{thm AOT_subst_cond_\<o>_def},
   fact]
 val substCondThm = Goal.prove ctxt [] [] substCond
   (fn {context=ctxt, prems=prems} =>
-      (SUBGOAL (fn (trm,int) => auto_tac (ctxt addsimps simpThms)) 1))
+      (SUBGOAL (fn (trm,int) => auto_tac (ctxt |> Simplifier.add_simps simpThms)) 1))
 val substThm = substCondThm RSN (2,@{thm AOT_subst})
 in
 resolve_tac ctxt [substThm RS
@@ -3406,7 +3406,7 @@ qed
 
 AOT_theorem "S5Basic:13": \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<equiv> \<box>(\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
 proof (rule "\<equiv>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> (\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
       by (meson "KBasic:13" "B\<diamond>" "Hypothetical Syllogism" "\<rightarrow>I")
   }
@@ -3415,7 +3415,7 @@ proof (rule "\<equiv>I")
   AOT_thus  \<open>\<box>(\<phi> \<rightarrow> \<box>\<psi>) \<rightarrow> \<box>(\<diamond>\<phi> \<rightarrow> \<psi>)\<close>
     using "4" "Hypothetical Syllogism" by blast
 next
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<box>(\<diamond>\<phi> \<rightarrow> \<psi>) \<rightarrow> (\<phi> \<rightarrow> \<box>\<psi>)\<close>
       by (meson "B" "Hypothetical Syllogism" "\<rightarrow>I" "qml:1"[axiom_inst])
   }
@@ -3447,7 +3447,7 @@ qed
 
 AOT_theorem "BFs:1": \<open>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<box>\<forall>\<alpha> \<phi>{\<alpha>}\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<diamond>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<diamond>\<box>\<phi>{\<alpha>}\<close> for \<alpha>
       using "cqt-orig:3" by (rule "RM\<diamond>")
     AOT_hence \<open>\<diamond>\<forall>\<alpha> \<box>\<phi>{\<alpha>} \<rightarrow> \<forall>\<alpha> \<phi>{\<alpha>}\<close>
@@ -3469,7 +3469,7 @@ lemmas "CBF" = "BFs:2"
 
 AOT_theorem "BFs:3": \<open>\<diamond>\<exists>\<alpha> \<phi>{\<alpha>} \<rightarrow> \<exists>\<alpha> \<diamond>\<phi>{\<alpha>}\<close>
 proof(rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<box>\<forall>\<alpha> \<not>\<phi>{\<alpha>} \<equiv> \<forall>\<alpha> \<box>\<not>\<phi>{\<alpha>}\<close>
       using BF CBF "\<equiv>I" by blast
   } note \<theta> = this
@@ -3671,7 +3671,7 @@ proof (rule "\<rightarrow>I")
     using 4[THEN "\<rightarrow>E"] "&E" "&I" "KBasic:3" "\<equiv>E"(2) by metis
   moreover AOT_have \<open>\<box>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>)) \<rightarrow> \<box>((\<phi> \<equiv> \<psi>) \<rightarrow> \<box>(\<phi> \<equiv> \<psi>))\<close>
   proof (rule RM; rule "\<rightarrow>I"; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume A: \<open>(\<box>(\<phi> \<rightarrow> \<box>\<phi>) & \<box>(\<psi> \<rightarrow> \<box>\<psi>))\<close>
       AOT_hence \<open>\<phi> \<rightarrow> \<box>\<phi>\<close> and \<open>\<psi> \<rightarrow> \<box>\<psi>\<close>
         using "&E" "qml:2"[axiom_inst] "\<rightarrow>E" by blast+
@@ -3828,7 +3828,7 @@ AOT_theorem "id-act:1": \<open>\<alpha> = \<beta> \<equiv> \<^bold>\<A>\<alpha> 
 
 AOT_theorem "id-act:2": \<open>\<alpha> \<noteq> \<beta> \<equiv> \<^bold>\<A>\<alpha> \<noteq> \<beta>\<close>
 proof (AOT_subst \<open>\<alpha> \<noteq> \<beta>\<close> \<open>\<not>(\<alpha> = \<beta>)\<close>)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_show \<open>\<alpha> \<noteq> \<beta> \<equiv> \<not>(\<alpha> = \<beta>)\<close>
       by (simp add: "=-infix" "\<equiv>Df")
   }
@@ -4157,7 +4157,7 @@ AOT_theorem "en-eq:10[4]": \<open>\<^bold>\<A>x\<^sub>1x\<^sub>2x\<^sub>3x\<^sub
 
 AOT_theorem "oa-facts:1": \<open>O!x \<rightarrow> \<box>O!x\<close>
 proof(rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>x \<diamond>E!x]x \<equiv> \<diamond>E!x\<close>
       by (rule "lambda-predicates:2"[axiom_inst, THEN "\<rightarrow>E"]) "cqt:2"
   } note \<theta> = this
@@ -4175,7 +4175,7 @@ qed
 
 AOT_theorem "oa-facts:2": \<open>A!x \<rightarrow> \<box>A!x\<close>
 proof(rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>x \<not>\<diamond>E!x]x \<equiv> \<not>\<diamond>E!x\<close>
       by (rule "lambda-predicates:2"[axiom_inst, THEN "\<rightarrow>E"]) "cqt:2"
   } note \<theta> = this
@@ -4246,7 +4246,7 @@ theorem "beta-C-cor:3":
 
 AOT_theorem "betaC:1:a": \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n \<^bold>\<turnstile>\<^sub>\<box> \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_assume \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
     moreover AOT_have \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>\<close> and \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>\<close>
       using calculation "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E"] "&E" by blast+
@@ -4264,7 +4264,7 @@ AOT_theorem "betaC:2:a":
   \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>, \<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>, \<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n} \<^bold>\<turnstile>\<^sub>\<box>
    [\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<kappa>\<^sub>1...\<kappa>\<^sub>n\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_assume 1: \<open>[\<lambda>\<mu>\<^sub>1...\<mu>\<^sub>n \<phi>{\<mu>\<^sub>1...\<mu>\<^sub>n}]\<down>\<close>
            and 2: \<open>\<kappa>\<^sub>1...\<kappa>\<^sub>n\<down>\<close>
            and 3: \<open>\<phi>{\<kappa>\<^sub>1...\<kappa>\<^sub>n}\<close>
@@ -4632,7 +4632,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
       moreover AOT_have \<open>\<box>([G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x)) \<rightarrow>
                                   \<box>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>)\<close>
       proof(rule RN; rule "\<rightarrow>I")
-        AOT_modally_strict {
+        AOT_modally_strict_{
           AOT_assume \<open>[G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<close>
           AOT_hence \<open>\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))\<down>\<close>
             using "cqt:5:a"[axiom_inst, THEN "\<rightarrow>E", THEN "&E"(2)] by blast
@@ -4697,7 +4697,7 @@ proof(rule "\<rightarrow>I"; rule "raa-cor:2")
       \<rightarrow> \<^bold>\<A>\<exists>p (p & \<not>p)\<close>
   proof (rule "logic-actual-nec:2"[axiom_inst, THEN "\<equiv>E"(1)];
          rule "RA[2]"; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume 0: \<open>[\<lambda>x [G]\<^bold>\<iota>y (y = x & \<exists>H (x[H] & \<not>[H]x))]\<down> &
                 \<forall>x ([G]\<^bold>\<iota>y(y = x & \<exists>H (x[H] & \<not>[H]x)) \<equiv> \<exists>H (x[H] & \<not>[H]x))\<close>
       AOT_have \<open>\<exists>F \<forall>x ([F]x \<equiv> \<exists>G (x[G] & \<not>[G]x))\<close>
@@ -4773,7 +4773,7 @@ qed
 
 AOT_theorem "pos-not-equiv-ne:2": \<open>(\<diamond>\<not>(\<phi>{F} \<equiv> \<phi>{G})) \<rightarrow> F \<noteq> G\<close>
 proof (rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<not>(\<phi>{F} \<equiv> \<phi>{G}) \<rightarrow> \<not>(F = G)\<close>
     proof (rule "\<rightarrow>I"; rule "raa-cor:2")
       AOT_assume 1: \<open>F = G\<close>
@@ -4805,7 +4805,7 @@ qed
 
 AOT_theorem "pos-not-equiv-ne:2[zero]": \<open>(\<diamond>\<not>(\<phi>{p} \<equiv> \<phi>{q})) \<rightarrow> p \<noteq> q\<close>
 proof (rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<not>(\<phi>{p} \<equiv> \<phi>{q}) \<rightarrow> \<not>(p = q)\<close>
     proof (rule "\<rightarrow>I"; rule "raa-cor:2")
       AOT_assume 1: \<open>p = q\<close>
@@ -5010,7 +5010,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
     AOT_assume \<open>Necessary([F])\<close>
     AOT_hence \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n)\<close>
       using "\<equiv>\<^sub>d\<^sub>fE"[OF "contingent-properties:1"] by blast
-    moreover AOT_modally_strict {
+    moreover AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E" by blast
       AOT_hence \<open>\<not>[F]\<^sup>-x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n
@@ -5031,7 +5031,7 @@ proof (rule "\<equiv>I"; rule "\<rightarrow>I")
       using "\<equiv>Df"[OF "contingent-properties:2", THEN "\<equiv>S"(1),
                   OF "cqt:2[const_var]"[axiom_inst], THEN "\<equiv>E"(1)]
       by blast
-    moreover AOT_modally_strict {
+    moreover AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<not>[F]x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>\<not>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E" by blast
       AOT_hence \<open>[F]\<^sup>-x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n
@@ -5056,7 +5056,7 @@ next
     AOT_assume \<open>Necessary([F]\<^sup>-)\<close>
     AOT_hence \<open>\<box>(\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]\<^sup>-x\<^sub>1...x\<^sub>n)\<close>
       using "\<equiv>\<^sub>d\<^sub>fE"[OF "contingent-properties:1"] by blast
-    moreover AOT_modally_strict {
+    moreover AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n [F]\<^sup>-x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>[F]\<^sup>-x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E" by blast
       AOT_hence \<open>\<not>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n
@@ -5077,7 +5077,7 @@ next
       using "\<equiv>Df"[OF "contingent-properties:2", THEN "\<equiv>S"(1),
                   OF "rel-neg-T:3", THEN "\<equiv>E"(1)]
       by blast
-    moreover AOT_modally_strict {
+    moreover AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n \<not>[F]\<^sup>-x\<^sub>1...x\<^sub>n\<close>
       AOT_hence \<open>\<not>[F]\<^sup>-x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n using "\<forall>E" by blast
       AOT_hence \<open>[F]x\<^sub>1...x\<^sub>n\<close> for x\<^sub>1x\<^sub>n 
@@ -5170,7 +5170,7 @@ AOT_define concrete_if_concrete :: \<open>\<Pi>\<close> (\<open>L\<close>)
 
 AOT_theorem "thm-noncont-e-e:1": \<open>Necessary(L)\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x
     AOT_have \<open>[\<lambda>x E!x \<rightarrow> E!x]\<down>\<close> by "cqt:2[lambda]"
     moreover AOT_have \<open>x\<down>\<close> using "cqt:2[const_var]"[axiom_inst] by blast
@@ -5188,7 +5188,7 @@ qed
 
 AOT_theorem "thm-noncont-e-e:2": \<open>Impossible([L]\<^sup>-)\<close>
 proof -
-  AOT_modally_strict {
+  AOT_modally_strict_{
     fix x
 
     AOT_have 0: \<open>\<forall>F (\<not>[F]\<^sup>-x \<equiv> [F]x)\<close>
@@ -6013,7 +6013,7 @@ proof -
   AOT_obtain p\<^sub>1 where \<open>ContingentlyTrue((p\<^sub>1))\<close>
     using "cont-tf-thm:1" "\<exists>E"[rotated] by blast
   AOT_hence 1: \<open>p\<^sub>1 & \<diamond>\<not>p\<^sub>1\<close> using "cont-tf:1"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
       by (rule "beta-C-cor:3"[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
     AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> \<box> ([\<lambda>z p]x \<equiv> p)\<close>
@@ -6040,7 +6040,7 @@ proof -
   AOT_obtain p\<^sub>1 where \<open>ContingentlyFalse((p\<^sub>1))\<close>
     using "cont-tf-thm:2" "\<exists>E"[rotated] by blast
   AOT_hence 1: \<open>\<not>p\<^sub>1 & \<diamond>p\<^sub>1\<close> using "cont-tf:2"[THEN "\<equiv>\<^sub>d\<^sub>fE"] by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
       by (rule "beta-C-cor:3"[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
     AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> (\<not>[\<lambda>z p]x \<equiv> \<not>p)\<close>
@@ -6053,7 +6053,7 @@ proof -
   AOT_hence \<open>\<box>(\<not>[\<lambda>z p\<^sub>1]x \<equiv> \<not>p\<^sub>1)\<close> using "\<forall>E" by blast
   AOT_hence 3: \<open>\<not>[\<lambda>z p\<^sub>1]x\<close>
     using 1[THEN "&E"(1)] "qml:2"[axiom_inst, THEN "\<rightarrow>E"] "\<equiv>E"(2) by blast
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> ([\<lambda>z p]x \<equiv> p)\<close>
       by (rule "beta-C-cor:3"[THEN "\<forall>E"(2)]) cqt_2_lambda_inst_prover
     AOT_hence \<open>for arbitrary p: \<^bold>\<turnstile>\<^sub>\<box> \<box>([\<lambda>z p]x \<equiv> p)\<close>
@@ -6175,7 +6175,7 @@ proof(rule GEN)
   fix F
   AOT_have Aux_A: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<rightarrow> \<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi>]x)\<close> for \<psi>
   proof(rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
     fix x
     AOT_assume 0: \<open>\<psi>\<close>
     AOT_have \<open>[\<lambda>z [F]z & \<psi>]x \<equiv> [F]x & \<psi>\<close>
@@ -6192,7 +6192,7 @@ proof(rule GEN)
 
   AOT_have Aux_B: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<psi> \<rightarrow> \<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> for \<psi>
   proof (rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume 0: \<open>\<psi>\<close>
       AOT_have \<open>[\<lambda>z ([F]z & \<psi>) \<or> \<not>\<psi>]x \<equiv> (([F]x & \<psi>) \<or> \<not>\<psi>)\<close>
@@ -6211,7 +6211,7 @@ proof(rule GEN)
   AOT_have Aux_C:
     \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<not>\<psi> \<rightarrow> \<diamond>\<not>\<forall>z([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close> for \<psi>
   proof(rule "RM\<diamond>"; rule "\<rightarrow>I"; rule "raa-cor:2")
-  AOT_modally_strict {
+  AOT_modally_strict_{
       AOT_assume 0: \<open>\<not>\<psi>\<close>
       AOT_assume \<open>\<forall>z ([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close>
       AOT_hence \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z
@@ -6238,7 +6238,7 @@ proof(rule GEN)
     proof(rule "\<equiv>I"; rule "KBasic:13"[THEN "\<rightarrow>E"];
           rule "RN[prem]"[where \<Gamma>="{\<guillemotleft>\<forall>z([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<guillemotright>}", simplified];
           (rule "useful-tautologies:5"[THEN "\<rightarrow>E"]; rule "\<rightarrow>I")?)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
         AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z
           using "\<forall>E" by blast
@@ -6251,7 +6251,7 @@ proof(rule GEN)
           by (rule GEN)
       }
     next
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
         AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z
           using "\<forall>E" by blast
@@ -6301,7 +6301,7 @@ proof(rule GEN)
   fix F
   AOT_have Aux_A: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<psi> \<rightarrow> \<diamond>\<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi>]x)\<close> for \<psi>
   proof(rule "RM\<diamond>"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
     fix x
     AOT_assume 0: \<open>\<psi>\<close>
     AOT_have \<open>[\<lambda>z [F]z & \<psi>]x \<equiv> [F]x & \<psi>\<close>
@@ -6318,7 +6318,7 @@ proof(rule GEN)
 
   AOT_have Aux_B: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<psi> \<rightarrow> \<diamond>\<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> for \<psi>
   proof (rule "RM\<diamond>"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume 0: \<open>\<psi>\<close>
       AOT_have \<open>[\<lambda>z ([F]z & \<psi>) \<or> \<not>\<psi>]x \<equiv> (([F]x & \<psi>) \<or> \<not>\<psi>)\<close>
@@ -6335,7 +6335,7 @@ proof(rule GEN)
 
   AOT_have Aux_C: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<not>\<psi> \<rightarrow> \<not>\<forall>z([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close> for \<psi>
   proof(rule "\<rightarrow>I"; rule "raa-cor:2")
-  AOT_modally_strict {
+  AOT_modally_strict_{
       AOT_assume 0: \<open>\<not>\<psi>\<close>
       AOT_assume \<open>\<forall>z ([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close>
       AOT_hence \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z
@@ -6358,7 +6358,7 @@ proof(rule GEN)
      \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x))\<close> for \<psi>
   proof (rule "\<rightarrow>I"; rule "\<equiv>I";
          (rule "useful-tautologies:5"[THEN "\<rightarrow>E"]; rule "\<rightarrow>I")?)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
       AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z
         using "\<forall>E" by blast
@@ -6371,7 +6371,7 @@ proof(rule GEN)
         by (rule GEN)
     }
   next
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
       AOT_hence 1: \<open>[F]z \<equiv> [\<lambda>z [F]z & \<psi>]z\<close> for z
         using "\<forall>E" by blast
@@ -6420,7 +6420,7 @@ proof(rule GEN)
   fix F
   AOT_have Aux_A: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<psi> \<rightarrow> \<diamond>\<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi>]x)\<close> for \<psi>
   proof(rule "RM\<diamond>"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
     fix x
     AOT_assume 0: \<open>\<psi>\<close>
     AOT_have \<open>[\<lambda>z [F]z & \<psi>]x \<equiv> [F]x & \<psi>\<close>
@@ -6438,7 +6438,7 @@ proof(rule GEN)
 
   AOT_have Aux_B: \<open>\<^bold>\<turnstile>\<^sub>\<box> \<diamond>\<psi> \<rightarrow> \<diamond>\<forall>x([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close> for \<psi>
   proof (rule "RM\<diamond>"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x
       AOT_assume 0: \<open>\<psi>\<close>
       AOT_have \<open>[\<lambda>z ([F]z & \<psi>) \<or> \<not>\<psi>]x \<equiv> (([F]x & \<psi>) \<or> \<not>\<psi>)\<close>
@@ -6456,7 +6456,7 @@ proof(rule GEN)
   AOT_have Aux_C:
     \<open>\<^bold>\<turnstile>\<^sub>\<box> \<^bold>\<A>\<not>\<psi> \<rightarrow> \<^bold>\<A>\<not>\<forall>z([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close> for \<psi>
   proof(rule "act-cond"[THEN "\<rightarrow>E"]; rule "RA[2]"; rule "\<rightarrow>I"; rule "raa-cor:2")
-  AOT_modally_strict {
+  AOT_modally_strict_{
       AOT_assume 0: \<open>\<not>\<psi>\<close>
       AOT_assume \<open>\<forall>z ([\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z)\<close>
       AOT_hence \<open>[\<lambda>z [F]z & \<psi>]z \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]z\<close> for z
@@ -6478,7 +6478,7 @@ proof(rule GEN)
     (\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv>
      \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)))\<close> for \<psi>
   proof (rule RN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
         AOT_assume \<open>\<forall>z ([F]z \<equiv> [\<lambda>z [F]z & \<psi>]z)\<close>
         AOT_thus \<open>\<not>\<forall>x ([\<lambda>z [F]z & \<psi>]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x) \<equiv>
                   \<not>\<forall>x ([F]x \<equiv> [\<lambda>z [F]z & \<psi> \<or> \<not>\<psi>]x)\<close>
@@ -7084,7 +7084,7 @@ proof -
   note props = this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y & q\<^sub>0]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7114,7 +7114,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y & \<not>q\<^sub>0]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7163,7 +7163,7 @@ proof -
     using "&E" by blast+
   note props = props this
 
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>y q\<^sub>0]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]b & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]b & \<not>\<^bold>\<A>[\<lambda>y q\<^sub>0]a & \<^bold>\<Delta>[\<lambda>y q\<^sub>0]a\<close>
@@ -7177,7 +7177,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [E!]y \<or> ([A!]y & \<not>q\<^sub>0)]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7237,7 +7237,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [A!]y \<or> [E!]y]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7269,7 +7269,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y & \<not>[E!]y]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7298,7 +7298,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y \<not>[E!]y & ([O!]y \<or> q\<^sub>0)]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7315,7 +7315,7 @@ proof -
     next
       AOT_show \<open>\<diamond>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close>
       proof (AOT_subst \<open>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0))\<close> \<open>[E!]b \<or> \<not>([O!]b \<or> q\<^sub>0)\<close>)
-        AOT_modally_strict {
+        AOT_modally_strict_{
           AOT_show \<open>\<not>(\<not>[E!]b & ([O!]b \<or> q\<^sub>0)) \<equiv> [E!]b \<or> \<not>([O!]b \<or> q\<^sub>0)\<close>
             by (metis "&I" "&E"(1,2) "\<or>I"(1,2) "\<or>E"(2)
                       "\<rightarrow>I" "\<equiv>I" "reductio-aa:1")
@@ -7352,7 +7352,7 @@ proof -
     using "&E" by blast+
   note props = props this
 
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>y \<not>q\<^sub>0]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]b & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]b & \<^bold>\<A>[\<lambda>y \<not>q\<^sub>0]a & \<not>\<^bold>\<Delta>[\<lambda>y \<not>q\<^sub>0]a\<close>
@@ -7365,7 +7365,7 @@ proof -
     using "&E" by blast+
   note props = props this
 
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<lambda>y \<not>[E!]y]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<lambda>y \<not>[E!]y]b & \<not>\<^bold>\<Delta>[\<lambda>y \<not>[E!]y]b &
@@ -7398,7 +7398,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y \<or> q\<^sub>0]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<not>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7426,7 +7426,7 @@ proof -
   note props = props this
 
   let ?\<Pi> = "\<guillemotleft>[\<lambda>y [O!]y \<or> \<not>q\<^sub>0]\<guillemotright>"
-  AOT_modally_strict {
+  AOT_modally_strict_{
      AOT_have \<open>[\<guillemotleft>?\<Pi>\<guillemotright>]\<down>\<close> by "cqt:2[lambda]"
   } note 1 = this
   moreover AOT_have \<open>\<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]b & \<^bold>\<A>[\<guillemotleft>?\<Pi>\<guillemotright>]a & \<not>\<^bold>\<Delta>[\<guillemotleft>?\<Pi>\<guillemotright>]a\<close>
@@ -7451,7 +7451,7 @@ proof -
          by (metis "KBasic:16" "&I" "vdash-properties:10")
       AOT_show \<open>\<diamond>\<not>([O!]a \<or> \<not>q\<^sub>0)\<close>
       proof (AOT_subst (reverse) \<open>\<not>([O!]a \<or> \<not>q\<^sub>0)\<close> \<open>\<not>[O!]a & q\<^sub>0\<close>)
-        AOT_modally_strict {
+        AOT_modally_strict_{
           AOT_show \<open>\<not>[O!]a & q\<^sub>0 \<equiv> \<not>([O!]a \<or> \<not>q\<^sub>0)\<close>
             by (metis "&I" "&E"(1) "&E"(2) "\<or>I"(1) "\<or>I"(2)
                       "\<or>E"(3) "deduction-theorem" "\<equiv>I" "raa-cor:3")
@@ -7509,7 +7509,7 @@ text\<open>\label{PLM: 9.11}\<close>
 
 AOT_theorem "o-objects-exist:1": \<open>\<box>\<exists>x O!x\<close>
 proof(rule RN)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_obtain a where \<open>\<diamond>(E!a & \<not>\<^bold>\<A>[E!]a)\<close>
       using "\<exists>E"[rotated, OF "qml:4"[axiom_inst, THEN "BF\<diamond>"[THEN "\<rightarrow>E"]]]
       by blast
@@ -7527,7 +7527,7 @@ qed
 
 AOT_theorem "o-objects-exist:2": \<open>\<box>\<exists>x A!x\<close>
 proof (rule RN)
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_obtain a where \<open>[A!]a\<close>
       using "A-objects"[axiom_inst] "\<exists>E"[rotated] "&E" by blast
     AOT_thus \<open>\<exists>x A!x\<close> using "\<exists>I" by blast
@@ -7548,7 +7548,7 @@ AOT_theorem "o-objects-exist:4": \<open>\<box>\<not>\<forall>x A!x\<close>
 
 AOT_theorem "o-objects-exist:5": \<open>\<box>\<not>\<forall>x E!x\<close>
 proof (rule RN; rule "raa-cor:2")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_assume \<open>\<forall>x E!x\<close>
     moreover AOT_obtain a where abs: \<open>A!a\<close>
       using "o-objects-exist:2"[THEN "qml:2"[axiom_inst, THEN "\<rightarrow>E"]]
@@ -7729,7 +7729,7 @@ proof(rule CP)
     AOT_assume \<open>O!x\<close>
     AOT_hence \<open>\<box>O!x\<close> by (metis "oa-facts:1" "vdash-properties:10")
     moreover {
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_have \<open>O!x \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
         proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
           AOT_assume \<open>O!x\<close>
@@ -7749,7 +7749,7 @@ proof(rule CP)
     AOT_assume \<open>O!y\<close>
     AOT_hence \<open>\<box>O!y\<close> by (metis "oa-facts:1" "vdash-properties:10")
     moreover {
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_have \<open>O!y \<rightarrow> (x = y \<equiv> x =\<^sub>E y)\<close>
         proof (rule "\<rightarrow>I"; rule "\<equiv>I"; rule "\<rightarrow>I")
           AOT_assume \<open>O!y\<close>
@@ -7789,13 +7789,13 @@ proof (rule "safe-ext[2]"[axiom_inst, THEN "\<rightarrow>E"]; rule "&I")
 next
   AOT_show \<open>\<box>\<forall>x\<forall>y ([O!]x & [O!]y & x =\<^sub>E y \<equiv> [O!]x & [O!]y & x = y)\<close>
   proof (rule RN; rule GEN; rule GEN; rule "\<equiv>I"; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_show \<open>[O!]x & [O!]y & x = y\<close> if \<open>[O!]x & [O!]y & x =\<^sub>E y\<close> for x y
         by (metis "&I" "&E"(1) "Conjunction Simplification"(2) "=E-simple:2"
                   "modus-tollens:1" "raa-cor:1" that)
     }
   next
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_show \<open>[O!]x & [O!]y & x =\<^sub>E y\<close> if \<open>[O!]x & [O!]y & x = y\<close> for x y
         apply(safe intro!: "&I")
           apply (metis that[THEN "&E"(1), THEN "&E"(1)])
@@ -8090,7 +8090,7 @@ proof(rule CP)
   AOT_hence \<open>\<box>\<box>\<phi>{G}\<close> by (metis "S5Basic:6" "\<equiv>E"(1))
   moreover AOT_have \<open>\<box>\<box>\<phi>{G} \<rightarrow> \<box>(\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G] \<equiv> \<phi>{G})\<close>
   proof (rule RM; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume 1: \<open>\<box>\<phi>{G}\<close>
       AOT_hence \<open>\<^bold>\<iota>x(A!x & \<forall>F (x[F] \<equiv> \<phi>{G}))[G]\<close>
         using "Box-desc-encode:1" "\<rightarrow>E" by blast
@@ -8607,7 +8607,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   AOT_hence \<open>\<box>[\<lambda>x \<phi>{x}]\<down>\<close> by (metis "exist-nec" "vdash-properties:10")
   moreover AOT_have \<open>\<box>[\<lambda>x \<phi>{x}]\<down> \<rightarrow> \<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (\<phi>{x} \<equiv> \<phi>{y}))\<close>
   proof (rule "RM:1"; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x y
       AOT_assume 0: \<open>[\<lambda>x \<phi>{x}]\<down>\<close>
       moreover AOT_assume \<open>\<forall>F([F]x \<equiv> [F]y)\<close>
@@ -8623,7 +8623,7 @@ next
   AOT_have \<open>\<box>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (\<phi>{x} \<equiv> \<phi>{y})) \<rightarrow>
             \<box>\<forall>y(\<exists>x(\<forall>F([F]x \<equiv> [F]y) & \<phi>{x}) \<equiv> \<phi>{y})\<close>
   proof(rule "RM:1"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<forall>y(\<forall>F([F]x \<equiv> [F]y) \<rightarrow> (\<phi>{x} \<equiv> \<phi>{y}))\<close>
       AOT_hence indisc: \<open>\<phi>{x} \<equiv> \<phi>{y}\<close> if \<open>\<forall>F([F]x \<equiv> [F]y)\<close> for x y
         using "\<forall>E"(2) "\<rightarrow>E" that by blast
@@ -8677,7 +8677,7 @@ proof(rule "\<equiv>I"; rule "\<rightarrow>I")
   moreover AOT_have \<open>\<box>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down> \<rightarrow> \<box>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n
     (\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> (\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n}))\<close>
   proof (rule "RM:1"; rule "\<rightarrow>I"; rule GEN; rule GEN; rule "\<rightarrow>I")
-    AOT_modally_strict {
+    AOT_modally_strict_{
       fix x\<^sub>1x\<^sub>n y\<^sub>1y\<^sub>n :: \<open>'a AOT_var\<close>
       AOT_assume 0: \<open>[\<lambda>x\<^sub>1...x\<^sub>n \<phi>{x\<^sub>1...x\<^sub>n}]\<down>\<close>
       moreover AOT_assume \<open>\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n)\<close>
@@ -8700,7 +8700,7 @@ next
         ((\<exists>x\<^sub>1...\<exists>x\<^sub>n(\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) & \<phi>{x\<^sub>1...x\<^sub>n})) \<equiv>
          \<phi>{y\<^sub>1...y\<^sub>n})\<close>
   proof(rule "RM:1"; rule "\<rightarrow>I"; rule GEN)
-    AOT_modally_strict {
+    AOT_modally_strict_{
       AOT_assume \<open>\<forall>x\<^sub>1...\<forall>x\<^sub>n\<forall>y\<^sub>1...\<forall>y\<^sub>n
         (\<forall>F([F]x\<^sub>1...x\<^sub>n \<equiv> [F]y\<^sub>1...y\<^sub>n) \<rightarrow> (\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n}))\<close>
       AOT_hence indisc: \<open>\<phi>{x\<^sub>1...x\<^sub>n} \<equiv> \<phi>{y\<^sub>1...y\<^sub>n}\<close>
@@ -8877,7 +8877,7 @@ proof(rule "\<rightarrow>I")
     AOT_show \<open>\<box>(\<exists>x [\<Pi>]x \<rightarrow> \<forall>x [\<Pi>]x)\<close>
     proof (rule "rule=E"[rotated, OF \<Pi>_def[symmetric]];
            rule RN; rule "\<rightarrow>I"; rule GEN)
-      AOT_modally_strict {
+      AOT_modally_strict_{
         AOT_assume \<open>\<exists>x [\<lambda>y p]x\<close>
         then AOT_obtain a where \<open>[\<lambda>y p]a\<close> using "\<exists>E"[rotated] by blast
         AOT_hence 0: \<open>p\<close> by (metis "\<beta>\<rightarrow>C"(1))
@@ -8903,7 +8903,7 @@ qed
 
 AOT_theorem "prop-in-f:2": \<open>Impossible([F]) \<rightarrow> Indiscriminate([F])\<close>
 proof (rule "\<rightarrow>I")
-  AOT_modally_strict {
+  AOT_modally_strict_{
     AOT_have \<open>\<forall>x \<not>[F]x \<rightarrow> (\<exists>x [F]x \<rightarrow> \<forall>x [F]x)\<close>
       by (metis "\<exists>E" "cqt-orig:3" "Hypothetical Syllogism" "\<rightarrow>I" "raa-cor:3")
   }

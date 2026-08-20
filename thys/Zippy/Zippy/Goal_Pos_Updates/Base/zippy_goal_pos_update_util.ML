@@ -15,7 +15,7 @@ sig
   val focus_update_comp_gclusters : GCS.gclusters -> GCS.goal_pos gpos_update -> focus_update
 end
 
-functor Zippy_Goal_Pos_Update_Util(
+functor Zippy_Goal_Pos_Update_Util_Functor(
     structure GPU : ZIPPY_GOAL_POS_UPDATE
     structure F : ZIPPY_GOAL_FOCUS
     sharing type F.GCS.gcpos = GPU.GCS.gcpos
@@ -46,6 +46,6 @@ fun focus_update_comp_gclusters gclusters = comp_gclusters_gpos_update gclusters
 end
 end
 
-structure Standard_Zippy_Goal_Pos_Update_Util = Zippy_Goal_Pos_Update_Util(
-  structure GPU = Standard_Zippy_Goal_Pos_Update
-  structure F = Standard_Zippy_Goal_Focus)
+structure Zippy_Goal_Pos_Update_Util = Zippy_Goal_Pos_Update_Util_Functor(
+  structure GPU = Zippy_Goal_Pos_Update
+  structure F = Zippy_Goal_Focus)

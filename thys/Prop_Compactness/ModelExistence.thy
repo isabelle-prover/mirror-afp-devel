@@ -4,16 +4,17 @@
    Departamento de Ciencias de la Computación e Inteligencia Artificial,
    Universidad de Sevilla, Spain, 2012.
    https://idus.us.es/handle/11441/57780.  In Spanish 
-   Last modified: 29 Sep, 2025 *)
+   Last modified: 3 Mar, 2026 *)
 
-(*<*)
+
 theory ModelExistence
 imports FormulaEnumeration
 begin
-(*>*)
+
 section    \<open> Model Existence Theorem  \<close>
 
-text   \<open> This theory formalises the Model Existence Theorem according to Smullyan's textbook \cite{Smullyan} as presented by Fitting in \cite{Fitting}.  \<close>
+text \<open> This theory formalises the Model Existence Theorem according to Smullyan's textbook \cite{Smullyan}
+as presented by Fitting in \cite{Fitting}.\<close>
 
 
 theorem  ExtensionCharacterFiniteP:
@@ -133,8 +134,8 @@ corollary Satisfiable_SetP1:
 proof -
   obtain g where g: "enumeration (g:: nat \<Rightarrow> 'b )" 
     using h0 by auto
-  have "enumeration ((\<Delta>P g):: nat \<Rightarrow> 'b formula)" using g  EnumerationFormulasP1 by auto
-  hence  h'0: "\<exists>g. enumeration (g:: nat \<Rightarrow> 'b formula)" by auto
+  hence  h'0: "\<exists>g. enumeration (g:: nat \<Rightarrow> 'b formula)"
+    using EnumerationFormulasP1 by auto
   show ?thesis using Theo_ExistenceModels[OF h'0 h1 h2] by auto
 qed
 
@@ -142,6 +143,6 @@ corollary Satisfiable_SetP2:
   assumes "consistenceP \<C>" and "(S:: nat formula set) \<in> \<C>"
   shows "satisfiable S"
   using  enum_nat assms Satisfiable_SetP1 by auto 
-(*<*)
+
 end
-(*>*)
+

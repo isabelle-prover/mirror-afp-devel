@@ -1,7 +1,9 @@
 \<^marker>\<open>creator "Kevin Kappelmann"\<close>
 section \<open>ML Theorem Utils\<close>
 theory ML_Theorem_Utils
-  imports ML_Logger
+  imports
+    ML_Logger
+    ML_Term_Utils
 begin
 
 paragraph \<open>Summary\<close>

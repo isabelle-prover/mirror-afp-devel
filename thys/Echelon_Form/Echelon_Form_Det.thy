@@ -81,7 +81,7 @@ lemma det_bezout_iterate:
   assumes ib: "is_bezout_ext bezout"
   and Aik: "A $ i $ from_nat k \<noteq> 0"
   and n: "n<ncols A"
-  shows "det (bezout_iterate A n i (from_nat k) bezout) = det A"
+  shows "matrix_det (bezout_iterate A n i (from_nat k) bezout) = matrix_det A"
   using Aik n
 proof (induct n arbitrary: A)
   case 0
@@ -98,15 +98,15 @@ next
     hence "(bezout_iterate A (Suc n) i (mod_type_class.from_nat k) bezout) 
       = bezout_iterate ?A n i (mod_type_class.from_nat k) bezout"
       unfolding bezout_iterate.simps by auto
-    also have "det (...) = det ?A"
+    also have "matrix_det (...) = matrix_det ?A"
     proof (rule Suc.hyps, rule bezout_matrix_not_zero[OF ib _ Suc.prems(1)])
       show "n < ncols ?A" using Suc.prems(2) unfolding ncols_def by simp
       show "i \<noteq> from_nat (Suc n)" using False
         by (metis Suc.prems(2) eq_imp_le ncols_def to_nat_from_nat_id)
     qed
-    also have "... = det A"
+    also have "... = matrix_det A"
     proof -
-      have "det ?B = 1"
+      have "matrix_det ?B = 1"
       proof (rule det_bezout_matrix[OF ib _  Suc.prems(1)])          
         have "from_nat (to_nat i) < (from_nat (Suc n)::'n)"
         proof (rule from_nat_mono)
@@ -127,9 +127,9 @@ subsubsection\<open>Echelon Form of column k\<close>
 lemma det_echelon_form_of_column_k_det:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  and det: "det_P * det B = det A"
-  shows "fst ((echelon_form_of_column_k_det bezout) (det_P,A,i) k) * det B 
-  = det (fst (snd ((echelon_form_of_column_k_det bezout) (det_P,A,i) k)))"
+  and matrix_det: "det_P * matrix_det B = matrix_det A"
+  shows "fst ((echelon_form_of_column_k_det bezout) (det_P,A,i) k) * matrix_det B 
+  = matrix_det (fst (snd ((echelon_form_of_column_k_det bezout) (det_P,A,i) k)))"
 proof -
   let ?interchange="(interchange_rows A (from_nat i) 
     (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n))"
@@ -142,14 +142,14 @@ proof -
       and Amk: "A $ m $ from_nat k \<noteq> 0"
       and i_not_nrows: "i \<noteq> nrows A "
       and Aik: "A $ from_nat i $ from_nat k = 0"
-    have "det ?B = det ?interchange"
+    have "matrix_det ?B = matrix_det ?interchange"
     proof (rule det_bezout_iterate[OF ib])
       show "?interchange $ from_nat i $ from_nat k \<noteq> 0" 
         by (metis (mono_tags, lifting) Amk LeastI_ex 
           dual_order.strict_iff_order i interchange_rows_i)
       show "nrows A - Suc 0 < ncols ?interchange"  unfolding nrows_def ncols_def by simp
     qed
-    also have "... = - det A" 
+    also have "... = - matrix_det A" 
     proof (rule det_interchange_different_rows, rule ccontr, simp)
       assume i_least: "from_nat i = (LEAST n. A $ n $ from_nat k \<noteq> 0 \<and> from_nat i \<le> n)"
       have "A $ from_nat i $ from_nat k \<noteq> 0"
@@ -157,19 +157,19 @@ proof -
           linear i i_least leD)
       thus "False" using Aik by contradiction
     qed    
-    finally show "- det A = det ?B" by simp
+    finally show "- matrix_det A = matrix_det ?B" by simp
   next
     assume i: "i \<noteq> nrows A"
       and Aik: "A $ from_nat i $ from_nat k \<noteq> 0"
-    have "det ?B = det ?interchange"
+    have "matrix_det ?B = matrix_det ?interchange"
     proof (rule det_bezout_iterate[OF ib])
       show "?interchange $ from_nat i $ from_nat k \<noteq> 0"
         by (metis (mono_tags, lifting) Aik LeastI order_refl interchange_rows_i)    
       show "nrows A - Suc 0 < ncols ?interchange"  unfolding nrows_def ncols_def by simp
     qed
-    also have "... = det A"
+    also have "... = matrix_det A"
       by (rule det_interchange_same_rows, rule Least_equality[symmetric], auto simp add: Aik)
-    finally show "det A = det ?B" ..
+    finally show "matrix_det A = matrix_det ?B" ..
   qed
 qed
 
@@ -207,8 +207,8 @@ lemma snd_echelon_form_of_upt_k_det_eq:
 lemma det_echelon_form_of_upt_k_det:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "fst ((echelon_form_of_upt_k_det bezout) (1::'a,A) k) *  det A 
-  = det (snd ((echelon_form_of_upt_k_det bezout) (1::'a,A) k))"
+  shows "fst ((echelon_form_of_upt_k_det bezout) (1::'a,A) k) *  matrix_det A 
+  = matrix_det (snd ((echelon_form_of_upt_k_det bezout) (1::'a,A) k))"
 proof (induct k)
   case 0 
   show ?case
@@ -233,16 +233,16 @@ subsubsection\<open>Echelon form\<close>
 lemma det_echelon_form_of_det:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "(fst (echelon_form_of_det A bezout)) * det A = det (snd (echelon_form_of_det A bezout))"
+  shows "(fst (echelon_form_of_det A bezout)) * matrix_det A = matrix_det (snd (echelon_form_of_det A bezout))"
   using det_echelon_form_of_upt_k_det ib unfolding echelon_form_of_det_def by simp
 
 subsubsection\<open>Proving that the first component is a unit\<close>
 
 lemma echelon_form_of_column_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
-  assumes det: "is_unit (det_P)"
+  assumes matrix_det: "is_unit (det_P)"
   shows "is_unit (fst ((echelon_form_of_column_k_det bezout) (det_P,A,i) k))"
-  unfolding echelon_form_of_column_k_det_def Let_def fst_conv snd_conv using det by auto
+  unfolding echelon_form_of_column_k_det_def Let_def fst_conv snd_conv using matrix_det by auto
 
 lemma echelon_form_of_upt_k_det_unit:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
@@ -275,13 +275,13 @@ subsubsection\<open>Final lemmas\<close>
 corollary det_echelon_form_of_det':
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
-  * det (snd (echelon_form_of_det A bezout))"
+  shows "matrix_det A = 1 div (fst (echelon_form_of_det A bezout)) 
+  * matrix_det (snd (echelon_form_of_det A bezout))"
 proof -
-  have "(fst (echelon_form_of_det A bezout)) * det A = det (snd (echelon_form_of_det A bezout))"
+  have "(fst (echelon_form_of_det A bezout)) * matrix_det A = matrix_det (snd (echelon_form_of_det A bezout))"
     by (rule det_echelon_form_of_det[OF ib])
-  thus "det A = 1 div (fst (echelon_form_of_det A bezout)) 
-    * det (snd (echelon_form_of_det A bezout))"
+  thus "matrix_det A = 1 div (fst (echelon_form_of_det A bezout)) 
+    * matrix_det (snd (echelon_form_of_det A bezout))"
     by (auto simp add: echelon_form_of_unit dest: sym)
 qed
 
@@ -298,21 +298,21 @@ lemma ef_echelon_form_of_det:
 lemma det_echelon_form:
   fixes A::"'a::{bezout_domain}^'n::{mod_type}^'n::{mod_type}"
   assumes ef: "echelon_form A"
-  shows "det A = prod (\<lambda>i. A $ i $ i) (UNIV:: 'n set)"
+  shows "matrix_det A = prod (\<lambda>i. A $ i $ i) (UNIV:: 'n set)"
   using det_upperdiagonal echelon_form_imp_upper_triagular[OF ef] 
   unfolding upper_triangular_def by blast
 
 corollary det_echelon_form_of_det_prod:
   fixes A::"'a::{bezout_domain_div}^'n::{mod_type}^'n::{mod_type}"
   assumes ib: "is_bezout_ext bezout"
-  shows "det A = 1 div (fst (echelon_form_of_det A bezout)) 
+  shows "matrix_det A = 1 div (fst (echelon_form_of_det A bezout)) 
   * prod (\<lambda>i. snd (echelon_form_of_det A bezout) $ i $ i) (UNIV:: 'n set)"
   using det_echelon_form_of_det'[OF ib]
   unfolding det_echelon_form[OF ef_echelon_form_of_det[OF ib]] by auto
 
 corollary det_echelon_form_of_euclidean[code]:
   fixes A::"'a::{euclidean_ring_gcd}^'n::{mod_type}^'n::{mod_type}"
-  shows "det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
+  shows "matrix_det A = 1 div (fst (echelon_form_of_det A euclid_ext2)) 
   * prod (\<lambda>i. snd (echelon_form_of_det A euclid_ext2) $ i $ i) (UNIV:: 'n set)"
   by (rule det_echelon_form_of_det_prod[OF is_bezout_ext_euclid_ext2])
 

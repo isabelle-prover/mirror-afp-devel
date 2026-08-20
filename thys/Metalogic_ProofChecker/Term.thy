@@ -172,7 +172,7 @@ corollary has_typ1_unique:
 hide_fact typ_of_def
 
 lemma typ_of_def: "typ_of t \<equiv> typ_of1 [] t"
-  by (smt has_typ1_iff_typ_of1 has_typ_def has_typ_iff_typ_of not_None_eq)
+  by (smt (z3) has_typ1_iff_typ_of1 has_typ_def has_typ_iff_typ_of not_None_eq)
 
 text\<open>Loose bound variables\<close>
 
@@ -414,7 +414,7 @@ lemma subst_bv2_subst_bv2:
 proof(induction t arbitrary: i j u v)
   case (Abs s T t)
   then show ?case
-    by (smt Suc_mono add.commute lift_lift lift_subst_bv2_subst_lt plus_1_eq_Suc subst_bv2.simps(2) zero_less_Suc)
+    by (smt (z3) Suc_mono add.commute lift_lift lift_subst_bv2_subst_lt plus_1_eq_Suc subst_bv2.simps(2) zero_less_Suc)
 qed (use subst_bv2_lift in \<open>auto simp add: diff_Suc lift_lift [symmetric] lift_subst_bv2_subst_lt split: nat.split\<close>)
 
 (* Bridging *)
@@ -905,7 +905,7 @@ lemma typ_of_beta_redex_arg: "typ_of (Abs T s $ t) \<noteq> None \<Longrightarro
 
 lemma [partial_function_mono]: "option.mono_body
           (\<lambda>beta_norm. map_option (Abs T) (beta_norm t))"
-  by (smt flat_ord_def fun_ord_def map_option_is_None monotone_def)
+  by (smt (z3) flat_ord_def fun_ord_def map_option_is_None monotone_def)
 lemma [partial_function_mono]: "option.mono_body
           (\<lambda>beta_norm.
               case beta_norm x of None \<Rightarrow> None

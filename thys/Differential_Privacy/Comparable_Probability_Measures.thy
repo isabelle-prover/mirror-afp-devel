@@ -163,7 +163,7 @@ proof(rule AE_upper_bound_inf_ennreal)
       by measurable
     show "?C \<subseteq> ?C"
       by auto
-    have "(1 + ennreal e) * emeasure N ?C = (1 + ennreal e) * \<integral>\<^sup>+ x. indicator ?C x \<partial>N"
+    have "(1 + ennreal e) * emeasure N ?C = (1 + ennreal e) * (\<integral>\<^sup>+ x. indicator ?C x \<partial>N)"
       by auto
     also have "... = \<integral>\<^sup>+ x. (1 + ennreal e)* indicator ?C x \<partial>N"
       by (metis (mono_tags, lifting) calculation measurableA nn_integral_cmult_indicator nn_integral_cong)
@@ -970,11 +970,8 @@ proof-
     by(rule sigma_finite_measure.RN_deriv_unique,auto simp add: P3)
   have "AE x in sum_measure M N. ennreal(dM x + dN x) = (1 :: ennreal)"
     using P1 P2 by auto
-  thus"AE x in sum_measure M N. (dM x + dN x) = (1 :: real)"
-  proof
-    show "AE x in sum_measure M N. ennreal (dM x + dN x) = 1 \<longrightarrow> dM x + dN x = 1"
-      by (metis (mono_tags, lifting) AE_I2 ennreal_eq_1)
-  qed
+  thus "AE x in sum_measure M N. (dM x + dN x) = (1 :: real)"
+    by (smt (verit, del_insts) AE_I2 AE_mp ennreal_eq_1)
 qed
 
 end (* end of locale *)

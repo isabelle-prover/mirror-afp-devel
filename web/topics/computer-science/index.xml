@@ -4,6 +4,16 @@
     <title>Computer science</title>
     <link>https://isa-afp.org/topics/computer-science/</link>
     <description>AFP entries in Computer science</description><item>
+  <title>Dynamic Pushdown Networks</title>
+  <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
+  <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>
+  <description>Dynamic Pushdown Networks in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Automata and formal languages</category>
+    <category>Computer science/Programming languages/Static analysis</category>
+</item>
+<item>
   <title>Stratified Datalog and Program Analysis</title>
   <link>https://isa-afp.org/entries/Stratified_Datalog.html</link>
   <pubDate>Mon, 01 Sep 2025 00:00:00 +0000</pubDate>

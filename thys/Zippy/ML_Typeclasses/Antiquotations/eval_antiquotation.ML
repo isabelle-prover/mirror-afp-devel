@@ -31,6 +31,8 @@ end
 
 signature EVAL_ANTIQUOTATION =
 sig
+  structure FI : FUNCTOR_INSTANCE
+
   structure Data : GENERIC_DATA
   where type T = Eval_Antiquotation_Args.args
 
@@ -54,7 +56,7 @@ sig
   val setup_antiquotation : theory -> theory
 end
 
-functor Eval_Antiquotation(
+functor Eval_Antiquotation_Functor(
     structure FI : FUNCTOR_INSTANCE_BASE
     val init_args : Eval_Antiquotation_Args.args
   ) : EVAL_ANTIQUOTATION =
@@ -79,7 +81,7 @@ val map_parser = map_args o PA.map_parser
 
 fun eval context = get_args context |> EAA.eval
 
-val binding = Binding.make (FI.prefix_id "eval", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 
 val parse_arg_entries =
   let

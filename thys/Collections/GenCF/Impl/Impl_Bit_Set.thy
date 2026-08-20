@@ -282,7 +282,7 @@ export_code
     apply (rule "termination"[of "measure (\<lambda>(n,s). nat (s + 1 - (1<<n)))"])
     apply simp
     apply auto
-    by (smt bin_mask_ge0 bin_mask_p1_conv_shift)
+    by (smt (z3) bin_mask_ge0 bin_mask_p1_conv_shift)
 
 
   partial_function (tailrec) 

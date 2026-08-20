@@ -20,7 +20,7 @@ open Nominal_ThmDecls;
 
 fun atomize_conv ctxt =
   Simplifier.rewrite_cterm (true, false, false) (K (K NONE))
-    (put_simpset HOL_basic_ss ctxt addsimps @{thms induct_atomize})
+    (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms induct_atomize})
 
 fun atomize_intr ctxt = Conv.fconv_rule (Conv.prems_conv ~1 (atomize_conv ctxt))
 
@@ -40,9 +40,9 @@ fun eqvt_rel_single_case_tac ctxt pred_names pi intro =
     SUBPROOF (fn {prems, context = goal_ctxt, ...} =>
       let
         val simps1 =
-          put_simpset HOL_basic_ss goal_ctxt addsimps @{thms permute_fun_def permute_self split_paired_all}
+          goal_ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms permute_fun_def permute_self split_paired_all}
         val simps2 =
-          put_simpset HOL_basic_ss goal_ctxt addsimps @{thms permute_bool_def permute_minus_cancel(2)}
+          goal_ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms permute_bool_def permute_minus_cancel(2)}
         val prems' = map (transform_prem2 goal_ctxt pred_names) prems
         val prems'' = map (fn thm => eqvt_rule goal_ctxt eqvt_sconfig (thm RS pi_intro_rule)) prems'
         val prems''' = map (simplify simps2 o simplify simps1) prems''

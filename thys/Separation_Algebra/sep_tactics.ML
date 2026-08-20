@@ -112,7 +112,7 @@ let
 
   (* simp add: sep_conj_ac *)
   val sep_conj_ac_tac = Simplifier.asm_full_simp_tac
-                          (put_simpset HOL_basic_ss ctxt addsimps SepConj.sep_conj_ac);
+                          (ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps SepConj.sep_conj_ac);
 
 in
   (* XXX: normally you'd want to keep track of what variables we want to make

@@ -59,7 +59,7 @@ subsection \<open>Refinement 1: List with Gap\<close>
       simp: in_br_conv gap_\<alpha>_def gap_invar_def move_left1_def list_update_beyond
       split: prod.splits)
     (* sledgehammer! *)  
-    by (smt Cons_nth_drop_Suc Suc_pred append.assoc append_Cons append_Nil 
+    by (smt (z3) Cons_nth_drop_Suc Suc_pred append.assoc append_Cons append_Nil 
       diff_Suc_less drop_update_cancel hd_drop_conv_nth length_list_update 
       less_le_trans nth_list_update_eq take_hd_drop)  
 

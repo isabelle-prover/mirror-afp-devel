@@ -16,11 +16,6 @@ begin
 notation qpochhammer_inf ("'(_ ; _')\<^sub>\<infinity>")
 end
 
-bundle no_qpochhammer_inf_notation
-begin
-no_notation qpochhammer_inf ("'(_ ; _')\<^sub>\<infinity>")
-end
-
 
 lemma qpochhammer_inf_0_left [simp]: "qpochhammer_inf 0 q = 1"
   by (simp add: qpochhammer_inf_def)

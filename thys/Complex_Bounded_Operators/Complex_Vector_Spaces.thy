@@ -452,7 +452,7 @@ proof (cases "\<psi> \<in> cspan B")
     unfolding r_def
     using True  Real_Vector_Spaces.real_vector.sum_representation_eq[where B = B' and basis = B'
         and v = \<psi>]
-    by (smt Real_Vector_Spaces.dependent_raw_def \<open>\<psi> \<in> Real_Vector_Spaces.span B'\<close> \<open>finite B'\<close>
+    by (smt (z3) Real_Vector_Spaces.dependent_raw_def \<open>\<psi> \<in> Real_Vector_Spaces.span B'\<close> \<open>finite B'\<close>
         equalityD2 k1)
   have d1: "(\<Sum>v\<in>B. r (\<i> *\<^sub>C v) *\<^sub>R (\<i> *\<^sub>C v)) = (\<Sum>v\<in>(*\<^sub>C) \<i> ` B. r v *\<^sub>R v)"
     using l0'
@@ -916,7 +916,7 @@ proof
     by (simp add: a1 a2 bij_is_inj bij_is_surj complex_vector.linear_add inv_f_eq surj_f_inv_f)
   show "inv f (r *\<^sub>C b) = r *\<^sub>C inv f b"
     using that
-    by (smt bij_inv_eq_iff clinear_def complex_vector.linear_scale)
+    by (smt (z3) bij_inv_eq_iff clinear_def complex_vector.linear_scale)
 qed
 
 
@@ -1501,7 +1501,7 @@ proof -
   have w5:"(\<Sum>b | (b \<in> B \<longrightarrow> x b \<noteq> 0) \<and> b \<in> B. x b *\<^sub>R b) =
     (\<Sum>b\<in>B. x b *\<^sub>R b)" for x
     using \<open>finite B\<close>
-    by (smt DiffD1 DiffD2 mem_Collect_eq real_vector.scale_eq_0_iff subset_eq sum.mono_neutral_left)
+    by (smt (z3) DiffD1 DiffD2 mem_Collect_eq real_vector.scale_eq_0_iff subset_eq sum.mono_neutral_left)
   have "representation B (\<Sum>b\<in>B. x b *\<^sub>R b) =  (\<lambda>b. if b \<in> B then x b else 0)"
     for x
   proof (rule real_vector.representation_eqI)
@@ -1604,7 +1604,7 @@ proof -
       by simp
     hence "repr' (comb' x) = 0"
       unfolding repr'_def o_def repr_def apply simp
-      by (smt repr'_comb' blin_comb' dist_0_norm linear_simps(3) mem_sphere norm_zero x)
+      by (smt (z3) repr'_comb' blin_comb' dist_0_norm linear_simps(3) mem_sphere norm_zero x)
     hence "x = 0"
       by auto
     with x show False
@@ -1674,7 +1674,7 @@ proof -
   qed
   hence "norm (repr \<psi> b) \<le> norm \<psi> * D" for \<psi>
     unfolding repr'_def
-    by (smt \<open>comb' \<equiv> \<lambda>l. comb (Rep_euclidean_space l \<circ> abs)\<close>
+    by (smt (z3) \<open>comb' \<equiv> \<lambda>l. comb (Rep_euclidean_space l \<circ> abs)\<close>
         \<open>repr' \<equiv> \<lambda>\<psi>. Abs_euclidean_space (repr \<psi> \<circ> rep)\<close> comb'_repr' comp_apply norm_le_zero_iff
         repr_bad repr_comb)
   thus "\<exists>D>0. \<forall>\<psi>. norm (repr \<psi> b) \<le> norm \<psi> * D"
@@ -1834,7 +1834,7 @@ proof (cases "B\<noteq>{}")
   with Dbound
   have "norm (repr \<psi> b) \<le> norm \<psi> * Dall" if "b\<in>B" for b \<psi>
     using that
-    by (smt mult_left_mono norm_not_less_zero)
+    by (smt (z3) mult_left_mono norm_not_less_zero)
   moreover have "norm (repr \<psi> b) \<le> norm \<psi> * Dall" if "b\<notin>B" for b \<psi>
     unfolding repr_def using real_vector.representation_ne_zero True
     by (metis calculation empty_subsetI less_le_trans local.repr_def norm_ge_zero norm_zero not_less
@@ -1934,7 +1934,7 @@ proof -
     hence "crepresentation B \<psi> b = 0"
       using complex_vector.representation_ne_zero by blast
     thus ?thesis
-      by (smt \<open>0 < D\<close> norm_ge_zero norm_zero split_mult_pos_le)
+      by (smt (z3) \<open>0 < D\<close> norm_ge_zero norm_zero split_mult_pos_le)
   qed
   with \<open>D > 0\<close>
   show ?thesis
@@ -1995,7 +1995,7 @@ proof -
       by (simp add: sum_mono mult_right_mono)
     also have "\<dots> \<le> \<parallel>x\<parallel> * C * (\<Sum>a\<in>basis. \<parallel>f a\<parallel>)"
       using sum_distrib_left
-      by (smt sum.cong)
+      by (smt (z3) sum.cong)
     also have "\<dots> = \<parallel>x\<parallel> * M"
       unfolding M_def
       by linarith
@@ -2205,7 +2205,7 @@ proof -
     by (metis (mono_tags, lifting) complex_vector.subspace_0)
   ultimately show ?thesis
     unfolding C_def complex_vector.subspace_def
-    by (smt mem_Collect_eq set_plus_elim set_plus_intro)
+    by (smt (z3) mem_Collect_eq set_plus_elim set_plus_intro)
 qed
 
 lemma closed_csubspace_0[simp]:
@@ -2495,7 +2495,7 @@ qed
 
 lemma cspan_singleton_scaleC[simp]: "(a::complex)\<noteq>0 \<Longrightarrow> cspan { a *\<^sub>C \<psi> } = cspan {\<psi>}"
   for \<psi>::"'a::complex_vector"
-  by (smt complex_vector.dependent_single complex_vector.independent_insert
+  by (smt (z3) complex_vector.dependent_single complex_vector.independent_insert
       complex_vector.scale_eq_0_iff complex_vector.span_base complex_vector.span_redundant
       complex_vector.span_scale doubleton_eq_iff insert_absorb insert_absorb2 insert_commute
       singletonI)

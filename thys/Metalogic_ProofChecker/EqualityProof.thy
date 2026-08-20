@@ -589,7 +589,7 @@ proof-
     using eq proved_terms_well_formed wt_term_def typ_of1_split_App typ_of_def
     by (meson term_ok_mk_eqD)+
   obtain \<tau> where \<tau>1: "typ_of (Abs_fv x \<tau>' s) = Some (\<tau>' \<rightarrow> \<tau>)"
-    by (smt eq proved_terms_well_formed_pre typ_of1_split_App_obtains typ_of_Abs_body_typ' typ_of_def)
+    by (smt (z3) eq proved_terms_well_formed_pre typ_of1_split_App_obtains typ_of_Abs_body_typ' typ_of_def)
   hence \<tau>2: "typ_of (Abs_fv x \<tau>' t) = Some (\<tau>' \<rightarrow> \<tau>)"
     by (metis eq(1) proved_terms_well_formed(2) term_ok_mk_eq_same_typ thy)
 
@@ -922,10 +922,10 @@ proof-
   have abs_ok: "term_ok \<Theta> (Abs \<tau>' s)" "term_ok \<Theta> (Abs \<tau>' t)"
     using eq(1) option.distinct(1) proved_terms_well_formed term_ok'.simps(4)
         wt_term_def typ_of1_split_App typ_of_def 
-    by (smt term_ok_mk_eqD)+
+    by (smt (z3) term_ok_mk_eqD)+
 
   obtain \<tau> where \<tau>1: "typ_of (Abs \<tau>' s) = Some (\<tau>' \<rightarrow> \<tau>)"
-    by (smt eq proved_terms_well_formed_pre typ_of1_split_App_obtains typ_of_Abs_body_typ' typ_of_def)
+    by (smt (z3) eq proved_terms_well_formed_pre typ_of1_split_App_obtains typ_of_Abs_body_typ' typ_of_def)
   hence \<tau>2: "typ_of (Abs \<tau>' t)= Some (\<tau>' \<rightarrow> \<tau>)"
     by (metis eq(1) proved_terms_well_formed(2) term_ok_mk_eq_same_typ thy)
 
@@ -1324,7 +1324,7 @@ using eta term_ok' free proof(induction t u arbitrary: vs rule: eta.induct)
 
   obtain \<tau> where "typ_of (Abs T (subst_bvs1' (s $ Bv 0) 1 (map (case_prod Fv) vs))) = Some (T \<rightarrow> \<tau>)"
     using eta.prems(1) simp wt_term_def typ_of_Abs_body_typ'
-    by (smt has_typ_iff_typ_of typ_of_def term_ok_def)
+    by (smt (z3) has_typ_iff_typ_of typ_of_def term_ok_def)
   hence ty: "typ_of (subst_bvs1' s 1 (map (case_prod Fv) vs)) = Some (T \<rightarrow> \<tau>)"
     using eta.eta eta_preserves_typ_of is_closed_decr_unchanged not_dependent
         ok simp simp' wt_term_def typ_of_imp_closed
@@ -1352,7 +1352,7 @@ next
   moreover obtain \<tau>' where "typ_of 
     (subst_bvs (map (case_prod Fv) vs) s) = Some (\<tau> \<rightarrow> \<tau>')"
     using \<tau> appL.prems(1) not_None_eq subst_bvs_App wt_term_def typ_of1_arg_typ typ_of_def
-    by (smt has_typ_iff_typ_of typ_of_def term_ok_def)
+    by (smt (z3) has_typ_iff_typ_of typ_of_def term_ok_def)
   ultimately show ?case 
     using proves_eq_combination_rule_better thy finite ctxt by simp
 next
@@ -1527,7 +1527,7 @@ proof(cases "is_Abs B")
   from this obtain t T where Abs: "B = Abs T t"
     using is_Abs_def by auto
   have "T = \<tau>"
-    by (smt Abs all list.inject proved_terms_well_formed(1) typ.inject(1) typ_of1.simps(1) 
+    by (smt (z3) Abs all list.inject proved_terms_well_formed(1) typ.inject(1) typ_of1.simps(1) 
         typ_of_Abs_body_typ' typ_of_def typ_of_fun)
   then show ?thesis
     using True Abs all a by (auto intro: forall_elim[where \<tau>=\<tau>])

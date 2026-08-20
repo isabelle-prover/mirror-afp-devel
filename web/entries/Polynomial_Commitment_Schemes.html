@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Polynomial Commitment Schemes - Archive of Formal Proofs</title>
+    <meta name="description" content="Polynomial Commitment Schemes in the Archive of Formal Proofs">
+    <meta property="og:description" content="Polynomial Commitment Schemes in the Archive of Formal Proofs">
+    <meta property="og:title" content="Polynomial Commitment Schemes">
+    <meta property="og:url" content="https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>P</span>olynomial <span class='first'>C</span>ommitment <span class='first'>S</span>chemes
+  </h1>
+  <div>
+      <p><a href="../authors/rothmann/">Tobias Rothmann</a> <a class="obfuscated" data="eyJ1c2VyIjpbInRvYmlhcyIsInJvdGhtYW5uIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
+      </p>
+      <p class="date">July 13, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry formalizes polynomial commitment schemes (PCSs) and the security proofs of two variants of the Kate–Zaverucha–Goldberg (KZG) construction. We define an abstract PCS interface and games for correctness, polynomial binding, evaluation binding, hiding, and knowledge soundness. We also formalize symmetric pairings, the DL, $t$-DL, $t$-SDH, and $t$-BSDH assumptions, and the Algebraic Group Model (AGM) of Fuchsbauer, Kiltz, and Loss using a constraint-programming-inspired approach. Based on these definitions, we verify correctness, polynomial binding, evaluation binding, and knowledge soundness for the standard and batched KZG constructions, as well as weak evaluation hiding for the standard KZG. The security proofs are carried out in the CryptHOL framework and follow Shoup's sequence-of-games approach with machine-checked game transitions.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/security/cryptography/">Computer science/Security/Cryptography</a></li>
+      </ul>
+      <h3>Session Polynomial_Commitment_Schemes</h3>
+      <ul>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/Pairing.html">Pairing</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/Primitives.html">Primitives</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/DL_assumption.html">DL_assumption</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/tDL_assumption.html">tDL_assumption</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/tSDH_assumption.html">tSDH_assumption</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/tBSDH_assumption.html">tBSDH_assumption</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/Polynomial_Commitment_Schemes.html">Polynomial_Commitment_Schemes</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/Restrictive_Comp.html">Restrictive_Comp</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/Algebraic_Group_Model.html">Algebraic_Group_Model</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_def.html">KZG_def</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_correct.html">KZG_correct</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/CryptHOL_ext.html">CryptHOL_ext</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_poly_bind.html">KZG_poly_bind</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_eval_bind.html">KZG_eval_bind</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_knowledge_sound.html">KZG_knowledge_sound</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/KZG_hiding.html">KZG_hiding</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/BatchKZG_def.html">BatchKZG_def</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/BatchKZG_correct.html">BatchKZG_correct</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/BatchKZG_poly_bind.html">BatchKZG_poly_bind</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/BatchKZG_eval_bind.html">BatchKZG_eval_bind</a></li>
+          <li><a href="../thys/Polynomial_Commitment_Schemes/BatchKZG_knowledge_sound.html">BatchKZG_knowledge_sound</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Berlekamp_Zassenhaus.html">The Factorization Algorithm of Berlekamp and Zassenhaus</a></li>
+              <li><a href="../entries/CryptHOL.html">CryptHOL</a></li>
+              <li><a href="../entries/Elimination_Of_Repeated_Factors.html">Elimination of Repeated Factors Algorithm</a></li>
+              <li><a href="../entries/Polynomial_Interpolation.html">Polynomial Interpolation</a></li>
+              <li><a href="../entries/Sigma_Commit_Crypto.html">Sigma Protocols and Commitment Schemes</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Polynomial_Commitment_Schemes/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Polynomial_Commitment_Schemes/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Polynomial_Commitment_Schemes/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Polynomial_Commitment_Schemes-AFP</p>
+        <pre id="copy-text">@article{Polynomial_Commitment_Schemes-AFP,
+  author  = {Tobias Rothmann},
+  title   = {Polynomial Commitment Schemes},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Polynomial_Commitment_Schemes.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Polynomial_Commitment_Schemes-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

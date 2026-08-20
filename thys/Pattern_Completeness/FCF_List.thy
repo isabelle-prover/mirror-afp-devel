@@ -147,6 +147,10 @@ fun sort_of :: "('f \<times> 's,'v \<times> 's)term \<Rightarrow> 's" where
   "sort_of (Fun (f,s) ts) = s" 
 | "sort_of (Var (x,s)) = s" 
 
+lemma sort_of_Var [simp]:
+  \<open>sort_of (Var x_s) = snd x_s\<close>
+  by (cases x_s) simp
+
 fun list_Union :: "'a set list \<Rightarrow> 'a set" where
   "list_Union [] = {}" 
 | "list_Union (x # xs) = x \<union> list_Union xs" 
@@ -360,7 +364,7 @@ fun simplify_tpp :: "('f,'s)tagged_simple_pat_problem_slist \<Rightarrow> ('f,'s
 | "simplify_tpp (False, p) = map_option (Pair True) (simplify_pp p)"
 
 definition s\<tau>c :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> 'f \<times> 's list \<Rightarrow> ('f \<times> 's,nat \<times> 's)subst" where 
-  "s\<tau>c n x = (\<lambda>(f,ss). subst x (Fun (f,snd x) (map Var (zip [n ..< n + length ss] ss))))"
+  "s\<tau>c n x = (\<lambda>(f,ss). subst x (Fun (f,snd x) (map Var (indexed_from n ss))))"
 
 definition s\<tau>s_list :: "nat \<Rightarrow> nat \<times> 's \<Rightarrow> ('f \<times> 's,nat \<times> 's)subst list" where
   "s\<tau>s_list n x = map (s\<tau>c n x) (Cl (snd x))"
@@ -373,14 +377,13 @@ proof -
   have "add_sort (t \<cdot> \<tau>c n x (f,ss)) = add_sort t \<cdot> s\<tau>c n x (f,ss) \<and> sort_of (add_sort t \<cdot> s\<tau>c n x (f,ss)) = sort_of (add_sort t)" 
   proof (induct)
     case (Fun g ts)
-    thus ?case apply (auto simp: o_def) 
+    thus ?case apply (auto simp: o_def)
        apply (smt (verit, best) length_map list_all2_conv_all_nth list_eq_iff_nth_eq nth_map)
       by (smt (verit, del_insts) in_set_conv_nth list_all2_conv_all_nth)
   next
     case (Var y s)
-    thus ?case using assms(1) apply (cases x, auto simp: s\<tau>c_def \<tau>c_def subst_def o_def split: prod.splits)
-      by (metis (no_types, lifting) ext enumerate_eq_zip fun_hastype_def map_snd_enumerate option.sel
-          sort_of.simps(2) surjective_pairing)
+    with assms(1) show ?case
+      by (auto simp: s\<tau>c_def \<tau>c_def subst_def o_def dest: fun_hastypeD split: prod.splits)
   qed
   thus ?thesis by auto
 qed
@@ -1070,8 +1073,8 @@ proof -
     fix t eqc mp \<tau>
     assume t: "t \<in> set eqc" "eqc \<in> set mp" "mp \<in> set p" and tau: "\<tau> \<in> set (\<tau>s_list n x)" 
     from t assms(3) have "fst ` vars t \<subseteq> {..<n}" by fastforce
-    with tau m have "fst ` vars (t \<cdot> \<tau>) \<subseteq> {..<n} \<union> {..<n+m}" unfolding \<tau>s_list \<tau>s_def \<tau>c_def
-      by (auto simp: subst_def vars_term_subst split: if_splits simp: set_zip) (fastforce+)
+    with tau have "fst ` vars (t \<cdot> \<tau>) \<subseteq> {..<n} \<union> {..<n+m}"
+      by (auto simp add: \<tau>s_list \<tau>s_def \<tau>c_def subst_def vars_term_subst in_set_indexed_from_eq dest!: m split: if_splits simp: set_zip)
     hence "fst ` vars (t \<cdot> \<tau>) \<subseteq> {..< n + m}" by auto
   } note vars = this    
   show ?thesis 

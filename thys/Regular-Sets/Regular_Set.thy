@@ -93,6 +93,49 @@ by (fastforce simp: Cons_eq_append_conv append_eq_Cons_conv
        conc_Diff_if_Nil1 conc_Diff_if_Nil2)
 
 
+lemma if_finite_conc1:
+  assumes "finite (L1 @@ L2)" "L2 \<noteq> {}"
+  shows "finite L1"
+proof -
+  have "finite L1" if asm: "finite (L1 @@ {y})" for y
+  proof -
+    have "L1 @@ {y} = (\<lambda>x. x@y) ` L1"
+      unfolding conc_def by auto
+    with finite_image_iff[of "\<lambda>x. x @ y" L1] show ?thesis
+      unfolding inj_on_def using asm by auto
+  qed
+  moreover have "L1 @@ L2 = (\<Union>y \<in> L2. L1 @@ {y})"
+    unfolding conc_def by auto
+  ultimately show ?thesis using assms
+    by (metis UN_insert Un_infinite ex_in_conv insert_absorb)
+qed
+
+lemma if_finite_conc2: assumes "finite (L1 @@ L2)" "L1 \<noteq> {}" shows "finite L2"
+proof -
+  have "finite L2" if asm: "finite ({x} @@ L2)" for x
+  proof -
+    have "{x} @@ L2 = (\<lambda>y. x@y) ` L2"
+      unfolding conc_def by auto
+    with finite_image_iff[of "\<lambda>y. x @ y" L2] show ?thesis
+      unfolding inj_on_def using asm by auto
+  qed
+  moreover have "L1 @@ L2 = (\<Union>x \<in> L1. {x} @@ L2)"
+    unfolding conc_def by auto
+  ultimately show ?thesis using assms
+    by (metis UN_insert Un_infinite ex_in_conv insert_absorb)
+qed
+
+lemma finite_conc_if: assumes "finite L1" "finite L2" shows "finite (L1 @@ L2)"
+proof -
+  have "finite (L1 \<times> L2)"
+    using assms by simp
+  moreover have "L1 @@ L2 = (\<lambda>(x,y). x@y) ` (L1 \<times> L2)"
+    unfolding conc_def by auto
+  ultimately show ?thesis
+    by simp
+qed
+
+
 subsection\<open>@{term "A ^^ n"}\<close>
 
 lemma lang_pow_mono:
@@ -180,6 +223,17 @@ proof -
   with \<open>w : star A\<close> show "P w" by (auto simp: star_def)
 qed
 
+lemma star_rev_induct[consumes 1, case_names Nil append]:
+assumes "w : star A"
+  and "P []"
+  and step: "!!u v. v : A \<Longrightarrow> u : star A \<Longrightarrow> P u \<Longrightarrow> P (u@v)"
+shows "P w"
+proof -
+  { fix n have "w : A ^^ n \<Longrightarrow> P w"
+    by (induct n arbitrary: w) (auto simp: conc_pow_comm intro: \<open>P []\<close> step star_if_lang_pow) }
+  with \<open>w : star A\<close> show "P w" by (auto simp: star_def)
+qed
+
 lemma star_empty[simp]: "star {} = {[]}"
 by (auto elim: star_induct)
 
@@ -245,6 +299,11 @@ lemma star_decom:
   shows "\<exists>a b. x = a @ b \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"
 using a by (induct rule: star_induct) (blast)+
 
+lemma star_decom2: 
+  assumes a: "x \<in> star A" "x \<noteq> []"
+  shows "\<exists>a b. x = b @ a \<and> a \<noteq> [] \<and> a \<in> A \<and> b \<in> star A"
+using a by (induct rule: star_rev_induct) (blast)+
+
 lemma star_pow:
   "s \<in> star A \<Longrightarrow>\<exists>n. s \<in> A ^^ n"
 proof(induction rule: star_induct)
@@ -253,6 +312,18 @@ proof(induction rule: star_induct)
 next
   case (append u v)
   then show ?case using lang_pow.simps(2) by blast
+qed
+
+lemma star_image_single: "star ((\<lambda>s. [s]) ` M) = {w. set w \<subseteq> M}"
+  unfolding star_conv_concat
+proof
+  show "{concat ws |ws. set ws \<subseteq> (\<lambda>s. [s]) ` M} \<subseteq> {w. set w \<subseteq> M}"
+    by(fastforce)
+next
+  have "concat (map (\<lambda>s. [s]) w) = w \<and> set (map (\<lambda>s. [s]) w) \<subseteq> (\<lambda>s. [s]) ` M" if "set w \<subseteq> M" for w
+    using that by(auto simp add: concat_map_singleton[of "\<lambda>x. x"])
+  thus "{w. set w \<subseteq> M} \<subseteq> {concat ws |ws. set ws \<subseteq> (\<lambda>s. [s]) ` M}"
+    by (metis (mono_tags, lifting) Collect_mono)
 qed
 
 

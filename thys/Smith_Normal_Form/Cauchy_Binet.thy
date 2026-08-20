@@ -95,7 +95,7 @@ next
   proof (cases "i = a'")
     case True
     have "(sorted_list_of_set I) ! i > a"
-      by (smt "1" Suc_less_eq True a_def a_notin_I distinct_card distinct_sorted_list_of_set finI i2
+      by (smt (z3) "1" Suc_less_eq True a_def a_notin_I distinct_card distinct_sorted_list_of_set finI i2
           ia' index_a' insort_nth2 length_insort lessI list.size(3) nat_less_le not_less_zero
           pick_in_set_le set_sorted_list_of_set sorted_list_of_set(2)
           sorted_list_of_set_insert
@@ -458,7 +458,7 @@ proof -
   have "(\<Sum>\<pi> | \<pi> permutes {0..<n}. (\<Sum>f\<in>F. prod (\<lambda>i. B $$ (f i, i)) {0..<n}
       * (signof \<pi> * (\<Prod>i = 0..<n. A $$ (\<pi> i, f i))))) =
     (\<Sum>\<pi> | \<pi> permutes {0..<n}. \<Sum>f\<in>F. signof \<pi> * (\<Prod>i = 0..<n. B $$ (f i, i) * A $$ (\<pi> i, f i)))"
-    by (smt mult.left_commute prod.cong prod.distrib sum.cong)
+    by (smt (z3) mult.left_commute prod.cong prod.distrib sum.cong)
   also have "... = (\<Sum>\<pi> | \<pi> permutes {0..<n}. \<Sum>f\<in>F. signof (Hilbert_Choice.inv \<pi>)
     * (\<Prod>i = 0..<n. B $$ (f i, i) * A $$ (Hilbert_Choice.inv \<pi> i, f i)))"
     by (rule sum_permutations_inverse)
@@ -523,7 +523,7 @@ proof -
   qed (simp)
   also have "... = (\<Sum>\<pi> | \<pi> permutes {0..<n}. \<Sum>f\<in>F. (\<Prod>i = 0..<n. B $$ (f i, \<pi> i))
   * (signof \<pi> * (\<Prod>i = 0..<n. A $$ (i, f i))))"
-    by (smt mult.left_commute prod.cong prod.distrib sum.cong)
+    by (smt (z3) mult.left_commute prod.cong prod.distrib sum.cong)
   finally show ?thesis .
 qed
 
@@ -1391,7 +1391,7 @@ proof -
           sorted_list_of_set(3) sorted_list_of_set_eq_pick subsetCE)
     moreover have "strict_mono_on {0..<card I} (\<lambda>i. if i < card I then sorted_list_of_set I ! i else i)"
       if "I \<subseteq> {0..<m}" and "n = card I" for I
-      by (smt \<open>I \<subseteq> {0..<m}\<close> atLeastLessThan_iff distinct_card finite_atLeastLessThan pick_mono_le
+      by (smt (z3) \<open>I \<subseteq> {0..<m}\<close> atLeastLessThan_iff distinct_card finite_atLeastLessThan pick_mono_le
           rev_finite_subset sorted_list_of_set(1) sorted_list_of_set(3)
           sorted_list_of_set_eq_pick strict_mono_on_def)
     moreover have "x \<in> ?f ` {I. I \<subseteq> {0..<m} \<and> card I = n}"

@@ -87,7 +87,7 @@ local
 in
 val parse_attribute = gen_parse_attribute Asm.parse_attribute Concl.parse_attribute
 
-val binding = Binding.make (FI.prefix_id "subst", FI.pos)
+val binding = Binding.make (FI.id, FI.pos)
 val setup_attribute = gen_setup_attribute binding "subst" parse_attribute
 
 val parse_method = gen_parse_method Asm.parse_entry_context_update Concl.parse_entry_context_update

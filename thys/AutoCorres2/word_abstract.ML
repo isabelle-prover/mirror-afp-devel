@@ -314,8 +314,8 @@ fun wa_corres_normal_form ctxt thm =
     |> extract_preconds_of_call_in_prems
     |> rotate_abstract_val_first_in_prems
     |> Conv.fconv_rule ( 
-         (Simplifier.asm_full_rewrite (put_simpset HOL_basic_ss ctxt 
-           addsimps ([conj_True_simp] @ @{thms id_tuple_unfold}))))
+         (Simplifier.asm_full_rewrite (ctxt |> put_simpset HOL_basic_ss
+           |> Simplifier.add_simps (conj_True_simp :: @{thms id_tuple_unfold}))))
 
 
 val assumption_thm = @{lemma "P \<Longrightarrow> P" by simp}
@@ -469,7 +469,7 @@ fun mk_corresTA_fun_ptr_thm prog_info (rec_funs, rec_ptrs) ctxt ((P_prev as Cons
          EVERY [
            Method.insert_tac ctxt [impl, abs_val] 1,
            resolve_tac ctxt @{thms corresTA_assume_and_weaken_pre} 1,
-           asm_full_simp_tac (ctxt addsimps @{thms abstract_val_def} delsimps @{thms map_of_default.simps}) 1,
+           asm_full_simp_tac (ctxt |> Simplifier.add_simps @{thms abstract_val_def} |> Simplifier.del_simps @{thms map_of_default.simps}) 1,
            resolve_tac ctxt [Local_Defs.unfold ctxt @{thms DYN_CALL_def} corres_pre] 1,
            asm_full_simp_tac ctxt 1])
      |> single |> Proof_Context.export ctxt' ctxt
@@ -572,7 +572,7 @@ let
         |> Utils.apply_tac lthy'' "move precond to assumption" (resolve_tac lthy'' @{thms corresTA_precond_to_asm} 1)
         |> Utils.apply_tac lthy'' "split precond" (REPEAT (CHANGED (eresolve_tac lthy'' @{thms conjE} 1)))
         |> Utils.apply_tac lthy'' "remove abs_var p id p'" 
-             (asm_full_simp_tac (put_simpset HOL_ss lthy'' addsimps  @{thms abs_var_id_unit_ptr}) 1) 
+             (asm_full_simp_tac (lthy'' |> put_simpset HOL_ss |> Simplifier.add_simps @{thms abs_var_id_unit_ptr}) 1) 
         |> Utils.apply_tac lthy'' "create schematic precond" (resolve_tac lthy'' @{thms corresTA_precond_to_guard} 1) 
         |> Utils.apply_tac lthy'' "unfold RHS" (CHANGED (Utils.unfold_once_tac lthy'' old_body_def 1))
     val more_corres = Named_Theorems.get lthy'' @{named_theorems wa_corres} |> map (wa_corres_normal_form lthy'') 
@@ -654,7 +654,7 @@ let
       Conv.fconv_rule (
         corresTA_abs_conv (fn ctxt =>
           (Simplifier.rewrite (
-                put_simpset HOL_basic_ss ctxt addsimps @{thms id_def fun_app_def}))
+                ctxt |> put_simpset HOL_basic_ss |> Simplifier.add_simps @{thms id_def fun_app_def}))
         )
       ) thm
 

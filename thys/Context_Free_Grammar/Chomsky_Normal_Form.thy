@@ -1013,8 +1013,8 @@ proof -
   let ?ps1 = "eps_elim ps" let ?ps2 = "unit_elim ?ps1"
   let ?ps3 = "uniformize S ?ps2" let ?ps4 = "binarize S ?ps3"
   have "eps_free ?ps1" by (rule eps_free_eps_elim)
-  hence "eps_free ?ps2" by (meson unit_elim_correct Unit_elim_rel_Eps_free)
-  have "Unit_free(set ?ps2)" by (metis unit_elim_correct Unit_free_if_Unit_elim_rel)
+  hence "eps_free ?ps2" by (metis Unit_elim_set Unit_elim_Eps_free)
+  have "Unit_free(set ?ps2)" by (metis Unit_Free_Unit_elim Unit_elim_set)
   have "eps_free ?ps3" by(rule eps_free_uniformize[OF \<open>eps_free ?ps2\<close>])
   have "Unit_free(set ?ps3)" by (rule Unit_free_uniformize[OF \<open>Unit_free(set ?ps2)\<close>])
   have "uniform (set ?ps3)" by (rule uniform_uniformize)
@@ -1059,7 +1059,7 @@ lemma cnf_length_derive2:
   shows "length \<alpha> \<ge> 2"
 proof -
   obtain u v where uv: "P \<turnstile> [Nt A] \<Rightarrow>* u \<and> P \<turnstile> [Nt B] \<Rightarrow>* v \<and> \<alpha> = u @ v"
-    using assms(2) derives_append_decomp[of P \<open>[Nt A]\<close> \<open>[Nt B]\<close> \<alpha>] by auto
+    using assms(2) derives_appendD[of P \<open>[Nt A]\<close> \<open>[Nt B]\<close> \<alpha>] by auto
   hence "length u \<ge> 1 \<and> length v \<ge> 1" 
     using cnf_length_derive[OF assms(1)] by blast
   thus ?thesis
@@ -1114,7 +1114,7 @@ proof -
   hence "\<not>(P \<turnstile> [Nt A] \<Rightarrow>* []) \<and> \<not>(P \<turnstile> [Nt B] \<Rightarrow>* [])"
     using assms(1) CNF_eq Eps_free_derives_Nil by blast
   from this obtain u v where uv: "P \<turnstile> [Nt A] \<Rightarrow>* u \<and> P \<turnstile> [Nt B] \<Rightarrow>* v \<and> u@v = map Tm w \<and> u \<noteq> [] \<and> v \<noteq> []"
-    using AB derives_append_decomp[of P \<open>[Nt A]\<close> \<open>[Nt B]\<close> \<open>map Tm w\<close>] by force
+    using AB derives_appendD[of P \<open>[Nt A]\<close> \<open>[Nt B]\<close> \<open>map Tm w\<close>] by force
   moreover have "\<exists>u' v'. u = map Tm u' \<and> v = map Tm v'"
     using uv map_eq_append_conv[of Tm w u v] by auto
   ultimately show ?thesis

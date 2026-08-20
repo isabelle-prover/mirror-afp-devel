@@ -1,0 +1,38 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Aho-Corasick String Matching}
+\author{Arthur Freitas Ramos\\
+David Barros Hulak\\
+Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This development formalizes the Aho-Corasick multi-pattern string matching
+algorithm~\cite{AhoCorasick1975} over lists.  The verified executable
+reference automaton uses the canonical Aho-Corasick state: after reading a text
+prefix, the state is the longest suffix of that prefix that is also a pattern
+prefix.  The development also proves a state-only transition theorem, a
+fold-based scan invariant, and a recursive failure-link transition refining the
+canonical transition, together with equivalent state-carrying and failure-link
+search procedures.  The main theorem shows that the search procedure reports
+exactly the pattern occurrences ending at each text position.  AI assistance
+was used for proof engineering; all final definitions, statements, and proofs
+are checked by Isabelle.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

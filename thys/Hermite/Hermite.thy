@@ -84,7 +84,7 @@ subsubsection\<open>Upper triangular matrices\<close>
 lemma is_unit_diagonal: 
   fixes U::"'a::{comm_ring_1, algebraic_semidom}^'n::{finite, wellorder}^'n::{finite, wellorder}"
   assumes U: "upper_triangular U"
-  and det_U: "is_unit (det U)"
+  and det_U: "is_unit (matrix_det U)"
   shows "\<forall>i. is_unit (U $ i $ i)"
 proof -
   have "is_unit (prod (\<lambda>i. U $ i $ i) UNIV)" 
@@ -122,7 +122,7 @@ lemma upper_triangular_adjugate:
   assumes A: "upper_triangular A"
   shows "upper_triangular (adjugate A)"
 proof (auto simp add: cofactor_def upper_triangular_def adjugate_def transpose_def cofactorM_def)
-  fix i j::'n assume ji: "j < i" with A show "det (minorM A j i) = 0"
+  fix i j::'n assume ji: "j < i" with A show "matrix_det (minorM A j i) = 0"
     unfolding minorM_eq det_sq_matrix_eq[symmetric] from_vec_to_vec det_minor_row
     by (subst Square_Matrix.det_upperdiagonal)
        (auto simp: upd_row.rep_eq from_vec.rep_eq row_def axis_def upper_triangular_def intro!: prod_zero)
@@ -1969,7 +1969,7 @@ proof -
     by (metis U_def inv_P inv_Q invertible_def invertible_mult matrix_inv_left matrix_inv_right)
   have H_UK: "H = U ** K" using A_PH A_QK inv_P 
     by (metis U_def matrix_inv_left matrix_mul_assoc matrix_mul_lid)
-  have "det K *k U = H ** adjugate K"
+  have "matrix_det K *k U = H ** adjugate K"
     unfolding H_UK matrix_mul_assoc[symmetric] mult_adjugate_det matrix_mul_mat ..
   have upper_triangular_H: "upper_triangular H" 
     by (metis H Hermite_def echelon_form_imp_upper_triagular)
@@ -1978,7 +1978,7 @@ proof -
   have upper_triangular_U: "upper_triangular U" 
     by (metis H_UK inv_K matrix_inv_right matrix_mul_assoc matrix_mul_rid upper_triangular_H 
       upper_triangular_K upper_triangular_inverse upper_triangular_mult)
-  have unit_det_U: "is_unit (det U)" by (metis inv_U invertible_iff_is_unit)
+  have unit_det_U: "is_unit (matrix_det U)" by (metis inv_U invertible_iff_is_unit)
   have is_unit_diagonal_U: "(\<forall>i. is_unit (U $ i $ i))"
     by (rule is_unit_diagonal[OF upper_triangular_U unit_det_U])
   have Uii_1: "(\<forall>i. (U $ i $ i) = 1)" and Hii_Kii: "(\<forall>i. (H $ i $ i) = (K $ i $ i))"

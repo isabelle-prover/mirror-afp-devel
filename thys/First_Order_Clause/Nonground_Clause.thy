@@ -13,7 +13,7 @@ subsection \<open>Nonground Literals\<close>
 
 sublocale nonground_clause_generic where 
   atom_vars = term.vars and atom_subst = "(\<cdot>t)" and atom_to_ground = term.to_ground and
-  atom_from_ground = term.from_ground
+  atom_from_ground = term.from_ground and atom_is_ground = term.is_ground
   by unfold_locales
 
 lemma obtain_from_pos_literal_subst:

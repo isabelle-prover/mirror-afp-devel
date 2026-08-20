@@ -668,7 +668,7 @@ let
   val (thm, lthy') = 
     lthy 
     |> Local_Theory.begin_nested |> snd
-    |> (Specification.definition NONE [] [] (binding, eqn))
+    |> (Specification.definition {verbose = false} NONE [] [] (binding, eqn))
     |> Local_Theory.end_nested_result
        (fn phi => fn (_, (_, thm)) => Morphism.thm phi thm)
 in

@@ -286,7 +286,7 @@ fun preference_profile ((agents, alts), args) lthy =
 
     fun tac lthy =
        let 
-         val lthy' = put_simpset HOL_ss lthy addsimps
+         val lthy' = lthy |> put_simpset HOL_ss |> Simplifier.add_simps
            @{thms list.set Union_insert Un_insert_left insert_not_empty Int_empty_left Int_empty_right
               insert_commute Un_empty_left Un_empty_right insert_absorb2 Union_empty
               is_weak_ranking_Cons is_weak_ranking_Nil finite_insert finite.emptyI

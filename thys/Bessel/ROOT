@@ -1,0 +1,13 @@
+chapter AFP
+
+session Bessel (AFP) = Incomplete_Gamma +
+  options [timeout = 600]
+  sessions
+    Path_Automation
+    Prime_Number_Theorem
+  theories  
+    Bessel
+    Bessel_Hankel_Integral
+  document_files
+    "root.tex"
+    "root.bib"

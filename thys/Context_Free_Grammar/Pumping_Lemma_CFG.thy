@@ -6,7 +6,6 @@ section "Pumping Lemma for Context Free Grammars"
 
 theory Pumping_Lemma_CFG
 imports
-  "List_Power.List_Power"
   Chomsky_Normal_Form
 begin
 
@@ -83,7 +82,7 @@ next
   moreover have "P \<turnstile> [Nt B] \<Rightarrow>* map Tm w \<and> P \<turnstile> [Nt C] \<Rightarrow>* map Tm v"
     using trans by blast
   ultimately show ?case 
-    using derives_append_decomp[of P \<open>[Nt B]\<close> \<open>[Nt C]\<close> \<open>map Tm (w @ v)\<close>] by auto
+    using derives_appendD[of P \<open>[Nt B]\<close> \<open>[Nt C]\<close> \<open>map Tm (w @ v)\<close>] by auto
 qed
 
 corollary cnf_der_eq: "CNF P \<Longrightarrow> (P \<turnstile> [Nt S] \<Rightarrow>* map Tm w \<longleftrightarrow> P \<turnstile> S \<Rightarrow>cnf w)"

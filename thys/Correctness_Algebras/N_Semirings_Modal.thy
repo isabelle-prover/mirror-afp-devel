@@ -312,7 +312,7 @@ text \<open>Theorem 23.6\<close>
 
 lemma box_right_mult_n_n:
   "|x](n(y) * n(z)) = |x]n(y) * |x]n(z)"
-  by (smt an_dist_sup an_export_n an_n_L mult_assoc mult_left_dist_sup mult_right_dist_sup nbox_def)
+  by (smt (z3) an_dist_sup an_export_n an_n_L mult_assoc mult_left_dist_sup mult_right_dist_sup nbox_def)
 
 lemma box_right_mult_an_n:
   "|x](an(y) * n(z)) = |x]an(y) * |x]n(z)"
@@ -336,7 +336,7 @@ lemma box_an_export:
 
 lemma box_left_antitone:
   "y \<le> x \<Longrightarrow> |x]z \<le> |y]z"
-  by (smt an_mult_commutative an_order box_diamond box_left_dist_sup le_iff_sup)
+  by (smt (z3) an_mult_commutative an_order box_diamond box_left_dist_sup le_iff_sup)
 
 lemma box_right_isotone:
   "y \<le> z \<Longrightarrow> |x]y \<le> |x]z"
@@ -444,7 +444,7 @@ lemma box_omega:
 
 lemma an_box_omega_induct:
   "|x]an(y) * n(z * L) \<le> an(y) \<Longrightarrow> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]z \<le> an(y)"
-  by (smt an_dist_sup an_omega_induct an_omega_mult box_left_dist_sup box_x_an mult_assoc n_an_def nbox_def)
+  by (smt (z3) an_dist_sup an_omega_induct an_omega_mult box_left_dist_sup box_x_an mult_assoc n_an_def nbox_def)
 
 lemma n_box_omega_induct:
   "|x]n(y) * n(z * L) \<le> n(y) \<Longrightarrow> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]z \<le> n(y)"
@@ -482,20 +482,20 @@ lemma box_segerberg_an:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) = an(y) * |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>](n(y) \<squnion> |x]an(y))"
 proof (rule order.antisym)
   have "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) \<le> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]|x]an(y)"
-    by (smt box_left_dist_sup box_left_mult box_omega sup_right_isotone box_left_antitone mult_right_dist_sup star.right_plus_below_circ)
+    by (smt (z3) box_left_dist_sup box_left_mult box_omega sup_right_isotone box_left_antitone mult_right_dist_sup star.right_plus_below_circ)
   hence "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) \<le> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>](n(y) \<squnion> |x]an(y))"
     using box_right_isotone order_lesseq_imp sup.cobounded2 by blast
   thus"|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) \<le> an(y) * |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>](n(y) \<squnion> |x]an(y))"
     by (metis le_sup_iff box_1_an box_left_antitone order_refl star_left_unfold_equal an_mult_least_upper_bound nbox_def)
 next
   have "an(y) * |x](n(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)) * (n(y) \<squnion> |x]an(y)) = |x]( |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) * an(y)) * an(y)"
-    by (smt sup_bot_left an_export an_mult_commutative box_right_mult_an_an mult_assoc mult_right_dist_sup n_complement_bot nbox_def)
+    by (smt (z3) sup_bot_left an_export an_mult_commutative box_right_mult_an_an mult_assoc mult_right_dist_sup n_complement_bot nbox_def)
   hence 1: "an(y) * |x](n(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)) * (n(y) \<squnion> |x]an(y)) \<le> n(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)"
-    by (smt sup_assoc sup_commute sup_ge2 box_1_an box_left_dist_sup box_left_mult mult_left_dist_sup omega_unfold star_left_unfold_equal star.circ_plus_one)
+    by (smt (z3) sup_assoc sup_commute sup_ge2 box_1_an box_left_dist_sup box_left_mult mult_left_dist_sup omega_unfold star_left_unfold_equal star.circ_plus_one)
   have "n(y) * |x](n(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)) * (n(y) \<squnion> |x]an(y)) \<le> n(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)"
-    by (smt sup_ge1 an_n_def mult_left_isotone n_an_mult_left_lower_bound n_mult_left_absorb_sup nbox_def order_trans)
+    by (smt (z3) sup_ge1 an_n_def mult_left_isotone n_an_mult_left_lower_bound n_mult_left_absorb_sup nbox_def order_trans)
   thus "an(y) * |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>](n(y) \<squnion> |x]an(y)) \<le> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)"
-    using 1 by (smt an_case_split_left an_shunting_an mult_assoc n_box_omega_induct_n n_dist_sup nbox_def nbox_from_L)
+    using 1 by (smt (z3) an_case_split_left an_shunting_an mult_assoc n_box_omega_induct_n n_dist_sup nbox_def nbox_from_L)
 qed
 
 text \<open>Theorem 23.16\<close>
@@ -506,7 +506,7 @@ lemma box_segerberg_n:
 
 lemma diamond_segerberg_an:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>an(y) = an(y) \<squnion> |x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>(n(y) * |x>an(y))"
-  by (smt an_export an_n_L box_diamond box_segerberg_an diamond_box mult_assoc n_an_def)
+  by (smt (z3) an_export an_n_L box_diamond box_segerberg_an diamond_box mult_assoc n_an_def)
 
 text \<open>Theorem 23.12\<close>
 
@@ -520,7 +520,7 @@ lemma diamond_star_unfold_n:
   "|x\<^sup>\<star>>n(y) = n(y) \<squnion> |an(y) * x>|x\<^sup>\<star>>n(y)"
 proof -
   have "|x\<^sup>\<star>>n(y) = n(y) \<squnion> n(y) * |x * x\<^sup>\<star>>n(y) \<squnion> |an(y) * x * x\<^sup>\<star>>n(y)"
-    by (smt sup_assoc sup_commute sup_bot_right an_complement an_complement_bot diamond_an_n diamond_left_dist_sup diamond_n_export diamond_n_n_same mult_assoc mult_left_one mult_right_dist_sup star_left_unfold_equal)
+    by (smt (z3) sup_assoc sup_commute sup_bot_right an_complement an_complement_bot diamond_an_n diamond_left_dist_sup diamond_n_export diamond_n_n_same mult_assoc mult_left_one mult_right_dist_sup star_left_unfold_equal)
   thus ?thesis
     by (metis diamond_left_mult diamond_x_n n_sup_left_absorb_mult)
 qed
@@ -533,7 +533,7 @@ text \<open>Theorem 23.15\<close>
 
 lemma box_star_unfold_n:
   "|x\<^sup>\<star>]n(y) = n(y) * |n(y) * x]|x\<^sup>\<star>]n(y)"
-  by (smt an_export an_n_L box_diamond diamond_box diamond_star_unfold_an n_an_def n_export)
+  by (smt (z3) an_export an_n_L box_diamond diamond_box diamond_star_unfold_an n_an_def n_export)
 
 lemma box_star_unfold_an:
   "|x\<^sup>\<star>]an(y) = an(y) * |an(y) * x]|x\<^sup>\<star>]an(y)"
@@ -543,7 +543,7 @@ text \<open>Theorem 23.10\<close>
 
 lemma diamond_omega_unfold_n:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>n(y) = n(y) \<squnion> |an(y) * x>|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>n(y)"
-  by (smt sup_assoc sup_commute diamond_an_export diamond_left_dist_sup diamond_right_dist_sup diamond_star_unfold_n diamond_x_n n_omega_mult n_plus_complement_intro_n omega_unfold)
+  by (smt (z3) sup_assoc sup_commute diamond_an_export diamond_left_dist_sup diamond_right_dist_sup diamond_star_unfold_n diamond_x_n n_omega_mult n_plus_complement_intro_n omega_unfold)
 
 lemma diamond_omega_unfold_an:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>an(y) = an(y) \<squnion> |n(y) * x>|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>>an(y)"
@@ -553,7 +553,7 @@ text \<open>Theorem 23.14\<close>
 
 lemma box_omega_unfold_n:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]n(y) = n(y) * |n(y) * x]|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]n(y)"
-  by (smt an_export an_n_L box_diamond diamond_box diamond_omega_unfold_an n_an_def n_export)
+  by (smt (z3) an_export an_n_L box_diamond diamond_box diamond_omega_unfold_an n_an_def n_export)
 
 lemma box_omega_unfold_an:
   "|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y) = an(y) * |an(y) * x]|x\<^sup>\<omega> \<squnion> x\<^sup>\<star>]an(y)"
@@ -622,9 +622,9 @@ proof -
   also have "... \<le> |-q * x>(-p) \<squnion> --q * -r"
     by (simp add: ndiamond_def)
   finally have "-p \<le> |-q * x>(-p) \<squnion> --q * -r"
-    using 1 by (smt sup_assoc le_iff_sup tests_dual.inf_cases sub_comm)
+    using 1 by (smt (z3) sup_assoc le_iff_sup tests_dual.inf_cases sub_comm)
   thus ?thesis
-    by (smt L_left_zero an_diamond_omega_induct_an an_uminus diamond_left_dist_sup mult_assoc n_n_L n_omega_mult ndiamond_def sub_mult_closed)
+    by (smt (z3) L_left_zero an_diamond_omega_induct_an an_uminus diamond_left_dist_sup mult_assoc n_n_L n_omega_mult ndiamond_def sub_mult_closed)
 qed
 
 lemma modal_while_loop:
@@ -644,7 +644,7 @@ proof -
   have "-p \<le> |-q * x>(-p) \<squnion> --q"
     by (smt (verit, del_insts) assms an_uminus tests_dual.double_negation n_an_def n_isotone ndiamond_def diamond_an_export sup_assoc sup_commute le_iff_sup tests_dual.inf_complement_intro)
   thus ?thesis
-    by (smt L_left_zero an_diamond_omega_induct_an an_uminus diamond_left_dist_sup mult_assoc tests_dual.sup_idempotent n_n_L n_omega_mult ndiamond_def)
+    by (smt (z3) L_left_zero an_diamond_omega_induct_an an_uminus diamond_left_dist_sup mult_assoc tests_dual.sup_idempotent n_n_L n_omega_mult ndiamond_def)
 qed
 
 end
@@ -722,7 +722,7 @@ next
   have "an(y) * |x\<^sup>\<star>](n(y) \<squnion> |x]an(y)) \<le> an(y) * |x]an(y)"
     by (metis sup_bot_left an_complement_bot box_an_an box_left_antitone box_x_an mult_left_dist_sup mult_left_one mult_right_isotone star.circ_reflexive)
   thus "an(y) * |x\<^sup>\<star>](n(y) \<squnion> |x]an(y)) \<le> |x\<^sup>\<star>]an(y)"
-    by (smt an_box_star_induct_sup an_case_split_left an_dist_sup an_mult_least_upper_bound box_left_antitone box_left_mult box_right_mult_an_an star.left_plus_below_circ nbox_def)
+    by (smt (z3) an_box_star_induct_sup an_case_split_left an_dist_sup an_mult_least_upper_bound box_left_antitone box_left_mult box_right_mult_an_an star.left_plus_below_circ nbox_def)
 qed
 
 lemma box_star_segerberg_n:
@@ -731,7 +731,7 @@ lemma box_star_segerberg_n:
 
 lemma diamond_segerberg_an:
   "|x\<^sup>\<star>>an(y) = an(y) \<squnion> |x\<^sup>\<star>>(n(y) * |x>an(y))"
-  by (smt an_export an_n_L box_diamond box_star_segerberg_an diamond_box mult_assoc n_an_def)
+  by (smt (z3) an_export an_n_L box_diamond box_star_segerberg_an diamond_box mult_assoc n_an_def)
 
 lemma diamond_star_segerberg_n:
   "|x\<^sup>\<star>>n(y) = n(y) \<squnion> |x\<^sup>\<star>>(an(y) * |x>n(y))"
@@ -739,7 +739,7 @@ lemma diamond_star_segerberg_n:
 
 lemma box_cut_star_iteration_an:
   "|x\<^sup>\<star>]an(y) = |(an(y) * x)\<^sup>\<star>]an(y)"
-  by (smt an_box_star_induct_sup an_mult_commutative an_mult_complement_intro_an order.antisym box_an_export box_star_unfold_an nbox_def order_refl)
+  by (smt (z3) an_box_star_induct_sup an_mult_commutative an_mult_complement_intro_an order.antisym box_an_export box_star_unfold_an nbox_def order_refl)
 
 lemma box_cut_star_iteration_n:
   "|x\<^sup>\<star>]n(y) = |(n(y) * x)\<^sup>\<star>]n(y)"

@@ -574,7 +574,7 @@ qed
 
 lemma power2_e:
  "\<And>e::real. 0 < e \<Longrightarrow> \<exists>n::nat. real_of_rat (1/2)^n < e"
-  by (simp add: real_arch_pow_inv)
+  by (simp add: arch_pow_inv)
 
 lemma r01_binary_expression_converges_to_r:
   assumes "0 < r"

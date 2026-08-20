@@ -885,7 +885,7 @@ lemma consistent_signs_at_roots_eq:
   using assms poly_roots_finite apply blast
   unfolding sgn_vec_def sgn_def signs_at_def squash_def o_def
   using roots_def apply auto[1]
-    by (smt Collect_cong assms image_iff poly_roots_finite roots_def sorted_list_of_set(1))
+    by (smt (z3) Collect_cong assms image_iff poly_roots_finite roots_def sorted_list_of_set(1))
 
 abbreviation w_vec_R:: "real poly \<Rightarrow> real poly list \<Rightarrow> rat list list  \<Rightarrow> rat vec"
   where "w_vec_R \<equiv> construct_lhs_vector_R"
@@ -2152,7 +2152,7 @@ proof -
   then have with_take_cols_from_matrix: "vec_space.rank (length (find_nonzeros_from_input_vec ?lhs)) (take_cols_from_matrix ?step1_T (map snd (pivot_positions (gauss_jordan_single (?step1_T))))) = dim_col ?step1_mat"
     using rank_transpose rechar_take_cols conjugatable_vec_space.gjs_and_take_cols_var
     apply (auto)
-    by (smt conjugatable_vec_space.gjs_and_take_cols_var gt_eq_assm obv rechar_take_cols reduce_mat_cols.simps)
+    by (smt (z3) conjugatable_vec_space.gjs_and_take_cols_var gt_eq_assm obv rechar_take_cols reduce_mat_cols.simps)
   have "(take_rows_from_matrix ?step1_mat (rows_to_keep ?step1_mat)) = (take_cols_from_matrix ?step1_T  (rows_to_keep ?step1_mat))\<^sup>T"
     using take_rows_and_take_cols
     by blast 

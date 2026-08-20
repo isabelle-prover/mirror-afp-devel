@@ -88,21 +88,13 @@ lemma half_galois_prop_rightD [dest]:
 
 interpretation g : galois_prop S T f g for S T f g .
 
-lemma rel_inv_half_galois_prop_right_eq_half_galois_prop_left_rel_inv [simp]:
-  "((\<le>\<^bsub>R\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<ge>\<^bsub>R\<^esub>))"
+lemma half_galois_prop_left_rel_inv_eq_rel_inv_half_galois_prop_right [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>L\<^esub>))\<inverse>"
   by (intro ext) blast
 
-corollary half_galois_prop_left_rel_inv_iff_half_galois_prop_right [iff]:
-  "((\<ge>\<^bsub>L\<^esub>) \<^sub>h\<unlhd> (\<ge>\<^bsub>R\<^esub>)) f g \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<unlhd>\<^sub>h (\<le>\<^bsub>L\<^esub>)) g f"
-  by (simp flip: rel_inv_half_galois_prop_right_eq_half_galois_prop_left_rel_inv)
-
-lemma rel_inv_half_galois_prop_left_eq_half_galois_prop_right_rel_inv [simp]:
-  "((\<le>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L\<^esub>))\<inverse> = ((\<ge>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<ge>\<^bsub>R\<^esub>))"
+lemma half_galois_prop_right_rel_inv_eq_rel_inv_half_galois_prop_left [simp]:
+  "((\<ge>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<ge>\<^bsub>R\<^esub>)) = ((\<le>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L\<^esub>))\<inverse>"
   by (intro ext) blast
-
-corollary half_galois_prop_right_rel_inv_iff_half_galois_prop_left [iff]:
-  "((\<ge>\<^bsub>L\<^esub>) \<unlhd>\<^sub>h (\<ge>\<^bsub>R\<^esub>)) f g \<longleftrightarrow> ((\<le>\<^bsub>R\<^esub>) \<^sub>h\<unlhd> (\<le>\<^bsub>L\<^esub>)) g f"
-  by (simp flip: rel_inv_half_galois_prop_left_eq_half_galois_prop_right_rel_inv)
 
 end
 
@@ -196,8 +188,8 @@ interpretation flip_inv : galois "(\<ge>\<^bsub>R\<^esub>)" "(\<ge>\<^bsub>L\<^e
   and "\<And>(R :: 'a \<Rightarrow> 'a \<Rightarrow> bool). transitive R\<inverse> \<equiv> transitive R"
   and "\<And>R. in_codom R\<inverse> \<equiv> in_dom R"
   by (simp_all add: flip_unit_eq_counit flip_counit_eq_unit
-    galois_prop.half_galois_prop_left_rel_inv_iff_half_galois_prop_right
-    galois_prop.half_galois_prop_right_rel_inv_iff_half_galois_prop_left
+    galois_prop.half_galois_prop_left_rel_inv_eq_rel_inv_half_galois_prop_right
+    galois_prop.half_galois_prop_right_rel_inv_eq_rel_inv_half_galois_prop_left
     mono_wrt_rel_eq_dep_mono_wrt_rel)
 
 corollary counit_rel_if_right_rel_if_mono_wrt_relI:

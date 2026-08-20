@@ -57,7 +57,7 @@ let
   val class_law_name = classname ^ "_class_law"
   val class_law_lhs = list_comb ((Free (class_law_name,(map (dest_Free #> snd) vars) ---> \<^typ>\<open>bool\<close>)),vars)
   val class_law_eq = HOLogic.Trueprop $ HOLogic.mk_eq (class_law_lhs,class_law)
-  val ((_,(_,class_law_thm)),lthy') = Specification.definition NONE [] [] ((Binding.empty, []), class_law_eq) lthy
+  val ((_,(_,class_law_thm)),lthy') = Specification.definition {verbose = false} NONE [] [] ((Binding.empty, []), class_law_eq) lthy
   
   val ctxt_thy = Proof_Context.init_global (Proof_Context.theory_of lthy')
   val class_law_thm_export = singleton (Proof_Context.export lthy' ctxt_thy) class_law_thm

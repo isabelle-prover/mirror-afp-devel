@@ -41,7 +41,7 @@ sig
   val check: Context.generic -> xstring * Position.T -> string * rules
   val extern: Context.generic -> string -> xstring
   val intern: Context.generic -> xstring -> string
-  val markup_extern: Context.generic -> string -> Markup.T * xstring
+  val markups_extern: Context.generic -> string -> Markup.T list * xstring
 
   val gen_pattern_fun: string -> Proof.context -> string * string list -> string
 
@@ -295,7 +295,7 @@ structure Data = Generic_Data (
 
 fun intern context = Data.get context |> Name_Space.space_of_table |> Name_Space.intern
 fun extern context = Data.get context |> Name_Space.space_of_table |> Name_Space.extern (Context.proof_of context)
-fun markup_extern context = Data.get context |> Name_Space.space_of_table |> Name_Space.markup_extern (Context.proof_of context)
+fun markups_extern context = Data.get context |> Name_Space.space_of_table |> Name_Space.markups_extern (Context.proof_of context)
 
 (*
  val define: Context.generic -> bool -> binding * 'a -> 'a table -> string * 'a table
@@ -446,9 +446,9 @@ fun string_of_bool true = "true"
 
 fun markup_name ctxt rules_name =
   let
-    val (m, str) = markup_extern (Context.Proof ctxt) rules_name
+    val (ms, str) = markups_extern (Context.Proof ctxt) rules_name
   in
-    Markup.markup m str
+    Markup.markups ms str
   end
 
 fun pretty_rule ctxt (rule: rule) =

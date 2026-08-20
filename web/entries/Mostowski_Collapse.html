@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>The Mostowski Collapse Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="The Mostowski Collapse Theorem in the Archive of Formal Proofs">
+    <meta property="og:description" content="The Mostowski Collapse Theorem in the Archive of Formal Proofs">
+    <meta property="og:title" content="The Mostowski Collapse Theorem">
+    <meta property="og:url" content="https://isa-afp.org/entries/Mostowski_Collapse.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>T</span>he <span class='first'>M</span>ostowski <span class='first'>C</span>ollapse <span class='first'>T</span>heorem
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">May 11, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry formalizes the Mostowski collapse theorem in Isabelle/ZF
+[3, 4]. For a set equipped with a well-founded extensional relation, the
+development defines the collapsing map by well-founded recursion,
+proves that its range is transitive, and shows that the map is an
+order isomorphism between the original relation and membership on
+the transitive range. The construction is also proved unique among
+maps satisfying the same recursive equation. The result is a standard
+bridge from abstract well-founded extensional structures to transitive
+membership structures, and complements the existing Isabelle/ZF and
+AFP developments on ordinals, cardinals, forcing, and transitive models
+[2, 1]. AI assistance was used for proof engineering. The final definitions,
+statements, and proofs are checked by Isabelle</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/set-theory/">Logic/Set theory</a></li>
+      </ul>
+      <h3>Session Mostowski_Collapse</h3>
+      <ul>
+          <li><a href="../thys/Mostowski_Collapse/Mostowski_Collapse.html">Mostowski_Collapse</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mostowski_Collapse/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mostowski_Collapse/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Mostowski_Collapse/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Mostowski_Collapse-AFP</p>
+        <pre id="copy-text">@article{Mostowski_Collapse-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {The Mostowski Collapse Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {May},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Mostowski_Collapse.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Mostowski_Collapse-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

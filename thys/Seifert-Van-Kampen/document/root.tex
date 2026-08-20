@@ -1,0 +1,85 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+\setlength{\emergencystretch}{3em}
+
+\begin{document}
+
+\title{The Classical Seifert--van Kampen Theorem}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+  This entry formalizes a quotient-oriented proof of the classical
+  Seifert--van Kampen theorem in Isabelle/HOL. For open subsets $U$ and $V$ of
+  a topological space with $x_0 \in U \cap V$ and path-connected intersection,
+  it proves that the fundamental group of $U \cup V$ at $x_0$ is in bijection
+  with the carrier-based amalgamated free product of the fundamental groups of
+  $U$ and $V$ over the fundamental group of $U \cap V$. The development also
+  provides reusable infrastructure for explicit path homotopies, pushout-style
+  quotients, free-product words, carrier-based amalgamated free products, and
+  the abstract encode/decode interface used to organize the final argument.
+  AI assistance was used for proof engineering. The final definitions,
+  statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\section{Overview}
+
+The main unconditional result of the entry is the theorem
+\path{classical_seifert_van_kampen_bij_betw} in
+\path{Classical_Seifert_Van_Kampen.thy}. It establishes the classical
+open-union form of Seifert--van Kampen through a quotient-level bijection
+between the fundamental group of $U \cup V$ and the carrier-based amalgamated
+free product assembled from the fundamental groups of $U$, $V$, and
+$U \cap V$.
+
+Supporting theories package the quotient-level encode/decode interface and the
+topological pushout constructions used by the classical proof. These auxiliary
+layers are internal to the entry; the completed headline result remains the
+classical open-union theorem above.
+
+\section{Development structure}
+
+The theories are organized in three layers:
+\begin{itemize}
+\item \emph{Quotients and pushouts:} \path{Equivalence_Quotients.thy},
+  \path{Pushout_Scaffold.thy}, \path{Binary_Sum_Topology.thy}, and
+  \path{Topological_Pushout_Scaffold.thy} isolate the generic equivalence-class
+  and topological-pushout constructions.
+\item \emph{The algebraic target:} \path{Free_Product_Words.thy},
+  \path{Amalgamated_Free_Product.thy}, \path{Carrier_Group_Scaffold.thy},
+  \path{Carrier_Amalgamated_Free_Product.thy}, and
+  \path{Carrier_Amalgamated_Free_Product_Eval.thy} provide the word calculus,
+  carrier-group locales, and evaluation map for the carrier-based amalgamated
+  free product.
+\item \emph{The topological argument:}
+  \path{Explicit_Path_Homotopy_Scaffold.thy},
+  \path{Explicit_Fundamental_Group_Scaffold.thy}, and
+  \path{Fundamental_Group_Scaffold.thy} develop the quotient view of the
+  fundamental group, while \path{Seifert_Van_Kampen_Scaffold.thy},
+  \path{Topological_Seifert_Van_Kampen.thy}, and
+  \path{Classical_Seifert_Van_Kampen.thy} package the abstract interface and
+  its classical open-union instantiation.
+\end{itemize}
+
+\section{Sources}
+
+The informal mathematics follows the classical theorem due to Seifert and van
+Kampen~\cite{Seifert1931,vanKampen1933} and standard textbook presentations in
+algebraic topology, especially Hatcher~\cite{Hatcher2002} and
+Brown~\cite{Brown2006}.
+
+\tableofcontents
+
+\sloppy
+\input{session}
+\fussy
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

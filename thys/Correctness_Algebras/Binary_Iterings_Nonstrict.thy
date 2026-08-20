@@ -29,20 +29,20 @@ next
     have 1: "(x \<squnion> y) \<star> z = (x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z)"
       using mult_left_dist_sup omega_decompose star.circ_sup_9 sup_assoc while_def mult_assoc by auto
     hence 2: "(x \<squnion> y) \<star> z \<le> (x \<star> y) \<star> (x \<star> z)"
-      by (smt sup_mono sup_ge2 le_iff_sup mult_left_isotone omega_sub_dist star.circ_sub_dist while_def)
+      by (smt (z3) sup_mono sup_ge2 le_iff_sup mult_left_isotone omega_sub_dist star.circ_sub_dist while_def)
     let ?rhs = "x\<^sup>\<star> * y * ((x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z)) \<squnion> (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z)"
     have "x\<^sup>\<omega> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<le> x\<^sup>\<omega>"
       by (simp add: omega_sub_vector)
     hence "x\<^sup>\<omega> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<le> ?rhs"
-      by (smt sup_commute sup_mono sup_ge1 mult_left_dist_sup order_trans)
+      by (smt (z3) sup_commute sup_mono sup_ge1 mult_left_dist_sup order_trans)
     hence 3: "(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<le> ?rhs"
       by (metis mult_right_dist_sup omega_unfold)
     have "x\<^sup>\<omega> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<le> x\<^sup>\<omega>"
       by (simp add: omega_mult_star_2 omega_sub_vector)
     hence "x\<^sup>\<omega> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<squnion> x\<^sup>\<star> * y * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<le> ?rhs"
-      by (smt sup_commute sup_mono sup_ge2 mult_assoc mult_left_dist_sup order_trans)
+      by (smt (z3) sup_commute sup_mono sup_ge2 mult_assoc mult_left_dist_sup order_trans)
     hence "(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<le> ?rhs"
-      by (smt sup_assoc sup_ge2 le_iff_sup mult_assoc mult_right_dist_sup star.circ_loop_fixpoint)
+      by (smt (z3) sup_assoc sup_ge2 le_iff_sup mult_assoc mult_right_dist_sup star.circ_loop_fixpoint)
     hence "(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<le> ?rhs"
       using 3 by simp
     hence "(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z) \<le> (x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * z)"
@@ -73,16 +73,16 @@ next
       have "x * z * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v) \<le> (z * y\<^sup>\<omega> \<squnion> z * y\<^sup>\<star> \<squnion> w) * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v)"
         using 1 mult_left_isotone by auto
       also have "... = z * (y\<^sup>\<omega> * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v) \<squnion> y\<^sup>\<star> * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v)) \<squnion> w * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v)"
-        by (smt mult_assoc mult_left_dist_sup mult_right_dist_sup)
+        by (smt (z3) mult_assoc mult_left_dist_sup mult_right_dist_sup)
       also have "... = z * (y\<^sup>\<omega> * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v) \<squnion> y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v) \<squnion> w * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v)"
-        by (smt sup_assoc mult_assoc mult_left_dist_sup star.circ_transitive_equal star_mult_omega)
+        by (smt (z3) sup_assoc mult_assoc mult_left_dist_sup star.circ_transitive_equal star_mult_omega)
       also have "... \<le> z * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v) \<squnion> x\<^sup>\<star> * w * (y\<^sup>\<omega> \<squnion> y\<^sup>\<star> * v)"
-        by (smt sup_commute sup_mono sup_left_top mult_left_dist_sup mult_left_one mult_right_dist_sup mult_right_sub_dist_sup_left omega_vector order_refl star.circ_plus_one)
+        by (smt (z3) sup_commute sup_mono sup_left_top mult_left_dist_sup mult_left_one mult_right_dist_sup mult_right_sub_dist_sup_left omega_vector order_refl star.circ_plus_one)
       finally show ?thesis
-        by (smt sup_assoc sup_commute le_iff_sup)
+        by (smt (z3) sup_assoc sup_commute le_iff_sup)
     qed
     hence "x * ?rhs \<le> ?rhs"
-      by (smt sup_assoc sup_commute sup_ge1 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup omega_unfold star.circ_increasing star.circ_transitive_equal)
+      by (smt (z3) sup_assoc sup_commute sup_ge1 le_iff_sup mult_assoc mult_left_dist_sup mult_right_dist_sup omega_unfold star.circ_increasing star.circ_transitive_equal)
     hence "z * v \<squnion> x * ?rhs \<le> ?rhs"
       using 2 le_supI by blast
     hence "x\<^sup>\<star> * z * v \<le> ?rhs"
@@ -105,7 +105,7 @@ next
     have 2: "z * x\<^sup>\<omega> \<le> ?rhs"
     proof -
       have "z * x\<^sup>\<omega> \<le> y * y\<^sup>\<star> * z * x\<^sup>\<omega> \<squnion> y\<^sup>\<omega> * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<omega>"
-        using 1 by (smt sup_commute le_iff_sup mult_assoc mult_right_dist_sup omega_unfold)
+        using 1 by (smt (z3) sup_commute le_iff_sup mult_assoc mult_right_dist_sup omega_unfold)
       also have "... \<le> y * y\<^sup>\<star> * z * x\<^sup>\<omega> \<squnion> y\<^sup>\<omega> \<squnion> w * x\<^sup>\<omega>"
         using omega_sub_vector semiring.add_mono by blast
       also have "... = y * y\<^sup>\<star> * (z * x\<^sup>\<omega>) \<squnion> (y\<^sup>\<omega> \<squnion> w * x\<^sup>\<omega>)"
@@ -208,7 +208,7 @@ proof -
   also have "... = x\<^sup>\<omega> * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y * x\<^sup>\<star>"
     using mult_right_dist_sup by force
   also have "... = x * x\<^sup>\<star> * (y * x * x\<^sup>\<star>) \<squnion> x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y"
-    by (smt sup_assoc sup_commute mult_assoc omega_mult_star_2 star.circ_back_loop_fixpoint star.circ_plus_same star.circ_transitive_equal)
+    by (smt (z3) sup_assoc sup_commute mult_assoc omega_mult_star_2 star.circ_back_loop_fixpoint star.circ_plus_same star.circ_transitive_equal)
   finally have "y * x * x\<^sup>\<star> \<le> x * x\<^sup>\<star> * (y * x * x\<^sup>\<star>) \<squnion> (x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y)"
     using sup_assoc by force
   hence "y * x * x\<^sup>\<star> \<le> (x * x\<^sup>\<star>)\<^sup>\<omega> \<squnion> (x * x\<^sup>\<star>)\<^sup>\<star> * (x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y)"
@@ -226,7 +226,7 @@ proof -
   have "x * (x \<star> (1 \<squnion> y)) = x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y"
     using mult_1_right mult_left_dist_sup omega_unfold sup_assoc while_def mult_assoc by auto
   hence "y * x\<^sup>\<omega> \<le> (x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> \<squnion> x * x\<^sup>\<star> * y) * x\<^sup>\<omega>"
-    by (smt assms le_iff_sup mult_assoc mult_right_dist_sup omega_unfold)
+    by (smt (z3) assms le_iff_sup mult_assoc mult_right_dist_sup omega_unfold)
   also have "... = x\<^sup>\<omega> * x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> * x\<^sup>\<omega> \<squnion> x * x\<^sup>\<star> * y * x\<^sup>\<omega>"
     using semiring.distrib_right by auto
   also have "... = x * x\<^sup>\<star> * (y * x\<^sup>\<omega>) \<squnion> x\<^sup>\<omega>"
@@ -371,21 +371,21 @@ proof -
   also have "... \<le> (x\<^sup>\<star> * y * w)\<^sup>\<star> * x\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y * w)\<^sup>\<omega>"
     by (metis sup_left_isotone mult_assoc mult_right_isotone omega_sub_vector)
   finally have 1: "w * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<omega> \<le> (w * x\<^sup>\<star> * y)\<^sup>\<star> * w * x\<^sup>\<omega> \<squnion> (w * x\<^sup>\<star> * y)\<^sup>\<omega>"
-    by (smt sup_commute le_iff_sup mult_assoc mult_left_dist_sup while_def while_slide)
+    by (smt (z3) sup_commute le_iff_sup mult_assoc mult_left_dist_sup while_def while_slide)
   have "(x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<star> * z = (x\<^sup>\<star> * y * w)\<^sup>\<star> * x\<^sup>\<omega> * ((x\<^sup>\<star> * y * w)\<^sup>\<star> * x\<^sup>\<omega>)\<^sup>\<star> * (x\<^sup>\<star> * y * w)\<^sup>\<star> * z \<squnion> (x\<^sup>\<star> * y * w)\<^sup>\<star> * z"
-    by (smt sup_commute mult_assoc star.circ_sup star.circ_loop_fixpoint)
+    by (smt (z3) sup_commute mult_assoc star.circ_sup star.circ_loop_fixpoint)
   also have "... \<le> (x\<^sup>\<star> * y * w)\<^sup>\<star> * x\<^sup>\<omega> \<squnion> (x\<^sup>\<star> * y * w)\<^sup>\<star> * z"
-    by (smt sup_commute sup_right_isotone mult_assoc mult_right_isotone omega_sub_vector)
+    by (smt (z3) sup_commute sup_right_isotone mult_assoc mult_right_isotone omega_sub_vector)
   finally have "w * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<star> * z \<le> (w * x\<^sup>\<star> * y)\<^sup>\<star> * w * x\<^sup>\<omega> \<squnion> (w * x\<^sup>\<star> * y)\<^sup>\<star> * w * z"
     by (metis mult_assoc mult_left_dist_sup mult_right_isotone star.circ_slide)
   hence "w * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<omega> \<squnion> w * (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<star> * z \<le> (w * x\<^sup>\<star> * y)\<^sup>\<star> * (w * x\<^sup>\<omega>)\<^sup>\<omega> \<squnion> (w * x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (w * x\<^sup>\<star> * y)\<^sup>\<star> * w * z"
-    using 1 by (smt sup_assoc sup_commute le_iff_sup mult_assoc tarski_mult_omega_omega)
+    using 1 by (smt (z3) sup_assoc sup_commute le_iff_sup mult_assoc tarski_mult_omega_omega)
   also have "... \<le> (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<star> * (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<star> * w * z"
     by (metis sup_mono sup_ge1 sup_ge2 mult_isotone mult_left_isotone omega_isotone star.circ_isotone)
   also have "... = (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<omega> \<squnion> (w * x\<^sup>\<omega> \<squnion> w * x\<^sup>\<star> * y)\<^sup>\<star> * w * z"
     by (simp add: star_mult_omega)
   finally have "w * ((x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<omega> \<squnion> (x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y * w)\<^sup>\<star> * z) \<le> w * ((x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y) * w)\<^sup>\<omega> \<squnion> w * ((x\<^sup>\<omega> \<squnion> x\<^sup>\<star> * y) * w)\<^sup>\<star> * z"
-    by (smt mult_assoc mult_left_dist_sup omega_slide star.circ_slide)
+    by (smt (z3) mult_assoc mult_left_dist_sup omega_slide star.circ_slide)
   hence 2: "w * ((x \<star> (y * w)) \<star> z) \<le> w * (((x \<star> y) * w) \<star> z)"
     by (simp add: mult_left_dist_sup while_def mult_assoc)
   have "w * (((x \<star> y) * w) \<star> z) \<le> w * ((x \<star> (y * w)) \<star> z)"
@@ -426,7 +426,7 @@ text \<open>Theorem 8.3\<close>
 
 subclass bounded_extended_binary_itering
   apply unfold_locales
-  by (smt mult_assoc while_denest_2a while_denest_4a while_increasing while_slide)
+  by (smt (z3) mult_assoc while_denest_2a while_denest_4a while_increasing while_slide)
 
 text \<open>Theorem 13.13\<close>
 

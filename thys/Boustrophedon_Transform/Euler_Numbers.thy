@@ -370,7 +370,7 @@ proof -
   have "Abs_fps (\<lambda>n. bernpoly n x / fact n :: 'a) = bernoulli_fps * fps_exp x"
     unfolding fps_times_def
     by (simp add: bernpoly_def fps_eq_iff sum_divide_distrib binomial_fact
-                  field_simps atLeast0AtMost)
+                  field_simps atLeast0AtMost of_real_bernoulli)
   also have "\<dots> = fps_X * fps_exp x / (fps_exp 1 - 1)"
     unfolding bernoulli_fps_def by (subst fps_divide_times2) auto
   finally show ?thesis .
@@ -1022,7 +1022,7 @@ lemma bernpoly_aux_correct:
   "bernpoly_aux cs (map (\<lambda>p. poly p x) ps) n x = 
      map (\<lambda>p. poly p x) (Bernpolys_aux cs ps n)"
   by (rule sym, induction n arbitrary: ps cs)
-     (simp_all add: Let_def poly_sum_list poly_monom o_def case_prod_unfold zip_map1
+     (simp_all add: Let_def poly_sum_list_eq poly_monom o_def case_prod_unfold zip_map1
                del: upt_Suc of_nat_Suc)
 
 lemma bernpoly_code [code]:
@@ -1120,7 +1120,7 @@ lemma length_euler_poly_aux [simp]: "length (euler_poly_aux cs xs n x) = length 
 lemma euler_poly_aux_correct:
   "euler_poly_aux cs (map (\<lambda>p. poly p x) ps) n x = map (\<lambda>p. poly p x) (Euler_polys_aux cs ps n)"
   by (rule sym, induction n arbitrary: ps cs)
-     (simp_all add: Let_def poly_sum_list poly_monom o_def case_prod_unfold zip_map1
+     (simp_all add: Let_def poly_sum_list_eq poly_monom o_def case_prod_unfold zip_map1
                del: upt_Suc of_nat_Suc)
 
 lemma euler_poly_code [code]:

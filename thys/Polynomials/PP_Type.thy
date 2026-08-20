@@ -1,7 +1,7 @@
 (* Author: Alexander Maletzky *)
 
 theory PP_Type
-  imports Power_Products
+  imports Power_Products OAlist
 begin
 
 text \<open>For code generation, we must introduce a copy of type @{typ "'a \<Rightarrow>\<^sub>0 'b"} for power-products.\<close>
@@ -327,5 +327,138 @@ lemma drlex_pp_zero_min: "drlex_pp 0 s"
 lemma drlex_pp_plus_monotone: "drlex_pp s t \<Longrightarrow> drlex_pp (s + u) (t + u)"
   for s t::"(_, _::{ordered_ab_semigroup_add_imp_le, ordered_cancel_comm_monoid_add}) pp"
   by (transfer, rule drlex_pm_plus_monotone)
+
+
+subsection \<open>Power-Products Represented by @{type oalist_tc}\<close>
+
+instantiation pp :: (type, "{equal, zero}") equal
+begin
+
+definition equal_pp :: "('a, 'b) pp \<Rightarrow> ('a, 'b) pp \<Rightarrow> bool" where
+  "equal_pp p q \<equiv> (\<forall>t. lookup_pp p t = lookup_pp q t)"
+
+instance by standard (auto simp: equal_pp_def intro: pp_eqI)
+
+end
+
+definition PP_oalist :: "('a::linorder, 'b::zero) oalist_tc \<Rightarrow> ('a, 'b) pp"
+  where "PP_oalist xs = pp_of_fun (OAlist_tc_lookup xs)"
+
+code_datatype PP_oalist
+
+lemma lookup_PP_oalist [simp, code]: "lookup_pp (PP_oalist xs) = OAlist_tc_lookup xs"
+  unfolding PP_oalist_def
+proof (rule lookup_pp_of_fun)
+  have "{x. OAlist_tc_lookup xs x \<noteq> 0} \<subseteq> fst ` set (list_of_oalist_tc xs)"
+  proof (rule, simp)
+    fix x
+    assume "OAlist_tc_lookup xs x \<noteq> 0"
+    thus "x \<in> fst ` set (list_of_oalist_tc xs)"
+      using in_OAlist_tc_sorted_domain_iff_lookup set_OAlist_tc_sorted_domain by blast
+  qed
+  also have "finite ..." by simp
+  finally (finite_subset) show "finite {x. OAlist_tc_lookup xs x \<noteq> 0}" .
+qed
+
+lemma keys_PP_oalist [code]: "keys_pp (PP_oalist xs) = set (OAlist_tc_sorted_domain xs)"
+  by (rule set_eqI, simp add: keys_pp_iff in_OAlist_tc_sorted_domain_iff_lookup)
+
+lemma zero_PP_oalist [code]: "(0::('a::linorder, 'b::zero) pp) = PP_oalist OAlist_tc_empty"
+  by (rule pp_eqI, simp add: lookup_OAlist_tc_empty)
+
+lemma plus_PP_oalist [code]:
+  "PP_oalist xs + PP_oalist ys = PP_oalist (OAlist_tc_map2_val_neutr (\<lambda>_. (+)) xs ys)"
+  by (rule pp_eqI, simp add: lookup_plus_pp, rule lookup_OAlist_tc_map2_val_neutr[symmetric], simp_all)
+
+lemma minus_PP_oalist [code]:
+  "PP_oalist xs - PP_oalist ys = PP_oalist (OAlist_tc_map2_val_rneutr (\<lambda>_. (-)) xs ys)"
+  by (rule pp_eqI, simp add: lookup_minus_pp, rule lookup_OAlist_tc_map2_val_rneutr[symmetric], simp)
+
+lemma equal_PP_oalist [code]: "equal_class.equal (PP_oalist xs) (PP_oalist ys) = (xs = ys)"
+  by (simp add: equal_eq pp_eq_iff, auto elim: OAlist_tc_lookup_inj)
+
+lemma lcs_PP_oalist [code]:
+  "lcs (PP_oalist xs) (PP_oalist ys) = PP_oalist (OAlist_tc_map2_val_neutr (\<lambda>_. max) xs ys)"
+  for xs ys :: "('a::linorder, 'b::add_linorder_min) oalist_tc"
+  by (rule pp_eqI, simp add: lookup_lcs_pp, rule lookup_OAlist_tc_map2_val_neutr[symmetric], simp_all add: max_def)
+
+lemma deg_pp_PP_oalist [code]: "deg_pp (PP_oalist xs) = sum_list (map snd (list_of_oalist_tc xs))"
+proof -
+  have "irreflp ((<)::_::linorder \<Rightarrow> _)" by (rule irreflpI, simp)
+  have "deg_pp (PP_oalist xs) = sum (OAlist_tc_lookup xs) (set (OAlist_tc_sorted_domain xs))"
+    by (simp add: deg_pp_alt keys_PP_oalist)
+  also have "... = sum_list (map (OAlist_tc_lookup xs) (OAlist_tc_sorted_domain xs))"
+    by (rule sum.distinct_set_conv_list, rule distinct_sorted_wrt_irrefl,
+        fact, fact transp_on_less, fact sorted_OAlist_tc_sorted_domain)
+  also have "... = sum_list (map snd (list_of_oalist_tc xs))"
+    by (rule arg_cong[where f=sum_list], simp add: OAlist_tc_sorted_domain_def OAlist_tc_lookup_eq_valueI)
+  finally show ?thesis .
+qed
+
+lemma single_PP_oalist [code]: "single_pp x e = PP_oalist (oalist_tc_of_list [(x, e)])"
+  by (rule pp_eqI, simp add: lookup_single_pp OAlist_tc_lookup_single)
+
+definition adds_pp_add_linorder :: "('b, 'a::add_linorder) pp \<Rightarrow> _ \<Rightarrow> bool"
+  where [code_abbrev]: "adds_pp_add_linorder = (adds)"
+
+lemma adds_pp_PP_oalist [code]:
+  "adds_pp_add_linorder (PP_oalist xs) (PP_oalist ys) = OAlist_tc_prod_ord (\<lambda>_. less_eq) xs ys"
+  for xs ys::"('a::linorder, 'b::add_linorder_min) oalist_tc"
+proof (simp add: adds_pp_add_linorder_def adds_pp_iff adds_poly_mapping lookup_pp.rep_eq[symmetric] OAlist_tc_prod_ord_alt le_fun_def,
+      intro iffI allI ballI)
+  fix k
+  assume "\<forall>x. OAlist_tc_lookup xs x \<le> OAlist_tc_lookup ys x"
+  thus "OAlist_tc_lookup xs k \<le> OAlist_tc_lookup ys k" by blast
+next
+  fix x
+  assume *: "\<forall>k\<in>fst ` set (list_of_oalist_tc xs) \<union> fst ` set (list_of_oalist_tc ys).
+              OAlist_tc_lookup xs k \<le> OAlist_tc_lookup ys k"
+  show "OAlist_tc_lookup xs x \<le> OAlist_tc_lookup ys x"
+  proof (cases "x \<in> fst ` set (list_of_oalist_tc xs) \<union> fst ` set (list_of_oalist_tc ys)")
+    case True
+    with * show ?thesis ..
+  next
+    case False
+    hence "x \<notin> set (OAlist_tc_sorted_domain xs)" and "x \<notin> set (OAlist_tc_sorted_domain ys)"
+      by (simp_all add: set_OAlist_tc_sorted_domain)
+    thus ?thesis by (simp add: in_OAlist_tc_sorted_domain_iff_lookup)
+  qed
+qed
+
+subsubsection \<open>Constructor\<close>
+
+definition "sparse\<^sub>0 xs = PP_oalist (oalist_tc_of_list xs)" \<comment>\<open>sparse representation\<close>
+
+subsubsection \<open>Computations\<close>
+
+experiment begin
+
+abbreviation "X \<equiv> 0::nat"
+abbreviation "Y \<equiv> 1::nat"
+abbreviation "Z \<equiv> 2::nat"
+
+value [code] "sparse\<^sub>0 [(X, 2::nat), (Z, 7)]"
+
+lemma
+  "sparse\<^sub>0 [(X, 2::nat), (Z, 7)] - sparse\<^sub>0 [(X, 2), (Z, 2)] = sparse\<^sub>0 [(Z, 5)]"
+  by eval
+
+lemma
+  "lcs (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 7)]) (sparse\<^sub>0 [(Y, 3), (Z, 2)]) = sparse\<^sub>0 [(X, 2), (Y, 3), (Z, 7)]"
+  by eval
+
+lemma
+  "(sparse\<^sub>0 [(X, 2::nat), (Z, 1)]) adds (sparse\<^sub>0 [(X, 3), (Y, 2), (Z, 1)])"
+  by eval
+
+lemma
+  "lookup_pp (sparse\<^sub>0 [(X, 2::nat), (Z, 3)]) X = 2"
+  by eval
+
+lemma
+  "deg_pp (sparse\<^sub>0 [(X, 2::nat), (Y, 1), (Z, 3), (X, 1)]) = 6"
+  by eval
+
+end
 
 end (* theory *)

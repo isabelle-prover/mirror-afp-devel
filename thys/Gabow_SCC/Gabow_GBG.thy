@@ -1548,7 +1548,7 @@ begin
       moreover with \<open>j<B!(length B - 1)\<close> have "find_seg j < length B - 1"
         (* What follows is an unreadable, auto-generated structured proof
           that replaces the following smt-call:
-        by (smt GS.seg_start_def `seg_start (find_seg j) \<le> j`)*)
+        by (smt (z3) GS.seg_start_def `seg_start (find_seg j) \<le> j`)*)
       proof -
         have f1: "\<And>x\<^sub>1 x. \<not> (x\<^sub>1::nat) < x\<^sub>1 - x"
           using less_imp_diff_less by blast
@@ -1584,7 +1584,7 @@ begin
         by (metis GS.seg_end_def add_diff_inverse_nat \<open>i + 1 \<le> length B - 1\<close>
           add_lessD1 less_imp_diff_less less_le_not_le nat_neq_iff 
           seg_end_bound)
-        (*by (smt `i < length B - 1` seg_end_bound)*)
+        (*by (smt (z3) `i < length B - 1` seg_end_bound)*)
       with I_consistent \<open>v=S!j\<close> have "I v = Some (STACK j)" by auto
       ultimately show "v\<in>?L"
         by (auto simp: on_stack_less_def)

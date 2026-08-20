@@ -4,6 +4,14 @@
     <title>Kevin Kappelmann</title>
     <link>https://isa-afp.org/authors/kappelmann/</link>
     <description>AFP entries of Kevin Kappelmann</description><item>
+  <title>Type Annotations with Roundtrip Property</title>
+  <link>https://isa-afp.org/entries/Printing_Parsing_Roundtrip.html</link>
+  <pubDate>Tue, 12 May 2026 00:00:00 +0000</pubDate>
+  <description>Type Annotations with Roundtrip Property in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Computer science/Programming languages/Type systems</category>
+</item>
+<item>
   <title>Zippy - Generic White-Box Proof Search with Zippers</title>
   <link>https://isa-afp.org/entries/Zippy.html</link>
   <pubDate>Tue, 11 Nov 2025 00:00:00 +0000</pubDate>

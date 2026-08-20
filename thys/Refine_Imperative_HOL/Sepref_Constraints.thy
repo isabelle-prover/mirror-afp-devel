@@ -315,15 +315,17 @@ ML \<open>
 
     local
       fun simp_constraints_tac ctxt = let
-        val ctxt = put_simpset HOL_basic_ss ctxt 
-          addsimps (Named_Theorems.get ctxt @{named_theorems constraint_simps})
+        val ctxt = ctxt
+          |> put_simpset HOL_basic_ss 
+          |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems constraint_simps})
       in
         simp_tac ctxt
       end
 
       fun unfold_abbrevs_tac ctxt =  let
-        val ctxt = put_simpset HOL_basic_ss ctxt 
-          addsimps (Named_Theorems.get ctxt @{named_theorems constraint_abbrevs})
+        val ctxt = ctxt
+          |> put_simpset HOL_basic_ss 
+          |> Simplifier.add_simps (Named_Theorems.get ctxt @{named_theorems constraint_abbrevs})
         val ethms = @{thms conjE}  
         val ithms = @{thms conjI}  
       in

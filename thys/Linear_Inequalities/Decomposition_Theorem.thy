@@ -543,7 +543,7 @@ proof -
           unfolding y by (auto simp: vec_set_def)
         have "y \<in> Bounded_vec (?oi ?Bnd)" using xB abs
           unfolding Bounded_vec_vec_set vy
-          by (smt imageE max.absorb2 max.bounded_iff)
+          by (smt (z3) imageE max.absorb2 max.bounded_iff)
       } note yn0 = this
       note y0 yn0
     } note BndY = this

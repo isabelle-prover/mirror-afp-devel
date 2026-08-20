@@ -48,7 +48,7 @@ structure Data = Generic_Data
 (
   type T = simpset Name_Space.table;
   val empty: T = Name_Space.empty_table "named-simpset";
-  val merge : T * T -> T = Name_Space.join_tables (K merge_ss);
+  val merge : T * T -> T = Name_Space.join_tables (K Simplifier.merge_ss);
 );
 
 
@@ -64,12 +64,12 @@ fun put name ctxt = put_simpset (get ctxt name) ctxt
 fun map name f context =
   (content context name; Data.map (Name_Space.map_table_entry name f) context);
 
-fun map_ctxt name f context = map name (simpset_map (Context.proof_of context) f) context
+fun map_ctxt name f context = map name (Simplifier.simpset_map (Context.proof_of context) f) context
 
 
 (* maintain content *)
 
-fun clear name = map_ctxt name clear_simpset;
+fun clear name = map_ctxt name Simplifier.clear_simpset;
 
 fun add_simp name thm = map_ctxt name (Simplifier.add_simp thm)
 fun del_simp name thm = map_ctxt name (Simplifier.del_simp thm)
@@ -100,7 +100,7 @@ fun check ctxt = let val context = Context.Proof ctxt in Name_Space.check contex
 fun new_entry binding init = let
   fun decl _ context = let
     val sstab = Data.get context
-    val ss = the_default (Simplifier.clear_simpset (Context.proof_of context) |> simpset_of) init
+    val ss = init |> the_default (context |> Context.proof_of |> Simplifier.clear_simpset |> Simplifier.simpset_of) 
     val (_,sstab) = Name_Space.define context true (binding,ss) sstab
   in Data.put sstab context end  
   

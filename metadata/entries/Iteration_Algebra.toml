@@ -1,0 +1,69 @@
+title = "The Algebra of Iterative Constructions"
+date = 2026-04-29
+topics = [
+  "Logic/General logic/Modal logic",
+]
+abstract = """
+<p>
+Fixed points are a recurring theme in computer science and are often constructed
+as limits of suitably seeded fixed point iterations. This entry formalises an
+instance of the algebra of iterative constructions (AIC) from the paper <em>The
+Algebra of Iterative Constructions</em>.
+</p>
+
+<p>
+AIC is a purely algebraic approach to reasoning about fixed point iterations of
+continuous endomaps on complete lattices. AIC allows derivations of constructive
+fixed point theorems via equational logic and avoids explicit computations with
+indices. We demonstrate the applicability of AIC by providing algebraic proofs
+of several well- and less-well-known fixed point theorems: Among others, we
+prove the Tarski-Kantorovich principle &mdash; a generalization of the
+Kleene fixed point theorem &mdash; as well as a fixed point-theoretic
+generalization of k-induction.
+</p>
+
+<p>
+We moreover improve upon a recent generalization of the Tarski-Kantorovich
+principle due to Olszewski for obtaining pre- and postfixed points from
+lattice-theoretic limit inferiors and limit superiors trough iterating an
+endomap on an <em>arbitrary</em> seed element: We identify sufficient continuity
+conditions on the endomaps so that these limits become \\<em>proper</em> fixed
+points.
+</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.batz]
+email = "batz_email"
+
+[authors.kaminski]
+email = "kaminski_email"
+
+[authors.kehrer]
+email = "kehrer_email"
+
+[authors.klein]
+email = "klein_email1"
+
+[authors.urbat]
+email = "urbat_email"
+
+[authors.schmid]
+email = "schmid_email"
+
+[contributors]
+
+[notify]
+klein = "klein_email1"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "Batz et al. \"The Algebra of Iterative Constructions\", LICS'26.",
+]

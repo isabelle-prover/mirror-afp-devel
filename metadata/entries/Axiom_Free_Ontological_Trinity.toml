@@ -1,0 +1,42 @@
+title = "Formal Verification of Axiom-Free Gödelian Ontological Argument and Trinity Necessity Proof in Isabelle HOL"
+date = 2026-03-17
+topics = [
+  "Logic/Philosophical aspects",
+  "Logic/General logic/Mechanization of proofs",
+  "Logic/General logic/Modal logic",
+]
+abstract = """
+<p>This study reconstructs metaphysical arguments within a framework of computational formalization and machine verification, thereby recasting ontological claims as candidates for formal validation.</p>
+
+<p>This paper presents a formal development in <strong>automated reasoning for metaphysical systems</strong>, treating ontological arguments as precisely specified logical theories subject to machine verification. We provide an Isabelle/HOL formalization that reconstructs and verifies the core claims of <strong>two prior philosophical arguments</strong> within higher-order logic.</p>
+
+<p>Working entirely within HOL and introducing no additional axioms beyond the base logic, the development proceeds by conservative definitional extension (U-layer methodology). We define the concept of <strong>H-Optimality</strong> ($H_{opt}$) &mdash; capturing the ultimate truth concept of \"a truth so certain that no more certain truth can be conceived\" &mdash; as a structurally maximal admissible ground characterized by maximal non-trivial support relations and a finality condition.</p>
+
+<p>A Hilbert-style flat-model interpretation establishes the internal consistency and non-vacuity of this definitional package. This confirmation of the concept's consistency fulfills the core objective pursued by ontological arguments since G. W. Leibniz. Within this framework, we formally derive structural exclusion results for $H_{opt}$ at the level of argument-classes: the cases $N=1$ (singularity), $N=2$ (strict duality), and $N \\ge 4$ independent maxima are ruled out by $\\approx$-collapse ($\\mathrm{Arg}$-equivalence collapse) and $=$-collapse (numerical-identity collapse) mechanisms. Consequently, $N=3$ emerges as the unique admissible cardinality compatible with the stated maximality and exclusion conditions.</p>
+
+<p>We further prove a <strong>Definitional Finality Theorem</strong>: assuming $H_{opt}(q)$ and that any definition $D$ ranges over the pan-domain ($\\mathrm{PDom}$), there does not exist an $r$ satisfying $D(r)$ such that $\\mathrm{Arg}(q) \\prec \\mathrm{Arg}(r)$. This establishes a precise formal boundary for admissible strengthening under the given definitions, proving that the definition of a truth strictly superior to $H_{opt}$ is impossible.</p>
+
+<p>Finally, bounded finite-model search (Nitpick) identifies a genuine satisfying model, providing mechanized evidence for the existence of a non-vacuous and genuine triune model.</p>"""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.dock]
+email = "dock_email"
+
+[contributors]
+
+[notify]
+dock = "dock_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.20433/jnkpa.2023.07.95",
+  "10.20433/jnkpa.2025.07.101",
+]
+pubs = []

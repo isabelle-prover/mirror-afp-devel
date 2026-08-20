@@ -1,0 +1,42 @@
+title = "Feuerbach's Theorem"
+date = 2026-05-08
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+Feuerbach’s theorem is a classical result in Euclidean geometry about certain circles associated with a triangle. It states that the nine-point circle is tangent internally to the triangle’s incircle and tangent externally to each of the three excircles, where the <i>incircle</i> is the circle tangent to all three sides of the triangle; the <i>excircles</i> are circles tangent to one side and the extensions of the other two; the <i>nine-point circle</i> is the circle passing through nine special points of the triangle.
+
+This development is an experiment in automatic translation from one proof assistant to another using AI.
+The file <kbd>feuerbach.ml</kbd> was given, one proof at a time, 
+to Claude 4.6 using the <a href=\"https://github.com/awslabs/AutoCorrode\">Isabelle Assistant</a> plug-in.
+
+Despite coaxing and hints, the auto formalisation process transformed a 214-line HOL Light file
+to nearly 1500 lines of Isabelle/HOL, though one that could be processed in five seconds.
+Part of the excess length comes from spelling out two transformations (translation of a point to zero, 
+followed by rotation of a side to the vector $(1,0)$) that in HOL Light is done silently by WLOG tactics.
+The current proof has been heavily simplified, in part using Claude but mostly manually, 
+and is now under 750 lines. It is notable that Claude often relied on the <kbd>algebra</kbd> proof method, 
+despite its relative obscurity."""
+license = "bsd"
+note = ""
+creation_note = """
+Claude 4.6, as described in the abstract
+"""
+
+[authors]
+
+[authors.paulson]
+email = "paulson_email"
+
+[contributors]
+
+[notify]
+paulson = "paulson_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

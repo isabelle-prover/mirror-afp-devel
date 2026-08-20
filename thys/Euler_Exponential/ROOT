@@ -1,0 +1,10 @@
+chapter AFP
+
+session "Euler_Exponential" = "HOL-Nonstandard_Analysis" +
+  options [timeout = 300]
+  sessions  
+    Real_Power
+  theories
+    EulerExponential
+  document_files
+    "root.tex"

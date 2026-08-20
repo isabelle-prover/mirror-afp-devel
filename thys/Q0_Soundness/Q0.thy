@@ -359,7 +359,7 @@ lemma wff_Forall_iff[simp]: "wff \<beta> \<^bold>[\<^bold>\<forall>x:\<alpha>. A
 proof 
   assume "wff \<beta> \<^bold>[\<^bold>\<forall>x:\<alpha>. A\<^bold>]"
   then show "wff Tv A \<and> \<beta> = Tv"
-    by (smt Forall_def unique_type type_sym.inject wff_Abs' wff_App' wff_PI)
+    by (smt (z3) Forall_def unique_type type_sym.inject wff_Abs' wff_App' wff_PI)
 next
   assume "wff Tv A \<and> \<beta> = Tv"
   then show "wff \<beta> \<^bold>[\<^bold>\<forall>x:\<alpha>. A\<^bold>]" 
@@ -731,7 +731,7 @@ next
         using wff_Abs by auto
       ultimately
       have "val D I (\<phi>((x, \<alpha>) := xa)) A = val D I (\<psi>((x, \<alpha>) := xa)) A"
-        using assms wff_Abs by (smt case_prodI2) 
+        using assms wff_Abs by (smt (z3) case_prodI2) 
     }  
     ultimately
     show "val D I (\<phi>((x, \<alpha>) := xa)) A \<in>: D \<beta> \<and> val D I (\<phi>((x, \<alpha>) := xa)) A = val D I (\<psi>((x, \<alpha>) := xa)) A"
@@ -1051,7 +1051,7 @@ proof -
   have "val D I (\<phi>((''x'', Tv) := false, 
                    (''y'', Tv) := y, 
                    (''g'', ooo) := val_give_fst)) T \<in>: D Tv"
-    by (smt Pair_inject wff_give_fst assms(1,2,3) fun_upd_twist general_model.simps
+    by (smt (z3) Pair_inject wff_give_fst assms(1,2,3) fun_upd_twist general_model.simps
         asg_into_interp_fun_upd[OF assms(1,2)] asg_into_interp_fun_upd_true[OF assms(1)] 
         asg_into_interp_fun_upd_false[OF assms(1)] type_sym.distinct(5) val_give_fst_def wff_T)
   then have val_give_fst_D:
@@ -1174,7 +1174,7 @@ proof -
   then have "val D I (\<phi>((''x'', Tv) := x, 
                    (''y'', Tv) := false, 
                    (''g'', ooo) := val_give_snd)) T \<in>: D Tv"
-    by (smt Pair_inject wff_give_snd assms(1,2,3) 
+    by (smt (z3) Pair_inject wff_give_snd assms(1,2,3) 
         fun_upd_twist general_model.simps asg_into_interp_fun_upd[OF assms(1,2)] 
         asg_into_interp_fun_upd_false[OF assms(1)] asg_into_interp_fun_upd_true[OF assms(1)] 
         type_sym.distinct(5) val_give_snd_def wff_T)
@@ -1812,7 +1812,7 @@ next
   have "boolean (satisfies D I \<phi> (g\<^sub>o\<^sub>o \<^bold>\<cdot> T)
           \<and> satisfies D I \<phi> (g\<^sub>o\<^sub>o \<^bold>\<cdot> F)) = false"
     using False
-    by (smt boolean_def val.simps(1) val.simps(3) lemma_5401_c[OF assms(1,2)] 
+    by (smt (z3) boolean_def val.simps(1) val.simps(3) lemma_5401_c[OF assms(1,2)] 
         lemma_5401_d[OF assms(1,2)])
   then have 1: "val D I \<phi> ( 
          (g\<^sub>o\<^sub>o \<^bold>\<cdot> T) \<^bold>\<and>
@@ -2331,7 +2331,7 @@ lemma theorem_isa_Tv:
 next
   case (by_rule_R A B C)
   then show ?case
-    by (smt replacement_preserves_type rule_R.cases wff_Eql_iff)
+    by (smt (z3) replacement_preserves_type rule_R.cases wff_Eql_iff)
 qed
 
 (* Corresponds to Andrews' theorem 5402 a *)

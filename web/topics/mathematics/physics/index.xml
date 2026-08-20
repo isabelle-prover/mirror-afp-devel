@@ -4,6 +4,15 @@
     <title>Mathematics/Physics</title>
     <link>https://isa-afp.org/topics/mathematics/physics/</link>
     <description>AFP entries in Physics</description><item>
+  <title>The Gelfand–Naimark–Segal Construction</title>
+  <link>https://isa-afp.org/entries/Gelfand_Naimark_Segal.html</link>
+  <pubDate>Mon, 09 Mar 2026 00:00:00 +0000</pubDate>
+  <description>The Gelfand–Naimark–Segal Construction in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Mathematics/Physics</category>
+</item>
+<item>
   <title>Formalization of Gyrovector Spaces as Models of Hyperbolic Geometry and Special Relativity</title>
   <link>https://isa-afp.org/entries/GyrovectorSpaces.html</link>
   <pubDate>Sun, 16 Mar 2025 00:00:00 +0000</pubDate>

@@ -703,7 +703,7 @@ proof -
     assume "finitely_often passive.select_queue_step (lmap passive_of Sts)"
     hence fin_cp: "finitely_often choose_p_step Sts"
       unfolding finitely_often_def choose_p_step_imp_select_passive_queue_step
-      by (smt choose_p_step_imp_select_passive_queue_step enat_ord_code(4) len llength_lmap
+      by (smt (z3) choose_p_step_imp_select_passive_queue_step enat_ord_code(4) len llength_lmap
           lnth_lmap)
     hence fin_ci: "finitely_often compute_infer_step Sts"
       using fair by blast

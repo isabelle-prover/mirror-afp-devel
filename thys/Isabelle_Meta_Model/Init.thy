@@ -153,7 +153,7 @@ definition upto where "upto i j =
 definition "split_at f l =
  (let f = \<lambda>x. \<not> f x in
   (takeWhile f l, case dropWhile f l of [] \<Rightarrow> (None, []) | x # xs \<Rightarrow> (Some x, xs)))"
-definition take where "take reverse lg l = reverse (snd (L.split (takeWhile (\<lambda>(n, _). n < lg) (enumerate 0 (reverse l)))))"
+definition take where "take reverse lg l = reverse (snd (L.split (takeWhile (\<lambda>(n, _). n < lg) (indexed_from 0 (reverse l)))))"
 definition "take_last = take rev"
 definition "take_first = take id"
 definition "replace_gen f_res l c0 lby =

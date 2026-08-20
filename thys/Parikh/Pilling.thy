@@ -121,9 +121,8 @@ proof -
     (\<forall>y \<in> vars p2. y \<noteq> x)" unfolding bipart_rlexp_def by auto
   let ?q' = "Union (Concat q1 (Concat (Var x) q2)) (Union (Concat p1 q2) (Concat q1 p2))"
   let ?f' = "Union (Concat p1 p2) (Concat ?q' (Var x))"
-  have "\<forall>v. (\<Psi> (eval (Concat f1 f2) v) = \<Psi> (eval ?f' v))"
-  proof (rule allI)
-    fix v
+  have "\<Psi> (eval (Concat f1 f2) v) = \<Psi> (eval ?f' v)" for v
+  proof -
     have f2_subst: "\<Psi> (eval f2 v) = \<Psi> (eval p2 v \<union> eval q2 v @@ v x)"
       using p2_q2_intro f2'_intro by auto
     have "\<Psi> (eval (Concat f1 f2) v) = \<Psi> ((eval p1 v \<union> eval q1 v @@ v x) @@ eval f2 v)"
@@ -142,7 +141,7 @@ proof -
       by (simp add: conc_Un_distrib(2) conc_assoc)
     also have "\<dots> = \<Psi> (eval ?f' v)"
       by (simp add: Un_commute)
-    finally show "\<Psi> (eval (Concat f1 f2) v) = \<Psi> (eval ?f' v)" .
+    finally show ?thesis .
   qed
   moreover have "bipart_rlexp x ?f'" unfolding bipart_rlexp_def using p1_q1_intro p2_q2_intro by auto
   moreover from f1'_intro f2'_intro p1_q1_intro p2_q2_intro
@@ -162,9 +161,8 @@ proof -
     f' = Union p (Concat q (Var x)) \<and> (\<forall>y \<in> vars p. y \<noteq> x)" unfolding bipart_rlexp_def by auto
   let ?q_new = "Concat (Star p) (Concat (Star (Concat q (Var x))) (Concat (Star (Concat q (Var x))) q))"
   let ?f_new = "Union (Star p) (Concat ?q_new (Var x))"
-  have "\<forall>v. (\<Psi> (eval (Star f) v) = \<Psi> (eval ?f_new v))"
-  proof (rule allI)
-    fix v
+  have "\<Psi> (eval (Star f) v) = \<Psi> (eval ?f_new v)" for v
+  proof -
     have "\<Psi> (eval (Star f) v) = \<Psi> (star (eval p v \<union> eval q v @@ v x))"
       using f'_intro parikh_star_mono_eq p_q_intro
       by (metis eval.simps(1) eval.simps(3) eval.simps(4) eval.simps(5))
@@ -181,7 +179,7 @@ proof -
     also have "\<dots> = \<Psi> (star (eval p v) @@ {[]} \<union> star (eval p v) @@ star (eval q v @@ v x)
         @@ star (eval q v @@ v x) @@ eval q v @@ v x)" by (metis conc_Un_distrib(1))
     also have "\<dots> = \<Psi> (eval ?f_new v)" by (simp add: conc_assoc)
-    finally show "\<Psi> (eval (Star f) v) = \<Psi> (eval ?f_new v)" .
+    finally show ?thesis .
   qed
   moreover have "bipart_rlexp x ?f_new" unfolding bipart_rlexp_def using p_q_intro by fastforce
   moreover from f'_intro p_q_intro have "vars ?f_new = vars (Star f) \<union> {x}" by auto
@@ -380,7 +378,7 @@ lemma sols'_r: "sols' r = sol_r"
 
 text \<open>The next lemmas show that \<^const>\<open>sols'\<close> is still \<^const>\<open>reg_eval\<close> and that it complies with
 each of the four conditions defined by the predicate \<^const>\<open>partial_min_sol_ineq_sys\<close>:\<close>
-lemma sols'_reg: "\<forall>i. reg_eval (sols' i)"
+lemma sols'_reg: "reg_eval (sols' i)"
   using sols_reg sol_r_reg using subst_reg_eval_update by blast
 
 lemma sols'_is_sol: "solution_ineq_sys (take (Suc r) sys) sols'"
@@ -403,31 +401,29 @@ unfolding solution_ineq_sys_def proof (rule allI, rule impI)
     unfolding solves_ineq_sys_comm_def solves_ineq_comm_def by (auto simp add: less_Suc_eq)
 qed
 
-lemma sols'_min: "\<forall>sols2 v2. (\<forall>x. v2 x = eval (sols2 x) v2)
-                   \<and> solves_ineq_sys_comm (take (Suc r) sys) v2
-                   \<longrightarrow> (\<forall>i. \<Psi> (eval (sols' i) v2) \<subseteq> \<Psi> (v2 i))"
-proof (rule allI | rule impI)+
-  fix sols2 v2 i
-  assume as: "(\<forall>x. v2 x = eval (sols2 x) v2) \<and> solves_ineq_sys_comm (take (Suc r) sys) v2"
-  then have "solves_ineq_sys_comm (take r sys) v2" unfolding solves_ineq_sys_comm_def by fastforce
-  with as sols_is_sol have sols_s2: "\<Psi> (eval (sols i) v2) \<subseteq> \<Psi> (v2 i)" for i
+lemma sols'_min:
+assumes "\<forall>x. v2 x = eval (sols2 x) v2" "solves_ineq_sys_comm (take (Suc r) sys) v2"
+shows "\<Psi> (eval (sols' i) v2) \<subseteq> \<Psi> (v2 i)"
+proof -
+  from assms(2) have "solves_ineq_sys_comm (take r sys) v2" unfolding solves_ineq_sys_comm_def by fastforce
+  with assms(1) sols_is_sol have sols_s2: "\<Psi> (eval (sols i) v2) \<subseteq> \<Psi> (v2 i)" for i
     unfolding partial_min_sol_ineq_sys_def by auto
   have "eval (sys' ! r) v2 = eval (sys ! r) (\<lambda>i. eval (sols i) v2)"
     unfolding subst_sys_def using substitution_lemma[where f="sys ! r"]
     by (simp add: r_valid Suc_le_lessD)
   with sols_s2 have "\<Psi> (eval (sys' ! r) v2) \<subseteq> \<Psi> (eval (sys ! r) v2)"
     using rlexp_mono_parikh[of "sys ! r"] by auto
-  with as have "solves_ineq_comm r (sys' ! r) v2"
+  with assms(2) have "solves_ineq_comm r (sys' ! r) v2"
     unfolding solves_ineq_sys_comm_def solves_ineq_comm_def using r_valid by force
-  with as sol_r_is_sol have sol_r_min: "\<Psi> (eval sol_r v2) \<subseteq> \<Psi> (v2 r)"
+  with assms(1) sol_r_is_sol have sol_r_min: "\<Psi> (eval sol_r v2) \<subseteq> \<Psi> (v2 r)"
     unfolding partial_min_sol_one_ineq_def by blast
   let ?v' = "v2(r := eval sol_r v2)"
   from sol_r_min have "\<Psi> (?v' i) \<subseteq> \<Psi> (v2 i)" for i by simp
-  with sols_s2 show "\<Psi> (eval (sols' i) v2) \<subseteq> \<Psi> (v2 i)"
+  with sols_s2 show ?thesis
     using substitution_lemma_upd[where f="sols i"] rlexp_mono_parikh[of "sols i" ?v' v2] by force
 qed
 
-lemma sols'_vars_gt_r: "\<forall>i \<ge> Suc r. sols' i = Var i"
+lemma sols'_vars_gt_r: "i \<ge> Suc r \<Longrightarrow> sols' i = Var i"
   using sols_is_sol unfolding partial_min_sol_ineq_sys_def by auto
 
 lemma sols'_vars_leq_r: "\<forall>i < Suc r. \<forall>x \<in> vars (sols' i). x \<ge> Suc r \<and> x < length sys"
@@ -522,14 +518,12 @@ proof -
   from ls'_intro sols_intro have "solves_ineq_sys_comm sys ?ls'"
     unfolding partial_min_sol_ineq_sys_def solution_ineq_sys_def
     by (smt (verit) eval.simps(1) linorder_not_less nless_le take_all_iff)
-  moreover have "\<forall>sol'. solves_ineq_sys_comm sys sol' \<longrightarrow> (\<forall>x. \<Psi> (?ls' x) \<subseteq> \<Psi> (sol' x))"
-  proof (rule allI, rule impI)
-    fix sol' x
-    assume as: "solves_ineq_sys_comm sys sol'"
+  moreover have "\<Psi> (?ls' x) \<subseteq> \<Psi> (sol' x)" if as: "solves_ineq_sys_comm sys sol'" for sol' x
+  proof -
     let ?sol_rlexps = "\<lambda>i. Const (sol' i)"
     from as have "solves_ineq_sys_comm (take (length sys) sys) sol'" by simp
     moreover have "sol' x = eval (?sol_rlexps x) sol'" for x by simp
-    ultimately show "\<forall>x. \<Psi> (?ls' x) \<subseteq> \<Psi> (sol' x)"
+    ultimately show ?thesis
       using sols_intro unfolding partial_min_sol_ineq_sys_def
       by (smt (verit) empty_subsetI eval.simps(1) ls'_intro parikh_img_mono)
   qed

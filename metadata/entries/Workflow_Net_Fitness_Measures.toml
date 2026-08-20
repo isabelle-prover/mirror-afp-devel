@@ -1,0 +1,29 @@
+title = "Workflow Net Fitness Measures"
+date = 2026-02-07
+topics = [
+  "Computer science/Automata and formal languages",
+  "Computer science/Data structures",
+]
+abstract = """
+This entry covers workflow nets, a specialization of Petri nets, which are especially useful for modelling business processes. It then defines measures for the fitness of these nets, namely trace fitness and causal footprint fitness. These attempt to measure how well a model covers all of the traces in an event log (a multiset of traces, which have happened in the business). Most fitness measures are far from perfect and a number of attributes have been defined in literature.
+The main goal of this entry is to formalize proofs for some of these attributes of fitness measures and learning how to correctly define the measures and attributes along the way."""
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.manke]
+email = "manke_email"
+
+[contributors]
+
+[notify]
+manke = "manke_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

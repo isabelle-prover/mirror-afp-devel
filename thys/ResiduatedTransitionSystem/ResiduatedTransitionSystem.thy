@@ -1134,9 +1134,14 @@ begin
 
     lemma composable_permute:
     shows "composable t (u \\ t) \<longleftrightarrow> composable u (t \\ u)"
-      unfolding composable_def
-      by (metis cube ide_backward_stable ide_imp_con_iff_cong prfx_implies_con
-          composite_ofE composite_ofI)
+    proof
+      show "\<And>t u. composable t (u \\ t) \<Longrightarrow> composable u (t \\ u)"
+        unfolding composable_def
+        apply (elim exE composite_ofE)
+        by (metis coinitial_ide_are_cong composite_ofI con_imp_coinitial cube
+            ide_backward_stable prfx_implies_con)
+      thus "composable u (t \\ u) \<Longrightarrow> composable t (u \\ t)" by blast
+    qed
 
     lemma diamond_commutes_upto_cong:
     assumes "composite_of t (u \\ t) v" and "composite_of u (t \\ u) v'"
@@ -1494,7 +1499,7 @@ begin
           by (meson assms calculation con_sym prfx_implies_con resid_comp(2))
         also have "... = u \<cdot> v"
         proof -
-          have 2: "(t \<cdot> u) \\ t = u"
+          have "(t \<cdot> u) \\ t = u"
             by (metis assms comp_is_composite_of(2) composable_def composable_iff_arr_comp
                       composable_imp_seq composite_of_def extensionality seqE)
           moreover have "v \\ (t \\ (t \<cdot> u)) = v"
@@ -1754,6 +1759,26 @@ begin
       qed
     qed
 
+    lemma join_is_lub:
+    assumes "t \<lesssim> v" and "u \<lesssim> v" and "joinable t u"
+    shows "t \<squnion> u \<lesssim> v"
+    proof -
+      have "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
+        using assms resid_join\<^sub>E(3) [of t u v]
+        by (metis con_sym con_with_join_if(2) con_comp_iff prfx_decomp prfx_implies_con)
+      also have "... = trg v \<squnion> trg v"
+        using assms
+        by (metis ideE prfx_implies_con src_resid\<^sub>W\<^sub>E trg_ide)
+      also have "... = trg v"
+        by (metis assms(2) ide_iff_src_self ide_implies_arr join_arr_self prfx_implies_con
+            src_resid\<^sub>W\<^sub>E)
+      finally have "(t \<squnion> u) \\ v = trg v" by blast
+      moreover have "ide (trg v)"
+        using assms
+        by (metis con_implies_arr(2) prfx_implies_con cong_char trg_def)
+      ultimately show ?thesis by simp
+    qed
+
     lemma join_prfx_monotone:
     assumes "t \<lesssim> u" and "u \<squnion> v \<frown> t \<squnion> v"
     shows "t \<squnion> v \<lesssim> u \<squnion> v"
@@ -1890,27 +1915,12 @@ begin
         by (metis (full_types) has_joins joinable_iff_join_not_null joinable_implies_con con_sym)
     qed
 
-    lemma join_is_lub:
+    lemma join_is_lub\<^sub>E\<^sub>J:
     assumes "t \<lesssim> v" and "u \<lesssim> v"
     shows "t \<squnion> u \<lesssim> v"
-    proof -
-      have "(t \<squnion> u) \\ v = (t \\ v) \<squnion> (u \\ v)"
-        using assms resid_join\<^sub>E(3) [of t u v]
-        by (metis arr_prfx_join_self con_target con_sym join_assoc joinable_iff_con
-            joinable_iff_join_not_null prfx_implies_con resid_reflects_con)
-      also have "... = trg v \<squnion> trg v"
-        using assms
-        by (metis ideE prfx_implies_con src_resid\<^sub>W\<^sub>E trg_ide)
-      also have "... = trg v"
-        by (metis assms(2) ide_iff_src_self ide_implies_arr join_arr_self prfx_implies_con
-            src_resid\<^sub>W\<^sub>E)
-      finally have "(t \<squnion> u) \\ v = trg v" by blast
-      moreover have "ide (trg v)"
-        using assms
-        by (metis con_implies_arr(2) prfx_implies_con cong_char trg_def)
-      ultimately show ?thesis by simp
-    qed
-        
+      using assms
+      by (meson con_prfx(1) join_is_lub joinable_iff_con prfx_implies_con)
+
   end
 
   subsubsection "Extensional RTS with Composites"
@@ -2110,6 +2120,12 @@ begin
   assumes extensionality: "\<not> A.arr t \<Longrightarrow> F t = B.null"
   and preserves_con [simp]: "A.con t u \<Longrightarrow> B.con (F t) (F u)"
   and preserves_resid [simp]: "A.con t u \<Longrightarrow> F (t \\\<^sub>A u) = F t \\\<^sub>B F u"
+
+  locale strong_simulation =
+    simulation +
+  assumes reflects_con: "\<lbrakk>A.coinitial t u; B.con (F t) (F u)\<rbrakk> \<Longrightarrow> A.con t u"
+
+  context simulation
   begin
 
     notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
@@ -2189,6 +2205,17 @@ begin
       using con_implies_arr con_sym arr_resid_iff_con
       by unfold_locales auto
 
+    lemma is_simulation:
+    shows "simulation resid resid map"
+      ..
+
+    sublocale strong_simulation resid resid map
+      by unfold_locales fastforce
+
+    lemma is_strong_simulation:
+    shows "strong_simulation resid resid map"
+      ..
+
   end
 
   subsection "Composite of Simulations"
@@ -2222,6 +2249,38 @@ begin
     lemma is_simulation:
     shows "simulation A C map"
       using F.simulation_axioms G.simulation_axioms by blast
+
+  end
+
+  locale composite_of_strong_simulations =
+    composite_simulation +
+    F: strong_simulation A B F +
+    G: strong_simulation B C G
+  begin
+
+    sublocale strong_simulation A C map
+    proof
+      fix t u
+      assume tu: "F.A.coinitial t u"
+      assume con: "G.B.con (map t) (map u)"
+      have "F.B.coinitial (F t) (F u)"
+      proof -
+        obtain v where v: "v \<in> F.A.sources t \<inter> F.A.sources u"
+          using tu F.A.src_in_sources by blast
+        have "F v \<in> F.B.sources (F t) \<inter> F.B.sources (F u)"
+          using F.preserves_sources v by blast
+        thus ?thesis
+          using F.B.coinitial_def by auto
+      qed
+      hence "F.B.con (F t) (F u)"
+        by (metis G.reflects_con comp_def con)
+      thus "F.A.con t u"
+        using F.reflects_con tu by blast
+    qed
+
+    lemma is_strong_simulation:
+    shows "strong_simulation A C map"
+      ..
 
   end
 
@@ -2388,8 +2447,6 @@ begin
     qed
 
   end
-
-  subsection "Identities form a Coherent Normal Sub-RTS"
 
   section "Paths"
 
@@ -4467,6 +4524,14 @@ begin
       using assms
       by (metis (full_types) Arr.simps(1) Con_implies_Arr(1-2) Con_rec(1) null_char)
 
+    sublocale incl: strong_simulation resid Resid incl
+      using reflects_con con_char
+      by unfold_locales blast
+
+    lemma incl_is_strong_simulation:
+    shows "strong_simulation resid Resid incl"
+      ..
+
   end
 
   subsection "Composites of Paths"
@@ -5082,8 +5147,7 @@ begin
         by (metis Con_implies_Arr(1) Ide.simps(1) Srcs_Resid ide_char Con_imp_Arr_Resid
             seq_char)
       also have "PCong (T @ (U \<^sup>*\\\<^sup>* T)) (U @ (T \<^sup>*\\\<^sup>* U))"
-        using PCong_permute assms con_char prfx_implies_con
-        by (metis Ide.simps(1))
+        using PCong_permute assms con_char prfx_implies_con by metis
       also have "PCong (U @ (T \<^sup>*\\\<^sup>* U)) U"
         using assms PCong_append_Ide
         by (metis Con_imp_Arr_Resid Con_implies_Arr(1) Srcs_Resid arr_resid_iff_con
@@ -5385,7 +5449,7 @@ begin
 
   end
 
-  subsection "Simulations Lift to Paths"
+  subsection "Simulations Extend to Paths"
 
   text \<open>
     In this section we show that a simulation from RTS \<open>A\<close> to RTS \<open>B\<close> determines a simulation
@@ -5467,16 +5531,1387 @@ begin
             P\<^sub>A.con_char map_Resid)
     qed
 
-    lemma lifts_to_paths:
+    lemma extends_to_paths:
     shows "simulation P\<^sub>A.Resid P\<^sub>B.Resid (\<lambda>T. if P\<^sub>A.Arr T then map F T else [])"
       ..
+
+  end
+
+  section "Constructions on RTS's"
+
+  subsection "Products of RTS's"
+
+  locale product_rts =
+    A: rts A +
+    B: rts B
+  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
+  begin
+
+    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
+    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
+    notation A.cong    (infix \<open>\<sim>\<^sub>A\<close> 50)
+
+    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
+    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
+
+    type_synonym ('c, 'd) arr = "'c * 'd"
+
+    abbreviation (input) Null :: "('a, 'b) arr"
+    where "Null \<equiv> (A.null, B.null)"
+
+    definition resid :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
+    where "resid t u = (if fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u
+                        then (fst t \\\<^sub>A fst u, snd t \\\<^sub>B snd u)
+                        else Null)"
+
+    notation resid      (infix \<open>\\<close> 70)
+
+    sublocale partial_magma resid
+      by unfold_locales
+        (metis A.con_implies_arr(1-2) A.not_arr_null fst_conv resid_def)
+
+    lemma is_partial_magma:
+    shows "partial_magma resid"
+      ..
+
+    lemma null_char [simp]:
+    shows "null = Null"
+      by (metis B.null_is_zero(1) ex_un_null null_is_zero(1) resid_def B.conE snd_conv)
+
+    sublocale residuation resid
+    proof
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> u \\ t \<noteq> null"
+        by (metis A.con_def A.con_sym null_char prod.inject resid_def B.con_sym)
+      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> (t \\ u) \\ (t \\ u) \<noteq> null"
+        by (metis (no_types, lifting) A.arrE B.con_def B.con_imp_arr_resid fst_conv null_char
+            resid_def A.arr_resid snd_conv)
+      show "\<And>v t u. (v \\ t) \\ (u \\ t) \<noteq> null \<Longrightarrow> (v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+      proof -
+        fix t u v
+        assume 1: "(v \\ t) \\ (u \\ t) \<noteq> null"
+        have "(fst v \\\<^sub>A fst t) \\\<^sub>A (fst u \\\<^sub>A fst t) \<noteq> A.null"
+          by (metis 1 A.not_arr_null fst_conv null_char null_is_zero(1-2)
+              resid_def A.arr_resid)
+        moreover have "(snd v \\\<^sub>B snd t) \\\<^sub>B (snd u \\\<^sub>B snd t) \<noteq> B.null"
+          by (metis 1 B.not_arr_null snd_conv null_char null_is_zero(1-2)
+              resid_def B.arr_resid)
+        ultimately show "(v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
+          using resid_def null_char A.con_def B.con_def A.cube B.cube
+          apply simp
+          by (metis (no_types, lifting) A.conI A.con_sym_ax A.resid_reflects_con
+              B.con_sym_ax B.null_is_zero(1))
+      qed
+    qed
+
+    lemma is_residuation:
+    shows "residuation resid"
+      ..
+
+    notation con     (infix \<open>\<frown>\<close> 50)
+
+    lemma arr_char [iff]:
+    shows "arr t \<longleftrightarrow> A.arr (fst t) \<and> B.arr (snd t)"
+      by (metis (no_types, lifting) A.arr_def B.arr_def B.conE null_char resid_def
+          arr_def con_def snd_eqD)
+
+    lemma ide_char [iff]:
+    shows "ide t \<longleftrightarrow> A.ide (fst t) \<and> B.ide (snd t)"
+      by (metis (no_types, lifting) A.residuation_axioms B.residuation_axioms
+          arr_char arr_def fst_conv null_char prod.collapse resid_def residuation.conE
+          residuation.ide_def residuation.ide_implies_arr residuation_axioms snd_conv)
+
+    lemma con_char [iff]:
+    shows "t \<frown> u \<longleftrightarrow> fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u"
+      by (simp add: con_def resid_def B.con_def)
+
+    lemma trg_char:
+    shows "trg t = (if arr t then (A.trg (fst t), B.trg (snd t)) else Null)"
+      using A.trg_def B.trg_def resid_def trg_def by auto
+
+    sublocale rts resid
+    proof
+      show "\<And>t. arr t \<Longrightarrow> ide (trg t)"
+        by (simp add: trg_char)
+      show 1: "\<And>a t. \<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
+        by (simp add: A.resid_arr_ide B.resid_arr_ide resid_def)
+      thus "\<And>a t. \<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
+        using arr_resid cube
+        apply (elim ideE, intro ideI)
+         apply auto
+        by (metis 1 conI con_sym_ax ideI null_is_zero(2))
+      show "\<And>t u. t \<frown> u \<Longrightarrow> \<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
+      proof -
+        fix t u
+        assume tu: "t \<frown> u"
+        obtain a1 where a1: "a1 \<in> A.sources (fst t) \<inter> A.sources (fst u)"
+          by (meson A.con_imp_common_source all_not_in_conv con_char tu)
+        obtain a2 where a2: "a2 \<in> B.sources (snd t) \<inter> B.sources (snd u)"
+          by (meson B.con_imp_common_source all_not_in_conv con_char tu)
+        have "ide (a1, a2) \<and> (a1, a2) \<frown> t \<and> (a1, a2) \<frown> u"
+          using a1 a2 ide_char con_char
+          by (metis A.con_imp_common_source A.in_sourcesE A.sources_eqI
+              B.con_imp_common_source B.in_sourcesE B.sources_eqI con_sym
+              fst_conv inf_idem snd_conv tu)
+        thus "\<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u" by blast
+      qed
+      show "\<And>t u v. \<lbrakk>ide (t \\ u); u \<frown> v\<rbrakk> \<Longrightarrow> t \\ u \<frown> v \\ u"
+      proof -
+        fix t u v
+        assume tu: "ide (t \\ u)"
+        assume uv: "u \<frown> v"
+        have "A.ide (fst t \\\<^sub>A fst u) \<and> B.ide (snd t \\\<^sub>B snd u)"
+          using tu ide_char
+          by (metis conI con_char fst_eqD ide_implies_arr not_arr_null resid_def snd_conv)
+        moreover have "fst u \<frown>\<^sub>A fst v \<and> snd u \<frown>\<^sub>B snd v"
+          using uv con_char by blast
+        ultimately show "t \\ u \<frown> v \\ u"
+          by (simp add: A.con_target A.con_sym A.prfx_implies_con
+              B.con_target B.con_sym B.prfx_implies_con resid_def)
+      qed
+    qed
+
+    lemma is_rts:
+    shows "rts resid"
+      ..
+
+    notation prfx    (infix \<open>\<lesssim>\<close> 50)
+    notation cong    (infix \<open>\<sim>\<close> 50)
+
+    lemma sources_char:
+    shows "sources t = A.sources (fst t) \<times> B.sources (snd t)"
+      by force
+
+    lemma targets_char:
+    shows "targets t = A.targets (fst t) \<times> B.targets (snd t)"
+    proof
+      show "targets t \<subseteq> A.targets (fst t) \<times> B.targets (snd t)"
+        using targets_def ide_char con_char resid_def trg_char trg_def by auto
+      show "A.targets (fst t) \<times> B.targets (snd t) \<subseteq> targets t"
+      proof
+        fix a
+        assume a: "a \<in> A.targets (fst t) \<times> B.targets (snd t)"
+        show "a \<in> targets t"
+        proof
+          show "ide a"
+            using a ide_char by auto
+          show "trg t \<frown> a"
+            using a trg_char con_char [of "trg t" a]
+            by (metis (no_types, lifting) SigmaE arr_char con_char con_implies_arr(1)
+                fst_conv A.in_targetsE B.in_targetsE A.arr_resid_iff_con
+                B.arr_resid_iff_con A.trg_def B.trg_def snd_conv)
+        qed
+      qed
+    qed
+
+    lemma prfx_char:
+    shows "t \<lesssim> u \<longleftrightarrow> fst t \<lesssim>\<^sub>A fst u \<and> snd t \<lesssim>\<^sub>B snd u"
+      using A.prfx_implies_con B.prfx_implies_con resid_def by auto
+
+    lemma cong_char:
+    shows "t \<sim> u \<longleftrightarrow> fst t \<sim>\<^sub>A fst u \<and> snd t \<sim>\<^sub>B snd u"
+      using prfx_char by auto
+
+    lemma join_of_char:
+    shows "join_of t u v \<longleftrightarrow> A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
+    and "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
+    proof -
+      show "\<And>v. join_of t u v \<longleftrightarrow>
+                   A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
+      proof
+        fix v
+        show "join_of t u v \<Longrightarrow>
+                A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
+        proof -
+          assume 1: "join_of t u v"
+          have 2: "t \<frown> u \<and> t \<frown> v \<and> u \<frown> v \<and> u \<frown> t \<and> v \<frown> t \<and> v \<frown> u"
+            by (meson 1 bounded_imp_con con_prfx_composite_of(1) join_ofE con_sym)
+          show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
+            using 1 2 prfx_char resid_def
+            by (elim conjE join_ofE composite_ofE congE conE,
+                intro conjI A.join_ofI B.join_ofI A.composite_ofI B.composite_ofI)
+               auto
+        qed
+        show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)
+                \<Longrightarrow> join_of t u v"
+          apply (elim conjE A.join_ofE B.join_ofE A.composite_ofE B.composite_ofE,
+                 intro join_ofI composite_ofI)
+          using prfx_char resid_def by auto
+      qed
+      thus "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
+        using joinable_def A.joinable_def B.joinable_def by simp
+    qed
+
+  end
+
+  locale product_of_weakly_extensional_rts =
+    A: weakly_extensional_rts A +
+    B: weakly_extensional_rts B +
+    product_rts
+  begin
+
+    sublocale weakly_extensional_rts resid
+    proof
+      show "\<And>t u. \<lbrakk>t \<sim> u; ide t; ide u\<rbrakk> \<Longrightarrow> t = u"
+        by (metis cong_char ide_char prod.exhaust_sel A.weak_extensionality B.weak_extensionality)
+    qed
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts resid"
+      ..
+
+    lemma src_char:
+    shows "src t = (if arr t then (A.src (fst t), B.src (snd t)) else null)"
+    proof (cases "arr t")
+      show "\<not> arr t \<Longrightarrow> ?thesis"
+        using src_def by presburger
+      assume t: "arr t"
+      show ?thesis
+        using t con_char arr_char
+        by (intro src_eqI) auto
+    qed
+
+  end
+
+  locale product_of_extensional_rts =
+    A: extensional_rts A +
+    B: extensional_rts B +
+    product_of_weakly_extensional_rts
+  begin
+
+    sublocale extensional_rts resid
+    proof
+      show "\<And>t u. t \<sim> u \<Longrightarrow> t = u"
+        by (metis A.extensionality B.extensionality cong_char prod.collapse)
+    qed
+
+    lemma is_extensional_rts:
+    shows "extensional_rts resid"
+      ..
+
+  end
+
+  subsubsection "Product Simulations"
+
+  locale product_simulation =
+    A1: rts A1 +
+    A0: rts A0 +
+    B1: rts B1 +
+    B0: rts B0 +
+    A1xA0: product_rts A1 A0 +
+    B1xB0: product_rts B1 B0 +
+    F1: simulation A1 B1 F1 +
+    F0: simulation A0 B0 F0
+  for A1 :: "'a1 resid"      (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
+  and A0 :: "'a0 resid"      (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
+  and B1 :: "'b1 resid"      (infix \<open>\\<^sub>B\<^sub>1\<close> 70)
+  and B0 :: "'b0 resid"      (infix \<open>\\<^sub>B\<^sub>0\<close> 70)
+  and F1 :: "'a1 \<Rightarrow> 'b1"
+  and F0 :: "'a0 \<Rightarrow> 'b0"
+  begin
+
+    definition map
+    where "map = (\<lambda>a. if A1xA0.arr a then (F1 (fst a), F0 (snd a))
+                      else (F1 A1.null, F0 A0.null))"
+
+    lemma map_simp [simp]:
+    assumes "A1.arr a1" and "A0.arr a0"
+    shows "map (a1, a0) = (F1 a1, F0 a0)"
+      using assms map_def by auto
+
+    sublocale simulation A1xA0.resid B1xB0.resid map
+    proof
+      show "\<And>t. \<not> A1xA0.arr t \<Longrightarrow> map t = B1xB0.null"
+        using map_def F1.extensionality F0.extensionality by auto
+      show "\<And>t u. A1xA0.con t u \<Longrightarrow> B1xB0.con (map t) (map u)"
+        using A1xA0.con_char B1xB0.con_char A1.con_implies_arr A0.con_implies_arr by auto
+      show "\<And>t u. A1xA0.con t u \<Longrightarrow> map (A1xA0.resid t u) = B1xB0.resid (map t) (map u)"
+        using A1xA0.resid_def B1xB0.resid_def A1.con_implies_arr A0.con_implies_arr
+        by auto
+    qed
+
+    lemma is_simulation:
+    shows "simulation A1xA0.resid B1xB0.resid map"
+      ..
+
+  end
+
+  subsubsection "Binary Simulations"
+
+  locale binary_simulation =
+    A1: rts A1 +
+    A0: rts A0 +
+    A: product_rts A1 A0 +
+    B: rts B +
+    simulation A.resid B F
+  for A1 :: "'a1 resid"    (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
+  and A0 :: "'a0 resid"    (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
+  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
+  and F :: "'a1 * 'a0 \<Rightarrow> 'b"
+  begin
+
+    lemma fixing_ide_gives_simulation_1:
+    assumes "A1.ide a1"
+    shows "simulation A0 B (\<lambda>t0. F (a1, t0))"
+    proof
+      show "\<And>t0. \<not> A0.arr t0 \<Longrightarrow> F (a1, t0) = B.null"
+        using assms extensionality A.arr_char by simp
+      show "\<And>t0 u0. A0.con t0 u0 \<Longrightarrow> B.con (F (a1, t0)) (F (a1, u0))"
+        using assms A.con_char preserves_con by auto
+      show "\<And>t0 u0. A0.con t0 u0 \<Longrightarrow> F (a1, t0 \\\<^sub>A\<^sub>0 u0) = F (a1, t0) \\\<^sub>B F (a1, u0)"
+        using assms A.con_char A.resid_def preserves_resid
+        by (metis A1.ideE fst_conv snd_conv)
+    qed
+
+    lemma fixing_ide_gives_simulation_0:
+    assumes "A0.ide a0"
+    shows "simulation A1 B (\<lambda>t1. F (t1, a0))"
+    proof
+      show "\<And>t1. \<not> A1.arr t1 \<Longrightarrow> F (t1, a0) = B.null"
+        using assms extensionality A.arr_char by simp
+      show "\<And>t1 u1. A1.con t1 u1 \<Longrightarrow> B.con (F (t1, a0)) (F (u1, a0))"
+        using assms A.con_char preserves_con by auto
+      show "\<And>t1 u1. A1.con t1 u1 \<Longrightarrow> F (t1 \\\<^sub>A\<^sub>1 u1, a0) = F (t1, a0) \\\<^sub>B F (u1, a0)"
+        using assms A.con_char A.resid_def preserves_resid
+        by (metis A0.ideE fst_conv snd_conv)
+    qed
+
+  end
+
+  subsection "Sub-RTS's"
+
+  text\<open>
+    A sub-RTS of an RTS \<open>R\<close> may be determined by specifying a subset of the transitions
+    of \<open>R\<close> that is closed under residuation and in addition includes some common source
+    for every consistent pair of transitions contained in it.
+  \<close>
+
+  locale sub_rts =
+    R: rts R
+  for R :: "'a resid"  (infix \<open>\\<^sub>R\<close> 70)
+  and Arr :: "'a \<Rightarrow> bool" +
+  assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
+  and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
+  and enough_sources: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow>
+                          \<exists>a. Arr a \<and> a \<in> R.sources t \<and> a \<in> R.sources u"
+  begin
+
+    notation R.con     (infix \<open>\<frown>\<^sub>R\<close> 50)
+    notation R.prfx    (infix \<open>\<lesssim>\<^sub>R\<close> 50)
+    notation R.cong    (infix \<open>\<sim>\<^sub>R\<close> 50)
+
+    definition resid :: "'a resid"  (infix \<open>\\<close> 70)
+    where "t \\ u \<equiv> if Arr t \<and> Arr u \<and> t \<frown>\<^sub>R u then t \\\<^sub>R u else R.null"
+
+    sublocale partial_magma resid
+      using R.not_con_null(2) R.null_is_zero(1) resid_def
+      by unfold_locales metis
+
+    lemma is_partial_magma:
+    shows "partial_magma resid"
+      ..
+
+    lemma null_char:
+    shows "null = R.null"
+      by (metis R.not_arr_null inclusion null_eqI resid_def)
+
+    sublocale residuation resid
+      using R.conE R.con_sym R.not_con_null(1) null_is_zero(1) resid_def
+      apply unfold_locales
+        apply metis
+       apply (metis R.con_def R.con_imp_arr_resid resid_closed)
+      by (metis (no_types, lifting) R.con_def R.cube resid_closed)
+
+    lemma is_residuation:
+    shows "residuation resid"
+      ..
+
+    notation con     (infix \<open>\<frown>\<close> 50)
+
+    lemma arr_char:
+    shows "arr t \<longleftrightarrow> Arr t"
+      by (metis R.con_arr_self R.con_def R.not_arr_null arrE con_def inclusion
+          null_is_zero(2) resid_def residuation.con_implies_arr(1) residuation_axioms)
+
+    lemma ide_char:
+    shows "ide t \<longleftrightarrow> Arr t \<and> R.ide t"
+      by (metis R.ide_def arrI arr_char con_def ide_def not_arr_null resid_def)
+
+    lemma con_char:
+    shows "con t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.con t u"
+      by (metis R.conE arr_char con_def not_arr_null null_is_zero(1) resid_def)
+
+    lemma trg_char:
+    shows "trg = (\<lambda>t. if arr t then R.trg t else null)"
+      using arr_char trg_def R.trg_def resid_def by fastforce
+
+    sublocale rts resid
+      using arr_char ide_char con_char trg_char resid_def resid_closed inclusion
+      apply unfold_locales
+      using R.prfx_reflexive trg_def apply force
+         apply (simp add: R.resid_arr_ide)
+        apply simp
+       apply (meson R.con_sym R.in_sourcesE enough_sources)
+      by (metis (no_types, lifting) R.con_target arr_resid_iff_con con_sym_ax null_char)
+
+    lemma is_rts:
+    shows "rts resid"
+      ..
+
+    notation prfx    (infix \<open>\<lesssim>\<close> 50)
+    notation cong    (infix \<open>\<sim>\<close> 50)
+
+    lemma sources_subset:
+    shows "sources t \<subseteq> {a. Arr t \<and> a \<in> R.sources t}"
+      using con_char ide_char by fastforce
+
+    lemma targets_subset:
+    shows "targets t \<subseteq> {b. Arr t \<and> b \<in> R.targets t}"
+    proof
+      fix b
+      assume b: "b \<in> targets t"
+      show "b \<in> {b. Arr t \<and> b \<in> R.targets t}"
+      by (metis CollectI R.rts_axioms arr_char arr_iff_has_target b con_char
+        emptyE ide_char in_targetsE rts.in_targetsI trg_char)
+    qed
+
+    lemma prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
+    shows "prfx t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.prfx t u"
+      using arr_char con_char ide_char
+      by (metis R.prfx_implies_con prfx_implies_con resid_closed resid_def)
+
+    lemma cong_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
+    shows "t \<sim> u \<longleftrightarrow> Arr t \<and> Arr u \<and> t \<sim>\<^sub>R u"
+      using prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S by force
+
+    lemma composite_of_char:
+    shows "composite_of t u v \<longleftrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v"
+    proof
+      show "composite_of t u v \<Longrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v"
+        by (metis R.composite_of_def R.con_sym composite_ofE con_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
+            resid_def rts.prfx_implies_con rts_axioms)
+      show "Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v \<Longrightarrow> composite_of t u v"
+        using composite_of_def resid_closed resid_def rts.composite_ofE ide_char
+        by fastforce
+    qed
+
+    lemma join_of_char:
+    shows "join_of t u v \<longleftrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.join_of t u v"
+      using composite_of_char
+      by (metis R.bounded_imp_con R.join_of_def join_of_def resid_closed resid_def)
+
+    lemma preserves_weakly_extensional_rts:
+    assumes "weakly_extensional_rts R"
+    shows "weakly_extensional_rts resid"
+      by (metis assms cong_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S ide_char rts_axioms weakly_extensional_rts.intro
+          weakly_extensional_rts.weak_extensionality weakly_extensional_rts_axioms.intro)
+
+    lemma preserves_extensional_rts:
+    assumes "extensional_rts R"
+    shows "extensional_rts resid"
+      by (meson assms extensional_rts.cong_char extensional_rts.intro
+          extensional_rts_axioms.intro prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S rts_axioms)
+
+    abbreviation incl
+    where "incl t \<equiv> if arr t then t else null"
+
+    sublocale Incl: simulation resid R incl
+      using resid_closed resid_def
+      by unfold_locales (auto simp add: null_char arr_char con_char)
+
+    lemma inclusion_is_simulation:
+    shows "simulation resid R incl"
+      ..
+
+    lemma incl_cancel_left:
+    assumes "transformation X resid F G T" and "transformation X resid F' G' T'"
+    and "incl \<circ> T = incl \<circ> T'"
+    shows "T = T'"
+    proof
+      fix x
+      interpret T: transformation X resid F G T
+        using assms(1) by blast
+      interpret T': transformation X resid F' G' T'
+        using assms(2) by blast
+      show "T x = T' x"
+      proof -
+        have "T x = (incl \<circ> T) x"
+          using T.extensionality T.A.prfx_reflexive T.respects_cong arr_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
+          by auto
+        also have "... = (incl \<circ> T') x"
+          using assms(3) by auto
+        also have "... = T' x"
+          using T'.extensionality T.A.prfx_reflexive T'.respects_cong arr_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
+          by fastforce
+        finally show ?thesis by blast
+      qed
+    qed
+
+    lemma incl_reflects_con:
+    assumes "R.con (incl t) (incl u)"
+    shows "con t u"
+      by (metis (full_types) R.not_con_null(1) R.not_con_null(2) arr_char
+          assms con_char null_char)
+
+    sublocale strong_simulation resid R incl
+      using incl_reflects_con
+      by unfold_locales blast
+
+    lemma incl_is_strong_simulation:
+    shows "strong_simulation resid R incl"
+      ..
+
+    lemma corestriction_of_simulation:
+    assumes "simulation X R F"
+    and "\<And>x. residuation.arr X x \<Longrightarrow> Arr (F x)"
+    shows "simulation X resid F" and "incl \<circ> F = F"
+    proof -
+      interpret X: rts X
+        using assms(1) simulation_def by blast
+      interpret F: simulation X R F
+        using assms(1) by blast
+      interpret F': simulation X resid F
+        using assms(2) con_char resid_def F.extensionality null_char
+              X.con_implies_arr(1-2)
+        by unfold_locales auto
+      show 1: "simulation X resid F" ..
+      show "incl \<circ> F = F"
+        using F.extensionality null_char by fastforce
+    qed
+
+    lemma corestriction_of_transformation:
+    assumes "simulation X resid F" and "simulation X resid G"
+    and "transformation X R F G T"
+    and "\<And>x. residuation.arr X x \<Longrightarrow> Arr (T x)"
+    shows "transformation X resid F G T" and "incl \<circ> T = T"
+    proof -
+      interpret X: rts X
+        using assms(3) transformation_def by blast
+      interpret R: weakly_extensional_rts R
+        using assms(3) transformation_def by blast
+      interpret S: weakly_extensional_rts resid
+        by (simp add: R.weakly_extensional_rts_axioms preserves_weakly_extensional_rts)
+      interpret F: simulation X resid F
+        using assms(1) transformation_def by blast
+      interpret G: simulation X resid G
+        using assms(2) transformation_def by blast
+      interpret T: transformation X R F G T
+        using assms(3) by blast
+      interpret T': transformation X resid F G T
+      proof
+        show "\<And>f. \<not> X.arr f \<Longrightarrow> T f = null"
+          by (simp add: T.extensionality null_char)
+        show "\<And>x x'. \<lbrakk>X.ide x; X.cong x x'\<rbrakk> \<Longrightarrow> T x = T x'"
+          using T.respects_cong_ide by blast
+        show "\<And>f. X.ide f \<Longrightarrow> src (T f) = F f"
+          by (metis F.preserves_ide F.preserves_reflects_arr R.arr_resid_iff_con
+              R.arr_src_iff_arr R.ide_implies_arr R.resid_arr_src S.con_imp_eq_src
+              S.src_ide T.F.preserves_ide T.preserves_src X.con_implies_arr(2)
+              X.ideE arr_char assms(4) con_char)
+        show "\<And>f. X.ide f \<Longrightarrow> trg (T f) = G f"
+          by (simp add: T.preserves_trg arr_char assms(4) trg_char)
+        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> T a \\ F f = T (X a f)"
+          by (metis F.preserves_reflects_arr R.residuation_axioms T.naturality1_ax
+              X.arr_iff_has_source X.ex_un_null X.ide_implies_arr X.in_sourcesE
+              X.not_arr_null X.null_eqI X.source_is_prfx arr_char assms(4) resid_def
+              residuation.conI)
+        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> F f \\ T a = G f"
+          by (metis F.preserves_reflects_arr R.arr_resid_iff_con
+              T.G.preserves_reflects_arr T.naturality2_ax X.in_sourcesE
+              X.residuation_axioms arr_char assms(4) resid_def
+              residuation.con_implies_arr(1) residuation.ide_implies_arr)
+        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> join_of (T a) (F f) (T f)"
+          by (meson F.preserves_reflects_arr T.naturality3 X.con_implies_arr(1)
+              X.ide_implies_arr X.in_sourcesE arr_char assms(4) join_of_char)
+      qed
+      show 1: "transformation X resid F G T" ..
+      show "incl \<circ> T = T"
+        using T.extensionality arr_char assms(4) null_char by fastforce
+    qed
+
+  end
+
+  locale source_replete_sub_rts =
+    R: rts R
+  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  and Arr :: "'a \<Rightarrow> bool" +
+  assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
+  and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
+  and source_replete: "Arr t \<Longrightarrow> R.sources t \<subseteq> Collect Arr"
+  begin
+
+    sublocale sub_rts
+      using inclusion resid_closed source_replete
+      apply unfold_locales
+        apply auto[2]
+      by (metis Collect_mem_eq Collect_mono_iff R.con_imp_common_source
+          R.sources_eqI R.src_in_sources)
+
+    lemma is_sub_rts:
+    shows "sub_rts R Arr"
+      ..
+
+    lemma sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
+    shows "sources t = {a. Arr t \<and> a \<in> R.sources t}"
+      using source_replete sources_subset
+      apply auto[1]
+      by (metis Ball_Collect R.in_sourcesE con_char ide_char in_sourcesI)
+
+    lemma targets_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
+    shows "targets t = {b. Arr t \<and> b \<in> R.targets t}"
+    proof
+      show "targets t \<subseteq> {b. Arr t \<and> b \<in> R.targets t}"
+        using targets_subset by blast
+      show "{b. Arr t \<and> b \<in> R.targets t} \<subseteq> targets t"
+      proof
+        fix b
+        assume b: "b \<in> {b. Arr t \<and> b \<in> R.targets t}"
+        show "b \<in> targets t"
+        by (metis (no_types, lifting) R.in_targetsE R.rts_axioms arr_char b
+          con_arr_self mem_Collect_eq rts.in_sourcesI sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S sources_resid
+          trg_char trg_def trg_in_targets)
+      qed
+    qed
+
+    interpretation P\<^sub>R: paths_in_rts R
+      ..
+    interpretation P: paths_in_rts resid
+      ..
+
+    (*
+     * TODO: It might be possible to prove the following without the additional assumption
+     * on sources, if the definition of path were generalized so that only nonempty
+     * intersection of the targets of one transition with the sources of the next were
+     * required, rather than containment.
+     *)
+
+    lemma path_reflection:
+    shows "\<lbrakk>P\<^sub>R.Arr T; set T \<subseteq> Collect Arr\<rbrakk> \<Longrightarrow> P.Arr T"
+    proof (induct T, simp)
+      fix t T
+      assume ind: "\<lbrakk>P\<^sub>R.Arr T; set T \<subseteq> Collect Arr\<rbrakk> \<Longrightarrow> P.Arr T"
+      assume tT: "P\<^sub>R.Arr (t # T)"
+      assume set: "set (t # T) \<subseteq> Collect Arr"
+      have 1: "R.arr t"
+        using tT
+        by (metis P\<^sub>R.Arr_imp_arr_hd list.sel(1))
+      show "P.Arr (t # T)"
+      proof (cases "T = []")
+        show "T = [] \<Longrightarrow> ?thesis"
+          using 1 set arr_char by simp
+        assume T: "T \<noteq> []"
+        show ?thesis
+        proof
+          show "arr t"
+            using 1 arr_char set by simp
+          show "P.Arr T"
+            using T tT P\<^sub>R.Arr_imp_Arr_tl
+            by (metis ind insert_subset list.sel(3) list.simps(15) set)
+          show "targets t \<subseteq> P.Srcs T"
+          proof -
+            have "targets t \<subseteq> R.targets t"
+              using targets_subset by blast
+            also have "... \<subseteq> R.sources (hd T)"
+              using T tT
+              by (metis P\<^sub>R.Arr.simps(3) P\<^sub>R.Srcs_simp\<^sub>P list.collapse)
+            also have "... \<subseteq> P.Srcs T"
+              using P.Arr_imp_arr_hd P.Srcs_simp\<^sub>P \<open>P.Arr T\<close> sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S arr_char
+              by force
+            finally show ?thesis by blast
+          qed
+        qed
+      qed
+    qed
+
+  end
+
+  locale sub_rts_of_weakly_extensional_rts =
+    R: weakly_extensional_rts R +
+    sub_rts R Arr
+  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  and Arr :: "'a \<Rightarrow> bool"
+  begin
+
+    sublocale weakly_extensional_rts resid
+      using R.weakly_extensional_rts_axioms preserves_weakly_extensional_rts
+      by blast
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts resid"
+      ..
+
+    lemma src_char:
+    shows "src = (\<lambda>t. if arr t then R.src t else null)"
+    proof
+      fix t
+      show "src t = (if arr t then R.src t else null)"
+        by (metis R.src_eqI con_arr_src(2) con_char ide_char ide_src src_def)
+    qed
+
+    lemma targets_char:
+    assumes "arr t"
+    shows "targets t = {R.trg t}"
+      using assms trg_char trg_in_targets arr_has_un_target by auto
+
+  end
+
+  locale sub_rts_of_extensional_rts =
+    R: extensional_rts R +
+    sub_rts R Arr
+  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
+  and Arr :: "'a \<Rightarrow> bool"
+  begin
+
+    sublocale sub_rts_of_weakly_extensional_rts ..
+
+    sublocale extensional_rts resid
+      using R.extensional_rts_axioms preserves_extensional_rts
+      by blast
+
+    lemma is_extensional_rts:
+    shows "extensional_rts resid"
+      ..
+
+  end
+
+  subsection "Quotient RTS's"
+
+  text\<open>
+    The following locale constructs the quotient of an RTS by an equivalence relation \<open>\<E>\<close>
+    on arrows, which is assumed to be a strong congruence on arrows (reflexive, symmetric,
+    transitive, substitutive for residuation and consistency), plus two additional properties.
+    One of these additional properties (\<open>relates_prfx_ide\<close>) states that the equivalence classes
+    of identity arrows are closed under prefix, which ultimately results in the quotient RTS
+    being weakly extensional.  The other additional property (\<open>coinitial_witnesses\<close>) states
+    that every situation comprised of arrows \<open>u\<close> and \<open>v\<close> consistent with arrows \<open>t\<^sub>u\<close> and \<open>t\<^sub>v\<close>,
+    respectively, which are equivalent to each other, can be transported via equivalence
+    to a situation of mutually coinitial arrows \<open>t'\<close>, \<open>u'\<close>, and \<open>v'\<close>, so that both \<open>u'\<close> and \<open>t'\<close>
+    are consistent with the same arrow \<open>t'\<close>.
+    This latter property, which is used to establish the cube property for the quotient RTS,
+    seems to be of a purely technical nature, as opposed to being related to any particular
+    class of simulations.
+  \<close>
+
+  locale quotient_rts =
+    R: rts +
+    fixes \<E> :: "'a => 'a => bool"
+    assumes relation_on_arrows: "\<E> t t' \<Longrightarrow> R.arr t \<and> R.arr t'"
+    and reflp_on: "reflp_on (Collect R.arr) \<E>"
+    and symp: "symp \<E>"
+    and transp: "transp \<E>"
+    and subst_resid: "\<lbrakk>\<E> t t'; \<E> u u'; t \<frown> u; t' \<frown> u'\<rbrakk> \<Longrightarrow> \<E> (t \\ u) (t' \\ u')"
+    and subst_con: "\<lbrakk>\<E> t t'; \<E> u u'; t \<frown> u; R.coinitial t' u'\<rbrakk> \<Longrightarrow> t' \<frown> u'"
+    and relates_prfx_ide: "\<lbrakk>\<E> t a; R.ide a\<rbrakk> \<Longrightarrow> \<forall>t'. R.prfx t' t \<longrightarrow> \<E> t' a"
+    and coinitial_witnesses: "\<lbrakk>t\<^sub>u \<frown> u; t\<^sub>v \<frown> v; \<E> t\<^sub>u t\<^sub>v\<rbrakk>
+                                 \<Longrightarrow> \<exists>t' u' v'. \<E> t' t\<^sub>u \<and> \<E> u' u \<and> \<E> v' v \<and> t' \<frown> u' \<and> t' \<frown> v'"
+  begin
+
+    text\<open>
+      A consequence of the property \<open>relates_prfx_ide\<close> is that each pair of identities that
+      are related by \<open>R.cong\<close> are also related by \<open>\<E>\<close>.  Later, we will show that the set of
+      all arrows mapped to identities by a simulation to a weakly extensional RTS must
+      satisfy \<open>relates_prfx_ide\<close>.  However, I do not know whether there is a more general way
+      to carry out the quotient construction without assuming \<open>relates_prfx_ide\<close>.
+    \<close>
+
+    lemma relates_cong_ide:
+    assumes "R.ide a" and "R.ide a'" and "R.cong a a'"
+    shows "\<E> a a'"
+      by (metis R.ide_implies_arr assms(2,3) mem_Collect_eq reflp_on reflp_on_def
+          relates_prfx_ide)
+
+    text \<open>
+      Here we develop some notions relating to the congruence classes of \<open>\<E>\<close>.
+    \<close>
+
+    (*
+     * TODO: Try to factor this out into something standalone that can be used elsewhere.
+     * Note that there is material in the library on equivalence classes, but I have
+     * found it to be a bit of a struggle to get it to do what I want here.
+     *)
+
+    definition cong_class_of (\<open>\<lbrace>_\<rbrace>\<close>)
+    where "cong_class_of  t \<equiv> {t'. \<E> t t'}"
+
+    definition is_cong_class
+    where "is_cong_class T \<equiv> \<exists>t. t \<in> T \<and> T = \<lbrace>t\<rbrace>"
+
+    definition cong_class_rep
+    where "cong_class_rep T \<equiv> SOME t. t \<in> T"
+
+    lemma cong_class_is_nonempty:
+    assumes "is_cong_class T"
+    shows "T \<noteq> {}"
+      using assms is_cong_class_def by fastforce
+
+    lemma rep_in_cong_class:
+    assumes "is_cong_class T"
+    shows "cong_class_rep T \<in> T"
+      using assms is_cong_class_def cong_class_rep_def someI_ex [of "\<lambda>t. t \<in> T"]
+      by metis
+
+    lemma arr_in_cong_class:
+    assumes "R.arr t"
+    shows "t \<in> \<lbrace>t\<rbrace>"
+      using assms cong_class_of_def
+      by (metis mem_Collect_eq reflp_on reflp_on_def)
+
+    lemma is_cong_classI:
+    assumes "R.arr t"
+    shows "is_cong_class \<lbrace>t\<rbrace>"
+      by (metis CollectI cong_class_of_def assms is_cong_class_def reflp_on reflp_on_def)
+
+    lemma is_cong_classI' [intro]:
+    assumes "T \<noteq> {}"
+    and "\<And>t t'. \<lbrakk>t \<in> T; t' \<in> T\<rbrakk> \<Longrightarrow> \<E> t t'"
+    and "\<And>t t'. \<lbrakk>t \<in> T; \<E> t' t\<rbrakk> \<Longrightarrow> t' \<in> T"
+    shows "is_cong_class T"
+    proof -
+      obtain t where t: "t \<in> T"
+        using assms by auto
+      have "T = \<lbrace>t\<rbrace>"
+        unfolding cong_class_of_def
+        using assms(2-3) t symp sympD
+        by (metis (no_types, lifting) Collect_cong Collect_mem_eq)
+      thus ?thesis
+        using is_cong_class_def t by blast
+    qed
+
+    lemma cong_class_memb_is_arr:
+    assumes "is_cong_class T" and "t \<in> T"
+    shows "R.arr t"
+      by (metis assms(1,2) cong_class_of_def is_cong_class_def mem_Collect_eq relation_on_arrows)
+
+    lemma cong_class_membs_are_cong:
+    assumes "is_cong_class T" and "t \<in> T" and "t' \<in> T"
+    shows "\<E> t t'"
+      by (metis cong_class_of_def UNIV_def assms(1,2,3) is_cong_class_def mem_Collect_eq
+          symp symp_on_def transp transp_on_def)
+
+    lemma cong_class_eqI:
+    assumes "\<E> t t'"
+    shows "\<lbrace>t\<rbrace> = \<lbrace>t'\<rbrace>"
+      by (metis Collect_cong assms cong_class_of_def symp sympE transp transp_def)
+
+    lemma cong_class_eqI':
+    assumes "is_cong_class T" and "is_cong_class U" and "T \<inter> U \<noteq> {}"
+    shows "T = U"
+      using assms is_cong_class_def cong_class_eqI cong_class_membs_are_cong Int_emptyI
+      by (metis (no_types, lifting))
+
+    lemma is_cong_classE [elim]:
+    assumes "is_cong_class T"
+    and "\<lbrakk>T \<noteq> {}; \<And>t t'. \<lbrakk>t \<in> T; t' \<in> T\<rbrakk> \<Longrightarrow> \<E> t t'; \<And>t t'. \<lbrakk>t \<in> T; \<E> t' t\<rbrakk> \<Longrightarrow> t' \<in> T\<rbrakk> \<Longrightarrow> thesis"
+    shows thesis
+      using assms cong_class_of_def cong_class_is_nonempty cong_class_membs_are_cong
+      by (metis (full_types) arr_in_cong_class cong_class_eqI is_cong_class_def relation_on_arrows)
+
+    lemma cong_class_cong_class_memb:
+    assumes "is_cong_class T" and "t \<in> T"
+    shows "\<lbrace>t\<rbrace> = T"
+      by (metis cong_class_eqI assms(1) is_cong_class_def assms(2) cong_class_membs_are_cong)
+
+    lemma cong_class_cong_class_rep [simp]:
+    assumes "is_cong_class T"
+    shows "\<lbrace>cong_class_rep T\<rbrace> = T"
+      by (simp add: assms cong_class_cong_class_memb rep_in_cong_class)
+
+    lemma cong_class_memb_cong_rep:
+    assumes "is_cong_class T" and "t \<in> T"
+    shows "\<E> t (cong_class_rep T)"
+      using assms cong_class_membs_are_cong rep_in_cong_class by simp
+
+    (*
+     * Construction of the quotient RTS.
+     *)
+
+    abbreviation (input) Arr
+    where "Arr \<equiv> is_cong_class"
+
+    abbreviation (input) Con
+    where "Con T U \<equiv> Arr T \<and> Arr U \<and> (\<exists>t u. t \<in> T \<and> u \<in> U \<and> t \<frown> u)"
+
+    definition Resid  (infix \<open>\<lbrace>\\<rbrace>\<close> 70)
+    where "T \<lbrace>\\\<rbrace> U \<equiv> if Con T U then {v. \<exists>t u. t \<in> T \<and> u \<in> U \<and> t \<frown> u \<and> \<E> (t \\ u) v} else {}"
+
+    lemma Resid_by_members:
+    assumes "Arr T" and "Arr U" and "t \<in> T" and "u \<in> U" and "t \<frown> u"
+    shows "T \<lbrace>\\\<rbrace> U = \<lbrace>t \\ u\<rbrace>"
+    proof
+      show "\<lbrace>t \\ u\<rbrace> \<subseteq> T \<lbrace>\\\<rbrace> U"
+        using Resid_def assms cong_class_of_def by auto
+      show "T \<lbrace>\\\<rbrace> U \<subseteq> \<lbrace>t \\ u\<rbrace>"
+      proof
+        fix v
+        assume v: "v \<in> T \<lbrace>\\\<rbrace> U"
+        have "v \<in> {v. \<exists>t u. t \<in> T \<and> u \<in> U \<and> t \<frown> u \<and> \<E> (t \\ u) v}"
+          using assms v Resid_def [of T U]
+          by (metis (lifting))
+        from this obtain t' u' where t'u': "t' \<in> T \<and> u' \<in> U \<and> t' \<frown> u' \<and> \<E> (t' \\ u') v"
+          by blast
+        show "v \<in> \<lbrace>t \\ u\<rbrace>"
+          by (metis assms cong_class_eqI cong_class_membs_are_cong cong_class_of_def
+              mem_Collect_eq subst_resid t'u')
+      qed
+    qed
+
+    lemma cong_class_Resid:
+    assumes "R.con t u"
+    shows "\<lbrace>t \\ u\<rbrace> = \<lbrace>t\<rbrace> \<lbrace>\\\<rbrace> \<lbrace>u\<rbrace>"
+      by (metis R.con_implies_arr(1,2) arr_in_cong_class assms is_cong_classI Resid_by_members)
+
+    lemma Arr_Resid:
+    assumes "Con T U"
+    shows "Arr (T \<lbrace>\\\<rbrace> U)"
+    proof -
+      obtain t u where tu: "t \<in> T \<and> u \<in> U \<and> t \<frown> u"
+        using assms Resid_def by presburger
+      show ?thesis
+        using assms tu Resid_by_members is_cong_classI by force
+    qed
+
+    sublocale partial_magma Resid
+      using cong_class_is_nonempty Resid_def
+      by unfold_locales metis
+
+    lemma is_partial_magma:
+    shows "partial_magma Resid"
+      ..
+
+    lemma null_char:
+    shows "null = {}"
+      using cong_class_is_nonempty Resid_def
+      by (metis null_is_zero(2))
+
+    sublocale residuation Resid
+    proof
+      show "\<And>T U. T \<lbrace>\\\<rbrace> U \<noteq> null \<Longrightarrow> U \<lbrace>\\\<rbrace> T \<noteq> null"
+          by (metis (lifting) Arr_Resid cong_class_is_nonempty R.con_sym Resid_def null_char)
+      show "\<And>T U. T \<lbrace>\\\<rbrace> U \<noteq> null \<Longrightarrow> (T \<lbrace>\\\<rbrace> U) \<lbrace>\\\<rbrace> (T \<lbrace>\\\<rbrace> U) \<noteq> null"
+          by (metis (no_types, opaque_lifting) Arr_Resid R.arr_def Resid_def
+              cong_class_memb_is_arr ex_in_conv is_cong_classE null_char)
+      show "\<And>T U V. (V \<lbrace>\\\<rbrace> T) \<lbrace>\\\<rbrace> (U \<lbrace>\\\<rbrace> T) \<noteq> null \<Longrightarrow>
+                       (V \<lbrace>\\\<rbrace> T) \<lbrace>\\\<rbrace> (U \<lbrace>\\\<rbrace> T) = (V \<lbrace>\\\<rbrace> U) \<lbrace>\\\<rbrace> (T \<lbrace>\\\<rbrace> U)"
+      proof -
+        fix T U V
+        assume 1: "(V \<lbrace>\\\<rbrace> T) \<lbrace>\\\<rbrace> (U \<lbrace>\\\<rbrace> T) \<noteq> null"
+        obtain t\<^sub>u u where t\<^sub>uu: "t\<^sub>u \<in> T \<and> u \<in> U \<and> t\<^sub>u \<frown> u"
+          using 1
+          by (metis cong_class_is_nonempty Resid_def null_char R.con_sym)
+        obtain t\<^sub>v v where t\<^sub>vv: "t\<^sub>v \<in> T \<and> v \<in> V \<and> t\<^sub>v \<frown> v"
+          using 1
+          by (metis cong_class_is_nonempty Resid_def null_char R.con_sym)
+        have "\<E> t\<^sub>u t\<^sub>v"
+          using t\<^sub>uu t\<^sub>vv
+          by (metis "1" cong_class_is_nonempty cong_class_membs_are_cong Resid_def null_char)
+        from this obtain t' u' v'
+        where t'u'v': "t' \<in> T \<and> u' \<in> U \<and> v' \<in> V \<and> t' \<frown> u' \<and> t' \<frown> v'"
+          using t\<^sub>uu t\<^sub>vv coinitial_witnesses [of t\<^sub>u u t\<^sub>v v]
+          by (metis (no_types, opaque_lifting) "1" cong_class_eqI cong_class_membs_are_cong
+              R.con_implies_arr(1,2) Resid_def arr_in_cong_class is_cong_class_def
+              null_is_zero(1,2))
+        obtain vt ut where vt_ut: "vt \<in> V \<lbrace>\\\<rbrace> T \<and> ut \<in> U \<lbrace>\\\<rbrace> T \<and> vt \<frown> ut"
+          by (metis (lifting) 1 Resid_def null_char)
+        have 2: "v' \\ t' \<frown> u' \\ t'"
+        proof -
+          have "\<E> (v' \\ t') (v \\ t\<^sub>v)"
+            by (metis "1" cong_class_is_nonempty cong_class_membs_are_cong R.con_sym Resid_def
+                null_char subst_resid t'u'v' t\<^sub>vv)
+          moreover have "\<E> (u' \\ t') (u \\ t\<^sub>u)"
+            by (metis "1" cong_class_is_nonempty cong_class_membs_are_cong R.con_sym Resid_def
+                null_char subst_resid t'u'v' t\<^sub>uu)
+          moreover have "\<E> vt (v \\ t\<^sub>v)"
+            by (metis (no_types, opaque_lifting) R.arr_resid_iff_con Resid_def arr_in_cong_class
+                calculation(1) cong_class_Resid cong_class_eqI cong_class_membs_are_cong
+                empty_iff is_cong_class_def relation_on_arrows t\<^sub>vv vt_ut)
+          moreover have "\<E> ut (u \\ t\<^sub>u)"
+            by (metis (no_types, lifting) "1" cong_class_of_def cong_class_eqI
+                cong_class_is_nonempty Resid_by_members Resid_def calculation(2)
+                is_cong_class_def mem_Collect_eq null_char residuation.con_sym rts_def
+                quotient_rts_axioms quotient_rts_def t\<^sub>uu vt_ut)
+          ultimately show ?thesis
+            using t'u'v' vt_ut 1 subst_con [of vt "v' \\ t'" ut "u' \\ t'"]
+            by (metis cong_class_of_def cong_class_eqI R.arr_resid_iff_con R.con_sym
+                R.sources_resid arr_in_cong_class mem_Collect_eq rts.coinitial_iff
+                quotient_rts_axioms quotient_rts_def)
+        qed
+        show "(V \<lbrace>\\\<rbrace> T) \<lbrace>\\\<rbrace> (U \<lbrace>\\\<rbrace> T) = (V \<lbrace>\\\<rbrace> U) \<lbrace>\\\<rbrace> (T\<lbrace>\\\<rbrace> U)"
+        proof -
+          have "(V \<lbrace>\\\<rbrace> T) \<lbrace>\\\<rbrace> (U \<lbrace>\\\<rbrace> T) = \<lbrace>v' \\ t'\<rbrace> \<lbrace>\\\<rbrace> \<lbrace>u' \\ t'\<rbrace>"
+            by (metis (mono_tags, lifting) vt_ut "2" R.arr_resid_iff_con R.con_implies_arr(1,2)
+                Resid_def cong_class_Resid cong_class_cong_class_memb empty_iff t'u'v')
+          also have "... = \<lbrace>(v' \\ t') \\ (u' \\ t')\<rbrace>"
+            by (metis 2 cong_class_Resid)
+          also have "... = \<lbrace>(v' \\ u') \\ (t' \\ u')\<rbrace>"
+            using R.cube by auto
+          also have "... = \<lbrace>v' \\ u'\<rbrace> \<lbrace>\\\<rbrace> \<lbrace>t' \\ u'\<rbrace>"
+            by (metis 2 cong_class_Resid R.arr_resid_iff_con R.cube)
+          also have "... = (V \<lbrace>\\\<rbrace> U) \<lbrace>\\\<rbrace> (T \<lbrace>\\\<rbrace> U)"
+            using t'u'v' 1 cong_class_Resid
+            by (metis (lifting) ext "2" R.con_sym R.resid_reflects_con cong_class_cong_class_memb
+                empty_iff quotient_rts.Resid_def quotient_rts_axioms vt_ut)
+          finally show ?thesis by simp
+        qed
+      qed
+    qed
+
+    lemma is_residuation:
+    shows "residuation Resid"
+      ..
+
+    notation con  (infix \<open>\<lbrace>\<frown>\<rbrace>\<close> 50)
+
+    lemma con_char:
+    shows "T \<lbrace>\<frown>\<rbrace> U \<longleftrightarrow> Con T U"
+      by (metis (lifting) Arr_Resid cong_class_is_nonempty Resid_def con_def null_char)
+
+    lemma arr_char:
+    shows "arr T \<longleftrightarrow> Arr T"
+      using con_char
+      by (metis cong_class_membs_are_cong R.con_arr_self arr_def is_cong_class_def
+          relation_on_arrows)
+
+    abbreviation (input) Ide
+    where "Ide A \<equiv> \<exists>a. R.ide a \<and> \<lbrace>a\<rbrace> = A"
+
+    lemma ide_char:
+    shows "ide A \<longleftrightarrow> Ide A"
+      by (metis cong_class_membs_are_cong Resid_by_members R.arr_def R.cong_reflexive R.ide_def
+          arr_char relation_on_arrows arr_def ide_def arr_in_cong_class is_cong_class_def)
+
+    lemma con_imp_coinitial_members_are_con:
+    assumes "T \<lbrace>\<frown>\<rbrace> U" and "t \<in> T" and "u \<in> U" and "R.coinitial t u"
+    shows "t \<frown> u"
+      by (meson assms con_char cong_class_membs_are_cong subst_con)
+
+    sublocale rts Resid
+    proof
+      show "\<And>T. arr T \<Longrightarrow> ide (trg T)"
+        by (metis R.prfx_reflexive Resid_by_members arr_char cong_class_memb_is_arr ide_char
+            rep_in_cong_class R.con_arr_self trg_def)
+      show 1: "\<And>A T. \<lbrakk>ide A; T \<lbrace>\<frown>\<rbrace> A\<rbrakk> \<Longrightarrow> T \<lbrace>\\\<rbrace> A = T"
+      proof -
+        fix A T
+        assume A: "ide A" and T: "T \<lbrace>\<frown>\<rbrace> A"
+        show "T \<lbrace>\\\<rbrace> A = T"
+        proof -
+          obtain t a where ta: "t \<in> T \<and> A = \<lbrace>a\<rbrace> \<and> t \<frown> a"
+            using T con_char
+            by (metis cong_class_eqI cong_class_memb_cong_rep is_cong_class_def)
+          have "R.src t \<in> A"
+            using A ta relates_prfx_ide [of a]
+            by (metis R.coinitialE R.con_imp_coinitial R.source_is_prfx R.src_in_sources
+                T arr_in_cong_class con_char ide_char quotient_rts.is_cong_classE
+                quotient_rts_axioms R.ide_def)
+          hence "T \<lbrace>\\\<rbrace> A = \<lbrace>t\<rbrace>"
+            using R.con_implies_arr(1) R.resid_arr_ide Resid_by_members T con_char ta
+            by force
+          thus ?thesis
+            using T con_char cong_class_cong_class_memb ta by auto
+        qed
+      qed
+      show "\<And>A T. \<lbrakk>ide A; A \<lbrace>\<frown>\<rbrace> T\<rbrakk> \<Longrightarrow> ide (A \<lbrace>\\\<rbrace> T)"
+      proof -
+        fix A T
+        assume A: "ide A" and T: "A \<lbrace>\<frown>\<rbrace> T"
+        show "ide (A \<lbrace>\\\<rbrace> T)"
+        proof -
+          obtain t a where ta: "t \<in> T \<and> a \<in> A \<and> a \<frown> t"
+            using T con_char by auto
+          obtain a' where a': "a' \<in> A \<and> R.ide a'"
+            by (metis R.ide_implies_arr A arr_in_cong_class ide_char)
+          have "R.src t \<in> A"
+            by (metis (no_types, lifting) cong_class_of_def cong_class_eqI
+                R.coinitial_imp_eq_src R.con_arr_src(2) R.con_imp_coinitial
+                R.con_implies_arr(1) R.ide_src R.resid_ide_arr A a' arr_in_cong_class
+                ide_char mem_Collect_eq relates_prfx_ide ta)
+          hence "R.src t \\ t \<in> A \<lbrace>\\\<rbrace> T"
+            using R.con_implies_arr(2) Resid_by_members T arr_in_cong_class con_char ta by force
+          thus ?thesis
+            by (metis A T 1 arrE arr_resid con_sym cube ide_def)
+        qed
+      qed
+      show "\<And>T U. T \<lbrace>\<frown>\<rbrace> U \<Longrightarrow> \<exists>A. ide A \<and> A \<lbrace>\<frown>\<rbrace> T \<and> A \<lbrace>\<frown>\<rbrace> U"
+      proof -
+        fix T U
+        assume TU: "T \<lbrace>\<frown>\<rbrace> U"
+        obtain t u where tu: "t \<in> T \<and> u \<in> U \<and> t \<frown> u"
+          using TU con_char by auto
+        obtain a where a: "a \<in> R.sources t \<inter> R.sources u"
+          using R.con_imp_common_source tu by auto
+        have "ide \<lbrace>a\<rbrace> \<and> \<lbrace>a\<rbrace> \<lbrace>\<frown>\<rbrace> T \<and> \<lbrace>a\<rbrace> \<lbrace>\<frown>\<rbrace> U"
+          by (meson IntD1 IntD2 R.con_sym R.ide_implies_arr TU a is_cong_classI
+              R.in_sourcesE arr_in_cong_class con_char ide_char tu)
+        thus "\<exists>A. ide A \<and> A \<lbrace>\<frown>\<rbrace> T \<and> A \<lbrace>\<frown>\<rbrace> U" by blast
+      qed
+      show "\<And>T U V. \<lbrakk>ide (T \<lbrace>\\\<rbrace> U); U \<lbrace>\<frown>\<rbrace> V\<rbrakk> \<Longrightarrow> T \<lbrace>\\\<rbrace> U \<lbrace>\<frown>\<rbrace> V \<lbrace>\\\<rbrace> U"
+      proof -
+        fix T U V
+        assume TU: "ide (T \<lbrace>\\\<rbrace> U)" and UV: "U \<lbrace>\<frown>\<rbrace> V"
+        have "\<exists>tu. tu \<in> {v. \<exists>t u. t \<in> T \<and> u \<in> U \<and> t \<frown> u \<and> \<E> (t \\ u) v} \<and> R.ide tu"
+          by (metis (no_types, lifting) R.ide_implies_arr Resid_def TU arr_in_cong_class
+              ide_char ide_implies_arr not_arr_null null_char)
+        from this obtain t u tu where tu: "t \<in> T \<and> u \<in> U \<and> \<E> (t \\ u) tu \<and> R.ide tu"
+          by auto
+        obtain u' v where u'v: "u' \<in> U \<and> v \<in> V \<and> u' \<frown> v"
+          using UV con_char by auto
+        obtain t' u'' v' where t'u''v': "t' \<in> T \<and> u'' \<in> U \<and> v' \<in> V \<and> u'' \<frown> t' \<and> u'' \<frown> v'"
+          using coinitial_witnesses [of u t u' v]
+          by (metis (no_types, lifting) R.arr_resid_iff_con R.con_sym Resid_def TU UV
+              arr_in_cong_class con_char cong_class_cong_class_memb cong_class_eqI
+              cong_class_of_def mem_Collect_eq not_ide_null null_char relation_on_arrows tu u'v)
+        have 1: "\<E> (t' \\ u'') tu"
+          by (metis R.con_def R.not_arr_null R.residuation_axioms TU arr_resid_iff_con
+              con_char cong_class_membs_are_cong relation_on_arrows residuation.con_sym
+              residuation.ide_implies_arr residuation_axioms subst_resid t'u''v'
+              transp transp_def tu)
+        have "R.con (t' \\ u'') (v' \\ u'')"
+        proof -
+          have "\<E> (R.trg u'') (t' \\ u'')"
+            by (metis (full_types) "1" R.arr_resid_iff_con R.cube R.prfx_reflexive
+                R.trg_def arr_in_cong_class cong_class_eqI cong_class_of_def
+                mem_Collect_eq relates_prfx_ide relation_on_arrows t'u''v' tu)
+          moreover have "R.con (R.trg u'') (v' \\ u'')"
+            using t'u''v' UV
+            by (metis R.con_implies_arr(1) R.con_target R.prfx_reflexive R.trg_def)
+          ultimately show ?thesis
+            using t'u''v' UV subst_con
+            by (metis R.coinitial_iff R.con_implies_arr(2) R.con_sym R.sources_resid
+                arr_in_cong_class cong_class_of_def mem_Collect_eq relation_on_arrows)
+        qed
+        moreover have "t' \\ u'' \<in> T \<lbrace>\\\<rbrace> U"
+          by (metis (lifting) R.arr_resid_iff_con R.con_sym Resid_by_members TU
+              arr_in_cong_class ide_implies_arr not_arr_null null_char Resid_def t'u''v')
+        moreover have "v' \\ u'' \<in> V \<lbrace>\\\<rbrace> U"
+          by (metis (full_types) Resid_by_members R.con_implies_arr(2) R.con_sym UV
+              arr_in_cong_class calculation(1) con_char t'u''v')
+        ultimately show "con (T \<lbrace>\\\<rbrace> U) (V \<lbrace>\\\<rbrace> U)"
+          by (meson Arr_Resid R.con_sym TU UV con_char ide_def)
+      qed
+    qed
+
+    lemma is_rts:
+    shows "rts Resid"
+      ..
+
+    notation cong  (infix \<open>\<lbrace>\<sim>\<rbrace>\<close> 50)
+
+    sublocale weakly_extensional_rts Resid
+    proof
+      fix T U
+      assume T: "ide T" and U: "ide U" and TU: "T \<lbrace>\<sim>\<rbrace> U"
+      obtain b where b: "R.ide b \<and> b \<in> Resid T U"
+        using TU arr_in_cong_class ide_char R.ide_implies_arr by metis
+      obtain t u where tu: "t \<in> T \<and> u \<in> U \<and> \<E> (t \\ u) b"
+        using TU
+        apply (elim congE)
+        using b con_char Resid_def by auto
+      have "\<E> t u"
+      proof -
+        have "\<E> t (R.src t)"
+          by (metis (mono_tags, lifting) cong_class_of_def cong_class_eqI
+              cong_class_membs_are_cong R.con_arr_src(2) R.ide_src R.resid_ide_arr
+              T TU arr_in_cong_class b con_char mem_Collect_eq prfx_implies_con
+              relates_prfx_ide relation_on_arrows resid_arr_ide tu)
+        moreover have "\<E> (R.src t) (R.src u)"
+          by (metis tu calculation cong_class_eqI R.arr_resid_iff_con R.coinitial_imp_eq_src
+              mem_Collect_eq R.con_imp_coinitial cong_class_of_def relation_on_arrows)
+        moreover have "\<E> (R.src u) u"
+          by (metis (full_types) cong_class_of_def cong_class_eqI R.con_arr_src(1) R.con_sym
+              R.ide_src R.resid_ide_arr U arr_in_cong_class ide_char mem_Collect_eq
+              relates_prfx_ide relation_on_arrows tu)
+        ultimately show ?thesis
+          by (metis cong_class_of_def cong_class_eqI mem_Collect_eq)
+      qed
+      thus "T = U"
+        by (metis \<open>\<E> t u\<close> tu con_char cong_class_membs_are_cong T U prfx_implies_con
+            cong_class_eqI ide_def is_cong_class_def)
+    qed
+
+    lemma is_weakly_extensional_rts:
+    shows "weakly_extensional_rts Resid"
+      ..
+
+    subsubsection "Quotient Map"
+
+    abbreviation quot
+    where "quot t \<equiv> \<lbrace>t\<rbrace>"
+
+    sublocale quot: simulation resid Resid quot
+    proof
+      show "\<And>t. \<not> R.arr t \<Longrightarrow> \<lbrace>t\<rbrace> = null"
+        using cong_class_of_def null_char relation_on_arrows by auto
+      show "\<And>t u. t \<frown> u \<Longrightarrow> con \<lbrace>t\<rbrace> \<lbrace>u\<rbrace>"
+        by (meson R.con_implies_arr(1,2) arr_in_cong_class con_char is_cong_classI)
+      show "\<And>t u. t \<frown> u \<Longrightarrow> \<lbrace>t \\ u\<rbrace> = \<lbrace>t\<rbrace> \<lbrace>\\\<rbrace> \<lbrace>u\<rbrace>"
+        using cong_class_Resid by blast
+    qed
+
+    lemma quotient_is_simulation:
+    shows "simulation resid Resid quot"
+      ..
+
+    sublocale quot: strong_simulation resid Resid quot
+      using R.coinitialE arr_in_cong_class con_imp_coinitial_members_are_con
+      by unfold_locales meson
+
+    lemma quotient_is_strong_simulation:
+    shows "strong_simulation resid Resid quot"
+      ..
+
+    sublocale quot: simulation_to_weakly_extensional_rts resid Resid quot ..
+
+    lemma quotient_is_simulation_to_weakly_extensional_rts:
+    shows "simulation_to_weakly_extensional_rts resid Resid quot"
+      ..
+
+    text\<open>
+      If a simulation \<open>F\<close> from \<open>R\<close> to an RTS \<open>B\<close> respects the equivalence \<open>\<E>\<close>,
+      then it has a unique extension along the quotient map.
+    \<close>
+
+    lemma is_couniversal:
+    assumes "rts B"
+    and "simulation resid B F"
+    and "\<And>t u. \<E> t u \<Longrightarrow> F t = F u"
+    shows "\<exists>!H. simulation Resid B H \<and> H \<circ> quot = F"
+    proof -
+      interpret B: rts B
+        using assms(1) simulation.axioms(2) by blast
+      interpret F: simulation resid B F
+        using assms by blast
+      let ?H = "\<lambda>T. if arr T then F (cong_class_rep T) else B.null"
+      interpret H: simulation Resid B ?H
+      proof
+        show "\<And>T. \<not> arr T \<Longrightarrow> ?H T = B.null"
+          by argo
+        fix T U
+        assume con: "T \<lbrace>\<frown>\<rbrace> U"
+        show "?H T \<frown>\<^sub>B ?H U"
+          using con
+          by (metis (full_types) cong_class_membs_are_cong F.preserves_con arr_char
+              assms(3) con_char rep_in_cong_class)
+        show "?H (T \<lbrace>\\\<rbrace> U) = B (?H T) (?H U)"
+        proof -
+          have 2: "is_cong_class T \<and> is_cong_class U"
+            using con con_char by blast
+          obtain t u where tu: "t \<in> T \<and> u \<in> U \<and> t \<frown> u"
+            using con con_char by force
+          have "?H (T \<lbrace>\\\<rbrace> U) = ?H \<lbrace>t \\ u\<rbrace>"
+            using "2" cong_class_of_def cong_class_eqI Resid_by_members is_cong_class_def tu
+            by fastforce
+          also have "... = F (t \\ u)"
+            by (metis cong_class_of_def R.arr_resid_iff_con assms(3) is_cong_classI
+                mem_Collect_eq quot.preserves_reflects_arr rep_in_cong_class tu)
+          also have "... = B (F t) (F u)"
+            by (simp add: tu)
+          also have "... = B (?H T) (?H U)"
+            by (metis (full_types) "2" assms(3) con con_implies_arr(1,2)
+                cong_class_memb_cong_rep tu)
+          finally show ?thesis by blast
+        qed
+      qed
+      have "simulation Resid B ?H \<and> ?H \<circ> quot = F"
+        using H.simulation_axioms F.extensionality arr_char arr_in_cong_class assms(3)
+              cong_class_memb_cong_rep quot.preserves_reflects_arr
+        by fastforce
+      moreover have "\<And>H'. \<lbrakk>simulation Resid B H'; H' \<circ> quot = F\<rbrakk> \<Longrightarrow> H' = ?H"
+        by (metis arr_char comp_eq_dest_lhs cong_class_cong_class_rep simulation.extensionality)
+      ultimately show ?thesis by blast
+    qed
+
+    definition ext_to_quotient
+    where "ext_to_quotient B F \<equiv> THE H. simulation Resid B H \<and> H \<circ> quot = F"
+
+    lemma ext_to_quotient_props:
+    assumes "rts B"
+    and "simulation resid B F"
+    and "\<And>t u. \<E> t u \<Longrightarrow> F t = F u"
+    shows "simulation Resid B (ext_to_quotient B F)" and "ext_to_quotient B F \<circ> quot = F"
+      unfolding ext_to_quotient_def
+      using assms is_couniversal [of B F] theI' [of "\<lambda>H. simulation (\<lbrace>\\\<rbrace>) B H \<and> H \<circ> quot = F"]
+      by auto
+
+  end
+
+  subsection "Kernels of Simulations"
+
+  text\<open>
+    In this section we consider the relationship between the kernel of a simulation \<open>F : A \<rightarrow> B\<close>
+    and the assumptions made for the purpose of constructing a quotient RTS.
+    We show that the kernel of a simulation is an equivalence relation that is substitutive for
+    residuation, when the latter is defined.
+  \<close>
+
+  context simulation
+  begin
+
+    abbreviation kern
+    where "kern t t' \<equiv> A.arr t \<and> A.arr t' \<and> F t = F t'"
+
+    lemma kernI [intro]:
+    assumes "A.arr t" and "F t = F t'"
+    shows "kern t t'"
+      by (metis assms(1,2) preserves_reflects_arr)
+
+    lemma kernD [dest]:
+    assumes "kern t t'"
+    shows "A.arr t" and "A.arr t'" and "F t = F t'"
+      using assms by fastforce+
+
+    lemma reflp_on_kern:
+    shows "reflp_on (Collect A.arr) kern"
+      by (metis (mono_tags, lifting) mem_Collect_eq reflp_onI)
+
+    lemma symp_kern:
+    shows "symp kern"
+      by (metis (mono_tags, lifting) sympI)
+
+    lemma transp_kern:
+    shows "transp kern"
+      by (simp add: transp_on_def)
+
+    lemma kern_subst_resid:
+    shows "\<lbrakk>kern t t'; kern u u'; t \<frown>\<^sub>A u; t' \<frown>\<^sub>A u'\<rbrakk> \<Longrightarrow> kern (t \\\<^sub>A u) (t' \\\<^sub>A u')"
+      by auto
+
+  end
+
+  text\<open>
+    If the simulation \<open>F\<close> happens to be a strong simulation, then its kernel is also
+    substitutive for consistency.
+  \<close>
+
+  context strong_simulation
+  begin
+
+    lemma kern_subst_con:
+    shows "\<lbrakk>kern t t'; kern u u'; t \<frown>\<^sub>A u; A.coinitial t' u'\<rbrakk> \<Longrightarrow> t' \<frown>\<^sub>A u'"
+      by (metis preserves_con reflects_con)
+
+  end
+
+  text\<open>
+    In case the target RTS \<open>B\<close> is weakly extensional, then the kernel has the property
+    that the equivalence classes of identity arrows are closed under prefix.
+  \<close>
+
+  context simulation_to_weakly_extensional_rts
+  begin
+
+    lemma kern_prfx_ide:
+    shows "\<lbrakk>kern t a; A.ide a\<rbrakk> \<Longrightarrow> \<forall>t'. A.prfx t' t \<longrightarrow> kern t' a"
+      by (metis A.arr_resid_iff_con A.con_implies_arr(1) A.ide_implies_arr B.con_ide_are_eq
+          B.ide_backward_stable B.prfx_implies_con preserves_ide preserves_prfx)
 
   end
 
   section "Normal Sub-RTS's and Congruence"
 
   text \<open>
-    We now develop a general quotient construction on an RTS.
+    We now explore a particular instance of the general quotient construction on an RTS
+    developed in the previous section.
     We define a \emph{normal sub-RTS} of an RTS to be a collection of transitions \<open>\<NN>\<close> having
     certain ``local'' closure properties.  We will refer to the elements of \<open>\<NN>\<close> as
     \emph{normal transitions}.  A normal sub-RTS induces an equivalence relation \<open>\<approx>\<^sub>0\<close>,
@@ -5510,6 +6945,19 @@ begin
     and backward_stable: "\<lbrakk> u \<in> \<NN>; t \\ u \<in> \<NN> \<rbrakk> \<Longrightarrow> t \<in> \<NN>"
   begin
 
+    text \<open>
+      Here we justify the terminology ``normal sub-RTS'' by showing that a normal sub-RTS
+      really is a sub-RTS.
+    \<close>
+
+    lemma is_sub_rts:
+    shows "source_replete_sub_rts resid (\<lambda>t. t \<in> \<NN>)"
+      using elements_are_arr ide_closed
+      apply unfold_locales
+         apply blast
+        apply (meson R.con_def R.con_imp_coinitial R.con_sym_ax forward_stable)
+      by blast
+
     lemma prfx_closed:
     assumes "u \<in> \<NN>" and "R.prfx t u"
     shows "t \<in> \<NN>"
@@ -5530,22 +6978,14 @@ begin
     lemma resid_along_normal_preserves_con:
     assumes "u \<in> \<NN>" and "t \<frown> t'" and "R.coinitial t u"
     shows "t \\ u \<frown> t' \\ u"
-    proof -
-      have "R.coinitial (t \\ t') (u \\ t')"
-        by (metis assms R.arr_resid_iff_con R.coinitialI R.con_imp_common_source forward_stable
-            elements_are_arr R.con_implies_arr(2) R.sources_resid R.sources_eqI)
-      hence "t \\ t' \<frown> u \\ t'"
-        by (metis assms(1) R.coinitial_iff R.con_imp_coinitial R.con_sym elements_are_arr
-                  forward_stable R.arr_resid_iff_con)
-      thus ?thesis
-        using assms R.cube forward_stable by fastforce
-    qed
+      by (metis R.arr_resid_iff_con R.coinitialI R.con_def R.cube
+          R.sources_resid assms(1,2,3) forward_stable elements_are_arr R.con_sym)
 
     lemma resid_along_normal_preserves_reflects_con:
     assumes "u \<in> \<NN>" and "R.sources t = R.sources u"
     shows "t \\ u \<frown> t' \\ u \<longleftrightarrow> t \<frown> t'"
-      by (metis R.arr_resid_iff_con assms R.con_implies_arr(1-2) elements_are_arr R.coinitial_iff
-                R.resid_reflects_con resid_along_normal_preserves_con)
+      by (metis R.arr_resid_iff_con assms R.con_implies_arr(1-2) elements_are_arr
+                R.coinitial_iff R.resid_reflects_con resid_along_normal_preserves_con)
 
   end
 
@@ -5607,8 +7047,7 @@ begin
     lemma Ide_implies_NPath:
     assumes "P.Ide T"
     shows "NPath T"
-      using assms
-      by (metis Ball_Collect NPath_def P.Ide_char ide_closed subsetI)
+      by (metis assms Ball_Collect NPath_def P.Ide_char ide_closed subsetI)
 
     lemma NPath_implies_Arr:
     assumes "NPath T"
@@ -5626,158 +7065,98 @@ begin
       using assms NPath_def by simp
 
     lemma NPath_Resid_single_Arr:
-    shows "\<lbrakk>t \<in> \<NN>; P.Arr U; R.sources t = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (P.Resid [t] U)"
-    proof (induct U arbitrary: t)
-      show "\<And>t. \<lbrakk>t \<in> \<NN>; P.Arr []; R.sources t = P.Srcs []\<rbrakk> \<Longrightarrow> NPath (P.Resid [t] [])"
-        by simp
+    assumes "P.Arr U"
+    shows "\<lbrakk>t \<in> \<NN>; R.sources t = P.Srcs U\<rbrakk> \<Longrightarrow> NPath ([t] \<^sup>*\\\<^sup>* U)"
+    proof (induct U arbitrary: t rule: P.Arr_induct)
+      show "P.Arr U" by fact
+      show "\<And>t u. \<lbrakk>P.Arr [u]; t \<in> \<NN>; R.sources t = P.Srcs [u]\<rbrakk> \<Longrightarrow> NPath ([t] \<^sup>*\\\<^sup>* [u])"
+        by (metis NPath_def P.Arr.simps(2) P.Resid.simps(3) P.Srcs.simps(2)
+            R.arr_iff_has_source R.arr_resid_iff_con R.coinitial_def elements_are_arr
+            empty_set empty_subsetI forward_stable inf.idem insert_subset list.simps(15))
       fix t u U
-      assume ind: "\<And>t. \<lbrakk>t \<in> \<NN>; P.Arr U; R.sources t = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (P.Resid [t] U)"
+      assume ind: "\<And>t. \<lbrakk>t \<in> \<NN>; R.sources t = P.Srcs U\<rbrakk> \<Longrightarrow> NPath ([t] \<^sup>*\\\<^sup>* U)"
       assume t: "t \<in> \<NN>"
+      assume U: "U \<noteq> []"
       assume uU: "P.Arr (u # U)"
       assume src: "R.sources t = P.Srcs (u # U)"
       show "NPath (P.Resid [t] (u # U))"
-      proof (cases "U = []")
-        show "U = [] \<Longrightarrow> ?thesis"
-          using NPath_def t src
-          apply simp
-          by (metis R.arrE R.arr_resid_iff_con R.coinitial_def R.con_imp_common_source
-              elements_are_arr forward_stable)
-        assume U: "U \<noteq> []"
-        show ?thesis
-        proof -
-          have "NPath (P.Resid [t] (u # U)) \<longleftrightarrow> NPath (P.Resid [t \\ u] U)"
-            using t U uU src
-            by (metis P.Arr.simps(2) P.Con_implies_Arr(1) P.Resid_rec(3) P.Con_rec(3)
-                R.arr_resid_iff_con)
-          also have "... \<longleftrightarrow> True"
-            using t U uU src ind
-            by (metis P.Arr.elims(2) P.Arr.simps(2) P.Srcs_simp\<^sub>P P.Trgs.simps(2)
-                P.seq_implies_Trgs_eq_Srcs R.arr_resid_iff_con R.coinitialI R.sources_resid
-                elements_are_arr list.inject list.sel(1) forward_stable)
-          finally show ?thesis by blast
-        qed
+      proof -
+        have "NPath (P.Resid [t] (u # U)) \<longleftrightarrow> NPath (P.Resid [t \\ u] U)"
+          using t U uU src
+          by (metis P.Arr.simps(2) P.Con_implies_Arr(1) P.Resid_rec(3) P.Con_rec(3)
+              R.arr_resid_iff_con)
+        also have "... \<longleftrightarrow> True"
+          using t U uU src ind
+          by (metis P.Arr.elims(2) P.Arr.simps(2) P.Srcs_simp\<^sub>P P.Trgs.simps(2)
+              P.seq_implies_Trgs_eq_Srcs R.arr_resid_iff_con R.coinitialI R.sources_resid
+              elements_are_arr list.inject list.sel(1) forward_stable)
+        finally show ?thesis by blast
       qed
     qed
 
     lemma NPath_Resid_Arr_single:
-    shows "\<lbrakk> NPath T; R.arr u; P.Srcs T = R.sources u \<rbrakk> \<Longrightarrow> NPath (P.Resid T [u])"
-    proof (induct T arbitrary: u)
-      show "\<And>u. \<lbrakk>NPath []; R.arr u; P.Srcs [] = R.sources u\<rbrakk> \<Longrightarrow> NPath (P.Resid [] [u])"
-        by simp
+    assumes "NPath T"
+    shows "\<lbrakk>R.arr u; P.Srcs T = R.sources u\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* [u])"
+    proof (induct T arbitrary: u rule: NPath_induct)
+      show "NPath T" by fact
+      show "\<And>t u. \<lbrakk>t \<in> \<NN>; R.arr u; P.Srcs [t] = R.sources u\<rbrakk> \<Longrightarrow> NPath ([t] \<^sup>*\\\<^sup>* [u])"
+        by (metis NPath_Resid_single_Arr P.Arr.simps(2) P.Srcs.simps(2))
       fix t u T
-      assume ind: "\<And>u. \<lbrakk>NPath T; R.arr u; P.Srcs T = R.sources u\<rbrakk> \<Longrightarrow> NPath (P.Resid T [u])"
-      assume tT: "NPath (t # T)"
+      assume ind: "\<And>u. \<lbrakk>R.arr u; P.Srcs T = R.sources u\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* [u])"
+      assume t: "t \<in> \<NN>"
+      assume T: "NPath T"
+      assume tT: "R.targets t \<subseteq> P.Srcs T"
       assume u: "R.arr u"
       assume src: "P.Srcs (t # T) = R.sources u"
-      show "NPath (P.Resid (t # T) [u])"
-      proof (cases "T = []")
-        show "T = [] \<Longrightarrow> ?thesis"
-          using tT u src NPath_def
-          by (metis P.Arr.simps(2) NPath_Resid_single_Arr P.Srcs.simps(2)
-              list.set_intros(1) subsetD)
-        assume T: "T \<noteq> []"
+      show "NPath ((t # T) \<^sup>*\\\<^sup>* [u])"
+      proof -
         have con: "t \<frown> u"
-        proof -
-          have "R.coinitial u t"
-            by (metis R.coinitialI P.Srcs.simps(3) T list.exhaust_sel src u)
-          thus ?thesis
-            using tT T u src R.con_sym NPath_def
-            by (metis R.arr_resid_iff_con elements_are_arr forward_stable
-                insert_subset list.simps(15))
-        qed
-        have 1: "NPath (P.Resid (t # T) [u]) \<longleftrightarrow> NPath ((t \\ u) # P.Resid T [u \\ t])"
-        proof -
-          have "t # T \<^sup>*\<frown>\<^sup>* [u]"
-          proof -
-            have 2: "[t] \<^sup>*\<frown>\<^sup>* [u]"
-              by (simp add: P.Con_rec(1) con)
-            moreover have "T \<^sup>*\<frown>\<^sup>* P.Resid [u] [t]"
-              using tT u T src con 2 ind NPath_def
-              by (metis (lifting) ext P.Arr.simps(1) P.Arr_iff_Con_self P.Con_imp_eq_Srcs
-                  P.Con_implies_Arr(2) P.Con_rec(1,4) P.Resid_rec(1) P.Srcs.simps(2)
-                  R.arr_resid R.con_sym R.sources_resid insert_subset list.simps(15))
-            ultimately show ?thesis
-              using tT T u src P.Con_cons(1) by simp
-          qed
-          thus ?thesis
-            using tT T u src P.Resid_cons(1) P.Resid_rec(2) by presburger
-        qed
+          by (metis NPath_def P.Arr.simps(1) P.Srcs.simps(3) R.coinitialI R.con_def
+              R.not_arr_null T elements_are_arr forward_stable list.exhaust_sel src t u)
+        have "NPath ((t # T) \<^sup>*\\\<^sup>* [u]) \<longleftrightarrow> NPath ((t \\ u) # (T \<^sup>*\\\<^sup>* [u \\ t]))"
+          by (metis NPath_def P.Arr.simps(1,2) P.Con_rec(2) P.Resid_rec(2) P.Trgs.simps(2)
+              P.seq_implies_Trgs_eq_Srcs R.arr_resid_iff_con R.con_sym T con elements_are_arr
+              ind normal_sub_rts_axioms normal_sub_rts_def rts.sources_resid t tT)
         also have "... \<longleftrightarrow> True"
-        proof -
-          have 2: "t \\ u \<in> \<NN> \<and> R.arr (u \\ t)"
-            using tT u src con NPath_def
-            by (metis R.arr_resid R.con_imp_coinitial basic_trans_rules(31) forward_stable
-                list.set_intros(1) R.con_sym)
-          moreover have 3: "NPath (T \<^sup>*\\\<^sup>* [u \\ t])"
-            using tT ind NPath_def
-            by (metis 2 P.Con_Arr_self P.Con_imp_eq_Srcs P.Con_rec(4) R.arr_resid_iff_con
-                R.sources_resid P.Srcs.simps(2) T insert_subset list.exhaust
-                list.simps(15) P.Arr.simps(3))
-          moreover have "R.targets (t \\ u) \<subseteq> P.Srcs (P.Resid T [u \\ t])"
-            using tT T u src NPath_def
-            by (metis 3 P.Arr.simps(1) R.targets_resid_sym P.Srcs_Resid_Arr_single
-                con subset_refl)
-          ultimately show ?thesis
-            using NPath_def con by simp
-        qed
+          by (metis NPath_def P.Arr.simps(1,2) P.Con_rec(2) P.Trgs.simps(2)
+              P.seq_implies_Trgs_eq_Srcs R.arr_resid_iff_con R.con_sym T con ind insert_subset
+              list.simps(15) forward_stable normal_sub_rts_axioms normal_sub_rts_def
+              P.Arr_Resid_single P.Resid_rec(2) R.con_implies_arr(1) rts.con_imp_coinitial
+              rts.sources_resid t tT)
         finally show ?thesis by blast
       qed
     qed
 
     lemma NPath_Resid [simp]:
-    shows "\<lbrakk>NPath T; P.Arr U; P.Srcs T = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
-    proof (induct T arbitrary: U)
-      show "\<And>U. \<lbrakk>NPath []; P.Arr U; P.Srcs [] = P.Srcs U\<rbrakk> \<Longrightarrow> NPath ([] \<^sup>*\\\<^sup>* U)"
-        by simp
+    assumes "NPath T"
+    shows "\<lbrakk>P.Arr U; P.Srcs T = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
+    proof (induct T arbitrary: U rule: NPath_induct)
+      show "NPath T" by fact
+      show "\<And>t U. \<lbrakk>t \<in> \<NN>; P.Arr U; P.Srcs [t] = P.Srcs U\<rbrakk> \<Longrightarrow> NPath ([t] \<^sup>*\\\<^sup>* U)"
+        using NPath_Resid_single_Arr by auto
       fix t T U
-      assume ind: "\<And>U. \<lbrakk>NPath T; P.Arr U; P.Srcs T = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
-      assume tT: "NPath (t # T)"
+      assume ind: "\<And>U. \<lbrakk>P.Arr U; P.Srcs T = P.Srcs U\<rbrakk> \<Longrightarrow> NPath (T \<^sup>*\\\<^sup>* U)"
+      assume t: "t \<in> \<NN>"
+      assume T: "NPath T"
+      assume tT: "R.targets t \<subseteq> P.Srcs T"
       assume U: "P.Arr U"
-      assume Coinitial: "P.Srcs (t # T) = P.Srcs U"
+      assume src: "P.Srcs (t # T) = P.Srcs U"
       show "NPath ((t # T) \<^sup>*\\\<^sup>* U)"
-      proof (cases "T = []")
-        show "T = [] \<Longrightarrow> ?thesis"
-          using tT U Coinitial NPath_Resid_single_Arr NPath_def by force
-        assume T: "T \<noteq> []"
-        have 0: "NPath ((t # T) \<^sup>*\\\<^sup>* U) \<longleftrightarrow> NPath ([t] \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
-        proof -
-          have "U \<noteq> []"
-            using U by auto
-          moreover have "(t # T) \<^sup>*\<frown>\<^sup>* U"
-          proof -
-            have 1: "[t] \<^sup>*\<frown>\<^sup>* U"
-              using tT U NPath_Resid_single_Arr [of t U] NPath_def Coinitial P.Srcs_simp\<^sub>P
-              by force
-            moreover have "T \<^sup>*\<frown>\<^sup>* (U \<^sup>*\\\<^sup>* [t])"
-            proof -
-              have "P.Srcs T = P.Srcs (U \<^sup>*\\\<^sup>* [t])"
-                using T tT U Coinitial 1
-                by (metis P.Con_Arr_self P.Con_cons(2) P.Con_imp_eq_Srcs P.Con_sym
-                    P.Srcs_Resid_Arr_single list.discI NPath_implies_Arr)
-              hence "NPath (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
-                using T tT U Coinitial 1 P.Con_sym ind NPath_def
-                by (metis P.Con_imp_Arr_Resid P.Srcs.elims insert_subset list.simps(15)
-                    P.Arr.simps(3))
-              thus ?thesis
-                using NPath_def by auto
-            qed
-            ultimately show ?thesis
-              using P.Con_cons(1) [of T U t] by fastforce
-          qed
-          ultimately show ?thesis
-            using tT U T Coinitial P.Resid_cons(1) by auto
-        qed
+      proof -
+        have "NPath ((t # T) \<^sup>*\\\<^sup>* U) \<longleftrightarrow> NPath ([t] \<^sup>*\\\<^sup>* U @ T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
+          by (metis NPath_implies_Arr P.Arr.simps(1) P.Con_cons(1) P.Con_imp_Arr_Resid
+              P.Con_implies_Arr(1) P.Con_sym P.Resid_cons(1) P.Srcs_Resid_Arr_single
+              P.Trgs.simps(2) P.seq_implies_Trgs_eq_Srcs T append.right_neutral ind tT)
         also have "... \<longleftrightarrow> True"
         proof (intro iffI, simp_all)
           show "NPath (([t] \<^sup>*\\\<^sup>* U) @ (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t])))"
           proof
             show 1: "NPath ([t] \<^sup>*\\\<^sup>* U)"
-              by (metis Coinitial NPath_Resid_single_Arr P.Srcs_simp\<^sub>P U insert_subset
-                  list.sel(1) list.simps(15) NPath_def tT)
+              by (metis NPath_Resid_single_Arr P.Srcs.simps(2) P.Srcs_append U append_Cons
+                  append_Nil list.distinct(1) src t)
             show 2: "NPath (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
-              by (metis 0 1 P.Arr.simps(1) P.Con_cons(1) P.Con_imp_eq_Srcs
-                  P.Con_implies_Arr(1-2) NPath_def T append_Nil2 ind
-                  insert_subset list.simps(15) tT)
+              by (metis "1" NPath_implies_Arr P.Arr.simps(1) P.Con_cons(1) P.Con_imp_Arr_Resid
+                  P.Con_imp_eq_Srcs P.Con_sym T U calculation ind self_append_conv)
             show "P.Trgs ([t] \<^sup>*\\\<^sup>* U) \<subseteq> P.Srcs (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
               by (metis 2 P.Arr.simps(1) NPath_def P.Srcs_Resid P.Trgs_Resid_sym
                   dual_order.refl)
@@ -5788,16 +7167,17 @@ begin
     qed
 
     lemma Backward_stable_single:
-    shows "\<lbrakk>NPath U; NPath ([t] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath [t]"
-    proof (induct U arbitrary: t)
-      show "\<And>t. \<lbrakk>NPath []; NPath ([t] \<^sup>*\\\<^sup>* [])\<rbrakk> \<Longrightarrow> NPath [t]"
-        using NPath_def by simp
-      show "\<And>a U t. \<lbrakk>\<And>t. \<lbrakk>NPath U; NPath ([t] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath [t];
-                     NPath (a # U); NPath ([t] \<^sup>*\\\<^sup>* (a # U))\<rbrakk>
-                        \<Longrightarrow> NPath [t]"
-        using NPath_def P.Arr.simps(1-2) P.Con_implies_Arr(2)
-            P.Resid_rec(1,3) insert_subset list.simps(15)
-        by (metis P.Con_implies_Arr(1) backward_stable)
+    assumes "NPath U"
+    shows "\<lbrakk>NPath ([t] \<^sup>*\\\<^sup>* U)\<rbrakk> \<Longrightarrow> NPath [t]"
+    proof (induct U arbitrary: t rule: NPath_induct)
+      show "NPath U" by fact
+      show "\<And>t u. \<lbrakk>u \<in> \<NN>; NPath ([t] \<^sup>*\\\<^sup>* [u])\<rbrakk> \<Longrightarrow> NPath [t]"
+        by (metis NPath_def P.Arr.simps(1) P.Con_implies_Arr(1) P.Resid_rec(1)
+            backward_stable insert_subset list.simps(15))
+      thus "\<And>t u U. \<lbrakk>u \<in> \<NN>; NPath U; R.targets u \<subseteq> P.Srcs U; NPath ([t] \<^sup>*\\\<^sup>* (u # U));
+                       \<And>t. NPath ([t] \<^sup>*\\\<^sup>* U) \<Longrightarrow> NPath [t]\<rbrakk>
+                         \<Longrightarrow> NPath [t]"
+        by (metis NPath_def P.Arr.simps(1) P.Con_initial_left P.Con_sym P.Resid_rec(1,3))
     qed
 
     lemma Backward_stable:
@@ -5814,7 +7194,7 @@ begin
         show "T = [] \<Longrightarrow> ?thesis"
           using U resid Backward_stable_single by blast
         assume T: "T \<noteq> []"
-        have 1: "NPath ([t] \<^sup>*\\\<^sup>* U) \<and> NPath (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
+        have "NPath ([t] \<^sup>*\\\<^sup>* U) \<and> NPath (T \<^sup>*\\\<^sup>* (U \<^sup>*\\\<^sup>* [t]))"
           using T U NPath_append resid NPath_def
           by (metis P.Arr.simps(1) P.Con_cons(1) P.Resid_cons(1))
         thus ?thesis
@@ -5838,7 +7218,13 @@ begin
         by (metis P.Con_Arr_self P.Con_implies_Arr(1) P.Resid1x_as_Resid
             P.null_is_zero(2) P.Con_rec(1) P.Resid1x_as_Resid' R.not_con_null(2))
       also have "... \<longleftrightarrow> [t] \<^sup>*\<frown>\<^sup>* [t']"
-        by (simp add: Resid_along_NPath_preserves_reflects_Con assms(1,2))
+      proof -
+        have "\<And>T T' U. \<lbrakk>NPath U; P.Srcs T = P.Srcs U\<rbrakk> \<Longrightarrow> T \<^sup>*\\\<^sup>* U \<^sup>*\<frown>\<^sup>* T' \<^sup>*\\\<^sup>* U \<longleftrightarrow> T \<^sup>*\<frown>\<^sup>* T'"
+          using NPath_def NPath_Resid P.Con_implies_Arr(2) P.Cube(1)
+          by (metis P.Arr.simps(1) P.Arr_iff_Con_self P.Con_imp_Arr_Resid P.Con_imp_eq_Srcs)
+        thus ?thesis
+          using assms by simp
+      qed
       also have "... \<longleftrightarrow> t \<frown> t'"
         by auto
       finally show ?thesis by blast
@@ -5851,7 +7237,7 @@ begin
     interpretation NP: normal_sub_rts P.Resid \<open>Collect NPath\<close>
       using Ide_implies_NPath NPath_implies_Arr P.ide_char P.coinitial_def P.sources_char\<^sub>P
       apply unfold_locales
-           apply auto
+           apply auto[4]
       by (meson Backward_stable)
 
     theorem normal_extends_to_paths:
@@ -5862,213 +7248,91 @@ begin
     where "implode \<U> \<equiv> foldr (@) \<U> []"
 
     lemma NP_P_Srcs_eq:
-    shows "NP.P.Arr \<U> \<Longrightarrow> NP.P.Srcs \<U> = P.sources (implode \<U>)"
-    proof (induct \<U>)
-      show "NP.P.Arr [] \<Longrightarrow> NP.P.Srcs [] = P.sources (implode [])"
+    assumes "NP.P.Arr \<U>"
+    shows "NP.P.Srcs \<U> = P.sources (implode \<U>)"
+    proof (induct \<U> rule: NP.P.Arr_induct)
+      show "NP.P.Arr \<U>" by fact
+      show "\<And>T. NP.P.Arr [T] \<Longrightarrow> NP.P.Srcs [T] = P.sources (implode [T])"
         by simp
-      show "\<And>U \<U>. \<lbrakk>NP.P.Arr \<U> \<Longrightarrow> NP.P.Srcs \<U> = P.sources (implode \<U>); NP.P.Arr (U # \<U>)\<rbrakk>
-                     \<Longrightarrow> NP.P.Srcs (U # \<U>) = P.sources (implode (U # \<U>))"
-      proof -
-        fix U \<U>
-        assume ind: "NP.P.Arr \<U> \<Longrightarrow> NP.P.Srcs \<U> = P.sources (implode \<U>)"
-        assume U\<U>: "NP.P.Arr (U # \<U>)"
-        show "NP.P.Srcs (U # \<U>) = P.sources (implode (U # \<U>))"
-        proof (cases "\<U> = []")
-          case True
-          show ?thesis
-            using True by simp
-          next
-          case False
-          have "NP.P.Srcs (U # \<U>) = P.sources U"
-            using U\<U>
-            by (metis False NP.P.Srcs.simps(3) neq_Nil_conv)
-          also have "... = P.sources (U @ implode \<U>)"
-            by (metis (no_types, lifting) ext False NP.P.Con_Arr_self NP.P.Con_cons(2)
-                NP.P.Trgs.simps(2) NP.P.paths_in_rts_axioms P.paths_in_rts_axioms
-                P.seqI(1) U\<U> ind list.sel(1) list.simps(3) paths_in_rts.Arr_imp_arr_hd
-                paths_in_rts.Con_imp_eq_Srcs paths_in_rts.Con_implies_Arr(2)
-                paths_in_rts.Srcs_Resid paths_in_rts.sources_append)
-          also have "... = P.sources (implode (U # \<U>))"
-            by simp
-          finally show ?thesis by blast
-        qed
-      qed
+      fix U \<U>
+      assume ind: "NP.P.Srcs \<U> = P.sources (implode \<U>)"
+      assume U\<U>: "NP.P.Arr (U # \<U>)"
+      assume \<U>: "\<U> \<noteq> []"
+      show "NP.P.Srcs (U # \<U>) = P.sources (implode (U # \<U>))"
+        by (metis (no_types, lifting) ext NP.P.Con_cons(2) NP.P.Con_imp_eq_Srcs
+            NP.P.Srcs_Resid_Arr_single NP.P.Srcs_simp\<^sub>P P.seqI(1) P.sources_append
+            \<U> concat.simps(2) concat_conv_foldr ind list.sel(1) list.simps(3)
+            NP.P.Arr_imp_arr_hd NP.P.Con_Arr_self U\<U>)
     qed
 
     lemma P_Arr_implode:
-    shows "NP.P.Arr \<U> \<Longrightarrow> P.Arr (implode \<U>)"
-    proof (induct \<U>)
-      show "NP.P.Arr [] \<Longrightarrow> P.Arr (implode [])"
-        by simp
-      show "\<And>U \<U>. \<lbrakk>NP.P.Arr \<U> \<Longrightarrow> P.Arr (implode \<U>); NP.P.Arr (U # \<U>)\<rbrakk>
-                      \<Longrightarrow> P.Arr (implode (U # \<U>))"
-      proof -
-        fix U \<U>
-        assume ind: "NP.P.Arr \<U> \<Longrightarrow> P.Arr (implode \<U>)"
-        assume U\<U>: "NP.P.Arr (U # \<U>)"
-        show "P.Arr (implode (U # \<U>))"
-        proof (cases "\<U> = []")
-          case True
-          show ?thesis
-            using True P.arr_char U\<U> by auto
-          next
-          case False
-          show ?thesis
-          proof -
-            have "implode (U # \<U>) = U @ implode \<U>"
-              by simp
-            moreover have "P.Arr ..."
-            proof (intro P.Arr_appendI\<^sub>P)
-              show "P.Arr U"
-                using NP.P.Arr_imp_arr_hd P.arr_char U\<U> by fastforce
-              show "P.Arr (implode \<U>)"
-                using False U\<U> ind
-                by (metis NP.P.Arr_iff_Con_self NP.P.Con_implies_Arr(2) NP.P.Resid_cons(2))
-              show "P.Trgs U \<subseteq> P.Srcs (implode \<U>)"
-                using False U\<U> NP_P_Srcs_eq
-                by (metis NP.P.Arr_has_Src P.Arr_has_Trg P.Trgs.simps(1)
-                    P.arr_append_imp_seq P.arr_iff_has_source P.seq_char
-                    \<open>P.Arr (implode \<U>)\<close> \<open>P.Arr U\<close> calculation set_eq_subset)
-            qed
-            ultimately show ?thesis by simp
-          qed
-        qed
-      qed
+    assumes "NP.P.Arr \<U>"
+    shows "P.Arr (implode \<U>)"
+    proof (induct \<U> rule: NP.P.Arr_induct)
+      show "NP.P.Arr \<U>" by fact
+      show "\<And>U. NP.P.Arr [U] \<Longrightarrow> P.Arr (implode [U])"
+        by (simp add: P.arr_char)
+      show "\<And>U \<U>. \<lbrakk>NP.P.Arr (U # \<U>); \<U> \<noteq> []; P.Arr (implode \<U>)\<rbrakk> \<Longrightarrow> P.Arr (implode (U # \<U>))"
+        by (metis NP.P.Arr_has_Src NP_P_Srcs_eq P.arr_char P.arr_iff_has_source)
     qed
 
     lemma NP_P_Trgs_eq:
-    shows "NP.P.Arr \<U> \<Longrightarrow> NP.P.Trgs \<U> = P.targets (implode \<U>)"
-    proof (induct \<U>)
-      show "NP.P.Arr [] \<Longrightarrow> NP.P.Trgs [] = P.targets (implode [])"
-        by simp
-      show "\<And>U \<U>. \<lbrakk>NP.P.Arr \<U> \<Longrightarrow> NP.P.Trgs \<U> = P.targets (implode \<U>); NP.P.Arr (U # \<U>)\<rbrakk>
+    assumes "NP.P.Arr \<U>"
+    shows "NP.P.Trgs \<U> = P.targets (implode \<U>)"
+    proof (induct \<U> rule: NP.P.Arr_induct)
+      show "NP.P.Arr \<U>" by fact
+      show "\<And>U. NP.P.Arr [U] \<Longrightarrow> NP.P.Trgs [U] = P.targets (implode [U])"
+        by auto
+      show "\<And>U \<U>. \<lbrakk>NP.P.Arr (U # \<U>); \<U> \<noteq> []; NP.P.Trgs \<U> = P.targets (implode \<U>)\<rbrakk>
                      \<Longrightarrow> NP.P.Trgs (U # \<U>) = P.targets (implode (U # \<U>))"
-      proof -
-        fix U \<U>
-        assume ind: "NP.P.Arr \<U> \<Longrightarrow> NP.P.Trgs \<U> = P.targets (implode \<U>)"
-        assume U\<U>: "NP.P.Arr (U # \<U>)"
-        show "NP.P.Trgs (U # \<U>) = P.targets (implode (U # \<U>))"
-        proof (cases "\<U> = []")
-          case True
-          show ?thesis
-            using True by simp
-          next
-          case False
-          have "NP.P.Trgs (U # \<U>) = NP.P.Trgs \<U>"
-            by (metis False NP.P.Trgs_append append_Cons append_Nil)
-          also have "... = P.targets (implode \<U>)"
-            using U\<U> ind
-            by (metis False NP.P.Arr_imp_Arr_tl list.sel(3))
-          also have "... = P.targets (implode (U # \<U>))"
-            using False U\<U>
-            apply simp
-            by (metis NP.P.Arr_has_Trg P.Arr.simps(1) P.arr_append_imp_seq P.arr_char
-                P.arr_iff_has_target P.paths_in_rts_axioms P_Arr_implode append.left_neutral
-                calculation concat.simps(2) concat_conv_foldr paths_in_rts.targets_append)
-          finally show ?thesis by blast
-        qed
-      qed
+        by (metis NP.P.Arr_imp_Arr_tl NP.P.Arr_imp_arr_hd NP.P.Trgs.simps(3) P.Arr.simps(1)
+            P.arr_append_imp_seq P_Arr_implode concat.simps(2) concat_conv_foldr
+            list.exhaust_sel list.sel(1,3) P.arr_char P.targets_append)
     qed
 
     lemma NP_Resid1x_eq:
-    shows "NP.P.Resid1x T \<U> \<noteq> [] \<Longrightarrow> NP.P.Resid1x T \<U> = T \<^sup>*\\\<^sup>* implode \<U>"
-    proof (induct \<U> arbitrary: T)
-      show "\<And>T. NP.P.Resid1x T [] \<noteq> [] \<Longrightarrow> NP.P.Resid1x T [] = T \<^sup>*\\\<^sup>* implode []"
-        by (simp add: P.null_char)
-      show "\<And>U \<U> T. \<lbrakk>\<And>T. NP.P.Resid1x T \<U> \<noteq> [] \<Longrightarrow> NP.P.Resid1x T \<U> = T \<^sup>*\\\<^sup>* implode \<U>;
-                      NP.P.Resid1x T (U # \<U>) \<noteq> []\<rbrakk>
-                         \<Longrightarrow> NP.P.Resid1x T (U # \<U>) = T \<^sup>*\\\<^sup>* implode (U # \<U>)"
+    assumes "NP.P.Resid1x T \<U> \<noteq> []"
+    shows "NP.P.Resid1x T \<U> = T \<^sup>*\\\<^sup>* implode \<U>"
+    proof (induct \<U> arbitrary: T rule: NP.P.Arr_induct)
+      show "NP.P.Arr \<U>"
+        by (metis NP.P.Con_implies_Arr(2) NP.P.paths_in_rts_axioms P.null_char assms
+            paths_in_rts.Resid1x_as_Resid')
+      show "\<And>T U. NP.P.Arr [U] \<Longrightarrow> NP.P.Resid1x T [U] = T \<^sup>*\\\<^sup>* implode [U]"
+        by auto
+      fix T U \<U>
+      assume ind: "\<And>T. NP.P.Resid1x T \<U> = T \<^sup>*\\\<^sup>* implode \<U>"
+      assume U\<U>: "NP.P.Arr (U # \<U>)"
+      assume \<U>: "\<U> \<noteq> []"
+      show "NP.P.Resid1x T (U # \<U>) = T \<^sup>*\\\<^sup>* implode (U # \<U>)"
       proof -
-        fix U \<U> T
-        assume ind: "\<And>T. NP.P.Resid1x T \<U> \<noteq> [] \<Longrightarrow> NP.P.Resid1x T \<U> = T \<^sup>*\\\<^sup>* implode \<U>"
-        assume U\<U>: "NP.P.Resid1x T (U # \<U>) \<noteq> []"
-        show "NP.P.Resid1x T (U # \<U>) = T \<^sup>*\\\<^sup>* implode (U # \<U>)"
-        proof (cases "\<U> = []")
-          case True
-          show ?thesis
-            using True by fastforce
-          next
-          case False
-          have "NP.P.Resid1x T (U # \<U>) = NP.P.Resid1x (T \<^sup>*\\\<^sup>* U) \<U>"
-            using False
-            by (metis NP.P.Resid1x.simps(3) neq_Nil_conv)
-          also have "... = (T \<^sup>*\\\<^sup>* U) \<^sup>*\\\<^sup>* implode \<U>"
-            using U\<U> calculation ind by auto
-          also have "... = T \<^sup>*\\\<^sup>* (U @ implode \<U>)"
-            by (metis P.Con_appendI(2) P.Con_sym P.Resid.simps(1) P.Resid_append(2)
-                U\<U> calculation)
-          also have "... = T \<^sup>*\\\<^sup>* foldr (@) (U # \<U>) []"
-            by auto
-          finally show ?thesis by blast
-        qed
+        have "NP.P.Resid1x T (U # \<U>) = NP.P.Resid1x (T \<^sup>*\\\<^sup>* U) \<U>"
+          using \<U>
+          by (metis NP.P.Resid1x.simps(3) neq_Nil_conv)
+        also have "... = (T \<^sup>*\\\<^sup>* U) \<^sup>*\\\<^sup>* implode \<U>"
+          using U\<U> calculation ind by auto
+        also have "... = T \<^sup>*\\\<^sup>* (U @ implode \<U>)"
+          by (metis NP.P.Arr_imp_arr_hd NP.P.Resid1x_null P.Arr.simps(1) P.Con_appendI(2)
+              P.Resid_append(2) P.null_char P_Arr_implode U\<U> \<U> ind list.sel(1,3)
+              NP.P.Arr_imp_Arr_tl P.arr_char)
+        also have "... = T \<^sup>*\\\<^sup>* implode (U # \<U>)"
+          by auto
+        finally show ?thesis by blast
       qed
     qed
 
     lemma NP_NPath_imp:
-    shows "NP.NPath \<U> \<Longrightarrow> NPath (implode \<U>)"
-    proof (induct \<U>)
-      show "NP.NPath [] \<Longrightarrow> NPath (implode [])"
-        using NP.NPath_def NP.P.Arr.simps(1) by blast
-      show "\<And>U \<U>. \<lbrakk>NP.NPath \<U> \<Longrightarrow> NPath (implode \<U>); NP.NPath (U # \<U>)\<rbrakk>
-                      \<Longrightarrow> NPath (implode (U # \<U>))"
-      proof -
-        fix U \<U>
-        assume ind: "NP.NPath \<U> \<Longrightarrow> NPath (implode \<U>)"
-        assume U\<U>: "NP.NPath (U # \<U>)"
-        show "NPath (implode (U # \<U>))"
-        proof (cases "\<U> = []")
-          case True
-          show ?thesis
-            using True NP.NPath_def U\<U> by fastforce
-          next
-          case False
-          have "NPath (foldr (@) (U # \<U>) []) = NPath (U @ implode \<U>)"
-            by force
-          also have "... = True"
-          proof -
-            have "P.seq U (implode \<U>)"
-            proof
-              show "P.Arr U"
-                using NPath_def NP.NPath_def U\<U> by force
-              show "P.Arr (foldr (@) \<U> [])"
-                by (metis False NPath_def NP.P.Arr_imp_Arr_tl U\<U> ind insert_subset list.sel(3)
-                    list.simps(15) normal_extends_to_paths normal_sub_rts.NPath_def)
-              show "P.Trgs U \<inter> P.Srcs (implode \<U>) \<noteq> {}"
-              proof -
-                have "P.Srcs (implode \<U>) = P.Srcs (hd \<U> @ implode (tl \<U>))"
-                  using False
-                  by (metis concat.simps(2) concat_conv_foldr hd_Cons_tl)
-                also have "... = P.Srcs (hd \<U>)"
-                  using False
-                  by (metis NP.NPath_implies_Arr NP.P.Arr_imp_arr_hd P.null_char
-                      U\<U> list.sel(3) NP.P.Arr_imp_Arr_tl P.Srcs_append P.not_arr_null)
-                also have "... = P.Trgs U"
-                proof -
-                  have "NP.P.Srcs \<U> = P.targets U"
-                    using False U\<U>
-                    by (metis NP.P.Arr.simps(2) NP.P.Trgs.simps(2) list.exhaust_sel
-                        normal_extends_to_paths normal_sub_rts.NPath_def NP.P.Arr.simps(3)
-                        NP.P.seq_implies_Trgs_eq_Srcs)
-                  thus ?thesis
-                    using False
-                    by (metis NP.NPath_implies_Arr NP.P.Arr_imp_Arr_tl NP.P.Srcs_simp\<^sub>P
-                        P.arr_char P.seqI(1) P.seq_char U\<U> \<open>P.Arr U\<close> list.sel(3))
-                qed
-                finally have "P.Srcs (implode \<U>) = P.Trgs U" by blast
-                moreover have "... \<noteq> {}"
-                  using U\<U> by (simp add: P.Arr_has_Trg \<open>P.Arr U\<close>)
-                ultimately show ?thesis by blast
-              qed
-            qed
-            thus ?thesis
-              using False U\<U> ind
-              by (metis CollectD NPath_appendI NP.P.Arr_iff_Con_self NP.P.Con_cons(1)
-                  insert_subset list.discI list.simps(15) NP.NPath_def order_refl
-                  NP.P.Con_implies_Arr(2) NP.P.Con_rec(3) P.seq_char)
-          qed
-          finally show ?thesis by blast
-        qed
-      qed
+    assumes "NP.NPath \<U>"
+    shows "NPath (implode \<U>)"
+    proof (induct \<U> rule: NP.NPath_induct)
+      show "NP.NPath \<U>" by fact
+      show "\<And>U. U \<in> Collect NPath \<Longrightarrow> NPath (implode [U])"
+        by auto
+      show "\<And>U \<U>. \<lbrakk>U \<in> Collect NPath; NP.NPath \<U>; P.targets U \<subseteq> NP.P.Srcs \<U>; NPath (implode \<U>)\<rbrakk>
+                     \<Longrightarrow> NPath (implode (U # \<U>))"
+        by (metis NP.P.Arr_consI\<^sub>P P.Arr_append_iff\<^sub>P P.arr_char P.not_arr_null P.null_char
+            P_Arr_implode concat.simps(2) concat_conv_foldr mem_Collect_eq
+            normal_extends_to_paths NPath_appendI normal_sub_rts.NPath_implies_Arr
+            normal_sub_rts_axioms)
     qed
 
   end
@@ -6102,9 +7366,8 @@ begin
           using "1" NPath_def elements_are_arr by force+
         have 2: "[t] @ [t' \\ t] \<^sup>*\<sim>\<^sup>* [t'] @ [t \\ t']"
           using 1 P.diamond_commutes_upto_cong P.append_is_composite_of
-          by (metis (no_types, lifting) ext R.sources_resid P.Arr.simps(2)
-              P.Con_implies_Arr(2) P.Resid.simps(3) P.Srcs.simps(2) P.Trgs.simps(2)
-              elements_are_arr not_Cons_self2 P.seq_char R.arr_resid_iff_con)
+          by (metis NPath_implies_Arr P.Arr.simps(2) P.Cong_iff_PCong P.PCong.intros(6)
+              R.arr_resid_iff_con \<open>NPath [t' \ t]\<close> append_Cons append_Nil)
         show "[t] @ [t' \\ t] \<^sup>*\<lesssim>\<^sup>* [t'] @ [t \\ t']"
           using 2 by blast
         show "[t'] @ [t \\ t'] \<^sup>*\<lesssim>\<^sup>* [t] @ [t' \\ t]"
@@ -6764,7 +8027,7 @@ begin
         show "a \<^sup>1\\\<^sup>* U \<approx>\<^sub>0 a' \<^sup>1\\\<^sup>* U'"
         proof -
           have "P.con [a] U" and "P.con [a'] U'"
-            by (metis R.con_implies_arr(1-2) R.not_arr_null P.Con_single_ideI(1) UU'
+            by (metis R.con_implies_arr(1) R.not_arr_null P.Con_single_ideI(1) UU'
                 assms(2-3) Cong\<^sub>0_imp_con NPath_def P.Con_imp_eq_Srcs P.Resid1x_as_Resid'
                 P.Srcs.simps(2) P.conI\<^sub>P R.in_sourcesE)+
           moreover have "a \<^sup>1\\\<^sup>* U \<in> P.Trgs U" and "a' \<^sup>1\\\<^sup>* U' \<in> P.Trgs U'"
@@ -6961,10 +8224,15 @@ begin
       have "Cong t t' \<Longrightarrow> Cong' t t'"
         using Cong_def Cong'_if by blast
       moreover have "Cong' t t' \<Longrightarrow> Cong t t'"
-        apply (induction rule: Cong'.induct)
-        using Cong_closure_props(3-4) Cong_def
-           apply auto
-        by (metis (full_types) Cong_transitive)
+      proof (induction rule: Cong'.induct)
+        show "\<And>t u. \<lbrakk>Cong' t u; t \<approx> u\<rbrakk> \<Longrightarrow> u \<approx> t" by blast
+        show "\<And>t u v. \<lbrakk>Cong' t u; t \<approx> u; Cong' u v; u \<approx> v\<rbrakk> \<Longrightarrow> t \<approx> v"
+          using Cong_closure_props(2) by blast
+        show "\<And>t u. t \<approx>\<^sub>0 u \<Longrightarrow> t \<approx> u"
+          using Cong_closure_props(3) by auto
+        show "\<And>t u. \<lbrakk>R.arr t; u \<in> \<NN>; R.sources t = R.sources u\<rbrakk> \<Longrightarrow> t \<approx> t \\ u"
+          by (simp add: Cong_closure_props(4))
+      qed
       ultimately show ?thesis
         using Cong_def by blast
     qed
@@ -7142,103 +8410,6 @@ begin
 
   end
 
-  subsection "Congruence Classes"
-
-  text \<open>
-    Here we develop some notions relating to the congruence classes of \<open>\<approx>\<close>.
-  \<close>
-
-  context normal_sub_rts
-  begin
-
-    definition Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
-    where "Cong_class t \<equiv> {t'. t \<approx> t'}"
-
-    definition is_Cong_class
-    where "is_Cong_class \<T> \<equiv> \<exists>t. t \<in> \<T> \<and> \<T> = \<lbrace>t\<rbrace>"
-
-    definition Cong_class_rep
-    where "Cong_class_rep \<T> \<equiv> SOME t. t \<in> \<T>"
-
-    lemma Cong_class_is_nonempty:
-    assumes "is_Cong_class \<T>"
-    shows "\<T> \<noteq> {}"
-      using assms is_Cong_class_def Cong_class_def by auto
-
-    lemma rep_in_Cong_class:
-    assumes "is_Cong_class \<T>"
-    shows "Cong_class_rep \<T> \<in> \<T>"
-      using assms is_Cong_class_def Cong_class_rep_def someI_ex [of "\<lambda>t. t \<in> \<T>"]
-      by metis
-
-    lemma arr_in_Cong_class:
-    assumes "R.arr t"
-    shows "t \<in> \<lbrace>t\<rbrace>"
-      using assms Cong_class_def Cong_reflexive by simp
-
-    lemma is_Cong_classI:
-    assumes "R.arr t"
-    shows "is_Cong_class \<lbrace>t\<rbrace>"
-      using assms Cong_class_def is_Cong_class_def Cong_reflexive by blast
-
-    lemma is_Cong_classI' [intro]:
-    assumes "\<T> \<noteq> {}"
-    and "\<And>t t'. \<lbrakk>t \<in> \<T>; t' \<in> \<T>\<rbrakk> \<Longrightarrow> t \<approx> t'"
-    and "\<And>t t'. \<lbrakk>t \<in> \<T>; t' \<approx> t\<rbrakk> \<Longrightarrow> t' \<in> \<T>"
-    shows "is_Cong_class \<T>"
-    proof -
-      obtain t where t: "t \<in> \<T>"
-        using assms by auto
-      have "\<T> = \<lbrace>t\<rbrace>"
-        unfolding Cong_class_def
-        using assms(2-3) t by blast
-      thus ?thesis
-        using is_Cong_class_def t by blast
-    qed
-
-    lemma Cong_class_memb_is_arr:
-    assumes "is_Cong_class \<T>" and "t \<in> \<T>"
-    shows "R.arr t"
-      using assms Cong_class_def is_Cong_class_def Cong_imp_arr(2) by force
-
-    lemma Cong_class_membs_are_Cong:
-    assumes "is_Cong_class \<T>" and "t \<in> \<T>" and "t' \<in> \<T>"
-    shows "Cong t t'"
-      using assms Cong_class_def is_Cong_class_def
-      by (metis CollectD Cong_closure_props(2) Cong_symmetric)
-
-    lemma Cong_class_eqI:
-    assumes "t \<approx> t'"
-    shows "\<lbrace>t\<rbrace> = \<lbrace>t'\<rbrace>"
-      using assms Cong_class_def
-      by (metis (full_types) Collect_cong Cong'.intros(1-2) Cong_char)
-
-    lemma Cong_class_eqI':
-    assumes "is_Cong_class \<T>" and "is_Cong_class \<U>" and "\<T> \<inter> \<U> \<noteq> {}"
-    shows "\<T> = \<U>"
-      using assms is_Cong_class_def Cong_class_eqI Cong_class_membs_are_Cong Int_emptyI
-      by (metis (no_types, lifting))
-
-    lemma is_Cong_classE [elim]:
-    assumes "is_Cong_class \<T>"
-    and "\<lbrakk>\<T> \<noteq> {}; \<And>t t'. \<lbrakk>t \<in> \<T>; t' \<in> \<T>\<rbrakk> \<Longrightarrow> t \<approx> t'; \<And>t t'. \<lbrakk>t \<in> \<T>; t' \<approx> t\<rbrakk> \<Longrightarrow> t' \<in> \<T>\<rbrakk> \<Longrightarrow> T"
-    shows T
-      using assms Cong_class_def Cong_class_is_nonempty Cong_class_membs_are_Cong
-      by (metis Cong_class_eqI Cong_imp_arr(1) is_Cong_class_def arr_in_Cong_class)
-
-    lemma Cong_class_rep [simp]:
-    assumes "is_Cong_class \<T>"
-    shows "\<lbrace>Cong_class_rep \<T>\<rbrace> = \<T>"
-      by (metis Cong_class_membs_are_Cong Cong_class_eqI assms is_Cong_class_def
-          rep_in_Cong_class)
-
-    lemma Cong_class_memb_Cong_rep:
-    assumes "is_Cong_class \<T>" and "t \<in> \<T>"
-    shows "Cong t (Cong_class_rep \<T>)"
-      using assms Cong_class_membs_are_Cong rep_in_Cong_class by simp
-
-  end
-
   subsection "Coherent Normal Sub-RTS's"
 
   text \<open>
@@ -7386,18 +8557,16 @@ begin
           using VV' WW' by auto
         show "P.Srcs V = P.Srcs W"
           using WW' xx'
-          by (metis (no_types, lifting) ext R.coinitialE R.con_imp_coinitial
-              R.null_is_zero(2) P.Con_imp_eq_Srcs P.Con_sym1 P.Residx1_as_Resid
-              P.Srcs.simps(2) assms(3) elements_are_arr R.not_arr_null)
+          by (metis Cong\<^sub>0_imp_con P.Con_rec(1) P.paths_in_rts_axioms R.con_def R.null_is_zero(2)
+              assms(3) paths_in_rts.Con_imp_eq_Srcs paths_in_rts.Resid1x_as_Resid')
         show "P.Srcs V' = P.Srcs W'"
           using WW' xx'
           by (metis (full_types) R.null_is_zero(2) P.Con_imp_eq_Srcs P.Con_sym1
               P.Residx1_as_Resid P.Srcs.simps(2) assms(4) elements_are_arr R.not_arr_null)
         show "P.Trgs W = P.Trgs W'"
-          using yy' R.conE R.partial_magma_axioms P.Resid1x_as_Resid
-                P.Srcs_Resid_single_Arr Cong\<^sub>0_imp_con R.null_is_zero(2) P.Con_imp_eq_Srcs
-                P.Con_rec(1) P.Resid1x_as_Resid'
-          by (metis (no_types, lifting) ext)
+          by (metis P.paths_in_rts_axioms P.sources_Resid1x R.null_is_zero(2) elements_are_arr
+              normal_sub_rts.Cong\<^sub>0_imp_coinitial normal_sub_rts_axioms
+              paths_in_rts.Resid1x_as_Resid' R.not_arr_null yy')
       qed
       have 2: "t' \<^sup>1\\\<^sup>* W' \<frown> u' \<^sup>1\\\<^sup>* W'"
         using Resid_along_NPath_preserves_reflects_con
@@ -7488,10 +8657,9 @@ begin
       qed
       also have "... \<approx> t' \\ u'"
          using WW' 3 4
-         by (metis (lifting) ext "2" Cong'.intros(1) Cong'_arr_resid_NPath Cong_char
-             NPath_Resid_Arr_single R.con_implies_arr(1) R.con_sym R.not_con_null(2)
-             R.sources_resid P.Con_imp_eq_Srcs P.Con_sym P.Resid1x_as_Resid'
-             P.Srcs.simps(2) P.Srcs_Resid_Arr_single R.arr_resid_iff_con)
+         by (metis Cong_closure_props(1) Cong_imp_arr(2) NPath_Resid P.Arr.simps(2)
+             P.Con_imp_eq_Srcs P.Con_implies_Arr(1) P.Resid1x_as_Resid' P.Srcs.simps(2)
+             R.not_arr_null R.null_is_zero(2) Cong_arr_resid_NPath)
       finally show "t \\ u \<approx> t' \\ u'" by simp
     qed
 
@@ -7865,7 +9033,7 @@ begin
           moreover have 3: "NPath ..."
           proof -
             have "NPath ((?t \<^sup>*\\\<^sup>* ?t') \<^sup>*\\\<^sup>* ?T')"
-              by (metis "1" C NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.Con_imp_eq_Srcs
+              by (metis "1" C NPath_Resid P.Arr.simps(1) P.Con_imp_eq_Srcs
                   P.Con_implies_Arr(1,2))
             moreover have "P.Trgs ((?t \<^sup>*\\\<^sup>* ?t') \<^sup>*\\\<^sup>* ?T') =
                            P.Srcs ((?T \<^sup>*\\\<^sup>* (?t' \<^sup>*\\\<^sup>* ?t)) \<^sup>*\\\<^sup>* (?T' \<^sup>*\\\<^sup>* (?t \<^sup>*\\\<^sup>* ?t')))"
@@ -7978,72 +9146,178 @@ begin
 
   subsection "Quotient by Coherent Normal Sub-RTS"
 
-  text \<open>
-    We now define the quotient of an RTS by a coherent normal sub-RTS and show that it is
-    an extensional RTS.
-  \<close>
-
   locale quotient_by_coherent_normal =
     R: rts +
     coherent_normal_sub_rts
   begin
 
-    definition Resid  (infix \<open>\<lbrace>\\<rbrace>\<close> 70)
-    where "\<T> \<lbrace>\\\<rbrace> \<U> \<equiv>
-           if is_Cong_class \<T> \<and> is_Cong_class \<U> \<and> (\<exists>t u. t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u)
-           then Cong_class
-                  (fst (SOME tu. fst tu \<in> \<T> \<and> snd tu \<in> \<U> \<and> fst tu \<frown> snd tu) \\
-                   snd (SOME tu. fst tu \<in> \<T> \<and> snd tu \<in> \<U> \<and> fst tu \<frown> snd tu))
-           else {}"
+    sublocale quotient_rts resid Cong
+    proof
+      show "\<And>t t'. t \<approx> t' \<Longrightarrow> R.arr t \<and> R.arr t'"
+        using Cong_imp_arr(2) by blast
+      show "\<And>a a'. \<lbrakk>a \<approx> a'; R.ide a'\<rbrakk> \<Longrightarrow> \<forall>b. b \<lesssim> a \<longrightarrow> b \<approx> a'"
+        by (metis Cong'.intros(2,3) Cong_char Cong_closure_props(1) R.con_imp_coinitial
+            R.prfx_implies_con forward_stable ide_closed normal_is_Cong_closed)
+      show "reflp_on (Collect R.arr) (\<approx>)"
+        by (metis Cong_reflexive mem_Collect_eq reflp_onI)
+      show "symp (\<approx>)"
+        by (simp add: Cong_symmetric sympI)
+      show "transp (\<approx>)"
+        using Cong_transitive transp_def by blast
+      show "\<And>t t' u u'. \<lbrakk>t \<approx> t'; u \<approx> u'; t \<frown> u; R.coinitial t' u'\<rbrakk> \<Longrightarrow> t' \<frown> u'"
+        using Cong_subst(1,2) by force
+      show "\<And>t t' u u'. \<lbrakk>t \<approx> t'; u \<approx> u'; t \<frown> u; t' \<frown> u'\<rbrakk> \<Longrightarrow> t \\ u \<approx> t' \\ u'"
+        using Cong_subst(2) R.coinitial_iff R.con_imp_coinitial by presburger
+      show "\<And>t\<^sub>u u t\<^sub>v v. \<lbrakk>t\<^sub>u \<frown> u; t\<^sub>v \<frown> v; t\<^sub>u \<approx> t\<^sub>v\<rbrakk> \<Longrightarrow>
+                \<exists>t' u' v'. t' \<approx> t\<^sub>u \<and> u' \<approx> u \<and> v' \<approx> v \<and> t' \<frown> u' \<and> t' \<frown> v'"
+      proof -
+        fix t\<^sub>u u t\<^sub>v v
+        assume t\<^sub>uu: "t\<^sub>u \<frown> u" and t\<^sub>vv: "t\<^sub>v \<frown> v" and \<T>\<^sub>\<U>\<T>\<^sub>\<V>: "t\<^sub>u \<approx> t\<^sub>v"
+        obtain \<X> \<Y> where \<X>\<Y>: "NPath \<X> \<and> NPath \<Y> \<and> t\<^sub>u \<^sup>1\\\<^sup>* \<X> \<approx>\<^sub>0 t\<^sub>v \<^sup>1\\\<^sup>* \<Y>"
+          using \<T>\<^sub>\<U>\<T>\<^sub>\<V> by blast
+        have "t\<^sub>u \<^sup>1\\\<^sup>* \<X> \<approx> t\<^sub>u \<and> u \<^sup>1\\\<^sup>* \<X> \<approx> u \<and> v \<^sup>1\\\<^sup>* \<Y> \<approx> v \<and> t\<^sub>u \<^sup>1\\\<^sup>* \<X> \<frown> u \<^sup>1\\\<^sup>* \<X> \<and>
+              t\<^sub>u \<^sup>1\\\<^sup>* \<X> \<frown> v \<^sup>1\\\<^sup>* \<Y>"
+          by (metis (lifting) ext Cong\<^sub>0_subst_left(1) Cong_arr_resid_NPath
+              Cong_closure_props(1,3) Cong_imp_arr(2) P.Con_imp_eq_Srcs P.Resid1x_as_Resid'
+              P.Srcs.simps(2) R.coinitial_iff R.con_imp_coinitial R.not_arr_null
+              Resid_along_NPath_preserves_reflects_con \<X>\<Y> t\<^sub>uu t\<^sub>vv)
+        thus "\<exists>t' u' v'. t' \<approx> t\<^sub>u \<and> u' \<approx> u \<and> v' \<approx> v \<and> t' \<frown> u' \<and> t' \<frown> v'" by blast
+      qed
+    qed
 
-    sublocale partial_magma Resid
-      using Cong_class_is_nonempty Resid_def
-      by unfold_locales metis
+    notation cong_class_of  (\<open>\<lbrace>_\<rbrace>\<close>)
+    notation Resid  (infix \<open>\<lbrace>\\<rbrace>\<close> 70)
 
-    lemma is_partial_magma:
-    shows "partial_magma Resid"
+    lemma ide_char\<^sub>Q\<^sub>C\<^sub>N:
+    shows "ide \<A> \<longleftrightarrow> arr \<A> \<and> \<A> \<subseteq> \<NN>"
+    proof
+      show "ide \<A> \<Longrightarrow> arr \<A> \<and> \<A> \<subseteq> \<NN>"
+        by (metis cong_class_of_def ide_char ide_closed ide_implies_arr mem_Collect_eq
+            normal_is_Cong_closed subsetI)
+      show "arr \<A> \<and> \<A> \<subseteq> \<NN> \<Longrightarrow> ide \<A>"
+      proof -
+        assume \<A>: "arr \<A> \<and> \<A> \<subseteq> \<NN>"
+        have "\<And>a. a \<in> \<A> \<Longrightarrow> a \<approx> R.trg a"
+          using Cong_closure_props(4) R.trg_def \<A> by auto
+        hence "\<exists>a. R.ide a \<and> a \<in> \<A>"
+          by (metis R.ide_trg \<A> arr_char arr_in_cong_class cong_class_eqI is_cong_class_def
+              relation_on_arrows)
+        thus "ide \<A>"
+          using ide_char
+          by (metis \<A> arr_char cong_class_eqI cong_class_membs_are_cong is_cong_class_def)
+      qed
+    qed
+
+    sublocale extensional_rts Resid
+    proof
+      fix \<T> \<U>
+      assume \<T>\<U>: "cong \<T> \<U>"
+      show "\<T> = \<U>"
+      proof -
+        obtain t u where tu: "\<T> = \<lbrace>t\<rbrace> \<and> \<U> = \<lbrace>u\<rbrace> \<and> t \<frown> u"
+          using \<T>\<U> con_char
+          by (metis cong_class_of_def cong_class_eqI cong_class_membs_are_cong
+              cong_class_of_def is_cong_class_def prfx_implies_con)
+        have "t \<approx>\<^sub>0 u"
+          using tu \<T>\<U> cong_class_Resid R.con_sym ide_char\<^sub>Q\<^sub>C\<^sub>N
+          by (metis R.arr_resid_iff_con arr_in_cong_class subsetD)
+        hence "t \<approx> u"
+          using Cong\<^sub>0_implies_Cong by simp
+        thus "\<T> = \<U>"
+          by (simp add: cong_class_eqI tu)
+      qed
+    qed
+
+    theorem is_extensional_rts:
+    shows "extensional_rts Resid"
       ..
 
-    lemma null_char:
-    shows "null = {}"
-      using Cong_class_is_nonempty Resid_def
-      by (metis null_is_zero(2))
+    lemma sources_char\<^sub>Q\<^sub>C\<^sub>N:
+    shows "sources \<T> = {\<A>. arr \<T> \<and> \<A> = {a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a}}"
+    proof -
+      let ?\<A> = "{a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a}"
+      have 1: "arr \<T> \<Longrightarrow> ide ?\<A>"
+      proof (unfold ide_char\<^sub>Q\<^sub>C\<^sub>N, intro conjI)
+        assume \<T>: "arr \<T>"
+        show "?\<A> \<subseteq> \<NN>"
+          using ide_closed normal_is_Cong_closed by blast
+        show "arr ?\<A>"
+        proof (unfold arr_char, intro is_cong_classI')
+          show "?\<A> \<noteq> {}"
+            using \<T> arr_char R.arr_iff_has_source
+            by (metis (no_types, lifting) Collect_empty_eq Cong_reflexive cong_class_memb_is_arr
+                ex_in_conv in_sources_respects_Cong is_cong_class_def)
+          show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<in> ?\<A>\<rbrakk> \<Longrightarrow> a \<approx> a'"
+          proof -
+            fix a a'
+            assume a: "a \<in> ?\<A>" and a': "a' \<in> ?\<A>"
+            obtain t a'' where ta'': "t \<in> \<T> \<and> a'' \<in> R.sources t \<and> a'' \<approx> a"
+              using a by blast
+            obtain t' a''' where t'a''': "t' \<in> \<T> \<and> a''' \<in> R.sources t' \<and> a''' \<approx> a'"
+              using a' by blast
+            have "quot a = quot a'"
+              by (metis (full_types) \<T> a ta'' t'a''' cong_class_cong_class_memb cong_class_eqI
+                  quot.preserves_src arr_char)
+            thus "a \<approx> a'"
+              by (metis Cong_imp_arr(2) t'a''' arr_in_cong_class cong_class_membs_are_cong
+                  is_cong_classI quot.preserves_reflects_arr)
+          qed
+          show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<approx> a\<rbrakk> \<Longrightarrow> a' \<in> ?\<A>"
+          proof -
+            fix a a'
+            assume a: "a \<in> ?\<A>" and aa': "a' \<approx> a"
+            obtain t a'' where ta'': "t \<in> \<T> \<and> a'' \<in> R.sources t \<and> a'' \<approx> a"
+              using a by blast
+            show "a' \<in> ?\<A>"
+              by (metis (mono_tags, lifting) Cong_closure_props(1,2) ta'' aa' mem_Collect_eq)
+          qed
+        qed
+      qed
+      moreover have "arr \<T> \<Longrightarrow> con \<T> ?\<A>"
+      proof -
+        assume \<T>: "arr \<T>"
+        obtain t a where a: "t \<in> \<T> \<and> a \<in> R.sources t"
+          by (metis arr_char \<T> is_cong_class_def quot.preserves_reflects_arr
+              R.arr_iff_has_source ex_in_conv)
+        have "t \<in> \<T> \<and> a \<in> {a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a} \<and> t \<frown> a"
+          using a Cong_reflexive R.sources_def R.con_implies_arr(2) by fast
+        thus ?thesis
+          using \<T> calculation con_char by auto
+      qed
+      ultimately have "arr \<T> \<Longrightarrow> ?\<A> \<in> sources \<T>"
+        using sources_def by blast
+      thus ?thesis
+        using "1" ide_char sources_char\<^sub>W\<^sub>E by auto
+    qed
 
-    lemma Resid_by_members:
-    assumes "is_Cong_class \<T>" and "is_Cong_class \<U>" and "t \<in> \<T>" and "u \<in> \<U>" and "t \<frown> u"
-    shows "\<T> \<lbrace>\\\<rbrace> \<U> = \<lbrace>t \\ u\<rbrace>"
-      using assms Resid_def someI_ex [of "\<lambda>tu. fst tu \<in> \<T> \<and> snd tu \<in> \<U> \<and> fst tu \<frown> snd tu"]
-      apply simp
-      by (meson Cong_class_membs_are_Cong Cong_class_eqI Cong_subst(2)
-          R.coinitial_iff R.con_imp_coinitial)
+    lemma targets_char\<^sub>Q\<^sub>C\<^sub>N:
+    shows "targets \<T> = {\<B>. arr \<T> \<and> \<B> = \<T> \<lbrace>\\\<rbrace> \<T>}"
+      using resid_arr_self targets_char\<^sub>W\<^sub>E by force
 
-    abbreviation Con  (infix \<open>\<lbrace>\<frown>\<rbrace>\<close> 50)
-    where "\<T> \<lbrace>\<frown>\<rbrace> \<U> \<equiv> \<T> \<lbrace>\\\<rbrace> \<U> \<noteq> {}"
+    lemma src_char\<^sub>Q\<^sub>C\<^sub>N:
+    shows "src \<T> = {a. arr \<T> \<and> (\<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a)}"
+      using sources_char\<^sub>Q\<^sub>C\<^sub>N [of \<T>]
+      by (simp add: null_char src_def)
 
-    lemma Con_char:
-    shows "\<T> \<lbrace>\<frown>\<rbrace> \<U> \<longleftrightarrow>
-           is_Cong_class \<T> \<and> is_Cong_class \<U> \<and> (\<exists>t u. t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u)"
-      by (metis (no_types, opaque_lifting) Cong_class_is_nonempty is_Cong_classI
-          Resid_def Resid_by_members R.arr_resid_iff_con)
+    lemma trg_char\<^sub>Q\<^sub>C\<^sub>N:
+    shows "trg \<T> = \<T> \<lbrace>\\\<rbrace> \<T>"
+      unfolding trg_def by blast
 
-    lemma Con_sym:
-    assumes "Con \<T> \<U>"
-    shows "Con \<U> \<T>"
-      using assms Con_char R.con_sym by meson
-
-    lemma is_Cong_class_Resid:
-    assumes "\<T> \<lbrace>\<frown>\<rbrace> \<U>"
-    shows "is_Cong_class (\<T> \<lbrace>\\\<rbrace> \<U>)"
-      using assms Con_char Resid_by_members R.arr_resid_iff_con is_Cong_classI by auto
+    text\<open>
+      The following fact was included in an earlier version of this article.
+      Its use in constructing the quotient of an RTS by a coherent normal sub-RTS has now
+      been superseded by a somewhat weaker property.  However the stronger property might
+      have other uses, so I have retained it in the current version.
+    \<close>
 
     lemma Con_witnesses:
-    assumes "\<T> \<lbrace>\<frown>\<rbrace> \<U>" and "t \<in> \<T>" and "u \<in> \<U>"
+    assumes "con \<T> \<U>" and "t \<in> \<T>" and "u \<in> \<U>"
     shows "\<exists>V W. NPath V \<and> NPath W \<and> t \<^sup>1\\\<^sup>* V \<frown> u \<^sup>1\\\<^sup>* W"
     proof -
       obtain t' u' where t'u': "t' \<in> \<T> \<and> u' \<in> \<U> \<and> t' \<frown> u'"
-        using assms Con_char by auto
+        using assms con_char by auto
       have 1: "t' \<approx> t \<and> u' \<approx> u"
-        using assms Con_char t'u' Cong_class_membs_are_Cong by auto
+        using assms con_char t'u' cong_class_membs_are_cong by auto
       obtain V V' where VV': "NPath V \<and> NPath V' \<and> t' \<^sup>1\\\<^sup>* V \<approx>\<^sub>0 t \<^sup>1\\\<^sup>* V'"
         using 1 by auto
       obtain W W' where WW': "NPath W \<and> NPath W' \<and> u' \<^sup>1\\\<^sup>* W \<approx>\<^sub>0 u \<^sup>1\\\<^sup>* W'"
@@ -8316,1165 +9590,102 @@ begin
       ultimately show ?thesis by auto
     qed
 
-    abbreviation Arr
-    where "Arr \<T> \<equiv> Con \<T> \<T>"
-
-    lemma Arr_Resid:
-    assumes "Con \<T> \<U>"
-    shows "Arr (\<T> \<lbrace>\\\<rbrace> \<U>)"
-      by (metis Con_char Cong_class_memb_is_arr R.arrE rep_in_Cong_class
-          assms is_Cong_class_Resid)
-
-    lemma Cube:
-    assumes "Con (\<V> \<lbrace>\\\<rbrace> \<T>) (\<U> \<lbrace>\\\<rbrace> \<T>)"
-    shows "(\<V> \<lbrace>\\\<rbrace> \<T>) \<lbrace>\\\<rbrace> (\<U> \<lbrace>\\\<rbrace> \<T>) = (\<V> \<lbrace>\\\<rbrace> \<U>) \<lbrace>\\\<rbrace> (\<T> \<lbrace>\\\<rbrace> \<U>)"
-    proof -
-      obtain t u where tu: "t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u \<and> \<T> \<lbrace>\\\<rbrace> \<U> = \<lbrace>t \\ u\<rbrace>"
-        using assms
-        by (metis Con_char Cong_class_is_nonempty R.con_sym Resid_by_members)
-      obtain t' v where t'v: "t' \<in> \<T> \<and> v \<in> \<V> \<and> t' \<frown> v \<and> \<T> \<lbrace>\\\<rbrace> \<V> = \<lbrace>t' \\ v\<rbrace>"
-        using assms
-        by (metis Con_char Cong_class_is_nonempty Resid_by_members Con_sym)
-      have tt': "t \<approx> t'"
-        using assms
-        by (metis Cong_class_membs_are_Cong Cong_class_is_nonempty Resid_def t'v tu)
-      have \<U>\<T>: "\<U> \<lbrace>\\\<rbrace> \<T> = \<lbrace>u \\ t\<rbrace>" and \<V>\<T>: "\<V> \<lbrace>\\\<rbrace> \<T> = \<lbrace>v \\ t'\<rbrace>"
-        by (metis Con_char Cong_class_is_nonempty R.con_sym Resid_by_members assms t'v tu)+
-      obtain W W' where WW': "NPath W \<and> NPath W' \<and> t \<^sup>1\\\<^sup>* W \<approx>\<^sub>0 t' \<^sup>1\\\<^sup>* W'"
-        using tu t'v tt' by auto
-      obtain X X' where XX': "NPath X \<and> NPath X' \<and> (u \\ t) \<^sup>1\\\<^sup>* X \<frown> (v \\ t') \<^sup>1\\\<^sup>* X'"
-        using \<U>\<T> \<V>\<T> Con_witnesses [of "\<U> \<lbrace>\\\<rbrace> \<T>" "\<V> \<lbrace>\\\<rbrace> \<T>" "u \\ t" "v \\ t'"]
-        by (metis arr_in_Cong_class R.con_sym t'v tu assms Con_sym R.arr_resid_iff_con)
-
-      have Con_tW: "P.Con [t] W"
-        by (metis Cong\<^sub>0_imp_con P.Resid1x_as_Resid' R.not_con_null(1) WW')
-      have Con_t'W': "P.Con [t'] W'"
-        by (metis Cong\<^sub>0_imp_con P.Resid1x_as_Resid' R.not_con_null(1) WW')
-      have Con_uW: "P.Con [u] W"
-        by (metis NPath_Resid_Arr_single NPath_implies_Arr P.Arr.simps(1)
-            P.Con_imp_eq_Srcs P.Con_sym P.Srcs.simps(2) R.coinitial_iff
-            R.con_imp_coinitial WW' Con_tW tu)
-      have Con_vW': "P.Con [v] W'"
-        by (metis Cong_arr_resid_NPath P.Con_imp_eq_Srcs P.Con_rec(1)
-            P.Resid1x_as_Resid' P.Srcs.simps(2) R.con_implies_arr(2) R.not_arr_null
-            WW' Con_t'W' Cong_imp_arr(2) t'v)
-      have Con_tX_W: "P.Con ([t] @ X) W"
-        by (metis (lifting) ext NPath_implies_Arr P.Arr.simps(1) P.Con_appendI(1)
-            P.Con_imp_eq_Srcs P.Con_sym P.Srcs.simps(2) R.con_sym R.not_arr_null
-            XX' Con_tW NPath_Resid  P.Con_imp_Arr_Resid P.Resid1x_as_Resid'
-            P.Srcs_Resid_Arr_single R.con_implies_arr(1) R.sources_resid tu)
-      have Con_X_Wt: "X \<^sup>*\<frown>\<^sup>* W \<^sup>*\\\<^sup>* [t]"
-        by (metis NPath_implies_Arr P.Arr.simps(1) P.Con_cons(1) P.null_char
-            P.null_is_zero(2) XX' Con_tX_W append_Cons append_Nil)
-      have Con_X'_W't': "X' \<^sup>*\<frown>\<^sup>* W' \<^sup>*\\\<^sup>* [t']"
-        by (metis (lifting) ext NPath_implies_Arr P.Arr.simps(1) P.Con_imp_eq_Srcs
-            P.Con_sym P.Srcs.simps(2) R.con_sym XX' Con_t'W' NPath_Resid
-            R.null_is_zero(2) P.Con_imp_Arr_Resid P.Resid1x_as_Resid'
-            P.Srcs_Resid_Arr_single R.conE R.sources_resid t'v)
-      have Con_t'X'_W': "P.Con ([t'] @ X') W'"
-        using P.Con_append(1)
-        by (metis P.Resid.simps(1) P.ex_un_null Con_X'_W't' Con_t'W')
-      have seq_tX: "P.seq [t] X"
-        by (metis P.arr_append_imp_seq P.con_implies_arr(1) Con_X_Wt Con_tX_W
-            not_Cons_self P.Resid.simps(1) P.con_char)
-      have seq_t'X': "P.seq [t'] X'"
-        by (metis P.Con_sym P.arr_append_imp_seq Con_X'_W't' Con_t'X'_W'
-            P.Con_implies_Arr(2) P.Resid.simps(1) P.arrI\<^sub>P)
-
-      let ?t_W = "t \<^sup>1\\\<^sup>* W" and ?t'_W' = "t' \<^sup>1\\\<^sup>* W'" and ?u_W = "u \<^sup>1\\\<^sup>* W" and ?v_W' = "v \<^sup>1\\\<^sup>* W'"
-      let ?tX = "[t] @ X" and ?t'X' = "[t'] @ X'"
-      let ?tX_W = "?tX \<^sup>*\\\<^sup>* W" and ?t'X'_W' = "?t'X' \<^sup>*\\\<^sup>* W'"
-      let ?W_tX = "(W \<^sup>*\\\<^sup>* [t]) \<^sup>*\\\<^sup>* X" and ?W'_t'X' = "(W' \<^sup>*\\\<^sup>* [t']) \<^sup>*\\\<^sup>* X'"
-      let ?u_tX = "(u \\ t) \<^sup>1\\\<^sup>* X" and ?v_t'X' = "(v \\ t') \<^sup>1\\\<^sup>* X'"
-      let ?u_W = "u \<^sup>1\\\<^sup>* W" and ?v_W' = "v \<^sup>1\\\<^sup>* W'"
-      let ?W_u = "W \<^sup>*\\\<^sup>* [u]" and ?W'_v = "W' \<^sup>*\\\<^sup>* [v]"
-
-      have tX: "P.composite_of [t] X ?tX"
-        using P.append_is_composite_of seq_tX by blast
-      have t'X': "P.composite_of [t'] X' ?t'X'"
-        using P.append_is_composite_of seq_t'X' by blast
-      have NPath_W_tX: "NPath ?W_tX"
-        by (metis NPath_Resid P.Arr.simps(1) P.Con_imp_eq_Srcs P.Con_implies_Arr(2)
-            P.seq_char WW' seq_tX Con_X_Wt)
-      have NPath_W'_t'X': "NPath ?W'_t'X'"
-        by (metis NPath_Resid P.Con_imp_eq_Srcs P.Con_implies_Arr(1) WW'
-            Con_X'_W't' Con_t'W')
-      have tX_W_eq: "?tX_W = [?t_W] @ (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))"
-        by (metis P.Resid.simps(1) P.Resid_cons' Con_X_Wt Con_tX_W
-            append.left_neutral append_Cons)
-      have t'X'_W'_eq: "?t'X'_W' = [?t'_W'] @ (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']))"
-        by (metis P.Resid.simps(1) P.Resid_cons' Con_X'_W't' Con_t'X'_W'
-            append.left_neutral append_Cons)
-
-      have Con_tX_W__t'X'_W': "?tX_W \<^sup>*\<frown>\<^sup>* ?t'X'_W'"
-      proof -
-        have "[?t_W] @ (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) \<^sup>*\<frown>\<^sup>* [?t'_W'] @ (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']))"
-        proof (intro P.Con_appendI)
-          show 1: "[t \<^sup>1\\\<^sup>* W] \<^sup>*\<frown>\<^sup>* [t' \<^sup>1\\\<^sup>* W']"
-            using Cong\<^sub>0_imp_con WW' by auto
-          show 2: "[t \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t' \<^sup>1\\\<^sup>* W'] \<^sup>*\<frown>\<^sup>* X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])"
-            by (metis (lifting) ext "1" Con_X'_W't' Con_t'W' NPath_Resid NPath_implies_Arr
-                P.Arr.simps(1) P.Resid1x_as_Resid XX' P.Con_imp_Arr_Resid
-                P.Con_imp_eq_Srcs P.Con_sym P.Srcs_Resid P.Trgs_Resid_sym)
-          show "X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) \<^sup>*\<frown>\<^sup>* ([t' \<^sup>1\\\<^sup>* W'] @ X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W]"
-          proof -
-            have "NPath (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))"
-              by (metis Backward_stable NPath_Resid NPath_implies_Arr P.Con_imp_eq_Srcs
-                  NPath_W_tX XX')
-            moreover have "P.coinitial
-                             (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))
-                             (([t' \<^sup>1\\\<^sup>* W'] @ X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W])"
-              by (metis P.arr_resid P.coinitialI P.sources_resid P.targets_resid_sym
-                  Con_X_Wt 1 2 Con_tW P.Con_appendI(2) P.Con_sym P.Resid1x_as_Resid
-                  P.conI\<^sub>P)
-            ultimately show ?thesis
-              by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.coinitial_char(1))
-          qed
-        qed
-        thus ?thesis
-          using t'X'_W'_eq tX_W_eq by argo
-      qed
-      have NPath_tX_W__t'X'_W': "NPath (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W')"
-      proof -
-        have "?tX_W \<^sup>*\\\<^sup>* ?t'X'_W' =
-              (([?t_W] \<^sup>*\\\<^sup>* [?t'_W']) \<^sup>*\\\<^sup>* (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']))) @
-                 ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* [?t_W]))"
-          by (metis P.Con_initial_left P.Resid.simps(1) P.Resid_cons' P.Resid_cons(1,2)
-              Con_tX_W__t'X'_W' Con_X'_W't' Con_t'X'_W' append.left_neutral append_Cons tX_W_eq)
-        moreover have "NPath (([?t_W] \<^sup>*\\\<^sup>* [?t'_W']) \<^sup>*\\\<^sup>* (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])))"
-          by (metis P.Con_rec(1) P.Resid.simps(3) P.Resid1x_as_Resid WW'
-              Con_X'_W't' Con_t'W' Cong\<^sub>0_imp_con NPath_Resid_single_Arr
-              P.Con_imp_Arr_Resid P.Srcs_Resid P.Srcs_Resid_Arr_single
-              P.Trgs_Resid_sym R.sources_resid)
-        moreover have "NPath ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* [?t_W]))"
-          using NPath_Resid P.Con_append(1) P.Con_imp_Arr_Resid P.Con_imp_eq_Srcs
-                P.Con_sym P.Resid.simps(1) XX' Con_tX_W__t'X'_W' list.discI tX_W_eq
-          by (metis (lifting) ext Con_X_Wt Con_t'X'_W')
-        ultimately show ?thesis
-          by (metis NPath_appendI NPath_implies_Arr P.Arr_append_iff\<^sub>P
-              P.Con_imp_Arr_Resid P.arrI\<^sub>P P.arr_resid_iff_con P.con_char
-              Con_tX_W__t'X'_W')
-      qed
-      have NPath_t'X'_W'__tX_W: "NPath (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-      proof -
-        have "?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W =
-              (([?t'_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) @
-                 ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* (?tX_W \<^sup>*\\\<^sup>* [?t'_W']))"
-        proof -
-          have "?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W =
-                (([t'] \<^sup>*\\\<^sup>* W') @ (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']))) \<^sup>*\\\<^sup>* (([t] @ X) \<^sup>*\\\<^sup>* W)"
-            by (metis Con_t'X'_W' P.Resid_append(1) not_Cons_self2)
-          also have "... = (([t'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* (([t] \<^sup>*\\\<^sup>* W) @ (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])))) @
-                              ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* ((([t] @ X) \<^sup>*\\\<^sup>* W) \<^sup>*\\\<^sup>* ([t'] \<^sup>*\\\<^sup>* W')))"
-            by (metis Con_t'W' Con_tX_W Con_tX_W__t'X'_W' P.Con_sym P.Resid_append(1)
-                calculation not_Cons_self2)
-          also have "... = ((([t'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([t] \<^sup>*\\\<^sup>* W)) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) @
-                              ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* ((([t] @ X) \<^sup>*\\\<^sup>* W) \<^sup>*\\\<^sup>* ([t'] \<^sup>*\\\<^sup>* W')))"
-            using Con_X_Wt Con_tW P.Arr.simps(1) P.Con_implies_Arr(1)
-                  P.Resid_append(2) [of "[t] \<^sup>*\\\<^sup>* W" "X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])" "[t'] \<^sup>*\\\<^sup>* W'"]
-            by (metis P.Con_appendI(2))
-          also have "... = (([?t'_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) @
-                             ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* (?tX_W \<^sup>*\\\<^sup>* [?t'_W']))"
-            using Con_t'W' Con_tW P.Resid1x_as_Resid by fastforce
-          finally show ?thesis by blast
-        qed
-        moreover have "NPath (([?t'_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])))"
-          by (metis P.Con_rec(1) P.Resid.simps(3) P.Resid1x_as_Resid
-              WW' Con_X_Wt Con_tW Cong\<^sub>0_imp_con NPath_Resid_single_Arr
-              P.Con_imp_Arr_Resid P.Srcs_Resid P.Srcs_Resid_Arr_single
-              P.Trgs_Resid_sym R.sources_resid)
-        moreover have "NPath ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) \<^sup>*\\\<^sup>* (?tX_W \<^sup>*\\\<^sup>* [?t'_W']))"
-          by (metis NPath_Resid P.Con_append(2) XX' Con_tX_W__t'X'_W' Con_X'_W't' Con_tX_W
-              list.distinct(1) P.Con_imp_Arr_Resid P.Con_imp_eq_Srcs P.Con_implies_Arr(2)
-              t'X'_W'_eq)
-        ultimately show ?thesis
-          by (metis NPath_appendI NPath_implies_Arr P.Arr_append_iff\<^sub>P
-              P.Con_imp_Arr_Resid P.Con_sym P.arrI\<^sub>P P.arr_resid_iff_con P.con_char
-              Con_tX_W__t'X'_W')
-      qed
-
-      let ?Z = "?tX_W @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-      let ?Z' = "?t'X'_W' @ (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W')"
-      have Z: "P.Arr ?Z" and Z': "P.Arr ?Z'"
-        by (metis P.Con_appendI(2) P.Con_implies_Arr(2) P.con_imp_arr_resid
-            P.null_char Con_tX_W Con_t'X'_W' append_Nil2)+
-      have Z_eq: "?Z = [?t_W] @ ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W))"
-        using tX_W_eq by force
-      have Z'_eq: "?Z' = [?t'_W'] @ ((X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) @ (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W'))"
-        using t'X'_W'_eq by force
-
-      have Con_Z_tW: "?Z \<^sup>*\<frown>\<^sup>* [?t_W]"
-      proof -
-        have "?Z = [?t_W] @ ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W))"
-          using Z_eq by fastforce
-        moreover have "P.Ide ([t \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W])"
-          using P.Con_imp_Arr_Resid P.Resid1x_as_Resid P.Resid_Arr_self Con_tW
-          by presburger
-        moreover have "X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W) \<^sup>*\<frown>\<^sup>* [t \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W]"
-        proof -
-          have "[t \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W] \<in> P.targets (W \<^sup>*\\\<^sup>* [t])"
-            using P.trg_in_targets
-            by (metis P.Resid1x_as_Resid P.arr_resid P.conI\<^sub>P P.targets_resid_sym
-                P.trg_def Con_tW)
-          moreover have "P.sources (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)) =
-                         P.targets (W \<^sup>*\\\<^sup>* [t])"
-          proof -
-            have "P.sources (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)) =
-                  P.sources (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))"
-              by (metis NPath_implies_Arr P.arr_append_imp_seq P.sources_append
-                  NPath_W_tX Z Z_eq append_is_Nil_conv append_self_conv list.simps(3)
-                  P.Arr_appendE\<^sub>P P.Con_sym P.arrI\<^sub>P P.con_char P.arr_resid_iff_con)
-            thus ?thesis
-              by (metis NPath_implies_Arr NPath_W_tX P.arrI\<^sub>P P.arr_resid_iff_con
-                  P.con_sym P.sources_resid)
-          qed
-          ultimately show ?thesis
-            by (metis P.Con_sym P.ide_char P.source_is_prfx P.Ide.simps(1))
-        qed
-        ultimately show ?thesis
-          using P.Con_append(1)
-          by (metis P.Ide.simps(1) P.null_char P.null_is_zero(1))
-      qed
-      have Con_Z_uW: "?Z \<^sup>*\<frown>\<^sup>* [?u_W]"
-      proof (intro P.Con_appendI(1))
-        show 1: "([t] @ X) \<^sup>*\\\<^sup>* W \<^sup>*\<frown>\<^sup>* [u \<^sup>1\\\<^sup>* W]"
-        proof -
-          have "[t \<^sup>1\\\<^sup>* W] @ X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) \<^sup>*\<frown>\<^sup>* [u \<^sup>1\\\<^sup>* W]"
-          proof (intro P.Con_appendI(1))
-            show 1: "[t \<^sup>1\\\<^sup>* W] \<^sup>*\<frown>\<^sup>* [u \<^sup>1\\\<^sup>* W]"
-              by (metis (no_types, lifting) P.Con_rec(1) P.Resid1x_as_Resid WW'
-                  Con_tW Con_uW Resid_along_NPath_preserves_reflects_Con
-                  P.Con_imp_eq_Srcs tu)
-            show "X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]) \<^sup>*\<frown>\<^sup>* [u \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W]"
-            proof -
-              have "NPath (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))"
-                by (metis Backward_stable NPath_Resid NPath_W_tX NPath_implies_Arr
-                    P.Con_imp_eq_Srcs XX')
-              moreover have "P.coinitial (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) ([u \<^sup>1\\\<^sup>* W] \<^sup>*\\\<^sup>* [t \<^sup>1\\\<^sup>* W])"
-                by (metis (full_types) "1" Con_X_Wt Con_tW P.arr_resid P.coinitialI
-                    P.paths_in_rts_axioms P.sources_resid P.targets_resid_sym
-                    paths_in_rts.Con_sym paths_in_rts.Resid1x_as_Resid paths_in_rts.conI\<^sub>P)
-              ultimately show ?thesis
-                by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.coinitial_char(1))
-            qed
-          qed
-          thus ?thesis
-            using tX_W_eq by argo
-        qed
-        show "?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W \<^sup>*\<frown>\<^sup>* [?u_W] \<^sup>*\\\<^sup>* ?tX_W"
-          using NPath_t'X'_W'__tX_W
-          by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.Con_imp_Arr_Resid
-              P.Con_sym P.Srcs_Resid 1)
-      qed
-      have Con_Z'_vW': "?Z' \<^sup>*\<frown>\<^sup>* [?v_W']"
-      proof (intro P.Con_appendI(1))
-        show 1: "([t'] @ X') \<^sup>*\\\<^sup>* W' \<^sup>*\<frown>\<^sup>* [v \<^sup>1\\\<^sup>* W']"
-        proof -
-          have "[t' \<^sup>1\\\<^sup>* W'] @ X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']) \<^sup>*\<frown>\<^sup>* [v \<^sup>1\\\<^sup>* W']"
-          proof (intro P.Con_appendI(1))
-            show 2: "[t' \<^sup>1\\\<^sup>* W'] \<^sup>*\<frown>\<^sup>* [v \<^sup>1\\\<^sup>* W']"
-              by (metis (no_types, lifting) P.Con_rec(1) P.Resid1x_as_Resid
-                  WW' Con_t'W' Con_vW' Resid_along_NPath_preserves_reflects_Con
-                  P.Con_imp_eq_Srcs t'v)
-            show "X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']) \<^sup>*\<frown>\<^sup>* [v \<^sup>1\\\<^sup>* W'] \<^sup>*\\\<^sup>* [t' \<^sup>1\\\<^sup>* W']"
-            proof -
-              have "NPath (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t']))"
-                by (metis Backward_stable NPath_Resid NPath_W'_t'X' NPath_implies_Arr
-                    P.Con_imp_eq_Srcs XX')
-              moreover have "P.coinitial (X' \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* [t'])) ([v \<^sup>1\\\<^sup>* W'] \<^sup>*\\\<^sup>* [t' \<^sup>1\\\<^sup>* W'])"
-                by (metis (no_types, lifting) "2" Con_X'_W't' Con_t'W' P.Con_sym
-                    P.arr_resid P.coinitialI P.conI\<^sub>P P.paths_in_rts_axioms
-                    P.sources_resid P.targets_resid_sym paths_in_rts.Resid1x_as_Resid)
-              ultimately show ?thesis
-                by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.coinitial_char(1))
-            qed
-          qed
-          thus ?thesis
-            using t'X'_W'_eq by argo
-        qed
-        show "?tX_W \<^sup>*\\\<^sup>* ?t'X'_W' \<^sup>*\<frown>\<^sup>* [?v_W'] \<^sup>*\\\<^sup>* ?t'X'_W'"
-          by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) 1
-              NPath_tX_W__t'X'_W' P.Con_imp_Arr_Resid P.Con_sym P.Srcs_Resid)
-      qed
-
-      have *: "?u_W \\ ?t_W \<frown> ?v_W' \\ ?t_W"
-      proof -
-        have 2: "NPath (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))"
-          using P.Con_imp_eq_Srcs P.Con_implies_Arr(2) XX' Con_X_Wt by auto
-        have "?u_W \<^sup>1\\\<^sup>* ?Z \<frown> ?v_W' \<^sup>1\\\<^sup>* ?Z"
-        proof -
-          have "?u_W \<^sup>1\\\<^sup>* ?Z \<frown> ?v_W' \<^sup>1\\\<^sup>* ?Z'"
-          proof -
-            let ?Y = "(W \<^sup>*\\\<^sup>* ?tX) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-            let ?Y' = "(W' \<^sup>*\\\<^sup>* ?t'X') @ (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W')"
-            have Y: "P.composite_of (W \<^sup>*\\\<^sup>* ?tX) (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W) ?Y"
-              using P.append_is_composite_of
-              by (metis (no_types, lifting) ext P.seq_char Con_tX_W__t'X'_W' Con_tX_W
-                  P.Con_imp_Arr_Resid P.Con_sym P.Srcs_Resid P.Trgs_Resid_sym)
-            have Y': "P.composite_of (W' \<^sup>*\\\<^sup>* ?t'X') (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W') ?Y'"
-              using P.append_is_composite_of
-              by (metis P.Arr_append_iff\<^sub>P P.arrI\<^sub>P P.arr_append_imp_seq Z' Con_tX_W__t'X'_W'
-                  Con_t'X'_W' P.Con_imp_Arr_Resid P.Con_sym P.Trgs_Resid_sym)
-            have NPath_Y: "NPath ?Y"
-              by (metis NPath_Resid NPath_appendI P.Arr_append_iff\<^sub>P P.Con_imp_eq_Srcs
-                  P.Con_implies_Arr(1) P.Con_sym P.Trgs_Resid_sym WW' Z Con_tX_W__t'X'_W'
-                  NPath_t'X'_W'__tX_W Con_tX_W)
-            have NPath_Y': "NPath ?Y'"
-              by (metis NPath_Resid P.Arr_append_iff\<^sub>P P.Con_implies_Arr(1)
-                  WW' Z' Con_tX_W__t'X'_W' NPath_tX_W__t'X'_W' Con_t'X'_W' NPath_appendI
-                  P.Con_imp_eq_Srcs P.Trgs_Resid_sym)
-            have Y_coinitial: "P.coinitial ?Y [u \<^sup>1\\\<^sup>* ?tX]"
-            proof
-              show "P.Arr ?Y"
-                using \<open>NPath ?Y\<close> NPath_implies_Arr by blast
-              show 3: "P.Arr [u \<^sup>1\\\<^sup>* ?tX]"
-                by (metis P.Arr.simps(2) P.Resid.simps(1) P.Resid1x.simps(3)
-                    P.ex_un_null R.con_implies_arr(1) R.not_arr_null XX' append_Cons
-                    append_Nil neq_Nil_conv P.Resid1x_as_Resid')
-              show "P.Srcs ?Y \<inter> P.Srcs [u \<^sup>1\\\<^sup>* ?tX] \<noteq> {}"
-              proof -
-                have "P.Srcs ?Y = P.Trgs ?tX"
-                  using P.Con_sym Con_tX_W by auto
-                also have "... = P.Srcs [u \<^sup>1\\\<^sup>* ?tX]"
-                  by (metis P.Arr.simps(2) P.Resid1x_as_Resid P.Resid1x_as_Resid'
-                      P.Srcs_Resid R.not_arr_null 3)
-                finally show ?thesis
-                by (metis P.Arr_has_Src 3 inf_idem)
-              qed
-            qed
-            have Y'_coinitial: "P.coinitial ?Y' [v \<^sup>1\\\<^sup>* ?t'X']"
-            proof
-              show "P.Arr ?Y'"
-                using NPath_Y' NPath_implies_Arr by blast
-              show 3: "P.Arr [v \<^sup>1\\\<^sup>* ?t'X']"
-                by (metis NPath_implies_Arr P.Arr.simps(1) P.Con_implies_Arr(2)
-                    P.Resid1x.simps(3) XX' append.left_neutral append_Cons list.exhaust
-                    P.Con_rec(1))
-              show "P.Srcs ?Y' \<inter> P.Srcs [v \<^sup>1\\\<^sup>* ?t'X'] \<noteq> {}"
-              proof -
-                have "P.Srcs ?Y' = P.Trgs ?t'X'"
-                  using P.Con_sym Con_t'X'_W' by auto
-                also have "... = P.Srcs [v \<^sup>1\\\<^sup>* ?t'X']"
-                  by (metis P.Arr.simps(2) P.Resid1x_as_Resid P.Resid1x_as_Resid'
-                      P.Srcs_Resid R.not_arr_null 3)
-                finally show ?thesis
-                  by (metis P.Arr_has_Src 3 inf_idem)
-              qed
-            qed
-            have Con_Y: "P.Con ?Y [u \<^sup>1\\\<^sup>* ?tX]"
-              by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.coinitial_char(1)
-                  NPath_Y Y_coinitial)
-            have Con_Y': "P.Con ?Y' [v \<^sup>1\\\<^sup>* ?t'X']"
-              by (metis NPath_Resid NPath_implies_Arr P.Arr.simps(1) P.coinitial_char(1)
-                  NPath_Y' Y'_coinitial)
-            have A: "?u_W \<^sup>1\\\<^sup>* ?Z \<sim> (u \<^sup>1\\\<^sup>* ?tX) \<^sup>1\\\<^sup>* ?Y"
-            proof -
-              have "[(u \<^sup>1\\\<^sup>* ?tX) \<^sup>1\\\<^sup>* ?Y] \<^sup>*\<sim>\<^sup>* [?u_W \<^sup>1\\\<^sup>* ?Z]"
-              proof -
-                have "[(u \<^sup>1\\\<^sup>* ?tX) \<^sup>1\\\<^sup>* ?Y] = ([u] \<^sup>*\\\<^sup>* ?tX) \<^sup>*\\\<^sup>* ?Y"
-                  using P.Resid1x_as_Resid
-                  by (metis (no_types, opaque_lifting) Con_Y Con_Z_uW Con_tX_W__t'X'_W'
-                      Con_uW P.Con_append(1) P.Con_sym P.Resid.simps(1) P.cube)
-                also have "([u] \<^sup>*\\\<^sup>* ?tX) \<^sup>*\\\<^sup>* ?Y \<^sup>*\<sim>\<^sup>*
-                           (([u] \<^sup>*\\\<^sup>* ?tX) \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* ?tX)) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-                  using Y Con_Y
-                        P.resid_composite_of(3)
-                          [of "W \<^sup>*\\\<^sup>* ?tX" "?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W" ?Y "[u \<^sup>1\\\<^sup>* ?tX]"]
-                  by (metis P.Resid.simps(1) P.Resid1x_as_Resid P.con_char calculation)
-                also have "(([u] \<^sup>*\\\<^sup>* ?tX) \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* ?tX)) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W) =
-                           [?u_W] \<^sup>*\\\<^sup>* ?Z"
-                  by (metis Con_Z_uW Con_tX_W Con_tX_W__t'X'_W' Con_uW P.Con_sym
-                      P.Resid1x_as_Resid P.Resid_append(2) P.cube)
-                also have "... = [?u_W \<^sup>1\\\<^sup>* ?Z]"
-                  using Con_Z_uW P.Con_sym P.Resid1x_as_Resid by blast
-                finally show ?thesis by blast
-              qed
-              thus ?thesis
-                using P.Resid_rec(1) P.paths_in_rts_axioms P.prfx_implies_con
-                      paths_in_rts.con_char P.ide_char
-                by (metis P.Ide.simps(2))
-            qed
-            have B: "?v_W' \<^sup>1\\\<^sup>* ?Z' \<sim> (v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y'"
-            proof -
-              have "[(v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y'] \<^sup>*\<sim>\<^sup>* [?v_W' \<^sup>1\\\<^sup>* ?Z']"
-              proof -
-                have "[(v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y'] = ([v] \<^sup>*\\\<^sup>* ?t'X') \<^sup>*\\\<^sup>* ?Y'"
-                  using P.Resid1x_as_Resid [of v ?t'X'] P.Resid1x_as_Resid [of "v \<^sup>1\\\<^sup>* ?t'X'" ?Y']
-                  by (metis Con_Y' P.Con_sym P.Con_sym1 P.Resid1x_null P.Residx1_as_Resid)
-                also have "... \<^sup>*\<sim>\<^sup>*
-                           (([v] \<^sup>*\\\<^sup>* ?t'X') \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* ?t'X')) \<^sup>*\\\<^sup>* (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W')"
-                  using Y Con_Y
-                        P.resid_composite_of(3)
-                          [of "W' \<^sup>*\\\<^sup>* ?t'X'" "?tX_W \<^sup>*\\\<^sup>* ?t'X'_W'" ?Y' "[v \<^sup>1\\\<^sup>* ?t'X']"]
-                  by (metis P.conI\<^sub>P P.con_sym P.resid_composite_of(3) Y' calculation list.discI)
-                also have "(([v] \<^sup>*\\\<^sup>* ?t'X') \<^sup>*\\\<^sup>* (W' \<^sup>*\\\<^sup>* ?t'X')) \<^sup>*\\\<^sup>* (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W') =
-                           [?v_W'] \<^sup>*\\\<^sup>* ?Z'"
-                  by (metis (no_types, opaque_lifting) Con_Z'_vW' Con_t'X'_W' Con_tX_W__t'X'_W'
-                      Con_vW' P.Con_sym P.Resid1x_as_Resid P.Resid_append(2) P.cube)
-                also have "[?v_W'] \<^sup>*\\\<^sup>* ?Z' = [?v_W' \<^sup>1\\\<^sup>* ?Z']"
-                  using Con_Z'_vW' P.Con_sym P.Resid1x_as_Resid by blast
-                finally show ?thesis by blast
-              qed
-              thus ?thesis
-                using P.Resid_rec(1) P.paths_in_rts_axioms P.prfx_implies_con
-                      paths_in_rts.con_char P.ide_char
-                by (metis P.Ide.simps(2))
-            qed
-            have C: "u \<^sup>1\\\<^sup>* ?tX \<frown> v \<^sup>1\\\<^sup>* ?t'X'"
-              by (metis NPath_implies_Arr P.Arr.simps(1) P.Resid1x.simps(3) XX'
-                  append_Cons append_Nil list.exhaust)
-            have par_Y_Y': "P.Srcs ?Y = P.Srcs ?Y' \<and> P.Trgs ?Y = P.Trgs ?Y'"
-            proof
-              show "P.Srcs ?Y = P.Srcs ?Y'"
-              proof -
-                have 1: "NPath (?Y \<^sup>*\\\<^sup>* ?Y') \<and> NPath (?Y' \<^sup>*\\\<^sup>* ?Y)"
-                proof -
-                  have "P.coinitial ?Y ?Y'"
-                    using C Con_Y Con_Y' P.Con_imp_eq_Srcs P.Con_implies_Arr(1)
-                          P.coinitialI\<^sub>P R.con_imp_common_source
-                    by auto
-                  thus ?thesis
-                    using NPath_Resid P.coinitial_char(1) NPath_Y NPath_Y'
-                    by presburger
-                qed
-                have "P.Srcs ?Y = P.Trgs ?tX"
-                  using P.Con_sym Con_tX_W by auto
-                also have "... = P.Srcs ?Y'"
-                  by (metis (full_types) 1 NPath_implies_Arr P.Con_imp_eq_Srcs
-                      P.paths_in_rts_axioms calculation paths_in_rts.Arr.simps(1))
-                finally show ?thesis by blast
-              qed
-              show "P.Trgs ?Y = P.Trgs ?Y'"
-                using Con_tX_W__t'X'_W' P.Con_sym by force
-            qed
-            have "(u \<^sup>1\\\<^sup>* ?tX) \<^sup>1\\\<^sup>* ?Y \<frown> (v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y'"
-            proof -
-              have "(u \<^sup>1\\\<^sup>* ?tX) \<^sup>1\\\<^sup>* ?Y \<frown> (v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y"
-                by (metis C Con_Y NPath_Y P.Srcs.simps(2) P.Con_imp_eq_Srcs
-                    Resid_along_NPath_preserves_reflects_con)
-              moreover have "(v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y \<approx>\<^sub>0 (v \<^sup>1\\\<^sup>* ?t'X') \<^sup>1\\\<^sup>* ?Y'"
-                using par_Y_Y' coherent R.coinitial_iff Y'_coinitial NPath_Y NPath_Y'
-                      C P.Srcs.simps(2) P.coinitial_char(1) R.con_implies_arr(2)
-                by presburger
-              ultimately show ?thesis
-                using Cong\<^sub>0_subst_right(1) by blast
-            qed
-            thus ?thesis
-              by (meson A B Cong\<^sub>0_subst_Con ide_closed)
-          qed
-          moreover have 1: "?v_W' \<^sup>1\\\<^sup>* ?Z' \<approx> ?v_W' \<^sup>1\\\<^sup>* ?Z"
-          proof -
-            have 2: "NPath (?Z \<^sup>*\\\<^sup>* ?Z') \<and> NPath (?Z' \<^sup>*\\\<^sup>* ?Z)"
-            proof -
-              have "P.seq ?tX_W (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W) \<and> P.seq ?t'X'_W' (?tX_W \<^sup>*\\\<^sup>* ?t'X'_W')"
-                using P.Con_sym P.arr_append_imp_seq P.arr_char Z Z' Con_tX_W__t'X'_W'
-                      Con_t'X'_W' Con_tX_W
-                by presburger
-              hence "P.cong ?Z ?Z'"
-                using P.append_is_composite_of
-                by (metis P.diamond_commutes_upto_cong)
-              thus ?thesis
-                using Ide_implies_NPath P.ide_char by blast
-            qed
-            have "(?v_W' \<^sup>1\\\<^sup>* ?Z') \<approx> (?v_W' \<^sup>1\\\<^sup>* ?Z') \<^sup>1\\\<^sup>* (?Z \<^sup>*\\\<^sup>* ?Z')"
-              using 2 Cong_arr_resid_NPath
-              by (metis P.Arr.simps(1) P.Resid1x_as_Resid P.Resid1x_as_Resid'
-                  P.Srcs.simps(2) P.Srcs_Resid R.con_implies_arr(1) R.con_sym
-                  R.not_arr_null calculation NPath_implies_Arr)
-            also have 3: "(?v_W' \<^sup>1\\\<^sup>* ?Z') \<^sup>1\\\<^sup>* (?Z \<^sup>*\\\<^sup>* ?Z') = (?v_W' \<^sup>1\\\<^sup>* ?Z) \<^sup>1\\\<^sup>* (?Z' \<^sup>*\\\<^sup>* ?Z)"
-            proof -
-              have "[(?v_W' \<^sup>1\\\<^sup>* ?Z') \<^sup>1\\\<^sup>* (?Z \<^sup>*\\\<^sup>* ?Z')] = ([?v_W'] \<^sup>*\\\<^sup>* ?Z') \<^sup>*\\\<^sup>* (?Z \<^sup>*\\\<^sup>* ?Z')"
-                using P.Resid1x_as_Resid
-                by (metis Con_Z'_vW' R.not_arr_null calculation Cong_imp_arr(2) P.Con_sym
-                    P.Resid1x_as_Resid')
-              also have "... = ([?v_W'] \<^sup>*\\\<^sup>* ?Z) \<^sup>*\\\<^sup>* (?Z' \<^sup>*\\\<^sup>* ?Z)"
-                using P.cube by blast
-              also have "... = [(?v_W' \<^sup>1\\\<^sup>* ?Z) \<^sup>1\\\<^sup>* (?Z' \<^sup>*\\\<^sup>* ?Z)]"
-                using P.Resid1x_as_Resid
-                by (metis P.Resid.simps(1) calculation P.Resid1x_as_Resid')
-              finally show ?thesis by blast
-            qed
-            also have "(?v_W' \<^sup>1\\\<^sup>* ?Z) \<^sup>1\\\<^sup>* (?Z' \<^sup>*\\\<^sup>* ?Z) \<approx> ?v_W' \<^sup>1\\\<^sup>* ?Z"
-            proof -
-              have "R.sources (?v_W' \<^sup>1\\\<^sup>* ?Z) = P.Srcs (?Z' \<^sup>*\\\<^sup>* ?Z)"
-                by (metis (no_types, lifting) Cong_imp_arr(2) P.Srcs.simps(2)
-                    R.not_arr_null calculation P.Con_imp_eq_Srcs P.Resid1x_as_Resid')
-              thus ?thesis
-                using 2 3 Cong\<^sub>0_reflexive Cong_imp_arr(2) calculation
-                      Cong_arr_resid_NPath [of "?Z' \<^sup>*\\\<^sup>* ?Z" "?v_W' \<^sup>1\\\<^sup>* ?Z"]
-                by blast
-            qed
-            finally show ?thesis by blast
-          qed
-          moreover have "R.sources (?v_W' \<^sup>1\\\<^sup>* ?Z) = R.sources (?u_W \<^sup>1\\\<^sup>* ?Z)"
-          proof -
-            have "R.sources ((v \<^sup>1\\\<^sup>* W') \<^sup>1\\\<^sup>* ?Z) = P.Srcs (([v] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ?Z)"
-              using P.Resid1x_as_Resid
-              by (metis P.Resid1x_as_Resid' P.Srcs.simps(2) R.not_arr_null
-                  Con_vW' calculation(2) Cong_imp_arr(2))
-            also have "... = P.Trgs ?Z"
-              by (metis R.not_arr_null 1 Con_vW' Cong_imp_arr(2) P.Resid1x_as_Resid
-                  P.Resid1x_as_Resid' P.Srcs_Resid)
-            also have "... = P.Srcs (([u] \<^sup>*\\\<^sup>* W) \<^sup>*\\\<^sup>* ?Z)"
-              by (metis Con_Z_uW P.Con_sym P.Resid1x_as_Resid P.Srcs_Resid Con_uW)
-            also have "... = R.sources ((u \<^sup>1\\\<^sup>* W) \<^sup>1\\\<^sup>* ?Z)"
-              by (metis Con_Z_uW P.Con_sym P.Resid1x_as_Resid P.Srcs.simps(2) Con_uW)
-            finally show ?thesis by blast
-          qed
-          ultimately show ?thesis
-            using Cong_reflexive R.con_implies_arr(1)
-                  Cong_subst(1)
-                    [of "?u_W \<^sup>1\\\<^sup>* ?Z" "?u_W \<^sup>1\\\<^sup>* ?Z" "?v_W' \<^sup>1\\\<^sup>* ?Z'" "?v_W' \<^sup>1\\\<^sup>* ?Z"]
-            by blast
-        qed
-        hence 1: "[?u_W] \<^sup>*\\\<^sup>* ?Z \<^sup>*\<frown>\<^sup>* [?v_W'] \<^sup>*\\\<^sup>* ?Z"
-          using P.Con_rec(1) P.Resid1x_as_Resid' R.null_is_zero(2)
-                P.Con_sym P.Resid1x_as_Resid R.conE
-          by (metis Con_Z_uW)
-        moreover have "[?u_W] \<^sup>*\\\<^sup>* ?Z =
-                       (([?u_W] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-          using Z_eq
-                P.Resid_append(2)
-                  [of "[?t_W]" "(X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)" "[?u_W]"]
-          by (metis (no_types, lifting) Con_X_Wt Con_Z_uW Con_tX_W Con_tX_W__t'X'_W'
-              P.Con_append(2) P.Con_sym P.Resid_append(2) not_Cons_self2 tX_W_eq)
-        moreover have "[?v_W'] \<^sup>*\\\<^sup>* ?Z =
-                       (([?v_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-        proof -
-          have "[?v_W'] \<^sup>*\\\<^sup>* ?Z = [?v_W'] \<^sup>*\\\<^sup>* ([?t_W] @ ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)))"
-            using Z_eq by simp
-          also have "... = ([?v_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* ((X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W))"
-            using P.Resid_append(2)
-                    [of "[?t_W]" "(X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t])) @ (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)" "[?v_W']"]
-            by (metis 1 Con_X_Wt P.null_char P.null_is_zero(2) Z_eq
-                append_is_Nil_conv neq_Nil_conv)
-          also have "... = (([?v_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-            by (metis Con_X_Wt Con_tX_W__t'X'_W' P.Con_appendI(2) P.Con_sym P.Resid.simps(1)
-                P.Resid_append(2))
-          finally show ?thesis by blast
-        qed
-        ultimately
-        have "(([?u_W] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W) \<^sup>*\<frown>\<^sup>*
-              (([?v_W'] \<^sup>*\\\<^sup>* [?t_W]) \<^sup>*\\\<^sup>* (X \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [t]))) \<^sup>*\\\<^sup>* (?t'X'_W' \<^sup>*\\\<^sup>* ?tX_W)"
-          by simp
-        hence "[?u_W] \<^sup>*\\\<^sup>* [?t_W] \<^sup>*\<frown>\<^sup>* [?v_W'] \<^sup>*\\\<^sup>* [?t_W]"
-          by (metis P.Resid.simps(1) P.cube)
-        thus ?thesis
-          by (metis P.Con_sym P.Resid.simps(1,3))
-      qed
-
-      have \<T>: "is_Cong_class \<T> \<and> ?t_W \<in> \<T>"
-      proof -
-        have "t \<approx> ?t_W"
-          by (metis (lifting) ext Cong_arr_resid_NPath Cong_imp_arr(1)
-              P.Con_imp_eq_Srcs P.Srcs.simps(2) P.Srcs_append
-              P.ex_un_null WW' Z_eq append_Cons append_is_Nil_conv neq_Nil_conv tt')
-        thus ?thesis
-          by (metis Con_char Cong_closure_props(1) is_Cong_classE assms tu)
-      qed
-      have \<U>: "is_Cong_class \<U> \<and> ?u_W \<in> \<U>"
-      proof -
-        have "u \<approx> ?u_W"
-          by (metis Con_Z_uW P.Arr_has_Src P.Con_imp_eq_Srcs P.Con_implies_Arr(1)
-              P.Resid1x_as_Resid' P.Srcs.simps(2) R.arr_iff_has_source
-              WW' Cong_arr_resid_NPath R.not_arr_null)
-        thus ?thesis
-          by (metis Con_char Cong_closure_props(1) is_Cong_classE assms tu)
-      qed
-      have \<V>: "is_Cong_class \<V> \<and> ?v_W' \<in> \<V>"
-      proof -
-        have "v \<approx> ?v_W'"
-          by (metis Cong_arr_resid_NPath P.Con_imp_eq_Srcs P.Srcs.simps(2)
-              R.con_implies_arr(2) WW' Con_vW' t'v)
-        thus ?thesis
-          by (metis Con_char Cong_symmetric is_Cong_classE assms t'v)
-      qed
-      show "(\<V> \<lbrace>\\\<rbrace> \<T>) \<lbrace>\\\<rbrace> (\<U> \<lbrace>\\\<rbrace> \<T>) = (\<V> \<lbrace>\\\<rbrace> \<U>) \<lbrace>\\\<rbrace> (\<T> \<lbrace>\\\<rbrace> \<U>)"
-      proof -
-        have 1: "?v_W' \\ ?t_W \<frown> ?u_W \\ ?t_W \<and>
-                 (?v_W' \\ ?t_W) \\ (?u_W \\ ?t_W) = (?v_W' \\ ?u_W) \\ (?t_W \\ ?u_W)"
-          by (simp add: "*" R.con_sym R.cube)
-        have "(\<V> \<lbrace>\\\<rbrace> \<T>) \<lbrace>\\\<rbrace> (\<U> \<lbrace>\\\<rbrace> \<T>) = \<lbrace>(?v_W' \\ ?t_W) \\ (?u_W \\ ?t_W)\<rbrace>"
-          by (metis (lifting) ext "1" Con_char arr_in_Cong_class R.arr_resid_iff_con
-              R.con_implies_arr(1,2) Resid_by_members \<T> \<U> \<V> assms)
-        moreover have "(\<V> \<lbrace>\\\<rbrace> \<U>) \<lbrace>\\\<rbrace> (\<T> \<lbrace>\\\<rbrace> \<U>) = \<lbrace>(?v_W' \\ ?u_W) \\ (?t_W \\ ?u_W)\<rbrace>"
-          using \<T> \<U> \<V> Resid_by_members [of \<T> \<U> ?t_W ?u_W] Resid_by_members [of \<V> \<U> ?v_W' ?u_W]
-                Resid_by_members [of "\<V> \<lbrace>\\\<rbrace> \<U>" "\<T> \<lbrace>\\\<rbrace> \<U>" "?v_W' \\ ?u_W" "?t_W \\ ?u_W"]
-          by (metis "1" R.arr_resid_iff_con R.con_implies_arr(1,2) arr_in_Cong_class is_Cong_classI)
-        ultimately show ?thesis
-          using 1 by simp
-      qed
-    qed
-
-    sublocale residuation Resid
-      using null_char Con_sym Arr_Resid Cube
-      by unfold_locales metis+
-
-    lemma is_residuation:
-    shows "residuation Resid"
-      ..
-
-    lemma arr_char:
-    shows "arr \<T> \<longleftrightarrow> is_Cong_class \<T>"
-      by (metis is_Cong_class_def arrI not_arr_null null_char Cong_class_memb_is_arr
-          Con_char R.arrE arrE arr_resid conI)
-
-    lemma ide_char:
-    shows "ide \<U> \<longleftrightarrow> arr \<U> \<and> \<U> \<inter> \<NN> \<noteq> {}"
-    proof
-      show "ide \<U> \<Longrightarrow> arr \<U> \<and> \<U> \<inter> \<NN> \<noteq> {}"
-        by (metis Cong\<^sub>0_reflexive Cong_class_memb_is_arr arr_in_Cong_class
-            rep_in_Cong_class R.arrE Resid_by_members arr_char disjoint_iff ideE
-            ide_implies_arr elements_are_arr)
-      show "arr \<U> \<and> \<U> \<inter> \<NN> \<noteq> {} \<Longrightarrow> ide \<U>"
-      proof -
-        assume \<U>: "arr \<U> \<and> \<U> \<inter> \<NN> \<noteq> {}"
-        obtain u where u: "R.arr u \<and> u \<in> \<U> \<inter> \<NN>"
-          using \<U> arr_char
-          by (metis IntI Cong_class_memb_is_arr disjoint_iff)
-        show ?thesis
-          by (metis IntD1 IntD2 Cong_class_eqI Cong_closure_props(4) arr_in_Cong_class
-              is_Cong_classI Resid_by_members \<U> arrE arr_char disjoint_iff ideI
-              Cong_class_eqI' R.arrE u)
-      qed
-    qed
-
-    lemma ide_char':
-    shows "ide \<A> \<longleftrightarrow> arr \<A> \<and> \<A> \<subseteq> \<NN>"
-      by (metis Int_absorb2 Int_emptyI Cong_class_memb_Cong_rep Cong_closure_props(1)
-          ide_char not_arr_null null_char normal_is_Cong_closed arr_char subsetI)
-
-    lemma con_char\<^sub>Q\<^sub>C\<^sub>N:
-    shows "con \<T> \<U> \<longleftrightarrow>
-           is_Cong_class \<T> \<and> is_Cong_class \<U> \<and> (\<exists>t u. t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u)"
-      by (metis Con_char conE conI null_char)
-
-    (*
-     * TODO: Does the stronger form of con_char hold in this context?
-     * I am currently only able to prove it for the more special context of paths,
-     * but it doesn't seem like that should be required.
-     *
-     * The issue is that congruent paths have the same sets of sources,
-     * but this does not necessarily hold in general.  If we know that all representatives
-     * of a congruence class have the same sets of sources, then we known that if any
-     * pair of representatives is consistent, then the arbitrarily chosen representatives
-     * of the congruence class are consistent.  This is by substitutivity of congruence,
-     * which has coinitiality as a hypothesis.
-     *
-     * In the general case, we have to reason as follows: if t and u are consistent
-     * representatives of \<T> and \<U>, and if t' and u' are arbitrary coinitial representatives
-     * of \<T> and \<U>, then we can obtain "opposing spans" connecting t u and t' u'.
-     * The opposing span form of coherence then implies that t' and u' are consistent.
-     * So we should be able to show that if congruence classes \<T> and \<U> are consistent,
-     * then all pairs of coinitial representatives are consistent.
-     *)
-
-    lemma con_imp_coinitial_members_are_con:
-    assumes "con \<T> \<U>" and "t \<in> \<T>" and "u \<in> \<U>" and "R.sources t = R.sources u"
-    shows "t \<frown> u"
-      by (meson assms Cong_subst(1) is_Cong_classE con_char\<^sub>Q\<^sub>C\<^sub>N)
-
-    sublocale rts Resid
-    proof
-      show 1: "\<And>\<A> \<T>. \<lbrakk>ide \<A>; con \<T> \<A>\<rbrakk> \<Longrightarrow> \<T> \<lbrace>\\\<rbrace> \<A> = \<T>"
-      proof -
-        fix \<A> \<T>
-        assume \<A>: "ide \<A>" and con: "con \<T> \<A>"
-        obtain t a where ta: "t \<in> \<T> \<and> a \<in> \<A> \<and> R.con t a \<and> \<T> \<lbrace>\\\<rbrace> \<A> = \<lbrace>t \\ a\<rbrace>"
-          using con con_char\<^sub>Q\<^sub>C\<^sub>N Resid_by_members by auto
-        have "a \<in> \<NN>"
-          using \<A> ta ide_char' by auto
-        hence "t \\ a \<approx> t"
-          by (meson Cong_closure_props(4) Cong_symmetric R.coinitialE R.con_imp_coinitial
-              ta)
-        thus "\<T> \<lbrace>\\\<rbrace> \<A> = \<T>"
-          using ta
-          by (metis Cong_class_eqI Cong_class_memb_Cong_rep Cong_class_rep con con_char\<^sub>Q\<^sub>C\<^sub>N)
-      qed
-      show "\<And>\<T>. arr \<T> \<Longrightarrow> ide (trg \<T>)"
-        by (metis Cong\<^sub>0_reflexive Resid_by_members disjoint_iff ide_char Cong_class_memb_is_arr
-            arr_in_Cong_class is_Cong_class_def arr_char R.arrE R.arr_resid resid_arr_self)
-      show "\<And>\<A> \<T>. \<lbrakk>ide \<A>; con \<A> \<T>\<rbrakk> \<Longrightarrow> ide (\<A> \<lbrace>\\\<rbrace> \<T>)"
-        by (metis 1 arrE arr_resid con_sym ideE ideI cube)
-      show "\<And>\<T> \<U>. con \<T> \<U> \<Longrightarrow> \<exists>\<A>. ide \<A> \<and> con \<A> \<T> \<and> con \<A> \<U>"
-      proof -
-        fix \<T> \<U>
-        assume \<T>\<U>: "con \<T> \<U>"
-        obtain t u where tu: "\<T> = \<lbrace>t\<rbrace> \<and> \<U> = \<lbrace>u\<rbrace> \<and> t \<frown> u"
-          using \<T>\<U> con_char\<^sub>Q\<^sub>C\<^sub>N arr_char
-          by (metis Cong_class_memb_Cong_rep Cong_class_eqI Cong_class_rep)
-        obtain a where a: "a \<in> R.sources t"
-          using \<T>\<U> tu R.con_implies_arr(1) R.arr_iff_has_source by blast
-        have "ide \<lbrace>a\<rbrace> \<and> con \<lbrace>a\<rbrace> \<T> \<and> con \<lbrace>a\<rbrace> \<U>"
-        proof (intro conjI)
-          have 2: "a \<in> \<NN>"
-            using \<T>\<U> tu a arr_char ide_closed R.sources_def by force
-          show 3: "ide \<lbrace>a\<rbrace>"
-            using \<T>\<U> tu 2 a ide_char arr_char con_char\<^sub>Q\<^sub>C\<^sub>N
-            by (metis IntI arr_in_Cong_class is_Cong_classI empty_iff elements_are_arr)
-          show "con \<lbrace>a\<rbrace> \<T>"
-            using \<T>\<U> tu 2 3 a ide_char arr_char con_char\<^sub>Q\<^sub>C\<^sub>N
-            by (metis arr_in_Cong_class R.composite_of_source_arr
-                R.composite_of_def R.prfx_implies_con R.con_implies_arr(1))
-          show "con \<lbrace>a\<rbrace> \<U>"
-            using \<T>\<U> tu a ide_char arr_char con_char\<^sub>Q\<^sub>C\<^sub>N
-            by (metis arr_in_Cong_class R.composite_of_source_arr R.con_prfx_composite_of
-                is_Cong_classI R.con_implies_arr(1) R.con_implies_arr(2))
-        qed
-        thus "\<exists>\<A>. ide \<A> \<and> con \<A> \<T> \<and> con \<A> \<U>" by auto
-      qed
-      show "\<And>\<T> \<U> \<V>. \<lbrakk>ide (\<T> \<lbrace>\\\<rbrace> \<U>); con \<U> \<V>\<rbrakk> \<Longrightarrow> con (\<T> \<lbrace>\\\<rbrace> \<U>) (\<V> \<lbrace>\\\<rbrace> \<U>)"
-      proof -
-        fix \<T> \<U> \<V>
-        assume \<T>\<U>: "ide (\<T> \<lbrace>\\\<rbrace> \<U>)"
-        assume \<U>\<V>: "con \<U> \<V>"
-        obtain t u where tu: "t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u \<and> \<T> \<lbrace>\\\<rbrace> \<U> = \<lbrace>t \\ u\<rbrace>"
-          using \<T>\<U>
-          by (meson Resid_by_members ide_implies_arr con_char\<^sub>Q\<^sub>C\<^sub>N arr_resid_iff_con)
-        obtain v u' where vu': "v \<in> \<V> \<and> u' \<in> \<U> \<and> v \<frown> u' \<and> \<V> \<lbrace>\\\<rbrace> \<U> = \<lbrace>v \\ u'\<rbrace>"
-          by (meson R.con_sym Resid_by_members \<U>\<V> con_char\<^sub>Q\<^sub>C\<^sub>N)
-        have 1: "u \<approx> u'"
-          using \<U>\<V> tu vu'
-          by (meson Cong_class_membs_are_Cong con_char\<^sub>Q\<^sub>C\<^sub>N)
-        obtain W W' where WW': "NPath W \<and> NPath W' \<and> u \<^sup>1\\\<^sup>* W \<approx>\<^sub>0 u' \<^sup>1\\\<^sup>* W'"
-          using 1 by auto
-        have 2: "((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W)) \<frown>
-                 ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) \\ ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-        proof -
-          have "((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W)) \<in> \<NN>"
-          proof -
-            have "t \\ u \<in> \<NN>"
-              using tu arr_in_Cong_class R.arr_resid_iff_con \<T>\<U> ide_char' by blast
-            hence "NPath ([t \\ u] \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [u]))"
-              by (metis Cong\<^sub>0_imp_con NPath_Resid_single_Arr P.null_char
-                  R.null_is_zero(2)  WW' P.Con_imp_Arr_Resid P.Resid1x_as_Resid'
-                  P.Srcs_Resid_Arr_single R.conE P.con_sym_ax R.sources_resid tu)
-            moreover have "P.Srcs ([t \\ u] \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) =
-                           P.Srcs (([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W))"
-            proof -
-              have "P.Srcs ([t \\ u] \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) = P.Trgs (W \<^sup>*\\\<^sup>* [u])"
-                by (metis NPath_implies_Arr P.Arr.simps(1) P.Srcs_Resid calculation)
-              also have "... = P.Trgs ([u] \<^sup>*\\\<^sup>* W)"
-                by (metis P.Trgs_Resid_sym)
-              also have "... = P.Srcs (([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W))"
-                by (metis Cong\<^sub>0_imp_con P.Resid1x.simps(2) P.Resid1x_as_Resid'
-                    P.Srcs_Resid P.paths_in_rts_axioms R.not_con_null(2)
-                    R.null_is_zero(1) WW' paths_in_rts.Resid1x_as_Resid)
-              finally show ?thesis by blast
-            qed
-            ultimately
-            have "NPath (([t \\ u] \<^sup>*\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \<^sup>*\\\<^sup>* (([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W)))"
-              by (metis NPath_Resid NPath_implies_Arr P.Arr_has_Src P.Con_imp_Arr_Resid
-                  P.Srcs.simps(1))
-            hence "NPath [((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W))]"
-              using P.Resid1x_as_Resid
-              by (metis P.Arr.simps(1) P.Resid.simps(1) P.Resid1x.simps(2) P.ex_un_null
-                  NPath_def)
-            thus ?thesis
-              by (simp add: NPath_def)
-          qed
-          moreover have "R.sources (((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W))) =
-                         R.sources (((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) \\ ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W')))"
-          proof -
-            have "R.sources (((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W))) =
-                  R.targets ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W))"
-              using R.arr_resid_iff_con elements_are_arr R.sources_resid calculation by blast
-            also have "... = R.targets ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-              by (metis R.targets_resid_sym R.conI)
-            also have "... = R.sources (((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) \\ ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W')))"
-            proof -
-              have "R.con ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-              proof -
-                have "(u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W') \<in> \<NN>"
-                  using WW' by fastforce
-                moreover have "R.sources ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) =
-                               R.sources ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-                proof -
-                  have "R.sources ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) = P.Trgs (W' \<^sup>*\\\<^sup>* [u'])"
-                    by (metis (no_types, lifting) ext Cong_imp_arr(2) NPath_Resid
-                        P.Arr.simps(2) P.Con_imp_eq_Srcs P.Trgs.simps(1)
-                        R.arr_iff_has_source R.arr_resid R.con_implies_arr(2) R.not_arr_null
-                        R.sources_resid WW' Cong_arr_resid_NPath P.Resid1x_as_Resid'
-                        P.Srcs_Resid_Arr_single P.sources_Resid1x vu')
-                  also have "... = R.targets (u' \<^sup>1\\\<^sup>* W')"
-                    by (metis Cong\<^sub>0_imp_con P.Con_sym P.Con_sym1 P.Resid1x_as_Resid
-                        P.Residx1_as_Resid P.Trgs_Resid_sym P.paths_in_rts_axioms
-                        R.not_con_null(2) WW' paths_in_rts.Trgs.simps(2))
-                  also have "... = R.sources ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-                    by (simp add: Cong\<^sub>0_imp_con WW')
-                  finally show ?thesis by blast
-                qed
-                ultimately show ?thesis
-                  by (metis Cong_closure_props(4) Cong_imp_arr(2) R.conI R.not_arr_null)
-
-              qed
-              thus ?thesis
-                using R.arr_resid_iff_con elements_are_arr R.sources_resid
-                by presburger
-            qed
-            finally show ?thesis by simp
-          qed
-          ultimately show ?thesis
-            by (metis Cong_closure_props(4) P.Con_rec(1) P.Con_sym1 P.Resid1x.simps(2)
-                P.Residx1_as_Resid R.arr_def R.not_con_null(1) Cong_imp_arr(2))
-        qed
-        moreover have "t \\ u \<approx> ((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) \\ ((u' \<^sup>1\\\<^sup>* W') \\ (u \<^sup>1\\\<^sup>* W))"
-        proof -
-          have "NPath (W \<^sup>*\\\<^sup>* [u])"
-            by (metis Cong\<^sub>0_imp_con P.Arr.simps(2) P.Con_imp_eq_Srcs R.null_is_zero(2)
-                WW' NPath_Resid P.Resid1x_as_Resid' R.conE R.con_implies_arr(2) tu)
-          moreover have 1: "NPath (([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W))"
-            by (metis WW' NPath_def P.Arr.simps(2) P.Resid.simps(3) elements_are_arr
-                R.conE R.null_is_zero(2) empty_set empty_subsetI insert_subset list.simps(15)
-                Cong\<^sub>0_imp_con P.Resid1x_as_Resid P.Resid1x_as_Resid')
-          moreover have "R.sources (t \\ u) = P.Srcs (W \<^sup>*\\\<^sup>* [u])"
-            by (metis NPath_def P.Arr.simps(1) P.Srcs_Resid_Arr_single R.sources_resid
-                calculation(1) tu)
-          moreover have "R.sources ((t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])) =
-                         P.Srcs (([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W))"
-            by (metis "2" P.Con_imp_eq_Srcs P.Resid1x.simps(2) P.Resid1x_as_Resid
-                P.Resid1x_as_Resid' P.Srcs.simps(2) R.conE R.ex_un_null R.null_is_zero(2))
-          ultimately show ?thesis
-            using Cong_arr_resid_NPath [of "W \<^sup>*\\\<^sup>* [u]" "t \\ u"]
-                  Cong_arr_resid_NPath
-                    [of "([u'] \<^sup>*\\\<^sup>* W') \<^sup>*\\\<^sup>* ([u] \<^sup>*\\\<^sup>* W)" "(t \\ u) \<^sup>1\\\<^sup>* (W \<^sup>*\\\<^sup>* [u])"]
-            by (metis (full_types, lifting) ext Backward_stable Cong_closure_props(4)
-                NPath_implies_Arr P.Arr.simps(2) P.Resid.simps(1) P.Resid1x.simps(2)
-                P.Resid1x_as_Resid P.Resid1x_null P.Srcs.simps(2) P.ex_un_null
-                R.arr_resid_iff_con R.con_def WW' Cong_closure_props(2))
-        qed
-        moreover have "v \\ u' \<approx> ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) \\ ((u \<^sup>1\\\<^sup>* W) \\ (u' \<^sup>1\\\<^sup>* W'))"
-        proof -
-          have "NPath (W' \<^sup>*\\\<^sup>* [u'])"
-            by (metis "1" Cong\<^sub>0_imp_con Cong_imp_arr(2) P.Arr.simps(2) P.Con_imp_eq_Srcs
-                R.null_is_zero(2) WW' NPath_Resid P.Resid1x_as_Resid' R.conE)
-          moreover have 1: "NPath (([u] \<^sup>*\\\<^sup>* W) \<^sup>*\\\<^sup>* ([u'] \<^sup>*\\\<^sup>* W'))"
-            using WW'
-            by (metis NPath_def P.Arr.simps(2) P.Resid.simps(3) elements_are_arr
-                R.conE R.null_is_zero(2) empty_set empty_subsetI insert_subset list.simps(15)
-                Cong\<^sub>0_imp_con P.Resid1x_as_Resid P.Resid1x_as_Resid')
-          moreover have "R.sources (v \\ u') = P.Srcs (W' \<^sup>*\\\<^sup>* [u'])"
-            by (metis NPath_implies_Arr P.Arr.simps(1) R.sources_resid calculation(1)
-                P.Srcs_Resid_Arr_single vu')
-          moreover have "R.sources ((v \\ u') \<^sup>1\\\<^sup>* (W' \<^sup>*\\\<^sup>* [u'])) =
-                         P.Srcs (([u] \<^sup>*\\\<^sup>* W) \<^sup>*\\\<^sup>* ([u'] \<^sup>*\\\<^sup>* W'))"
-            by (metis "2" P.Con_imp_eq_Srcs P.Resid1x.simps(2) P.Resid1x_as_Resid
-                P.Resid1x_as_Resid' P.Srcs.simps(2) R.conE R.ex_un_null R.null_is_zero(2))
-          ultimately show ?thesis
-            using Cong_arr_resid_NPath
-            by (metis (no_types, lifting) ext "2" Cong\<^sub>0_reflexive Cong_closure_props(4)
-                Cong_transitive P.Con_imp_eq_Srcs P.Srcs.simps(2)
-                R.arr_resid_iff_con R.con_implies_arr(2) WW' CongI Cong_imp_arr(1)
-                P.Con_rec(1))
-        qed
-        ultimately show "con (\<T> \<lbrace>\\\<rbrace> \<U>) (\<V> \<lbrace>\\\<rbrace> \<U>)"
-          using tu vu' con_char\<^sub>Q\<^sub>C\<^sub>N is_Cong_classI Cong_class_def by auto
-      qed
-    qed
-
-    lemma is_rts:
-    shows "rts Resid"
-      ..
-
-    sublocale extensional_rts Resid
-    proof
-      fix \<T> \<U>
-      assume \<T>\<U>: "cong \<T> \<U>"
-      show "\<T> = \<U>"
-      proof -
-        obtain t u where tu: "\<T> = \<lbrace>t\<rbrace> \<and> \<U> = \<lbrace>u\<rbrace> \<and> t \<frown> u"
-          by (metis Con_char Cong_class_eqI Cong_class_memb_Cong_rep Cong_class_rep
-              \<T>\<U> ide_char not_arr_null null_char)
-        have "t \<approx>\<^sub>0 u"
-          using tu \<T>\<U> Resid_by_members [of \<T> \<U> t u] Resid_by_members [of \<U> \<T> u t] R.con_sym
-          by (metis (full_types) arr_in_Cong_class R.con_implies_arr(1-2)
-              is_Cong_classI ide_char' R.arr_resid_iff_con subset_iff)+
-        hence "t \<approx> u"
-          using Cong\<^sub>0_implies_Cong by simp
-        thus "\<T> = \<U>"
-          by (simp add: Cong_class_eqI tu)
-      qed
-    qed
-
-    theorem is_extensional_rts:
-    shows "extensional_rts Resid"
-      ..
-
-    lemma sources_char\<^sub>Q\<^sub>C\<^sub>N:
-    shows "sources \<T> = {\<A>. arr \<T> \<and> \<A> = {a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a}}"
-    proof -
-      let ?\<A> = "{a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a}"
-      have 1: "arr \<T> \<Longrightarrow> ide ?\<A>"
-      proof (unfold ide_char', intro conjI)
-        assume \<T>: "arr \<T>"
-        show "?\<A> \<subseteq> \<NN>"
-          using ide_closed normal_is_Cong_closed by blast
-        show "arr ?\<A>"
-        proof -
-          have "is_Cong_class ?\<A>"
-          proof
-            show "?\<A> \<noteq> {}"
-              by (metis (mono_tags, lifting) Collect_empty_eq Cong_class_def Cong_imp_arr(1)
-                  is_Cong_class_def sources_are_Cong R.arr_iff_has_source R.sources_def
-                  \<T> arr_char mem_Collect_eq)
-            show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<approx> a\<rbrakk> \<Longrightarrow> a' \<in> ?\<A>"
-              using Cong_transitive by blast
-            show "\<And>a a'. \<lbrakk>a \<in> ?\<A>; a' \<in> ?\<A>\<rbrakk> \<Longrightarrow> a \<approx> a'"
-            proof -
-              fix a a'
-              assume a: "a \<in> ?\<A>" and a': "a' \<in> ?\<A>"
-              obtain t b where b: "t \<in> \<T> \<and> b \<in> R.sources t \<and> b \<approx> a"
-                using a by blast
-              obtain t' b' where b': "t' \<in> \<T> \<and> b' \<in> R.sources t' \<and> b' \<approx> a'"
-                using a' by blast
-              have "b \<approx> b'"
-                using \<T> arr_char b b'
-                by (meson IntD1 Cong_class_membs_are_Cong in_sources_respects_Cong)
-              thus "a \<approx> a'"
-                by (meson Cong_symmetric Cong_transitive b b')
-            qed
-          qed
-          thus ?thesis
-            using arr_char by auto
-        qed
-      qed
-      moreover have "arr \<T> \<Longrightarrow> con \<T> ?\<A>"
-      proof -
-        assume \<T>: "arr \<T>"
-        obtain t a where a: "t \<in> \<T> \<and> a \<in> R.sources t"
-          using \<T> arr_char
-          by (metis Cong_class_is_nonempty R.arr_iff_has_source empty_subsetI
-                    Cong_class_memb_is_arr subsetI subset_antisym)
-        have "t \<in> \<T> \<and> a \<in> {a. \<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a} \<and> t \<frown> a"
-          using a Cong_reflexive R.sources_def R.con_implies_arr(2) by fast
-        thus ?thesis
-          using \<T> 1 arr_char con_char\<^sub>Q\<^sub>C\<^sub>N [of \<T> ?\<A>] by auto
-      qed
-      ultimately have "arr \<T> \<Longrightarrow> ?\<A> \<in> sources \<T>"
-        using sources_def by blast
-      thus ?thesis
-        using "1" ide_char sources_char\<^sub>W\<^sub>E by auto
-    qed
-
-    lemma targets_char\<^sub>Q\<^sub>C\<^sub>N:
-    shows "targets \<T> = {\<B>. arr \<T> \<and> \<B> = \<T> \<lbrace>\\\<rbrace> \<T>}"
-    proof -
-      have "targets \<T> = {\<B>. ide \<B> \<and> con (\<T> \<lbrace>\\\<rbrace> \<T>) \<B>}"
-        by (simp add: targets_def trg_def)
-      also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and> (\<exists>t u. t \<in> \<T> \<lbrace>\\\<rbrace> \<T> \<and> u \<in> \<B> \<and> t \<frown> u)}"
-        using arr_resid_iff_con con_char\<^sub>Q\<^sub>C\<^sub>N arr_char arr_def by auto
-      also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and>
-                           (\<exists>t t' b u. t \<in> \<T> \<and> t' \<in> \<T> \<and> t \<frown> t' \<and> b \<in> \<lbrace>t \\ t'\<rbrace> \<and> u \<in> \<B> \<and> b \<frown> u)}"
-        apply auto
-         apply (metis (full_types) Resid_by_members cong_char not_ide_null null_char Con_char)
-        by (metis Resid_by_members arr_char)
-      also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and>
-                           (\<exists>t t' b. t \<in> \<T> \<and> t' \<in> \<T> \<and> t \<frown> t' \<and> b \<in> \<lbrace>t \\ t'\<rbrace> \<and> b \<in> \<B>)}"
-      proof -
-        have "\<And>\<B> t t' b. \<lbrakk>arr \<T>; ide \<B>; t \<in> \<T>; t' \<in> \<T>; t \<frown> t'; b \<in> \<lbrace>t \\ t'\<rbrace>\<rbrakk>
-                            \<Longrightarrow> (\<exists>u. u \<in> \<B> \<and> b \<frown> u) \<longleftrightarrow> b \<in> \<B>"
-        proof -
-          fix \<B> t t' b
-          assume \<T>: "arr \<T>" and \<B>: "ide \<B>" and t: "t \<in> \<T>" and t': "t' \<in> \<T>"
-                 and tt': "t \<frown> t'" and b: "b \<in> \<lbrace>t \\ t'\<rbrace>"
-          have 0: "b \<in> \<NN>"
-            by (metis Resid_by_members \<T> b ide_char' ide_trg arr_char subsetD t t' trg_def tt')
-          show "(\<exists>u. u \<in> \<B> \<and> b \<frown> u) \<longleftrightarrow> b \<in> \<B>"
-            using 0
-            by (meson Cong_closure_props(3) forward_stable elements_are_arr
-                \<B> arr_char R.con_imp_coinitial is_Cong_classE ide_char' R.arrE
-                R.con_sym subsetD)
-        qed
-        thus ?thesis
-          using ide_char arr_char
-          by (metis (no_types, lifting))
-      qed
-      also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and> (\<exists>t t'. t \<in> \<T> \<and> t' \<in> \<T> \<and> t \<frown> t' \<and> \<lbrace>t \\ t'\<rbrace> \<subseteq> \<B>)}"
-      proof -
-        have "\<And>\<B> t t' b. \<lbrakk>arr \<T>; ide \<B>; t \<in> \<T>; t' \<in> \<T>; t \<frown> t'\<rbrakk>
-                            \<Longrightarrow> (\<exists>b. b \<in> \<lbrace>t \\ t'\<rbrace> \<and> b \<in> \<B>) \<longleftrightarrow> \<lbrace>t \\ t'\<rbrace> \<subseteq> \<B>"
-          using ide_char arr_char
-          apply (intro iffI)
-           apply (metis IntI Cong_class_eqI' R.arr_resid_iff_con is_Cong_classI empty_iff
-                        set_eq_subset)
-          by (meson arr_in_Cong_class R.arr_resid_iff_con subsetD)
-        thus ?thesis
-          using ide_char arr_char
-          by (metis (no_types, lifting))
-      qed
-      also have "... = {\<B>. arr \<T> \<and> ide \<B> \<and> \<T> \<lbrace>\\\<rbrace> \<T> \<subseteq> \<B>}"
-        using arr_char ide_char Resid_by_members [of \<T> \<T>]
-        by (metis (no_types, opaque_lifting) arrE con_char\<^sub>Q\<^sub>C\<^sub>N)
-      also have "... = {\<B>. arr \<T> \<and> \<B> = \<T> \<lbrace>\\\<rbrace> \<T>}"
-        by (metis (no_types, lifting) arr_has_un_target calculation con_ide_are_eq
-            cong_reflexive mem_Collect_eq targets_def trg_def)
-      finally show ?thesis by blast
-    qed
-
-    lemma src_char\<^sub>Q\<^sub>C\<^sub>N:
-    shows "src \<T> = {a. arr \<T> \<and> (\<exists>t a'. t \<in> \<T> \<and> a' \<in> R.sources t \<and> a' \<approx> a)}"
-      using sources_char\<^sub>Q\<^sub>C\<^sub>N [of \<T>]
-      by (simp add: null_char src_def)
-
-    lemma trg_char\<^sub>Q\<^sub>C\<^sub>N:
-    shows "trg \<T> = \<T> \<lbrace>\\\<rbrace> \<T>"
-      unfolding trg_def by blast
-
     subsubsection "Quotient Map"
 
-    abbreviation quot
-    where "quot t \<equiv> \<lbrace>t\<rbrace>"
+    sublocale quot: simulation_to_extensional_rts resid Resid quot ..
 
-    sublocale quot: simulation_to_extensional_rts resid Resid quot
-    proof
-      show "\<And>t. \<not> R.arr t \<Longrightarrow> \<lbrace>t\<rbrace> = null"
-        using Cong_class_def Cong_imp_arr(1) null_char by force
-      show "\<And>t u. t \<frown> u \<Longrightarrow> con \<lbrace>t\<rbrace> \<lbrace>u\<rbrace>"
-        by (meson arr_in_Cong_class is_Cong_classI R.con_implies_arr(1-2) con_char\<^sub>Q\<^sub>C\<^sub>N)
-      show "\<And>t u. t \<frown> u \<Longrightarrow> \<lbrace>t \\ u\<rbrace> = \<lbrace>t\<rbrace> \<lbrace>\\\<rbrace> \<lbrace>u\<rbrace>"
-        by (metis arr_in_Cong_class is_Cong_classI R.con_implies_arr(1-2) Resid_by_members)
-    qed
+    sublocale strong_simulation resid Resid quot
+      by unfold_locales
+         (meson R.coinitialE arr_in_cong_class con_imp_coinitial_members_are_con)
 
-    lemma quotient_is_simulation:
-    shows "simulation resid Resid quot"
+    lemma quotient_is_strong_simulation:
+    shows "strong_simulation resid Resid quot"
       ..
 
     lemma ide_quot_normal:
     assumes "t \<in> \<NN>"
     shows "ide (quot t)"
-      using assms
-      by (metis IntI arr_in_Cong_class elements_are_arr empty_iff
-          quot.preserves_reflects_arr ide_char)
+      by (metis Cong_closure_props(4) R.prfx_reflexive assms cong_class_eqI elements_are_arr
+          quot.preserves_ide)
 
-    lemma quotient_reflects_con:
-    assumes "con \<lbrace>t\<rbrace> \<lbrace>u\<rbrace>" and "R.coinitial t u"
-    shows "R.con t u"
-      using assms
-      by (meson R.coinitialE arr_in_Cong_class con_imp_coinitial_members_are_con)
-
-    text\<open>
-      If a simulation \<open>F\<close> from \<open>R\<close> to an extensional RTS \<open>B\<close> maps every element of \<open>\<NN>\<close>
-      to an identity, then it has a unique extension along the quotient map.
-    \<close>
+    lemma has_normal_as_kernel:
+    shows "\<NN> = {t. ide (quot t)}"
+    proof
+      show "\<NN> \<subseteq> {t. ide (quot t)}"
+        using ide_quot_normal by blast
+      show "{t. ide (quot t)} \<subseteq> \<NN>"
+        using arr_in_cong_class ide_char\<^sub>Q\<^sub>C\<^sub>N by auto
+    qed
 
     lemma is_couniversal:
     assumes "extensional_rts B"
     and "simulation resid B F"
     and "\<And>t. t \<in> \<NN> \<Longrightarrow> residuation.ide B (F t)"
-    shows "\<exists>!F'. simulation Resid B F' \<and> F' \<circ> quot = F"
+    shows "\<exists>!H. simulation Resid B H \<and> H \<circ> quot = F"
     proof -
       interpret B: extensional_rts B
-        using assms(1) simulation.axioms(2) by blast
-      interpret Bp: paths_in_rts B ..
+        using assms(1) by blast
       interpret F: simulation resid B F
-        using assms by blast
-      have *: "\<And>V. NPath V \<Longrightarrow> \<forall>t. P.coinitial [t] V \<longrightarrow> F (t \<^sup>1\\\<^sup>* V) = F t"
+        using assms(2) by blast
+      have *: "\<And>t U. \<lbrakk>NPath U; R.sources t = P.Srcs U\<rbrakk> \<Longrightarrow> F (t \<^sup>1\\\<^sup>* U) = F t"
       proof -
-        fix V
-        assume V: "NPath V"
-        show "\<forall>t. P.coinitial [t] V \<longrightarrow> F (t \<^sup>1\\\<^sup>* V) = F t"
-        proof (induct V rule: NPath_induct)
-          show "NPath V" by fact
-          show "\<And>v. v \<in> \<NN> \<Longrightarrow> \<forall>t. P.coinitial [t] [v] \<longrightarrow> F (t \<^sup>1\\\<^sup>* [v]) = F t"
-          proof (intro allI impI)
-            fix t v
-            assume v: "v \<in> \<NN>" and tv: "P.coinitial [t] [v]"
-            have "F (t \<^sup>1\\\<^sup>* [v]) = F (t \\ v)"
-              by auto
-            also have "... = B (F t) (F v)"
-              by (metis F.preserves_resid Cong_closure_props(4) Cong_imp_arr(2)
-                  P.Srcs.simps(2) P.coinitial_char(1) R.conI R.not_arr_null tv v)
+        fix t U
+        assume U: "NPath U"
+        show "R.sources t = P.Srcs U \<Longrightarrow> F (t \<^sup>1\\\<^sup>* U) = F t"
+        proof (induct U arbitrary: t rule: NPath_induct)
+          show "NPath U" by fact
+          show 1: "\<And>t u. \<lbrakk>u \<in> \<NN>; R.sources t = P.Srcs [u]\<rbrakk> \<Longrightarrow> F (t \<^sup>1\\\<^sup>* [u]) = F t"
+            by (metis (lifting) B.con_def B.not_ide_null B.null_is_zero(2) B.rts_axioms
+                Cong\<^sub>0_reflexive Cong_closure_props(4) F.preserves_resid P.Resid1x.simps(2)
+                P.Srcs.simps(2) R.arr_resid_iff_con assms(3) relation_on_arrows rts.resid_arr_ide)
+          show "\<And>t u U. \<lbrakk>u \<in> \<NN>; NPath U; R.targets u \<subseteq> P.Srcs U;
+                         \<And>t. R.sources t = P.Srcs U \<Longrightarrow> F (t \<^sup>1\\\<^sup>* U) = F t;
+                         R.sources t = P.Srcs (u # U)\<rbrakk>
+                           \<Longrightarrow> F (t \<^sup>1\\\<^sup>* (u # U)) = F t"
+          proof -
+            fix t u U
+            assume u: "u \<in> \<NN>" and U: "NPath U" and uU: "R.targets u \<subseteq> P.Srcs U"
+              and tuU: "R.sources t = P.Srcs (u # U)"
+              and ind: "\<And>t. R.sources t = P.Srcs U \<Longrightarrow> F (t \<^sup>1\\\<^sup>* U) = F t"
+            have "F (t \<^sup>1\\\<^sup>* (u # U)) = F ((t \\ u) \<^sup>1\\\<^sup>* U)"
+              by (metis P.Resid1x.simps(3) normal_sub_rts_axioms normal_sub_rts.NPath_implies_Arr
+                  U list.exhaust P.Arr.simps(1))
+            also have "... = F (t \\ u)"
+              by (metis P.Arr.simps(2) P.Resid1x_null P.Trgs.simps(2) P.seq_implies_Trgs_eq_Srcs
+                  R.residuation_axioms R.sources_resid U ind normal_sub_rts.NPath_implies_Arr
+                  normal_sub_rts.elements_are_arr normal_sub_rts_axioms residuation.conI u uU)
             also have "... = F t"
-              using v assms(3)
-              by (metis B.resid_arr_ide F.preserves_reflects_arr Cong_closure_props(4)
-                  P.Srcs.simps(2) P.coinitial_char(1) \<open>F (t \ v) = B (F t) (F v)\<close>
-                  Cong_imp_arr(2) B.arr_resid_iff_con tv)
-            finally show "F (t \<^sup>1\\\<^sup>* [v]) = F t" by blast
-          qed
-          show "\<And>v V. \<lbrakk>v \<in> \<NN>; NPath V; R.targets v \<subseteq> P.Srcs V;
-                        \<forall>t. P.coinitial [t] V \<longrightarrow> F (t \<^sup>1\\\<^sup>* V) = F t\<rbrakk>
-                           \<Longrightarrow> \<forall>t. P.coinitial [t] (v # V) \<longrightarrow> F (t \<^sup>1\\\<^sup>* (v # V)) = F t"
-          proof (intro allI impI)
-            fix v V t
-            assume v: "v \<in> \<NN>" and V: "NPath V" and vV: "R.targets v \<subseteq> P.Srcs V"
-            assume ind: "\<forall>t. P.coinitial [t] V \<longrightarrow> F (t \<^sup>1\\\<^sup>* V) = F t"
-            assume t: "P.coinitial [t] (v # V)"
-            show "F (t \<^sup>1\\\<^sup>* (v # V)) = F t"
-            proof -
-              have "F (t \<^sup>1\\\<^sup>* (v # V)) = F ((t \\ v) \<^sup>1\\\<^sup>* V)"
-                by (metis P.Arr.simps(1) P.Resid1x.simps(3) V neq_Nil_conv
-                    NPath_implies_Arr)
-              also have "... = F (t \\ v)"
-                using ind
-                by (metis F.extensionality P.Arr.simps(2) P.Resid1x_as_Resid'
-                    P.Trgs.simps(2) P.conI\<^sub>P coherent elements_are_arr R.not_arr_null
-                    V NPath_implies_Arr P.seq_implies_Trgs_eq_Srcs R.arrI R.conI
-                    P.con_imp_coinitial R.sources_resid v vV)
-              also have "... = F t"
-                by (metis B.resid_arr_ide F.preserves_con F.preserves_resid
-                    resid_along_normal_preserves_reflects_con P.Arr.simps(2)
-                    P.Srcs_simp\<^sub>P R.arr_def assms(3) list.sel(1) P.coinitial_char(1)
-                    R.arr_resid_iff_con t v)
-              finally show ?thesis by blast
-            qed
+              by (metis P.Resid1x.simps(2) P.Srcs.simps(2,3) list.exhaust tuU u 1)
+            finally show "F (t \<^sup>1\\\<^sup>* (u # U)) = F t" by blast
           qed
         qed
       qed
-      have 1: "\<And>t u. t \<approx> u \<Longrightarrow> F t = F u"
+      have "\<And>t t'. Cong t t' \<Longrightarrow> F t = F t'"
       proof -
-        fix t u
-        assume Cong: "t \<approx> u"
-        obtain V W where VW: "NPath V \<and> NPath W \<and> t \<^sup>1\\\<^sup>* V \<approx>\<^sub>0 u \<^sup>1\\\<^sup>* W"
-          using Cong by blast
-        have "B.cong (F t) (F u)"
-          using assms(3) VW * B.not_ide_null F.extensionality P.Resid1x_as_Resid'
-                P.conI\<^sub>P P.con_imp_coinitial R.con_def R.not_arr_null R.not_con_null(2)
-                Cong\<^sub>0_imp_con F.preserves_resid
-          by (metis (no_types, lifting) ext)
-        thus "F t = F u"
-          using B.extensionality by blast
+        fix t t'
+        assume tt': "Cong t t'"
+        obtain U U' where UU': "NPath U \<and> NPath U' \<and> t \<^sup>1\\\<^sup>* U \<approx>\<^sub>0 t' \<^sup>1\\\<^sup>* U'"
+          using tt' by blast
+        have "F t = F (t \<^sup>1\\\<^sup>* U)"
+          by (metis "*" P.Con_imp_eq_Srcs P.Resid1x_as_Resid' P.Srcs.simps(2) R.arr_def
+              R.con_def R.null_is_zero(2) UU'
+              elements_are_arr)
+        also have "... = F (t' \<^sup>1\\\<^sup>* U')"
+          by (metis B.cong_char Cong\<^sub>0_imp_con F.preserves_resid UU' assms(3))
+        also have "... = F t'"
+          by (metis "*" P.Con_imp_eq_Srcs P.Con_sym1 P.Residx1_as_Resid P.Srcs.simps(2)
+              R.not_arr_null R.null_is_zero(1) UU'
+              elements_are_arr)
+        finally show "F t = F t'" by blast
       qed
-      let ?F' = "\<lambda>\<T>. if arr \<T> then F (Cong_class_rep \<T>) else B.null"
-      interpret F': simulation Resid B ?F'
-      proof
-        show "\<And>\<T>. \<not> arr \<T> \<Longrightarrow> ?F' \<T> = B.null"
-          by argo
-        fix \<T> \<U>
-        assume con: "con \<T> \<U>"
-        show "B.con (?F' \<T>) (?F' \<U>)"
-          using con
-          by (metis (full_types) 1 F.preserves_con Cong_class_memb_Cong_rep arr_char
-              con_char\<^sub>Q\<^sub>C\<^sub>N)
-        show "?F' (\<T> \<lbrace>\\\<rbrace> \<U>) = B (?F' \<T>) (?F' \<U>)"
-        proof -
-          have 2: "is_Cong_class \<T> \<and> is_Cong_class \<U>"
-            using con con_char\<^sub>Q\<^sub>C\<^sub>N by auto
-          obtain t u where tu: "t \<in> \<T> \<and> u \<in> \<U> \<and> t \<frown> u"
-            using con con_char\<^sub>Q\<^sub>C\<^sub>N by force
-          have "?F' (\<T> \<lbrace>\\\<rbrace> \<U>) = ?F' \<lbrace>t \\ u\<rbrace>"
-            using tu 2 Resid_by_members by force
-          also have "... = F (t \\ u)"
-            by (metis tu Cong_class_memb_Cong_rep arr_in_Cong_class is_Cong_classI
-                R.arr_resid \<open>\<And>y x. x \<approx> y \<Longrightarrow> F x = F y\<close> quot.preserves_reflects_arr)
-          also have "... = B (F t) (F u)"
-            by (simp add: tu)
-          also have "... = B (?F' \<T>) (?F' \<U>)"
-            by (metis (full_types) tu 1 2 Cong_class_memb_Cong_rep con
-                con_implies_arr(1-2))
-          finally show ?thesis by blast
-        qed
-      qed
-      have "simulation Resid B ?F' \<and> ?F' \<circ> quot = F"
-        using 1 F'.simulation_axioms F.extensionality Cong_class_memb_Cong_rep
-              arr_in_Cong_class arr_char quot.preserves_reflects_arr
-        by fastforce
-      moreover have "\<And>F''. \<lbrakk>simulation Resid B F''; F'' \<circ> quot = F\<rbrakk> \<Longrightarrow> F'' = ?F'"
-        using simulation.extensionality arr_char by force
-      ultimately show ?thesis by blast
+      thus ?thesis
+        using is_couniversal B.rts_axioms F.simulation_axioms by blast
     qed
 
-    definition ext_to_quotient
-    where "ext_to_quotient B F \<equiv> THE F'. simulation Resid B F' \<and> F' \<circ> quot = F"
+    text\<open>
+      If a simulation \<open>F\<close> from \<open>R\<close> to an extensional RTS \<open>B\<close> maps every element of \<open>\<NN>\<close>
+      to an identity, then it has a unique extension along the quotient map.
+    \<close>
 
     lemma ext_to_quotient_props:
     assumes "extensional_rts B"
@@ -9485,7 +9696,7 @@ begin
       have "simulation Resid B (ext_to_quotient B F) \<and> ext_to_quotient B F \<circ> quot = F"
         unfolding ext_to_quotient_def
         using assms is_couniversal [of B F]
-              theI' [of "\<lambda>F'. simulation (\<lbrace>\\\<rbrace>) B F' \<and> F' \<circ> quot = F"]
+              theI' [of "\<lambda>F'. simulation Resid B F' \<and> F' \<circ> quot = F"]
         by fastforce
       thus "simulation Resid B (ext_to_quotient B F)" and "ext_to_quotient B F \<circ> quot = F"
         by auto
@@ -9568,24 +9779,23 @@ begin
 
   end
 
-  subsection "Kernels of Consistency-Reflecting Simulations"
+  subsection "Kernels of Simulations"
 
   text\<open>
-    We may regard the set of transitions that are mapped to identities by a simulation
-    as a kind of kernel of the simulation.  Here we show that if \<open>F\<close> is a
-    consistency-reflecting simulation, then its kernel is a coherent normal sub-RTS of
-    its domain.
+    Here we consider an alternate notion of kernel of a simulation \<open>F : A \<rightarrow> B\<close>;
+    namely, the set of transitions that are mapped to identities by \<open>F\<close>.
+    We show that if \<open>F\<close> is a strong simulation, then its kernel in this sense is a
+    coherent normal sub-RTS of \<open>A\<close>.
   \<close>
 
-  lemma (in simulation) kernel_is_coherent_normal_sub_rts:
-  assumes "\<And>t u. \<lbrakk>A.coinitial t u; B.con (F t) (F u)\<rbrakk> \<Longrightarrow> A.con t u"
+  lemma (in strong_simulation) kernel_is_coherent_normal_sub_rts:
   shows "coherent_normal_sub_rts A {t. B.ide (F t)}"
   proof -
     interpret P\<^sub>A: paths_in_rts A ..
     interpret P\<^sub>B: paths_in_rts B ..
     interpret N\<^sub>A: normal_sub_rts A \<open>{t. B.ide (F t)}\<close>
     proof
-      show "\<And>t. t \<in> {t. B.ide (F t)} \<Longrightarrow> A.arr t"
+      show 1: "\<And>t. t \<in> {t. B.ide (F t)} \<Longrightarrow> A.arr t"
         using B.ide_implies_arr by blast
       show "\<And>a. A.ide a \<Longrightarrow> a \<in> {t. B.ide (F t)}"
         by fastforce
@@ -9596,30 +9806,27 @@ begin
         assume t: "A.coinitial t u"
         have "F u \<in> B.sources (F t)"
           using t u
-          by (metis (mono_tags, lifting) A.in_sourcesE A.residuation_axioms A.rts_axioms
-              B.in_sourcesI B.rts_axioms CollectD preserves_con preserves_resid
-              residuation.arrE rts.coinitial_iff rts.resid_arr_ide rts.sources_resid
-              rts.src_in_sources)
+          by (metis (mono_tags, lifting) A.in_sourcesE B.in_sourcesI CollectD preserves_con
+              preserves_resid A.arrE A.coinitial_iff A.resid_arr_ide B.sources_resid
+              A.src_in_sources)
         hence "F u \\\<^sub>B F t \<in> B.targets (F t)"
           using B.resid_source_in_targets by blast
         thus "u \\\<^sub>A t \<in> {t. B.ide (F t)}"
-          by (metis A.conI A.not_arr_null A.residuation_axioms B.conE B.in_sourcesE
-              B.in_targetsE CollectI \<open>F u \<in> B.sources (F t)\<close> assms extensionality
-              preserves_resid residuation.con_sym_ax t)
+          by (metis A.con_sym B.in_sourcesE B.target_is_ide \<open>F u \<in> B.sources (F t)\<close>
+              mem_Collect_eq preserves_resid reflects_con t)
       qed
       show "\<And>u t. \<lbrakk>u \<in> {t. B.ide (F t)}; t \\\<^sub>A u \<in> {t. B.ide (F t)}\<rbrakk> \<Longrightarrow> t \<in> {t. B.ide (F t)}"
-        by (metis A.arr_resid_iff_con B.resid_arr_ide CollectD CollectI
-            \<open>\<And>t. t \<in> {t. B.ide (F t)} \<Longrightarrow> A.arr t\<close> preserves_con preserves_resid)
+        by (metis 1 A.arr_resid_iff_con B.resid_arr_ide CollectD CollectI preserves_con
+            preserves_resid)
     qed
     interpret N\<^sub>B: normal_sub_rts B \<open>{t. B.ide t}\<close>
       by (simp add: B.identities_form_normal_sub_rts)
     let ?Fx = "\<lambda>T. if P\<^sub>A.Arr T then map F T else []"
     interpret Fx: simulation P\<^sub>A.Resid P\<^sub>B.Resid ?Fx
-      using simulation_axioms lifts_to_paths by fastforce
+      using simulation_axioms extends_to_paths by fastforce
     have *: "\<And>T. N\<^sub>A.NPath T \<Longrightarrow> N\<^sub>B.NPath (?Fx T)"
       unfolding N\<^sub>A.NPath_def N\<^sub>B.NPath_def
-      apply auto
-      using preserves_paths by blast
+      using preserves_paths by auto
     show ?thesis
     proof
       show "\<And>t U U'. \<lbrakk>A.arr t; N\<^sub>A.NPath U; N\<^sub>A.NPath U';
@@ -9641,27 +9848,17 @@ begin
             by (metis A.arr_iff_has_target A.not_arr_null P\<^sub>A.Arr_has_Trg P\<^sub>A.Resid1x_as_Resid
                 P\<^sub>A.Resid1x_as_Resid' P\<^sub>A.Trgs.simps(2) list.simps(8))
           also have "... = P\<^sub>B.Resid (?Fx [t]) (?Fx U)"
-            by (meson Fx.preserves_resid P\<^sub>A.arr_char P\<^sub>A.arr_resid_iff_con calculation
-                not_Cons_self2)
+            by (metis Fx.preserves_resid P\<^sub>A.Arr.simps(1) P\<^sub>A.con_char calculation not_Cons_self2)
           also have "... = P\<^sub>B.Resid [F t] (?Fx U)"
             using calculation by auto
-          also have "... = [P\<^sub>B.Resid1x (F t) (?Fx U)]"
-            by (metis P\<^sub>B.Resid1x_as_Resid calculation not_Cons_self2)
           also have "... = [F t]"
-          proof -
-            have "P\<^sub>B.Ide (?Fx U)"
-              using "*" N\<^sub>B.NPath_def U by blast
-            thus ?thesis
-              by (metis A.not_arr_null B.rts_axioms P\<^sub>B.Resid_Arr_Ide_ind
-                  \<open>[F (P\<^sub>A.Resid1x t U)] = (if P\<^sub>A.Arr [P\<^sub>A.Resid1x t U] then map F [P\<^sub>A.Resid1x t U] else [])\<close>
-                  calculation extensionality list.sel(1) list.simps(3) P\<^sub>A.Arr.simps(2)
-                  paths_in_rts.Resid1x_as_Resid' paths_in_rts.intro preserves_reflects_arr)
-          qed
+            by (metis "*" N\<^sub>B.NPath_def P\<^sub>B.Ide_char P\<^sub>B.Resid_Arr_Ide_ind U calculation
+                not_Cons_self2)
           finally show ?thesis by blast
         qed
         have Ft': "F (P\<^sub>A.Resid1x t U') = F t"
         proof -
-          have 1: "[F (P\<^sub>A.Resid1x t U')] = ?Fx [P\<^sub>A.Resid1x t U']"
+          have "[F (P\<^sub>A.Resid1x t U')] = ?Fx [P\<^sub>A.Resid1x t U']"
             using N\<^sub>A.Resid_along_NPath_preserves_reflects_con P\<^sub>A.Arr_iff_Con_self U' t tU'
             by simp
           also have "... = ?Fx (P\<^sub>A.Resid [t] U')"
@@ -9672,29 +9869,19 @@ begin
                 not_Cons_self2)
           also have "... = P\<^sub>B.Resid [F t] (?Fx U')"
             using calculation by auto
-          also have "... = [P\<^sub>B.Resid1x (F t) (?Fx U')]"
-            by (metis P\<^sub>B.Resid1x_as_Resid calculation not_Cons_self2)
           also have "... = [F t]"
-          proof -
-            have "P\<^sub>B.Ide (?Fx U')"
-              using "*" N\<^sub>B.NPath_def U' by blast
-            thus ?thesis
-              by (metis 1 A.not_arr_null B.rts_axioms P\<^sub>A.paths_in_rts_axioms
-                  P\<^sub>B.Resid_Arr_Ide_ind calculation extensionality list.sel(1) list.simps(3)
-                  paths_in_rts.Arr.simps(2) paths_in_rts.Resid1x_as_Resid' paths_in_rts.intro
-                  preserves_reflects_arr)
-          qed
+            by (metis "*" N\<^sub>B.NPath_def P\<^sub>B.Ide_char P\<^sub>B.Resid_Arr_Ide_ind U' calculation
+                not_Cons_self2)
           finally show ?thesis by blast
         qed
-        have "A.con (P\<^sub>A.Resid1x t U) (P\<^sub>A.Resid1x t U')"
-          using assms t Ft Ft'
-          by (metis A.coinitial_iff A.not_arr_null P\<^sub>A.Resid1x_as_Resid'
-              P\<^sub>A.sources_Resid1x Trgs preserves_reflects_arr A.arrE
-              simulation.preserves_con simulation_axioms)
+        have 1: "A.con (P\<^sub>A.Resid1x t U) (P\<^sub>A.Resid1x t U')"
+          by (metis A.arrE A.coinitialI A.not_arr_null Ft Ft' P\<^sub>A.paths_in_rts_axioms
+              P\<^sub>A.sources_Resid1x Trgs paths_in_rts.Resid1x_as_Resid' preserves_con
+              preserves_reflects_arr reflects_con t)
         show "P\<^sub>A.Resid1x t U \\\<^sub>A P\<^sub>A.Resid1x t U' \<in> {t. B.ide (F t)}"
-          by (simp add: B.prfx_reflexive Ft Ft' \<open>P\<^sub>A.Resid1x t U \<frown>\<^sub>A P\<^sub>A.Resid1x t U'\<close> t)
+          by (simp add: 1 B.prfx_reflexive Ft Ft' t)
         show "P\<^sub>A.Resid1x t U' \\\<^sub>A P\<^sub>A.Resid1x t U \<in> {t. B.ide (F t)}"
-          by (simp add: A.con_sym B.prfx_reflexive Ft Ft' \<open>P\<^sub>A.Resid1x t U \<frown>\<^sub>A P\<^sub>A.Resid1x t U'\<close> t)
+          by (simp add: 1 A.con_sym B.prfx_reflexive Ft Ft' t)
       qed
     qed
   qed
@@ -9722,8 +9909,6 @@ begin
       using P.identities_form_coherent_normal_sub_rts by blast
     sublocale Q: quotient_by_coherent_normal P.Resid \<open>Collect P.ide\<close> ..
 
-    notation N.Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
-
     definition resid    (infix \<open>\<lbrace>\<^sup>*\\<^sup>*\<rbrace>\<close> 70)
     where "resid \<equiv> Q.Resid"
 
@@ -9738,7 +9923,7 @@ begin
     notation P.Con    (infix \<open>\<^sup>*\<frown>\<^sup>*\<close> 50)
     notation N.Cong   (infix \<open>\<^sup>*\<approx>\<^sup>*\<close> 50)
     notation N.Cong\<^sub>0  (infix \<open>\<^sup>*\<approx>\<^sub>0\<^sup>*\<close> 50)
-    notation N.Cong_class (\<open>\<lbrace>_\<rbrace>\<close>)
+    notation Q.cong_class_of (\<open>\<lbrace>_\<rbrace>\<close>)
 
     (* TODO: Delete? *)
     lemma P_ide_iff_NPath:
@@ -9773,26 +9958,29 @@ begin
 
     lemma ide_char\<^sub>C\<^sub>C:
     shows "ide \<T> \<longleftrightarrow> arr \<T> \<and> (\<forall>T. T \<in> \<T> \<longrightarrow> P.Ide T)"
-      by (metis Ball_Collect P.ide_char Q.ide_char' resid_def)
+      by (metis Ball_Collect P.ide_char Q.ide_char\<^sub>Q\<^sub>C\<^sub>N resid_def)
 
     lemma con_char\<^sub>C\<^sub>C:
-    shows "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<longleftrightarrow> arr \<T> \<and> arr \<U> \<and> N.Cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* N.Cong_class_rep \<U>"
+    shows "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<longleftrightarrow> arr \<T> \<and> arr \<U> \<and> Q.cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* Q.cong_class_rep \<U>"
     proof
-      show "arr \<T> \<and> arr \<U> \<and> N.Cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* N.Cong_class_rep \<U> \<Longrightarrow> \<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>"
-        by (metis N.Cong_class_rep P.conI\<^sub>P Q.arr_char Q.quot.preserves_con resid_def)
-      show "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<Longrightarrow> arr \<T> \<and> arr \<U> \<and> N.Cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* N.Cong_class_rep \<U>"
+      show "arr \<T> \<and> arr \<U> \<and> Q.cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* Q.cong_class_rep \<U> \<Longrightarrow> \<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>"
+        by (metis (full_types) P.con_char Q.con_char Q.quotient_rts_axioms Q.rep_in_cong_class
+            quotient_rts.arr_char resid_def)
+      show "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<Longrightarrow> arr \<T> \<and> arr \<U> \<and> Q.cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* Q.cong_class_rep \<U>"
       proof -
         assume con: "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>"
         have 1: "arr \<T> \<and> arr \<U>"
           using con coinitial_iff con_imp_coinitial by blast
-        moreover have "N.Cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* N.Cong_class_rep \<U>"
+        moreover have "Q.cong_class_rep \<T> \<^sup>*\<frown>\<^sup>* Q.cong_class_rep \<U>"
         proof -
           obtain T U where TU: "T \<in> \<T> \<and> U \<in> \<U> \<and> P.Con T U"
-            using P.con_char Q.con_char\<^sub>Q\<^sub>C\<^sub>N con resid_def by auto
-          have "T \<^sup>*\<approx>\<^sup>* N.Cong_class_rep \<T> \<and> U \<^sup>*\<approx>\<^sup>* N.Cong_class_rep \<U>"
-            using TU 1 N.Cong_class_memb_Cong_rep Q.arr_char resid_def by simp
+            using P.con_char Q.con_char con resid_def by auto
+          have "T \<^sup>*\<approx>\<^sup>* Q.cong_class_rep \<T> \<and> U \<^sup>*\<approx>\<^sup>* Q.cong_class_rep \<U>"
+            using Q.arr_char Q.cong_class_membs_are_cong Q.rep_in_cong_class TU calculation
+                  resid_def
+            by force
           thus ?thesis
-            using TU N.Cong_subst(1) [of T "N.Cong_class_rep \<T>" U "N.Cong_class_rep \<U>"]
+            using TU N.Cong_subst(1) [of T "Q.cong_class_rep \<T>" U "Q.cong_class_rep \<U>"]
             by (metis P.coinitial_iff P.con_char P.con_imp_coinitial sources_respects_Cong)
         qed
         ultimately show ?thesis by simp
@@ -9803,7 +9991,7 @@ begin
     shows "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<longleftrightarrow> arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> T \<^sup>*\<frown>\<^sup>* U)"
     proof
       show "arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> T \<^sup>*\<frown>\<^sup>* U) \<Longrightarrow> \<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>"
-        using con_char\<^sub>C\<^sub>C N.rep_in_Cong_class Q.arr_char resid_def by simp
+        using con_char\<^sub>C\<^sub>C Q.rep_in_cong_class Q.arr_char resid_def by simp
       show "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> \<Longrightarrow> arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> T \<^sup>*\<frown>\<^sup>* U)"
       proof (intro conjI allI impI)
         assume 1: "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>"
@@ -9815,14 +10003,14 @@ begin
         assume 2: "T \<in> \<T> \<and> U \<in> \<U>"
         show "T \<^sup>*\<frown>\<^sup>* U"
         proof -
-          have "N.Cong T (N.Cong_class_rep \<T>)"
+          have "N.Cong T (Q.cong_class_rep \<T>)"
             using \<open>arr \<T>\<close>
-            by (simp add: "2" N.Cong_class_memb_Cong_rep Q.arr_char resid_def)
-          moreover have "P.con (N.Cong_class_rep \<T>) (N.Cong_class_rep \<U>)"
+            by (simp add: "2" Q.arr_char Q.cong_class_membs_are_cong Q.rep_in_cong_class resid_def)
+          moreover have "P.con (Q.cong_class_rep \<T>) (Q.cong_class_rep \<U>)"
             using 1 con_char\<^sub>C\<^sub>C by blast
-          moreover have "N.Cong (N.Cong_class_rep \<U>) U"
+          moreover have "N.Cong (Q.cong_class_rep \<U>) U"
             using \<open>arr \<U>\<close>
-            by (simp add: "2" N.Cong_class_membs_are_Cong N.rep_in_Cong_class
+            by (simp add: "2" Q.cong_class_membs_are_cong Q.rep_in_cong_class
                 Q.arr_char resid_def)
           ultimately show ?thesis
             by (meson Cong_eq_Cong\<^sub>0 N.Cong\<^sub>0_subst_Con P.con_char)
@@ -9832,57 +10020,59 @@ begin
 
     lemma resid_char:
     shows "\<T> \<lbrace>\<^sup>*\\\<^sup>*\<rbrace> \<U> =
-           (if \<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> then \<lbrace>N.Cong_class_rep \<T> \<^sup>*\\\<^sup>* N.Cong_class_rep \<U>\<rbrace> else {})"
-      by (metis P.con_char N.rep_in_Cong_class Q.Resid_by_members Q.arr_char arr_resid_iff_con
-          con_char\<^sub>C\<^sub>C Q.is_Cong_class_Resid resid_def)
+           (if \<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U> then \<lbrace>Q.cong_class_rep \<T> \<^sup>*\\\<^sup>* Q.cong_class_rep \<U>\<rbrace> else {})"
+      by (metis (full_types) P.conI P.null_char Q.null_char Q.quotient_rts_axioms
+          Q.rep_in_cong_class composite_completion.con_char\<^sub>C\<^sub>C composite_completion_axioms
+          con_def quotient_rts.Resid_by_members quotient_rts.con_char resid_def)
 
     lemma resid_simp:
     assumes "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<U>" and "T \<in> \<T>" and "U \<in> \<U>"
     shows "\<T> \<lbrace>\<^sup>*\\\<^sup>*\<rbrace> \<U> = \<lbrace>P.Resid T U\<rbrace>"
       using assms resid_char
       by (metis (no_types, lifting) P.con_char con_char\<^sub>C\<^sub>C' Q.Resid_by_members
-          Q.con_char\<^sub>Q\<^sub>C\<^sub>N resid_def)
+          Q.con_char resid_def)
 
     lemma src_char':
-    shows "src \<T> = {A. arr \<T> \<and> P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A}"
+    shows "src \<T> = {A. arr \<T> \<and> P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A}"
     proof (cases "arr \<T>")
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         by (simp add: Q.null_char Q.src_def resid_def)
       assume \<T>: "arr \<T>"
-      have 1: "\<exists>A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A"
+      have 1: "\<exists>A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A"
         by (metis P.Con_imp_eq_Srcs P.con_char P.con_imp_coinitial_ax P.ide_char
             \<T> con_char\<^sub>C\<^sub>C arrE)
-      let ?A = "SOME A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A"
-      have A: "P.Ide ?A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs ?A"
-        using 1 someI_ex [of "\<lambda>A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A"] by simp
+      let ?A = "SOME A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A"
+      have A: "P.Ide ?A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs ?A"
+        using 1 someI_ex [of "\<lambda>A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A"] by simp
       have a: "arr \<lbrace>?A\<rbrace>"
-        using A P.ide_char N.is_Cong_classI Q.arr_char resid_def by auto
+        using A P.ide_char Q.is_cong_classI Q.arr_char resid_def by auto
       have ide_a: "ide \<lbrace>?A\<rbrace>"
-        using a A N.Cong_class_def N.normal_is_Cong_closed P_ide_iff_NPath P.ide_char ide_char\<^sub>C\<^sub>C
+        using a A Q.cong_class_of_def N.normal_is_Cong_closed P_ide_iff_NPath P.ide_char ide_char\<^sub>C\<^sub>C
         by auto
       have "sources \<T> = {\<lbrace>?A\<rbrace>}"
       proof -
         have "\<T> \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> \<lbrace>?A\<rbrace>"
-          by (metis (no_types, lifting) A N.Cong_class_rep P.conI\<^sub>P Q.quot.preserves_con
-              \<T> con_arr_self con_char\<^sub>C\<^sub>C P.Arr_iff_Con_self P.Con_IdeI(2) Q.arr_char resid_def)
+          by (metis (lifting) A P.Con_IdeI(2) P.Con_implies_Arr(1) Q.arr_char Q.cong_class_of_def
+              Q.rep_in_cong_class Srcs_respects_Cong \<T> con_arr_self con_char\<^sub>C\<^sub>C ide_a ide_char\<^sub>C\<^sub>C
+              mem_Collect_eq resid_def)
         hence "\<lbrace>?A\<rbrace> \<in> sources \<T>"
           using ide_a in_sourcesI by simp
         thus ?thesis
           using sources_char\<^sub>W\<^sub>E by auto
       qed
-      moreover have "\<lbrace>?A\<rbrace> = {A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A}"
+      moreover have "\<lbrace>?A\<rbrace> = {A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A}"
       proof
-        show "{A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A} \<subseteq> \<lbrace>?A\<rbrace>"
+        show "{A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A} \<subseteq> \<lbrace>?A\<rbrace>"
         proof
           fix A'
-          assume A': "A' \<in> {A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A}"
+          assume A': "A' \<in> {A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A}"
           show "A' \<in> \<lbrace>?A\<rbrace>"
             using A'
-            by (metis (mono_tags, lifting) A N.Cong_class_def P.Con_IdeI(2) P.Cong_iff_cong
+            by (metis (mono_tags, lifting) A Q.cong_class_of_def P.Con_IdeI(2) P.Cong_iff_cong
                 P.Ide_implies_Arr P.Resid_Arr_Ide_ind P.ide_char mem_Collect_eq)
         qed
-        show "\<lbrace>?A\<rbrace> \<subseteq> {A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A}"
-          using a A N.Cong_class_def Srcs_respects_Cong ide_a ide_char\<^sub>C\<^sub>C by blast
+        show "\<lbrace>?A\<rbrace> \<subseteq> {A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A}"
+          using a A Q.cong_class_of_def Srcs_respects_Cong ide_a ide_char\<^sub>C\<^sub>C by blast
       qed
       ultimately show ?thesis
         using \<T> src_in_sources sources_char\<^sub>W\<^sub>E by auto
@@ -9894,30 +10084,31 @@ begin
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         using src_char' by simp
       assume \<T>: "arr \<T>"
-      have "\<And>T. T \<in> \<T> \<Longrightarrow> P.Srcs T = P.Srcs (N.Cong_class_rep \<T>)"
-        using \<T> N.Cong_class_memb_Cong_rep Srcs_respects_Cong Q.arr_char resid_def by auto
+      have "\<And>T. T \<in> \<T> \<Longrightarrow> P.Srcs T = P.Srcs (Q.cong_class_rep \<T>)"
+        by (metis Q.cong_class_membs_are_cong Q.quotient_rts_axioms Q.rep_in_cong_class
+            Srcs_respects_Cong \<T> quotient_rts.arr_char resid_def)
       thus ?thesis
-        using \<T> src_char' N.is_Cong_class_def Q.arr_char resid_def by force
+        using \<T> src_char' Q.is_cong_class_def Q.arr_char resid_def by force
     qed
 
     lemma trg_char':
-    shows "trg \<T> = {B. arr \<T> \<and> P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B}"
+    shows "trg \<T> = {B. arr \<T> \<and> P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B}"
     proof (cases "arr \<T>")
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         using resid_char resid_def Q.trg_char\<^sub>Q\<^sub>C\<^sub>N by auto
       assume \<T>: "arr \<T>"
-      have 1: "\<exists>B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B"
+      have 1: "\<exists>B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B"
         by (metis P.Con_implies_Arr(2) P.Resid_Arr_self P.Srcs_Resid \<T> con_char\<^sub>C\<^sub>C arrE)
-      define B where "B = (SOME B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B)"
-      have B: "P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B"
+      define B where "B = (SOME B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B)"
+      have B: "P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B"
         unfolding B_def
-        using 1 someI_ex [of "\<lambda>B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B"] by simp
-      hence 2: "P.Ide B \<and> P.Con (P.Resid (N.Cong_class_rep \<T>) (N.Cong_class_rep \<T>)) B"
+        using 1 someI_ex [of "\<lambda>B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B"] by simp
+      hence 2: "P.Ide B \<and> P.Con (P.Resid (Q.cong_class_rep \<T>) (Q.cong_class_rep \<T>)) B"
         using \<T>
         by (metis (no_types, lifting) P.Con_Ide_iff P.Ide_implies_Arr P.Resid_Arr_self
             P.Srcs_Resid arrE P.Con_implies_Arr(2) con_char\<^sub>C\<^sub>C)
       have b: "arr \<lbrace>B\<rbrace>"
-        by (simp add: "2" P.ide_char N.is_Cong_classI Q.arr_char resid_def)
+        by (simp add: "2" P.ide_char Q.is_cong_classI Q.arr_char resid_def)
       have ide_b: "ide \<lbrace>B\<rbrace>"
         by (simp add: "2" P.ide_char resid_def)
       have "targets \<T> = {\<lbrace>B\<rbrace>}"
@@ -9929,19 +10120,24 @@ begin
         thus ?thesis
           using \<T> Q.targets_char\<^sub>Q\<^sub>C\<^sub>N [of \<T>] cong_char resid_def by auto
       qed 
-      moreover have "\<lbrace>B\<rbrace> = {B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B}"
+      moreover have "\<lbrace>B\<rbrace> = {B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B}"
       proof
-        show "{B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B} \<subseteq> \<lbrace>B\<rbrace>"
-          using B N.Cong_class_def N.Cong_closure_props(3) P.Ide_implies_Arr
-                P.ide_char P.Con_IdeI(2) P.Resid_Ide(1)
-          by auto
-        show "\<lbrace>B\<rbrace> \<subseteq> {B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B}"
+        show "{B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B} \<subseteq> \<lbrace>B\<rbrace>"
+        proof
+          fix B'
+          assume B': "B' \<in> {B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B}"
+          show "B' \<in> \<lbrace>B\<rbrace>"
+            using B B' N.Cong_closure_props(3) P.Con_IdeI(1) P.Ide_implies_Arr P.conI\<^sub>P
+              P.ide_char P.resid_ide_arr Q.cong_class_of_def
+            by auto
+        qed
+        show "\<lbrace>B\<rbrace> \<subseteq> {B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B}"
         proof -
-          have "\<And>B'. N.Cong B' B \<Longrightarrow> P.Ide B' \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B'"
+          have "\<And>B'. N.Cong B' B \<Longrightarrow> P.Ide B' \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B'"
             using B P_ide_iff_NPath N.normal_is_Cong_closed Srcs_respects_Cong
             by (metis N.Cong_closure_props(1) P.ide_char mem_Collect_eq)
           thus ?thesis
-            using N.Cong_class_def by blast
+            using Q.cong_class_of_def by blast
         qed
       qed
       ultimately show ?thesis
@@ -9954,29 +10150,30 @@ begin
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         using trg_char' by presburger
       assume \<T>: "arr \<T>"
-      have "\<And>T. T \<in> \<T> \<Longrightarrow> P.Trgs T = P.Trgs (N.Cong_class_rep \<T>)"
+      have "\<And>T. T \<in> \<T> \<Longrightarrow> P.Trgs T = P.Trgs (Q.cong_class_rep \<T>)"
         using \<T>
-        by (metis N.Cong_class_memb_Cong_rep Trgs_respects_Cong Q.arr_char resid_def)
+        by (simp add: Q.arr_char Q.cong_class_membs_are_cong Q.rep_in_cong_class
+            Trgs_respects_Cong resid_def)
       thus ?thesis
-        using \<T> trg_char' N.is_Cong_class_def Q.arr_char resid_def by force
+        using \<T> trg_char' Q.is_cong_class_def Q.arr_char resid_def by force
     qed
 
     lemma prfx_char:
     shows "\<T> \<lbrace>\<^sup>*\<lesssim>\<^sup>*\<rbrace> \<U> \<longleftrightarrow> arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> P.prfx T U)"
     proof
       show "\<T> \<lbrace>\<^sup>*\<lesssim>\<^sup>*\<rbrace> \<U> \<Longrightarrow> arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> P.prfx T U)"
-        by (metis (mono_tags, lifting) Ball_Collect N.arr_in_Cong_class
-            P.arr_resid_iff_con P.conI\<^sub>P P_ide_iff_NPath Q.ide_char'
-            con_char\<^sub>C\<^sub>C' prfx_implies_con resid_def resid_simp)
+        by (metis (mono_tags, lifting) Ball_Collect Q.arr_in_cong_class
+            P.arr_resid_iff_con P.conI\<^sub>P Q.ide_char\<^sub>Q\<^sub>C\<^sub>N con_char\<^sub>C\<^sub>C' prfx_implies_con
+            resid_def resid_simp)
       show "arr \<T> \<and> arr \<U> \<and> (\<forall>T U. T \<in> \<T> \<and> U \<in> \<U> \<longrightarrow> P.prfx T U) \<Longrightarrow> \<T> \<lbrace>\<^sup>*\<lesssim>\<^sup>*\<rbrace> \<U>"
-        by (metis N.Cong_class_rep N.rep_in_Cong_class Q.arr_char Q.quot.preserves_prfx
-            resid_def)
+        by (metis (no_types, lifting) P.prfx_implies_con Q.con_char Q.quot.preserves_prfx
+            Q.quot.preserves_resid Q.rep_in_cong_class resid_char con_arr_src(1) resid_def)
     qed
 
     lemma quotient_reflects_con:
     assumes "con (Q.quot t) (Q.quot u)"
     shows "P.con t u"
-      using assms N.arr_in_Cong_class P.con_char con_char\<^sub>C\<^sub>C' resid_def by force
+      using assms Q.arr_in_cong_class P.con_char con_char\<^sub>C\<^sub>C' resid_def by force
 
     lemma is_extensional_rts_with_composites:
     shows "extensional_rts_with_composites resid"
@@ -9984,20 +10181,21 @@ begin
       fix \<T> \<U>
       assume seq: "seq \<T> \<U>"
       obtain T where T: "\<T> = \<lbrace>T\<rbrace>"
-        by (metis N.Cong_class_rep Q.arr_char Q.seqE\<^sub>W\<^sub>E resid_def seq)
+        by (metis Q.con_arr_src(1) Q.resid_arr_src Q.seqE\<^sub>W\<^sub>E resid_char resid_def seq)
       obtain U where U: "\<U> = \<lbrace>U\<rbrace>"
-        by (metis N.Cong_class_rep Q.arr_char Q.seqE\<^sub>W\<^sub>E resid_def seq)
+        by (metis Q.arr_char Q.is_cong_class_def resid_def seq seqE\<^sub>W\<^sub>E)
       have 1: "P.Arr T \<and> P.Arr U"
         using P.arr_char T U resid_def seq by auto
       have 2: "P.Trgs T = P.Srcs U"
       proof -
-        have "P.Trgs (N.Cong_class_rep \<T>) = P.Srcs (N.Cong_class_rep \<U>)"
-          by (metis (mono_tags, lifting) P.Con_imp_eq_Srcs N.rep_in_Cong_class
+        have "P.Trgs (Q.cong_class_rep \<T>) = P.Srcs (Q.cong_class_rep \<U>)"
+          by (metis (mono_tags, lifting) P.Con_imp_eq_Srcs Q.rep_in_cong_class
               Q.arr_char con_arr_src(2) con_char\<^sub>C\<^sub>C' mem_Collect_eq resid_def
               seq seqE\<^sub>W\<^sub>E trg_char')
         thus ?thesis
-          by (metis "1" N.Cong_class_memb_Cong_rep P.arrI\<^sub>P N.arr_in_Cong_class
-              N.is_Cong_classI Srcs_respects_Cong T Trgs_respects_Cong U)
+          by (metis "1" P.arr_char Q.arr_char Q.arr_in_cong_class
+              Q.rep_in_cong_class Srcs_respects_Cong T Trgs_respects_Cong U
+              Q.cong_class_membs_are_cong resid_def seq seqE)
       qed
       have "P.Arr (T @ U)"
         using 1 2 by simp
@@ -10044,13 +10242,21 @@ begin
     lemma incl_reflects_con:
     assumes "incl t \<lbrace>\<^sup>*\<frown>\<^sup>*\<rbrace> incl u"
     shows "R.con t u"
-      by (metis P.Con_rec(1) N.arr_in_Cong_class assms con_char\<^sub>C\<^sub>C' incl_simp  
+      by (metis P.Con_rec(1) Q.arr_in_cong_class assms con_char\<^sub>C\<^sub>C' incl_simp
           Q.quot.preserves_reflects_arr resid_def)
+
+    sublocale incl: strong_simulation R resid incl
+      using incl_reflects_con
+      by unfold_locales auto
+
+    lemma incl_is_strong_simulation:
+    shows "strong_simulation R resid incl"
+      ..
 
     lemma cong_iff_eq_incl:
     assumes "R.arr t" and "R.arr u"
     shows "incl t = incl u \<longleftrightarrow> R.cong t u"
-      by (metis P.Ide.simps(2) N.arr_in_Cong_class assms(1) incl_reflects_con
+      by (metis P.Ide.simps(2) Q.arr_in_cong_class assms(1) incl_reflects_con
           conE cong_char ide_char\<^sub>C\<^sub>C incl.preserves_prfx incl.preserves_reflects_arr
           incl.preserves_resid incl_simp prfx_implies_con Q.quot.extensionality resid_def)
 
@@ -10089,18 +10295,20 @@ begin
         fix \<A>
         assume \<A>: "\<A> \<in> Collect ide"
         obtain A where A: "A \<in> \<A>"
-          using \<A> Q.ide_char resid_def by auto
+          using Q.con_char \<A> resid_def by fastforce
         obtain a where a: "a \<in> P.Srcs A"
           by (metis A CollectD P.Arr_has_Src P.Ide_implies_Arr \<A> equals0I ide_char\<^sub>C\<^sub>C)
         have "\<A> = \<lbrace>[a]\<rbrace>"
         proof -
           have "A \<^sup>*\<approx>\<^sub>0\<^sup>* [a]"
-            by (metis (no_types, lifting) A P.Ide.simps(2) P.Resid_Arr_Src P.Srcs_Resid_Arr_single P.ide_char P.ide_imp_con_iff_cong
-                P.paths_in_rts_axioms P.prfx_implies_con \<A> a composite_completion_axioms composite_completion_def ide_char\<^sub>C\<^sub>C
+            by (metis (no_types, lifting) A P.Ide.simps(2) P.Resid_Arr_Src P.Srcs_Resid_Arr_single
+                P.ide_char P.ide_imp_con_iff_cong P.paths_in_rts_axioms P.prfx_implies_con
+                \<A> a composite_completion_axioms composite_completion_def ide_char\<^sub>C\<^sub>C
                 mem_Collect_eq paths_in_rts.Con_sym paths_in_rts.Ide_implies_Arr rts.in_targetsE)
           thus ?thesis
-            by (metis A CollectD N.Cong\<^sub>0_implies_Cong N.Cong_class_eqI N.elements_are_arr P.Con_implies_Arr(1) P.arrE P.con_char
-                P.paths_in_rts_axioms P.resid_arr_ide Q.ideE \<A> a paths_in_rts.Resid_Arr_Src resid_def resid_simp)
+            by (metis A CollectD N.Cong\<^sub>0_implies_Cong Q.cong_class_eqI N.elements_are_arr
+                P.Con_implies_Arr(1) P.arrE P.con_char P.paths_in_rts_axioms P.resid_arr_ide
+                Q.ideE \<A> a paths_in_rts.Resid_Arr_Src resid_def resid_simp)
         qed
         thus "\<A> \<in> incl ` Collect R.ide"
           using P.Srcs_are_ide a by auto
@@ -10122,36 +10330,36 @@ begin
     notation comp (infixr "\<lbrace>\<^sup>*\<cdot>\<^sup>*\<rbrace>" 55)
 
     lemma src_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E:
-    shows "src \<T> = (if arr \<T> then incl (P.Src (N.Cong_class_rep \<T>)) else null)"
+    shows "src \<T> = (if arr \<T> then incl (P.Src (Q.cong_class_rep \<T>)) else null)"
     proof (cases "arr \<T>")
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         using src_def by auto
       assume \<T>: "arr \<T>"
-      have "src \<T> = {A. P.Ide A \<and> P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A}"
+      have "src \<T> = {A. P.Ide A \<and> P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A}"
         using \<T> src_char' [of \<T>] by simp
       moreover have 1: "\<And>A. P.Ide A \<Longrightarrow>
-                              P.Srcs (N.Cong_class_rep \<T>) = P.Srcs A \<longleftrightarrow>
-                              P.Src (N.Cong_class_rep \<T>) = P.Src A"
+                              P.Srcs (Q.cong_class_rep \<T>) = P.Srcs A \<longleftrightarrow>
+                              P.Src (Q.cong_class_rep \<T>) = P.Src A"
         by (metis \<T> P.Con_implies_Arr(2) P.Ide_implies_Arr con_arr_self con_char\<^sub>C\<^sub>C
             insertCI P.Srcs_simp\<^sub>P\<^sub>W\<^sub>E singletonD)
-      ultimately have 2: "src \<T> = {A. P.Ide A \<and> P.Src (N.Cong_class_rep \<T>) = P.Src A}"
+      ultimately have 2: "src \<T> = {A. P.Ide A \<and> P.Src (Q.cong_class_rep \<T>) = P.Src A}"
         by blast
-      also have "... = incl (P.Src (N.Cong_class_rep \<T>))"
+      also have "... = incl (P.Src (Q.cong_class_rep \<T>))"
       proof -
-        have "incl (P.Src (N.Cong_class_rep \<T>)) = Q.quot [R.src (hd (N.Cong_class_rep \<T>))]"
+        have "incl (P.Src (Q.cong_class_rep \<T>)) = Q.quot [R.src (hd (Q.cong_class_rep \<T>))]"
           by auto
-        also have "... = {A. P.Ide A \<and> P.Src (N.Cong_class_rep \<T>) = P.Src A}"
+        also have "... = {A. P.Ide A \<and> P.Src (Q.cong_class_rep \<T>) = P.Src A}"
           apply auto[1]
             apply (metis Q.null_char R.ide_iff_src_self R.src_src empty_iff ide_char\<^sub>C\<^sub>C
                 incl.extensionality incl.preserves_ide incl_simp resid_def)
-           apply (metis "1" CollectD N.Cong_class_def P.Ide.simps(2)
+           apply (metis "1" CollectD Q.cong_class_of_def P.Ide.simps(2)
                P.paths_in_weakly_extensional_rts_axioms Q.null_char R.rts_axioms R.src_trg
                R.trg_src Srcs_respects_Cong calculation composite_completion.ide_char\<^sub>C\<^sub>C
                composite_completion_axioms empty_iff incl.extensionality incl.preserves_ide
                list.sel(1) paths_in_weakly_extensional_rts.Src.elims resid_def rts.ide_src)
-          by (metis (mono_tags, lifting) 2 N.Cong_class_def P.Ide.simps(2)
-              P.Ide_imp_Ide_hd P.Src.elims N.is_Cong_classE Q.arr_char Q.src_src R.src_ide
-              list.sel(1) mem_Collect_eq resid_def src_char')
+          by (metis P.Con_initial_left P.Cong_iff_cong P.Ide.simps(2) P.Ide_imp_Ide_hd
+              P.Ide_implies_Arr P.Resid_Arr_self P.Resid_Ide_Arr_ind P.Resid_single_ide(2)
+              P.ide_char Q.cong_class_of_def list.exhaust list.sel(1) mem_Collect_eq)
         finally show ?thesis by blast
       qed
       finally show ?thesis
@@ -10159,25 +10367,25 @@ begin
     qed
 
     lemma trg_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E:
-    shows "trg \<T> = (if arr \<T> then incl (P.Trg (N.Cong_class_rep \<T>)) else null)"
+    shows "trg \<T> = (if arr \<T> then incl (P.Trg (Q.cong_class_rep \<T>)) else null)"
     proof (cases "arr \<T>")
       show "\<not> arr \<T> \<Longrightarrow> ?thesis"
         using trg_def by auto
       assume \<T>: "arr \<T>"
-      have "trg \<T> = {A. P.Ide A \<and> P.Trg (N.Cong_class_rep \<T>) = P.Src A}"
+      have "trg \<T> = {A. P.Ide A \<and> P.Trg (Q.cong_class_rep \<T>) = P.Src A}"
       proof -
-        have "trg \<T> = {B. P.Ide B \<and> P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B}"
+        have "trg \<T> = {B. P.Ide B \<and> P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B}"
           using \<T> trg_char' [of \<T>] by simp
         moreover have "\<And>B. P.Ide B \<Longrightarrow>
-                             P.Trgs (N.Cong_class_rep \<T>) = P.Srcs B \<longleftrightarrow>
-                             P.Trg (N.Cong_class_rep \<T>) = P.Src B"
+                             P.Trgs (Q.cong_class_rep \<T>) = P.Srcs B \<longleftrightarrow>
+                             P.Trg (Q.cong_class_rep \<T>) = P.Src B"
           by (metis P.Con_implies_Arr(1) P.Ide_implies_Arr \<T> con_arr_self con_char\<^sub>C\<^sub>C
               P.Srcs_simp\<^sub>P\<^sub>W\<^sub>E P.Trgs_simp\<^sub>P\<^sub>W\<^sub>E singleton_inject)
         ultimately show ?thesis by blast
       qed
-      also have "... = incl (P.Trg (N.Cong_class_rep \<T>))"
+      also have "... = incl (P.Trg (Q.cong_class_rep \<T>))"
         using incl.preserves_trg
-        by (metis (mono_tags, lifting) N.rep_in_Cong_class \<T> arr_trg_iff_arr
+        by (metis (mono_tags, lifting) Q.rep_in_cong_class \<T> arr_trg_iff_arr
             calculation mem_Collect_eq Q.arr_char resid_def src_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E src_trg)
       finally show ?thesis
         using \<T> by auto
@@ -10201,27 +10409,27 @@ begin
 
     lemma incl_bijective_on_ide:
     shows "incl \<in> Collect R.ide \<rightarrow> Collect ide"
-    and "(\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) \<in> Collect ide \<rightarrow> Collect R.ide"
-    and "\<And>a. R.ide a \<Longrightarrow> (\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) (incl a) = a"
-    and "\<And>\<A>. ide \<A> \<Longrightarrow> incl ((\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) \<A>) = \<A>"
+    and "(\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) \<in> Collect ide \<rightarrow> Collect R.ide"
+    and "\<And>a. R.ide a \<Longrightarrow> (\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) (incl a) = a"
+    and "\<And>\<A>. ide \<A> \<Longrightarrow> incl ((\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) \<A>) = \<A>"
     and "bij_betw incl (Collect R.ide) (Collect ide)"
-    and "bij_betw (\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) (Collect ide) (Collect R.ide)"
+    and "bij_betw (\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) (Collect ide) (Collect R.ide)"
     proof -
       show 1: "incl \<in> Collect R.ide \<rightarrow> Collect ide"
         using img_incl_ide by auto
-      show 2: "(\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) \<in> Collect ide \<rightarrow> Collect R.ide"
+      show 2: "(\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) \<in> Collect ide \<rightarrow> Collect R.ide"
         by (metis (no_types, lifting) P.Src.elims Pi_I' R.ide_iff_trg_self
             R.trg_src ide_implies_arr incl.preserves_reflects_arr mem_Collect_eq
             src_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E src_ide)
-      show 3: "\<And>a. R.ide a \<Longrightarrow> (\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) (incl a) = a"
+      show 3: "\<And>a. R.ide a \<Longrightarrow> (\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) (incl a) = a"
         by (metis R.ide_backward_stable R.weak_extensionality cong_iff_eq_incl
             incl.preserves_ide incl.preserves_reflects_arr ide_implies_arr
             src_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E src_ide)
-      show 4: "\<And>\<A>. ide \<A> \<Longrightarrow> incl ((\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) \<A>) = \<A>"
+      show 4: "\<And>\<A>. ide \<A> \<Longrightarrow> incl ((\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) \<A>) = \<A>"
         using src_char\<^sub>C\<^sub>C\<^sub>W\<^sub>E src_ide by auto
       show "bij_betw incl (Collect R.ide) (Collect ide)"
         using incl_injective_on_ide img_incl_ide bij_betw_def by blast
-      show "bij_betw (\<lambda>\<A>. P.Src (N.Cong_class_rep \<A>)) (Collect ide) (Collect R.ide)"
+      show "bij_betw (\<lambda>\<A>. P.Src (Q.cong_class_rep \<A>)) (Collect ide) (Collect R.ide)"
         using 1 2 3 4 bij_betwI by force
     qed
 
@@ -10296,7 +10504,7 @@ begin
 
   end
 
-  context paths_in_weakly_extensional_rts
+  context paths_in_rts
   begin
 
     abbreviation Comp
@@ -10317,16 +10525,12 @@ begin
       show "\<And>t u w. Comp t u \<^sup>*\\\<^sup>* w = Comp (t \<^sup>*\\\<^sup>* w) (u \<^sup>*\\\<^sup>* (w \<^sup>*\\\<^sup>* t))"
       proof -
         fix t u w
-        have "\<lbrakk>Arr t; Arr u; {Trg t} = Srcs u; (t @ u) \<^sup>*\\\<^sup>* w \<noteq> []\<rbrakk>
-                 \<Longrightarrow> Trg (t \<^sup>*\\\<^sup>* w) \<in> Srcs (u \<^sup>*\\\<^sup>* (w \<^sup>*\\\<^sup>* t))"
-          by (metis Arr.simps(1) Con_imp_Arr_Resid Con_implies_Arr(2) Resid_append_ind
-              Srcs_Resid Trgs_Resid_sym Trgs_simp\<^sub>P\<^sub>W\<^sub>E insertI1)
-        thus "Comp t u \<^sup>*\\\<^sup>* w = Comp (t \<^sup>*\\\<^sup>* w) (u \<^sup>*\\\<^sup>* (w \<^sup>*\\\<^sup>* t))"
-          using seq_char con_char null_char Con_implies_Arr
+        show "Comp t u \<^sup>*\\\<^sup>* w = Comp (t \<^sup>*\\\<^sup>* w) (u \<^sup>*\\\<^sup>* (w \<^sup>*\\\<^sup>* t))"
+          using null_char seq_char
           apply auto[1]
-          by (metis Arr_has_Src Con_append(1) Resid_append(1) Src_resid Srcs.simps(1)
-              Srcs_simp\<^sub>P\<^sub>W\<^sub>E Trg_resid_sym con_imp_arr_resid singleton_iff Con_imp_eq_Srcs)+
-            (* 8 sec, 12 subgoals *)
+          using Arr.simps(1) Con_appendI(1) Con_implies_Arr(1-2) Arr_appendE\<^sub>P
+                Resid_append(1) Con_append(1) Con_imp_Arr_Resid Srcs_Resid Trgs_Resid_sym
+          by metis+
       qed
     qed
 
@@ -10355,95 +10559,97 @@ begin
   locale simulation_ext_to_paths =
     A: rts A +
     B: rts_with_chosen_composites B comp\<^sub>B +
-    F: simulation A B F +
-    paths_in_rts A
+    F: simulation A B F
   for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
   and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
   and comp\<^sub>B :: "'b comp"   (infixr \<open>\<cdot>\<^sub>B\<close> 55)
   and F :: "'a \<Rightarrow> 'b"
   begin
 
-    notation Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
-    notation Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
-    notation Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
-    notation Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
-    notation B.con    (infix \<open>\<frown>\<^sub>B\<close> 50)
+    interpretation Ap: paths_in_rts A ..
+
+    notation Ap.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
+    notation Ap.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
+    notation Ap.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
+    notation Ap.con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
+    notation Ap.cong     (infix "\<^sup>*\<sim>\<^sub>A\<^sup>*" 70)
+    notation B.con       (infix \<open>\<frown>\<^sub>B\<close> 50)
 
     fun map
     where "map [] = B.null"
         | "map [t] = F t"
-        | "map (t # T) = (if arr (t # T) then F t \<cdot>\<^sub>B map T else B.null)"
+        | "map (t # T) = (if Ap.arr (t # T) then F t \<cdot>\<^sub>B map T else B.null)"
 
     lemma map_o_incl_eq:
-    shows "map (incl t) = F t"
-      by (simp add: null_char F.extensionality)
+    shows "map (Ap.incl t) = F t"
+      by (simp add: Ap.null_char F.extensionality)
 
     lemma extensionality:
-    shows "\<not> arr T \<Longrightarrow> map T = B.null"
-      using F.extensionality arr_char
-      by (metis Arr.simps(2) map.elims)
+    shows "\<not> Ap.arr T \<Longrightarrow> map T = B.null"
+      using F.extensionality Ap.arr_char
+      by (metis Ap.Arr.simps(2) map.elims)
 
     lemma preserves_comp:
-    shows "\<lbrakk>T \<noteq> []; U \<noteq> []; Arr (T @ U)\<rbrakk> \<Longrightarrow> map (T @ U) = map T \<cdot>\<^sub>B map U"
+    shows "\<lbrakk>T \<noteq> []; U \<noteq> []; Ap.Arr (T @ U)\<rbrakk> \<Longrightarrow> map (T @ U) = map T \<cdot>\<^sub>B map U"
     proof (induct T arbitrary: U)
       show "\<And>U. [] \<noteq> [] \<Longrightarrow> map ([] @ U) = map [] \<cdot>\<^sub>B map U"
         by simp
       fix t and T U :: "'a list"
-      assume ind: "\<And>U. \<lbrakk>T \<noteq> []; U \<noteq> []; Arr (T @ U)\<rbrakk>
+      assume ind: "\<And>U. \<lbrakk>T \<noteq> []; U \<noteq> []; Ap.Arr (T @ U)\<rbrakk>
                           \<Longrightarrow> map (T @ U) = map T \<cdot>\<^sub>B map U"
       assume U: "U \<noteq> []"
-      assume Arr: "Arr ((t # T) @ U)"
-      hence 1: "Arr (t # (T @ U))"
+      assume Arr: "Ap.Arr ((t # T) @ U)"
+      hence 1: "Ap.Arr (t # (T @ U))"
         by simp
-      have 2: "Arr (t # T)"
-        by (metis Con_Arr_self Con_append(1) Con_implies_Arr(1) Arr U append_is_Nil_conv
+      have 2: "Ap.Arr (t # T)"
+        by (metis Ap.Con_Arr_self Ap.Con_append(1) Ap.Con_implies_Arr(1) Arr U append_is_Nil_conv
             list.distinct(1))
-      show "map ((t # T) @ U) = comp\<^sub>B (map (t # T)) (map U)"
+      show "map ((t # T) @ U) = map (t # T) \<cdot>\<^sub>B map U"
       proof (cases "T = []")
         show "T = [] \<Longrightarrow> ?thesis"
-          by (metis (full_types) "1" arr_char U append_Cons append_Nil list.exhaust
+          by (metis (full_types) "1" Ap.arr_char U append_Cons append_Nil list.exhaust
               map.simps(2) map.simps(3))
         assume T: "T \<noteq> []"
         have "map ((t # T) @ U) = map (t # (T @ U))"
           by simp
         also have "... = F t \<cdot>\<^sub>B map (T @ U)"
           using T 1
-          by (metis arr_char Nil_is_append_conv list.exhaust map.simps(3))
+          by (metis Ap.arr_char Nil_is_append_conv list.exhaust map.simps(3))
         also have "... =  F t \<cdot>\<^sub>B (map T \<cdot>\<^sub>B map U)"
           using ind
-          by (metis "1" Con_Arr_self Con_implies_Arr(1) Con_rec(4) T U append_is_Nil_conv)
+          by (metis "1" Ap.Con_Arr_self Ap.Con_implies_Arr(1) Ap.Con_rec(4) T U append_is_Nil_conv)
         also have "... = (F t \<cdot>\<^sub>B map T) \<cdot>\<^sub>B map U"
           using B.comp_assoc\<^sub>C\<^sub>C by blast
         also have "... = map (t # T) \<cdot>\<^sub>B map U"
           using T 2
-          by (metis arr_char list.exhaust map.simps(3))
+          by (metis Ap.arr_char list.exhaust map.simps(3))
         finally show "map ((t # T) @ U) = map (t # T) \<cdot>\<^sub>B map U" by simp
       qed
     qed
 
     lemma preserves_arr_ind:
-    shows "\<lbrakk>arr T; a \<in> Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> F a \<in> B.sources (map T)"
+    shows "\<lbrakk>Ap.arr T; a \<in> Ap.Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> F a \<in> B.sources (map T)"
     proof (induct T arbitrary: a)
-      show "\<And>a. \<lbrakk>arr []; a \<in> Srcs []\<rbrakk> \<Longrightarrow> B.arr (map []) \<and> F a \<in> B.sources (map [])"
-        using arr_char by simp
+      show "\<And>a. \<lbrakk>Ap.arr []; a \<in> Ap.Srcs []\<rbrakk> \<Longrightarrow> B.arr (map []) \<and> F a \<in> B.sources (map [])"
+        using Ap.arr_char by simp
       fix a t T
-      assume a: "a \<in> Srcs (t # T)"
-      assume tT: "arr (t # T)"
-      assume ind: "\<And>a. \<lbrakk>arr T; a \<in> Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> F a \<in> B.sources (map T)"
+      assume a: "a \<in> Ap.Srcs (t # T)"
+      assume tT: "Ap.arr (t # T)"
+      assume ind: "\<And>a. \<lbrakk>Ap.arr T; a \<in> Ap.Srcs T\<rbrakk> \<Longrightarrow> B.arr (map T) \<and> F a \<in> B.sources (map T)"
       have 1: "a \<in> A.sources t"
-        using a tT Con_imp_eq_Srcs Con_initial_right Srcs.simps(2) con_char
+        using a tT Ap.Con_imp_eq_Srcs Ap.Con_initial_right Ap.Srcs.simps(2) Ap.con_char
         by blast
       show "B.arr (map (t # T)) \<and> F a \<in> B.sources (map (t # T))"
       proof (cases "T = []")
         show "T = [] \<Longrightarrow> ?thesis"
-          using 1arr_char tT by auto
+          using 1 Ap.arr_char tT by auto
         assume T: "T \<noteq> []"
         obtain a' where a': "a' \<in> A.targets t"
           using tT "1" A.resid_source_in_targets by auto
-        have 2: "a' \<in> Srcs T"
+        have 2: "a' \<in> Ap.Srcs T"
           using a' tT
-          by (metis Con_Arr_self A.sources_resid Srcs.simps(2) arr_char T
-              Con_imp_eq_Srcs Con_rec(4))
+          by (metis Ap.Con_Arr_self A.sources_resid Ap.Srcs.simps(2) Ap.arr_char T
+              Ap.Con_imp_eq_Srcs Ap.Con_rec(4))
         have "B.arr (map (t # T)) \<longleftrightarrow> B.arr (F t \<cdot>\<^sub>B map T)"
           using tT T by (metis map.simps(3) neq_Nil_conv)
         also have "... \<longleftrightarrow> True"
@@ -10453,8 +10659,8 @@ begin
             have "B.seq (F t) (map T)"
             proof
               show "B.arr (map T)"
-                by (metis "2" A.rts_axioms Con_implies_Arr(2) Resid_cons(2)
-                    T arrE arr_resid ind not_arr_null null_char
+                by (metis "2" A.rts_axioms Ap.Con_implies_Arr(2) Ap.Resid_cons(2)
+                    T Ap.arrE Ap.arr_resid ind Ap.not_arr_null Ap.null_char
                     paths_in_rts.arr_char paths_in_rts.intro tT)
               show "B.trg (F t) \<sim>\<^sub>B B.src (map T)"
               proof (intro B.coinitial_ide_are_cong)
@@ -10497,39 +10703,39 @@ begin
     qed
 
     lemma preserves_arr:
-    shows "arr T \<Longrightarrow> B.arr (map T)"
-      using preserves_arr_ind arr_char Arr_has_Src by blast
+    shows "Ap.arr T \<Longrightarrow> B.arr (map T)"
+      using preserves_arr_ind Ap.arr_char Ap.Arr_has_Src by blast
 
     lemma preserves_sources:
-    assumes "arr T" and "a \<in> Srcs T"
+    assumes "Ap.arr T" and "a \<in> Ap.Srcs T"
     shows "F a \<in> B.sources (map T)"
       using assms preserves_arr_ind by simp
 
     lemma preserves_targets:
-    shows "\<lbrakk>arr T; b \<in> Trgs T\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map T)"
+    shows "\<lbrakk>Ap.arr T; b \<in> Ap.Trgs T\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map T)"
     proof (induct T)
-      show "\<lbrakk>arr []; b \<in> Trgs []\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map [])"
+      show "\<lbrakk>Ap.arr []; b \<in> Ap.Trgs []\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map [])"
         by simp
       fix t T
-      assume tT: "arr (t # T)"
-      assume b: "b \<in> Trgs (t # T)"
-      assume ind: "\<lbrakk>arr T; b \<in> Trgs T\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map T)"
+      assume tT: "Ap.arr (t # T)"
+      assume b: "b \<in> Ap.Trgs (t # T)"
+      assume ind: "\<lbrakk>Ap.arr T; b \<in> Ap.Trgs T\<rbrakk> \<Longrightarrow> F b \<in> B.targets (map T)"
       show "F b \<in> B.targets (map (t # T))"
       proof (cases "T = []")
         show "T = [] \<Longrightarrow> ?thesis"
-          using tT b arr_char by auto
+          using tT b Ap.arr_char by auto
         assume T: "T \<noteq> []"
         show ?thesis
         proof -
           have "F b \<in> B.targets (map T)"
-            by (metis Resid_cons(2) T Trgs.simps(3) arrE b con_char
-                con_implies_arr(2) ind neq_Nil_conv tT)
+            by (metis Ap.Resid_cons(2) T Ap.Trgs.simps(3) Ap.arrE b Ap.con_char
+                Ap.con_implies_arr(2) ind neq_Nil_conv tT)
           moreover have "B.targets (map T) = B.targets (map (t # T))"
           proof -
             have "B.targets (map T) = B.targets (F t \<cdot>\<^sub>B map T)"
               by (metis B.comp_extensionality_ax B.composite_of_comp_ax
                   B.not_arr_null B.targets_composite_of T append_Cons append_Nil
-                  arr_char preserves_arr list.distinct(1) map.simps(2)
+                  Ap.arr_char preserves_arr list.distinct(1) map.simps(2)
                   preserves_comp tT)
             also have "... = B.targets (map (t # T))"
               by (metis T list.exhaust map.simps(3) tT)
@@ -10554,54 +10760,54 @@ begin
         show 1: "F t \<frown>\<^sub>B map (u # U)"
         proof (cases "U = []")
           show "U = [] \<Longrightarrow> ?thesis"
-            using Resid1x.simps(2) map.simps(2) F.preserves_con uU by fastforce
+            using Ap.Resid1x.simps(2) map.simps(2) F.preserves_con uU by fastforce
           assume U: "U \<noteq> []"
           have 3: "[t] \<^sup>*\\\<^sub>A\<^sup>* [u] \<noteq> [] \<and> ([t] \<^sup>*\\\<^sub>A\<^sup>* [u]) \<^sup>*\\\<^sub>A\<^sup>* U \<noteq> []"
-            using Con_cons(2) [of "[t]" U u]
-            by (meson Resid1x_as_Resid' U not_Cons_self2 uU)
+            using Ap.Con_cons(2) [of "[t]" U u]
+            by (meson Ap.Resid1x_as_Resid' U not_Cons_self2 uU)
           hence 2: "F t \<frown>\<^sub>B F u \<and> F t \\\<^sub>B F u \<frown>\<^sub>B map U"
-            by (metis Con_rec(1) Con_sym Con_sym1 Residx1_as_Resid Resid_rec(1)
+            by (metis Ap.Con_rec(1) Ap.Con_sym Ap.Con_sym1 Ap.Residx1_as_Resid Ap.Resid_rec(1)
                 F.preserves_con F.preserves_resid ind)
           moreover have "B.seq (F u) (map U)"
             by (metis B.coinitialE B.con_imp_coinitial calculation B.seqI(1)
                 B.sources_resid)
           ultimately have "F t \<frown>\<^sub>B map ([u] @ U)"
-            by (metis "3" B.composite_of_comp_ax B.con_composite_of_iff Con_consI(2)
-                Con_implies_Arr(2) append_Cons list.simps(3) map.simps(2) preserves_comp
+            by (metis "3" B.composite_of_comp_ax B.con_composite_of_iff Ap.Con_consI(2)
+                Ap.Con_implies_Arr(2) append_Cons list.simps(3) map.simps(2) preserves_comp
                 self_append_conv2)
           thus ?thesis by simp
         qed
         show "F (t \<^sup>1\\\<^sub>A\<^sup>* (u # U)) = F t \\\<^sub>B map (u # U)"
         proof (cases "U = []")
           show "U = [] \<Longrightarrow> ?thesis"
-            using Resid1x.simps(2) F.preserves_resid map.simps(2) uU by fastforce
+            using Ap.Resid1x.simps(2) F.preserves_resid map.simps(2) uU by fastforce
           assume U: "U \<noteq> []"
           have "F (t \<^sup>1\\\<^sub>A\<^sup>* (u # U)) = F ((t \\\<^sub>A u) \<^sup>1\\\<^sub>A\<^sup>* U)"
-            using Resid1x_as_Resid' Resid_rec(3) U uU by metis
+            using Ap.Resid1x_as_Resid' Ap.Resid_rec(3) U uU by metis
           also have "... = F (t \\\<^sub>A u) \\\<^sub>B map U"
-            using uU U ind Con_rec(3) Resid1x_as_Resid [of "t \\\<^sub>A u" U] 
-            by (metis Resid1x.simps(3) list.exhaust)
+            using uU U ind Ap.Con_rec(3) Ap.Resid1x_as_Resid [of "t \\\<^sub>A u" U] 
+            by (metis Ap.Resid1x.simps(3) list.exhaust)
           also have "... = (F t \\\<^sub>B F u) \\\<^sub>B map U"
             using uU U
-            by (metis Resid1x_as_Resid' F.preserves_resid Con_rec(3))
+            by (metis Ap.Resid1x_as_Resid' F.preserves_resid Ap.Con_rec(3))
           also have "... = F t \\\<^sub>B (F u \<cdot>\<^sub>B map U)"
           proof -
             have "F u \<cdot>\<^sub>B map U \<frown>\<^sub>B F t"
             proof
               show "B.composable (F u) (map U)"
                 by (metis "1" B.composable_iff_comp_not_null\<^sub>C\<^sub>C B.not_con_null(2)
-                    U append.left_neutral append_Cons arr_char extensionality
+                    U append.left_neutral append_Cons Ap.arr_char extensionality
                     map.simps(2) not_Cons_self preserves_comp)
               show "F t \\\<^sub>B F u \<frown>\<^sub>B map U"
-                by (metis B.arr_resid_iff_con Resid1x.simps(3) U calculation
+                by (metis B.arr_resid_iff_con Ap.Resid1x.simps(3) U calculation
                     ind list.exhaust uU)
             qed
             thus ?thesis
               using B.resid_comp_right_ax [of "F u" "map U" "F t"] by argo
           qed
           also have "... = F t \\\<^sub>B map (u # U)"
-            by (metis Resid1x_as_Resid' con_char U map.simps(3) neq_Nil_conv
-                con_implies_arr(2) uU)
+            by (metis Ap.Resid1x_as_Resid' Ap.con_char U map.simps(3) neq_Nil_conv
+                Ap.con_implies_arr(2) uU)
           finally show ?thesis by simp
         qed
       qed
@@ -10618,31 +10824,31 @@ begin
       show "map (u # U) \<frown>\<^sub>B F t \<and> map ((u # U) \<^sup>*\\\<^sub>A\<^sup>1 t) = map (u # U) \\\<^sub>B F t"
       proof (cases "U = []")
         show "U = [] \<Longrightarrow> ?thesis"
-          using Residx1.simps(2) F.preserves_con F.preserves_resid map.simps(2) uU
+          using Ap.Residx1.simps(2) F.preserves_con F.preserves_resid map.simps(2) uU
           by presburger
         assume U: "U \<noteq> []"
         show ?thesis
         proof
           show "map (u # U) \<frown>\<^sub>B F t"
-            using uU U Con_sym1 B.con_sym preserves_Resid1x_ind by blast
+            using uU U Ap.Con_sym1 B.con_sym preserves_Resid1x_ind by blast
           show "map ((u # U) \<^sup>*\\\<^sub>A\<^sup>1 t) = map (u # U) \\\<^sub>B F t"
           proof -
             have "map ((u # U) \<^sup>*\\\<^sub>A\<^sup>1 t) = map ((u \\\<^sub>A t) # U \<^sup>*\\\<^sub>A\<^sup>1 (t \\\<^sub>A u))"
-              using uU U Residx1_as_Resid Resid_rec(2) by fastforce
+              using uU U Ap.Residx1_as_Resid Ap.Resid_rec(2) by fastforce
             also have "... = F (u \\\<^sub>A t) \<cdot>\<^sub>B map (U \<^sup>*\\\<^sub>A\<^sup>1 (t \\\<^sub>A u))"
-              by (metis Residx1_as_Resid arr_char U Con_imp_Arr_Resid
-                  Con_rec(2) Resid_rec(2) list.exhaust map.simps(3) uU)
+              by (metis Ap.Residx1_as_Resid Ap.arr_char U Ap.Con_imp_Arr_Resid
+                  Ap.Con_rec(2) Ap.Resid_rec(2) list.exhaust map.simps(3) uU)
             also have "... = F (u \\\<^sub>A t) \<cdot>\<^sub>B map U \\\<^sub>B F (t \\\<^sub>A u)"
-              using uU U ind Con_rec(2) Residx1_as_Resid by force
+              using uU U ind Ap.Con_rec(2) Ap.Residx1_as_Resid by force
             also have "... = (F u \\\<^sub>B F t) \<cdot>\<^sub>B map U \\\<^sub>B (F t \\\<^sub>B F u)"
               using uU U
-              by (metis Con_initial_right Con_rec(1) Con_sym1 Resid1x_as_Resid'
-                  Residx1_as_Resid F.preserves_resid)
+              by (metis Ap.Con_initial_right Ap.Con_rec(1) Ap.Con_sym1 Ap.Resid1x_as_Resid'
+                  Ap.Residx1_as_Resid F.preserves_resid)
             also have "... = (F u \<cdot>\<^sub>B map U) \\\<^sub>B F t"
               using B.resid_comp_left_ax by auto
             also have "... = map (u # U) \\\<^sub>B F t"
-              by (metis Con_implies_Arr(2) Con_sym Residx1_as_Resid U
-                  arr_char map.simps(3) neq_Nil_conv uU)
+              by (metis Ap.Con_implies_Arr(2) Ap.Con_sym Ap.Residx1_as_Resid U
+                  Ap.arr_char map.simps(3) neq_Nil_conv uU)
             finally show ?thesis by simp
           qed
         qed
@@ -10650,52 +10856,51 @@ begin
     qed
 
     lemma preserves_resid_ind:
-    shows "con T U \<Longrightarrow> map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
+    shows "T \<^sup>*\<frown>\<^sub>A\<^sup>* U \<Longrightarrow> map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
     proof (induct T arbitrary: U)
-      show "\<And>U. con [] U \<Longrightarrow> map [] \<frown>\<^sub>B map U \<and> map ([] \<^sup>*\\\<^sub>A\<^sup>* U) = map [] \\\<^sub>B map U"
-        using con_char Resid.simps(1) by blast
+      show "\<And>U. [] \<^sup>*\<frown>\<^sub>A\<^sup>* U \<Longrightarrow> map [] \<frown>\<^sub>B map U \<and> map ([] \<^sup>*\\\<^sub>A\<^sup>* U) = map [] \\\<^sub>B map U"
+        using Ap.con_char Ap.Resid.simps(1) by blast
       fix t T U
-      assume tT: "con (t # T) U"
-      assume ind: "\<And>U. con T U \<Longrightarrow>
-                         map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
+      assume tT: "(t # T) \<^sup>*\<frown>\<^sub>A\<^sup>* U"
+      assume ind: "\<And>U. T \<^sup>*\<frown>\<^sub>A\<^sup>* U \<Longrightarrow> map T \<frown>\<^sub>B map U \<and> map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
       show "map (t # T) \<frown>\<^sub>B map U \<and> map ((t # T) \<^sup>*\\\<^sub>A\<^sup>* U) = map (t # T) \\\<^sub>B map U"
       proof (cases "T = []")
         assume T: "T = []"
         show ?thesis
           using T tT
           apply simp
-          by (metis Resid1x_as_Resid Residx1_as_Resid con_char
-              Con_sym Con_sym1 map.simps(2) preserves_Resid1x_ind)
+          by (metis Ap.Resid1x_as_Resid Ap.Residx1_as_Resid Ap.con_char
+              Ap.Con_sym Ap.Con_sym1 map.simps(2) preserves_Resid1x_ind)
         next
         assume T: "T \<noteq> []"
         have 1: "map (t # T) = F t \<cdot>\<^sub>B map T"
           using tT T
-          by (metis con_implies_arr(1) list.exhaust map.simps(3))
+          by (metis Ap.con_implies_arr(1) list.exhaust map.simps(3))
         show ?thesis
         proof
           show 2: "B.con (map (t # T)) (map U)"
             using T tT
             by (metis "1" B.composable_iff_comp_not_null\<^sub>C\<^sub>C B.con_compI\<^sub>C\<^sub>C(2) B.con_sym
-                B.not_arr_null Con_cons(1) Residx1_as_Resid con_char con_implies_arr(1-2)
-                preserves_arr ind not_arr_null null_char preserves_Residx1_ind)
+                B.not_arr_null Ap.Con_cons(1) Ap.Residx1_as_Resid Ap.con_char Ap.con_implies_arr(1-2)
+                preserves_arr ind Ap.not_arr_null Ap.null_char preserves_Residx1_ind)
           show "map ((t # T) \<^sup>*\\\<^sub>A\<^sup>* U) = map (t # T) \\\<^sub>B map U"
           proof -
             have "map ((t # T) \<^sup>*\\\<^sub>A\<^sup>* U) = map (([t] \<^sup>*\\\<^sub>A\<^sup>* U) @ (T \<^sup>*\\\<^sub>A\<^sup>* (U \<^sup>*\\\<^sub>A\<^sup>* [t])))"
-              by (metis Resid.simps(1) Resid_cons(1) con_char ex_un_null tT)
+              by (metis Ap.Resid.simps(1) Ap.Resid_cons(1) Ap.con_char Ap.ex_un_null tT)
             also have "... = map ([t] \<^sup>*\\\<^sub>A\<^sup>* U) \<cdot>\<^sub>B map (T \<^sup>*\\\<^sub>A\<^sup>* (U \<^sup>*\\\<^sub>A\<^sup>* [t]))"
-              by (metis Arr.simps(1) Con_imp_Arr_Resid Con_implies_Arr(2) Con_sym
-                  Resid_cons(1-2) con_char T preserves_comp tT)
+              by (metis Ap.Arr.simps(1) Ap.Con_imp_Arr_Resid Ap.Con_implies_Arr(2) Ap.Con_sym
+                  Ap.Resid_cons(1-2) Ap.con_char T preserves_comp tT)
             also have "... = (map [t] \\\<^sub>B map U) \<cdot>\<^sub>B map (T \<^sup>*\\\<^sub>A\<^sup>* (U \<^sup>*\\\<^sub>A\<^sup>* [t]))"
-              by (metis Con_initial_right Con_sym Resid1x_as_Resid
-                  Residx1_as_Resid con_char Con_sym1 map.simps(2)
+              by (metis Ap.Con_initial_right Ap.Con_sym Ap.Resid1x_as_Resid
+                  Ap.Residx1_as_Resid Ap.con_char Ap.Con_sym1 map.simps(2)
                   preserves_Resid1x_ind tT)
             also have "... = (map [t] \\\<^sub>B map U) \<cdot>\<^sub>B (map T \\\<^sub>B map (U \<^sup>*\\\<^sub>A\<^sup>* [t]))"
               using tT T ind
-              by (metis Con_cons(1) Con_sym Resid.simps(1) con_char)
+              by (metis Ap.Con_cons(1) Ap.Con_sym Ap.Resid.simps(1) Ap.con_char)
             also have "... = (map [t] \\\<^sub>B map U) \<cdot>\<^sub>B (map T \\\<^sub>B (map U \\\<^sub>B map [t]))"
               using tT T
-              by (metis Con_cons(1) Con_sym Resid.simps(2) Residx1_as_Resid
-                        con_char map.simps(2) preserves_Residx1_ind)
+              by (metis Ap.Con_cons(1) Ap.Con_sym Ap.Resid.simps(2) Ap.Residx1_as_Resid
+                        Ap.con_char map.simps(2) preserves_Residx1_ind)
             also have "... = (F t \\\<^sub>B map U) \<cdot>\<^sub>B (map T \\\<^sub>B (map U \\\<^sub>B F t))"
               using tT T by simp
             also have "... = map (t # T) \\\<^sub>B map U"
@@ -10707,129 +10912,109 @@ begin
     qed
 
     lemma preserves_con:
-    assumes "con T U"
+    assumes "T \<^sup>*\<frown>\<^sub>A\<^sup>* U"
     shows "map T \<frown>\<^sub>B map U"
       using assms preserves_resid_ind by simp
 
     lemma preserves_resid:
-    assumes "con T U"
+    assumes "T \<^sup>*\<frown>\<^sub>A\<^sup>* U"
     shows "map (T \<^sup>*\\\<^sub>A\<^sup>* U) = map T \\\<^sub>B map U"
       using assms preserves_resid_ind by simp
 
-    sublocale simulation Resid B map
-      using con_char preserves_con preserves_resid extensionality
+    sublocale simulation Ap.Resid B map
+      using Ap.con_char preserves_con preserves_resid extensionality
       by unfold_locales auto
 
     lemma is_simulation:
-    shows "simulation Resid B map"
+    shows "simulation Ap.Resid B map"
       ..
 
     lemma is_extension:
-    shows "map \<circ> incl = F"
+    shows "map \<circ> Ap.incl = F"
       using map_o_incl_eq by auto
 
-    lemma is_universal:
-    shows "simulation Resid B map" and "map \<circ> incl = F"
-    and "\<And>F'. \<lbrakk>simulation Resid B F'; F' o incl = F\<rbrakk>
-                 \<Longrightarrow> \<forall>T. arr T \<longrightarrow> B.cong (F' T) (map T)"
+    text\<open>
+      Since the composites chosen for \<open>B\<close> need not be unique, we cannot conclude exact
+      equality in the following result.
+    \<close>
+
+    lemma is_couniversal:
+    shows "simulation Ap.Resid B map" and "map \<circ> Ap.incl = F"
+    and "\<And>F'. \<lbrakk>simulation Ap.Resid B F'; F' o Ap.incl = F\<rbrakk>
+                 \<Longrightarrow> \<forall>T. Ap.arr T \<longrightarrow> F' T \<sim>\<^sub>B map T"
     proof -
-      show "simulation Resid B map" and "map \<circ> incl = F"
+      show "simulation Ap.Resid B map" and "map \<circ> Ap.incl = F"
         using map_o_incl_eq simulation_axioms by auto
-      show "\<And>F'. \<lbrakk>simulation Resid B F'; F' o incl = F\<rbrakk> \<Longrightarrow> \<forall>T. arr T \<longrightarrow> F' T \<sim>\<^sub>B map T"
-      proof (intro allI impI)
-        fix F' T
-        assume F': "simulation Resid B F'"
-        assume 1: "F' o incl = F"
-        interpret F': simulation Resid B F'
-          using F' by simp
-        show "arr T \<Longrightarrow> B.cong (F' T) (map T)"
-        proof (induct T)
-          show "arr [] \<Longrightarrow> F' [] \<sim>\<^sub>B map []"
-            by (simp add: arr_char F'.extensionality)
-          fix t T
-          assume ind: "arr T \<Longrightarrow> F' T \<sim>\<^sub>B map T"
-          assume arr: "arr (t # T)"
-          show "F' (t # T) \<sim>\<^sub>B map (t # T)"
-          proof (cases "Arr (t # T)")
-            show "\<not> Arr (t # T) \<Longrightarrow> ?thesis"
-              using arr arr_char by blast
-            assume tT: "Arr (t # T)"
-            show ?thesis
-            proof (cases "T = []")
-              show 2: "T = [] \<Longrightarrow> ?thesis"
-                using F' 1 tT B.prfx_reflexive arr map.simps(2) by force
-              assume T: "T \<noteq> []"
-              have "F' (t # T) \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B map T"
-              proof -
-                have "F' (t # T) = F' ([t] @ T)"
-                  by simp
-                also have "... \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B F' T"
-                proof -
-                  have "composite_of [t] T ([t] @ T)"
-                    using T tT
-                    by (metis (full_types) Arr.simps(2) Con_Arr_self
-                        append_is_composite_of Con_implies_Arr(1) Con_imp_eq_Srcs
-                        Con_rec(4) Resid_rec(1) Srcs_Resid seq_char A.arrI)
-                  thus ?thesis
-                    using F'.preserves_composites B.composite_of_comp_ax
-                    by (meson B.comp_extensionality_ax B.composable_def
-                        B.composite_of_unq_upto_cong B.composable_iff_comp_not_null\<^sub>C\<^sub>C)
-                qed
-                also have "F' [t] \<cdot>\<^sub>B F' T \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B map T"
-                proof
-                  show 0: "F' [t] \<cdot>\<^sub>B F' T \<lesssim>\<^sub>B F' [t] \<cdot>\<^sub>B map T"
-                  proof -
-                    have "F' [t] \<cdot>\<^sub>B F' T \<frown>\<^sub>B F' [t] \<cdot>\<^sub>B map T"
-                    proof
-                      show 1: "B.composable (F' [t]) (F' T)"
-                        using B.composable_iff_comp_not_null\<^sub>C\<^sub>C calculation by force
-                      show "(F' [t] \<cdot>\<^sub>B map T) \\\<^sub>B F' [t] \<frown>\<^sub>B F' T"
-                        by (meson 1 B.composableD(1-2) B.composableE B.composable_def
-                            B.con_compI\<^sub>C\<^sub>C(1) B.cong_respects_seq B.cong_subst_left(1)
-                            B.has_composites B.prfx_implies_con B.prfx_reflexive
-                            B.resid_composite_of(2) B.rts_axioms F'.preserves_reflects_arr
-                            ind rts.composite_ofE)
-                    qed
-                    thus ?thesis
-                      by (metis B.con_implies_arr(2) B.con_sym B.not_arr_null
-                          B.prfx_implies_con B.prfx_transitive B.resid_comp_right_ax
-                          F'.extensionality calculation ind)
-                  qed
-                  show "F' [t] \<cdot>\<^sub>B map T \<lesssim>\<^sub>B F' [t] \<cdot>\<^sub>B F' T"
-                  proof -
-                    have 1: "F' [t] \<cdot>\<^sub>B map T \<frown>\<^sub>B F' [t] \<cdot>\<^sub>B F' T"
-                    proof
-                      show "B.composable (F' [t]) (map T)"
-                        using 0 B.composable_iff_comp_not_null\<^sub>C\<^sub>C
-                        by force
-                      show "(F' [t] \<cdot>\<^sub>B F' T) \\\<^sub>B F' [t] \<frown>\<^sub>B map T"
-                        by (meson B.con_comp_iff\<^sub>C\<^sub>C B.prfx_implies_con
-                            \<open>F' [t] \<cdot>\<^sub>B F' T \<lesssim>\<^sub>B F' [t] \<cdot>\<^sub>B map T\<close>)
-                    qed
-                    hence "(F' [t] \<cdot>\<^sub>B map T) \\\<^sub>B (F' [t] \<cdot>\<^sub>B F' T) =
-                           ((F' [t] \<cdot>\<^sub>B map T) \\\<^sub>B F' [t]) \\\<^sub>B F' T"
-                      using B.resid_comp_right_ax B.con_sym by blast
-                    thus ?thesis
-                      by (metis 1 B.con_arr_self B.con_implies_arr(1) B.cong_reflexive
-                          B.not_ide_null B.null_is_zero(2) B.prfx_transitive
-                          B.resid_comp_right_ax extensionality ind)
-                  qed
-                qed
-                finally show ?thesis by blast
-              qed
-              also have "F' [t] \<cdot>\<^sub>B map T = (F' \<circ> incl) t \<cdot>\<^sub>B map T"
-                using tT
-                by (simp add: arr_char null_char F'.extensionality)
-              also have "... = F t \<cdot>\<^sub>B map T"
-                using F' 1 by simp
-              also have "... = map (t # T)"
-                using T tT
-                by (metis arr_char list.exhaust map.simps(3))
-              finally show ?thesis by simp
+      fix F'
+      assume F': "simulation Ap.Resid B F'"
+      assume 1: "F' \<circ> Ap.incl = F"
+      interpret F': simulation Ap.Resid B F'
+        using F' by blast
+      have "\<And>T. Ap.arr T \<Longrightarrow> F' T \<sim>\<^sub>B map T"
+      proof -
+        fix T
+        assume T: "Ap.arr T"
+        show "F' T \<sim>\<^sub>B map T"
+        proof (induct T rule: Ap.Arr_induct)
+          show "Ap.Arr T"
+            using T Ap.arr_char by blast
+          show "\<And>t. Ap.Arr [t] \<Longrightarrow> F' [t] \<sim>\<^sub>B map [t]"
+            using 1 Ap.arr_char B.cong_reflexive by auto
+          show "\<And>t U. \<lbrakk>Ap.Arr (t # U); U \<noteq> []; F' U \<sim>\<^sub>B map U\<rbrakk> \<Longrightarrow> F' (t # U) \<sim>\<^sub>B map (t # U)"
+          proof -
+            fix t U
+            assume tU: "Ap.Arr (t # U)" and U: "U \<noteq> []" and ind: "F' U \<sim>\<^sub>B map U"
+            have "F' (t # U) = F' ([t] @ U)"
+              by simp
+            also have "... \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B F' U"
+            proof -
+              have "Ap.composite_of [t] U ([t] @ U)"
+                using U tU
+                by (metis (full_types) Ap.Arr.simps(2) Ap.Con_Arr_self
+                    Ap.append_is_composite_of Ap.Con_implies_Arr(1) Ap.Con_imp_eq_Srcs
+                    Ap.Con_rec(4) Ap.Resid_rec(1) Ap.Srcs_Resid Ap.seq_char A.arrI)
+              thus ?thesis
+                using F'.preserves_composites B.composite_of_comp_ax
+                by (meson B.comp_extensionality_ax B.composable_def
+                    B.composite_of_unq_upto_cong B.composable_iff_comp_not_null\<^sub>C\<^sub>C)
             qed
+            also have "F' [t] \<cdot>\<^sub>B F' U \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B map U"
+            proof
+              show 0: "F' [t] \<cdot>\<^sub>B F' U \<lesssim>\<^sub>B F' [t] \<cdot>\<^sub>B map U"
+              proof -
+                have "F' [t] \<cdot>\<^sub>B F' U \<frown>\<^sub>B F' [t] \<cdot>\<^sub>B map U"
+                  by (metis (lifting) ext B.coinitialE B.composable_iff_seq B.con_comp_iff\<^sub>C\<^sub>C
+                      B.cong_implies_coinitial B.cong_subst_right(1) B.residuation_axioms
+                      B.seqE B.seqI(2) \<open>F' ([t] @ U) \<sim>\<^sub>B F' [t] \<cdot>\<^sub>B F' U\<close> ind residuation.arrE)
+                thus ?thesis
+                  by (metis B.con_sym B.prfx_implies_con B.prfx_transitive
+                      B.resid_comp_right_ax calculation ind)
+              qed
+              show "F' [t] \<cdot>\<^sub>B map U \<lesssim>\<^sub>B F' [t] \<cdot>\<^sub>B F' U"
+              proof -
+                have 1: "F' [t] \<cdot>\<^sub>B map U \<frown>\<^sub>B F' [t] \<cdot>\<^sub>B F' U"
+                  by (metis B.prfx_implies_con "0" B.con_sym)
+                hence "(F' [t] \<cdot>\<^sub>B map U) \\\<^sub>B (F' [t] \<cdot>\<^sub>B F' U) =
+                       ((F' [t] \<cdot>\<^sub>B map U) \\\<^sub>B F' [t]) \\\<^sub>B F' U"
+                  using B.resid_comp_right_ax B.con_sym by blast
+                thus ?thesis
+                  by (metis 1 B.con_arr_self B.con_implies_arr(1) B.cong_reflexive
+                      B.prfx_transitive B.resid_comp_right_ax ind)
+              qed
+            qed
+            also have "F' [t] \<cdot>\<^sub>B map U = (F' \<circ> Ap.incl) t \<cdot>\<^sub>B map U"
+              using tU
+              by (simp add: Ap.arr_char Ap.null_char F'.extensionality)
+            also have "... = F t \<cdot>\<^sub>B map U"
+              using F' 1 by simp
+            also have "... = map (t # U)"
+              using U tU
+              by (metis Ap.arr_char list.exhaust map.simps(3))
+            finally show "F' (t # U) \<sim>\<^sub>B map (t # U)" by simp
           qed
         qed
       qed
+      thus "\<forall>T. Ap.arr T \<longrightarrow> F' T \<sim>\<^sub>B map T" by blast
     qed
 
   end
@@ -10884,10 +11069,9 @@ begin
               also have "... = comp\<^sub>C (G (Fx.map [t])) (G (Fx.map U))"
                 using ind by simp
               also have "... = G (comp\<^sub>B (Fx.map [t]) (Fx.map U))"
-                by (metis B.composable_iff_comp_not_null\<^sub>C\<^sub>C B.not_arr_null
-                    Fx.simulation_ext_to_paths_axioms Fx.preserves_comp U append_Cons
-                    append_Nil assms(5) simulation_ext_to_paths.preserves_arr
-                    simulation_ext_to_paths_def not_Cons_self2 paths_in_rts.arr_char t)
+                by (metis Ap.arrI\<^sub>P B.composable_iff_comp_not_null\<^sub>C\<^sub>C B.not_arr_null
+                    Fx.preserves_comp U append_Cons append_Nil assms(5) not_Cons_self2
+                    Fx.preserves_arr t)
               also have "... = G (Fx.map ([t] @ U))"
                 by (metis Fx.preserves_comp U append.left_neutral append_Cons
                     not_Cons_self2 t)
@@ -10910,87 +11094,129 @@ begin
   and F :: "'a \<Rightarrow> 'b"
   begin
 
+    interpretation Ap: paths_in_rts A ..
     interpretation Ac: composite_completion A ..
 
-    notation Ac.P.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
-    notation Ac.P.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
-    notation Ac.P.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
-    notation Ac.P.Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
-    notation B.comp        (infixr \<open>\<cdot>\<^sub>B\<close> 55)
-    notation B.con         (infix \<open>\<frown>\<^sub>B\<close> 50)
+    notation Ap.Resid    (infix \<open>\<^sup>*\\<^sub>A\<^sup>*\<close> 70)
+    notation Ap.Resid1x  (infix \<open>\<^sup>1\\<^sub>A\<^sup>*\<close> 70)
+    notation Ap.Residx1  (infix \<open>\<^sup>*\\<^sub>A\<^sup>1\<close> 70)
+    notation Ap.Con      (infix \<open>\<^sup>*\<frown>\<^sub>A\<^sup>*\<close> 70)
+    notation B.comp      (infixr \<open>\<cdot>\<^sub>B\<close> 55)
+    notation B.con       (infix \<open>\<frown>\<^sub>B\<close> 50)
 
-    interpretation F_ext: simulation_ext_to_paths A B B.comp F ..
+    interpretation Fp: simulation_ext_to_paths A B B.comp F ..
 
     definition map
-    where "map = Ac.Q.ext_to_quotient B F_ext.map"
-
-    sublocale simulation Ac.resid B map
-      unfolding map_def Ac.resid_def
-      using Ac.Q.ext_to_quotient_props [of B F_ext.map] F_ext.simulation_axioms
-            F_ext.preserves_ide B.extensional_rts_axioms Ac.P.ide_char Ac.P_ide_iff_NPath
-      by blast
+    where "map = Ac.Q.ext_to_quotient B Fp.map"
 
     lemma is_simulation:
     shows "simulation Ac.resid B map"
-      ..
+      unfolding map_def Ac.resid_def
+      using Ac.Q.ext_to_quotient_props [of B Fp.map] Fp.simulation_axioms
+            Fp.preserves_ide B.extensional_rts_axioms Ap.ide_char Ac.P_ide_iff_NPath
+      by blast
+
+    (*
+     * TODO: Here I want to make the unqualified declaration:
+     *
+     *   sublocale simulation Ac.resid B map
+     *
+     * This does not fail immediately, but it introduces clashing definitions for A.null
+     * which cause subsequent attempts to use "context simulation_ext_to_composite_completion"
+     * to fail, which is strange.  Note that I have already declared "Ac: composite_completion A"
+     * above, so it is unclear why "sublocale simulation Ac.resid B map" would introduce a
+     * conflicting definition for "A.null".  A workaround is to use a qualified name here,
+     * but it is not really what I want to do.
+     *)
+    sublocale Fc: simulation Ac.resid B map
+      unfolding map_def Ac.resid_def
+      using Ac.Q.ext_to_quotient_props [of B Fp.map] Fp.simulation_axioms
+            Fp.preserves_ide B.extensional_rts_axioms Ap.ide_char Ac.P_ide_iff_NPath
+      by blast
 
     lemma is_extension:
     shows "map \<circ> Ac.incl = F"
     proof -
-      have "map \<circ> Ac.incl = map \<circ> Ac.Q.quot \<circ> Ac.P.incl"
+      have "map \<circ> Ac.incl = map \<circ> Ac.Q.quot \<circ> Ap.incl"
         using Ac.incl_def by auto
-      also have "... = F_ext.map \<circ> Ac.P.incl"
-        using Ac.Q.ext_to_quotient_props [of B F_ext.map]
-        by (simp add: B.extensional_rts_axioms F_ext.simulation_axioms
-            Ac.P_ide_iff_NPath Ac.P.ide_char map_def)
+      also have "... = Fp.map \<circ> Ap.incl"
+        using Ac.Q.ext_to_quotient_props [of B Fp.map]
+        by (simp add: B.extensional_rts_axioms Fp.simulation_axioms
+            Ac.P_ide_iff_NPath Ap.ide_char map_def)
       also have "... = F"
-        by (simp add: F_ext.is_extension)
+        by (simp add: Fp.is_extension)
       finally show ?thesis by blast
     qed
 
-    lemma is_universal:
+    lemma is_couniversal:
     shows "\<exists>!F'. simulation Ac.resid B F' \<and> F' \<circ> Ac.incl = F"
     proof
       show 0: "simulation Ac.resid B map \<and> map \<circ> Ac.incl = F"
-        using simulation_axioms is_extension by auto
+        using is_simulation is_extension by auto
       fix F'
       assume F': "simulation Ac.resid B F' \<and> F' \<circ> Ac.incl = F"
       interpret F': simulation Ac.resid B F'
         using F' by blast
       show "F' = map"
       proof -
-        have "F' \<circ> Ac.Q.quot = F_ext.map"
+        have "F' \<circ> Ac.Q.quot = Fp.map"
         proof -
-          interpret F'_o_quot: simulation Ac.P.Resid B \<open>F' \<circ> Ac.Q.quot\<close>
+          interpret F'_o_quot: simulation Ap.Resid B \<open>F' \<circ> Ac.Q.quot\<close>
             using F' Ac.Q.quotient_is_simulation Ac.resid_def by auto
-          interpret incl: simulation A Ac.P.Resid Ac.P.incl
-            using Ac.P.incl_is_simulation by blast
-          interpret F'_o_quot_o_incl: composite_simulation A Ac.P.Resid B Ac.P.incl
+          interpret incl: simulation A Ap.Resid Ap.incl
+            using Ap.incl_is_simulation by blast
+          interpret F'_o_quot_o_incl: composite_simulation A Ap.Resid B Ap.incl
                                         \<open>F' \<circ> Ac.Q.quot\<close>
             ..
-          have "(F' \<circ> Ac.Q.quot) \<circ> Ac.P.incl = F"
+          have "(F' \<circ> Ac.Q.quot) \<circ> Ap.incl = F"
             using F' Ac.incl_def by auto
-          hence "\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T \<sim>\<^sub>B F_ext.map T"
-            using F_ext.is_universal(3) F'_o_quot.simulation_axioms by blast
-          hence "\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = F_ext.map T"
+          hence "\<forall>T. Ap.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T \<sim>\<^sub>B Fp.map T"
+            using Fp.is_couniversal(3) F'_o_quot.simulation_axioms by blast
+          hence "\<forall>T. Ap.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = Fp.map T"
             using B.cong_char by blast
           thus ?thesis
           proof -
-            have "\<forall>as. (F' \<circ> Ac.Q.quot) as = F_ext.map as \<or> \<not> Ac.P.arr as"
-              using \<open>\<forall>T. Ac.P.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = F_ext.map T\<close> by blast
+            have "\<forall>as. (F' \<circ> Ac.Q.quot) as = Fp.map as \<or> \<not> Ap.arr as"
+              using \<open>\<forall>T. Ap.arr T \<longrightarrow> (F' \<circ> Ac.Q.quot) T = Fp.map T\<close> by blast
             then show ?thesis
-              using F'_o_quot.extensionality F_ext.extensionality by fastforce
+              using F'_o_quot.extensionality Fp.extensionality by fastforce
           qed
         qed
         thus ?thesis 
           by (metis (no_types, lifting) "0" B.extensional_rts_axioms F'
-              F_ext.preserves_ide F_ext.simulation_axioms Ac.P_ide_iff_NPath
-              Ac.Q.ext_to_quotient_props(2) Ac.Q.is_couniversal map_def mem_Collect_eq
-              Ac.resid_def)
+              Fp.preserves_ide Fp.simulation_axioms Ac.Q.ext_to_quotient_props(2)
+              Ac.Q.is_couniversal map_def mem_Collect_eq Ac.resid_def)
       qed
     qed
 
   end
+
+  lemma (in rts) has_composite_completion:
+  shows "\<exists>(A' :: 'a composite_completion.arr resid) I.
+             extensional_rts_with_composites A' \<and> simulation resid A' I \<and>
+          (\<forall>B (J :: 'a \<Rightarrow> 'c). extensional_rts_with_composites B \<and> simulation resid B J
+                                 \<longrightarrow> (\<exists>!J'. simulation A' B J' \<and> J' o I = J))"
+  proof (intro exI conjI)
+    interpret A': composite_completion resid ..
+    show "extensional_rts_with_composites A'.resid"
+      ..
+    show "simulation resid A'.resid A'.incl"
+      using A'.incl_is_simulation by simp
+    show "\<forall>B (J :: 'a \<Rightarrow> 'c). extensional_rts_with_composites B \<and> simulation resid B J
+                                \<longrightarrow> (\<exists>!J'. simulation A'.resid B J' \<and> J' o A'.incl = J)"
+    proof (intro allI impI)
+      fix B :: "'c resid" and J
+      assume 1: "extensional_rts_with_composites B \<and> simulation resid B J"
+      interpret B: extensional_rts_with_composites B
+        using 1 by simp
+      interpret J: simulation resid B J
+        using 1 by simp
+      interpret J: simulation_ext_to_composite_completion resid B J
+        ..
+      show "\<exists>!J'. simulation A'.resid B J' \<and> J' \<circ> A'.incl = J"
+        using J.is_couniversal by auto
+    qed
+  qed
 
   context composite_completion
   begin
@@ -11000,11 +11226,9 @@ begin
     shows "\<exists>T. P.arr T \<and> simulation_ext_to_paths.map R resid comp incl T = \<T>"
     proof -
       interpret inclx: simulation_ext_to_paths R resid comp incl ..
-      let ?T = "N.Cong_class_rep \<T>"
+      let ?T = "Q.cong_class_rep \<T>"
       have "P.arr ?T"
-        by (metis N.Cong_class_memb_is_arr N.rep_in_Cong_class
-            Q.quotient_by_coherent_normal_axioms assms
-            quotient_by_coherent_normal.arr_char resid_def)
+        using assms composite_completion.con_char\<^sub>C\<^sub>C composite_completion_axioms by blast
       moreover have "inclx.map ?T = \<T>"
       proof -
         have "\<And>T. P.arr T \<Longrightarrow> inclx.map T = \<lbrace>T\<rbrace>"
@@ -11019,12 +11243,13 @@ begin
             assume aU: "P.arr (a # U)"
             show "inclx.map (a # U) = Q.quot (a # U)"
               using Q.quotient_is_simulation aU cong_char incl_def
-                    inclx.is_universal(3) resid_def
+                    inclx.is_couniversal(3) resid_def
               by force
           qed
         qed
         thus ?thesis
-          using Q.arr_char assms calculation resid_def by force
+          by (metis Q.arr_char Q.cong_class_eqI Q.cong_class_membs_are_cong Q.is_cong_class_def
+              Q.rep_in_cong_class assms calculation resid_def)
       qed
       ultimately show ?thesis by blast
     qed
@@ -11055,787 +11280,10 @@ begin
       have "G \<circ> Fc.map \<circ> Ac.incl = GoFc.map \<circ> Ac.incl"
         using GoFc.is_extension Fc.is_extension comp_assoc by metis
       thus ?thesis
-        using GoFc.is_extension GoFc.is_universal GoFc.is_simulation
+        using GoFc.is_extension GoFc.is_couniversal GoFc.is_simulation
               G.simulation_axioms Fc.is_simulation simulation_comp
         by metis
     qed
   qed
-
-  (*
-   * TODO: Localize to context rts?
-   *)
-  lemma composite_completion_of_rts:
-  assumes "rts A"
-  shows "\<exists>(A' :: 'a composite_completion.arr resid) I.
-             extensional_rts_with_composites A' \<and> simulation A A' I \<and>
-          (\<forall>B (J :: 'a \<Rightarrow> 'c). extensional_rts_with_composites B \<and> simulation A B J
-                                 \<longrightarrow> (\<exists>!J'. simulation A' B J' \<and> J' o I = J))"
-  proof (intro exI conjI)
-    interpret A: rts A
-      using assms by auto
-    interpret A': composite_completion A ..
-    show "extensional_rts_with_composites A'.resid"
-      ..
-    show "simulation A A'.resid A'.incl"
-      using A'.incl_is_simulation by simp
-    show "\<forall>B (J :: 'a \<Rightarrow> 'c). extensional_rts_with_composites B \<and> simulation A B J
-                                \<longrightarrow> (\<exists>!J'. simulation A'.resid B J' \<and> J' o A'.incl = J)"
-    proof (intro allI impI)
-      fix B :: "'c resid" and J
-      assume 1: "extensional_rts_with_composites B \<and> simulation A B J"
-      interpret B: extensional_rts_with_composites B
-        using 1 by simp
-      interpret J: simulation A B J
-        using 1 by simp
-      interpret J: simulation_ext_to_composite_completion A B J
-        ..
-      show "\<exists>!J'. simulation A'.resid B J' \<and> J' \<circ> A'.incl = J"
-        using J.is_universal by auto
-    qed
-  qed
-
-  section "Constructions on RTS's"
-
-  subsection "Products of RTS's"
-
-  locale product_rts =
-    A: rts A +
-    B: rts B
-  for A :: "'a resid"      (infix \<open>\\<^sub>A\<close> 70)
-  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
-  begin
-
-    notation A.con     (infix \<open>\<frown>\<^sub>A\<close> 50)
-    notation A.prfx    (infix \<open>\<lesssim>\<^sub>A\<close> 50)
-    notation A.cong    (infix \<open>\<sim>\<^sub>A\<close> 50)
-
-    notation B.con     (infix \<open>\<frown>\<^sub>B\<close> 50)
-    notation B.prfx    (infix \<open>\<lesssim>\<^sub>B\<close> 50)
-    notation B.cong    (infix \<open>\<sim>\<^sub>B\<close> 50)
-
-    type_synonym ('c, 'd) arr = "'c * 'd"
-
-    abbreviation (input) Null :: "('a, 'b) arr"                                 
-    where "Null \<equiv> (A.null, B.null)"
-
-    definition resid :: "('a, 'b) arr \<Rightarrow> ('a, 'b) arr \<Rightarrow> ('a, 'b) arr"
-    where "resid t u = (if fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u
-                        then (fst t \\\<^sub>A fst u, snd t \\\<^sub>B snd u)
-                        else Null)"
-
-    notation resid      (infix \<open>\\<close> 70)
-
-    sublocale partial_magma resid
-      by unfold_locales
-        (metis A.con_implies_arr(1-2) A.not_arr_null fst_conv resid_def)
-
-    lemma is_partial_magma:
-    shows "partial_magma resid"
-      ..
-
-    lemma null_char [simp]:
-    shows "null = Null"
-      by (metis B.null_is_zero(1) ex_un_null null_is_zero(1) resid_def B.conE snd_conv)
-
-    sublocale residuation resid
-    proof
-      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> u \\ t \<noteq> null"
-        by (metis A.con_def A.con_sym null_char prod.inject resid_def B.con_sym)
-      show "\<And>t u. t \\ u \<noteq> null \<Longrightarrow> (t \\ u) \\ (t \\ u) \<noteq> null"
-        by (metis (no_types, lifting) A.arrE B.con_def B.con_imp_arr_resid fst_conv null_char
-            resid_def A.arr_resid snd_conv)
-      show "\<And>v t u. (v \\ t) \\ (u \\ t) \<noteq> null \<Longrightarrow> (v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
-      proof -
-        fix t u v
-        assume 1: "(v \\ t) \\ (u \\ t) \<noteq> null"
-        have "(fst v \\\<^sub>A fst t) \\\<^sub>A (fst u \\\<^sub>A fst t) \<noteq> A.null"
-          by (metis 1 A.not_arr_null fst_conv null_char null_is_zero(1-2)
-              resid_def A.arr_resid)
-        moreover have "(snd v \\\<^sub>B snd t) \\\<^sub>B (snd u \\\<^sub>B snd t) \<noteq> B.null"
-          by (metis 1 B.not_arr_null snd_conv null_char null_is_zero(1-2)
-              resid_def B.arr_resid)
-        ultimately show "(v \\ t) \\ (u \\ t) = (v \\ u) \\ (t \\ u)"
-          using resid_def null_char A.con_def B.con_def A.cube B.cube
-          apply simp
-          by (metis (no_types, lifting) A.conI A.con_sym_ax A.resid_reflects_con
-              B.con_sym_ax B.null_is_zero(1))
-      qed
-    qed
-
-    lemma is_residuation:
-    shows "residuation resid"
-      ..
-
-    notation con     (infix \<open>\<frown>\<close> 50)
-
-    lemma arr_char [iff]:
-    shows "arr t \<longleftrightarrow> A.arr (fst t) \<and> B.arr (snd t)"
-      by (metis (no_types, lifting) A.arr_def B.arr_def B.conE null_char resid_def
-          arr_def con_def snd_eqD)
-
-    lemma ide_char [iff]:
-    shows "ide t \<longleftrightarrow> A.ide (fst t) \<and> B.ide (snd t)"
-      by (metis (no_types, lifting) A.residuation_axioms B.residuation_axioms
-          arr_char arr_def fst_conv null_char prod.collapse resid_def residuation.conE
-          residuation.ide_def residuation.ide_implies_arr residuation_axioms snd_conv)
-
-    lemma con_char [iff]:
-    shows "t \<frown> u \<longleftrightarrow> fst t \<frown>\<^sub>A fst u \<and> snd t \<frown>\<^sub>B snd u"
-      by (simp add: con_def resid_def B.con_def)
-
-    lemma trg_char:
-    shows "trg t = (if arr t then (A.trg (fst t), B.trg (snd t)) else Null)"
-      using A.trg_def B.trg_def resid_def trg_def by auto
-
-    sublocale rts resid
-    proof
-      show "\<And>t. arr t \<Longrightarrow> ide (trg t)"
-        by (simp add: trg_char)
-      show 1: "\<And>a t. \<lbrakk>ide a; t \<frown> a\<rbrakk> \<Longrightarrow> t \\ a = t"
-        by (simp add: A.resid_arr_ide B.resid_arr_ide resid_def)
-      thus "\<And>a t. \<lbrakk>ide a; a \<frown> t\<rbrakk> \<Longrightarrow> ide (a \\ t)"
-        using arr_resid cube
-        apply (elim ideE, intro ideI)
-         apply auto
-        by (metis 1 conI con_sym_ax ideI null_is_zero(2))
-      show "\<And>t u. t \<frown> u \<Longrightarrow> \<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u"
-      proof -
-        fix t u
-        assume tu: "t \<frown> u"
-        obtain a1 where a1: "a1 \<in> A.sources (fst t) \<inter> A.sources (fst u)"
-          by (meson A.con_imp_common_source all_not_in_conv con_char tu)
-        obtain a2 where a2: "a2 \<in> B.sources (snd t) \<inter> B.sources (snd u)"
-          by (meson B.con_imp_common_source all_not_in_conv con_char tu)
-        have "ide (a1, a2) \<and> (a1, a2) \<frown> t \<and> (a1, a2) \<frown> u"
-          using a1 a2 ide_char con_char
-          by (metis A.con_imp_common_source A.in_sourcesE A.sources_eqI
-              B.con_imp_common_source B.in_sourcesE B.sources_eqI con_sym
-              fst_conv inf_idem snd_conv tu)
-        thus "\<exists>a. ide a \<and> a \<frown> t \<and> a \<frown> u" by blast
-      qed
-      show "\<And>t u v. \<lbrakk>ide (t \\ u); u \<frown> v\<rbrakk> \<Longrightarrow> t \\ u \<frown> v \\ u"
-      proof -
-        fix t u v
-        assume tu: "ide (t \\ u)"
-        assume uv: "u \<frown> v"
-        have "A.ide (fst t \\\<^sub>A fst u) \<and> B.ide (snd t \\\<^sub>B snd u)"
-          using tu ide_char
-          by (metis conI con_char fst_eqD ide_implies_arr not_arr_null resid_def snd_conv)
-        moreover have "fst u \<frown>\<^sub>A fst v \<and> snd u \<frown>\<^sub>B snd v"
-          using uv con_char by blast
-        ultimately show "t \\ u \<frown> v \\ u"
-          by (simp add: A.con_target A.con_sym A.prfx_implies_con
-              B.con_target B.con_sym B.prfx_implies_con resid_def)
-      qed
-    qed
-
-    lemma is_rts:
-    shows "rts resid"
-      ..
-
-    notation prfx    (infix \<open>\<lesssim>\<close> 50)
-    notation cong    (infix \<open>\<sim>\<close> 50)
-
-    lemma sources_char:
-    shows "sources t = A.sources (fst t) \<times> B.sources (snd t)"
-      by force
-
-    lemma targets_char:
-    shows "targets t = A.targets (fst t) \<times> B.targets (snd t)"
-    proof
-      show "targets t \<subseteq> A.targets (fst t) \<times> B.targets (snd t)"
-        using targets_def ide_char con_char resid_def trg_char trg_def by auto
-      show "A.targets (fst t) \<times> B.targets (snd t) \<subseteq> targets t"
-      proof
-        fix a
-        assume a: "a \<in> A.targets (fst t) \<times> B.targets (snd t)"
-        show "a \<in> targets t"
-        proof
-          show "ide a"
-            using a ide_char by auto
-          show "trg t \<frown> a"
-            using a trg_char con_char [of "trg t" a]
-            by (metis (no_types, lifting) SigmaE arr_char con_char con_implies_arr(1)
-                fst_conv A.in_targetsE B.in_targetsE A.arr_resid_iff_con
-                B.arr_resid_iff_con A.trg_def B.trg_def snd_conv)
-        qed
-      qed
-    qed
-
-    lemma prfx_char:
-    shows "t \<lesssim> u \<longleftrightarrow> fst t \<lesssim>\<^sub>A fst u \<and> snd t \<lesssim>\<^sub>B snd u"
-      using A.prfx_implies_con B.prfx_implies_con resid_def by auto
-
-    lemma cong_char:
-    shows "t \<sim> u \<longleftrightarrow> fst t \<sim>\<^sub>A fst u \<and> snd t \<sim>\<^sub>B snd u"
-      using prfx_char by auto
-
-    lemma join_of_char:
-    shows "join_of t u v \<longleftrightarrow> A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
-    and "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
-    proof -
-      show "\<And>v. join_of t u v \<longleftrightarrow>
-                   A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
-      proof
-        fix v
-        show "join_of t u v \<Longrightarrow>
-                A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
-        proof -
-          assume 1: "join_of t u v"
-          have 2: "t \<frown> u \<and> t \<frown> v \<and> u \<frown> v \<and> u \<frown> t \<and> v \<frown> t \<and> v \<frown> u"
-            by (meson 1 bounded_imp_con con_prfx_composite_of(1) join_ofE con_sym)
-          show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)"
-            using 1 2 prfx_char resid_def
-            by (elim conjE join_ofE composite_ofE congE conE,
-                intro conjI A.join_ofI B.join_ofI A.composite_ofI B.composite_ofI)
-               auto
-        qed
-        show "A.join_of (fst t) (fst u) (fst v) \<and> B.join_of (snd t) (snd u) (snd v)
-                \<Longrightarrow> join_of t u v"
-          using cong_char resid_def
-          by (elim conjE A.join_ofE B.join_ofE A.composite_ofE B.composite_ofE,
-                 intro join_ofI composite_ofI)
-             auto
-      qed
-      thus "joinable t u \<longleftrightarrow> A.joinable (fst t) (fst u) \<and> B.joinable (snd t) (snd u)"
-        using joinable_def A.joinable_def B.joinable_def by simp
-    qed
-
-  end
-
-  locale product_of_weakly_extensional_rts =
-    A: weakly_extensional_rts A +
-    B: weakly_extensional_rts B +
-    product_rts
-  begin
-
-    sublocale weakly_extensional_rts resid
-    proof
-      show "\<And>t u. \<lbrakk>t \<sim> u; ide t; ide u\<rbrakk> \<Longrightarrow> t = u"
-        by (metis cong_char ide_char prod.exhaust_sel A.weak_extensionality B.weak_extensionality)
-    qed
-
-    lemma is_weakly_extensional_rts:
-    shows "weakly_extensional_rts resid"
-      ..
-
-    lemma src_char:
-    shows "src t = (if arr t then (A.src (fst t), B.src (snd t)) else null)"
-    proof (cases "arr t")
-      show "\<not> arr t \<Longrightarrow> ?thesis"
-        using src_def by presburger
-      assume t: "arr t"
-      show ?thesis
-        using t con_char arr_char
-        by (intro src_eqI) auto
-    qed
-
-  end
-
-  locale product_of_extensional_rts =
-    A: extensional_rts A +
-    B: extensional_rts B +
-    product_of_weakly_extensional_rts
-  begin
-
-    sublocale extensional_rts resid
-    proof
-      show "\<And>t u. t \<sim> u \<Longrightarrow> t = u"
-        by (metis A.extensionality B.extensionality cong_char prod.collapse)
-    qed
-
-    lemma is_extensional_rts:
-    shows "extensional_rts resid"
-      ..
-
-  end
-
-  subsubsection "Product Simulations"
-
-  locale product_simulation =
-    A1: rts A1 +
-    A0: rts A0 +
-    B1: rts B1 +
-    B0: rts B0 +
-    A1xA0: product_rts A1 A0 +
-    B1xB0: product_rts B1 B0 +
-    F1: simulation A1 B1 F1 +
-    F0: simulation A0 B0 F0
-  for A1 :: "'a1 resid"      (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
-  and A0 :: "'a0 resid"      (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
-  and B1 :: "'b1 resid"      (infix \<open>\\<^sub>B\<^sub>1\<close> 70)
-  and B0 :: "'b0 resid"      (infix \<open>\\<^sub>B\<^sub>0\<close> 70)
-  and F1 :: "'a1 \<Rightarrow> 'b1"
-  and F0 :: "'a0 \<Rightarrow> 'b0"
-  begin
-
-    definition map
-    where "map = (\<lambda>a. if A1xA0.arr a then (F1 (fst a), F0 (snd a))
-                      else (F1 A1.null, F0 A0.null))"
-
-    lemma map_simp [simp]:
-    assumes "A1.arr a1" and "A0.arr a0"
-    shows "map (a1, a0) = (F1 a1, F0 a0)"
-      using assms map_def by auto
-
-    sublocale simulation A1xA0.resid B1xB0.resid map
-    proof
-      show "\<And>t. \<not> A1xA0.arr t \<Longrightarrow> map t = B1xB0.null"
-        using map_def F1.extensionality F0.extensionality by auto
-      show "\<And>t u. A1xA0.con t u \<Longrightarrow> B1xB0.con (map t) (map u)"
-        using A1xA0.con_char B1xB0.con_char A1.con_implies_arr A0.con_implies_arr by auto
-      show "\<And>t u. A1xA0.con t u \<Longrightarrow> map (A1xA0.resid t u) = B1xB0.resid (map t) (map u)"
-        using A1xA0.resid_def B1xB0.resid_def A1.con_implies_arr A0.con_implies_arr
-        by auto
-    qed
-
-    lemma is_simulation:
-    shows "simulation A1xA0.resid B1xB0.resid map"
-      ..
-
-  end
-
-  subsubsection "Binary Simulations"
-
-  locale binary_simulation =
-    A1: rts A1 +
-    A0: rts A0 +
-    A: product_rts A1 A0 +
-    B: rts B +
-    simulation A.resid B F
-  for A1 :: "'a1 resid"    (infix \<open>\\<^sub>A\<^sub>1\<close> 70)
-  and A0 :: "'a0 resid"    (infix \<open>\\<^sub>A\<^sub>0\<close> 70)
-  and B :: "'b resid"      (infix \<open>\\<^sub>B\<close> 70)
-  and F :: "'a1 * 'a0 \<Rightarrow> 'b"
-  begin
-
-    lemma fixing_ide_gives_simulation_1:
-    assumes "A1.ide a1"
-    shows "simulation A0 B (\<lambda>t0. F (a1, t0))"
-    proof
-      show "\<And>t0. \<not> A0.arr t0 \<Longrightarrow> F (a1, t0) = B.null"
-        using assms extensionality A.arr_char by simp
-      show "\<And>t0 u0. A0.con t0 u0 \<Longrightarrow> B.con (F (a1, t0)) (F (a1, u0))"
-        using assms A.con_char preserves_con by auto
-      show "\<And>t0 u0. A0.con t0 u0 \<Longrightarrow> F (a1, t0 \\\<^sub>A\<^sub>0 u0) = F (a1, t0) \\\<^sub>B F (a1, u0)"
-        using assms A.con_char A.resid_def preserves_resid
-        by (metis A1.ideE fst_conv snd_conv)
-    qed
-
-    lemma fixing_ide_gives_simulation_0:
-    assumes "A0.ide a0"
-    shows "simulation A1 B (\<lambda>t1. F (t1, a0))"
-    proof
-      show "\<And>t1. \<not> A1.arr t1 \<Longrightarrow> F (t1, a0) = B.null"
-        using assms extensionality A.arr_char by simp
-      show "\<And>t1 u1. A1.con t1 u1 \<Longrightarrow> B.con (F (t1, a0)) (F (u1, a0))"
-        using assms A.con_char preserves_con by auto
-      show "\<And>t1 u1. A1.con t1 u1 \<Longrightarrow> F (t1 \\\<^sub>A\<^sub>1 u1, a0) = F (t1, a0) \\\<^sub>B F (u1, a0)"
-        using assms A.con_char A.resid_def preserves_resid
-        by (metis A0.ideE fst_conv snd_conv)
-    qed
-
-  end
-
-  subsection "Sub-RTS's"
-
-  text\<open>
-    A sub-RTS of an RTS \<open>R\<close> may be determined by specifying a subset of the transitions
-    of \<open>R\<close> that is closed under residuation and in addition includes some common source
-    for every consistent pair of transitions contained in it.
-  \<close>
-
-  locale sub_rts =
-    R: rts R
-  for R :: "'a resid"  (infix \<open>\\<^sub>R\<close> 70)
-  and Arr :: "'a \<Rightarrow> bool" +
-  assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
-  and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
-  and enough_sources: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow>
-                          \<exists>a. Arr a \<and> a \<in> R.sources t \<and> a \<in> R.sources u"
-  begin
-
-    notation R.con     (infix \<open>\<frown>\<^sub>R\<close> 50)
-    notation R.prfx    (infix \<open>\<lesssim>\<^sub>R\<close> 50)
-    notation R.cong    (infix \<open>\<sim>\<^sub>R\<close> 50)
-
-    definition resid :: "'a resid"  (infix \<open>\\<close> 70)
-    where "t \\ u \<equiv> if Arr t \<and> Arr u \<and> t \<frown>\<^sub>R u then t \\\<^sub>R u else R.null"
-
-    sublocale partial_magma resid
-      using R.not_con_null(2) R.null_is_zero(1) resid_def
-      by unfold_locales metis
-
-    lemma is_partial_magma:
-    shows "partial_magma resid"
-      ..
-
-    lemma null_char:
-    shows "null = R.null"
-      by (metis R.not_arr_null inclusion null_eqI resid_def)
-
-    sublocale residuation resid
-      using R.conE R.con_sym R.not_con_null(1) null_is_zero(1) resid_def
-      apply unfold_locales
-        apply metis
-       apply (metis R.con_def R.con_imp_arr_resid resid_closed)
-      by (metis (no_types, lifting) R.con_def R.cube resid_closed)
-
-    lemma is_residuation:
-    shows "residuation resid"
-      ..
-
-    notation con     (infix \<open>\<frown>\<close> 50)
-
-    lemma arr_char:
-    shows "arr t \<longleftrightarrow> Arr t"
-      by (metis R.con_arr_self R.con_def R.not_arr_null arrE con_def inclusion
-          null_is_zero(2) resid_def residuation.con_implies_arr(1) residuation_axioms)
-
-    lemma ide_char:
-    shows "ide t \<longleftrightarrow> Arr t \<and> R.ide t"
-      by (metis R.ide_def arrI arr_char con_def ide_def not_arr_null resid_def)
-
-    lemma con_char:
-    shows "con t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.con t u"
-      by (metis R.conE arr_char con_def not_arr_null null_is_zero(1) resid_def)
-
-    lemma trg_char:
-    shows "trg = (\<lambda>t. if arr t then R.trg t else null)"
-      using arr_char trg_def R.trg_def resid_def by fastforce
-
-    sublocale rts resid
-      using arr_char ide_char con_char trg_char resid_def resid_closed inclusion
-      apply unfold_locales
-      using R.prfx_reflexive trg_def apply force
-         apply (simp add: R.resid_arr_ide)
-        apply simp
-       apply (meson R.con_sym R.in_sourcesE enough_sources)
-      by (metis (no_types, lifting) R.con_target arr_resid_iff_con con_sym_ax null_char)
-
-    lemma is_rts:
-    shows "rts resid"
-      ..
-
-    notation prfx    (infix \<open>\<lesssim>\<close> 50)
-    notation cong    (infix \<open>\<sim>\<close> 50)
-
-    lemma sources_subset:
-    shows "sources t \<subseteq> {a. Arr t \<and> a \<in> R.sources t}"
-      using con_char ide_char by fastforce
-
-    lemma targets_subset:
-    shows "targets t \<subseteq> {b. Arr t \<and> b \<in> R.targets t}"
-    proof
-      fix b
-      assume b: "b \<in> targets t"
-      show "b \<in> {b. Arr t \<and> b \<in> R.targets t}"
-      by (metis CollectI R.rts_axioms arr_char arr_iff_has_target b con_char
-        emptyE ide_char in_targetsE rts.in_targetsI trg_char)
-    qed
-
-    lemma prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "prfx t u \<longleftrightarrow> Arr t \<and> Arr u \<and> R.prfx t u"
-      using arr_char con_char ide_char
-      by (metis R.prfx_implies_con prfx_implies_con resid_closed resid_def)
-
-    lemma cong_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "t \<sim> u \<longleftrightarrow> Arr t \<and> Arr u \<and> t \<sim>\<^sub>R u"
-      using prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S by force
-
-    lemma composite_of_char:
-    shows "composite_of t u v \<longleftrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v"
-    proof
-      show "composite_of t u v \<Longrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v"
-        by (metis R.composite_of_def R.con_sym composite_ofE con_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
-            resid_def rts.prfx_implies_con rts_axioms)
-      show "Arr t \<and> Arr u \<and> Arr v \<and> R.composite_of t u v \<Longrightarrow> composite_of t u v"
-        using composite_of_def resid_closed resid_def rts.composite_ofE ide_char
-        by fastforce
-    qed
-
-    lemma join_of_char:
-    shows "join_of t u v \<longleftrightarrow> Arr t \<and> Arr u \<and> Arr v \<and> R.join_of t u v"
-      using composite_of_char
-      by (metis R.bounded_imp_con R.join_of_def join_of_def resid_closed resid_def)
-
-    lemma preserves_weakly_extensional_rts:
-    assumes "weakly_extensional_rts R"
-    shows "weakly_extensional_rts resid"
-      by (metis assms cong_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S ide_char rts_axioms weakly_extensional_rts.intro
-          weakly_extensional_rts.weak_extensionality weakly_extensional_rts_axioms.intro)
-
-    lemma preserves_extensional_rts:
-    assumes "extensional_rts R"
-    shows "extensional_rts resid"
-      by (meson assms extensional_rts.cong_char extensional_rts.intro
-          extensional_rts_axioms.intro prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S rts_axioms)
-
-    abbreviation incl
-    where "incl t \<equiv> if arr t then t else null"
-
-    sublocale Incl: simulation resid R incl
-      using resid_closed resid_def
-      by unfold_locales (auto simp add: null_char arr_char con_char)
-
-    lemma inclusion_is_simulation:
-    shows "simulation resid R incl"
-      ..
-
-    lemma incl_cancel_left:
-    assumes "transformation X resid F G T" and "transformation X resid F' G' T'"
-    and "incl \<circ> T = incl \<circ> T'"
-    shows "T = T'"
-    proof
-      fix x
-      interpret T: transformation X resid F G T
-        using assms(1) by blast
-      interpret T': transformation X resid F' G' T'
-        using assms(2) by blast
-      show "T x = T' x"
-      proof -
-        have "T x = (incl \<circ> T) x"
-          using T.extensionality T.A.prfx_reflexive T.respects_cong arr_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
-          by auto
-        also have "... = (incl \<circ> T') x"
-          using assms(3) by auto
-        also have "... = T' x"
-          using T'.extensionality T.A.prfx_reflexive T'.respects_cong arr_char prfx_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S
-          by fastforce
-        finally show ?thesis by blast
-      qed
-    qed
-
-    lemma incl_reflects_con:
-    assumes "R.con (incl t) (incl u)"
-    shows "con t u"
-      by (metis (full_types) R.not_con_null(1) R.not_con_null(2) arr_char
-          assms con_char null_char)
-
-    lemma corestriction_of_simulation:
-    assumes "simulation X R F"
-    and "\<And>x. residuation.arr X x \<Longrightarrow> Arr (F x)"
-    shows "simulation X resid F" and "incl \<circ> F = F"
-    proof -
-      interpret X: rts X
-        using assms(1) simulation_def by blast
-      interpret F: simulation X R F
-        using assms(1) by blast
-      interpret F': simulation X resid F
-        using assms(2) con_char resid_def F.extensionality null_char
-              X.con_implies_arr(1-2)
-        by unfold_locales auto
-      show 1: "simulation X resid F" ..
-      show "incl \<circ> F = F"
-        using F.extensionality null_char by fastforce
-    qed
-
-    lemma corestriction_of_transformation:
-    assumes "simulation X resid F" and "simulation X resid G"
-    and "transformation X R F G T"
-    and "\<And>x. residuation.arr X x \<Longrightarrow> Arr (T x)"
-    shows "transformation X resid F G T" and "incl \<circ> T = T"
-    proof -
-      interpret X: rts X
-        using assms(3) transformation_def by blast
-      interpret R: weakly_extensional_rts R
-        using assms(3) transformation_def by blast
-      interpret S: weakly_extensional_rts resid
-        by (simp add: R.weakly_extensional_rts_axioms preserves_weakly_extensional_rts)
-      interpret F: simulation X resid F
-        using assms(1) transformation_def by blast
-      interpret G: simulation X resid G
-        using assms(2) transformation_def by blast
-      interpret T: transformation X R F G T
-        using assms(3) by blast
-      interpret T': transformation X resid F G T
-      proof
-        show "\<And>f. \<not> X.arr f \<Longrightarrow> T f = null"
-          by (simp add: T.extensionality null_char)
-        show "\<And>x x'. \<lbrakk>X.ide x; X.cong x x'\<rbrakk> \<Longrightarrow> T x = T x'"
-          using T.respects_cong_ide by blast
-        show "\<And>f. X.ide f \<Longrightarrow> src (T f) = F f"
-          by (metis F.preserves_ide F.preserves_reflects_arr R.arr_resid_iff_con
-              R.arr_src_iff_arr R.ide_implies_arr R.resid_arr_src S.con_imp_eq_src
-              S.src_ide T.F.preserves_ide T.preserves_src X.con_implies_arr(2)
-              X.ideE arr_char assms(4) con_char)
-        show "\<And>f. X.ide f \<Longrightarrow> trg (T f) = G f"
-          by (simp add: T.preserves_trg arr_char assms(4) trg_char)
-        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> T a \\ F f = T (X a f)"
-          by (metis F.preserves_reflects_arr R.residuation_axioms T.naturality1_ax
-              X.arr_iff_has_source X.ex_un_null X.ide_implies_arr X.in_sourcesE
-              X.not_arr_null X.null_eqI X.source_is_prfx arr_char assms(4) resid_def
-              residuation.conI)
-        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> F f \\ T a = G f"
-          by (metis F.preserves_reflects_arr R.arr_resid_iff_con
-              T.G.preserves_reflects_arr T.naturality2_ax X.in_sourcesE
-              X.residuation_axioms arr_char assms(4) resid_def
-              residuation.con_implies_arr(1) residuation.ide_implies_arr)
-        show "\<And>a f. a \<in> X.sources f \<Longrightarrow> join_of (T a) (F f) (T f)"
-          by (meson F.preserves_reflects_arr T.naturality3 X.con_implies_arr(1)
-              X.ide_implies_arr X.in_sourcesE arr_char assms(4) join_of_char)
-      qed
-      show 1: "transformation X resid F G T" ..
-      show "incl \<circ> T = T"
-        using T.extensionality arr_char assms(4) null_char by fastforce
-    qed
-
-  end
-
-  locale source_replete_sub_rts =
-    R: rts R
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
-  and Arr :: "'a \<Rightarrow> bool" +
-  assumes inclusion: "Arr t \<Longrightarrow> R.arr t"
-  and resid_closed: "\<lbrakk>Arr t; Arr u; R.con t u\<rbrakk> \<Longrightarrow> Arr (t \\\<^sub>R u)"
-  and source_replete: "Arr t \<Longrightarrow> R.sources t \<subseteq> Collect Arr"
-  begin
-
-    sublocale sub_rts
-      using inclusion resid_closed source_replete
-      apply unfold_locales
-        apply auto[2]
-      by (metis Collect_mem_eq Collect_mono_iff R.con_imp_common_source
-          R.sources_eqI R.src_in_sources)
-
-    lemma is_sub_rts:
-    shows "sub_rts R Arr"
-      ..
-
-    lemma sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "sources t = {a. Arr t \<and> a \<in> R.sources t}"
-      using source_replete sources_subset
-      apply auto[1]
-      by (metis Ball_Collect R.in_sourcesE con_char ide_char in_sourcesI)
-
-    lemma targets_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S:
-    shows "targets t = {b. Arr t \<and> b \<in> R.targets t}"
-    proof
-      show "targets t \<subseteq> {b. Arr t \<and> b \<in> R.targets t}"
-        using targets_subset by blast
-      show "{b. Arr t \<and> b \<in> R.targets t} \<subseteq> targets t"
-      proof
-        fix b
-        assume b: "b \<in> {b. Arr t \<and> b \<in> R.targets t}"
-        show "b \<in> targets t"
-        by (metis (no_types, lifting) R.in_targetsE R.rts_axioms arr_char b
-          con_arr_self mem_Collect_eq rts.in_sourcesI sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S sources_resid
-          trg_char trg_def trg_in_targets)
-      qed
-    qed
-
-    interpretation P\<^sub>R: paths_in_rts R
-      ..
-    interpretation P: paths_in_rts resid
-      ..
-
-    (*
-     * TODO: It might be possible to prove the following without the additional assumption
-     * on sources, if the definition of path were generalized so that only nonempty
-     * intersection of the targets of one transition with the sources of the next were
-     * required, rather than containment.
-     *)
-
-    lemma path_reflection:
-    shows "\<lbrakk>P\<^sub>R.Arr T; set T \<subseteq> Collect Arr\<rbrakk> \<Longrightarrow> P.Arr T"
-    proof (induct T, simp)
-      fix t T
-      assume ind: "\<lbrakk>P\<^sub>R.Arr T; set T \<subseteq> Collect Arr\<rbrakk> \<Longrightarrow> P.Arr T"
-      assume tT: "P\<^sub>R.Arr (t # T)"
-      assume set: "set (t # T) \<subseteq> Collect Arr"
-      have 1: "R.arr t"
-        using tT
-        by (metis P\<^sub>R.Arr_imp_arr_hd list.sel(1))
-      show "P.Arr (t # T)"
-      proof (cases "T = []")
-        show "T = [] \<Longrightarrow> ?thesis"
-          using 1 set arr_char by simp
-        assume T: "T \<noteq> []"
-        show ?thesis
-        proof
-          show "arr t"
-            using 1 arr_char set by simp
-          show "P.Arr T"
-            using T tT P\<^sub>R.Arr_imp_Arr_tl
-            by (metis ind insert_subset list.sel(3) list.simps(15) set)
-          show "targets t \<subseteq> P.Srcs T"
-          proof -
-            have "targets t \<subseteq> R.targets t"
-              using targets_subset by blast
-            also have "... \<subseteq> R.sources (hd T)"
-              using T tT
-              by (metis P\<^sub>R.Arr.simps(3) P\<^sub>R.Srcs_simp\<^sub>P list.collapse)
-            also have "... \<subseteq> P.Srcs T"
-              using P.Arr_imp_arr_hd P.Srcs_simp\<^sub>P \<open>P.Arr T\<close> sources_char\<^sub>S\<^sub>R\<^sub>T\<^sub>S arr_char
-              by force
-            finally show ?thesis by blast
-          qed
-        qed
-      qed
-    qed
-
-  end
-
-  locale sub_rts_of_weakly_extensional_rts =
-    R: weakly_extensional_rts R +
-    sub_rts R Arr
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
-  and Arr :: "'a \<Rightarrow> bool"
-  begin
-
-    sublocale weakly_extensional_rts resid
-      using R.weakly_extensional_rts_axioms preserves_weakly_extensional_rts
-      by blast
-
-    lemma is_weakly_extensional_rts:
-    shows "weakly_extensional_rts resid"
-      ..
-
-    lemma src_char:
-    shows "src = (\<lambda>t. if arr t then R.src t else null)"
-    proof
-      fix t
-      show "src t = (if arr t then R.src t else null)"
-        by (metis R.src_eqI con_arr_src(2) con_char ide_char ide_src src_def)
-    qed
-
-    lemma targets_char:
-    assumes "arr t"
-    shows "targets t = {R.trg t}"
-      using assms trg_char trg_in_targets arr_has_un_target by auto
-
-  end
-
-  locale sub_rts_of_extensional_rts =
-    R: extensional_rts R +
-    sub_rts R Arr
-  for R :: "'a resid"  (infix "\\\<^sub>R" 70)
-  and Arr :: "'a \<Rightarrow> bool"
-  begin
-
-    sublocale sub_rts_of_weakly_extensional_rts ..
-
-    sublocale extensional_rts resid
-      using R.extensional_rts_axioms preserves_extensional_rts
-      by blast
-
-    lemma is_extensional_rts:
-    shows "extensional_rts resid"
-      ..
-
-  end
-
-  text \<open>
-    Here we justify the terminology ``normal sub-RTS'', which was introduced earlier,
-    by showing that a normal sub-RTS really is a sub-RTS.
-  \<close>
-
-  lemma (in normal_sub_rts) is_sub_rts:
-  shows "source_replete_sub_rts resid (\<lambda>t. t \<in> \<NN>)"
-    using elements_are_arr ide_closed
-    apply unfold_locales
-       apply blast
-      apply (meson R.con_def R.con_imp_coinitial R.con_sym_ax forward_stable)
-    by blast
 
 end

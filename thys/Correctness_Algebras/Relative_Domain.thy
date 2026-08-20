@@ -109,7 +109,7 @@ lemma d_mult_left_lower_bound:
 
 lemma d_mult_left_absorb_sup:
   "d(x) * (d(x) \<squnion> d(y)) = d(x)"
-  by (smt d_sup_closed d_export d_mult_idempotent d_idempotent d_mult_sub order.eq_iff mult_left_sub_dist_sup_left)
+  by (smt (z3) d_sup_closed d_export d_mult_idempotent d_idempotent d_mult_sub order.eq_iff mult_left_sub_dist_sup_left)
 
 lemma d_sup_left_absorb_mult:
   "d(x) \<squnion> d(x) * d(y) = d(x)"
@@ -262,7 +262,7 @@ lemma d_restrict_iff:
   "(x \<le> y \<squnion> Z) \<longleftrightarrow> (x \<le> d(x) * y \<squnion> Z)"
 proof -
   have "x \<le> y \<squnion> Z \<longrightarrow> x \<le> d(x) * (y \<squnion> Z) \<squnion> Z"
-    by (smt sup_left_isotone d_restrict le_iff_sup mult_left_sub_dist_sup_left order_trans)
+    by (smt (z3) sup_left_isotone d_restrict le_iff_sup mult_left_sub_dist_sup_left order_trans)
   hence "x \<le> y \<squnion> Z \<longrightarrow> x \<le> d(x) * y \<squnion> Z"
     by (meson le_supI order_lesseq_imp split_Z sup.cobounded2)
   thus ?thesis
@@ -596,7 +596,7 @@ lemma shunting_Z:
   "-p * x \<le> Z \<longleftrightarrow> x \<le> --p * top \<squnion> Z"
   apply (rule iffI)
   apply (simp add: shunting_top_1)
-  by (smt a_top a_Z a_antitone a_dist_sup a_export a_greatest_left_absorber sup_commute sup_bot_right mult_left_one)
+  by (smt (z3) a_top a_Z a_antitone a_dist_sup a_export a_greatest_left_absorber sup_commute sup_bot_right mult_left_one)
 
 proposition a_left_dist_sup: "-p * (y \<squnion> z) = -p * y \<squnion> -p * z" nitpick [expect=genuine,card=7] oops
 proposition shunting_top: "-p * x \<le> y \<longleftrightarrow> x \<le> --p * top \<squnion> y" nitpick [expect=genuine,card=7] oops

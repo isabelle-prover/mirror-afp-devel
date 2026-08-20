@@ -646,7 +646,7 @@ qed
 lemma normalize_field [simp]: "normalize (a :: 'a :: {field, semiring_gcd}) = (if a = 0 then 0 else 1)"
   using unit_factor_normalize by fastforce
 
-lemma content_field [simp]: "content (p :: 'a :: {field,semiring_gcd} poly) = (if p = 0 then 0 else 1)"
+lemma content_field [simp]: "Polynomial.content (p :: 'a :: {field,semiring_gcd} poly) = (if p = 0 then 0 else 1)"
   by (induct p, auto simp: content_def)
 
 lemma primitive_part_field [simp]: "primitive_part (p :: 'a :: {field,semiring_gcd} poly) = p"
@@ -683,12 +683,12 @@ qed
 
 lemma content_uminus[simp]: 
   fixes f::"int poly"
-  shows "content (-f) = content f"
+  shows "Polynomial.content (-f) = Polynomial.content f"
 proof -
   have "-f = - (smult 1 f)" by auto
   also have "... = smult (-1) f" using smult_minus_left by auto
-  finally have "content (-f) = content (smult (-1) f)" by auto
-  also have "... = normalize (- 1) * content f" unfolding content_smult ..
+  finally have "Polynomial.content (-f) = Polynomial.content (smult (-1) f)" by auto
+  also have "... = normalize (- 1) * Polynomial.content f" unfolding content_smult ..
   finally show ?thesis by auto  
 qed
 

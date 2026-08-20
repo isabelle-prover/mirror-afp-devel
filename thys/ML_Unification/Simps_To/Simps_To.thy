@@ -17,7 +17,7 @@ definition "SIMPS_TO s t \<equiv> (s \<equiv> t)"
 
 open_bundle SIMPS_TO_syntax
 begin
-notation SIMPS_TO ("_ \<equiv>> _" [50,50] 50)
+notation SIMPS_TO ("(_ \<equiv>> _)" [51,51] 50)
 end
 
 lemma SIMPS_TO_eq: "s \<equiv>> t \<equiv> (s \<equiv> t)"
@@ -37,11 +37,11 @@ definition "SIMPS_TO_UNIF s t \<equiv> (s \<equiv> t)"
 
 open_bundle SIMPS_TO_UNIF_syntax
 begin
-notation SIMPS_TO_UNIF ("_ \<equiv>\<^sup>?> _" [50,50] 50)
+notation SIMPS_TO_UNIF ("(_ \<equiv>\<^sup>?> _)" [51,51] 50)
 end
 
 text \<open>Prevent simplification\<close>
-lemma SIMPS_TO_UNIF_cong [cong]: "s \<equiv>\<^sup>?>t \<equiv> s \<equiv>\<^sup>?> t" by simp
+lemma SIMPS_TO_UNIF_cong [cong]: "s \<equiv>\<^sup>?> t \<equiv> s \<equiv>\<^sup>?> t" by simp
 
 lemma SIMPS_TO_UNIF_eq: "s \<equiv>\<^sup>?> t \<equiv> (s \<equiv> t)" unfolding SIMPS_TO_UNIF_def by simp
 
@@ -61,7 +61,7 @@ begin
 schematic_goal
   assumes [simp]: "P \<equiv> Q"
   and [simp]: "Q \<equiv> R"
-  shows "P \<equiv>\<^sup>?> ?A"
+  shows "\<And>x. PROP U x ==> P x \<equiv>\<^sup>?> ?A x"
   apply (tactic \<open>HEADGOAL (Simps_To_Unif.SIMPS_TO_UNIF_tac (simp_tac @{context})
     (K all_tac) 1 @{context})\<close>)
   by (rule reflexive)

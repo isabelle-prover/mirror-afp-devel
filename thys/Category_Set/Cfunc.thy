@@ -101,9 +101,9 @@ method etcs_assocl declares type_rule = (etcs_subst comp_associative2)+
 method etcs_assocr declares type_rule = (etcs_subst sym[OF comp_associative2])+
 
 method_setup etcs_subst_asm = 
-  \<open>Runtime.exn_trace (fn _ => Scan.repeats (Scan.unless (Scan.lift (Args.$$$ "type_rule" -- Args.colon)) Attrib.multi_thm)
+  \<open>Scan.repeats (Scan.unless (Scan.lift (Args.$$$ "type_rule" -- Args.colon)) Attrib.multi_thm)
     -- Scan.option ((Scan.lift (Args.$$$ "type_rule" -- Args.colon)) |-- Attrib.thms)
-     >> ETCS_subst_asm_method)\<close> 
+     >> ETCS_subst_asm_method\<close> 
   "apply substitution to assumptions of the goal, with ETCS type checking"
 
 method etcs_assocl_asm declares type_rule = (etcs_subst_asm comp_associative2)+
@@ -127,7 +127,7 @@ definition monomorphism :: "cfunc \<Rightarrow> bool" where
 
 lemma monomorphism_def2:
   "monomorphism f \<longleftrightarrow> (\<forall> g h A X Y. g : A \<rightarrow> X \<and> h : A \<rightarrow> X \<and> f : X \<rightarrow> Y \<longrightarrow> (f \<circ>\<^sub>c g = f \<circ>\<^sub>c h \<longrightarrow> g = h))"
-  unfolding monomorphism_def by (smt cfunc_type_def domain_comp)
+  unfolding monomorphism_def by (smt (z3) cfunc_type_def domain_comp)
 
 lemma monomorphism_def3:
   assumes "f : X \<rightarrow> Y"
@@ -194,7 +194,7 @@ definition epimorphism :: "cfunc \<Rightarrow> bool" where
 
 lemma epimorphism_def2:
   "epimorphism f \<longleftrightarrow> (\<forall> g h A X Y. f : X \<rightarrow> Y \<and> g : Y \<rightarrow> A \<and> h : Y \<rightarrow> A \<longrightarrow> (g \<circ>\<^sub>c f = h \<circ>\<^sub>c f \<longrightarrow> g = h))"
-  unfolding epimorphism_def by (smt cfunc_type_def codomain_comp) 
+  unfolding epimorphism_def by (smt (z3) cfunc_type_def codomain_comp) 
 
 lemma epimorphism_def3:
   assumes "f : X \<rightarrow> Y"
@@ -307,7 +307,7 @@ lemma inv_iso:
 lemma inv_idempotent:
   assumes "isomorphism f"
   shows "(f\<^bold>\<inverse>)\<^bold>\<inverse> = f"
-  by (smt assms cfunc_type_def comp_associative id_left_unit inv_iso inverse_def2)
+  by (smt (z3) assms cfunc_type_def comp_associative id_left_unit inv_iso inverse_def2)
 
 definition is_isomorphic :: "cset \<Rightarrow> cset \<Rightarrow> bool" (infix "\<cong>" 50)  where
   "X \<cong> Y \<longleftrightarrow> (\<exists> f. f : X \<rightarrow> Y \<and> isomorphism f)"

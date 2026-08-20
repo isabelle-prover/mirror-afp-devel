@@ -1,7 +1,5 @@
 theory Wasm_Interpreter_Printing imports "../Wasm_Interpreter_Properties" begin
 
-declare [[code_del_allowed]]
-
 definition "run = run_v (2^63) 300"
 
 code_printing
@@ -9,9 +7,6 @@ code_printing
 | constant mem_grow_impl \<rightharpoonup> (OCaml) "ImplWrapper.mem'_grow'_impl"
 
 (* memory *)
-
-declare Rep_bytes_inverse[code abstype]
-declare Rep_mem_inverse[code abstype]
 
 code_printing
   type_constructor bytes \<rightharpoonup> (OCaml) "Int64.t"
@@ -24,11 +19,5 @@ code_printing
 | constant store \<rightharpoonup> (OCaml) "ImplWrapper.store"
 | constant load_packed \<rightharpoonup> (OCaml) "ImplWrapper.load'_packed"
 | constant store_packed \<rightharpoonup> (OCaml) "ImplWrapper.store'_packed"
-
-declare mem_size_def[code del]
-declare store_def[code del]
-declare load_def[code del]
-declare store_packed_def[code del]
-declare load_packed_def[code del]
 
 end

@@ -270,7 +270,7 @@ lemma usappconst_simp [simp]: "SConst \<sigma> f = Some r \<Longrightarrow> FVT(
 
 lemma usappconst_conv: "usappconst \<sigma> U f\<noteq>undeft \<Longrightarrow>
   SConst \<sigma> f = None \<or> (\<exists>r. SConst \<sigma> f = Some r \<and> FVT(r)\<inter>U={})"
-  (*by (smt option.case_eq_if option.collapse usappconst_def)*)
+  (*by (smt (z3) option.case_eq_if option.collapse usappconst_def)*)
 proof-
   assume as: "usappconst \<sigma> U f\<noteq>undeft"
   show "SConst \<sigma> f = None \<or> (\<exists>r. SConst \<sigma> f = Some r \<and> FVT(r)\<inter>U={})"
@@ -393,7 +393,7 @@ next
 next
   case (Const f)
   then show ?case
-    (*by (smt option.case_eq_if usappconst_def usubstappt.simps(3))*)
+    (*by (smt (z3) option.case_eq_if usappconst_def usubstappt.simps(3))*)
   proof - (*sledgehammer*)
     have f1: "usubstappt \<sigma> U (Const f) = (case SConst \<sigma> f of None \<Rightarrow> Aterm (Const f) | Some t \<Rightarrow> if FVT t \<inter> U = {} then Aterm t else undeft)"
       by (simp add: usappconst_def)
@@ -423,7 +423,7 @@ next
   case (Func f \<theta>)
   then show ?case using usubstappt_func
       (*by (cases "SFuncs \<sigma> f") (auto simp add: usubstappt_func)*)
-      (*by (smt option.case_eq_if usubstappt.simps(4))*)
+      (*by (smt (z3) option.case_eq_if usubstappt.simps(4))*)
   proof - (*sledgehammer*)
     have f1: "(case usubstappt \<sigma> U \<theta> of None \<Rightarrow> undeft | Some t \<Rightarrow> (case SFuncs \<sigma> f of None \<Rightarrow> Aterm (trm.Func f t) | Some ta \<Rightarrow> if FVT ta \<inter> U = {} then usubstappt (dotsubstt t) {} ta else undeft)) \<noteq> undeft"
       using Func(2) by auto
@@ -478,7 +478,7 @@ proof (induction \<phi> and \<alpha> arbitrary: U V and U V)
   case (Pred p \<theta>)
   then show ?case using usubstappt_det usubstappf_pred
   (*by (metis usubstappf.simps(1)) *)
-  (*by (smt option.case_eq_if usubstappf.simps(1)) *)
+  (*by (smt (z3) option.case_eq_if usubstappf.simps(1)) *)
     proof - (*sledgehammer*)
     have f1: "(case usubstappt \<sigma> U \<theta> of None \<Rightarrow> undeff | Some t \<Rightarrow> (case SPreds \<sigma> p of None \<Rightarrow> Afml (Pred p t) | Some f \<Rightarrow> if FVF f \<inter> U = {} then usubstappf (dotsubstt t) {} f else undeff)) \<noteq> undeff"
     using Pred.prems(1) by auto
@@ -639,7 +639,7 @@ next
 next
   case (Const f)
   then show ?case
-    (*by (smt disjoint_iff_not_equal option.case_eq_if set_rev_mp usappconst_def usubstappt.simps(3))*)
+    (*by (smt (z3) disjoint_iff_not_equal option.case_eq_if set_rev_mp usappconst_def usubstappt.simps(3))*)
   proof - (*sledgehammer*)
     have f1: "usubstappt \<sigma> U (Const f) = (case SConst \<sigma> f of None \<Rightarrow> Aterm (Const f) | Some t \<Rightarrow> if FVT t \<inter> U = {} then Aterm t else undeft)"
       by (simp add: usappconst_def)
@@ -666,7 +666,7 @@ next
 next
   case (Func f \<theta>)
   then show ?case using usubstappt_func
-      (*by (smt disjoint_iff_not_equal option.case_eq_if subset_iff usubstappt.simps(4))*)
+      (*by (smt (z3) disjoint_iff_not_equal option.case_eq_if subset_iff usubstappt.simps(4))*)
   proof - (*sledgehammer*)
     have f1: "(case usubstappt \<sigma> U \<theta> of None \<Rightarrow> undeft | Some t \<Rightarrow> (case SFuncs \<sigma> f of None \<Rightarrow> Aterm (trm.Func f t) | Some ta \<Rightarrow> if FVT ta \<inter> U = {} then usubstappt (dotsubstt t) {} ta else undeft)) \<noteq> undeft"
       using Func.prems(2) by fastforce
@@ -754,7 +754,7 @@ proof-
   proof (induction \<phi> and \<alpha> arbitrary: U V and U V)
     case (Pred p \<theta>)
     then show ?case using usubstappt_antimon usubstappf_pred
-    (*by (smt Un_mono disjoint_eq_subset_Compl empty_subsetI inf.commute option.case_eq_if sup.absorb_iff1 sup.absorb_iff2 usubstappf.simps(1)) *)
+    (*by (smt (z3) Un_mono disjoint_eq_subset_Compl empty_subsetI inf.commute option.case_eq_if sup.absorb_iff1 sup.absorb_iff2 usubstappf.simps(1)) *)
       proof - (*sledgehammer*)
       have f1: "\<forall>v. v \<notin> V \<or> v \<in> U"
       using Pred.prems(1) by auto
@@ -933,7 +933,7 @@ next
     from Choice have IHa: "fst(usubstappp \<sigma> U \<alpha>) \<supseteq> U \<union> BVG(the (snd(usubstappp \<sigma> U \<alpha>)))" by (simp add: Choiceo_undef)
     from Choice have IHb: "fst(usubstappp \<sigma> U \<beta>) \<supseteq> U \<union> BVG(the (snd(usubstappp \<sigma> U \<beta>)))" by (simp add: Choiceo_undef)
     have fact: "BVG(the (snd(usubstappp \<sigma> U \<alpha>))) \<union> BVG(the (snd(usubstappp \<sigma> U \<beta>))) \<supseteq> BVG(the (snd(usubstappp \<sigma> U (Choice \<alpha> \<beta>))))" using BVG_choice
-        (*by (smt Choice.prems Choiceo.simps(1) Choiceo_undef option.collapse option.sel snd_pair usubstappp_choice)*)
+        (*by (smt (z3) Choice.prems Choiceo.simps(1) Choiceo_undef option.collapse option.sel snd_pair usubstappp_choice)*)
     proof -
       have "Agame (the (snd (usubstappp \<sigma> U \<alpha>)) \<union>\<union> the (snd (usubstappp \<sigma> U \<beta>))) = Choiceo (snd (usubstappp \<sigma> U \<alpha>)) (snd (usubstappp \<sigma> U \<beta>))"
         by (metis (no_types) Choice.prems Choiceo.simps(1) option.collapse usubstappp_choice_conv)
@@ -953,7 +953,7 @@ next
     from Compose have IHa: "?V \<supseteq> U \<union> BVG(the (snd(usubstappp \<sigma> U \<alpha>)))" by (simp add: Composeo_undef)
     from Compose have IHb: "?W \<supseteq> ?V \<union> BVG(the (snd(usubstappp \<sigma> ?V \<beta>)))" by (simp add: Composeo_undef)
     have fact: "BVG(the (snd(usubstappp \<sigma> U \<alpha>))) \<union> BVG(the (snd(usubstappp \<sigma> ?V \<beta>))) \<supseteq> BVG(the (snd(usubstappp \<sigma> U (Compose \<alpha> \<beta>))))" using usubstappp.simps BVG_compose
-        (*by (smt Compose.prems Composeo.simps(1) Composeo_undef option.collapse option.sel snd_pair)*)
+        (*by (smt (z3) Compose.prems Composeo.simps(1) Composeo_undef option.collapse option.sel snd_pair)*)
     proof -
       have f1: "\<forall>z. z = undefg \<or> Agame (the z) = z"
         using option.collapse by blast
@@ -980,7 +980,7 @@ next
       using usubstappp_det by (metis IHdef Loop.prems le_sup_iff usubstappp_loop_conv)
     then have "?V \<supseteq> U \<union> BVG(the (snd(usubstappp \<sigma> U (Loop \<alpha>))))"
       using usubstappp.simps Vfix IHdef BVG_loop usubst_taboos_mon usubstappp_loop_conv
-        (*by (smt Loop.prems Loopo.simps(1) Un_mono option.collapse option.sel snd_pair sup.absorb_iff1)*)
+        (*by (smt (z3) Loop.prems Loopo.simps(1) Un_mono option.collapse option.sel snd_pair sup.absorb_iff1)*)
     proof - (*sledgehammer*)
       have f1: "\<forall>z. z = undefg \<or> Agame (the z) = z"
         using option.collapse by blast
@@ -1176,7 +1176,7 @@ lemma same_ODE_same_sol:
   "(\<And>\<nu>. Uvariation \<nu> (F(0)) {RVar x,DVar x} \<Longrightarrow> term_sem I \<theta> \<nu> = term_sem J \<eta> \<nu>)
   \<Longrightarrow> solves_ODE I F x \<theta> = solves_ODE J F x \<eta>"
   using Uvariation_Vagree Vagree_def solves_ODE_def
-    (*by (smt double_complement)*)
+    (*by (smt (z3) double_complement)*)
 proof-
   assume va: "\<And>\<nu>. Uvariation \<nu> (F(0)) {RVar x,DVar x} \<Longrightarrow> term_sem I \<theta> \<nu> = term_sem J \<eta> \<nu>"
   then have va2: "\<And>\<nu>. Uvariation \<nu> (F(0)) {RVar x,DVar x} \<Longrightarrow> term_sem J \<eta> \<nu> = term_sem I \<theta> \<nu>" by simp
@@ -1214,7 +1214,7 @@ proof-
   from subdef have IH: "\<And>\<nu>. Uvariation \<nu> (F(0)) (U\<union>{RVar x,DVar x}) \<Longrightarrow> term_sem I (the (usubstappt \<sigma> (U\<union>{RVar x,DVar x}) \<theta>)) \<nu> = term_sem (adjoint \<sigma> I (F(0))) \<theta> \<nu>" using Uvariation_refl Uvariation_trans usubst_term by blast
   have l2r: "solves_ODE I F x (the (usubstappt \<sigma> (U\<union>{RVar x,DVar x}) \<theta>)) \<Longrightarrow> solves_ODE (adjoint \<sigma> I \<omega>) F x \<theta>"
     using vaflow1 subdef same_ODE_same_sol Uvariation_trans usubst_term uv
-      (*by (smt sup_commute sup_left_idem)*)
+      (*by (smt (z3) sup_commute sup_left_idem)*)
   proof - (*sledgehammer*)
     assume a1: "solves_ODE I F x (the (usubstappt \<sigma> (U \<union> {RVar x, DVar x}) \<theta>))"
     obtain rr :: "trm \<Rightarrow> interp \<Rightarrow> trm \<Rightarrow> interp \<Rightarrow> char \<Rightarrow> (real \<Rightarrow> variable \<Rightarrow> real) \<Rightarrow> variable \<Rightarrow> real" where
@@ -1234,7 +1234,7 @@ proof-
   qed 
   have r2l: "solves_ODE (adjoint \<sigma> I \<omega>) F x \<theta> \<Longrightarrow> solves_ODE I F x (the (usubstappt \<sigma> (U\<union>{RVar x,DVar x}) \<theta>))"
     using vaflow2 subdef same_ODE_same_sol Uvariation_trans usubst_term uv
-      (*by (smt sup_commute sup_left_idem)*)
+      (*by (smt (z3) sup_commute sup_left_idem)*)
   proof - (*sledgehammer*)
     assume a1: "solves_ODE (USubst.adjoint \<sigma> I \<omega>) F x \<theta>"
     obtain rr :: "trm \<Rightarrow> interp \<Rightarrow> trm \<Rightarrow> interp \<Rightarrow> char \<Rightarrow> (real \<Rightarrow> variable \<Rightarrow> real) \<Rightarrow> variable \<Rightarrow> real" where
@@ -1321,7 +1321,7 @@ proof-
         finally have backw: "(\<mu> \<in>  X \<union> game_sem (adjoint \<sigma> I \<omega>) \<alpha> B) =  (\<mu> \<in> X \<union> game_sem I ?\<sigma>\<alpha> (selectlike B \<mu> (-BVG(?\<sigma>\<alpha>))))" .
 
         have samewin: "selectlike A \<mu> (-BVG(?\<sigma>\<alpha>)) = selectlike B \<mu> (-BVG(?\<sigma>\<alpha>))" using IHfp selectlike_antimon VgeqBV muvar Uvariation_trans selectlike_equal_cocond
-            (*by (smt le_iff_sup)*)
+            (*by (smt (z3) le_iff_sup)*)
         proof -
           have "Vagree \<mu> \<omega> (- fst (usubstappp \<sigma> U \<alpha>))"
             by (metis Uvariation_Vagree double_complement muvar)
@@ -1359,7 +1359,7 @@ proof-
     proof (cases "SPreds \<sigma> p")
       case None
       then show ?thesis using usubst_term[OF va] adjoint_preds_skip
-          (*by (smt Pred.prems(1) fml_sem.simps(1) mem_Collect_eq option.case_eq_if option.sel usubstappf.simps(1))*)
+          (*by (smt (z3) Pred.prems(1) fml_sem.simps(1) mem_Collect_eq option.case_eq_if option.sel usubstappf.simps(1))*)
       proof - (*sledgehammer*)
         have "\<forall>p V c t. usubstappf p V (Pred c t) = (if usubstappt p V t = undeft then undeff else case SPreds p c of None \<Rightarrow> Afml (Pred c (the (usubstappt p V t))) | Some f \<Rightarrow> if FVF f \<inter> V = {} then usubstappf (dotsubstt (the (usubstappt p V t))) {} f else undeff)"
           by (simp add: option.case_eq_if)
@@ -1403,7 +1403,7 @@ proof-
   next
     case (Geq \<sigma> U \<theta> \<eta>)
       (* then show ?case using usubst_term usubstappf_geq usubstappf_geq_conv
-          by (smt fml_sem.simps(2) mem_Collect_eq option.sel)*)
+          by (smt (z3) fml_sem.simps(2) mem_Collect_eq option.sel)*)
     then have def1: "usubstappt \<sigma> U \<theta> \<noteq> undeft" using usubstappf_geq_conv by simp 
     moreover have def2: "usubstappt \<sigma> U \<eta> \<noteq> undeft" using usubstappf_geq_conv Geq.prems(1) by blast 
     show ?case
@@ -1455,7 +1455,7 @@ proof-
       fix \<mu>
       assume muvar: "Uvariation \<mu> \<nu> (BVG(the (snd(usubstappp \<sigma> U \<alpha>))))" 
       have U\<mu>\<omega>: "Uvariation \<mu> \<omega> ?V" using muvar uv Uvariation_trans union_comm usubst_taboos Uvariation_mon
-          (*by (smt Diamond.prems(1) Diamondo.simps(2) usubstappf.simps(6))*)
+          (*by (smt (z3) Diamond.prems(1) Diamondo.simps(2) usubstappf.simps(6))*)
       proof- 
         have U\<mu>\<nu>: "Uvariation \<mu> \<nu> (BVG(the (snd(usubstappp \<sigma> U \<alpha>))))" by (rule muvar)
         have U\<nu>\<omega>: "Uvariation \<nu> \<omega> U" by (rule uv)
@@ -1476,7 +1476,7 @@ proof-
   next
     case (Assign \<sigma> U x \<theta>)
     then show ?case using usubst_term Assigno_undef
-        (*by (smt Assigno.elims game_sem.simps(2) mem_Collect_eq option.sel snd_pair usubstappp.simps(2))*)
+        (*by (smt (z3) Assigno.elims game_sem.simps(2) mem_Collect_eq option.sel snd_pair usubstappp.simps(2))*)
     proof - (*sledgehammer*)
       have f1: "usubstappt \<sigma> U \<theta> \<noteq> undeft"
         using Assign.prems(1) Assigno_undef by auto
@@ -1505,7 +1505,7 @@ proof-
     from Choice have IH\<beta>: "\<And>X. Uvariation \<nu> \<omega> U \<Longrightarrow> (\<nu> \<in> game_sem I (the (snd (usubstappp \<sigma> U \<beta>))) X) = (\<nu> \<in> game_sem (adjoint \<sigma> I \<omega>) \<beta> X)" by (simp add: Choiceo_undef) 
     from Choice have uv: "Uvariation \<nu> \<omega> U" by simp
     show ?case using IH\<alpha> IH\<beta> uv
-        (*by (smt Choice.prems(1) Choiceo.elims game_sem.simps(4) option.sel snd_pair union_or usubstappp_choice) *)
+        (*by (smt (z3) Choice.prems(1) Choiceo.elims game_sem.simps(4) option.sel snd_pair union_or usubstappp_choice) *)
     proof -
       have f1: "Agame (the (snd (usubstappp \<sigma> U \<alpha>))) = snd (usubstappp \<sigma> U \<alpha>)"
         by (meson Choice(3) option.collapse usubstappp_choice_conv)
@@ -1547,7 +1547,7 @@ proof-
       fix \<mu>
       assume muvar: "Uvariation \<mu> \<nu> (BVG(the(snd(usubstappp \<sigma> U \<alpha>))))" 
       have U\<mu>\<omega>: "Uvariation \<mu> \<omega> ?V" using muvar uv Uvariation_trans union_comm usubst_taboos Uvariation_mon
-          (*by (smt Compose.prems(1) Composeo_undef snd_pair usubstappp.simps(5))*)
+          (*by (smt (z3) Compose.prems(1) Composeo_undef snd_pair usubstappp.simps(5))*)
       proof -
         have "Uvariation \<mu> \<omega> (BVG (the (snd (usubstappp \<sigma> U \<alpha>))) \<union> U)" by (meson Uvariation_trans muvar uv)
         then show ?thesis using Uvariation_mon union_comm usubst_taboos
@@ -1576,7 +1576,7 @@ proof-
     from Dual have uv: "Uvariation \<nu> \<omega> U" by simp
     from Dual have def: "snd (usubstappp \<sigma> U (\<alpha>^d)) \<noteq> undefg" by simp
         (*show ?case using IH\<alpha>[OF uv]
-    by (smt Compl_iff Dual.prems(1) Dualo.elims game_sem.simps(7) option.sel snd_pair usubstappp.simps(7))*)
+    by (smt (z3) Compl_iff Dual.prems(1) Dualo.elims game_sem.simps(7) option.sel snd_pair usubstappp.simps(7))*)
     have "(\<nu> \<in> -game_sem I (the (snd (usubstappp \<sigma> U \<alpha>))) (-X)) = (\<nu> \<in> -game_sem (adjoint \<sigma> I \<omega>) \<alpha> (-X))" using IH\<alpha>[OF uv] by simp
     then have "(\<nu> \<in> game_sem I ((the (snd (usubstappp \<sigma> U \<alpha>)))^d) X) = (\<nu> \<in> game_sem (adjoint \<sigma> I \<omega>) (\<alpha>^d) X)" using game_sem.simps(7) by auto
     then show ?case using usubstappp_dual Dualo_undef
@@ -1680,7 +1680,7 @@ qed
 lemma usubstr_union: "(usubstr \<sigma> ((append A B), C) \<noteq> None) \<Longrightarrow>
   the (usubstr \<sigma> ((append A B), C)) = (append (fst (the (usubstr \<sigma> (A, C)))) (fst (the (usubstr \<sigma> (B, C)))), snd (the (usubstr \<sigma> (A, C))))"
   using usubstr_union_undef2
-    (*by (smt fst_pair map_append option.sel snd_pair usubstr_def)*)
+    (*by (smt (z3) fst_pair map_append option.sel snd_pair usubstr_def)*)
 proof-
   assume def: "(usubstr \<sigma> ((append A B), C) \<noteq> None)"  
   let ?R = "((append A B), C)"
@@ -1697,7 +1697,7 @@ lemma usubstr_length: "usubstr \<sigma> R \<noteq> None \<Longrightarrow> length
 lemma usubstr_nth: "usubstr \<sigma> R \<noteq> None \<Longrightarrow> 0\<le>k \<Longrightarrow> k<length (fst R) \<Longrightarrow>
    nth (fst (the (usubstr \<sigma> R))) k = the (usubstappf \<sigma> allvars (nth (fst R) k))"
   (*unfolding usubstr_def using usubstr_length
-  by (smt comp_apply fst_pair nth_map option.sel)*)
+  by (smt (z3) comp_apply fst_pair nth_map option.sel)*)
 proof-
   assume a1: "usubstr \<sigma> R \<noteq> None"
   assume a2: "0\<le>k"

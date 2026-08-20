@@ -1,0 +1,12 @@
+chapter AFP
+
+session "Concentrated_Liquidity_Market_Making_Operations" = "HOL-Analysis" +
+  options [timeout = 600]
+  theories
+    CLMM_Misc
+    Grid_Information
+    CLMM_Description
+    CLMM_Transformation
+  document_files
+    "root.bib"
+    "root.tex"

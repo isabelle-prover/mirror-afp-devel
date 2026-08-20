@@ -24,8 +24,8 @@ grammar whenever using an expression of the form "definition c \<equiv> t"*)
 open_bundle bi_related_syntax
 begin
 syntax
-  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_) \<equiv>\<^bsub>(_)\<^esub> (_)\<close> [51,51,51] 50)
-notation bi_related (\<open>'(\<equiv>(\<^bsub>_\<^esub>)')\<close>)
+  "_bi_related" :: "'a \<Rightarrow> 'b \<Rightarrow> 'a \<Rightarrow> bool" (\<open>(_ \<equiv>(\<^bsub>_\<^esub>) _)\<close> [51,0,51] 50)
+notation bi_related (\<open>('(\<equiv>(\<^bsub>_\<^esub>)'))\<close>)
 syntax_consts
   "_bi_related" \<rightleftharpoons> bi_related
 translations

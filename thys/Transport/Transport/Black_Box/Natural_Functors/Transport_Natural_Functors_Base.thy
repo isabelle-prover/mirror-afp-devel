@@ -509,11 +509,11 @@ lemma Frel_restrict_right_Fpred_eq_Frel_restrict_right:
   and P3 :: "'c2 \<Rightarrow> bool"
   shows "(Frel R1 R2 R3 :: _ \<Rightarrow> ('d, 'a2, 'b2, 'c2) F \<Rightarrow> _)\<upharpoonleft>\<^bsub>Fpred P1 P2 P3 :: ('d, 'a2, 'b2, 'c2) F \<Rightarrow> _\<^esub> =
     Frel (R1\<upharpoonleft>\<^bsub>P1\<^esub>) (R2\<upharpoonleft>\<^bsub>P2\<^esub>) (R3\<upharpoonleft>\<^bsub>P3\<^esub>)"
-  apply (subst rel_restrict_right_eq)
+  apply (subst rel_restrict_right_eq_inv_restrict_left_inv)
   apply (subst Frel_rel_inv_eq_rel_inv_Frel[symmetric])
   apply (subst Frel_restrict_left_Fpred_eq_Frel_restrict_left)
   apply (subst Frel_rel_inv_eq_rel_inv_Frel[symmetric])
-  apply (fold rel_restrict_right_eq)
+  apply (fold rel_restrict_right_eq_inv_restrict_left_inv)
   apply (rule refl)
   done
 

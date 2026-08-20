@@ -497,7 +497,7 @@ text \<open>H-line is uniquely determined by its ideal points\<close>
 lemma ideal_points_line_unique:        
   assumes "is_poincare_line H" "ideal_points H = {i1, i2}"
   shows "H = poincare_line i1 i2"
-  by (smt assms(1) assms(2) calc_ideal_points_on_unit_circle circline_set_def ex_poincare_line_points ideal_points_different(1) ideal_points_on_circline ideal_points_unique insertI1 insert_commute inversion_unit_circle mem_Collect_eq unique_poincare_line_general)
+  by (smt (z3) assms(1) assms(2) calc_ideal_points_on_unit_circle circline_set_def ex_poincare_line_points ideal_points_different(1) ideal_points_on_circline ideal_points_unique insertI1 insert_commute inversion_unit_circle mem_Collect_eq unique_poincare_line_general)
 
 text \<open>Ideal points of some special h-lines\<close>
 

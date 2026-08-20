@@ -1,0 +1,38 @@
+title = "Greedy Algorithms for Cardinality-Constrained Submodular Maximization"
+date = 2026-05-26
+topics = [
+  "Computer science/Algorithms/Approximation",
+  "Computer science/Algorithms/Optimization",
+  "Computer science/Algorithms/Mathematical",
+]
+abstract = """
+This entry formalizes greedy algorithms for monotone non-negative submodular maximization under a cardinality constraint on a finite ground set in Isabelle/HOL. The main result is the classical Nemhauser--Wolsey--Fisher approximation guarantee for deterministic greedy: after \\(k\\) steps, the greedy solution satisfies the finite-step bound \\(1 - (1 - 1/k)^k\\), and hence the standard \\(1 - 1/e\\) approximation ratio. The development separates the executable greedy construction, an abstract step-specification interface, and the approximation proof.
+
+The entry also includes a verified stateful lazy greedy variant based on cached upper bounds for marginal gains. The formalization proves that the lazy implementation selects a valid greedy element at each iteration and therefore inherits the same approximation guarantee. The result is intended as reusable Isabelle infrastructure for later formal developments on submodular maximization algorithms."""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI tools, including ChatGPT, were used during the development process for brainstorming, proofreading, code-organization suggestions, and local Isabelle proof-engineering assistance. All definitions, theorem statements, proofs, and documentation were reviewed, edited, and mechanically checked by the author, who takes full responsibility for the content of the submission.
+
+"""
+
+[authors]
+
+[authors.lyu]
+email = "lyu_email"
+
+[contributors]
+
+[notify]
+lyu = "lyu_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/BF01588971",
+  "10.1007/BFb0006528",
+]
+pubs = []

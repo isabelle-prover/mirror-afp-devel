@@ -8,17 +8,18 @@ theory Transport_Dep_Fun_Rel_Examples
     "HOL-Library.IArray"
 begin
 
+unbundle no HOL_ascii_syntax
+
 paragraph \<open>Summary\<close>
 text \<open>Dependent function relator examples from \<^cite>\<open>"transport"\<close>.
 Refer to the paper for more details.\<close>
-
 context
   includes galois_rel_Galois_syntax and transport_equivalences_syntax
   notes
-    transport.rel_if_partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equivalenceI
+    transport_rel_if.partial_equivalence_rel_equivalence_if_iff_if_partial_equivalence_rel_equivalence
       [rotated, per_intro]
     transport_Dep_Fun_Rel_no_dep_fun.partial_equivalence_rel_equivalenceI
-      [ML_Krattr \<open>Drule.rearrange_prems [1] #> Drule.rearrange_prems [2,3]\<close>, per_intro]
+      [ML_Krattr \<open>Drule.rearrange_prems [1] #> Drule.rearrange_prems [2]\<close>, per_intro]
 begin
 
 interpretation transport L R l r for L R l r .
@@ -34,9 +35,9 @@ lemma sub_parametric [trp_in_dom]:
 
 trp_term nat_sub :: "nat \<Rightarrow> nat \<Rightarrow> nat" where x = "(-) :: int \<Rightarrow> _"
   and L = "(i _ \<Colon> Zpos) \<Rrightarrow> (j _ \<Colon> Zpos | j \<le> i) \<Rrightarrow> Zpos"
-  and R = "(n _ \<Colon> (=)) \<Rrightarrow> (m _ \<Colon> (=)| m \<le> n) \<Rrightarrow> (=)"
+  and R = "(n _ \<Colon> (=)) \<Rrightarrow> (m _ \<Colon> (=) | m \<le> n) \<Rrightarrow> (=)"
   (*fastforce discharges the remaining side-conditions*)
-  by trp_prover fastforce+
+  by trp_prover (fastforce intro: transport_Dep_Fun_Rel.mono_cond_intros)+
 
 thm nat_sub_app_eq
 text \<open>Note: as of now, @{command trp_term} does not rewrite the
@@ -71,8 +72,8 @@ trp_term iarray_index where x = "(!) :: 'a list \<Rightarrow> _"
   and R = "((xs _ \<Colon> IARel R) \<Rrightarrow> (i _ \<Colon> (=) | i < IArray.length xs) \<Rrightarrow> R)"
   by trp_prover
   (*fastforce discharges the remaining side-conditions*)
-  (fastforce simp: list_all2_lengthD elim: iarray.rel_cases)+
-
+  (fastforce simp: list_all2_lengthD elim: iarray.rel_cases
+    intro: transport_Dep_Fun_Rel.mono_cond_intros)+
 end
 end
 

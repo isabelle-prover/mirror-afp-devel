@@ -3,13 +3,13 @@ chapter AFP
 session Zippy = HOL +
   description
     "Zippy - a Customisable Framework for Tree-Based Searches"
-  options
-    [timeout = 600]
+  options [timeout = 600]
   sessions
     ML_Unification
     SpecCheck
   directories
     "Antiquotations"
+    "Context_Parsers"
     "Gen_Lists"
     "Gen_Lists/Lists_1"
     "Gen_Zippers/"
@@ -25,7 +25,6 @@ session Zippy = HOL +
     "Gen_Zippers/Zippers5/Zippers"
     "Gen_Zippers/Zippers5/Zippers/Instances"
     "Gen_Zippers/Zippers5/Zippers/Utils"
-    "Generic_Data"
     "ML_Typeclasses/Antiquotations"
     "ML_Typeclasses/Gen_Coroutines"
     "ML_Typeclasses/Gen_Coroutines/Coroutines_1"
@@ -62,7 +61,6 @@ session Zippy = HOL +
     "Zippy/Goals"
     "Zippy/Goals/Base"
     "Zippy/Goals/Lists"
-    "Zippy/Identifiers"
     "Zippy/Instances"
     "Zippy/Instances/Cases"
     "Zippy/Instances/Classical"
@@ -98,8 +96,7 @@ session Zippy = HOL +
 session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_Structures" +
   description
     "Benchmarks for zip"
-  options
-    [timeout = 900]
+  options [timeout = 1800]
   sessions
     "HOL-Library"
     "Zippy"
@@ -114,4 +111,3 @@ session Zip_Benchmarks in "Zippy/Instances/Zip/Examples/Benchmarks" = "HOL-Data_
     Set
     Tree234_Set
     Word
-

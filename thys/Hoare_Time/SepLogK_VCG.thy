@@ -184,7 +184,7 @@ next
         subgoal by(simp add: plus_fun_def)  
         subgoal by(auto simp add: plus_fun_def)  
         subgoal
-          by (smt add_update_distrib dom_fun_upd domain_conv insert_dom option.simps(3) paval_extend sep_disj_fun_def)
+          by (smt (z3) add_update_distrib dom_fun_upd domain_conv insert_dom option.simps(3) paval_extend sep_disj_fun_def)
         done
   qed auto
 next
@@ -282,7 +282,7 @@ next
         subgoal using vc' apply(auto simp: sep_conj_ac) done
         done
       subgoal apply simp using pre unfolding sep_conj_def apply auto
-        by (smt semiring_normalization_rules(23) sep_add_assoc sep_add_commute sep_add_disjD sep_add_disjI1)
+        by (smt (z3) semiring_normalization_rules(23) sep_add_assoc sep_add_commute sep_add_disjD sep_add_disjI1)
       done
 qed
 

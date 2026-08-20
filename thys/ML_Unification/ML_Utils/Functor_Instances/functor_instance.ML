@@ -30,11 +30,8 @@ functor Functor_Instance(FI : FUNCTOR_INSTANCE_BASE) : FUNCTOR_INSTANCE =
 struct
 open FI
 
-val long_name = Binding.name_of binding
-
-val _ = @{assert} (long_name <> "")
-
 val name = Binding.name_of binding
+val _ = @{assert} (name <> "")
 val long_name = Binding.long_name_of binding
 val pos = Binding.pos_of binding
 

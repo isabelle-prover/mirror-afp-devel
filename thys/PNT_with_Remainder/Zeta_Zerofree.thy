@@ -579,9 +579,8 @@ proof -
   show ?thesis using \<sigma>_cnd s_def by auto (use * in linarith)
 qed
 
-lemma zeta_analytic_on_region:
-  shows "zeta analytic_on region"
-  by (rule analytic_zeta) (unfold region_def, auto)
+lemma zeta_analytic_on_region: "zeta analytic_on region"
+  by (auto intro!: analytic_intros simp: region_def)
 
 lemma zeta_div_bound:
   assumes "z \<in> cball s r"

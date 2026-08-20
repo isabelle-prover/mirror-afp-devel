@@ -47,7 +47,7 @@ fun mk_funs {T, ctrs, ...} lthy =
             val rhs = list_comb (Const (name, typ), args)
             val def = Logic.mk_equals (lhs, rhs)
             val ((term, (_, def_thm)), lthy') =
-              Specification.definition NONE [] [] ((binding, []), def) lthy
+              Specification.definition {verbose = false} NONE [] [] ((binding, []), def) lthy
             val unfold_thm = @{thm Pure.symmetric} OF [Local_Defs.abs_def_rule lthy' def_thm]
           in
             (SOME (term, (len, unfold_thm)), lthy')

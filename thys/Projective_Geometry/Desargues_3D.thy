@@ -57,7 +57,7 @@ qed
 lemma coplanar_4_bis :
   assumes "rk {A, B, C} = 3" and "rk {A, C, \<beta>} = 2"
   shows "rk {A, B, C, \<beta>} = 3"
-  by (smt assms(1) assms(2) coplanar_4 insert_commute)
+  by (smt (z3) assms(1) assms(2) coplanar_4 insert_commute)
 
 lemma desargues_config_3D_coplanar_4_bis :
   assumes "desargues_config_3D A B C A' B' C' P \<alpha> \<beta> \<gamma>"
@@ -74,7 +74,7 @@ qed
 lemma coplanar_4_ter :
   assumes "rk {A, B, C} = 3" and "rk {A, B, \<gamma>} = 2"
   shows "rk {A, B, C, \<gamma>} = 3"
-  by (smt assms(1) assms(2) coplanar_4 insert_commute)
+  by (smt (z3) assms(1) assms(2) coplanar_4 insert_commute)
 
 lemma desargues_config_3D_coplanar_4_ter :
   assumes "desargues_config_3D A B C A' B' C' P \<alpha> \<beta> \<gamma>"
@@ -94,11 +94,11 @@ lemma coplanar_5 :
 proof-
   have f1:"rk {A, B, C, \<alpha>} = 3" 
     using coplanar_4
-    by (smt One_nat_def Un_assoc Un_commute add.commute add_Suc_right assms(1) assms(2) insert_is_Un 
+    by (smt (z3) One_nat_def Un_assoc Un_commute add.commute add_Suc_right assms(1) assms(2) insert_is_Un 
         le_antisym matroid_ax_2_alt numeral_2_eq_2 numeral_3_eq_3 one_add_one)
   have f2:"rk {A, B, C, \<beta>} = 3" 
     using coplanar_4_bis
-    by (smt One_nat_def Un_assoc Un_commute add.commute add_Suc_right assms(1) assms(3) insert_is_Un 
+    by (smt (z3) One_nat_def Un_assoc Un_commute add.commute add_Suc_right assms(1) assms(3) insert_is_Un 
         le_antisym matroid_ax_2_alt numeral_2_eq_2 numeral_3_eq_3 one_add_one)
   from f1 and f2 show "rk {A, B, C, \<alpha>, \<beta>} = 3" 
     using matroid_ax_3_alt'
@@ -121,7 +121,7 @@ qed
 lemma coplanar_5_bis :
   assumes "rk {A, B, C} = 3" and "rk {B, C, \<alpha>} = 2" and "rk {A, B, \<gamma>} = 2"
   shows "rk {A, B, C, \<alpha>, \<gamma>} = 3"
-  by (smt assms coplanar_5 insert_commute)
+  by (smt (z3) assms coplanar_5 insert_commute)
 
 lemma desargues_config_3D_coplanar_5_bis :
   assumes "desargues_config_3D A B C A' B' C' P \<alpha> \<beta> \<gamma>"

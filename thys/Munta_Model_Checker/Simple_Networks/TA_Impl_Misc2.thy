@@ -239,7 +239,7 @@ lemma subseq_mapE:
 lemma list_all2_map_fst_aux:
   assumes "list_all2 (\<lambda>x y. x \<in> Pair y ` (zs y)) xs ys"
   shows "list_all2 (=) (map fst xs) ys"
-  using assms by (smt fstI imageE list.rel_mono_strong list_all2_map1)
+  using assms by (smt (z3) fstI imageE list.rel_mono_strong list_all2_map1)
 
 lemma list_all2_fst_aux:
   "map fst xs = ys" if "list_all2 (\<lambda>x y. fst x = y) xs ys"

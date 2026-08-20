@@ -1,0 +1,43 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Feuerbach's Theorem}
+\author{Lawrence C Paulson}
+\maketitle
+
+\begin{abstract}
+Feuerbach's theorem is a classical result in Euclidean geometry about certain circles associated with a triangle.
+It states that the nine-point circle is tangent internally to the triangle's incircle and tangent externally to each of the three excircles, where
+the \emph{incircle} is the circle tangent to all three sides of the triangle;
+the \emph{excircles} are circles tangent to one side and the extensions of the other two;
+the \emph{nine-point circle} is the circle passing through nine special points of the triangle.
+
+This development is an experiment in automatic translation from one proof assistant to another using AI\@.
+The HOL Light file \texttt{feuer\-bach.ml} was given, one proof at a time, 
+to Claude 4.6 using the Isabelle Assistant plug-in.%
+\footnote{Part of AutoCorrode: \url{https://github.com/awslabs/AutoCorrode}}
+%
+Despite coaxing and hints, the autoformalisation process transformed a 214-line HOL Light file
+to nearly 1500 lines of Isabelle/HOL, though one that could be processed in five seconds.
+Part of the excess length comes from spelling out two transformations (translation of a point to zero, 
+followed by rotation of a side to the vector $(1,0)$) that in HOL Light is done silently by WLOG tactics.
+The current proof has been heavily simplified, in part using Claude but mostly manually, 
+and is now under 750 lines. It is notable that Claude often relied on the \textbf{algebra} proof method, 
+despite its relative obscurity.
+\end{abstract}
+
+
+\tableofcontents
+\newpage
+
+\input{session}
+
+\end{document}

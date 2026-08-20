@@ -1342,7 +1342,7 @@ lemma delayedR_correct_aux_aux:
   assumes "c < a" "a < Suc c" "b \<ge> 0" "a + b < Suc c"
   shows "frac (a + b) = frac a + b"
 (* Working alternative:
-by (smt One_nat_def add.right_neutral add_Suc_right assms nat_intv_frac_decomp)
+by (smt (z3) One_nat_def add.right_neutral add_Suc_right assms nat_intv_frac_decomp)
 *)
 proof -
   have f1: "a + b < real (c + 1)"

@@ -1,0 +1,27 @@
+title = "Parameterized Termination for Sequential Composition and Synchronization Product"
+date = 2026-02-02
+topics = [
+  "Computer science/Concurrency/Process calculi",
+  "Computer science/Semantics and reasoning",
+]
+abstract = "Recently, parameterized termination has been introduced in HOL-CSP, allowing the termination event tick to carry a result value, in a way analogous to the return of a state monad. This conservative extension of the CSP theory required the generalization of several denotational definitions and the adaptation of numerous proofs. Since Isabelle2025, this work has been completed for the HOL-CSP, HOL-CSPM, and HOL-CSP\\_OpSem sessions. However, for two operators—namely sequential composition and the synchronization product—the most direct generalizations turn out to be conceptually unsatisfactory, in particular with respect to their interaction with $SKIP$. To address this issue, we introduce in this entry generalized versions of these operators that fully exploit the expressive power of parameterized termination; in particular, the resulting notion of sequential composition satisfies the monad laws. Building on these definitions, we establish a range of algebraic and operational laws, as well as fundamental properties such as continuity and non-destructiveness."
+license = "bsd"
+note = ""
+
+[authors]
+
+[authors.ballenghien]
+email = "ballenghien_email"
+
+[contributors]
+
+[notify]
+ballenghien = "ballenghien_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

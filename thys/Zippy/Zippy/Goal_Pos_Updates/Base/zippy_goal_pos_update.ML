@@ -51,7 +51,7 @@ sig
     GCS.gcpos gpos_update
 end
 
-functor Zippy_Goal_Pos_Update(
+functor Zippy_Goal_Pos_Update_Functor(
     structure GCS : ZIPPY_GOAL_CLUSTERS
     structure T : ZIPPY_GOAL_POS_UPDATE_TARGET
   ) : ZIPPY_GOAL_POS_UPDATE =
@@ -76,6 +76,6 @@ fun comp_gclusters_gpos_update gclusters = pure_comp (GCS.get_gcpos_index gclust
 
 end
 
-structure Standard_Zippy_Goal_Pos_Update = Zippy_Goal_Pos_Update(
-  structure GCS = Standard_Zippy_Goal_Clusters
+structure Zippy_Goal_Pos_Update = Zippy_Goal_Pos_Update_Functor(
+  structure GCS = Zippy_Goal_Clusters
   structure T = Zippy_Goal_Pos_Update_Target)

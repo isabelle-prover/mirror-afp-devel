@@ -665,10 +665,7 @@ lemma filtercomap_ident: "filtercomap (\<lambda>x. x) F = F"
   by (auto simp: filter_eq_iff eventually_filtercomap elim!: eventually_mono)
 
 lemma filtercomap_filtercomap: "filtercomap f (filtercomap g F) = filtercomap (\<lambda>x. g (f x)) F"
-  unfolding filter_eq_iff
-  sorry
-  (* apply (auto simp: eventually_filtercomap)[1] *)
-  (* apply (auto simp: eventually_filtercomap)[1] *)
+  by (auto simp: filter_eq_iff eventually_filtercomap)
 
 lemma filtercomap_mono: "F \<le> F' \<Longrightarrow> filtercomap f F \<le> filtercomap f F'"
   by (auto simp: eventually_filtercomap le_filter_def)

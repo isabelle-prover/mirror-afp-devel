@@ -381,7 +381,7 @@ proof -
   moreover from \<open>run _\<close> have "pred_stream (reaches s\<^sub>0) xs"
     using run_reachable by blast
   ultimately have "stream_all2 (\<lambda>x y. x \<preceq> y \<and> reaches s\<^sub>0 x \<and> y \<in> S) xs ys"
-    by (smt stream.pred_set stream.rel_mono_strong)
+    by (smt (z3) stream.pred_set stream.rel_mono_strong)
   with assms(3) \<open>s\<^sub>0 \<preceq> _\<close> \<open>s\<^sub>0' \<in> S\<close> have "alw (ev (holds F)) (s\<^sub>0' ## ys)"
     by (elim alw_ev_lockstep) (erule stream.rel_intros[rotated], auto)
   from buechi_run_lasso[OF ys(1) this] show ?thesis
@@ -498,7 +498,7 @@ proof -
   moreover from \<open>run _\<close> have "pred_stream P xs"
     using PA_invariant.invariant_run \<open>P s\<^sub>0\<close> by auto
   ultimately have "stream_all2 (\<lambda>x y. x \<preceq> y \<and> P x \<and> I y) xs ys"
-    by (smt stream.pred_set stream.rel_mono_strong)
+    by (smt (z3) stream.pred_set stream.rel_mono_strong)
   with assms(3) \<open>s\<^sub>0 \<preceq> _\<close> \<open>P s\<^sub>0\<close> \<open>I s\<^sub>0'\<close> have "alw (ev (holds F)) (s\<^sub>0' ## ys)"
     by (elim alw_ev_lockstep) (erule stream.rel_intros[rotated], auto)
   from buechi_run_lasso[OF ys(1) this] show ?thesis
@@ -597,7 +597,7 @@ proof -
   moreover from \<open>run _\<close> have "pred_stream (reaches s\<^sub>0) xs"
     using run_reachable by blast
   ultimately have "stream_all2 (\<lambda>x y. x \<preceq> y \<and> reaches s\<^sub>0 x \<and> y \<in> S) xs ys"
-    by (smt stream.pred_set stream.rel_mono_strong)
+    by (smt (z3) stream.pred_set stream.rel_mono_strong)
   with assms(3) \<open>s\<^sub>0 \<preceq> _\<close> \<open>s\<^sub>0' \<in> S\<close> have "alw (ev (holds F)) (s\<^sub>0' ## ys)"
     by (elim alw_ev_lockstep) (erule stream.rel_intros[rotated], auto)
   from buechi_run_lasso[OF ys(1) this] show ?thesis

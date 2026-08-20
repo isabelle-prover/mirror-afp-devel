@@ -851,7 +851,7 @@ next
   have "open_cover_of_open_subset S is_open (f\<^sup>\<inverse> S U) I (\<lambda>i. f\<^sup>\<inverse> S (V i))"
     by (simp add: oc open_cover_of_open_subset_from_target_to_source)
   then show "s = zero_im_sheaf U" using zero_im_sheaf_def
-    by (smt VU im_sheaf_def im_sheaf_morphisms_def eq0 inf.absorb_iff2 inf_le2 inf_sup_aci(1) inf_sup_aci(3) locality s vimage_Int)
+    by (smt (z3) VU im_sheaf_def im_sheaf_morphisms_def eq0 inf.absorb_iff2 inf_le2 inf_sup_aci(1) inf_sup_aci(3) locality s vimage_Int)
 next
   fix U I V s
   assume oc: "open_cover_of_open_subset S' is_open' U I V"
@@ -866,7 +866,7 @@ next
     show "\<rho> (f \<^sup>\<inverse> S (V i)) (f \<^sup>\<inverse> S (V i) \<inter> f \<^sup>\<inverse> S (V j)) (s i) = \<rho> (f \<^sup>\<inverse> S (V j)) (f \<^sup>\<inverse> S (V i) \<inter> f \<^sup>\<inverse> S (V j)) (s j)"
       if "i \<in> I" "j \<in> I" for i j
       using im_sheaf_morphisms_def eq that
-      by (smt Int_commute Int_left_commute inf.left_idem vimage_Int)
+      by (smt (z3) Int_commute Int_left_commute inf.left_idem vimage_Int)
   qed
   then obtain t where "t \<in> \<FF> (f\<^sup>\<inverse> S U) \<and> (\<forall>i. i\<in>I \<longrightarrow> \<rho> (f\<^sup>\<inverse> S U) (f\<^sup>\<inverse> S (V i)) t = s i)" ..
   then show "\<exists>t. t \<in> im_sheaf U \<and> (\<forall>i. i \<in> I \<longrightarrow> im_sheaf_morphisms U (V i) t = s i)"
@@ -998,9 +998,9 @@ proof (clarsimp simp: rel_def)
       by presburger
     also have "... = sx \<cdot> sy \<cdot> s1 \<cdot> s \<cdot> s1 \<cdot> r2 - sx \<cdot> sy \<cdot> s1 \<cdot> s2 \<cdot> s \<cdot> r1"
       using \<section>
-      by (smt sy comm.comm_mult comm.multiplicative.associative comm.multiplicative.composition_closed sub)
+      by (smt (z3) sy comm.comm_mult comm.multiplicative.associative comm.multiplicative.composition_closed sub)
     also have "... = sx \<cdot> sy \<cdot> s1 \<cdot> s \<cdot> s1 \<cdot> r2 - sx \<cdot> sy \<cdot> s1 \<cdot> s1 \<cdot> s \<cdot> r2"
-      using \<section> by (smt sx comm.comm_mult comm.multiplicative.associative
+      using \<section> by (smt (z3) sx comm.comm_mult comm.multiplicative.associative
           comm.multiplicative.composition_closed sub)
     also have "... = \<zero>"
       using \<section> by (simp add: comm.ring_mult_ac)
@@ -1065,7 +1065,7 @@ proof -
     unfolding rel_def by auto
   then have x_eq:"s1 \<cdot> s \<cdot> fst x = s1 \<cdot> snd x \<cdot> r"
     using comm.distributive x_RS assms(1)
-    by (smt comm.additive.group_axioms group.cancel_imp_equal comm.inverse_distributive(1)
+    by (smt (z3) comm.additive.group_axioms group.cancel_imp_equal comm.inverse_distributive(1)
         mem_Sigma_iff comm.multiplicative.associative comm.multiplicative.composition_closed prod.collapse sub)
   then show ?thesis using that x_RS \<open>s1\<in>S\<close> by auto
 qed
@@ -1537,7 +1537,7 @@ proof -
   interpret qr:quotient_ring "(R \<setminus> \<pp>)" R "(+)" "(\<cdot>)" \<zero> \<one>
     using spectrum_imp_cxt_quotient_ring assms by auto
   show ?thesis using assms
-    by (smt frac_in_carrier_local is_locally_frac_def is_regular_def
+    by (smt (z3) frac_in_carrier_local is_locally_frac_def is_regular_def
           pr_ideal.carrier_local_ring_at_def spectrum_imp_pr subset_eq)
 qed
 
@@ -1918,7 +1918,7 @@ lemma is_regular_one_sheaf_spec:
 proof -
   have "one_sheaf_spec U \<pp> \<in> R \<^bsub>\<pp> (+) (\<cdot>) \<zero>\<^esub>" if "\<pp> \<in> U" for \<pp>
     unfolding one_sheaf_spec_def
-    by (smt assms closed_subsets_zero comm_ring.closed_subsets_def
+    by (smt (z3) assms closed_subsets_zero comm_ring.closed_subsets_def
         quotient_ring.carrier_quotient_ring_iff quotient_ring.valid_frac_one
         quotient_ring_def local.comm_ring_axioms mem_Collect_eq
         pr_ideal.carrier_local_ring_at_def pr_ideal.submonoid_pr_ideal
@@ -2169,7 +2169,7 @@ proof -
       moreover have "is_locally_frac s V1"
         using is_locally_frac_subset[OF \<open>is_locally_frac s U1\<close>] unfolding V1_def by simp
       then have "is_locally_frac (restrict s V) V1"
-        unfolding restrict_def V1_def using is_locally_frac_cong by (smt in_mono inf_le2)
+        unfolding restrict_def V1_def using is_locally_frac_cong by (smt (z3) in_mono inf_le2)
       moreover have "V1 \<subseteq> V" "\<pp> \<in> V1"
         unfolding V1_def using \<open>V \<subseteq> U\<close> \<open>\<pp> \<in> U1\<close> that by auto
       ultimately show ?thesis by auto
@@ -2273,7 +2273,7 @@ proof intro_locales
     for U V W s
   proof -
     have "restrict s V \<in> \<O> V"
-      using that by (smt map.map_closed restrict_apply sheaf_spec_morphisms_are_maps sheaf_spec_morphisms_def)
+      using that by (smt (z3) map.map_closed restrict_apply sheaf_spec_morphisms_are_maps sheaf_spec_morphisms_def)
     with that show ?thesis
       by (simp add: sheaf_spec_morphisms_def inf_absorb2)
   qed
@@ -2352,9 +2352,9 @@ next
           unfolding sheaf_spec_def open_cover_of_open_subset_def open_cover_of_subset_def is_regular_def
           using \<open>\<pp> \<in> U\<close> cov_in_I cover_of_subset.cover_of_select_index by fastforce
         have "\<And>V' \<qq>. is_zariski_open V' \<and> V' \<subseteq> V (cover_of_subset.select_index I V \<pp>) \<Longrightarrow> \<qq> \<in> V' \<Longrightarrow> t \<qq> = s (cover_of_subset.select_index I V \<pp>) \<qq>"
-          by (smt D F1 H(1) V \<open>\<pp> \<in> U\<close> cover_of_subset.cover_of_select_index cover_of_subset.select_index_belongs open_cover_of_open_subset_def open_cover_of_subset_def restrict_apply subsetD)
+          by (smt (z3) D F1 H(1) V \<open>\<pp> \<in> U\<close> cover_of_subset.cover_of_select_index cover_of_subset.select_index_belongs open_cover_of_open_subset_def open_cover_of_subset_def restrict_apply subsetD)
         with V V2 show ?thesis unfolding is_locally_frac_def
-          by (smt subset_trans)
+          by (smt (z3) subset_trans)
       qed
     qed
     ultimately show ?thesis unfolding sheaf_spec_def by (simp add:PiE_iff)
@@ -2376,7 +2376,7 @@ next
     qed
     thus "sheaf_spec_morphisms U (V i) t \<pp> = s i \<pp>"
       using sheaf_spec_morphisms_def D F1
-      by (smt H(2) \<open>i \<in> I\<close> \<open>t \<in> \<O> U\<close> comm_ring.sheaf_morphisms_sheaf_spec local.comm_ring_axioms restrict_apply subsetD)
+      by (smt (z3) H(2) \<open>i \<in> I\<close> \<open>t \<in> \<O> U\<close> comm_ring.sheaf_morphisms_sheaf_spec local.comm_ring_axioms restrict_apply subsetD)
   qed
   thus "\<exists>t. t \<in> (\<O> U) \<and> (\<forall>i. i \<in> I \<longrightarrow> sheaf_spec_morphisms U (V i) t = s i)"
     using \<open>t \<in> \<O> U\<close> by blast
@@ -5011,7 +5011,7 @@ next
             using sec_def by auto
           moreover have "is_regular s \<D>(f)"
             using F(1,2) standard_open_is_subset  belongs_standard_open_iff is_regular_def[of s "\<D>(f)"] standard_open_is_zariski_open
-            by (smt is_locally_frac_def restrict_apply sec_def subsetD subsetI)
+            by (smt (z3) is_locally_frac_def restrict_apply sec_def subsetD subsetI)
           ultimately show ?thesis unfolding sheaf_spec_def[of "\<D>(f)"]
             by (simp add:PiE_iff)
         qed

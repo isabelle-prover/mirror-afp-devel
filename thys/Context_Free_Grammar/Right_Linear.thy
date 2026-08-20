@@ -503,23 +503,17 @@ text
  same production set as \<open>ps'\<close> without the unit productions. The language preservation property is already given\<close>
 
 lemma uppr_rlin2:
-  assumes rlinbin: "rlin_bin ps'"
-    and uppr_ps': "Unit_elim_rel ps' ps"
-  shows "rlin2 ps"
+  assumes rlinbin: "rlin_bin P"
+  shows "rlin2 (Unit_elim P)"
 proof - 
-  from rlinbin have "rlin2 (ps' - {(A,w) \<in> ps'. \<exists>B. w = [Nt B]})"
+  from rlinbin have "rlin2 (P - {(A,w) \<in> P. \<exists>B. w = [Nt B]})"
     using rlin2_def rlin_bin_def by fastforce
-  hence "rlin2 (ps' - (Unit_prods ps'))"
+  hence "rlin2 (P - (Unit_prods P))"
     by (simp add: Unit_prods_def)
-  hence 1: "rlin2 (Unit_rm ps')"
+  hence 1: "rlin2 (Unit_rm P)"
     by (simp add: Unit_rm_def)
-  hence 2: "rlin2 (New_prods ps')"
-    unfolding New_prods_def rlin2_def by fastforce
-  from 1 2 have "rlin2 (Unit_rm ps' \<union> New_prods ps')"
-    unfolding rlin2_def by auto
-  with uppr_ps' have "rlin2 ps"
-    by (simp add: Unit_elim_rel_def)
-  thus ?thesis .
+  thus ?thesis
+    unfolding rlin2_def Unit_elim_def by auto
 qed
 
 text
@@ -544,7 +538,7 @@ using assms proof -
   hence "rlin_bin (set (binarize (finalize ps)))"
     by (simp add: binarize_rlinbin)
   hence "rlin2 (Unit_elim (set (binarize (finalize ps))))"
-    using Unit_elim_correct uppr_rlin2 by blast
+    by (meson uppr_rlin2)
   thus "rlin2 ((rlin2_of_rlin ps))"
     by (simp add: rlin2_of_rlin_def)
 qed

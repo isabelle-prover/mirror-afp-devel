@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{cite}
+
+\begin{document}
+
+\title{Greedy Algorithms for Cardinality-Constrained Submodular Maximization}
+\author{Feier Lyu}
+\maketitle
+
+\begin{abstract}
+We formalize in Isabelle/HOL the classical approximation guarantee for monotone
+non-negative submodular maximization under a cardinality constraint on a finite
+ground set. The main result is the Nemhauser--Wolsey bound for deterministic
+greedy: after $k$ steps, the greedy solution achieves the finite-step guarantee
+$1 - (1 - 1/k)^k$, and hence also the standard $(1 - 1/e)$ approximation ratio.
+The development also includes a verified stateful lazy greedy variant, based on
+cached upper bounds on marginal gains, and proves that it satisfies the same
+approximation guarantee.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Background}
+
+The classical greedy algorithm for monotone submodular maximization under a
+cardinality constraint is due to Nemhauser, Wolsey, and Fisher
+\cite{NemhauserWolseyFisher1978}.  This entry also formalizes a stateful
+lazy-greedy variant, following the accelerated greedy idea of Minoux
+\cite{Minoux1978}: instead of recomputing all marginal gains at every outer
+iteration, the algorithm keeps cached upper bounds on marginal gains and
+recomputes them only when needed.  The formalization proves that this lazy
+implementation still selects a valid greedy element at each step and therefore
+inherits the same approximation guarantee.
+
+\input{session}
+
+\nocite{NemhauserWolseyFisher1978}
+\nocite{Minoux1978}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

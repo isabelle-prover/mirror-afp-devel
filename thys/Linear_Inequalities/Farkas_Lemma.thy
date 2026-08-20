@@ -68,7 +68,7 @@ proof -
     have "A *\<^sub>v x -b \<le> 0\<^sub>v nr" using vec_le_iff_diff_le_0 b
       by (metis A Axb carrier_matD(1) dim_mult_mat_vec)
     hence x1lez: "x1 \<ge> 0\<^sub>v nr" using x1 unfolding x1_def
-      by (smt A Axb carrier_matD(1) carrier_vecD diff_ge_0_iff_ge dim_mult_mat_vec 
+      by (smt (z3) A Axb carrier_matD(1) carrier_vecD diff_ge_0_iff_ge dim_mult_mat_vec 
           index_minus_vec(1) index_zero_vec(1) index_zero_vec(2) less_eq_vec_def)
     have x2lez: "x2 \<ge> 0\<^sub>v nc" using x2 less_eq_vec_def unfolding x2_def by fastforce
     have x3lez: "x3 \<ge> 0\<^sub>v nc" using x3 less_eq_vec_def unfolding x3_def by fastforce
@@ -113,7 +113,7 @@ proof -
     hence "b - A *\<^sub>v x = x1" using x1 A b by auto
     hence "b - A *\<^sub>v x \<ge> 0\<^sub>v nr" using x1lez by auto
     hence "A *\<^sub>v x \<le> b" using Axcarr
-      by (smt \<open>b - A *\<^sub>v x = x1\<close> \<open>b = x1 + A *\<^sub>v x\<close> carrier_vecD comm_add_vec index_zero_vec(2) 
+      by (smt (z3) \<open>b - A *\<^sub>v x = x1\<close> \<open>b = x1 + A *\<^sub>v x\<close> carrier_vecD comm_add_vec index_zero_vec(2) 
           minus_add_minus_vec minus_cancel_vec vec_le_iff_diff_le_0 x1)
     then show "\<exists>x1\<in>carrier_vec nr. \<exists>x2\<in>carrier_vec nc. \<exists>x3\<in>carrier_vec nc.
           0\<^sub>v nr \<le> x1 \<and> 0\<^sub>v nc \<le> x2 \<and> 0\<^sub>v nc \<le> x3 \<and> B *\<^sub>v (x1 @\<^sub>v x2 @\<^sub>v x3) = b \<Longrightarrow>

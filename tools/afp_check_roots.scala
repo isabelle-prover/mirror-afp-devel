@@ -4,10 +4,9 @@ Tools to check AFP session roots.
  */
 package afp
 
-
-import isabelle.*
-
 import java.io.File as JFile
+
+import isabelle._
 
 
 object AFP_Check_Roots {
@@ -22,11 +21,6 @@ object AFP_Check_Roots {
 
   private def entry_dirs(dir: Path): List[Path] =
     for (entry <- entries(dir)) yield dir + Path.basic(entry)
-
-  private def rel_path(entry_dir: Path, path: Path): Path =
-    File.relative_path(entry_dir.absolute, path.absolute).get
-
-  private def is_thy_file(file: JFile): Boolean = file.isFile && file.getName.endsWith(".thy")
 
 
   /* checks */
@@ -107,11 +101,9 @@ object AFP_Check_Roots {
             sessions = Sessions.parse_root_entries(entry_dir + Sessions.ROOT).map(_.name)
 
             theory_nodes = sessions.flatMap(deps.apply(_).proper_session_theories)
-            thy_files = theory_nodes.map(node => rel_path(entry_dir, node.path))
+            thy_files = theory_nodes.map(node => File.the_relative_path(entry_dir, node.path))
 
-            physical_files =
-              for (file <- File.find_files(entry_dir.file, is_thy_file, include_dirs = true))
-              yield rel_path(entry_dir, Path.explode(file.getAbsolutePath))
+            physical_files = File.find_files(entry_dir, pred = File.is_thy, relative = true)
 
             unused = physical_files.toSet -- thy_files.toSet
             if unused.nonEmpty
@@ -132,13 +124,14 @@ object AFP_Check_Roots {
               }
 
             document_files =
-              session_document_files.map { case (dir, path) => rel_path(entry_dir, dir + path) }
+              session_document_files.map { case (dir, path) =>
+                File.the_relative_path(entry_dir, dir + path) }
 
             physical_files =
               for {
                 document_dir <- session_document_files.map(_._1.file).distinct
-                document_file <- File.find_files(document_dir, _.isFile, include_dirs = true)
-              } yield rel_path(entry_dir, Path.explode(document_file.getAbsolutePath))
+                document_file <- File.find_files(File.path(document_dir))
+              } yield File.the_relative_path(entry_dir, document_file)
 
             unused = physical_files.toSet -- document_files.toSet
 
@@ -229,9 +222,9 @@ Usage: isabelle afp_check_roots [OPTIONS]
       val progress = new Console_Progress()
 
       if (check_dirs.isEmpty) {
-        check_dirs ::= AFP_Structure().thys_dir
+        check_dirs ::= AFP_Structure.thys_dir
       } else {
-        dirs ::= AFP_Structure().thys_dir
+        dirs ::= AFP_Structure.thys_dir
       }
 
       afp_check_roots(checks, dirs, check_dirs, progress)

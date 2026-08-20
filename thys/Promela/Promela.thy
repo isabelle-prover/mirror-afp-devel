@@ -1418,7 +1418,7 @@ definition setUp :: "ast \<Rightarrow> program \<times> gState" where
        (decls, procs, _) = preprocess ast;
        assertVar = Var (VTBounded 0 1) 0;
  
-       pre_procs = map (case_prod toProcess) (List.enumerate 1 procs);
+       pre_procs = map (case_prod toProcess) (indexed_from 1 procs);
 
        procs = IArray ((0, Index 0, [], []) # map (\<lambda>(_,_,_,_,p). p) pre_procs);
        labels = IArray (lm.empty() # map (\<lambda>(_,_,_,l,_). l) pre_procs);
@@ -1457,7 +1457,7 @@ next
 next
   case 4 thus ?case
     unfolding setUp_def
-    by (auto simp add: lm.correct o_def in_set_enumerate_eq nth_enumerate_eq 
+    by (auto simp add: lm.correct o_def in_set_indexed_from_eq nth_indexed_from_eq 
             dest!: subsetD[OF Misc.ran_map_of] toProcess_sidx 
             split: prod.splits)
   (* TODO: Change name Misc.ran_map_of \<longrightarrow> ran_map_of_ss, as it collides 
@@ -1467,7 +1467,7 @@ next
     apply (auto simp add: setUp_def o_def split: prod.splits)
     apply (frule toProcess_sidx)
     apply (frule toProcess_start)
-    apply (auto simp: in_set_enumerate_eq nth_enumerate_eq)
+    apply (auto simp: in_set_indexed_from_eq nth_indexed_from_eq)
     done
 qed
 

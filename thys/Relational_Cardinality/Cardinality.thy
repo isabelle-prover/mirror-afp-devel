@@ -435,7 +435,7 @@ proof -
   show "x * a \<sqinter> y \<le> x * z \<sqinter> y"
     using assms(2) comp_inf.mult_left_isotone mult_right_isotone by auto
   show "x * a \<sqinter> y \<noteq> bot"
-    by (smt assms inf.left_commute inf.left_idem inf_absorb1 schroeder_1)
+    by (smt (z3) assms inf.left_commute inf.left_idem inf_absorb1 schroeder_1)
 qed
 
 lemma AB_card_5_2:
@@ -579,9 +579,9 @@ next
     hence "(a * top \<sqinter> 1) * top * (a * top \<sqinter> 1) \<le> 1"
       using 1 by simp
     hence "a * top * a\<^sup>T \<le> 1"
-      by (smt comp_associative conv_dist_comp coreflexive_symmetric ex231e inf_top.right_neutral symmetric_top_closed vector_export_comp_unit)
+      by (smt (z3) comp_associative conv_dist_comp coreflexive_symmetric ex231e inf_top.right_neutral symmetric_top_closed vector_export_comp_unit)
     thus "a * top * a \<le> a"
-      by (smt comp_associative conv_dist_comp domain_vector_conv order.eq_iff ex231e inf.absorb2 inf.sup_monoid.add_commute mapping_one_closed symmetric_top_closed top_right_mult_increasing vector_export_comp_unit)
+      by (smt (z3) comp_associative conv_dist_comp domain_vector_conv order.eq_iff ex231e inf.absorb2 inf.sup_monoid.add_commute mapping_one_closed symmetric_top_closed top_right_mult_increasing vector_export_comp_unit)
   qed
 qed
 
@@ -835,7 +835,7 @@ proof -
   finally have "top * x \<sqinter> 1 = b"
     using 3 by (simp add: assms(3) codomain_atom)
   hence "a * top * b = x * top * x"
-    using 2 by (smt abel_semigroup.commute covector_comp_inf inf.abel_semigroup_axioms inf_top_right surjective_one_closed vector_export_comp_unit vector_top_closed mult_assoc)
+    using 2 by (smt (z3) abel_semigroup.commute covector_comp_inf inf.abel_semigroup_axioms inf_top_right surjective_one_closed vector_export_comp_unit vector_top_closed mult_assoc)
   also have "... = a * top * b * top * (x \<sqinter> a * top * b)"
     using assms(6) calculation inf_absorb1 by auto
   also have "... \<le> a * top * (x \<sqinter> a * top * b)"
@@ -911,7 +911,7 @@ proof -
   hence "(x * top \<sqinter> 1) * top * (x * top \<sqinter> 1) \<le> 1"
     using atom_rectangle_atom_one_rep atomrect by auto
   hence "x * top * x\<^sup>T \<le> 1"
-    by (smt comp_associative conv_dist_comp coreflexive_symmetric ex231e inf_top.right_neutral symmetric_top_closed vector_export_comp_unit)
+    by (smt (z3) comp_associative conv_dist_comp coreflexive_symmetric ex231e inf_top.right_neutral symmetric_top_closed vector_export_comp_unit)
   thus "injective (x * top)"
     by (metis comp_associative conv_dist_comp symmetric_top_closed vector_top_closed)
 qed
@@ -1019,15 +1019,15 @@ proof
   from this obtain c where 2: "atom c \<and> c \<le> a * top * b"
     using atomic by blast
   hence "c * top \<sqinter> 1 \<le> a * top \<sqinter> 1"
-    by (smt comp_inf.comp_isotone inf.boundedE inf.orderE inf_vector_comp reflexive_one_closed top_right_mult_increasing)
+    by (smt (z3) comp_inf.comp_isotone inf.boundedE inf.orderE inf_vector_comp reflexive_one_closed top_right_mult_increasing)
   also have "... = a"
     using 1 by (simp add: coreflexive_comp_top_inf_one)
   finally have 3: "c * top \<sqinter> 1 = a"
     using 1 2 domain_atom by simp
   have "top * c \<le> top * b"
-    using 2 3 by (smt comp_associative comp_inf.reflexive_top_closed comp_inf.vector_top_closed comp_inf_covector comp_isotone simple vector_export_comp_unit)
+    using 2 3 by (smt (z3) comp_associative comp_inf.reflexive_top_closed comp_inf.vector_top_closed comp_inf_covector comp_isotone simple vector_export_comp_unit)
   hence "top * c \<sqinter> 1 \<le> b"
-    using 1 by (smt epm_3 inf.cobounded1 inf.left_commute inf.orderE injective_one_closed reflexive_one_closed)
+    using 1 by (smt (z3) epm_3 inf.cobounded1 inf.left_commute inf.orderE injective_one_closed reflexive_one_closed)
   hence "top * c \<sqinter> 1 = b"
     using 1 2 codomain_atom by simp
   hence "dom_cod c = x"
@@ -1069,9 +1069,9 @@ proof (unfold num_atoms_below_def icard_cartesian_product[THEN sym], rule icard_
     hence 2: "a * top * b = c * top * d"
       using 1 by auto
     hence 3: "a = c"
-      using 1 by (smt atomsimple comp_associative coreflexive_comp_top_inf_one)
+      using 1 by (smt (z3) atomsimple comp_associative coreflexive_comp_top_inf_one)
     have "b = d"
-      using 1 2 by (smt atomsimple comp_associative epm_3 injective_one_closed)
+      using 1 2 by (smt (z3) atomsimple comp_associative epm_3 injective_one_closed)
     thus "x = y"
       using 1 3 by simp
   qed
@@ -1110,7 +1110,7 @@ lemma atom_vector_regular:
 
 lemma atom_rectangle_regular:
   "atom a \<Longrightarrow> regular (a * top * a)"
-  by (smt atom_covector_regular atom_vector_regular comp_associative pp_dist_comp regular_closed_top)
+  by (smt (z3) atom_covector_regular atom_vector_regular comp_associative pp_dist_comp regular_closed_top)
 
 lemma atom_regular:
   "atom a \<Longrightarrow> regular a"
@@ -1805,7 +1805,7 @@ proof -
   have "mapping (x\<^sup>T)"
     using assms(4) surjective_conv_total by auto
   thus ?thesis
-    by (smt card_univ_comp_mapping card_comp_univ card_conv card_univ_meet_comp coreflexive_comp_top_inf inf.absorb2 reflexive_one_closed top_right_mult_increasing total_one_closed univalent_one_closed)
+    by (smt (z3) card_univ_comp_mapping card_comp_univ card_conv card_univ_meet_comp coreflexive_comp_top_inf inf.absorb2 reflexive_one_closed top_right_mult_increasing total_one_closed univalent_one_closed)
 qed
 
 lemma counterexample_card_univ_comp_meet_card_comp_univ:

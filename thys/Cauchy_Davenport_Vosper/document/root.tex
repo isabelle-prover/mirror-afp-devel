@@ -1,0 +1,100 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage[a4paper,margin=2.4cm]{geometry}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{microtype}
+\usepackage{url}
+
+\urlstyle{rm}
+\isabellestyle{it}
+\setlength{\emergencystretch}{3em}
+
+\begin{document}
+
+\title{Vosper's Theorem and the Cauchy--Davenport Theorem via the Polynomial Method}
+\author{Arthur F. Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+This entry formalizes the Cauchy--Davenport lower bound and Vosper's theorem
+for sumsets over finite fields of prime cardinality. It combines a
+polynomial-method proof of Cauchy--Davenport with a Davenport-transform proof of
+Vosper's classification of the nontrivial equality case, and it provides
+modular-representative lemmas connecting the abstract prime-field results to
+normalized representatives of $\mathbb{Z}/p\mathbb{Z}$. AI assistance was used
+for proof engineering. The final definitions, statements, and proofs are checked by
+Isabelle.
+\end{abstract}
+
+\section{Overview}
+
+For nonempty finite subsets $A$ and $B$ of a prime field $\mathbb{F}_p$, the
+Cauchy--Davenport theorem gives the lower bound
+\[
+  |A + B| \geq \min(p, |A| + |B| - 1).
+\]
+Vosper's theorem refines the extremal case: if $|A|, |B| \geq 2$, the sumset is
+not all of $\mathbb{F}_p$, and equality holds in the Cauchy--Davenport bound,
+then both sets are arithmetic progressions with a common difference. These
+results are standard cornerstones of additive combinatorics.
+
+\section{Formalization}
+
+The Isabelle/HOL development first establishes generic finite-sumset facts for
+translations, complements, and cardinalities. The proof of Cauchy--Davenport is
+then carried out by the polynomial method, using ordinary Isabelle polynomials
+to package the bivariate degree argument over finite fields of prime
+cardinality. Vosper's theorem is proved via Davenport transforms: the
+formalization derives one-sided progression results under normalization
+hypotheses and combines them to obtain the final shared-difference
+classification. The entry also supplies concrete modular-translation facts over
+normalized representatives of $\mathbb{Z}/p\mathbb{Z}$.
+
+\section{Relation to existing AFP entries}
+
+The Cauchy--Davenport bound has been formalized in the AFP before. The entry
+\emph{Kneser's Theorem and the Cauchy--Davenport
+Theorem}~\cite{Baksys_Kneser_CD_AFP} derives it as a corollary of Kneser's
+addition theorem for abelian groups, and \emph{A Generalization of the
+Cauchy--Davenport Theorem}~\cite{Baksys_Generalized_CD_AFP} formalizes DeVos's
+generalization to (possibly non-abelian) groups. Both developments are set in an
+abstract group structure and build on further AFP material.
+
+The present entry is intended to complement, not duplicate, this work. Its
+principal new contribution is \emph{Vosper's theorem}, the critical-pair
+(inverse) theorem characterizing the equality case of the Cauchy--Davenport
+bound, which neither of the entries above provides. The Cauchy--Davenport bound
+itself is established here by a different route, the \emph{polynomial method}
+(Combinatorial Nullstellensatz) following Alon, Nathanson, and
+Ruzsa~\cite{AlonNathansonRuzsa1996}: a single explicit polynomial is shown to be
+non-vanishing on a grid built from $A$ and $B$. To the best of our knowledge
+this proof of Cauchy--Davenport is not otherwise present in the AFP. It is
+carried out directly for finite fields of prime cardinality, modelled by the
+\texttt{finite\_field} type class together with a primality hypothesis on the
+field's cardinality, and it depends only on the Isabelle/HOL distribution
+(\texttt{HOL-Computational\_Algebra} and \texttt{HOL-Number\_Theory}). Keeping
+this self-contained prime-field bound as the base case lets the Vosper
+development proceed without translating between the type-class and locale-based
+group representations.
+
+\section{Sources}
+
+The Cauchy--Davenport proof follows the polynomial-method perspective of Alon,
+Nathanson, and Ruzsa~\cite{AlonNathansonRuzsa1996}. The additive-combinatorics
+background follows standard sources such as Nathanson~\cite{Nathanson1996} and
+Tao and Vu~\cite{TaoVu2006}. The inverse theorem formalized here is Vosper's
+critical-pair theorem for groups of prime order~\cite{Vosper1956}.
+
+\tableofcontents
+
+\sloppy
+\input{session}
+\fussy
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

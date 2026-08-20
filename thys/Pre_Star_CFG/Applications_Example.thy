@@ -93,22 +93,19 @@ text\<open>
   can also be automated:
 \<close>
 
-lemma "P \<turnstile> A \<Rightarrow>\<^sup>? B"
+lemma "reachable P A B"
   by eval
 
-lemma "P \<turnstile> B \<Rightarrow>\<^sup>? A"
+lemma "reachable P B A"
   by eval
 
-lemma "P \<turnstile> A \<Rightarrow>\<^sup>? C"
+lemma "reachable P A C"
   by eval
 
-lemma "P \<turnstile> B \<Rightarrow>\<^sup>? C"
+lemma "reachable P B C"
   by eval
 
-lemma "\<not> P \<turnstile> C \<Rightarrow>\<^sup>? A"
-  by eval
-
-lemma "\<not> P \<turnstile> C \<Rightarrow>\<^sup>? A"
+lemma "\<not> reachable P C A"
   by eval
 
 end

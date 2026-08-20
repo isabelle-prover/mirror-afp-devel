@@ -63,7 +63,7 @@ proof-
         using h  by simp
       then have "\<not>(finite {x. (\<Sum>i\<le>n. k i z * x ^ i) = 0})"
         using infinite_Iio[where a="y"]  Inf_many_def[where P="\<lambda>x. (\<Sum>i\<le>n. k i z * x ^ i) = 0"]
-        by (smt INFM_iff_infinite frequently_mono lessThan_def)
+        by (smt (z3) INFM_iff_infinite frequently_mono lessThan_def)
       then have "\<forall>i\<le>n. k i z = 0"
         using  polyfun_rootbound[where n="n",  where c = "\<lambda>i. k i z" ]
         by blast
@@ -108,7 +108,7 @@ proof-
     )"
   have h3 : "\<forall>i. \<forall>F. (freeIn var F \<longrightarrow> freeIn var (g F i))"
     using g_def h1
-    by (smt PolyAtoms.and_def not_in_isovarspar PolyAtoms.or_def freeIn.simps(1) freeIn.simps(2) freeIn.simps(7) freeIn.simps(8) not_in_mult) 
+    by (smt (z3) PolyAtoms.and_def not_in_isovarspar PolyAtoms.or_def freeIn.simps(1) freeIn.simps(2) freeIn.simps(7) freeIn.simps(8) not_in_mult) 
   define L where "L = ([0..<((MPoly_Type.degree p var)+1)])"
   have "\<forall>F. freeIn var F \<longrightarrow> freeIn var (foldl (g::atom fm \<Rightarrow> nat \<Rightarrow> atom fm) F (L::nat list))"
   proof(induction L)

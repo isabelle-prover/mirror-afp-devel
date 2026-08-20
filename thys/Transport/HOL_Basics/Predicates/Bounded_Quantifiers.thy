@@ -17,7 +17,7 @@ syntax
 syntax_consts
   "_ball" \<rightleftharpoons> ball
 translations
-  "\<forall>x xs : P. Q" \<rightharpoonup> "CONST ball P (\<lambda>x. _ball xs P Q)"
+  "\<forall>x xs : P. Q" \<rightharpoonup> "CONST ball P (\<lambda>x. \<forall>xs : P. Q)"
   "\<forall>x : P. Q" \<rightleftharpoons> "CONST ball P (\<lambda>x. Q)"
 end
 
@@ -31,7 +31,7 @@ syntax
 syntax_consts
   "_bex" \<rightleftharpoons> bex
 translations
-  "\<exists>x xs : P. Q" \<rightharpoonup> "CONST bex P (\<lambda>x. _bex xs P Q)"
+  "\<exists>x xs : P. Q" \<rightharpoonup> "CONST bex P (\<lambda>x. \<exists>xs : P. Q)"
   "\<exists>x : P. Q" \<rightleftharpoons> "CONST bex P (\<lambda>x. Q)"
 end
 
@@ -45,7 +45,7 @@ syntax
 syntax_consts
   "_bex1" \<rightleftharpoons> bex1
 translations
-  "\<exists>!x xs : P. Q" \<rightharpoonup> "CONST bex1 P (\<lambda>x. _bex1 xs P Q)"
+  "\<exists>!x xs : P. Q" \<rightharpoonup> "CONST bex1 P (\<lambda>x. \<exists>!xs : P. Q)"
   "\<exists>!x : P. Q" \<rightleftharpoons> "CONST bex1 P (\<lambda>x. Q)"
 end
 
@@ -105,7 +105,7 @@ struct
 end
 open Simpdata
 \<close>
-declaration \<open>fn _ => Simplifier.map_ss (Simplifier.set_mksimps (mksimps mksimps_pairs))\<close>
+declaration \<open>K (Simplifier.map_simpset (Simplifier.set_mksimps (mksimps mksimps_pairs)))\<close>
 
 lemma atomize_ball: "(\<And>x. P x \<Longrightarrow> Q x) \<equiv> Trueprop (\<forall>x : P. Q x)"
   by (simp only: ball_pred_def atomize_all atomize_imp)

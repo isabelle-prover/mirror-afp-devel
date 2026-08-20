@@ -1278,7 +1278,7 @@ qed
 
 lemma stone_phi_embed_strict_order_isomorphism:
   "x < y \<longleftrightarrow> stone_phi_embed x < stone_phi_embed y"
-  by (smt less_eq_stone_phi_pair.rep_eq less_le_not_le less_stone_phi_pair.rep_eq stone_phi.pairs_less.elims(2,3) stone_phi_embed_homomorphism stone_phi_embed_order_injective)
+  by (smt (z3) less_eq_stone_phi_pair.rep_eq less_le_not_le less_stone_phi_pair.rep_eq stone_phi.pairs_less.elims(2,3) stone_phi_embed_homomorphism stone_phi_embed_order_injective)
 
 text \<open>
 Now all Stone algebra axioms can be inherited using the embedding.

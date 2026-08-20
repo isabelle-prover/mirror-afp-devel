@@ -92,7 +92,7 @@ proof -
       unfolding d_domain_def apply simp
       using One_nat_def Suc_pred \<open>0 < length p\<close>  add.commute
                     assms(3) d_domain_def less_diff_conv m_def nth_upt upt_Suc_append
-      by (smt \<open>length d_domain = m\<close> less_nat_zero_code list.size(3) upt_Suc)
+      by (smt (z3) \<open>length d_domain = m\<close> less_nat_zero_code list.size(3) upt_Suc)
 
     have s'_unfold: "peval (s' ! (d_domain ! k)) (push_list a ks)
                    = peval (s ! (d_domain ! k)) a"

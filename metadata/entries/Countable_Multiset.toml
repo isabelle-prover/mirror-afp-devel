@@ -1,0 +1,38 @@
+title = "Formalization of Countable Multisets"
+date = 2026-06-13
+topics = [
+  "Computer science/Data structures",
+]
+abstract = "We define countable multisets as a generalization of finite multisets. Countable multisets are equivalently represented as functions from elements to extended natural numbers ($\\mathbb{N} \\cup \\{\\infty\\}$) returning non-zero values for countably many elements, or as quotients of lazy lists modulo infinitary permutations. We register countable multisets as a bounded natural functor (BNF), enabling nested (co)recursion through them in (co)datatypes. We further define the subtype of countably infinite multisets and register it as a BNF, too."
+license = "bsd"
+note = ""
+creation_note = """
+A first complete version of the proofs was manually written by the authors. LLMs (GPT 5.4, Claude Sonnet 4.6) were used to convert messy apply-style proofs to canonical Isar. All the lemma statements remained unchanged during this refactoring.
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.rabing]
+email = "rabing_email"
+
+[authors.traytel]
+homepage = "traytel_homepage"
+
+[contributors]
+
+[notify]
+rabing = "rabing_email"
+traytel = "traytel_email2"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

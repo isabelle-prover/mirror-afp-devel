@@ -66,8 +66,8 @@ lemma sem_5b1: "ob X Y \<longrightarrow> ob X (Y \<sqinter> X)" by (metis (no_ty
 lemma sem_5b2: "(ob X (Y \<sqinter> X) \<longrightarrow> ob X Y)" by (metis (no_types, lifting) sem_5b) 
 lemma sem_5ab: "ob X Y \<longrightarrow> \<I>(X \<sqinter> Y)" by (metis (full_types) sem_5a sem_5b)
 lemma sem_5bd1: "Y \<sqsubseteq> X \<and> ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((\<sim>X) \<squnion> Y)" using sem_5b sem_5d by smt
-lemma sem_5bd2: "ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((Z \<sqinter> (\<sim>X)) \<squnion> Y)"  using sem_5b sem_5d  by (smt sem_5b1)  
-lemma sem_5bd3: "ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((\<sim>X) \<squnion> Y)"  by (smt sem_5bd2 sem_5b) 
+lemma sem_5bd2: "ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((Z \<sqinter> (\<sim>X)) \<squnion> Y)"  using sem_5b sem_5d  by (smt (z3) sem_5b1)  
+lemma sem_5bd3: "ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((\<sim>X) \<squnion> Y)"  by (smt (z3) sem_5bd2 sem_5b) 
 lemma sem_5bd4: "ob X Y \<and> X \<sqsubseteq> Z \<longrightarrow> ob Z ((\<sim>X) \<squnion> (X \<sqinter>  Y))" using sem_5bd3 by auto
 lemma sem_5bcd: "(ob X Z \<and> ob Y Z) \<longrightarrow> ob (X \<squnion> Y) Z" using sem_5b sem_5c sem_5d oops
 
@@ -143,7 +143,7 @@ lemma CJ_4: "\<lfloor>\<^bold>\<not>\<^bold>O\<langle>\<^bold>\<bottom>|A\<rangl
 lemma CJ_5: "\<lfloor>(\<^bold>O\<langle>B|A\<rangle> \<^bold>\<and> \<^bold>O\<langle>C|A\<rangle>) \<^bold>\<rightarrow> \<^bold>O\<langle>B\<^bold>\<and>C|A\<rangle>\<rfloor>" nitpick oops \<comment> \<open> countermodel found \<close>
 lemma CJ_5_minus: "\<lfloor>\<^bold>\<diamond>\<^sup>S\<^sup>5(A \<^bold>\<and> B \<^bold>\<and> C) \<^bold>\<and> (\<^bold>O\<langle>B|A\<rangle> \<^bold>\<and> \<^bold>O\<langle>C|A\<rangle>) \<^bold>\<rightarrow> \<^bold>O\<langle>B\<^bold>\<and>C|A\<rangle>\<rfloor>" by (simp add: sem_5c)
 
-lemma CJ_6: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>O\<langle>B|A\<^bold>\<and>B\<rangle>\<rfloor>" by (smt C_2 C_4)
+lemma CJ_6: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>O\<langle>B|A\<^bold>\<and>B\<rangle>\<rfloor>" by (smt (z3) C_2 C_4)
 lemma CJ_7: "\<lfloor>A \<^bold>\<leftrightarrow> B\<rfloor> \<longrightarrow> \<lfloor>\<^bold>O\<langle>C|A\<rangle> \<^bold>\<leftrightarrow> \<^bold>O\<langle>C|B\<rangle>\<rfloor>" using sem_5ab sem_5e by blast (* Valid only using classical (not Kaplan's indexical) validity*)
 lemma CJ_8: "\<lfloor>C \<^bold>\<rightarrow> (A \<^bold>\<leftrightarrow> B)\<rfloor> \<longrightarrow> \<lfloor>\<^bold>O\<langle>A|C\<rangle> \<^bold>\<leftrightarrow> \<^bold>O\<langle>B|C\<rangle>\<rfloor>" using C_6 by simp (* Valid only using classical (not Kaplan's indexical) validity*)
 
@@ -151,7 +151,7 @@ lemma CJ_9a: "\<lfloor>\<^bold>\<diamond>\<^sub>p\<^bold>O\<langle>B|A\<rangle> 
 lemma CJ_9p: "\<lfloor>\<^bold>\<diamond>\<^sub>a\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>\<box>\<^sub>a\<^bold>O\<langle>B|A\<rangle>\<rfloor>" by simp
 lemma CJ_9_var_a: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>\<box>\<^sub>a\<^bold>O\<langle>B|A\<rangle>\<rfloor>" by simp
 lemma CJ_9_var_b: "\<lfloor>\<^bold>O\<langle>B|A\<rangle> \<^bold>\<rightarrow> \<^bold>\<box>\<^sub>p\<^bold>O\<langle>B|A\<rangle>\<rfloor>" by simp
-lemma CJ_10: "\<lfloor>\<^bold>\<diamond>\<^sub>p(A \<^bold>\<and> B \<^bold>\<and> C) \<^bold>\<and> \<^bold>O\<langle>C|B\<rangle> \<^bold>\<rightarrow> \<^bold>O\<langle>C|A\<^bold>\<and>B\<rangle>\<rfloor>" by (smt C_4)
+lemma CJ_10: "\<lfloor>\<^bold>\<diamond>\<^sub>p(A \<^bold>\<and> B \<^bold>\<and> C) \<^bold>\<and> \<^bold>O\<langle>C|B\<rangle> \<^bold>\<rightarrow> \<^bold>O\<langle>C|A\<^bold>\<and>B\<rangle>\<rfloor>" by (smt (z3) C_4)
 
 lemma CJ_11a: "\<lfloor>(\<^bold>O\<^sub>aA \<^bold>\<and> \<^bold>O\<^sub>aB) \<^bold>\<rightarrow> \<^bold>O\<^sub>a(A \<^bold>\<and> B)\<rfloor>" nitpick oops \<comment> \<open>  countermodel found \<close>
 lemma CJ_11a_var: "\<lfloor>\<^bold>\<diamond>\<^sub>a(A \<^bold>\<and> B) \<^bold>\<and> (\<^bold>O\<^sub>aA \<^bold>\<and> \<^bold>O\<^sub>aB) \<^bold>\<rightarrow> \<^bold>O\<^sub>a(A \<^bold>\<and> B)\<rfloor>" using sem_5c by auto

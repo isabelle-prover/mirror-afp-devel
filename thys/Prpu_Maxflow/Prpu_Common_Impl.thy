@@ -280,7 +280,7 @@ proof -
   hence [simp]: "u\<in>V" unfolding cf.outgoing_def using cfE_of_ss_VxV by auto
   from \<open>cf.outgoing u \<noteq> {}\<close> 
   have AUX2: "\<exists>v. v \<in> adjacent_nodes u \<and> cf (u, v) \<noteq> 0"
-    by (smt AUX Collect_empty_eq Image_singleton_iff UnCI adjacent_nodes_def 
+    by (smt (z3) AUX Collect_empty_eq Image_singleton_iff UnCI adjacent_nodes_def 
             cf.outgoing_def cf_def converse_iff prod.simps(2))
       
   show ?thesis unfolding min_adj_label_aux_def EQ   

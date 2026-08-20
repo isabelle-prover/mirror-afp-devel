@@ -54,7 +54,7 @@ lemma asymmetric_irreflexive_inf:
 
 lemma transitive_asymmetric_irreflexive_inf:
   "transitive x \<Longrightarrow> asymmetric x \<longleftrightarrow> irreflexive_inf x"
-  by (smt asymmetric_inf asymmetric_irreflexive_inf inf.absorb2 inf.cobounded1 inf.sup_monoid.add_commute inf_assoc le_bot)
+  by (smt (z3) asymmetric_inf asymmetric_irreflexive_inf inf.absorb2 inf.cobounded1 inf.sup_monoid.add_commute inf_assoc le_bot)
 
 abbreviation "orientation x y \<equiv> y \<squnion> y\<^sup>T = x \<and> asymmetric y"
 abbreviation "loop_orientation x y \<equiv> y \<squnion> y\<^sup>T = x \<and> antisymmetric y"
@@ -357,7 +357,7 @@ lemma linear_orderable_3_implies_orientable_12:
 
 lemma orientable_11_implies_12:
   "orientable_11 x \<Longrightarrow> orientable_12 (x \<sqinter> -1)"
-  by (smt inf_sup_distrib2 conv_complement conv_dist_inf conv_involutive inf_import_p inf_top.left_neutral linear_asymmetric maddux_3_13 p_inf symmetric_one_closed)
+  by (smt (z3) inf_sup_distrib2 conv_complement conv_dist_inf conv_involutive inf_import_p inf_top.left_neutral linear_asymmetric maddux_3_13 p_inf symmetric_one_closed)
 
 end
 
@@ -448,7 +448,7 @@ proof -
   have "loop_super_orientation x ?y"
   proof
     show "x \<le> ?y \<squnion> ?y\<^sup>T"
-      by (smt 1 comp_inf.semiring.add_mono conv_dist_sup inf_le2 maddux_3_11_pp reflexive_one_closed regular_one_closed sup.absorb1 sup.left_commute sup_assoc symmetric_one_closed)
+      by (smt (z3) 1 comp_inf.semiring.add_mono conv_dist_sup inf_le2 maddux_3_11_pp reflexive_one_closed regular_one_closed sup.absorb1 sup.left_commute sup_assoc symmetric_one_closed)
     show "antisymmetric ?y"
       using 1 conv_dist_sup distrib_imp1 inf_sup_distrib1 sup_monoid.add_commute by auto
   qed
@@ -523,7 +523,7 @@ lemma all_orientable_characterisations:
 
 lemma orientable_12_implies_11:
   "orientable_12 x \<Longrightarrow> orientable_11 (x \<squnion> 1)"
-  by (smt inf_top.right_neutral conv_complement conv_dist_sup conv_involutive inf_import_p maddux_3_13 p_bot p_dist_inf p_dist_sup regular_one_closed symmetric_one_closed)
+  by (smt (z3) inf_top.right_neutral conv_complement conv_dist_sup conv_involutive inf_import_p maddux_3_13 p_bot p_dist_inf p_dist_sup regular_one_closed symmetric_one_closed)
 
 (* The following lemma might go into Relation_Algebras. *)
 lemma linear_strict_order_order:
@@ -726,7 +726,7 @@ proof
     also have "... \<le> y\<^sup>+ \<squnion> y\<^sup>T\<^sup>+ \<squnion> (z \<sqinter> y\<^sup>T)\<^sup>+ * (z \<sqinter> y)\<^sup>+"
       using comp_isotone semiring.add_left_mono semiring.add_right_mono star_isotone by auto
     also have "... \<le> -1 \<squnion> (z \<sqinter> y\<^sup>T)\<^sup>+ * (z \<sqinter> y)\<^sup>+"
-      by (smt 1 conv_complement conv_isotone conv_plus_commute inf.absorb2 inf.orderE order_conv_closed order_one_closed semiring.add_right_mono sup.absorb1)
+      by (smt (z3) 1 conv_complement conv_isotone conv_plus_commute inf.absorb2 inf.orderE order_conv_closed order_one_closed semiring.add_right_mono sup.absorb1)
     also have "... = -1"
     proof -
       have "(z \<sqinter> y\<^sup>T)\<^sup>+ * (z \<sqinter> y)\<^sup>+ \<le> (z \<sqinter> y\<^sup>T) * top * (z \<sqinter> y)\<^sup>+"
@@ -913,7 +913,7 @@ proof -
   have "(x \<sqinter> -y) * (x\<^sup>T \<sqinter> y\<^sup>T) \<le> -1"
     by (metis conv_dist_inf inf.cobounded2 inf_left_idem mult_left_one p_shunting_swap schroeder_4_p)
   hence "(x \<sqinter> -y) * (x\<^sup>T \<sqinter> y\<^sup>T) = bot"
-    by (smt assms comp_isotone coreflexive_comp_inf coreflexive_idempotent coreflexive_symmetric dual_order.trans inf.cobounded1 strict_order_var)
+    by (smt (z3) assms comp_isotone coreflexive_comp_inf coreflexive_idempotent coreflexive_symmetric dual_order.trans inf.cobounded1 strict_order_var)
   thus ?thesis
     by (simp add: conv_dist_inf schroeder_2 mult_assoc)
 qed
@@ -921,7 +921,7 @@ qed
 lemma top_injective_inf_complement_2:
   assumes "injective x"
   shows "(x\<^sup>T \<sqinter> y) * top \<sqinter> (x\<^sup>T \<sqinter> -y) * top = bot"
-  by (smt assms top_injective_inf_complement conv_dist_comp conv_dist_inf conv_involutive conv_complement conv_top conv_bot)
+  by (smt (z3) assms top_injective_inf_complement conv_dist_comp conv_dist_inf conv_involutive conv_complement conv_top conv_bot)
 
 text \<open>Theorem 10.3\<close>
 
@@ -946,7 +946,7 @@ proof -
     finally have "z\<^sup>\<star> \<sqinter> (x \<sqinter> -z)\<^sup>\<star> = (y\<^sup>T \<sqinter> z)\<^sup>\<star> * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>"
       using 3 inf_commute by simp
     also have "... = ((y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>) \<squnion> ((y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>)"
-      by (smt inf.sup_monoid.add_commute inf_sup_distrib1 star.circ_loop_fixpoint sup_commute mult_assoc)
+      by (smt (z3) inf.sup_monoid.add_commute inf_sup_distrib1 star.circ_loop_fixpoint sup_commute mult_assoc)
     also have "... = (1 \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>) \<squnion> ((y \<sqinter> z)\<^sup>+ \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>) \<squnion> ((y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>\<star>)"
       by (metis inf_sup_distrib2 star_left_unfold_equal)
     also have "... \<le> 1"
@@ -960,7 +960,7 @@ proof -
         have "(y \<sqinter> z)\<^sup>+ \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> \<le> y\<^sup>+ \<sqinter> y\<^sup>T\<^sup>\<star>"
           by (meson comp_inf.mult_isotone comp_isotone inf.cobounded1 star_isotone)
         also have "... = bot"
-          using 1 by (smt acyclic_star_inf_conv inf.orderE inf.sup_monoid.add_assoc pseudo_complement star.left_plus_below_circ)
+          using 1 by (smt (z3) acyclic_star_inf_conv inf.orderE inf.sup_monoid.add_assoc pseudo_complement star.left_plus_below_circ)
         finally show "(y \<sqinter> z)\<^sup>+ \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> \<le> bot"
           .
         have "(y \<sqinter> z)\<^sup>+ \<sqinter> (y\<^sup>T \<sqinter> -z)\<^sup>\<star> * (y \<sqinter> -z)\<^sup>+ \<le> top * (y \<sqinter> z) \<sqinter> top * (y \<sqinter> -z)"
@@ -981,7 +981,7 @@ proof -
         show "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> 1 \<le> 1"
           by simp
         have "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>\<star> \<sqinter> (y \<sqinter> -z)\<^sup>+ = ((y\<^sup>T \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+) \<squnion> ((y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+)"
-          by (smt inf.sup_monoid.add_commute inf_sup_distrib1 star.circ_back_loop_fixpoint star.circ_plus_same sup_commute mult_assoc)
+          by (smt (z3) inf.sup_monoid.add_commute inf_sup_distrib1 star.circ_back_loop_fixpoint star.circ_plus_same sup_commute mult_assoc)
         also have "... \<le> bot"
         proof (rule sup_least)
           have "(y\<^sup>T \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+ \<le> y\<^sup>T\<^sup>+ \<sqinter> y\<^sup>+"
@@ -991,7 +991,7 @@ proof -
           finally show "(y\<^sup>T \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+ \<le> bot"
             .
           have "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+ \<le> top * (y \<sqinter> z) \<sqinter> top * (y \<sqinter> -z)"
-            by (smt comp_inf.mult_isotone comp_isotone inf.cobounded1 inf.orderE star.circ_plus_same top.extremum mult_assoc)
+            by (smt (z3) comp_inf.mult_isotone comp_isotone inf.cobounded1 inf.orderE star.circ_plus_same top.extremum mult_assoc)
           also have "... = bot"
             using 1 by (simp add: top_injective_inf_complement)
           finally show "(y\<^sup>T \<sqinter> z)\<^sup>+ * (y \<sqinter> z)\<^sup>+ \<sqinter> (y \<sqinter> -z)\<^sup>+ \<le> bot"
@@ -1026,9 +1026,9 @@ proof (unfold acyclic_4_def, rule allI, rule impI)
   hence "y\<^sup>\<star> \<sqinter> (x \<sqinter> -y)\<^sup>+ \<le> 1"
     using acyclic_5b_def assms(2) by blast
   hence "y\<^sup>\<star> \<sqinter> x \<sqinter> -y \<le> 1"
-    by (smt inf.sup_left_divisibility inf.sup_monoid.add_assoc star.circ_mult_increasing)
+    by (smt (z3) inf.sup_left_divisibility inf.sup_monoid.add_assoc star.circ_mult_increasing)
   hence "y\<^sup>\<star> \<sqinter> x \<sqinter> -y = bot"
-    by (smt assms(1) comp_inf.semiring.mult_zero_left inf.orderE inf.sup_monoid.add_assoc inf.sup_monoid.add_commute pseudo_complement)
+    by (smt (z3) assms(1) comp_inf.semiring.mult_zero_left inf.orderE inf.sup_monoid.add_assoc inf.sup_monoid.add_commute pseudo_complement)
   thus "x \<sqinter> y\<^sup>\<star> \<le> --y"
     using inf.sup_monoid.add_commute pseudo_complement by fastforce
 qed
@@ -1130,7 +1130,7 @@ proof -
   have 2: "asymmetric (x\<^sup>+)"
     by (simp add: assms acyclic_asymmetric star.circ_transitive_equal star.left_plus_circ mult_assoc)
   have 3: "strict_linear (x\<^sup>+)"
-    by (smt assms acyclic_star_inf_conv conv_star_commute inf.sup_monoid.add_commute inf_absorb2 maddux_3_13 orientable_11_implies_12 star_left_unfold_equal)
+    by (smt (z3) assms acyclic_star_inf_conv conv_star_commute inf.sup_monoid.add_commute inf_absorb2 maddux_3_13 orientable_11_implies_12 star_left_unfold_equal)
   show ?thesis
     using 1 2 3 by simp
 qed
@@ -1181,7 +1181,7 @@ proof -
     have "x\<^sup>+ \<le> y\<^sup>\<star> \<squnion> y\<^sup>\<star>\<^sup>T"
       using 1 by (metis cancel_separate_1_sup conv_star_commute star.left_plus_below_circ)
     also have "... = ?y \<squnion> ?y\<^sup>T \<squnion> 1"
-      by (smt conv_plus_commute conv_star_commute star.circ_reflexive star_left_unfold_equal sup.absorb1 sup_assoc sup_monoid.add_commute)
+      by (smt (z3) conv_plus_commute conv_star_commute star.circ_reflexive star_left_unfold_equal sup.absorb1 sup_assoc sup_monoid.add_commute)
     finally show "x\<^sup>+ \<sqinter> -1 \<le> ?y \<squnion> ?y\<^sup>T"
       by (metis inf.order_lesseq_imp inf.sup_monoid.add_commute inf.sup_right_isotone p_inf_sup_below sup_commute)
   qed
@@ -1201,7 +1201,7 @@ lemma acyclic_3a_spannable_implies_6:
       and "spannable x"
       and "symmetric x"
     shows "acyclic_6 x"
-  by (smt acyclic_6_def acyclic_3a_def assms conv_isotone le_supI spannable_def)
+  by (smt (z3) acyclic_6_def acyclic_3a_def assms conv_isotone le_supI spannable_def)
 
 text \<open>Theorem 10.3\<close>
 
@@ -1249,7 +1249,7 @@ proof -
   also have "... \<le> (?y \<squnion> 1)\<^sup>T * (?y \<squnion> 1)"
     using 4 by (simp add: conv_isotone mult_isotone)
   also have "... = (?y \<squnion> ?y\<^sup>T)\<^sup>\<star>"
-    using 1 2 by (smt order.antisym cancel_separate_1 conv_star_commute star.circ_mult_1 star.circ_mult_increasing star.right_plus_circ star_right_induct_mult sup_commute)
+    using 1 2 by (smt (z3) order.antisym cancel_separate_1 conv_star_commute star.circ_mult_1 star.circ_mult_increasing star.right_plus_circ star_right_induct_mult sup_commute)
   finally have "-1 \<le> (?y \<squnion> ?y\<^sup>T)\<^sup>\<star>"
     using top.extremum top_le by blast
   thus "spanning (-1) (p \<sqinter> -1)"
@@ -1267,7 +1267,7 @@ proof -
   have "x \<sqinter> -1 \<le> (x \<sqinter> -1)\<^sup>\<star>"
     by (simp add: star.circ_increasing)
   hence "x \<le> (x \<sqinter> -1)\<^sup>\<star>"
-    using 1 by (smt maddux_3_11_pp regular_one_closed sup.absorb_iff1 sup_assoc)
+    using 1 by (smt (z3) maddux_3_11_pp regular_one_closed sup.absorb_iff1 sup_assoc)
   thus ?thesis
     by (metis order.antisym inf.cobounded1 star_involutive star_isotone)
 qed
@@ -1293,7 +1293,7 @@ next
     have "orientation x ?z"
     proof
       have "?z \<squnion> ?z\<^sup>T = ((--z \<squnion> --z\<^sup>T) \<sqinter> x) \<squnion> (-(z \<squnion> z\<^sup>T) \<sqinter> (y \<squnion> y\<^sup>T))"
-        by (smt 2 3 comp_inf.semiring.combine_common_factor conv_complement conv_dist_inf conv_dist_sup inf_sup_distrib1 orientation_symmetric sup.left_commute sup_assoc)
+        by (smt (z3) 2 3 comp_inf.semiring.combine_common_factor conv_complement conv_dist_inf conv_dist_sup inf_sup_distrib1 orientation_symmetric sup.left_commute sup_assoc)
       also have "... = x"
         by (metis 2 inf_commute maddux_3_11_pp pp_dist_sup sup_monoid.add_commute)
       finally show "?z \<squnion> ?z\<^sup>T = x"
@@ -1301,9 +1301,9 @@ next
       have "?z \<sqinter> ?z\<^sup>T = ((--z \<sqinter> x) \<squnion> (-(z \<squnion> z\<^sup>T) \<sqinter> y)) \<sqinter> ((--z\<^sup>T \<sqinter> x) \<squnion> (-(z \<squnion> z\<^sup>T) \<sqinter> y\<^sup>T))"
         by (simp add: 2 conv_complement conv_dist_inf conv_dist_sup inf.sup_monoid.add_commute)
       also have "... = ((--z \<sqinter> x) \<sqinter> (--z\<^sup>T \<sqinter> x)) \<squnion> ((--z \<sqinter> x) \<sqinter> (-(z \<squnion> z\<^sup>T) \<sqinter> y\<^sup>T)) \<squnion> ((-(z \<squnion> z\<^sup>T) \<sqinter> y) \<sqinter> (--z\<^sup>T \<sqinter> x)) \<squnion> ((-(z \<squnion> z\<^sup>T) \<sqinter> y) \<sqinter> (-(z \<squnion> z\<^sup>T) \<sqinter> y\<^sup>T))"
-        by (smt comp_inf.semiring.distrib_left inf_sup_distrib2 sup_assoc)
+        by (smt (z3) comp_inf.semiring.distrib_left inf_sup_distrib2 sup_assoc)
       also have "... = bot"
-        by (smt 2 3 inf.cobounded1 inf.left_commute inf.orderE p_dist_sup pseudo_complement sup.absorb_iff1)
+        by (smt (z3) 2 3 inf.cobounded1 inf.left_commute inf.orderE p_dist_sup pseudo_complement sup.absorb_iff1)
       finally show "?z \<sqinter> ?z\<^sup>T = bot"
         .
     qed
@@ -1346,7 +1346,7 @@ next
     hence "x \<sqinter> -y \<sqinter> (x \<sqinter> --y)\<^sup>\<star> = bot"
       using inf_import_p by auto
     hence "x \<sqinter> -y \<sqinter> (x \<sqinter> y)\<^sup>\<star> = bot"
-      by (smt p_inf_pp pp_dist_star pp_pp_inf_bot_iff)
+      by (smt (z3) p_inf_pp pp_dist_star pp_pp_inf_bot_iff)
     hence "x \<sqinter> -y \<sqinter> y\<^sup>\<star> = bot"
       using 4 inf_absorb2 by auto
     thus "x \<sqinter> y\<^sup>\<star> \<le> --y"
@@ -1388,7 +1388,7 @@ proof -
   have "top = x \<squnion> x\<^sup>T \<squnion> 1"
     using assms conv_dist_sup orientable_12_implies_11 sup_assoc sup_commute by fastforce
   also have "... \<le> x\<^sup>\<star> \<squnion> x\<^sup>\<star>\<^sup>T"
-    by (smt conv_star_commute star.circ_increasing star_sup_one sup_assoc sup_commute sup_mono)
+    by (smt (z3) conv_star_commute star.circ_increasing star_sup_one sup_assoc sup_commute sup_mono)
   finally show ?thesis
     by (simp add: assms top_le transitive_acyclic_asymmetric)
 qed
@@ -1467,7 +1467,7 @@ proof
       finally show "w \<sqinter> z \<sqinter> x\<^sup>T \<le> bot"
         by simp
       thus "z\<^sup>T \<sqinter> x \<sqinter> w\<^sup>T \<le> bot"
-        by (smt conv_dist_inf conv_inf_bot_iff inf.left_commute inf.sup_monoid.add_commute le_bot)
+        by (smt (z3) conv_dist_inf conv_inf_bot_iff inf.left_commute inf.sup_monoid.add_commute le_bot)
       have "irreflexive z"
         by (meson 4 assms(1) dual_order.trans irreflexive_complement_reflexive irreflexive_inf_closed reflexive_complement_irreflexive)
       hence "asymmetric z"

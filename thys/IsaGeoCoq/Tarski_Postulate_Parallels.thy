@@ -844,7 +844,7 @@ proof -
         then have "\<not> Col Q P R"
           using P9 W1 par_not_col by auto
         then have W3: "Q = U"
-          by (smt BetS_def Col_def P1C P7 W2 col_transitivity_2)
+          by (smt (z3) BetS_def Col_def P1C P7 W2 col_transitivity_2)
         then have "False"
           using BetS_def P1C by auto
       }
@@ -1229,9 +1229,9 @@ proof -
     fix A1 A2 B1 B2 P C1 C2
     assume P1: "Col P A1 A2 \<and> A1 A2 Par B1 B2 \<and> Col P B1 B2 \<and> A1 A2 Par C1 C2 \<and> Col P C1 C2"
     have "Col C1 B1 B2"
-      by (smt P1 l9_10 not_col_permutation_3 not_strict_par2 par_col2_par par_comm par_id_5 par_symmetry ts_distincts)
+      by (smt (z3) P1 l9_10 not_col_permutation_3 not_strict_par2 par_col2_par par_comm par_id_5 par_symmetry ts_distincts)
     moreover have "Col C2 B1 B2"
-      by (smt P1 l9_10 not_col_permutation_3 not_strict_par2 par_col2_par par_id_5 par_left_comm par_symmetry ts_distincts)
+      by (smt (z3) P1 l9_10 not_col_permutation_3 not_strict_par2 par_col2_par par_id_5 par_left_comm par_symmetry ts_distincts)
     ultimately have "Col C1 B1 B2 \<and> Col C2 B1 B2" by auto
   }
   then show ?thesis

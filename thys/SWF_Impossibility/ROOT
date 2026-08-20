@@ -1,0 +1,17 @@
+chapter AFP
+
+session SWF_Impossibility = Swap_Distance +
+  options [timeout = 1800]
+  sessions
+    PAPP_Impossibility
+    Swap_Distance
+    Randomised_Social_Choice
+  theories
+    Social_Welfare_Functions
+    SWF_Anonymous
+    SWF_Lowering
+    Anon_Unan_Stratproof_Impossibility
+    Majcons_Stratproof_Impossibility
+  document_files
+    root.tex
+    root.bib

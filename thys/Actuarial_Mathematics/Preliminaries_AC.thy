@@ -850,7 +850,7 @@ proof -
       using DERIV_deriv_iff_real_differentiable by simp
   qed
   thus ?thesis
-    by (intro fundamental_theorem_of_calculus_interior_strong[where S=S];
+    by (intro fundamental_theorem_of_calculus_interior_strong[OF countable_finite, where S=S];
         simp add: assms fin has_real_derivative_iff_has_vector_derivative)
 qed
 
@@ -2551,7 +2551,7 @@ qed
 proposition distributed_deriv_cdf:
   assumes [measurable]: "random_variable borel X"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  assumes "finite S" "\<And>x. x \<notin> S \<Longrightarrow> (F has_real_derivative f x) (at x)"
+  assumes "countable S" "\<And>x. x \<notin> S \<Longrightarrow> (F has_real_derivative f x) (at x)"
     and "continuous_on UNIV F" "f \<in> borel_measurable lborel"
   shows "distributed M lborel X f"
 proof -
@@ -2583,7 +2583,7 @@ proof -
           = \<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * g x) \<partial>lborel"
           apply (rule nn_integral_cong_AE)
           apply (rule AE_mp[where P="\<lambda>x. x \<notin> S"])
-          using assms finite_imp_null_set_lborel AE_not_in apply blast
+          using assms countable_imp_null_set_lborel AE_not_in apply blast
           unfolding g_def by simp
         also have "\<dots> = ennreal (F b - F a)"
         proof -
@@ -2591,14 +2591,15 @@ proof -
             unfolding g_def if_split apply safe
             using assms distrX_FBM.cdf_nondecreasing
             by (intro mono_on_imp_deriv_nonneg[of UNIV F]; simp add: monoI)
-          moreover have "\<And>x. x \<notin> S \<Longrightarrow> (F has_vector_derivative g x) (at x)"
-            using assms has_real_derivative_iff_has_vector_derivative g_def by simp
+          moreover have "\<And>x. x \<notin> S \<Longrightarrow> (F has_vector_derivative g x) (at x within {a..b})"
+            using assms has_real_derivative_iff_has_vector_derivative g_def
+            by (metis has_vector_derivative_at_within)
           moreover have "continuous_on {a..b} F"
             using assms continuous_on_subset by blast
           ultimately show ?thesis
             apply (rewrite nn_integral_has_integral_lebesgue, simp)
             unfolding F_def
-            by (rule fundamental_theorem_of_calculus_strong[of S]) (auto simp add: ab assms)
+            by (rule fundamental_theorem_of_calculus_strong[where S=S]) (auto simp add: ab assms)
         qed
         finally show ?thesis .
       qed

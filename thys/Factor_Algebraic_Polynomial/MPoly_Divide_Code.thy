@@ -3,7 +3,7 @@ subsection \<open>Implementation of Division on Multivariate Polynomials\<close>
 theory MPoly_Divide_Code
   imports 
     MPoly_Divide 
-    Polynomials.MPoly_Type_Class_FMap
+    Polynomials.MPoly_Type_Class_Finite_Map
     Polynomials.MPoly_Type_Univariate
 begin
 

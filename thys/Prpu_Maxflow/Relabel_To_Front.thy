@@ -236,7 +236,7 @@ proof -
     with A relabel_adm_edges(2,3)[OF PRE] neighbors_adm
     show False 
       apply (auto) (* TODO: Clean up this mess *)
-      by (smt DiffD2 Diff_triv adm_edges_def cf.incoming_def 
+      by (smt (z3) DiffD2 Diff_triv adm_edges_def cf.incoming_def 
           mem_Collect_eq prod.simps(2) relabel_preserve_other)
   qed
 qed  

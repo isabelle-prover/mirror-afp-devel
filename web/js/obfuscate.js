@@ -1,4 +1,7 @@
-/* constants */
+/* Author: Fabian Huch, TU Muenchen
+
+Obfuscated e-mail addresses within html page, to stop automated web scraping.
+ */
 
 const CLASS_OBFUSCATED = 'obfuscated'
 const CLASS_LINK = 'link'
@@ -7,7 +10,7 @@ const ATTRIBUTE_DATA = 'data'
 
 /* handler */
 
-const deobfuscate_href = (ev) => {
+function deobfuscate_href(ev) {
   const elem = ev.target
   if (elem.classList.contains(CLASS_OBFUSCATED)) {
     const data = elem.getAttribute(ATTRIBUTE_DATA)

@@ -347,7 +347,7 @@ proof-
     apply(simp add:  key_gen_def verify_def Let_def split_def valid_msg_def)
     apply(intro try_spmf_cong bind_spmf_cong[OF refl]; clarsimp?)+
     using special_soundness_def \<Sigma>_prot \<Sigma>_protocol_def special_soundness_alt special_soundness_def set_spmf_G_rel set_spmf_G_domain_rel 
-    by (smt basic_trans_rules(31) bind_spmf_cong domain_subset_valid_pub)
+    by (smt (z3) basic_trans_rules(31) bind_spmf_cong domain_subset_valid_pub)
   hence "abstract_com.bind_advantage \<A> \<le> spmf (TRY do {
   (x,w) \<leftarrow> G;
   (c, m, d, m', d') \<leftarrow> \<A> x;

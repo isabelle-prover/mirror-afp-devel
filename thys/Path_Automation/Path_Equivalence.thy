@@ -1422,6 +1422,20 @@ proof -
     by (rule homotopic_loops_subset) (use assms eq_loops_imp_path_image_eq[OF assms(1)] in auto)
 qed
 
+lemma eq_loops_imp_contour_integral_eq:
+  assumes "eq_loops p q" "valid_path p" "valid_path q"
+  assumes "f analytic_on (path_image p \<inter> path_image q)"
+  shows   "contour_integral p f = contour_integral q f"
+proof -
+  from assms(4) obtain A where A: "open A" "f holomorphic_on A" "path_image p \<inter> path_image q \<subseteq> A"
+    using analytic_on_holomorphic by auto
+  show ?thesis
+  proof (rule Cauchy_theorem_homotopic_loops)
+    show "homotopic_loops A p q"
+      by (intro eq_loops_imp_homotopic assms A)
+  qed (use assms A in auto)
+qed
+
 lemma eq_loops_homotopic_loops_trans [trans]:
   "eq_loops p q \<Longrightarrow> homotopic_loops A q r \<Longrightarrow> homotopic_loops A p r"
   "homotopic_loops A p q \<Longrightarrow> eq_loops q r \<Longrightarrow> homotopic_loops A p r"
@@ -1676,16 +1690,59 @@ proof -
   finally show ?thesis .
 qed
 
+lemma eq_loops_part_circlepath:
+  assumes "b = a + 2 * of_int n * pi" "b' = a' + 2 * of_int n * pi" "n \<noteq> 0"
+  shows   "eq_loops (part_circlepath x r a b) (part_circlepath x r a' b')"
+proof -
+  define c where "c = (a'-a)/(2*n*pi)"
+  have "eq_loops (part_circlepath x r a b) (shiftpath' c (part_circlepath x r a b))"
+    by (rule eq_loops_shiftpath'_right)
+       (auto simp: assms exp_eq_polar cis_multiple_2pi' simp flip: cis_mult)
+  also have "shiftpath' c (part_circlepath x r a b) = 
+               part_circlepath x r (a + 2 * real_of_int n * pi * c) (a + 2 * real_of_int n * pi * (c + 1))"
+      using shiftpath'_full_part_circlepath[of c x r a n] by (auto simp: assms)
+  also have "a + 2 * of_int n * pi * c = a'"
+    using \<open>n \<noteq> 0\<close> by (auto simp: c_def field_simps)
+  also have "a + 2 * real_of_int n * pi * (c + 1) = b'"
+    using \<open>n \<noteq> 0\<close> by (auto simp: c_def assms(1,2) field_simps)
+  finally show ?thesis .
+qed
+
 lemma eq_loops_full_part_circlepath:
   assumes "b = a + 2 * pi"
   shows   "eq_loops (part_circlepath x r a b) (circlepath x r)"
+  unfolding circlepath_def
+  by (rule eq_loops_part_circlepath[where n = 1]) (simp_all add: assms)
+
+lemma eqloops_reversepath_cong:
+  assumes "eq_loops p q"
+  shows   "eq_loops (reversepath p) (reversepath q)"
 proof -
-  have "eq_loops (circlepath x r) (shiftpath' (a / (2 * pi)) (circlepath x r))"
-    by simp
-  also have "shiftpath' (a / (2 * pi)) (circlepath x r) = part_circlepath x r a b"
-    by (simp add: shiftpath'_circlepath add_divide_distrib ring_distribs assms)
-  finally show ?thesis
-    by (rule eq_loops_sym)
+  obtain c where pq:
+     "pathstart p = pathfinish p" "pathstart q = pathfinish q" "path q" "eq_paths p (shiftpath' c q)"
+    using assms unfolding eq_loops_def by blast
+
+  have "eq_paths (reversepath p) (shiftpath' (1-frac c) (reversepath q))"
+  proof -
+    have "eq_paths (reversepath p) (reversepath (shiftpath' c q))"
+      by (intro eq_paths_reverse pq)
+    also have "shiftpath' c q = shiftpath' (frac c) q"
+      by (simp add: shiftpath'_frac)
+    also have *: "eq_paths (reversepath (shiftpath' (frac c) q)) (reversepath (shiftpath (frac c) q))"
+      by (rule eq_paths_sym, intro eq_paths_reverse eq_paths_shiftpath_shiftpath')
+         (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
+    also have "eq_paths \<dots> (shiftpath (1 - frac c) (reversepath q))"
+    proof (rule eq_paths_refl')
+      show "reversepath (shiftpath (frac c) q) x = shiftpath (1 - frac c) (reversepath q) x" 
+        if "x \<in> {0..1}" for x
+        using that pq by (subst shiftpath_reversepath_loop) auto
+    qed (use * in blast)
+    also have "eq_paths \<dots> (shiftpath' (1 - frac c) (reversepath q))"
+      by (intro eq_paths_shiftpath_shiftpath') (use pq less_imp_le[OF frac_lt_1[of c]] in auto)
+    finally show ?thesis .
+  qed
+  thus ?thesis
+    using pq unfolding eq_loops_def by auto
 qed
 
 
@@ -1702,8 +1759,9 @@ notation eq_paths (infix "\<equiv>\<^sub>p" 60)
 notation eq_loops (infix "\<equiv>\<^sub>\<circle>" 60)
 notation is_subpath (infix "\<le>\<^sub>p" 60)
 
-end
+(*FIXME: maybe the notation should be available in the whole file?*)
 
+end
 
 unbundle path_rel_notation
 

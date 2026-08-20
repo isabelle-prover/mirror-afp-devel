@@ -32,7 +32,7 @@ lemma den_not_zero:
   assumes "cmod a < 1" "cmod b < 1"
   shows "1 + cnj a * b \<noteq> 0"
   using assms
-  by (smt add.inverse_unique complex_mod_cnj i_squared norm_ii norm_mult norm_mult_less)
+  by (smt (z3) add.inverse_unique complex_mod_cnj i_squared norm_ii norm_mult norm_mult_less)
 
 lemma cmod_mix_cnj:
   assumes "cmod u < 1" "cmod v < 1"

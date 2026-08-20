@@ -1592,7 +1592,7 @@ proof -
     hence "(?cdfX has_real_derivative pdfX t) (at t)"
       unfolding pdfX_def using DERIV_deriv_iff_real_differentiable by auto }
   thus ?thesis
-    by (intro MM_PS.distributed_deriv_cdf[where S=S]; simp add: fin)
+    by (intro MM_PS.distributed_deriv_cdf[where S=S]; simp add: countable_finite fin)
 qed
 
 lemma pdfT0_X: "pdfT 0 = pdfX"
@@ -1894,7 +1894,7 @@ proof -
     hence "(?cdfTx has_real_derivative pdfT x t) (at t)"
       unfolding pdfT_def using DERIV_deriv_iff_real_differentiable by force }
   thus ?thesis
-    by (intro alivex_PS.distributed_deriv_cdf[where S=S]; simp add: fin)
+    by (intro alivex_PS.distributed_deriv_cdf[where S=S]; simp add: countable_finite fin)
 qed
 
 lemma nn_integral_pdfTx_1: "(\<integral>\<^sup>+s. pdfT x s \<partial>lborel) = 1"

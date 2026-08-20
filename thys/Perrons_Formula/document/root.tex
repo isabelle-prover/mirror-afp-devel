@@ -1,0 +1,54 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Perron's Formula}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry provides a proof of \emph{Perron's Formula}, which states that
+for a Dirichlet series $f(s) = \sum_{n=1}^\infty a_n n^{-s}$ with abscissa of convergence $\sigma_c$
+we have for any $c, z, x$ with $c > 0$, $x > 0$, $\text{Re}(z) > \sigma_c - c$:
+  \[\sum\limits_{n\leq x}\kern-1pt^{'} a_n n^{-z} =
+      \frac{1}{2\pi i}\, \lim_{T\to\infty} \int\limits_{c-iT}^{c+iT}\hskip-4pt f(z + w)\, 
+         x^s\kern1pt w\,\frac{\text{d}w}{w} \]
+Additionally, various explicit bounds for the remainder (i.e.\ when using some finite value of $T$ 
+instead of the limit) are shown.
+
+As an interesting nontrivial auxiliary result, asymptotic bounds for a Dirichlet series near
+$\pm i\infty$ are also included, namely that if $a\in[0,1)$ then $f(\sigma + it) \in o(t^{1-a})$ as
+$t\to\pm\infty$, uniformly for all $\sigma\geq \sigma_c + a + \varepsilon$.
+
+The proofs mainly follow Tenenbaum's \emph{Introduction to Analytic and Probabilistic Number
+Theory}~\cite{tenenbaum} and Titchmarsh's \emph{Theory of Functions}~\cite{titchmarsh}.
+\end{abstract}
+
+\newpage
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\nocite{titchmarsh, tenenbaum}
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

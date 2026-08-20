@@ -139,7 +139,7 @@ fun gen_derive_orbit_equations lthy sds_an_thm ps =
     val goals = map (map (fn x => (Thm.concl_of x, []))) intros
     val bindings = infos |> map 
       (fn info => Binding.qualify true (Binding.name_of (#binding info)) (Binding.name "orbits"))
-    val lthy = lthy addsimps @{thms multiset_add_ac insert_commute}
+    val lthy = lthy |> Simplifier.add_simps @{thms multiset_add_ac insert_commute}
 
     val before_proof = 
       let
@@ -504,7 +504,7 @@ fun gen_derive_strategyproofness_conditions lthy dist_limit sds_san_thm ps =
     val intros = prepare_strategyproofness_intro_thms lthy dist_limit sds_san_thm infos
     val goals = map (map (fn x => (Thm.concl_of x, [])) o snd) intros
     val bindings = map fst intros
-    val lthy = lthy addsimps 
+    val lthy = lthy |> Simplifier.add_simps 
       @{thms multiset_add_ac insert_commute insert_eq_iff multiset_Diff_single_normalize}
 
     val before_proof = 
