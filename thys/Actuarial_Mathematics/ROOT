@@ -7,6 +7,7 @@ session "Actuarial_Mathematics" = "HOL-Probability" +
     Interest
     Survival_Model
     Life_Table
+    Valuation
     Examples
   document_files
     "root.tex"

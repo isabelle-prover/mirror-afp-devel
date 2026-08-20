@@ -491,6 +491,7 @@ notation life_expect (\<open>$e`\<circ>'__\<close> [101] 200)
 notation temp_life_expect (\<open>$e`\<circ>'_{_:_}\<close> [0,0] 200)
 notation curt_life_expect (\<open>$e'__\<close> [101] 200)
 notation temp_curt_life_expect (\<open>$e'_{_:_}\<close> [0,0] 200)
+notation force_mortal (\<open>$\<mu>'__\<close> [101] 200)
 
 lemma p_l: "$p_{t&x} = $l_(x+t) / $l_x" if "t \<ge> 0" for t::real
   unfolding survive_def using ccdfTx_l_normal that by simp
@@ -678,8 +679,6 @@ sublocale smooth_life_table \<subseteq> smooth_survival_function \<MM> X
 
 context smooth_life_table
 begin
-
-notation force_mortal (\<open>$\<mu>'__\<close> [101] 200)
 
 lemma l_continuous[simp]: "continuous_on UNIV l"
   using l_piecewise_differentiable piecewise_differentiable_on_imp_continuous_on by fastforce

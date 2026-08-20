@@ -352,7 +352,7 @@ proof -
   proof -
     have "\<And>k::nat. k < n*m \<Longrightarrow> (1+i)^n * ($v.^((k+1::nat)/m) / m) = (1+i).^((n*m - Suc k)/m) / m"
       unfolding v_pres_def
-      by (simp add: v_futr_pos inverse_powr diff_divide_eq_iff that flip: powr_realpow powr_add)
+      by (simp add: v_futr_pos divide_powr diff_divide_eq_iff that flip: powr_realpow powr_add)
     thus ?thesis by (meson lessThan_iff sum.cong)
   qed
   also have "\<dots> = (\<Sum>k<n*m. (1+i).^(k/m) / m)"
@@ -406,7 +406,7 @@ lemma s''_s: "$s''^{m}_n = (1+i).^(1/m) * $s^{m}_n" if "m \<noteq> 0" for m::nat
 lemma s_s'': "$s^{m}_n = $v.^(1/m) * $s''^{m}_n" if "m \<noteq> 0" for m::nat
   unfolding acc_def acc_due_def v_pres_def using v_futr_pos
   apply (subst sum_distrib_left, subst times_divide_eq_right, simp)
-  by (subst inverse_powr, simp, subst powr_add[THEN sym], subst add_divide_distrib, simp)
+  by (subst divide_powr, subst powr_add[THEN sym], subst add_divide_distrib, simp)
 
 lemma s''_calc: "$s''^{m}_n = ((1+i)^n - 1) / $d^{m}" if "m \<noteq> 0" "i \<noteq> 0" for n m :: nat
 proof -
@@ -451,7 +451,7 @@ proof -
     using integrable_on_powr2_from_0_general[of "$v" n] v_pos v_futr_pos that
     apply (subst integral_mult, simp)
     apply (rule integral_cong)
-    unfolding v_pres_def using inverse_powr powr_add[THEN sym] by (smt (verit))
+    unfolding v_pres_def using divide_powr powr_add[THEN sym] by (smt (verit))
   also have "\<dots> = $s'_n"
     unfolding acc_cont_def using v_futr_pos that
     apply (subst has_integral_interval_reverse[of 0 n, simplified, THEN integral_unique]; simp?)
@@ -560,7 +560,7 @@ qed
 lemma Ilsm_Ilam: "$(I^{l}s)^{m}_n = (1+i)^n * $(I^{l}a)^{m}_n"
   if "l \<noteq> 0" "m \<noteq> 0" for l n m :: nat
   unfolding acc_incr_def ann_incr_def v_pres_def using v_futr_pos powr_realpow
-  apply (subst inverse_powr, simp)
+  apply (subst divide_powr, simp)
   apply (subst sum_distrib_left)
   by (subst minus_real_def, subst powr_add, subst times_divide_eq_right, subst mult.assoc, simp)
 
@@ -602,7 +602,7 @@ lemma Ism_calc: "$(Is)^{m}_n = (\<Sum>j<n. (j+1)/m * (\<Sum>k=j*m..<(j+1)*m. (1+
   apply (subst Iam_calc[simplified]; simp?)
   apply ((subst sum_distrib_left, rule sum.cong; simp))+
   unfolding v_pres_def using v_futr_pos
-  apply (subst inverse_powr; simp)
+  apply (subst divide_powr; simp)
   apply (subst powr_realpow[THEN sym], simp)
   by (subst powr_add[THEN sym]; simp)
 

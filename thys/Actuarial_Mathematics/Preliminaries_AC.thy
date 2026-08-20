@@ -6,9 +6,6 @@ notation powr (infixr \<open>.^\<close> 80)
 
 section \<open>Preliminary Lemmas\<close>
 
-lemma Collect_conj_eq2: "{x \<in> A. P x \<and> Q x} = {x \<in> A. P x} \<inter> {x \<in> A. Q x}"
-  by blast
-
 lemma vimage_compl_atMost:
   fixes f :: "'a \<Rightarrow> 'b::linorder"
   shows "-(f -` {..y}) = f -` {y<..}"
@@ -133,32 +130,28 @@ lemma(in field) divide_mult_cancel[simp]: fixes a b assumes "b \<noteq> 0"
   shows "a / b * b = a"
   by (simp add: assms)
 
-lemma inverse_powr: "(1/a).^b = a.^-b" if "a > 0" for a b :: real
+lemma divide_powr: "(1/a).^b = a.^-b" for a b :: real
   by (simp add: powr_divide powr_minus_divide)
 
-lemma geometric_increasing_sum_aux: "(1-r)^2 * (\<Sum>k<n. (k+1)*r^k) = 1 - (n+1)*r^n + n*r^(n+1)"
+lemma geometric_increasing_sum_aux: "(1-r)\<^sup>2 * (\<Sum>k<n. (k+1)*r^k) = 1 - (n+1)*r^n + n*r^(n+1)"
   for n::nat and r::real
 proof (induct n)
   case 0
   thus ?case by simp
 next
   case (Suc n)
-  thus ?case
-    apply (simp only: sum.lessThan_Suc)
-    apply (subst distrib_left)
-    apply (subst Suc.hyps)
-    by (subst power2_diff) (simp add: field_simps power2_eq_square)
+  have "(1-r)\<^sup>2 * (\<Sum>k < Suc n. (k+1)*r^k) = (1-r)\<^sup>2 * (\<Sum>k<n. (k+1)*r^k) + (1-r)\<^sup>2 * ((n+1)*r^n)"
+    using sum.lessThan_Suc by (simp add: field_simps)
+  also have "\<dots> = 1 - (n+1)*r^n + n*r^(n+1) + (1-r)\<^sup>2 * ((n+1)*r^n)"
+    using Suc.hyps by simp
+  also have "\<dots> = 1 - (n+2)*r^(n+1) + (n+1)*r^(n+2)"
+    by (simp add: field_simps power2_eq_square)
+  finally show ?case by simp
 qed
 
 lemma geometric_increasing_sum: "(\<Sum>k<n. (k+1)*r^k) = (1 - (n+1)*r^n + n*r^(n+1)) / (1-r)^2"
   if "r \<noteq> 1" for n::nat and r::real
-  by (subst geometric_increasing_sum_aux[THEN sym]) (simp add: that)
-
-(* Already included in Topologial_Spaces.thy *)
-lemma Lim_cong:
-  assumes "\<forall>\<^sub>F x in F. f x = g x"
-  shows "Lim F f = Lim F g"
-  unfolding t2_space_class.Lim_def using tendsto_cong assms by fastforce
+  by (rewrite geometric_increasing_sum_aux[THEN sym]) (simp add: that)
 
 lemma LIM_zero_iff': "((\<lambda>x. l - f x) \<longlongrightarrow> 0) F = (f \<longlongrightarrow> l) F"
   for f :: "'a \<Rightarrow> 'b::real_normed_vector"
@@ -299,6 +292,24 @@ corollary antimono_at_bot_ge:
   shows "\<And>x. f x \<le> b"
   using antimono_on_at_bot_ge assms antimono_imp_mono_on by blast
 
+lemma indicator_Ici_right_continuous:
+  fixes a x :: real
+  shows "continuous (at_right x) (indicator {a..})"
+proof (cases \<open>a \<le> x\<close>)
+  case True
+  hence "\<forall>\<^sub>F y in at_right x. indicator {a..} y = 1"
+    by (smt (verit, ccfv_threshold) Ioi_le_Ico eventually_at_right_less eventually_mono
+        greaterThan_iff indicator_eq_1_iff subset_iff)
+  with True show ?thesis
+    by (simp add: continuous_at_within_cong indicator_eq_1_iff)
+next
+  case False
+  hence "\<forall>\<^sub>F y in at_right x. indicator {a..} y = 0"
+    by (metis (mono_tags, lifting) atLeast_iff eventually_at_right indicator_eq_0_iff not_le)
+  with False show ?thesis
+    by (simp add: continuous_at_within_cong indicator_eq_0_iff)
+qed
+
 lemma continuous_cdivide:
   fixes c::"'a::real_normed_field"
   assumes "c \<noteq> 0" "continuous F f"
@@ -373,7 +384,7 @@ lemma DERIV_cmult_iff:
     ((\<lambda>x. c * f x) has_field_derivative c * D) (at x within s)"
 proof
   assume "(f has_field_derivative D) (at x within s)"
-  thus  "((\<lambda>x. c * f x) has_field_derivative c * D) (at x within s)" using DERIV_cmult by force
+  thus "((\<lambda>x. c * f x) has_field_derivative c * D) (at x within s)" using DERIV_cmult by force
 next
   assume "((\<lambda>x. c * f x) has_field_derivative c * D) (at x within s)"
   hence "((\<lambda>x. c * f x / c) has_field_derivative c * D / c) (at x within s)"
@@ -402,6 +413,12 @@ proof -
   thus ?thesis using DERIV_chain2 assms by fastforce
 qed
 
+corollary field_differentiable_at_ln_comp:
+  fixes f :: "real \<Rightarrow> real"
+  assumes "f x > 0" and "f field_differentiable (at x within s)"
+  shows "(\<lambda>x. ln (f x)) field_differentiable (at x within s)"
+  using DERIV_ln_divide_chain assms unfolding field_differentiable_def by force
+
 lemma inverse_fun_has_integral_ln:
   fixes f :: "real \<Rightarrow> real" and f' :: "real \<Rightarrow> real"
   assumes "a \<le> b" and
@@ -417,7 +434,7 @@ proof -
   ultimately show ?thesis using assms by (intro fundamental_theorem_of_calculus_interior; simp)
 qed
 
-lemma powr_at_top:
+lemma powr_at_top_at_top:
   fixes a::real
   assumes "a > 1"
   shows "filterlim (\<lambda>x. a.^x) at_top at_top"
@@ -431,15 +448,40 @@ proof -
   ultimately show ?thesis unfolding powr_def by(simp add: mult.commute)
 qed
 
+lemma powr_at_top_at_bot:
+  fixes a::real
+  assumes "0 < a" "a < 1"
+  shows "filterlim (\<lambda>x. a.^x) at_top at_bot"
+proof -
+  have "filterlim (\<lambda>x. (1/a).^x) at_top at_top"
+    by (rule powr_at_top_at_top) (simp add: assms)
+  thus ?thesis
+    by (metis (no_types, lifting) ext inverse_powr filterlim_at_top_mirror
+    inverse_eq_divide minus_minus powr_minus)
+qed
+
+lemma powr_0_at_bot:
+  fixes a::real
+  assumes "a > 1"
+  shows "((\<lambda>x. a.^x) \<longlongrightarrow> 0) at_bot"
+proof -
+  have "\<And>x. inverse ((1/a).^x) = a.^x"
+    using assms inverse_powr by (simp add: inverse_eq_divide)
+  moreover have "((\<lambda>x. inverse ((1/a).^x)) \<longlongrightarrow> 0) at_bot"
+    apply (intro tendsto_inverse_0_at_top powr_at_top_at_bot)
+    using assms by simp_all
+  ultimately show ?thesis by simp
+qed
+
 lemma powr_0_at_top:
   fixes a::real
   assumes "0 < a" "a < 1"
   shows "((\<lambda>x. a.^x) \<longlongrightarrow> 0) at_top"
 proof -
   have "\<And>x. inverse ((1/a).^x) = a.^x"
-    using assms by (rewrite inverse_powr; simp add: powr_minus)
+    using assms inverse_powr by (simp add: inverse_eq_divide)
   moreover have "((\<lambda>x. inverse ((1/a).^x)) \<longlongrightarrow> 0) at_top"
-    by (intro tendsto_inverse_0_at_top powr_at_top) (simp add: assms)
+    by (intro tendsto_inverse_0_at_top powr_at_top_at_top) (simp add: assms)
   ultimately show ?thesis by simp
 qed
 
@@ -465,12 +507,24 @@ proof -
   thus ?thesis using DERIV_fun_powr2[OF a_pos f] by simp
 qed
 
+corollary has_real_derivative_powr2_ln:
+  assumes "a > 0" "a \<noteq> 1"
+  shows "((\<lambda>x. a.^x / ln a) has_real_derivative a.^x) (at x)"
+  using assms by (intro derivative_eq_intros) (simp add: field_simps)+
+
 (* corollary to DERIV_shift *)
 lemma field_differentiable_shift:
   "(f field_differentiable (at (x + z))) = ((\<lambda>x. f (x + z)) field_differentiable (at x))"
   unfolding field_differentiable_def using DERIV_shift by force
 
-subsection \<open>Lemmas on \<open>indicator\<close> for a Linearly Ordered Type\<close>
+subsection \<open>Lemmas on \<open>indicator\<close> for an Ordered Type\<close>
+
+lemma mono_indicator_Ici: "mono (indicator {a::'a::order..} :: ('a \<Rightarrow> 'b::linordered_semidom))"
+  by (smt (verit) atLeast_iff dual_order.trans indicator_def monoI nle_le split_of_bool
+      zero_less_eq_of_bool)
+
+lemma mono_indicator_Ico: "mono (indicator {a::'a::order <..} :: ('a \<Rightarrow> 'b::linordered_semidom))"
+  by (metis (mono_tags, lifting) indicator_leI mono_greaterThan mono_set monotone_on_def)
 
 lemma indicator_Icc_shift:
   fixes a b t x :: "'a::linordered_ab_group_add"
@@ -811,17 +865,11 @@ lemma has_integral_powr2_from_0:
   shows "((\<lambda>x. a.^x) has_integral ((a.^c - 1) / (ln a))) {0..c}"
 proof -
   have "((\<lambda>x. a.^x) has_integral ((a.^c)/(ln a) - (a.^0)/(ln a))) {0..c}"
-  proof (rule fundamental_theorem_of_calculus[OF c_nneg])
-    fix x::real
-    assume "x \<in> {0..c}"
-    show "((\<lambda>y. a.^y / ln a) has_vector_derivative a.^x) (at x within {0..c})"
-      using has_real_derivative_powr2[OF a_pos, of x]
-            DERIV_cdivide[where c = "ln a"]
-      by(fastforce simp: assms has_real_derivative_iff_has_vector_derivative
-               intro!: has_vector_derivative_within_subset[where S=UNIV and T="{0..c}"])
-  qed
+    apply (rule fundamental_theorem_of_calculus[OF c_nneg])
+    apply (rule has_vector_derivative_within_subset[where S=UNIV and T="{0..c}"])
+    using has_real_derivative_iff_has_vector_derivative has_real_derivative_powr2_ln assms by simp+
   thus ?thesis
-    using assms powr_zero_eq_one by (simp add: field_simps)
+    using assms by (simp add: field_simps)
 qed
 
 lemma integrable_on_powr2_from_0:
@@ -842,6 +890,57 @@ next
   case False
   thus ?thesis
     using has_integral_powr2_from_0 False assms by auto
+qed
+
+(* counterpart of the lemma nn_integral_FTC_atLeast *)
+(* requesting to add to the standard distribution *)
+lemma nn_integral_FTC_atMost:
+  fixes f :: "real \<Rightarrow> real"
+  assumes f_borel: "f \<in> borel_measurable borel"
+  assumes f: "\<And>x. x \<le> b \<Longrightarrow> DERIV F x :> f x"
+  assumes nonneg: "\<And>x. x \<le> b \<Longrightarrow> 0 \<le> f x"
+  assumes lim: "(F \<longlongrightarrow> U) at_bot"
+  shows "(\<integral>\<^sup>+x. ennreal (f x) * indicator {.. b} x \<partial>lborel) = F b - U"
+proof -
+  let ?f = "\<lambda>(i::nat) (x::real). ennreal (f x) * indicator {b - real i .. b} x"
+  let ?fR = "\<lambda>x. ennreal (f x) * indicator {.. b} x"
+
+  have F_mono: "y \<le> b \<Longrightarrow> x \<le> y \<Longrightarrow> F x \<le> F y" for x y
+    using f nonneg by (intro DERIV_nonneg_imp_nondecreasing[of x y F]) (auto intro: order_trans)
+  then have F_ge_U: "x \<le> b \<Longrightarrow> F x \<ge> U" for x
+    by (intro tendsto_upperbound[OF lim])
+       (auto simp: eventually_at_bot_linorder)
+
+  have "(SUP i. ?f i x) = ?fR x" for x
+  proof (rule LIMSEQ_unique[OF LIMSEQ_SUP])
+    obtain n where "b - x < real n"
+      using reals_Archimedean2[of "b - x"] ..
+    then have "eventually (\<lambda>n. ?f n x = ?fR x) sequentially"
+      by (auto simp: frequently_def intro!: eventually_sequentiallyI[where c=n] split: split_indicator)
+    then show "(\<lambda>n. ?f n x) \<longlonglongrightarrow> ?fR x"
+      by (rule tendsto_eventually)
+  qed (auto simp: nonneg incseq_def le_fun_def split: split_indicator)
+  then have "integral\<^sup>N lborel ?fR = (\<integral>\<^sup>+ x. (SUP i. ?f i x) \<partial>lborel)"
+    by simp
+  also have "\<dots> = (SUP i. (\<integral>\<^sup>+ x. ?f i x \<partial>lborel))"
+  proof (rule nn_integral_monotone_convergence_SUP)
+    show "incseq ?f"
+      using nonneg by (auto simp: incseq_def le_fun_def split: split_indicator)
+    show "\<And>i. (?f i) \<in> borel_measurable lborel"
+      using f_borel by auto
+  qed
+  also have "\<dots> = (SUP i. ennreal (F b - F (b - real i)))"
+    by (subst nn_integral_FTC_Icc[OF f_borel f nonneg]) auto
+  also have "\<dots> = F b - U"
+  proof (rule LIMSEQ_unique[OF LIMSEQ_SUP])
+    have "LIM n sequentially. b - real n :> at_bot"
+      by real_asymp
+    then have "(\<lambda>n. F (b - real n)) \<longlonglongrightarrow> U"
+      using filterlim_compose lim by force
+    then show "(\<lambda>n. ennreal (F b - F (b - real n)) ) \<longlonglongrightarrow> ennreal (F b - U)"
+      by (simp add: F_mono F_ge_U tendsto_diff)
+  qed (auto simp: incseq_def intro!: ennreal_le_iff[THEN iffD2] F_mono)
+  finally show ?thesis .
 qed
 
 (* Stronger Version of lemma integral_power *)
@@ -870,10 +969,12 @@ proof -
   proof -
     fix x
     have "DERIV ?F x :> ?F x * ln c"
-      using DERIV_fun_powr2 assms by (intro derivative_eq_intros; simp) simp
-    thus "DERIV ?F x :> c.^x" using assms by simp
+      using DERIV_fun_powr2 assms by (intro derivative_eq_intros) simp+
+    thus "DERIV ?F x :> c.^x"
+      using assms by simp
   qed
-  thus ?thesis by (rewrite nn_integral_FTC_Icc[where F="?F"]; simp add: assms) argo
+  thus ?thesis
+     using assms by (rewrite nn_integral_FTC_Icc[where F="?F"]; simp add: field_simps)
 qed
 
 lemma nn_integral_powr_Icc_gen:
@@ -903,22 +1004,69 @@ next
   thus ?thesis by (rewrite nn_integral_powr_Icc_gen; simp add: assms)
 qed
 
+lemma nn_integral_powr_Ico_finite:
+  fixes a b c :: real
+  assumes "0 < c"
+  shows "(\<integral>\<^sup>+x\<in>{a..<b}. c.^x \<partial>lborel) < \<top>"
+proof -
+  have "(\<integral>\<^sup>+x\<in>{a..<b}. c.^x \<partial>lborel) \<le> (\<integral>\<^sup>+x\<in>{a..b}. c.^x \<partial>lborel)"
+    by (rule nn_set_integral_set_mono) force
+  also have "\<dots> < \<top>"
+    using nn_integral_powr_Icc_finite assms by simp
+  finally show ?thesis .
+qed
+
+lemma nn_integral_powr_Ioc_finite:
+  fixes a b c :: real
+  assumes "0 < c"
+  shows "(\<integral>\<^sup>+x\<in>{a<..b}. c.^x \<partial>lborel) < \<top>"
+proof -
+  have "(\<integral>\<^sup>+x\<in>{a<..b}. c.^x \<partial>lborel) \<le> (\<integral>\<^sup>+x\<in>{a..b}. c.^x \<partial>lborel)"
+    by (rule nn_set_integral_set_mono) force
+  also have "\<dots> < \<top>"
+    using nn_integral_powr_Icc_finite assms by simp
+  finally show ?thesis .
+qed
+
 lemma nn_integral_powr_Ici:
   fixes a c :: real
   assumes "0 < c" "c < 1"
   shows "(\<integral>\<^sup>+x\<in>{a..}. c.^x \<partial>lborel) = - (c.^a / ln c)"
 proof -
-  let ?F = "\<lambda>x. c.^x / ln c"
-  have "\<And>x. DERIV ?F x :> c.^x"
-  proof -
-    fix x
-    have "DERIV ?F x :> ?F x * ln c"
-      using DERIV_fun_powr2 assms by (intro derivative_eq_intros; simp) simp
-    thus "DERIV ?F x :> c.^x" using assms by simp
-  qed
-  moreover have "(?F \<longlongrightarrow> 0 / ln c) at_top"
+  have "((\<lambda>x. c.^x / ln c) \<longlongrightarrow> 0 / ln c) at_top"
     using assms by (intro tendsto_intros; simp add: powr_0_at_top)
-  ultimately show ?thesis by (rewrite nn_integral_FTC_atLeast[where F="?F"]; simp) simp
+  with has_real_derivative_powr2_ln show ?thesis
+    using assms by (rewrite nn_integral_FTC_atLeast) simp_all+
+qed
+
+lemma nn_integral_powr_Iic:
+  fixes b c :: real
+  assumes "1 < c"
+  shows "(\<integral>\<^sup>+x\<in>{..b}. c.^x \<partial>lborel) = c.^b / ln c"
+proof -
+  have "((\<lambda>x. c.^x / ln c) \<longlongrightarrow> 0 / ln c) at_bot"
+    using assms by (intro tendsto_intros; simp add: powr_0_at_bot)
+  with has_real_derivative_powr2_ln show ?thesis
+    using assms by (rewrite nn_integral_FTC_atMost) simp_all+
+qed
+
+lemma nn_set_integral_eq_set_integral2:
+  assumes [measurable]:"set_integrable M A f"
+      and "AE x \<in> A in M. 0 \<le> f x" "A \<in> sets M"
+    shows "(\<integral>\<^sup>+x\<in>A. f x \<partial>M) = (\<integral>x\<in>A. f x \<partial>M)"
+proof -
+  have "integrable M (\<lambda>x. indicat_real A x * f x)"
+    using assms unfolding set_integrable_def by simp
+  moreover have "AE x \<in> A in M. 0 \<le> indicat_real A x * f x"
+    using assms by simp
+  ultimately have "(\<integral>x\<in>A. indicat_real A x * f x \<partial>M) = (\<integral>\<^sup>+x\<in>A. indicat_real A x * f x \<partial>M)"
+    using nn_set_integral_eq_set_integral[of M "\<lambda>x. indicat_real A x * f x"] \<open>A \<in> sets M\<close>
+    unfolding set_lebesgue_integral_def by simp
+  moreover have "(\<integral>x\<in>A. indicat_real A x * f x \<partial>M) = (\<integral>x\<in>A. f x \<partial>M)"
+    by (rule set_lebesgue_integral_cong; simp add: assms)
+  moreover have "(\<integral>\<^sup>+x\<in>A. indicat_real A x * f x \<partial>M) = (\<integral>\<^sup>+x\<in>A. f x \<partial>M)"
+    by (rule set_nn_integral_cong; simp)
+  ultimately show ?thesis by simp
 qed
 
 lemma set_integrable_iff_bounded:
@@ -947,6 +1095,70 @@ proof -
   have "set_borel_measurable lborel {a..} (\<lambda>x. c.^x)" unfolding set_borel_measurable_def by simp
   moreover have "(\<integral>\<^sup>+x\<in>{a..}. c.^x \<partial>lborel) < \<top>" using assms nn_integral_powr_Ici by simp
   ultimately show ?thesis by (rewrite set_integrable_iff_bounded; simp)
+qed
+
+lemma set_integrable_powr_Iic:
+  fixes b c :: real
+  assumes "c > 1"
+  shows "set_integrable lborel {..b} (\<lambda>x. c.^x)"
+proof -
+  have "set_borel_measurable lborel {..b} (\<lambda>x. c.^x)" unfolding set_borel_measurable_def by simp
+  moreover have "(\<integral>\<^sup>+x\<in>{..b}. c.^x \<partial>lborel) < \<top>" using assms nn_integral_powr_Iic by simp
+  ultimately show ?thesis by (rewrite set_integrable_iff_bounded; simp)
+qed
+
+lemma LBINT_powr_Icc:
+  fixes a b c :: real
+  assumes "a \<le> b" "0 < c" "c \<noteq> 1"
+  shows "(LBINT x:{a..b}. c.^x) = (c.^b - c.^a) / ln c"
+proof -
+  have "ennreal (LBINT x:{a..b}. c.^x) = (\<integral>\<^sup>+x\<in>{a..b}. c.^x \<partial>lborel)"
+    using set_integrable_powr_Icc assms by (rewrite nn_set_integral_eq_set_integral2; simp)
+  also have "\<dots> = ennreal ((c.^b - c.^a) / ln c)"
+    using nn_integral_powr_Icc assms by simp
+  moreover have "0 \<le> (LBINT x:{a..b}. c.^x)"
+    unfolding set_lebesgue_integral_def apply (rule Bochner_Integration.integral_nonneg)
+    using powr_ge_zero by simp
+  moreover have "0 \<le> (c.^b - c.^a) / ln c"
+    using assms by (smt (verit, best) ln_le_zero_iff powr_less_cancel powr_mono' zero_le_divide_iff)
+  ultimately show ?thesis
+    using ennreal_inj by simp
+qed
+
+lemma LBINT_powr_Ici:
+  fixes a c :: real
+  assumes "0 < c" "c < 1"
+  shows "(LBINT x:{a..}. c.^x) = - (c.^a / ln c)"
+proof -
+  have "ennreal (LBINT x:{a..}. c.^x) = (\<integral>\<^sup>+x\<in>{a..}. c.^x \<partial>lborel)"
+    using set_integrable_powr_Ici assms by (rewrite nn_set_integral_eq_set_integral2; simp)
+  also have "\<dots> = ennreal (- (c.^a / ln c))"
+    using nn_integral_powr_Ici assms by simp
+  moreover have "0 \<le> (LBINT x:{a..}. c.^x)"
+    unfolding set_lebesgue_integral_def apply (rule Bochner_Integration.integral_nonneg)
+    using powr_ge_zero by simp
+  moreover have "0 \<le> - (c.^a / ln c)"
+    using assms by (simp add: divide_nonneg_neg)
+  ultimately show ?thesis
+    using ennreal_inj by simp
+qed
+
+lemma LBINT_powr_Iic:
+  fixes b c :: real
+  assumes "1 < c"
+  shows "(LBINT x:{..b}. c.^x) = c.^b / ln c"
+proof -
+  have "ennreal (LBINT x:{..b}. c.^x) = (\<integral>\<^sup>+x\<in>{..b}. c.^x \<partial>lborel)"
+    using set_integrable_powr_Iic assms by (rewrite nn_set_integral_eq_set_integral2; simp)
+  also have "\<dots> = ennreal (c.^b / ln c)"
+    using nn_integral_powr_Iic assms by simp
+  moreover have "0 \<le> (LBINT x:{..b}. c.^x)"
+    unfolding set_lebesgue_integral_def apply (rule Bochner_Integration.integral_nonneg)
+    using powr_ge_zero by simp
+  moreover have "0 \<le> c.^b / ln c"
+    using assms by (simp add: divide_nonneg_neg)
+  ultimately show ?thesis
+    using ennreal_inj by simp
 qed
 
 (* Analogue for lemma has_integral_integral_real *)
@@ -1071,7 +1283,7 @@ proof -
   from assms obtain N where P: "\<And>x. x \<in> space lborel - N \<Longrightarrow> P x" and null: "N \<in> null_sets lborel"
     using AE_E3 by blast
   hence "{y. a+y \<in> N} \<in> null_sets lborel"
-    using null_sets_translation[of N "-a", simplified] by (simp add: add.commute)
+    using null_sets_translation[of N "-a"] by (simp add: add.commute)
   moreover have "\<And>y. y \<in> space lborel - {y. a+y \<in> N} \<Longrightarrow> P (a+y)" using P by force
   ultimately show "AE y in lborel. P (a+y)"
     by (metis (no_types, lifting) Collect_mono P UNIV_I eventually_ae_filter
@@ -1262,7 +1474,7 @@ lemma set_integral_empty_0[simp]: "set_lebesgue_integral M {} f = 0"
 lemma set_integral_nonneg[simp]:
   fixes f :: "'a \<Rightarrow> real" and A :: "'a set"
   shows "(\<And>x. x \<in> A \<Longrightarrow> 0 \<le> f x) \<Longrightarrow> 0 \<le> set_lebesgue_integral M A f"
-  unfolding set_lebesgue_integral_def by (simp add: indicator_times_eq_if(1))
+  unfolding set_lebesgue_integral_def by (simp add: indicator_times_eq_if)
 
 (* Set Integral Version of the Lebesgue's Dominated Convergence Theorem *)
 lemma
@@ -1872,7 +2084,7 @@ proof -
             hence "lim (\<lambda>n. (f (r + d (n+m)) x - f r x) / d (n+m)) = Df r x" by (simp add: Df_eq) }
           thus ?thesis using AE_I' N_null by (smt (verit, del_insts) DiffI mem_Collect_eq subsetI)
         qed
-        thus ?thesis 
+        thus ?thesis
           using r_ab rd_ab by (intro integral_cong_AE) auto
       qed
       also have "\<dots> = \<integral>x. borel_measurable_extension M (\<lambda>y. deriv (\<lambda>s. f s y) r) x \<partial>M"
@@ -2037,7 +2249,7 @@ proof -
   also have "\<dots> = prob ?setP"
   proof (rule antisym)
     show "prob (?setP \<inter> ?setQ) \<le> prob ?setP"
-      using assms finite_measure_mono inf_sup_ord(1) by blast
+      using assms finite_measure_mono inf_sup_ord by blast
   next
     show "prob ?setP \<le> prob (?setP \<inter> ?setQ)"
     proof -
@@ -2159,19 +2371,28 @@ lemma expectation_nonneg_tail:
   assumes [measurable]: "random_variable borel X"
     and X_nonneg: "\<And>x. x \<in> space M \<Longrightarrow> X x \<ge> 0"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  shows "(\<integral>\<^sup>+x. ennreal (X x) \<partial>M) = (\<integral>\<^sup>+u\<in>{0..}. ennreal (1 - F u) \<partial>lborel)"
+  shows "(\<integral>\<^sup>+x. X x \<partial>M) = (\<integral>\<^sup>+u\<in>{0..}. 1 - F u \<partial>lborel)"
 proof -
+
   let ?distrX = "distr M borel X"
-  have "(\<integral>\<^sup>+x. ennreal (X x) \<partial>M) = (\<integral>\<^sup>+u. ennreal u \<partial>?distrX)"
+
+  text \<open>preparation\<close>
+  have [simp]: "\<And>u::real. u\<in>{0..} \<Longrightarrow> ennreal u = (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel)"
+    by (auto simp: inf.commute simp flip: indicator_inter_arith)
+  have [simp]: "space M - X -` {..x} \<inter> space M = X -` {x<..} \<inter> space M" for x
+    by auto
+  have [measurable]: "Measurable.pred (borel \<Otimes>\<^sub>M borel) (\<lambda>z::real\<times>real. fst z \<in> {..< snd z})"
+    by auto
+  have [measurable]:"\<And>v::real. Measurable.pred borel (\<lambda>u. v \<in> {..<u})"
+    by simp
+
+  text \<open>main part of the proof\<close>
+  have "(\<integral>\<^sup>+x. X x \<partial>M) = (\<integral>\<^sup>+u. u \<partial>?distrX)"
     by (simp add: nn_integral_distr)
-  also have "\<dots> = (\<integral>\<^sup>+u\<in>{0..}. ennreal u \<partial>?distrX)"
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{0..}. u \<partial>?distrX)"
     by (rule nn_integral_distr_set; simp add: X_nonneg)
   also have "\<dots> = (\<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX)"
-  proof -
-    have "\<And>u::real. u\<in>{0..} \<Longrightarrow> ennreal u = (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel)"
-      by(auto simp: indicator_inter_arith[symmetric] inf.commute)
-    thus ?thesis by (metis (no_types, lifting) indicator_eq_0_iff mult_eq_0_iff)
-  qed
+    by (rule set_nn_integral_cong; simp)
   also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel)"
   proof -
     have "(\<integral>\<^sup>+u\<in>{0..}. (\<integral>\<^sup>+v\<in>{0..}. indicator {..<u} v \<partial>lborel) \<partial>?distrX) =
@@ -2179,183 +2400,152 @@ proof -
       by (rewrite nn_integral_multc; simp)
     also have "\<dots> =
       \<integral>\<^sup>+v. (\<integral>\<^sup>+u. indicator {..<u} v * indicator {0..} v * indicator {0..} u \<partial>?distrX) \<partial>lborel"
-    proof -
-      have [measurable]: "Measurable.pred (borel \<Otimes>\<^sub>M borel) (\<lambda>x:: real \<times> real. fst x \<in> {..<snd x})"
-        by auto
-      show ?thesis
-        by(auto intro!: pair_sigma_finite.Fubini' pair_sigma_finite.intro
+      by (auto intro!: pair_sigma_finite.Fubini' pair_sigma_finite.intro
           simp: lborel.sigma_finite_measure_axioms prob_space_imp_sigma_finite[OF prob_space_distr])
-    qed
     also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) \<partial>lborel)"
-    proof -
-      have [measurable]:"\<And>x::real. Measurable.pred borel (\<lambda>y. x \<in> {..<y})"
-        by simp
-      have "\<And>x y. (indicator {..<y} x :: ennreal) * indicator {0..} x * indicator {0..} y
-                    = indicator {..<y} x * indicator {0..} y * indicator {0..} x"
-        by(auto simp: indicator_def)
-      thus ?thesis
-        by(subst nn_integral_multc[symmetric]) (auto intro!: nn_integral_cong simp: nn_integral_distr)
-    qed
-    finally show ?thesis by simp
+      apply (rule nn_integral_cong)
+      apply (rewrite nn_integral_multc[THEN sym])
+       apply (rule borel_measurable_times_ennreal; measurable)
+      by (rule nn_integral_cong) (simp add: field_simps)
+    finally show ?thesis .
   qed
-  also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. (\<integral>\<^sup>+u. indicator {v<..} u \<partial>?distrX) \<partial>lborel)"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. 1 - F v \<partial>lborel)"
   proof -
-    have [measurable]:"\<And>x::real. Measurable.pred borel (\<lambda>y. x \<in> {..<y})"
-      by simp
-    have "\<And>x y::real. indicator {..<y} x * indicator {0..} y * indicator {0..} x
-                 = indicator {x<..} y * (indicator {0..} x :: ennreal)"
-      by(auto simp: indicator_def)
+    { fix v::real assume "v \<in> {0..}"
+      hence "(\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) = (\<integral>\<^sup>+u. indicator {v<..} u \<partial>?distrX)"
+        unfolding indicator_def by (intro nn_integral_cong; simp)
+      also have "\<dots> = emeasure M (X -` {v<..} \<inter> space M)"
+        apply (rewrite nn_integral_indicator, simp)
+        by (rewrite emeasure_distr; simp)
+      also have "\<dots> = 1 - F v"
+        unfolding F_def cdf_def
+        by (rewrite emeasure_eq_measure) (rewrite measure_distr; simp flip: prob_compl)
+      finally have "(\<integral>\<^sup>+u\<in>{0..}. indicator {..<u} v \<partial>?distrX) = 1 - F v" .}
     thus ?thesis
-      by(auto intro!: nn_integral_cong simp del: nn_integral_indicator simp: nn_integral_multc[symmetric])
-  qed
-  also have "\<dots> = (\<integral>\<^sup>+v\<in>{0..}. ennreal (1 - F v) \<partial>lborel)"
-  proof -
-    have "space M - X -` {..x} \<inter> space M = X -` {x<..} \<inter> space M" for x
-      by auto
-    thus ?thesis
-      by(auto intro!: nn_integral_cong simp: emeasure_distr F_def cdf_def
-          measure_distr prob_compl[symmetric] emeasure_eq_measure[symmetric])
+      by (intro set_nn_integral_cong; simp)
   qed
   finally show ?thesis .
+
 qed
 
 lemma expectation_nonpos_tail:
   assumes [measurable]: "random_variable borel X"
     and X_nonpos: "\<And>x. x \<in> space M \<Longrightarrow> X x \<le> 0"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  shows "(\<integral>\<^sup>+x. ennreal (- X x) \<partial>M) = (\<integral>\<^sup>+u\<in>{..0}. ennreal (F u) \<partial>lborel)"
+  shows "(\<integral>\<^sup>+x. - X x \<partial>M) = (\<integral>\<^sup>+u\<in>{..<0}. F u \<partial>lborel)"
 proof -
+
   let ?distrX = "distr M borel X"
-  have "(\<integral>\<^sup>+x. ennreal (- X x) \<partial>M) = (\<integral>\<^sup>+u. ennreal (-u) \<partial>?distrX)"
+
+  text \<open>preparation\<close>
+  have [simp]: "{..<0::real} \<inter> {0..} = {}"
+    by force
+  have [simp]: "{..<0::real} \<union> {0..} = UNIV"
+    by force
+  have [simp]: "\<And>u::real. u < 0 \<Longrightarrow> - u = (\<integral>\<^sup>+v\<in>{..<0}. indicator {u..} v \<partial>lborel)"
+    by (rewrite indicator_inter_arith[THEN sym]; simp)
+  have [measurable]: "\<And>v::real. Measurable.pred borel (\<lambda>u. v \<in> {u..})"
+    by simp
+
+  text \<open>main part of the proof\<close>
+  have "(\<integral>\<^sup>+x. - X x \<partial>M) = (\<integral>\<^sup>+u. -u \<partial>?distrX)"
     by (rewrite nn_integral_distr; simp)
-  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..0}. ennreal (-u) \<partial>?distrX)"
+  also have "(\<integral>\<^sup>+u. -u \<partial>?distrX) = (\<integral>\<^sup>+u\<in>{..<0}. -u \<partial>?distrX) + (\<integral>\<^sup>+u\<in>{0..}. -u \<partial>?distrX)"
+    by (rewrite nn_integral_disjoint_pair[THEN sym]; simp)
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..<0}. -u \<partial>?distrX)"
+    apply (rewrite nn_integral_zero'[of "\<lambda>u. ennreal (-u) * indicator {0..} u"])
+     apply (rule AE_I2)
+    unfolding indicator_def using ennreal_lt_0 not_le by force+
+  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..<0}. (\<integral>\<^sup>+v\<in>{..<0}. indicator {u..} v \<partial>lborel) \<partial>?distrX)"
+    by (rule set_nn_integral_cong; simp)
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..<0}. (\<integral>\<^sup>+u\<in>{..<0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
   proof -
-    have [simp]: "{..0::real} \<union> {0<..} = UNIV" by force
-    have "(\<integral>\<^sup>+u. ennreal (-u) \<partial>?distrX) =
-      (\<integral>\<^sup>+u\<in>{..0}. ennreal (-u) \<partial>?distrX) + (\<integral>\<^sup>+u\<in>{0<..}. ennreal (-u) \<partial>?distrX)"
-      by (rewrite nn_integral_disjoint_pair[symmetric]) auto
-    also have "\<dots> = (\<integral>\<^sup>+u\<in>{..0}. ennreal (-u) \<partial>?distrX)"
-      apply (rewrite nn_integral_zero'[of "\<lambda>u. ennreal (-u) * indicator {0<..} u"])
-      unfolding indicator_def using always_eventually ennreal_lt_0 by fastforce+
+    have "(\<integral>\<^sup>+u\<in>{..<0}. (\<integral>\<^sup>+v\<in>{..<0}. indicator {u..} v \<partial>lborel) \<partial>?distrX) =
+      \<integral>\<^sup>+u. (\<integral>\<^sup>+v. indicator {u..} v * indicator {..<0} v * indicator {..<0} u \<partial>lborel) \<partial>?distrX"
+      by (rewrite nn_integral_multc; simp)
+    also have "\<dots> = 
+      \<integral>\<^sup>+v. (\<integral>\<^sup>+u. indicator {u..} v * indicator {..<0} v * indicator {..<0} u \<partial>?distrX) \<partial>lborel"
+      apply (rewrite pair_sigma_finite.Fubini')
+        apply (intro pair_sigma_finite.intro;
+          simp add: prob_space_distr prob_space_imp_sigma_finite sigma_finite_lborel)
+      using borel_measurable_times_ennreal by measurable simp_all
+    also have "\<dots> = (\<integral>\<^sup>+v\<in>{..<0}. (\<integral>\<^sup>+u\<in>{..<0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
+      apply (rule nn_integral_cong)
+      apply (rewrite nn_integral_multc[THEN sym])
+       apply (rule borel_measurable_times_ennreal; measurable)
+      by (rule nn_integral_cong) (simp add: field_simps)
     finally show ?thesis .
   qed
-  also have "\<dots> = (\<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX)"
+  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..<0}. F v \<partial>lborel)"
   proof -
-    have "\<And>u::real. u\<in>{..0} \<Longrightarrow> ennreal (-u) = (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel)"
-      by (rewrite indicator_inter_arith[THEN sym]) simp
-    thus ?thesis by (metis (no_types, lifting) indicator_eq_0_iff mult_eq_0_iff)
+    { fix v::real assume "v \<in> {..<0}"
+      hence "(\<integral>\<^sup>+u\<in>{..<0}. indicator {u..} v \<partial>?distrX) = (\<integral>\<^sup>+u. indicator {..v} u \<partial>?distrX)"
+        unfolding indicator_def apply (intro nn_integral_cong) by simp
+      also have "\<dots> = emeasure M (X -` {..v} \<inter> space M)"
+        apply (rewrite nn_integral_indicator, simp)
+        by (rewrite emeasure_distr; simp)
+      also have "\<dots> = F v"
+        unfolding F_def cdf_def
+        by (rewrite emeasure_eq_measure) (rewrite measure_distr; simp)
+      finally have "(\<integral>\<^sup>+u\<in>{..<0}. indicator {u..} v \<partial>?distrX) = F v" . }
+    thus ?thesis
+      by (intro set_nn_integral_cong; simp)
   qed
-  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
-  proof -
-    have "(\<integral>\<^sup>+u\<in>{..0}. (\<integral>\<^sup>+v\<in>{..0}. indicator {u..} v \<partial>lborel) \<partial>?distrX) =
-      \<integral>\<^sup>+u. (\<integral>\<^sup>+v. indicator {u..} v * indicator {..0} v * indicator {..0} u \<partial>lborel) \<partial>?distrX"
-      by (rewrite nn_integral_multc; simp)
-    also have "\<dots> =
-      \<integral>\<^sup>+v. (\<integral>\<^sup>+u. indicator {u..} v * indicator {..0} v * indicator {..0} u \<partial>?distrX) \<partial>lborel"
-      apply (rewrite pair_sigma_finite.Fubini')
-      using pair_sigma_finite.intro assms
-        prob_space_distr prob_space_imp_sigma_finite sigma_finite_lborel
-       apply blast
-      by measurable auto (* TODO: fix this proof *)
-    also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u\<in>{..0}. indicator {u..} v \<partial>?distrX) \<partial>lborel)"
-      apply (rewrite nn_integral_multc[THEN sym]; measurable; simp?)
-      apply (rule nn_integral_cong)+ 
-      using mult.assoc mult.commute by metis  (* TODO: fix this proof *)
-    finally show ?thesis by simp
-  qed
-  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. (\<integral>\<^sup>+u. indicator {..v} u \<partial>?distrX) \<partial>lborel)"
-    apply (rule nn_integral_cong)
-    apply (rewrite nn_integral_multc[THEN sym], measurable; (simp del: nn_integral_indicator)?)+
-    apply (rule nn_integral_cong)
-    using atMost_iff atLeast_iff indicator_simps by (smt (verit, del_insts) mult_1 mult_eq_0_iff)
-     (* TODO: fix this proof *)
-  also have "\<dots> = (\<integral>\<^sup>+v\<in>{..0}. ennreal (F v) \<partial>lborel)"
-    apply (rule nn_integral_cong, simp)
-    apply (rewrite emeasure_distr; simp?)
-    unfolding F_def cdf_def
-    by (rewrite measure_distr; simp add: emeasure_eq_measure)
-     (* TODO: fix this proof *)
   finally show ?thesis .
+
 qed
 
 proposition expectation_tail:
   assumes [measurable]: "integrable M X"
   defines "F u \<equiv> cdf (distr M borel X) u"
-  shows "expectation X = (LBINT u:{0..}. 1 - F u) - (LBINT u:{..0}. F u)"
+  shows "expectation X = (LBINT u:{0..}. 1 - F u) - (LBINT u:{..<0}. F u)"
 proof -
-  have "expectation X = expectation (\<lambda>x. max (X x) 0) + expectation (\<lambda>x. min (X x) 0)"
+  have "\<And>x. X x = max (X x) 0 + min (X x) 0"
+    by simp
+  hence "expectation X = expectation (\<lambda>x. max (X x) 0) + expectation (\<lambda>x. min (X x) 0)"
     using integrable_max integrable_min
-    apply (rewrite Bochner_Integration.integral_add[THEN sym], measurable)
-    by (rule Bochner_Integration.integral_cong; simp)
-     (* TODO: fix this proof *)
-  also have "\<dots> = expectation (\<lambda>x. max (X x) 0) - expectation (\<lambda>x. - min (X x) 0)" by force
-  also have "\<dots> = (LBINT u:{0..}. 1 - F u) - (LBINT u:{..0}. F u)"
+    by (rewrite Bochner_Integration.integral_add[THEN sym]; measurable)
+  also have "\<dots> = expectation (\<lambda>x. max (X x) 0) - expectation (\<lambda>x. - min (X x) 0)"
+    by force
+  moreover have "expectation (\<lambda>x. max (X x) 0) = (LBINT u:{0..}. 1 - F u)"
   proof -
-    have "expectation (\<lambda>x. max (X x) 0) = (LBINT u:{0..}. 1 - F u)"
+    have "expectation (\<lambda>x. max (X x) 0) = enn2real (\<integral>\<^sup>+x. max (X x) 0 \<partial>M)"
+      by (rule integral_eq_nn_integral; simp)
+    also have "\<dots> = enn2real (\<integral>\<^sup>+u. (indicator {0..} u) * (1 - F u) \<partial>lborel)"
     proof -
-      have "expectation (\<lambda>x. max (X x) 0) = enn2real (\<integral>\<^sup>+x. ennreal (max (X x) 0) \<partial>M)"
-        by (rule integral_eq_nn_integral; simp)
-      also have "\<dots> = enn2real (\<integral>\<^sup>+u\<in>{0..}. ennreal (1 - F u) \<partial>lborel)"
-        apply (rewrite expectation_nonneg_tail)
-          apply simp
-         apply simp
-        apply (rewrite cdf_distr_max)
-         apply simp
-        unfolding F_def
-        apply (metis (opaque_lifting) indicator_simps mult.commute mult_1 mult_eq_0_iff)
-        done
-      also have "\<dots> = enn2real (\<integral>\<^sup>+u. ennreal ((1 - F u) * indicator {0..} u) \<partial>lborel)"
-        by (simp add: indicator_mult_ennreal mult.commute)
-      also have "\<dots> = (LBINT u:{0..}. 1 - F u)"
-        apply (rewrite integral_eq_nn_integral[THEN sym])
-          apply(simp add: F_def)
-        unfolding F_def using real_distribution.cdf_bounded_prob
-         apply force
-        unfolding set_lebesgue_integral_def
-        apply (rule Bochner_Integration.integral_cong)
-         apply simp_all
-        done
-      finally show ?thesis .
+      have "(\<integral>\<^sup>+u\<in>{0..}. 1 - cdf (distr M borel (\<lambda>x. max (X x) 0)) u \<partial>lborel) =
+        \<integral>\<^sup>+u. (indicat_real {0..} u) * (1 - F u) \<partial>lborel"
+        apply (rule nn_integral_cong)
+        unfolding F_def indicator_def by (rewrite cdf_distr_max; simp)
+      thus ?thesis     
+        by (rewrite expectation_nonneg_tail; simp)
     qed
-    moreover have "expectation (\<lambda>x. - min (X x) 0) = (LBINT u:{..0}. F u)"
-    proof -
-      have "expectation (\<lambda>x. - min (X x) 0) = enn2real (\<integral>\<^sup>+x. ennreal (- min (X x) 0) \<partial>M)"
-        by (rule integral_eq_nn_integral; simp)
-      also have "\<dots> = enn2real (\<integral>\<^sup>+u\<in>{..0}. ennreal (F u) \<partial>lborel)"
-      proof -
-        let ?distrminX = "distr M borel (\<lambda>x. min (X x) 0)"
-        have [simp]: "sym_diff {..0} {..<0} = {0::real}" by force
-        have "enn2real (\<integral>\<^sup>+x. ennreal (- min (X x) 0) \<partial>M) =
-      enn2real (\<integral>\<^sup>+u\<in>{..0}. ennreal (cdf ?distrminX u) \<partial>lborel)"
-          by (rewrite expectation_nonpos_tail; simp)
-        also have "\<dots> = enn2real (\<integral>\<^sup>+u\<in>{..<0}. ennreal (cdf ?distrminX u) \<partial>lborel)"
-          by (rewrite nn_integral_null_delta, auto)
-        also have "\<dots> = enn2real (\<integral>\<^sup>+u\<in>{..<0}. ennreal (F u) \<partial>lborel)"
-          apply (rewrite cdf_distr_min)
-           apply simp
-          apply (intro arg_cong[where f=enn2real] nn_integral_cong)
-          unfolding F_def by (smt (verit) indicator_simps mult_cancel_left1 mult_eq_0_iff)
-        also have "\<dots> = enn2real (\<integral>\<^sup>+u\<in>{..0}. ennreal (F u) \<partial>lborel)"
-          by (rewrite nn_integral_null_delta, auto simp add: sup_commute)
-        finally show ?thesis .
-      qed
-      also have "\<dots> = enn2real (\<integral>\<^sup>+u. ennreal (F u * indicator {..0} u) \<partial>lborel)"
-        using mult.commute indicator_mult_ennreal by metis
-      also have "\<dots> = (LBINT u:{..0}. F u)"
-        apply (rewrite integral_eq_nn_integral[THEN sym])
-          apply(simp add: F_def)
-        unfolding F_def
-        using finite_borel_measure.cdf_nonneg real_distribution.finite_borel_measure_M
-         apply simp
-        unfolding set_lebesgue_integral_def
-        apply (rule Bochner_Integration.integral_cong)
-         apply simp_all
-        done
-      finally show ?thesis .
-    qed
-    ultimately show ?thesis by simp
+    also have "\<dots> = (LBINT u:{0..}. 1 - F u)"
+      unfolding F_def set_lebesgue_integral_def using real_distribution.cdf_bounded_prob
+      by (rewrite integral_eq_nn_integral[THEN sym]; simp)
+    finally show ?thesis .
   qed
-  finally show ?thesis .
+  moreover have "expectation (\<lambda>x. - min (X x) 0) = (LBINT u:{..<0}. F u)"
+  proof -
+    have "expectation (\<lambda>x. - min (X x) 0) = enn2real (\<integral>\<^sup>+x. - min (X x) 0 \<partial>M)"
+      by (rule integral_eq_nn_integral; simp)
+    also have "\<dots> = enn2real (\<integral>\<^sup>+u. (indicator {..<0} u) * F u \<partial>lborel)"
+    proof -
+      have "(\<integral>\<^sup>+u\<in>{..<0}. cdf (distr M borel (\<lambda>x. min (X x) 0)) u \<partial>lborel) =
+        \<integral>\<^sup>+u. indicat_real {..<0} u * F u \<partial>lborel"
+        apply (rule nn_integral_cong)
+        unfolding F_def indicator_def by (rewrite cdf_distr_min; simp)
+      thus ?thesis
+        by (rewrite expectation_nonpos_tail; simp)
+    qed
+    also have "\<dots> = (LBINT u:{..<0}. F u)"
+      unfolding F_def set_lebesgue_integral_def
+      apply (rewrite integral_eq_nn_integral, measurable)
+      using cdf_def by simp_all
+    finally show ?thesis .
+  qed
+  ultimately show ?thesis
+    by simp
 qed
 
 proposition distributed_deriv_cdf:
@@ -2378,7 +2568,7 @@ proof -
     moreover have "\<And>a b. a \<le> b \<Longrightarrow>
       emeasure (distr M lborel X) {a<..b} = emeasure (density lborel f) {a<..b}"
     proof -
-      fix a b :: real assume "a \<le> b"
+      fix a b :: real assume ab: "a \<le> b"
       hence [simp]: "sym_diff {a<..b} {a..b} = {a}" by force
       have "emeasure (density lborel f) {a<..b} = (\<integral>\<^sup>+x\<in>{a<..b}. ennreal (f x) \<partial>lborel)"
         by (rewrite emeasure_density; simp)
@@ -2389,34 +2579,33 @@ proof -
       also have "\<dots> = ennreal (F b - F a)"
       proof -
         define g where "g x = (if x \<in> S then 0 else f x)" for x :: real
-        have [simp]: "\<And>x. g x \<ge> 0"
-          unfolding g_def
-          apply (split if_split, auto)
-          apply (rule mono_on_imp_deriv_nonneg[of UNIV F], auto)
-          unfolding F_def mono_on_def using distrX_FBM.cdf_nondecreasing apply blast
-          using assms unfolding F_def by force
-          (* TODO: fix this proof *)
         have "(\<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * f x) \<partial>lborel)
           = \<integral>\<^sup>+x. ennreal (indicat_real {a..b} x * g x) \<partial>lborel"
           apply (rule nn_integral_cong_AE)
-          apply (rule AE_mp[where P= "\<lambda>x. x \<notin> S"])
-          using assms finite_imp_null_set_lborel AE_not_in
-           apply blast
-          unfolding g_def
-          apply simp
-          done
+          apply (rule AE_mp[where P="\<lambda>x. x \<notin> S"])
+          using assms finite_imp_null_set_lborel AE_not_in apply blast
+          unfolding g_def by simp
         also have "\<dots> = ennreal (F b - F a)"
-          apply (rewrite nn_integral_has_integral_lebesgue, simp)
-           apply (rule fundamental_theorem_of_calculus_strong[of S], auto simp: \<open>a \<le> b\<close> g_def assms)
-          using has_real_derivative_iff_has_vector_derivative assms apply presburger
-          using assms continuous_on_subset subsetI by fastforce
-          (* TODO: fix this proof *)
+        proof -
+          have "\<And>x. g x \<ge> 0"
+            unfolding g_def if_split apply safe
+            using assms distrX_FBM.cdf_nondecreasing
+            by (intro mono_on_imp_deriv_nonneg[of UNIV F]; simp add: monoI)
+          moreover have "\<And>x. x \<notin> S \<Longrightarrow> (F has_vector_derivative g x) (at x)"
+            using assms has_real_derivative_iff_has_vector_derivative g_def by simp
+          moreover have "continuous_on {a..b} F"
+            using assms continuous_on_subset by blast
+          ultimately show ?thesis
+            apply (rewrite nn_integral_has_integral_lebesgue, simp)
+            unfolding F_def
+            by (rule fundamental_theorem_of_calculus_strong[of S]) (auto simp add: ab assms)
+        qed
         finally show ?thesis .
       qed
       also have "\<dots> = emeasure (distr M lborel X) {a <.. b}"
-        using \<open>a \<le> b\<close>
+        using ab
         by (rewrite distrlX_FBM.emeasure_Ioc)
-           (auto simp: F_def cdf_def ennreal_minus[symmetric] distr_borel_lborel)
+          (auto simp: F_def cdf_def ennreal_minus[symmetric] distr_borel_lborel)
       finally show "emeasure (distr M lborel X) {a<..b} = emeasure (density lborel f) {a<..b}"
         by simp
     qed
@@ -2445,10 +2634,9 @@ proof
   have "emeasure ?rMa (space ?rMa) = 1 / \<mu> a * emeasure ?Ma (space ?rMa)" by simp
   also have "\<dots> = 1 / \<mu> a * emeasure ?M (space ?rMa)"
     using assms
-    apply (rewrite emeasure_restrict_space)
-    apply (simp add: measure_space_def sigma_algebra.sets_measure_of_eq)
-    by (simp add: space_restrict_space space_scale_measure) simp
-    (* TODO: fix this proof *)
+    by (rewrite emeasure_restrict_space;
+        simp add: measure_space_def sigma_algebra.sets_measure_of_eq
+        space_restrict_space space_scale_measure)
   also have "\<dots> = 1 / \<mu> a * emeasure ?M (space ?Ma)" by (rewrite space_scale_measure) simp
   also have "\<dots> = 1 / \<mu> a * emeasure ?M a"
     using assms
@@ -2509,7 +2697,7 @@ proof -
 qed
 
 lemma cond_cond_prob_space:
-  assumes [measurable]:"A \<in> events" "B \<in> events" "B \<subseteq> A" "prob B > 0"
+  assumes [measurable]: "A \<in> events" "B \<in> events" "B \<subseteq> A" "prob B > 0"
   shows "(M\<downharpoonright>A)\<downharpoonright>B = M\<downharpoonright>B"
 proof (rule measure_eqI)
   have pA_pos[simp]: "prob A > 0" using assms by (smt (verit, ccfv_SIG) finite_measure_mono)
@@ -2527,8 +2715,7 @@ proof (rule measure_eqI)
         simp: prob_space_axioms)
   show sets_MAB: "sets ((M\<downharpoonright>A)\<downharpoonright>B) = sets (M\<downharpoonright>B)"
     apply (rewrite prob_space.sets_cond_prob_space)
-    using MA_PS.prob_space_axioms
-     apply presburger
+    using MA_PS.prob_space_axioms apply presburger
     apply (rewrite sets_cond_prob_space, unfold image_def)+
     using assms by blast
   show "\<And>C. C \<in> sets ((M\<downharpoonright>A)\<downharpoonright>B) \<Longrightarrow> emeasure ((M\<downharpoonright>A)\<downharpoonright>B) C = emeasure (M\<downharpoonright>B) C"
@@ -2540,13 +2727,20 @@ proof (rule measure_eqI)
     hence [simp]: "C \<in> events" and [simp]: "C \<subseteq> B" and [simp]: "C \<subseteq> A" using assms by auto
     hence [simp]: "C \<in> MA_PS.events"
       using assms by (rewrite sets_cond_prob_space, unfold image_def) blast
-    show "emeasure ((M\<downharpoonright>A)\<downharpoonright>B) C = emeasure (M\<downharpoonright>B) C"
-      apply (rewrite finite_measure.emeasure_eq_measure, simp)+
-      apply (rewrite ennreal_inj, simp_all)
-      apply (rewrite prob_space.measure_cond_prob_space_subset,
-          simp_all add: assms prob_space_axioms MA_PS.prob_space_axioms)+
-      using pA_pos by fastforce 
-      (* TODO: fix this proof *)
+    have "Sigma_Algebra.measure ((M\<downharpoonright>A)\<downharpoonright>B) C = MA_PS.prob C / MA_PS.prob B"
+      by (rewrite prob_space.measure_cond_prob_space_subset; simp add: MA_PS.prob_space_axioms)
+    also have "MA_PS.prob C = prob C / prob A"
+      by (simp add: measure_cond_prob_space_subset)
+    also have "MA_PS.prob B = prob B / prob A"
+      by (simp add: assms measure_cond_prob_space_subset)
+    finally have "Sigma_Algebra.measure ((M\<downharpoonright>A)\<downharpoonright>B) C = (prob C / prob A) / (prob B / prob A)" .
+    also have "\<dots> = prob C / prob B"
+      using pA_pos by (smt (verit) divide_divide_eq_right divide_mult_cancel)
+    also have "\<dots> = MB_PS.prob C"
+      by (rewrite prob_space.measure_cond_prob_space_subset; simp add: prob_space_axioms assms)
+    finally have "Sigma_Algebra.measure ((M \<downharpoonright> A) \<downharpoonright> B) C = MB_PS.prob C" .
+    thus "emeasure ((M\<downharpoonright>A)\<downharpoonright>B) C = emeasure (M\<downharpoonright>B) C"
+      by (rewrite finite_measure.emeasure_eq_measure, simp)+ simp
   qed
 qed
 
@@ -2613,16 +2807,11 @@ lemma random_variable_cond_prob_space:
 lemma AE_cond_prob_space_iff:
   assumes "A \<in> events" "prob A > 0"
   shows "(AE x in M\<downharpoonright>A. P x) \<longleftrightarrow> (AE x in M. x \<in> A \<longrightarrow> P x)"
-proof -
-  have [simp]: "1 / emeasure M A > 0"
-    using assms divide_ennreal emeasure_eq_measure ennreal_1
-    by (simp add: ennreal_zero_less_divide)
-  show ?thesis
-    unfolding cond_prob_space_def
-    apply (rewrite AE_scale_measure_iff)
-     apply fact
-    by (rewrite AE_restrict_space_iff; simp add: assms)
-qed
+  unfolding cond_prob_space_def
+  apply (rewrite AE_scale_measure_iff)
+  using assms divide_ennreal emeasure_eq_measure ennreal_1
+   apply (simp add: ennreal_zero_less_divide)
+  by (rewrite AE_restrict_space_iff; simp add: assms)
 
 lemma integral_cond_prob_space_nn:
   assumes [measurable]:"A \<in> events" "prob A > 0"
@@ -2631,7 +2820,7 @@ lemma integral_cond_prob_space_nn:
   shows "integral\<^sup>L (M\<downharpoonright>A) X = expectation (\<lambda>x. indicator A x * X x) / prob A"
 proof -
   have [measurable]: "X \<in> borel_measurable (M\<downharpoonright>A)"
-    by (rule random_variable_cond_prob_space; (simp add: assms))
+    by (rule random_variable_cond_prob_space; simp add: assms)
   have [simp]: "AE x in (M\<downharpoonright>A). 0 \<le> X x"
     by (rewrite AE_cond_prob_space_iff; simp add: assms)
   have [measurable]: "random_variable borel (\<lambda>x. indicat_real A x * X x)" 
@@ -2639,7 +2828,7 @@ proof -
   have [simp]: "AE x in M. 0 \<le> indicat_real A x * X x" using nonneg by fastforce
   have "integral\<^sup>L (M\<downharpoonright>A) X = enn2real (\<integral>\<^sup>+ x. ennreal (X x) \<partial>(M\<downharpoonright>A))"
     by (rewrite integral_eq_nn_integral; simp)
-  also have "\<dots> = enn2real (1 / prob A * \<integral>\<^sup>+ x. ennreal (X x) \<partial>(restrict_space M A))"
+  also have "\<dots> = enn2real (1 / prob A * (\<integral>\<^sup>+ x. ennreal (X x) \<partial>(restrict_space M A)))"
     using divide_ennreal assms
     by(auto simp: nn_integral_scale_measure cond_prob_space_def measurable_restrict_space1
         emeasure_eq_measure ennreal_1[symmetric] simp del: ennreal_1)
@@ -2792,13 +2981,16 @@ lemma ccdf_continuous_distr_P_ge:
   assumes "random_variable borel X" "isCont (ccdf (distr M borel X)) x"
   shows "ccdf (distr M borel X) x = \<P>(\<omega> in M. X \<omega> \<ge> x)"
 proof -
-  have "ccdf (distr M borel X) x = measure (distr M borel X) {x<..}" unfolding ccdf_def by simp
-  also have "\<dots> = measure (distr M borel X) ({x<..} \<union> {x})"
-    apply (rewrite finite_measure.measure_zero_union, simp_all add: assms finite_measure_distr)
+  have "ccdf (distr M borel X) x = measure (distr M borel X) {x<..}"
+    unfolding ccdf_def by simp
+  moreover have "Sigma_Algebra.measure (distr M borel X) {x} = 0"
     using finite_borel_measure.isCont_ccdf real_distribution.finite_borel_measure_M assms by blast
-  also have "\<dots> = measure (distr M borel X) {x..}" by (metis Un_commute ivl_disj_un_singleton(1))
-  also have "\<dots> = \<P>(\<omega> in M. X \<omega> \<ge> x)" 
-    apply (rewrite measure_distr, simp_all add: assms)
+  ultimately have "ccdf (distr M borel X) x = measure (distr M borel X) ({x<..} \<union> {x})"
+    by (rewrite finite_measure.measure_zero_union; simp add: assms finite_measure_distr)
+  also have "\<dots> = measure (distr M borel X) {x..}"
+    by (metis Un_commute ivl_disj_un_singleton(1))
+  also have "\<dots> = \<P>(\<omega> in M. X \<omega> \<ge> x)"
+    apply (rewrite measure_distr, (simp_all add: assms)[2])
     unfolding vimage_def by simp (smt (verit) Collect_cong Int_def mem_Collect_eq)
   finally show ?thesis .
 qed
@@ -2864,32 +3056,32 @@ proof (cases \<open>ccdf (distr M borel X) t = 0\<close>)
   case True
   with hazard_rate_0_ccdf_0 show ?thesis by simp
 next
-  case h:False
+  case False
   let ?F = "cdf (distr M borel X)"
-  have "\<forall>\<^sub>F dt in at_right 0. \<P>(x in M. t < X x \<and> X x \<le> t + dt \<bar> X x > t) / dt =
+  have "\<And>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt \<bar> X x > t) =
+    \<P>(x in M. t < X x \<and> X x \<le> t + dt) / \<P>(x in M. t < X x)"
+    unfolding cond_prob_def by (metis (mono_tags, lifting) Collect_cong)
+  hence "\<forall>\<^sub>F dt in at_right 0. \<P>(x in M. t < X x \<and> X x \<le> t + dt \<bar> X x > t) / dt =
     (?F (t + dt) - ?F t) / dt / ccdf (distr M borel X) t"
-    apply (rule eventually_at_rightI[where b=1]; simp)
-    unfolding cond_prob_def
-    apply (rewrite cdf_distr_diff_P; simp)
-    apply (rewrite ccdf_distr_P[THEN sym], simp)
-    by (smt (verit) Collect_cong mult.commute) (* TODO: fix this proof *)
+    using cdf_distr_diff_P ccdf_distr_P by (intro eventually_at_rightI[where b=1]; simp)
+  moreover have "((\<lambda>dt. (?F (t + dt) - ?F t) / dt) \<longlongrightarrow> deriv ?F t) (at_right 0)"
+    apply (rule Lim_at_imp_Lim_at_within)
+    using DERIV_deriv_iff_real_differentiable assms DERIV_def by blast
   moreover have "((\<lambda>dt. (?F (t + dt) - ?F t) / dt / ccdf (distr M borel X) t) \<longlongrightarrow>
     deriv ?F t / ccdf (distr M borel X) t) (at_right 0)"
-    apply (rule tendsto_intros)
+  proof -
+    have "((\<lambda>dt. (?F (t + dt) - ?F t) / dt) \<longlongrightarrow> deriv ?F t) (at_right 0)"
       apply (rule Lim_at_imp_Lim_at_within)
-    using DERIV_deriv_iff_real_differentiable assms DERIV_def
-      apply blast
-     apply (rule Lim_at_imp_Lim_at_within)
-    using DERIV_deriv_iff_real_differentiable assms DERIV_def
-     apply blast
-    apply fact
-    done
+      using DERIV_deriv_iff_real_differentiable assms DERIV_def by blast
+    thus ?thesis
+      by (rule tendsto_intros; simp add: False)
+  qed
   ultimately show ?thesis
     unfolding hazard_rate_def using tendsto_cong by (intro tendsto_Lim; fastforce)
 qed
 
 lemma deriv_cdf_hazard_rate:
-  assumes [measurable]: "random_variable borel X"
+  assumes Xrv: "random_variable borel X"
     and "(cdf (distr M borel X)) differentiable at t"
   shows "deriv (cdf (distr M borel X)) t = ccdf (distr M borel X) t * hazard_rate X t"
 proof -
@@ -2900,7 +3092,7 @@ proof -
     case True
     hence "cdf (distr M borel X) t = 1"
       using distrX_FBM.cdf_ccdf
-      by (metis assms(1) diff_0_right prob_space.prob_space prob_space_distr)
+      by (metis Xrv diff_0_right prob_space.prob_space prob_space_distr)
     moreover obtain D where "(cdf (distr M borel X) has_real_derivative D) (at t)"
       using assms real_differentiable_def by blast
     ultimately have "(cdf (distr M borel X) has_real_derivative 0) (at t)"
@@ -2972,76 +3164,60 @@ proof -
   let ?srvl = "ccdf (distr M borel X)"
   have [simp]: "\<And>s. t \<le> s \<and> s \<le> u \<Longrightarrow> ?srvl s > 0"
     using distrX_FBM.ccdf_nonneg assms by (smt (verit) atLeastAtMost_iff)
+  from assms obtain S0 where S0_fin: "finite S0" and
+    diff_S0: "\<And>s. s \<in> {t<..<u} - S0 \<Longrightarrow> ?srvl differentiable at s within {t<..<u}"
+    unfolding piecewise_differentiable_on_def by blast
+  obtain S where
+    S_fin: "finite S" and diff_S: "\<And>s. s \<in> {t..u} - S \<Longrightarrow> ?srvl differentiable at s"
+  proof (atomize_elim)
+    let ?S = "S0 \<union> {t, u}"
+    have "finite ?S" using S0_fin by simp
+    moreover have "\<forall>s. s \<in> {t..u} - ?S \<longrightarrow> ?srvl differentiable at s"
+    proof -
+      { fix s assume s_in: "s \<in> {t..u} - ?S"
+        hence "?srvl differentiable at s within {t<..<u}" using diff_S0 by simp
+        hence "?srvl differentiable at s"
+          using s_in by (rewrite at_within_open[THEN sym]; simp) }
+      thus ?thesis by blast
+    qed
+    ultimately show "\<exists>S. finite S \<and> (\<forall>s. s \<in> {t..u} - S \<longrightarrow> ?srvl differentiable at s)"
+      by blast
+  qed
+  hence ln_srvl_diff: "\<And>s. s \<in> {t..u} - S \<Longrightarrow> (\<lambda>r. ln (?srvl r)) differentiable at s"
+    apply (rewrite differentiable_eq_field_differentiable_real)
+    using assms differentiable_eq_field_differentiable_real
+    by (intro field_differentiable_at_ln_comp; simp)
   have "(deriv (\<lambda>s. - ln (?srvl s)) has_integral - ln (?srvl u) - - ln (?srvl t)) {t..u}"
   proof -
-    have "continuous_on {t..u} (\<lambda>s. - ln (?srvl s))"
+    have C0: "continuous_on {t..u} (\<lambda>s. - ln (?srvl s))"
       by (intro continuous_intros continuous_on_ln) (auto simp add: assms)
-    moreover hence "(\<lambda>s. - ln (?srvl s)) piecewise_differentiable_on {t<..<u}"
+    moreover have "(\<lambda>s. - ln (?srvl s)) piecewise_differentiable_on {t<..<u}"
     proof -
-      have "?srvl ` {t<..<u} \<subseteq> {0<..}"
-      proof -
-        { fix s assume "s \<in> {t<..<u}"
-          hence "?srvl s \<noteq> 0" using assms by simp
-          moreover have "?srvl s \<ge> 0" using distrX_FBM.ccdf_nonneg by simp
-          ultimately have "?srvl s > 0" by simp }
-        thus ?thesis by auto
-      qed
-      hence "(\<lambda>r. - ln r) \<circ> ?srvl piecewise_differentiable_on {t<..<u}"
-        apply (intro differentiable_on_piecewise_compose)
-         apply(simp add: assms)
-        apply (rule derivative_intros)
-        apply (rule differentiable_on_subset[of ln "{0<..}"])
-         apply (rewrite differentiable_on_eq_field_differentiable_real)
-        unfolding field_differentiable_def using DERIV_ln
-        by (meson greaterThan_iff has_field_derivative_at_within) simp
-      thus ?thesis unfolding comp_def by simp
+      have "\<And>r. r \<in> {t<..<u} - S \<Longrightarrow> (\<lambda>s. - ln (?srvl s)) differentiable at r within {t<..<u}"
+        using ln_srvl_diff by (intro derivative_intros; simp add: differentiable_at_withinI)
+      thus ?thesis
+        unfolding piecewise_differentiable_on_def apply safe
+         apply (rule continuous_on_subset[of "{t..u}"]; force simp add: C0)
+        using S_fin by blast
     qed
-    ultimately show ?thesis by (intro FTC_real_deriv_has_integral; simp add: assms)
+    ultimately show ?thesis
+      by (intro FTC_real_deriv_has_integral; simp add: assms)
   qed
-  hence ln: "(deriv (\<lambda>s. - ln (?srvl s)) has_integral ln (?srvl t / ?srvl u)) {t..u}"
+  hence "(deriv (\<lambda>s. - ln (?srvl s)) has_integral ln (?srvl t / ?srvl u)) {t..u}"
     by (rewrite ln_div; force simp: assms)
-  thus "((hazard_rate X) has_integral ln (?srvl t / ?srvl u)) {t..u}"
+  moreover have "\<And>r. r \<in> {t..u} - S \<Longrightarrow> deriv (\<lambda>s. - ln (?srvl s)) r = hazard_rate X r"
   proof -
-    from assms obtain S0 where finS0: "finite S0" and
-      diffS0: "\<And>s. s \<in> {t<..<u} - S0 \<Longrightarrow> ?srvl differentiable at s within {t<..<u}"
-      unfolding piecewise_differentiable_on_def by blast
-    from this obtain S where "finite S" and "\<And>s. s \<in> {t..u} - S \<Longrightarrow> ?srvl differentiable at s"
-    proof (atomize_elim)
-      let ?S = "S0 \<union> {t, u}"
-      have "finite ?S" using finS0 by simp
-      moreover have "\<forall>s. s \<in> {t..u} - ?S \<longrightarrow> ccdf (distr M borel X) differentiable at s"
-      proof -
-        { fix s assume s_in: "s \<in> {t..u} - ?S"
-          hence "?srvl differentiable at s within {t<..<u}" using diffS0 by simp
-          hence "?srvl differentiable at s"
-            using s_in by (rewrite at_within_open[THEN sym], simp_all) }
-        thus ?thesis by blast
-      qed
-      ultimately show
-        "\<exists>S. finite S \<and> (\<forall>s. s \<in> {t..u} - S \<longrightarrow> ccdf (distr M borel X) differentiable at s)"
-        by blast
-    qed
-    thus ?thesis
-      apply (rewrite has_integral_spike_finite_eq [of S _ "deriv (\<lambda>s. - ln (?srvl s))"])
-        apply simp
-       apply (rewrite hazard_rate_deriv_ln_ccdf)
-          apply simp
-         apply(simp add: assms)
-        apply(simp add: assms)
-       apply (rewrite deriv_minus)
-        apply (rewrite in asm differentiable_eq_field_differentiable_real)
-        apply (rewrite comp_def[THEN sym])
-        apply(rule field_differentiable_compose[of "?srvl"])
-         apply simp
-      unfolding field_differentiable_def
-        apply (rule exI)
-        apply(rule DERIV_ln)
-        apply simp
-       apply simp
-      using ln
-      apply simp
-      done
+    fix r assume r_in : "r \<in> {t..u} - S"
+    hence "ln differentiable at (?srvl r)"
+      using assms
+      by (smt (verit) DERIV_ln_divide Diff_iff distrX_FBM.ccdf_nonneg real_differentiable_def)
+    hence "deriv (\<lambda>s. - ln (?srvl s)) r = - deriv (\<lambda>s. ln (?srvl s)) r"
+      using ln_srvl_diff r_in differentiable_eq_field_differentiable_real deriv_minus by simp
+    thus "deriv (\<lambda>s. - ln (?srvl s)) r = hazard_rate X r"
+      using assms r_in diff_S by (rewrite hazard_rate_deriv_ln_ccdf; simp)
   qed
+  ultimately show "((hazard_rate X) has_integral ln (?srvl t / ?srvl u)) {t..u}"
+    by (rewrite has_integral_spike_finite_eq [of S _ "deriv (\<lambda>s. - ln (?srvl s))"]; simp add: S_fin)
 qed
 
 corollary hazard_rate_integrable:
@@ -3084,7 +3260,7 @@ proof (cases \<open>ccdf (distr M borel X) t = 0\<close>)
   thus ?thesis
     using assms
     by (rewrite hazard_rate_0_ccdf_0)
-       (auto dest: distributed_measurable)
+      (auto dest: distributed_measurable)
 next
   case False
   have [simp]: "t \<le> u" using assms by simp
@@ -3144,19 +3320,16 @@ next
     ultimately show "\<P>(x in M. X x \<in> {t <.. t+dt}) = (LBINT s:{t..t+dt}. f s)" by simp
   qed
   ultimately have "((\<lambda>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt) / dt) \<longlongrightarrow> f t) (at_right 0)"
-    by(auto intro!: Lim_cong_within
-       [where f="\<lambda>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt) / dt"
+    by (auto intro!: Lim_cong_within
+        [where f="\<lambda>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt) / dt"
           and g="\<lambda>dt. (LBINT s:{t..t+dt}. f s) / dt",THEN iffD2])
   hence "((\<lambda>dt. \<P>(x in M. t < X x \<and> X x \<le> t + dt \<bar> X x > t) / dt) \<longlongrightarrow>
     f t / ccdf (distr M borel X) t) (at_right 0)"
-    unfolding cond_prob_def
-    apply (rewrite ccdf_distr_P[THEN sym])
-     apply simp
+    unfolding cond_prob_def apply (rewrite ccdf_distr_P[THEN sym], simp)
     unfolding conj.assoc divide_divide_eq_left
-    apply (rewrite mult.commute)
-    apply(rewrite divide_divide_eq_left[THEN sym])
+    apply (rewrite mult.commute, rewrite divide_divide_eq_left[THEN sym])
     apply(rule tendsto_intros)
-    by(auto intro!: Lim_cong_within
+    by (auto intro!: Lim_cong_within
         [where f="\<lambda>x. prob {\<omega> \<in> space M. t < X \<omega> \<and> X \<omega> \<le> t + x \<and> t < X \<omega>} / x"
           and g="\<lambda>dt. prob {x \<in> space M. t < X x \<and> X x \<le> t + dt} / dt", THEN iffD2]
         arg_cong[where f=prob] False)

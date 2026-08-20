@@ -2190,10 +2190,23 @@ corollary e_integral_pdfX: "$e`\<circ>_0 = integral {0..} (\<lambda>x. pdfX x * 
   \<comment> \<open>Note that \<open>0 = 0\<close> holds when the life expectation diverges.\<close>
   using e_integral_pdfT pdfT0_X psi_pos' by presburger
 
+end
+
 subsubsection \<open>Introduction of Force of Mortality\<close>
+
+context survival_model
+begin
 
 definition force_mortal :: "real \<Rightarrow> real" (\<open>$\<mu>'__\<close> [101] 200)
   where "$\<mu>_x \<equiv> MM_PS.hazard_rate X x"
+
+end
+
+context smooth_survival_function
+begin
+
+interpretation distrX_RD: real_distribution "distr \<MM> borel X"
+  using MM_PS.real_distribution_distr by simp
 
 lemma mu_pdfX: "$\<mu>_x = pdfX x / ccdf (distr \<MM> borel X) x"
   if "(cdf (distr \<MM> borel X)) differentiable at x" for x::real
