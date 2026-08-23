@@ -1,5 +1,24 @@
 [
  {
+  "abstract": "This entry shows an important basic fact in complex analysis, namely that a complex-valued function $f$ holomorphic on an open annulus $\\{z \\mid 0\\leq r \u003c \\Vert z - z_0\\Vert \\leq R\\}$ has a (generalised) Laurent series expansion of the form \\[f(z) = \\sum_{n=-\\infty}^\\infty a_n (z - z_0)^n\\] that is valid on the entire annulus.\nAn important special case that is also developed is $r = 0$, i.e. the local behaviour of a function around an isolated singularity. For non-essential singularities, this reduces to the well-known simpler Laurent series expansions from HOL-Complex_Analysis of the form $\\sum_{n=n_0}^\\infty a_n (z-z_0)^n$. ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-08-22",
+  "link": "../entries/Laurent_Annulus.html",
+  "permalink": "https://isa-afp.org/entries/Laurent_Annulus.html",
+  "related": [],
+  "shortname": "Laurent_Annulus",
+  "title": "Laurent Series Expansions on an Annulus",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry presents a minimal, machine-checked deep embedding of classical higher-order logic (HOL) in Isabelle/HOL, following the article Higher-Order Semantics and Extensionality by Benzmüller, Brown and Kohlhase (Journal of Symbolic Logic 69(4), 2004; henceforth BKK). Throughout, HOL means Church's simple theory of types: it is the embedded object logic, while Isabelle/HOL serves as the ambient meta-logic. The language is formalised in a locally nameless representation, which makes BKK's convention of identifying α-equivalent terms literally true and eliminates capture-avoiding substitution and renaming machinery altogether. The semantics is rendered abstractly, following BKK: applicative structures, Σ-evaluations (D, @, E) subject to BKK's four conditions on the evaluation function, Σ-models (D, @, E, υ), and the class Mβfb of Σ-Henkin models (BKK's property q is automatic here, since primitive equality is part of the signature). Standard models arise as the full special case, and the familiar recursive denotation over frames enters only as the canonical way of constructing concrete models.\nOn this basis we prove the natural-deduction calculus NK of BKK sound (including BKK's evaluation-variant argument) and complete in the sense of Henkin, via BKK's abstract-consistency and model-existence method, with the term model realised as a term evaluation. Completeness is established in a form stronger than BKK's: it holds at every infinite value carrier, for every signature with infinitely many parameters, and for open formulas. Consistency follows by exhibiting a concrete Σ-standard model over finite domains. The signature includes BKK's optional primitive equality and — going beyond BKK, following Andrews' General Models, Descriptions, and Choice in Type Theory (1972) — typed description operators. As an illustration, Cantor's theorem is derived inside NK, in surjective and injective form and at every type. To the best of our knowledge, this is the first machine-checked completeness proof for a deep embedding of HOL in HOL. This contribution is part of the LogiKEy project.\n",
   "authors": [
    "Christoph Benzmüller",

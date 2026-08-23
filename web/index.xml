@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Laurent Series Expansions on an Annulus</title>
+  <link>https://isa-afp.org/entries/Laurent_Annulus.html</link>
+  <pubDate>Sat, 22 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Laurent Series Expansions on an Annulus in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>A deep embedding of HOL in HOL: soundness, completeness, consistency</title>
   <link>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</link>
   <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
