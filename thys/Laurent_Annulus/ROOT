@@ -1,0 +1,9 @@
+chapter AFP
+
+session Laurent_Annulus (AFP) = Path_Automation +
+  options [timeout = 300]
+  theories
+    Laurent_Annulus
+  document_files
+    "root.tex"
+
