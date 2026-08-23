@@ -11,6 +11,13 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>A deep embedding of HOL in HOL: soundness, completeness, consistency</title>
   <link>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</link>
   <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>

@@ -4,6 +4,13 @@
     <title>Mathematics/Geometry</title>
     <link>https://isa-afp.org/topics/mathematics/geometry/</link>
     <description>AFP entries in Geometry</description><item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>The Wallace--Simson Line Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Simson.html</link>
   <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
