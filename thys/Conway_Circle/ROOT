@@ -1,0 +1,9 @@
+chapter AFP
+
+session Conway_Circle = "HOL-Analysis" +
+  options [document = pdf, timeout = 1200]
+  theories
+    Conway_Circle
+  document_files
+    "root.tex"
+    "root.bib"

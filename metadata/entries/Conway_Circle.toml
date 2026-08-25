@@ -1,0 +1,78 @@
+title = "Conway's Circle Theorem in Isabelle/HOL"
+date = 2026-06-27
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = """
+We formalize **Conway’s circle theorem** in Isabelle/HOL.
+
+For a nondegenerate Euclidean triangle (ABC) with side lengths
+
+$$
+a = |BC|,\\qquad b = |CA|,\\qquad c = |AB|,
+$$
+
+extend the two side-lines meeting at each vertex past that vertex by the length of the side opposite that vertex:
+
+$$
+\\begin{aligned}
+&\\text{at } A,\\text{ both adjacent sides are extended by } a,\\
+&\\text{at } B,\\text{ both adjacent sides are extended by } b,\\
+&\\text{at } C,\\text{ both adjacent sides are extended by } c.
+\\end{aligned}
+$$
+
+The six resulting endpoints lie on one circle. Its center is the incenter (I) of the triangle, and its radius is
+
+$$
+\\sqrt{r^{2}+s^{2}},
+$$
+
+where (r) is the inradius and
+
+$$
+s=\\frac{a+b+c}{2}
+$$
+
+is the semiperimeter.
+
+We give the result in three equivalent forms: as six explicit distance equations, as a subset relation (\\subseteq) into the corresponding (\\mathsf{sphere}), and as a single bounded-universal statement over the six-point set. A separate construction-correctness theorem records that each Conway point lies on the intended side line and at the declared extension length from the adjacent vertex.
+
+AI assistance was used for proof engineering."""
+license = "bsd"
+note = ""
+creation_note = """
+Opus 4.8 was used to help with proof engineering
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

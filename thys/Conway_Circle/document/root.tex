@@ -1,0 +1,125 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Conway's Circle Theorem in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+We formalize Conway's circle theorem in Isabelle/HOL.  For a nondegenerate
+Euclidean triangle \(ABC\) with side lengths \(a = |BC|\), \(b = |CA|\),
+and \(c = |AB|\), extend the two side-lines meeting at each vertex past
+that vertex by the length of the side opposite that vertex: at \(A\) both
+adjacent sides are extended by \(a\), at \(B\) by \(b\), and at \(C\) by
+\(c\).  The six resulting endpoints lie on one circle.  Its center is the
+incenter \(I\) of the triangle, and its radius is
+\[
+  \sqrt{r^{2}+s^{2}},
+\]
+where \(r\) is the inradius and \(s = (a+b+c)/2\) is the semiperimeter.
+
+We give the result in three equivalent forms: as six explicit distance
+equations, as a subset relation \(\subseteq\) into the corresponding
+\textsf{sphere}, and as a single bounded-universal statement over the
+six-point set.  A separate construction-correctness theorem records that
+each Conway point lies on the intended side line and at the declared
+extension length from the adjacent vertex.
+
+AI assistance was used for proof engineering. 
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\section{Introduction}
+
+Conway's construction is a compact Euclidean configuration: a triangle
+determines three side lengths, those lengths determine six points on the
+three side lines, and the resulting endpoints unexpectedly form a circle.
+The theorem is often presented as a visual fact about equal segments; the
+formal proof has to make explicit which directed lines are used, which
+extensions are external to the triangle, and how the metric computation is
+organized.
+
+The development follows the elementary proof.  Each constructed point lies
+on one of the three side lines.  The perpendicular from the
+incenter \(I\) to that side has length \(r\), and the signed distance from
+the foot of the perpendicular to either constructed endpoint is \(s\).
+The Pythagorean theorem therefore gives the common distance
+\[
+  \sqrt{r^{2}+s^{2}}
+\]
+from \(I\) to all six endpoints.
+
+\section{Definitions}
+
+The formal statement works in the Euclidean plane over real coordinates.
+The vertices \(A\), \(B\), and \(C\) are assumed not to be collinear.  The
+side lengths are named in the usual way:
+\[
+  \begin{aligned}
+    a &= |BC|, & b &= |CA|, & c &= |AB|, \\
+    s &= \frac{a+b+c}{2}.
+  \end{aligned}
+\]
+The incenter \(I\) is the point whose perpendicular distance to each side
+line is the common inradius \(r\).
+
+For the construction, each side line contributes two points.  On the line
+\(AB\), the point \(A_c\) is beyond \(A\) with \(|AA_c| = a\), and the
+point \(B_c\) is beyond \(B\) with \(|BB_c| = b\).  Cyclically, the line
+\(AC\) gives \(A_b\) and \(C_b\), and the line \(BC\) gives \(B_a\) and
+\(C_a\).  These prose names are only a guide to the geometric objects; the
+precise predicates and uniqueness facts are those rendered from the
+Isabelle theory below.
+
+\section{Proof Sketch}
+
+Let \(T_{AB}\) be the touch point of the incircle with the side \(AB\).
+The standard tangent-length identities give
+\[
+  |AT_{AB}| = s-a, \qquad |BT_{AB}| = s-b.
+\]
+Since \(A_c\) lies past \(A\) by length \(a\), the directed distance from
+\(T_{AB}\) to \(A_c\) has absolute value \(s\); similarly the directed
+distance from \(T_{AB}\) to \(B_c\) has absolute value \(s\).  The segment
+\(IT_{AB}\) is perpendicular to \(AB\) and has length \(r\), so the two
+right triangles with hypotenuses \(IA_c\) and \(IB_c\) both have legs
+\(r\) and \(s\).  Thus
+\[
+  |IA_c| = |IB_c| = \sqrt{r^{2}+s^{2}}.
+\]
+The same argument on the side lines \(AC\) and \(BC\) proves the identical
+distance formula for \(A_b\), \(C_b\), \(B_a\), and \(C_a\).  Hence all six
+constructed points lie on the circle with center \(I\) and radius
+\(\sqrt{r^{2}+s^{2}}\).
+
+\section{Historical Remark}
+
+The result is part of the informal triangle-geometry tradition associated
+with John H. Conway, and public expositions record the construction under
+his name~\cite{mathworldConwayCircle}.  We do not attempt a precise
+priority claim here.  Later conic work by Evans fits the theorem into the
+broader triangle-center literature~\cite{evans2002conicCenters}, and
+Garc{\'i}a Capit{\'a}n subsequently showed that the same six-point pattern
+belongs to a family of conics, with the Conway circle recovered when the
+chosen point is the
+incenter~\cite{garciaCapitan2013generalization}.  Honsberger's collection
+gives related Euclidean-geometry background~\cite{honsberger1995episodes}.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Termination Restricted to Right-Forward Closures</title>
+  <link>https://isa-afp.org/entries/Right_Forward_Closures.html</link>
+  <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Termination Restricted to Right-Forward Closures in the AFP</description>
+    <category>Logic/Rewriting</category>
+</item>
+<item>
   <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
   <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
   <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
@@ -97,6 +104,13 @@
   <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
   <description>Complete Elliptic Integrals and the Arithmetic–Geometric Mean in the AFP</description>
     <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Conway_Circle.html</link>
+  <pubDate>Sat, 27 Jun 2026 00:00:00 +0000</pubDate>
+  <description>Conway&#39;s Circle Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
 </item>
 <item>
   <title>Perron&#39;s Formula</title>
