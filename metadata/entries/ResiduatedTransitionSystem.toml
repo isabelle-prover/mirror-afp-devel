@@ -68,7 +68,16 @@ informal text.
 Added a notion of RTS with chosen sources, to support the generalization of facts
 about extension of simulations and transformations to composite completions to
 situations with weaker extensionality assumptions.
-(revision cd09c4762638)<br>"""
+(revision cd09c4762638)<br>
+"""
+2026-01-14 = """
+Rework to incorporate a significantly improved and generalized quotient RTS
+construction.
+(revision 37c310739c56)<br>
+"""
+2026-08-19 = """
+Further major reworking/generalization of quotient RTS construction.
+(revision b252d248ad76)<br>"""
 
 [extra]
 
