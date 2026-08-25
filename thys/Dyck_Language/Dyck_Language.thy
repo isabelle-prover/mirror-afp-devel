@@ -117,6 +117,18 @@ corollary bal_iff_bal_stk: "bal w \<longleftrightarrow> bal_stk [] w = ([],[])"
 using bal_if_bal_stk[of "[]"] bal_stk_if_bal by auto
 
 
+subsection "\<open>replicate\<close>"
+
+lemma bal_stk_replicate_Open: "bal_stk s (replicate i (Open a)) = (replicate i a @ s, [])"
+by (induction i arbitrary: s) (auto simp: replicate_append_same)
+
+lemma bal_stk_replicate_Close: "bal_stk (replicate i a @ t) (replicate i (Close a)) = (t, [])"
+by (induction i arbitrary: t) auto
+
+lemma bal_replicate_if: assumes "bal xs" shows "bal (replicate n (Open a) @ xs @ replicate n (Close a))"
+unfolding bal_iff_bal_stk
+using assms by (metis bal_stk_append_if bal_stk_if_bal bal_stk_replicate_Close bal_stk_replicate_Open)
+
 subsection "A rewriting approach: successively remove () pairs"
 
 inductive bal_rw :: "'a bracket list \<Rightarrow> 'a bracket list \<Rightarrow> bool"where
