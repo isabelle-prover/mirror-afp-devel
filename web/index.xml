@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Actuarial Mathematics</title>
+  <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
+  <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Actuarial Mathematics in the AFP</description>
+    <category>Mathematics/Games and economics</category>
+</item>
+<item>
   <title>Termination Restricted to Right-Forward Closures</title>
   <link>https://isa-afp.org/entries/Right_Forward_Closures.html</link>
   <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
@@ -470,13 +477,6 @@
   <pubDate>Thu, 22 Jan 2026 00:00:00 +0000</pubDate>
   <description>Linear orders as rankings in the AFP</description>
     <category>Mathematics/Order</category>
-</item>
-<item>
-  <title>Actuarial Mathematics</title>
-  <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
-  <pubDate>Fri, 16 Jan 2026 00:00:00 +0000</pubDate>
-  <description>Actuarial Mathematics in the AFP</description>
-    <category>Mathematics/Games and economics</category>
 </item>
 <item>
   <title>Arbitrage Opportunities Correspond to Probability Inequality Identities</title>

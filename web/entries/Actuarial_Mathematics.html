@@ -92,19 +92,18 @@
   <div>
       <p><a href="../authors/ito/">Yosuke Ito</a> <a class="obfuscated" data="eyJ1c2VyIjpbImdsYWNpZXIzNDUiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/hirata/">Michikazu Hirata</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1pY2hpLWlzYSJdLCJob3N0IjpbIm1haWwiLCJlZSJdfQ==">📧</a>
       </p>
-      <p class="date">January 16, 2026</p>
+      <p class="date">August 20, 2026</p>
   </div>
 </header>
       <div>
   <main>
 
     <h3>Abstract</h3>
-    <div class="abstract mathjax_process">Actuarial Mathematics is a theory in applied mathematics. This is mainly used for determining the prices of insurance products and evaluating the liability of a company associating with insurance contracts. It is related to calculus, probability theory and financial theory, etc.
-In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents the human mortality. The life table is based on the survival model and used for practical calculations.
-I have already formalized the basic part of Actuarial Mathematics in Coq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on the probability theory and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web.
-This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development.
-If you heavily depend on this entry, please let me know.
-(Updated January 16th, 2026.)</div>
+    <div class="abstract mathjax_process">Actuarial Mathematics is a theory in applied mathematics. This is mainly used for determining the prices of insurance products and evaluating the liability of a company associated with insurance contracts. It is related to calculus, probability theory and financial theory, etc.
+In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents human mortality. The life table is based on the survival model and used for practical calculations.
+I have already formalized the basic part of Actuarial Mathematics in Rocq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on probability theory, and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web.
+This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know.
+(Updated August 20, 2026.)</div>
 
     <h3>License</h3>
     <div>
@@ -112,6 +111,8 @@ If you heavily depend on this entry, please let me know.
     </div>
       <h3>History</h3>
       <dl>
+          <dt>August 20, 2026</dt>
+          <dd>Modified the existing theories; contact the author for incompatible changes.</dd>
           <dt>January 16, 2026</dt>
           <dd>Renamed the theory Preliminaries to Preliminaries_AC. Modified the existing theories; contact the author for incompatible changes.</dd>
           <dt>April 7, 2024</dt>
@@ -158,7 +159,7 @@ If you heavily depend on this entry, please let me know.
   author  = {Yosuke Ito and Michikazu Hirata},
   title   = {Actuarial Mathematics},
   journal = {Archive of Formal Proofs},
-  month   = {January},
+  month   = {August},
   year    = {2026},
   note    = {\url{https://isa-afp.org/entries/Actuarial_Mathematics.html},
              Formal proof development},

@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-17T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Right_Forward_Closures.html</loc>
     <lastmod>2026-07-17T00:00:00+00:00</lastmod>
@@ -196,9 +199,6 @@
   </url><url>
     <loc>https://isa-afp.org/entries/SWF_Impossibility.html</loc>
     <lastmod>2026-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
-    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Arbitrage_Probability_Correspondence.html</loc>
     <lastmod>2026-01-12T00:00:00+00:00</lastmod>
@@ -12275,6 +12275,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Analysis/Improper_Integral.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/HOL-Analysis/Infinite_Product.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/HOL-Analysis/Infinite_Products.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Analysis/Infinite_Set_Sum.html</loc>
@@ -22259,19 +22261,21 @@
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/ConcreteRTSCategory.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/Preliminaries.html</loc>
-  </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTS2_Preliminaries.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_Interp.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCategory.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_sim.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCatx.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_trn.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCategory.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSConstructions.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSEnrichedCategory.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/Smallness_old.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Resolution_FOL/Completeness.html</loc>
   </url><url>
