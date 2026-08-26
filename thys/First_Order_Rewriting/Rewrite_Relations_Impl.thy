@@ -11,7 +11,15 @@ theory Rewrite_Relations_Impl
     Multistep
 begin 
 
-lemma [code]:
+lemma par_rstep_sub_mstep: "par_rstep R \<subseteq> mstep R" 
+proof
+  fix s t
+  assume "(s,t) \<in> par_rstep R" 
+  thus "(s,t) \<in> mstep R" 
+    by (induction, auto simp: mstep.rule mstep.args)
+qed
+
+lemma vars_term_code[code]:
   \<open>vars_term t = set (vars_term_list t)\<close>
   by simp
 
@@ -195,43 +203,56 @@ qed
 text\<open>Generate all possible parallel rewrite steps for a given term, assuming that 
 the underlying TRS is well-formed.\<close>
 
-fun parallel_rewrite :: "('f, 'v) rules \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term list"
-  where
-    "parallel_rewrite R (Var x) = [Var x]"
-  | "parallel_rewrite R (Fun f ss) = remdups
-     (root_rewrite R (Fun f ss) @ map (\<lambda>ss. Fun f ss) (product_lists (map (parallel_rewrite R) ss)))"
+fun par_rstep_impl :: "('f,'v)rules \<Rightarrow> ('f,'v)term \<Rightarrow> ('f,'v)term list" where
+  "par_rstep_impl r s = s # rrewrite r s @ 
+      (case s of Var _ \<Rightarrow> [] | Fun f ss \<Rightarrow> 
+         (map (Fun f) (product_lists (map (par_rstep_impl r) ss))))"
 
-lemma parallel_rewrite_par_step:
-  assumes "t \<in> set (parallel_rewrite R s)"
-  shows "(s, t) \<in> par_rstep (set R)"
-  using assms
-proof (induct s arbitrary: t)
-  case (Fun f ss)
-  then consider (root) "t \<in> set (root_rewrite R (Fun f ss))"
-    | (args) "t \<in> set (map (\<lambda>ss. Fun f ss) (product_lists (map (parallel_rewrite R) ss)))"
-    by force
-  then show ?case
-  proof (cases)
-    case root
-    from root_rewrite_sound[OF this] obtain l r \<sigma> where "(l, r) \<in> set R"
-      and "l \<cdot> \<sigma> = Fun f ss" and "r \<cdot> \<sigma> = t"
-      unfolding rrstep_def rstep_r_p_s_def by auto
-    then show ?thesis using par_rstep.intros(1) by metis
+lemma par_rstep_impl_sound:  "t \<in> set (par_rstep_impl R s) \<Longrightarrow> (s,t) \<in> par_rstep (set R)"
+proof (induct R s arbitrary: t rule: par_rstep_impl.induct)
+  case (1 R s t)
+  note mem = 1(2)[unfolded par_rstep_impl.simps[of R s]]
+  show ?case
+  proof (cases "t \<in> set (s # rrewrite R s)")
+    case True
+    with rrewrite_sound have "s = t \<or> (s,t) \<in> rrstep (set R)" by auto
+    thus ?thesis using rrstep_imp_rule_subst by fastforce
   next
-    case args
-    then obtain ts where t:"t = Fun f ts" and ts:"ts \<in> set (product_lists (map (parallel_rewrite R) ss))"
-      by auto
-    then have len:"length ss = length ts" using in_set_product_lists_length by force
-    { fix i
-      assume i:"i < length ts"
-      have "ts ! i \<in> set (parallel_rewrite R (ss ! i))"
-        using ts[unfolded product_lists_set[of "_ ss"]]
-        by (auto simp: list_all2_map2[of "(\<lambda>x ys. x \<in> set ys)"] intro: list_all2_nthD[OF _ i])
-      with Fun(1) len i have "(ss ! i, ts ! i) \<in> par_rstep (set R)" by auto
-    }
-    from par_rstep.intros(2)[OF this len] show ?thesis using t by auto
+    case False
+    with mem obtain f ss ts where s: "s = Fun f ss" and t: "t = Fun f ts" 
+      and rec: "ts \<in> set (product_lists (map (par_rstep_impl R) ss))" 
+      by (cases s; cases t; auto)
+    note IH = 1(1)[OF s]
+    show ?thesis unfolding s t
+    proof (intro par_step_fun)
+      note rec = rec[unfolded product_lists_set list_all2_conv_all_nth]
+      show "length ss = length ts" using rec by auto
+      show "i < length ts \<Longrightarrow> (ss ! i, ts ! i) \<in> par_rstep (set R)" for i
+        using rec IH[of "ss ! i" "ts ! i"] by auto
+    qed
   qed
-qed auto
+qed
+
+lemma par_rstep_impl: assumes "\<And>l r. (l, r) \<in> set R \<Longrightarrow> vars_term r \<subseteq> vars_term l" 
+  shows "set (par_rstep_impl R s) = {t. (s, t) \<in> par_rstep (set R)}" 
+proof
+  show "set (par_rstep_impl R s) \<subseteq> {t. (s, t) \<in> par_rstep (set R)}" using par_rstep_impl_sound by auto
+  have "(s,t) \<in> par_rstep (set R) \<Longrightarrow> t \<in> set (par_rstep_impl R s)" for t
+  proof (induct rule: par_rstep.induct)
+    case (root_step s t \<sigma>)
+    hence "(s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> rrstep (set R)" by auto
+    with rrewrite[OF assms, of R] show ?case by auto
+  next
+    case (par_step_fun ts ss f)
+    have "ts \<in> set (product_lists (map (par_rstep_impl R) ss))" 
+      unfolding product_lists_set
+      by (intro CollectI list_all2_all_nthI, insert par_step_fun, auto)
+    thus ?case by auto
+  qed auto
+  thus "{t. (s, t) \<in> par_rstep (set R)} \<subseteq> set (par_rstep_impl R s)" by auto
+qed  
+
+declare par_rstep_impl.simps[simp del]
 
 subsection \<open>Implementation of Multi-Step Rewriting\<close>
 
@@ -682,6 +703,63 @@ proof (induct s arbitrary: t rule:subterm_induct)
   qed
 qed
 
+lemma mstep_mstep_rewrite_main:
+  assumes "(s, t) \<in> mstep (set R)"
+  shows "t \<in> set (mstep_rewrite_main s)"
+proof -
+  note simp = mstep_rewrite_main.simps
+  show ?thesis using assms
+  proof induction
+    case (Var x)
+    then show ?case by auto
+  next
+    case (args f n ss ts)
+    show ?case unfolding simp set_remdups set_append set_map
+    proof (intro UnI2 imageI)
+      show "ts \<in> set (product_lists (map (mstep_rewrite_main) ss))" 
+        unfolding product_lists_set
+        by (intro CollectI list_all2_all_nthI, insert args, auto)
+    qed
+  next
+    case (rule l r \<sigma> \<tau>)
+    from * rule obtain f ls where l: "l = Fun f ls" by (cases l, auto simp: list_all_iff)
+    hence lsig: "l \<cdot> \<sigma> = Fun f (map (\<lambda> li. li \<cdot> \<sigma>) ls)" by auto
+    from match_complete'[of l \<sigma>, OF refl] obtain \<sigma>'
+      where match: "Matching.match (l \<cdot> \<sigma>) l = Some \<sigma>'" and sigma': "(\<forall>x\<in>vars_term l. \<sigma> x = \<sigma>' x)"
+      by auto
+    from * rule have sub: "vars_term r \<subseteq> vars_term l" by (auto simp: list_all_iff)
+    with sigma'
+    have "map \<sigma> (vars_distinct r) = map \<sigma>' (vars_distinct r)"  
+      by (intro map_cong, auto)
+    hence mem: "(r, map \<sigma> (vars_distinct r)) \<in> set (root_subst_with_rhs R (l \<cdot> \<sigma>))" 
+      using match unfolding root_subst_with_rhs.simps using \<open>(l,r) \<in> set R\<close> by force 
+    show ?case unfolding lsig simp set_remdups set_append set_concat
+      unfolding lsig[symmetric] set_map image_comp o_def[of set]
+    proof (intro UnI1, rule UN_I[OF mem], unfold split set_map, intro rev_image_eqI)
+      let ?vs = "vars_distinct r" 
+      define vs where "vs = ?vs" 
+      have dist: "distinct vs" unfolding vs_def by auto
+      show "r \<cdot> \<tau> = r \<cdot> mk_subst Var (zip ?vs (map \<tau> ?vs))"
+      proof (intro term_subst_eq, unfold vs_def[symmetric])
+        fix x
+        assume "x \<in> vars_term r" 
+        hence "x \<in> set vs" by (auto simp: vs_def)
+        then obtain i where i: "i < length vs" and x: "x = vs ! i" by (auto simp: set_conv_nth)
+        show "\<tau> x = mk_subst Var (zip vs (map \<tau> vs)) x" 
+          unfolding x 
+          by (subst mk_subst_distinct[OF dist i], insert i, auto)
+      qed
+      show "map \<tau> (vars_distinct r) \<in> set (product_lists (map mstep_rewrite_main (map \<sigma> (vars_distinct r))))" 
+        unfolding product_lists_set vs_def[symmetric] map_map unfolding o_def
+        by (intro CollectI list_all2_map_map, insert rule sub, auto simp: vs_def)
+    qed
+  qed
+qed
+
+lemma set_mstep_rewrite_main: "set (mstep_rewrite_main s) = { t. (s, t) \<in> mstep (set R)}"
+  using mstep_mstep_rewrite_main mstep_rewrite_main_mstep by blast
+
+
 end
 
 text\<open>We need to be able to export code for @{const mstep_rewrite_main}, hence the following definitions.\<close>
@@ -731,6 +809,15 @@ proof -
   from mstep_rewrite_main_mstep[OF wf, folded mstep_rewrite_wf_def, OF assms(1)[unfolded mstep_rewrite_def, folded R'_def]]
   have "(s, t) \<in> mstep (set (get_TRS R'))" .
   with mstep_mono[OF sub] show ?thesis  by auto
+qed
+
+lemma mstep_rewrite_iff_mstep:
+  assumes "wf_trs (set R)" 
+  shows "set (mstep_rewrite R s) = {t. (s, t) \<in> mstep (set R)}"
+proof -
+  have id: "get_TRS (get_wfTRS_sub R) = R" using assms by (transfer, auto)
+  show ?thesis unfolding mstep_rewrite_def mstep_rewrite_wf_def id
+    by (rule set_mstep_rewrite_main[OF assms])
 qed
 
 end
