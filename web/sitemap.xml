@@ -14,6 +14,9 @@
     <loc>https://isa-afp.org/entries/Miquel.html</loc>
     <lastmod>2026-08-11T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</loc>
+    <lastmod>2026-08-11T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</loc>
     <lastmod>2026-08-05T00:00:00+00:00</lastmod>
   </url><url>
@@ -17750,6 +17753,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/spichkova/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/hadjikosti/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/fernandezm/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/cousin/</loc>
@@ -24810,6 +24815,22 @@
     <loc>https://isa-afp.org/thys/TortoiseHare/TortoiseHare.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/nishihara/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/Prelim.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Abstract.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Abstract_Binary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Inversion_Rules.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Soundness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Soundness_Binary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/Sequential_Par_While_Language.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Transcendence_Series_Hancl_Rucki/Transcendence_Series.html</loc>
   </url><url>

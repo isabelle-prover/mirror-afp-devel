@@ -2915,6 +2915,14 @@ host = [
 
 [haberl.homepages]
 
+[hadjikosti]
+name = "Marialena Hadjikosti"
+orcid = "0009-0004-8021-075X"
+
+[hadjikosti.emails]
+
+[hadjikosti.homepages]
+
 [haftmann]
 name = "Florian Haftmann"
 

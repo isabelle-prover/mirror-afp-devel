@@ -11,6 +11,14 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Miquel.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
