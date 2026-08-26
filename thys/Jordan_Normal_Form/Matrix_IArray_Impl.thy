@@ -274,4 +274,265 @@ proof -
   qed
 qed
 
+
+partial_function (tailrec) scalar_prod_main where 
+  [code]: "scalar_prod_main (n :: integer) v w i (s :: 'a :: semiring_0) = (if i = n then s else
+     scalar_prod_main n v w (i+1) (s + v i * w i))" 
+
+definition "scalar_prod_gen n v w = scalar_prod_main n v w 0 0" 
+
+lemma scalar_prod_gen: "scalar_prod_gen (integer_of_nat n) v w = (\<Sum>i = 0..<n. (v (integer_of_nat i) * w (integer_of_nat i)))" 
+proof -
+  define p where "p i = v (integer_of_nat i) * w (integer_of_nat i)" for i
+  define s :: 'a where "s = 0" 
+  define m :: nat where "m = 0" 
+  have mn: "m \<le> n" unfolding m_def by auto
+  have "scalar_prod_gen (integer_of_nat n) v w = scalar_prod_main (integer_of_nat n) v w (integer_of_nat m) s" 
+    unfolding scalar_prod_gen_def m_def s_def by (simp add: integer_of_nat_0)
+  also have "\<dots> = s + (\<Sum>i = m..<n. p i)" using mn
+  proof (induct "n - m" arbitrary: s m)
+    case 0
+    hence id: "m = n" by simp
+    show ?case unfolding id scalar_prod_main.simps[of _ _ _"integer_of_nat n"] by simp
+  next
+    case (Suc d m s)
+    hence "m \<noteq> n" by auto
+    hence diff: "(integer_of_nat m = integer_of_nat n) = False" 
+      by (simp add: integer_of_nat_eq_of_nat)
+    from Suc have mn: "m < n" by auto
+    hence "(\<Sum>i = m..<n. p i) = (p m + (\<Sum>i = Suc m..<n. p i))"         
+      by (meson sum.atLeast_Suc_lessThan)
+    also have "s + \<dots> = (s + p m) + (\<Sum>i = Suc m..<n. p i)" by (simp add: ac_simps)
+    also have "\<dots> = scalar_prod_main (integer_of_nat n) v w (integer_of_nat (Suc m)) (s + p m)"
+      by (subst Suc(1), insert Suc(2-), auto)
+    also have "integer_of_nat (Suc m) = integer_of_nat m + 1"
+      by (simp add: integer_of_nat_eq_of_nat)
+    finally have id: "s + sum p {m..<n} = scalar_prod_main (integer_of_nat n) v w (integer_of_nat m + 1)  (s + p m)" .
+    show ?case unfolding id scalar_prod_main.simps[of _ _ _ "integer_of_nat m"] diff if_False
+      by (rule arg_cong[of _ _ "\<lambda> x. scalar_prod_main _ _ _ _ (_ + x)"], auto simp: p_def)
+  qed
+  finally show ?thesis unfolding p_def s_def m_def by simp
+qed
+
+lift_definition scalar_prod_impl :: "'a vec_impl \<Rightarrow> 'a vec_impl \<Rightarrow> 'a :: semiring_0" is 
+  "\<lambda> (n,v) (n',w). scalar_prod_gen (integer_of_nat n) (\<lambda> i. IArray.sub' (v, i)) (\<lambda> i. IArray.sub' (w,i))" .
+
+lemma scalar_prod_impl[code]: "scalar_prod (vec_impl v) (vec_impl w) = (if dim_vec_impl v = dim_vec_impl w then
+   scalar_prod_impl v w else Code.abort (STR ''scalar-prod on vectors of different dimension'') 
+      (\<lambda> _. scalar_prod (vec_impl v) (vec_impl w)))" 
+proof (cases "dim_vec_impl v = dim_vec_impl w")
+  case True
+  hence id: "(dim_vec_impl v = dim_vec_impl w) = True" by simp
+  show ?thesis unfolding id if_True scalar_prod_def using True
+  proof (transfer, goal_cases)
+    case (1 nv nw)
+    then obtain v w :: "'a iarray" and n where 
+      nv: "nv = (n,v)" "nw = (n,w)" and len: "IArray.length v = n" "IArray.length w = n"
+      by (cases nv, cases nw, auto)
+    show ?case unfolding nv split fst_conv snd_conv
+      by (subst scalar_prod_gen, rule sum.cong) (auto simp: mk_vec_def)
+  qed
+qed auto
+
+partial_function (tailrec) upt_integer_main :: "integer list \<Rightarrow> integer \<Rightarrow> integer list" where
+  [code]: "upt_integer_main xs x = (if x = 0 then 0 # xs else upt_integer_main (x # xs) (x - 1))"
+
+definition "upt_integer x = (if x = 0 then [] else upt_integer_main [] (x - 1))" 
+
+fun scalar_prod_list_main :: "'a :: semiring_0 \<Rightarrow> _" where 
+  "scalar_prod_list_main s (x # xs) (y # ys) = scalar_prod_list_main (s + x * y) xs ys" 
+| "scalar_prod_list_main s _ _ = s" 
+
+definition "scalar_prod_list = scalar_prod_list_main 0" 
+
+lemma scalar_prod_list: "scalar_prod_list (map f [m..<n]) (map g [m..<n])
+   = (\<Sum>i = m..<n. f i * g i)"
+proof -
+  have id: "scalar_prod_list_main s (map f xs) (map g xs)
+    = s + (\<Sum>i \<in> set xs. f i * g i)" if "distinct xs" for s xs 
+    using that
+  proof (induct xs arbitrary: s)
+    case (Cons x xs s)
+    from Cons(2) have d: "distinct xs" and x: "x \<notin> set xs" by auto
+    show ?case unfolding list.simps scalar_prod_list_main.simps Cons(1)[OF d]
+      using x by (auto simp: ac_simps)
+  qed auto
+  show ?thesis unfolding scalar_prod_list_def 
+    by (subst id, auto)
+qed
+
+lemma upt_integer[simp]: "upt_integer (integer_of_nat n) = map integer_of_nat [0..< n]"
+proof (cases n)
+  case 0
+  thus ?thesis unfolding upt_integer_def by (simp add: integer_of_nat_0)
+next
+  case (Suc m)
+  hence m: "m < n" by auto
+  have "1 + of_nat m > (0 :: integer)"
+    by (simp add: add_pos_nonneg)
+  hence "upt_integer (integer_of_nat n) = upt_integer_main (map integer_of_nat [Suc m..< n]) (integer_of_nat m)"
+    unfolding upt_integer_def using Suc by (simp add: integer_of_nat_eq_of_nat)
+  also have "\<dots> = map integer_of_nat [0..<n]" using m 
+  proof (induct m)
+    case 0
+    hence "[0..<n] = 0 # [Suc 0..<n]" by (rule upt_conv_Cons)
+    thus ?case unfolding integer_of_nat_0 upt_integer_main.simps[of _ 0]
+      by (simp add: integer_of_nat_0)
+  next
+    case (Suc x)
+    have id: "integer_of_nat (Suc x) = integer_of_nat x + 1" 
+      by (simp add: integer_of_nat_eq_of_nat)
+    have id2: "(integer_of_nat x + 1 = 0) = False"
+      by (metis integer_of_nat_eq_of_nat local.id nat.discI of_nat_eq_0_iff)
+    from Suc have "x < n" by auto
+    show ?case unfolding id id2 upt_integer_main.simps[of _ "integer_of_nat x + 1"] if_False
+    proof (subst Suc(1)[symmetric, OF \<open>x < n\<close>], rule arg_cong2[of _ _ _ _ upt_integer_main])
+      show "(integer_of_nat x + 1) # map integer_of_nat [Suc (Suc x)..<n] = map integer_of_nat [Suc x..<n]" 
+        by (simp add: Suc id upt_conv_Cons)
+    qed auto
+  qed
+  finally show ?thesis .
+qed
+
+lift_definition times_mat_impl :: "'a mat_impl \<Rightarrow> 'a mat_impl \<Rightarrow> 'a :: semiring_0 mat_impl" is
+  "\<lambda> (nr,n,a) (n',nc,b). let 
+        nri = integer_of_nat nr; 
+        ni = integer_of_nat n;
+        nci = integer_of_nat nc;
+        n_idx = upt_integer ni;
+        a_list = IArray.tabulate (nri, (\<lambda> i. let row_i = IArray.sub' (a,i)
+           in map (\<lambda> j. IArray.sub' (row_i,j)) n_idx));
+        b_transpose_list = IArray.tabulate (nci, (\<lambda> j. 
+           map (\<lambda> i. IArray.sub' (IArray.sub' (b,i), j)) n_idx))
+      in (nr,nc, IArray.tabulate (nri, (\<lambda> i. 
+        let a_row_i = IArray.sub' (a_list,i)
+        in 
+           IArray.tabulate (nci, (\<lambda> j. 
+              let b_col_j = IArray.sub' (b_transpose_list,j)
+              in scalar_prod_list a_row_i b_col_j)))))" 
+  by auto
+
+declare [[code drop: "(*) :: (_ mat \<Rightarrow> _ mat \<Rightarrow> _mat)"]]
+
+lemma sub'_IArray: "IArray.sub' (IArray as, n) = as ! nat_of_integer n" by simp
+
+lemma times_mat_code[code]: "mat_impl a * mat_impl b = (if dim_col_impl a = dim_row_impl b
+  then mat_impl (times_mat_impl a b) else Code.abort (STR ''matrix-mult with incompatible dimensions'')
+     (\<lambda> _. mat_impl a * mat_impl b))" 
+proof (cases "dim_col_impl a = dim_row_impl b")
+  case True
+  hence id: "(dim_col_impl a = dim_row_impl b) = True" by auto
+  from True have True': "dim_col (mat_impl a) = dim_row (mat_impl b)" 
+    by transfer auto
+  show ?thesis unfolding id if_True 
+  proof (rule sym, intro eq_matI)
+    show "dim_row (mat_impl (times_mat_impl a b)) = dim_row (mat_impl a * mat_impl b)" 
+      by (simp, transfer, auto)
+    show "dim_col (mat_impl (times_mat_impl a b)) = dim_col (mat_impl a * mat_impl b)" 
+      by (simp, transfer, auto)
+    fix i j
+    assume i: "i < dim_row (mat_impl a * mat_impl b)" 
+    assume j: "j < dim_col (mat_impl a * mat_impl b)" 
+    from i j have ij: "i < dim_row_impl a" "j < dim_col_impl b" 
+      by (auto simp: dim_row_code dim_col_code)
+    have "(mat_impl a * mat_impl b) $$ (i, j) = scalar_prod (row (mat_impl a) i) (col (mat_impl b) j)" 
+      using i j by simp
+    also have "\<dots> = (\<Sum>k = 0..<dim_row (mat_impl b). mat_impl a $$ (i,k) * mat_impl b $$ (k,j))" 
+      unfolding scalar_prod_def 
+      by (rule sum.cong, insert i j True', auto)
+    also have "\<dots> = (\<Sum>k = 0..<dim_row_impl b. index_mat_impl a (i,k) * index_mat_impl b (k,j))" 
+      unfolding index_mat_code dim_row_code ..
+    also have "\<dots> = index_mat_impl (times_mat_impl a b) (i, j)" using True ij
+    proof (transfer, goal_cases)
+      case (1 A B i j)
+      then obtain nr n nc a b where A: "A = (nr,n,a)" and 
+        Ac: "IArray.length a = nr" "IArray.all (\<lambda>r. IArray.length r = n) a" and
+        B: "B = (n,nc,b)" and 
+        Bc: "IArray.length b = n" "IArray.all (\<lambda>r. IArray.length r = nc) b" and
+        i: "i < nr" and
+        j: "j < nc" and
+        id: "(i < nr) = True" "[0..<nr] ! i = i" "[0..<nc] ! j = j" 
+        by auto
+      from i have inr: "i < length [0..<nr]" by auto
+      from j have jnc: "j < length [0..<nc]" by auto
+      show ?case unfolding A B split Let_def fst_conv id if_True
+          IArray.tabulate.simps IArray.sub_def IArray.list_of.simps o_def nat_of_integer_integer_of_nat
+          nth_map[OF inr] nth_map[OF jnc] upt_integer map_map sub'_IArray
+        unfolding scalar_prod_list
+        by (rule sum.cong[OF refl], insert i j, auto)
+    qed
+    finally show "mat_impl (times_mat_impl a b) $$ (i, j) = (mat_impl a * mat_impl b) $$ (i, j)"
+      by (simp add: index_mat_code)
+  qed
+qed auto
+    
+lift_definition row_impl :: "'a mat_impl \<Rightarrow> nat \<Rightarrow> 'a vec_impl" 
+  is "\<lambda> (nr,nc,m) i. if i < nr then (nc, IArray.sub' (m, integer_of_nat i)) else 
+    (Code.abort (STR ''row index too large'') (\<lambda> _.  (nc, IArray.of_fun (\<lambda>j. IArray.sub (IArray ([] ! (i - nr))) j) nc)))"
+  by (auto split: if_splits)
+
+
+declare [[code drop: row]]
+
+lemma row_code[code]: "row (mat_impl a) i = vec_impl (row_impl a i)" 
+  unfolding row_def
+proof (transfer, goal_cases)
+  case (1 a i)
+  then obtain nr nc m where a: "a = (nr,nc,m)" and 
+    inv: "IArray.length m = nr" "IArray.all (\<lambda>r. IArray.length r = nc) m" by auto
+  show ?case 
+  proof (cases "i < nr") 
+    case True
+    hence i: "(i < nr) = True" by auto
+    show ?thesis unfolding a split o_def fst_conv snd_conv i if_True
+      using i inv by (auto simp: mk_vec_def mk_mat_def)
+  next
+    case False
+    hence i: "(i < nr) = False" by auto
+    hence "\<not> i < length (map f [0..<nr])" for f :: "nat \<Rightarrow> 'a list" by auto
+    from empty_nth[OF this] 
+    show ?thesis unfolding a split o_def fst_conv snd_conv i if_False Code.abort_def using i
+      by (auto simp: mk_vec_def mk_mat_def undef_mat_def)
+  qed
+qed
+
+lift_definition col_impl :: "'a mat_impl \<Rightarrow> nat \<Rightarrow> 'a vec_impl" 
+  is "\<lambda> (nr,nc,m) j. if j < nc then (nr, IArray.tabulate (integer_of_nat nr, \<lambda> i. IArray.sub' (IArray.sub' (m,i),integer_of_nat j)))
+      else Code.abort (STR ''col index too large'') (\<lambda> _.  (nr, IArray.of_fun (\<lambda>i. IArray.sub (IArray.sub m i) j) nr))" 
+  by (auto split: if_splits)
+
+declare [[code drop: col]] 
+
+lemma col_impl_code[code]: "col (mat_impl a) i = vec_impl (col_impl a i)" 
+  unfolding col_def
+proof (transfer, goal_cases)
+  case (1 a j)
+  then obtain nr nc m where a: "a = (nr,nc,m)" and 
+    inv: "IArray.length m = nr" "IArray.all (\<lambda>r. IArray.length r = nc) m" by auto
+  show ?case 
+  proof (cases "j < nc") 
+    case True
+    hence j: "(j < nc) = True" by auto
+    show ?thesis unfolding a split o_def fst_conv snd_conv j if_True
+      using j inv by (auto simp: mk_vec_def mk_mat_def)
+  next
+    case False
+    {
+      fix i
+      assume "i < nr" 
+      hence len: "length (IArray.list_of (IArray.list_of m ! i)) = nc" using inv 
+        by auto
+      from empty_nth[OF False[folded len], unfolded len] 
+      have "IArray.list_of (IArray.list_of m ! i) ! j = [] ! (j - nc)" by simp
+    } note undef = this
+    from False
+    have j: "(j < nc) = False" by auto
+    hence "\<not> j < length (map f [0..<nc])" for f :: "nat \<Rightarrow> 'a" by auto
+    from empty_nth[OF this] 
+    show ?thesis unfolding a split o_def fst_conv snd_conv j if_False
+      using j undef by (auto simp: mk_vec_def mk_mat_def undef_mat_def)
+  qed
+qed
+
+
 end
