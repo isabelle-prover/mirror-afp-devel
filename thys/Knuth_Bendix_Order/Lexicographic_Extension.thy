@@ -750,6 +750,12 @@ lemma lex_ext_unbounded_map_NS:
   shows "snd (lex_ext_unbounded r (map f ss) (map f ts))"
   using lex_ext_unbounded_map[of ss ts r f, OF S NS] nstri by blast
 
+lemma lex_ext_unbounded_map2:
+  assumes S: "\<And> i. i < length ss \<Longrightarrow> i < length ts \<Longrightarrow> fst (r (ss ! i) (ts ! i)) \<Longrightarrow> fst (q (map f ss ! i) (map f ts ! i))"
+  and NS: "\<And> i. i < length ss \<Longrightarrow> i < length ts \<Longrightarrow> snd (r (ss ! i) (ts ! i)) \<Longrightarrow> snd (q (map f ss ! i) (map f ts ! i))"
+  shows "(fst (lex_ext_unbounded r ss ts) \<longrightarrow> fst (lex_ext_unbounded q (map f ss) (map f ts)))
+    \<and> (snd (lex_ext_unbounded r ss ts) \<longrightarrow> snd (lex_ext_unbounded q (map f ss) (map f ts)))"
+  using S NS unfolding lex_ext_unbounded_iff by auto
 
 
 
@@ -1015,5 +1021,6 @@ lemma lex_ext_mono [mono]:
   shows "fst (lex_ext (\<lambda> x y. (ord x y, (x, y) \<in> ns)) (length ts) ts ss) \<longrightarrow> 
           fst (lex_ext (\<lambda> x y. (ord' x y, (x, y) \<in> ns)) (length ts) ts ss)"
   using assms lex_ext_local_mono[of ts ss ord ord' ns] by blast
+
 
 end
