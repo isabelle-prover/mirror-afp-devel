@@ -1,0 +1,2958 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{AlphabetReduction{\isacharunderscore}{\kern0pt}Codec}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isakeywordONE{theory}\isamarkupfalse%
+\ AlphabetReduction{\isacharunderscore}{\kern0pt}Codec\isanewline
+\ \ \isakeywordTWO{imports}\ {\isachardoublequoteopen}Multitape{\isacharunderscore}{\kern0pt}TM{\isacharunderscore}{\kern0pt}Substrate{\isachardot}{\kern0pt}Multitape{\isacharunderscore}{\kern0pt}Substrate{\isachardoublequoteclose}\isanewline
+\isakeywordTWO{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsection{Alphabet reduction%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+This theory opens the alphabet-reduction development.  The
+  \isa{alphabet{\isacharunderscore}{\kern0pt}reduce} combinator takes a well-formed substrate
+  machine over an arbitrary finite alphabet \isa{{\isacharprime}{\kern0pt}a} (with
+  tape-alphabet cardinality \isa{{\isasymge}} 4) and produces a
+  well-formed substrate machine over the fixed four-element alphabet
+  \isa{sym{\isadigit{4}}}, preserving the accepted language, determinism, and
+  tape count.
+
+  This is the elementary determinism-preserving per-symbol multi-cell
+  encoding.
+
+  The development is layered: this first theory fixes the output
+  alphabet \isa{sym{\isadigit{4}}} and the per-symbol binary codec; the
+  simulator, its delta, and the headline theorems
+  (\isa{alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}wf}, \isa{alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}language},
+  \isa{alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}time}, \isa{alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}det}) are
+  built across the theories that follow.
+  Throughout, \isa{b} abbreviates \isa{block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}} (the per-symbol cell width).%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+The fixed four-element output alphabet:
+  \isa{BLANK{\isadigit{4}}} (blank), \isa{LE{\isadigit{4}}} (left endmarker),
+  \isa{BIT{\isadigit{0}}} (binary 0), \isa{BIT{\isadigit{1}}} (binary 1).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{datatype}\isamarkupfalse%
+\ sym{\isadigit{4}}\ {\isacharequal}{\kern0pt}\ BLANK{\isadigit{4}}\ {\isacharbar}{\kern0pt}\ LE{\isadigit{4}}\ {\isacharbar}{\kern0pt}\ BIT{\isadigit{0}}\ {\isacharbar}{\kern0pt}\ BIT{\isadigit{1}}\isanewline
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ sym{\isadigit{4}}{\isacharunderscore}{\kern0pt}UNIV{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}BLANK{\isadigit{4}}{\isacharcomma}{\kern0pt}\ LE{\isadigit{4}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ sym{\isadigit{4}}{\isachardot}{\kern0pt}exhaust\ \isakeywordONE{by}\isamarkupfalse%
+\ blast%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ sym{\isadigit{4}}{\isacharunderscore}{\kern0pt}card{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ {\isacharparenleft}{\kern0pt}UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{4}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}BLANK{\isadigit{4}}{\isacharcomma}{\kern0pt}\ LE{\isadigit{4}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ sym{\isadigit{4}}{\isacharunderscore}{\kern0pt}UNIV{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{moreover}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}card\ {\isacharbraceleft}{\kern0pt}BLANK{\isadigit{4}}{\isacharcomma}{\kern0pt}\ LE{\isadigit{4}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{4}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{ultimately}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Per-symbol encoder helpers%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+The per-source-symbol block length: the number of \isa{sym{\isadigit{4}}}
+  cells that encode one \isa{{\isasymGamma}}-symbol, and the slowdown factor of
+  the reduction.  At least \isa{{\isadigit{1}}} (to avoid degenerate empty
+  encodings even for trivial \isa{{\isasymGamma}}), and otherwise
+  \isa{{\isasymlceil}log\isactrlsub {\isadigit{2}}\ {\isacharparenleft}{\kern0pt}card\ {\isasymGamma}{\isacharparenright}{\kern0pt}{\isasymrceil}}, the fewest binary digits that
+  index all of \isa{{\isasymGamma}}.  Defined combinatorially via \isa{LEAST}
+  on the predicate \isa{card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n}; existence of such an
+  \isa{n} follows from \isa{card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ card\ {\isasymGamma}}
+  (HOL.Power.\isa{less{\isacharunderscore}{\kern0pt}exp}).
+
+  \textbf{What is counted.}  The index space \isa{{\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}}
+  covers \emph{every} symbol of \isa{{\isasymGamma}}: the blank at index
+  \isa{{\isadigit{0}}} (the anchor \isa{gamma{\isacharunderscore}{\kern0pt}enum} relies on --- see below), and
+  the left endmarker \isa{le} as an ordinary coded symbol, since
+  \isa{valid{\isacharunderscore}{\kern0pt}mttm} permits a machine to write \isa{le} at any tape
+  position (its only special handling is the single \isa{LE{\isadigit{4}}} cell at
+  position \isa{{\isadigit{0}}}).  So \isa{block{\isacharunderscore}{\kern0pt}width} is genuinely the width of
+  this uniform code, not a loose bound on a smaller one --- but it is not
+  the \emph{coding} minimum.  Reserving index \isa{{\isadigit{0}}} for the
+  blank (so an all-\isa{BLANK{\isadigit{4}}} block reads back through the same
+  accumulator) puts it one digit above
+  \isa{{\isasymlceil}log\isactrlsub {\isadigit{2}}\ {\isacharparenleft}{\kern0pt}card\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}{\isasymrceil}}, the width for the
+  \isa{card\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}} non-blank symbols; the two agree except just
+  past a power of two.  Detecting the all-\isa{BLANK{\isadigit{4}}} block directly
+  would recover that digit, and additionally giving \isa{le} its own
+  marker block would reach \isa{{\isasymlceil}log\isactrlsub {\isadigit{2}}\ {\isacharparenleft}{\kern0pt}card\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}{\isasymrceil}}
+  --- but each costs a marker-detection branch in the read and write
+  phases, so that constant-factor gain is deliberately not taken.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ nat{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharequal}{\kern0pt}\ max\ {\isadigit{1}}\ {\isacharparenleft}{\kern0pt}LEAST\ n{\isachardot}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+A \emph{blank-anchored} enumeration of \isa{{\isasymGamma}} as a
+  bijection to \isa{{\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}} that additionally sends the
+  blank \isa{bl} to \isa{{\isadigit{0}}}.  The anchor is load-bearing for the
+  read phase: a blank source cell is encoded as a \isa{b}-cell
+  all-\isa{BLANK{\isadigit{4}}} block (\isa{bit{\isacharunderscore}{\kern0pt}value\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}), so the read fold
+  is a fixpoint at \isa{gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}}, which must equal
+  \isa{bl} — and the decode round-trips force that to
+  \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}.  Existence of such a bijection
+  is unconditional on \isa{finite\ {\isasymGamma}} for \emph{any}
+  \isa{bl} (\isa{ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}anchor} below: swap \isa{{\isadigit{0}}} with
+  \isa{g\ bl} when \isa{bl\ {\isasymin}\ {\isasymGamma}}, otherwise free off-domain),
+  so the carried \isa{bl} needs no \isa{bl\ {\isasymin}\ {\isasymGamma}} side
+  condition.  Downstream proofs reason about \isa{bij{\isacharunderscore}{\kern0pt}betw}- and
+  anchor-derived facts only; the Hilbert choice picks one specific
+  anchored bijection.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ nat{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}SOME\ f{\isachardot}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw\ f\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ f\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Render a natural number as a fixed-length \isa{sym{\isadigit{4}}}
+  bit list (\isa{BIT{\isadigit{0}}} / \isa{BIT{\isadigit{1}}} only).  The list has
+  shape \isa{{\isacharbrackleft}{\kern0pt}bit\isactrlsub b\isactrlsub {\isacharminus}{\kern0pt}\isactrlsub {\isadigit{1}}{\isacharcomma}{\kern0pt}\ {\isasymdots}{\isacharcomma}{\kern0pt}\ bit\isactrlsub {\isadigit{1}}{\isacharcomma}{\kern0pt}\ bit\isactrlsub {\isadigit{0}}{\isacharbrackright}{\kern0pt}}:
+  most-significant bit at the head, least-significant bit at
+  the tail.  For \isa{n\ {\isasymge}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ b} the high bits are dropped
+  (only the low \isa{b} bits are rendered).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{fun}\isamarkupfalse%
+\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}nat\ {\isasymRightarrow}\ nat\ {\isasymRightarrow}\ sym{\isadigit{4}}\ list{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isadigit{0}}\ {\isacharunderscore}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+{\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\ n\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}if\ n\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Per-symbol encoder%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Encoding a single \isa{{\isacharprime}{\kern0pt}a}-symbol as a fixed-length list of
+  \isa{sym{\isadigit{4}}}-symbols, parameterised over the source alphabet
+  \isa{{\isasymGamma}} (a finite set, passed explicitly as a value rather
+  than through a type-class constraint, so the construction is uniform
+  over all source alphabets).  The
+  length \isa{b} is the slowdown factor; the encoding is
+  injective on \isa{{\isasymGamma}}.  The two bit symbols \isa{BIT{\isadigit{0}}},
+  \isa{BIT{\isadigit{1}}} carry the payload; \isa{LE{\isadigit{4}}} and \isa{BLANK{\isadigit{4}}}
+  do not appear in any encoder image.  For \isa{x\ {\isasymnotin}\ {\isasymGamma}} the
+  encoder produces a value that's structurally well-shaped (a
+  \isa{b}-cell bit list) but semantically arbitrary —
+  downstream proofs always operate on \isa{x\ {\isasymin}\ {\isasymGamma}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ sym{\isadigit{4}}\ list{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x\ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Encoding an input word as a flat list of \isa{sym{\isadigit{4}}}-symbols
+  (concatenation of per-symbol encodings under the given \isa{{\isasymGamma}}).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ list\ {\isasymRightarrow}\ sym{\isadigit{4}}\ list{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ w\ {\isacharequal}{\kern0pt}\ concat\ {\isacharparenleft}{\kern0pt}map\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ w{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Per-symbol encoder lemmas%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+The encoded list has length \isa{b}, by induction
+  on the block width.  Total — no \isa{x\ {\isasymin}\ {\isasymGamma}} precondition is
+  needed.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ length{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}length\ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ n{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ k{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ k\ arbitrary{\isacharcolon}{\kern0pt}\ n{\isacharparenright}{\kern0pt}\ auto%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ length{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}length\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Every cell of an encoded symbol is in the bit alphabet
+  \isa{{\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}}.  In particular, the substrate-reserved
+  markers \isa{LE{\isadigit{4}}} and \isa{BLANK{\isadigit{4}}} never appear in an
+  encoder image.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ set{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}set\ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ n{\isacharparenright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ k\ arbitrary{\isacharcolon}{\kern0pt}\ n{\isacharparenright}{\kern0pt}\ auto%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}cell{\isacharunderscore}{\kern0pt}domain{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}set\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ set{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The enumeration \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl} is a genuine bijection
+  from \isa{{\isasymGamma}} to \isa{{\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}} whenever \isa{{\isasymGamma}} is
+  finite.  Existence is library
+  (\isa{ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}finite{\isacharunderscore}{\kern0pt}nat}); the Hilbert-choice operator
+  picks one such bijection.%
+\end{isamarkuptext}\isamarkuptrue%
+%
+\begin{isamarkuptext}%
+Existence of a blank-anchored bijection
+  \isa{{\isasymGamma}\ {\isasymrightarrow}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}} sending \isa{bl} to \isa{{\isadigit{0}}},
+  unconditional on \isa{finite\ {\isasymGamma}} for any \isa{bl}.  Take any
+  bijection \isa{g} (library \isa{ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}finite{\isacharunderscore}{\kern0pt}nat}); if
+  \isa{bl\ {\isasymin}\ {\isasymGamma}}, post-compose with the nat-level transposition of
+  \isa{{\isadigit{0}}} and \isa{g\ bl} (both \isa{{\isacharless}{\kern0pt}\ card\ {\isasymGamma}}), which is a
+  \isa{bij{\isacharunderscore}{\kern0pt}betw} of \isa{{\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}} onto itself by
+  \isa{endo{\isacharunderscore}{\kern0pt}inj{\isacharunderscore}{\kern0pt}surj}; if \isa{bl\ {\isasymnotin}\ {\isasymGamma}}, just override
+  \isa{g} at \isa{bl} (off-domain, so \isa{bij{\isacharunderscore}{\kern0pt}betw} is
+  unchanged by \isa{bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}cong}).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}anchor{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{fixes}\ {\isasymGamma}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set{\isachardoublequoteclose}\ \isakeywordTWO{and}\ bl\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isacharprime}{\kern0pt}a\isanewline
+\ \ \isakeywordTWO{assumes}\ finG{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}{\isasymexists}f{\isachardot}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw\ f\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}\ {\isasymand}\ f\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{obtain}\isamarkupfalse%
+\ g\ \isakeywordTWO{where}\ g{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ g\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}finite{\isacharunderscore}{\kern0pt}nat{\isacharbrackleft}{\kern0pt}OF\ finG{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ atLeast{\isadigit{0}}LessThan{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ {\isachardoublequoteopen}bl\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ False\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ agree{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}{\kern0pt}\ x\ {\isasymin}\ {\isasymGamma}\ {\isasymLongrightarrow}\ {\isacharparenleft}{\kern0pt}g{\isacharparenleft}{\kern0pt}bl\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ x\ {\isacharequal}{\kern0pt}\ g\ x{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ False\ \isakeywordONE{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ {\isacharparenleft}{\kern0pt}g{\isacharparenleft}{\kern0pt}bl\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ g\ agree\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}metis\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}cong{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{moreover}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}g{\isacharparenleft}{\kern0pt}bl\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{ultimately}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ True\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ npos{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isadigit{0}}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ True\ finG\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ card{\isacharunderscore}{\kern0pt}gt{\isacharunderscore}{\kern0pt}{\isadigit{0}}{\isacharunderscore}{\kern0pt}iff{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ gbl{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}g\ bl\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ g\ True\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}s\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}{\isasymlambda}i{\isachardot}{\kern0pt}\ if\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ g\ bl\ else\ if\ i\ {\isacharequal}{\kern0pt}\ g\ bl\ then\ {\isadigit{0}}\ else\ i{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ into{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}s\ {\isacharbackquote}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gbl\ npos\ \isakeywordONE{by}\isamarkupfalse%
+\ auto\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ inj{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}inj{\isacharunderscore}{\kern0pt}on\ {\isacharquery}{\kern0pt}s\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ inj{\isacharunderscore}{\kern0pt}on{\isacharunderscore}{\kern0pt}def\ split{\isacharcolon}{\kern0pt}\ if{\isacharunderscore}{\kern0pt}splits{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ {\isacharquery}{\kern0pt}s\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ inj\ endo{\isacharunderscore}{\kern0pt}inj{\isacharunderscore}{\kern0pt}surj{\isacharbrackleft}{\kern0pt}OF\ finite{\isacharunderscore}{\kern0pt}lessThan\ into\ inj{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \ \ \isakeywordONE{from}\isamarkupfalse%
+\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}trans{\isacharbrackleft}{\kern0pt}OF\ g\ this{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ {\isacharparenleft}{\kern0pt}{\isacharquery}{\kern0pt}s\ {\isasymcirc}\ g{\isacharparenright}{\kern0pt}\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isakeywordONE{moreover}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharquery}{\kern0pt}s\ {\isasymcirc}\ g{\isacharparenright}{\kern0pt}\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ gbl\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ comp{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{ultimately}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isakeywordONE{qed}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}anchor{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isakeywordONE{using}\isamarkupfalse%
+\ ex{\isacharunderscore}{\kern0pt}bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}anchor{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ someI{\isacharunderscore}{\kern0pt}ex{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}bij{\isacharunderscore}{\kern0pt}betw\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}anchor{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The anchor: the blank-anchored enumeration sends the blank to
+  \isa{{\isadigit{0}}}.  This is what makes an all-\isa{BLANK{\isadigit{4}}} block decode to
+  \isa{bl} (\isa{decode{\isacharunderscore}{\kern0pt}blank}).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}blank{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ bl\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}anchor{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The cardinality of \isa{{\isasymGamma}} fits in \isa{b} bits:
+  \isa{card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ b}.  This is the structural
+  bound that underwrites injectivity: every enumeration value
+  \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}} for \isa{x\ {\isasymin}\ {\isasymGamma}} is in the
+  range where \isa{nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits} is injective.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ ex{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymexists}n{\isachardot}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ less{\isacharunderscore}{\kern0pt}exp{\isacharbrackleft}{\kern0pt}of\ {\isachardoublequoteopen}card\ {\isasymGamma}{\isachardoublequoteclose}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}intro\ exI{\isacharbrackleft}{\kern0pt}of\ {\isacharunderscore}{\kern0pt}\ {\isachardoublequoteopen}card\ {\isasymGamma}{\isachardoublequoteclose}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ simp\isanewline
+\ \ \isakeywordONE{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}m\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}LEAST\ n{\isachardot}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ m{\isacharunderscore}{\kern0pt}bound{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharquery}{\kern0pt}m{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ LeastI{\isacharunderscore}{\kern0pt}ex{\isacharbrackleft}{\kern0pt}OF\ ex{\isacharbrackright}{\kern0pt}\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}m\ {\isasymle}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{hence}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}nat{\isacharparenright}{\kern0pt}\ {\isacharcircum}{\kern0pt}\ {\isacharquery}{\kern0pt}m\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ power{\isacharunderscore}{\kern0pt}increasing{\isacharparenright}{\kern0pt}\ simp\isanewline
+\ \ \isakeywordONE{with}\isamarkupfalse%
+\ m{\isacharunderscore}{\kern0pt}bound\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Minimality (the lower edge): \isa{b} is the \emph{smallest} width
+  that indexes all of \isa{{\isasymGamma}}, so once \isa{card\ {\isasymGamma}\ {\isasymge}\ {\isadigit{2}}} one
+  bit fewer does not suffice --- \isa{{\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}}.  With
+  \isa{card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width} this pins \isa{b} to
+  \isa{{\isasymlceil}log\isactrlsub {\isadigit{2}}\ {\isacharparenleft}{\kern0pt}card\ {\isasymGamma}{\isacharparenright}{\kern0pt}{\isasymrceil}} exactly: \isa{b} is a \emph{step
+  function} of \isa{card\ {\isasymGamma}}, constant on each band
+  \isa{{\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ b} and jumping by one as
+  \isa{card\ {\isasymGamma}} crosses a power of two (\isa{{\isadigit{4}}\ {\isasymrightarrow}\ {\isadigit{5}}},
+  \isa{{\isadigit{8}}\ {\isasymrightarrow}\ {\isadigit{9}}}, \isa{{\isadigit{1}}{\isadigit{6}}\ {\isasymrightarrow}\ {\isadigit{1}}{\isadigit{7}}}).  The slowdown factor therefore
+  rises in unit steps at the powers of two, not smoothly with alphabet
+  size.  This is minimality for the \emph{uniform} code that indexes
+  every symbol of \isa{{\isasymGamma}} with the blank at index \isa{{\isadigit{0}}}; the
+  \emph{coding} minimum (the non-blank symbols alone) sits one digit
+  lower just past each power of two --- see \isa{block{\isacharunderscore}{\kern0pt}width}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}pred{\isacharunderscore}{\kern0pt}less{\isacharunderscore}{\kern0pt}card{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ card{\isadigit{2}}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isadigit{2}}\ {\isasymle}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}{\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ ex{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymexists}n{\isachardot}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ less{\isacharunderscore}{\kern0pt}exp{\isacharbrackleft}{\kern0pt}of\ {\isachardoublequoteopen}card\ {\isasymGamma}{\isachardoublequoteclose}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}intro\ exI{\isacharbrackleft}{\kern0pt}of\ {\isacharunderscore}{\kern0pt}\ {\isachardoublequoteopen}card\ {\isasymGamma}{\isachardoublequoteclose}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ simp\isanewline
+\ \ \isakeywordONE{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}m\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}LEAST\ n{\isachardot}{\kern0pt}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ notP{\isadigit{0}}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymnot}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isadigit{0}}{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}nat{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ card{\isadigit{2}}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ m{\isacharunderscore}{\kern0pt}pos{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isadigit{0}}\ {\isacharless}{\kern0pt}\ {\isacharquery}{\kern0pt}m{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ ccontr{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordTHREE{assume}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymnot}\ {\isadigit{0}}\ {\isacharless}{\kern0pt}\ {\isacharquery}{\kern0pt}m{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{then}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharquery}{\kern0pt}m\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{then}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isadigit{0}}{\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}nat{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ LeastI{\isacharunderscore}{\kern0pt}ex{\isacharbrackleft}{\kern0pt}OF\ ex{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{with}\isamarkupfalse%
+\ notP{\isadigit{0}}\ \isakeywordTHREE{show}\isamarkupfalse%
+\ False\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{qed}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordONE{hence}\isamarkupfalse%
+\ bw{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharequal}{\kern0pt}\ {\isacharquery}{\kern0pt}m{\isachardoublequoteclose}\ \isakeywordONE{unfolding}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}\ {\isacharless}{\kern0pt}\ {\isacharquery}{\kern0pt}m{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ bw\ m{\isacharunderscore}{\kern0pt}pos\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{hence}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymnot}\ card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ not{\isacharunderscore}{\kern0pt}less{\isacharunderscore}{\kern0pt}Least{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The bit-renderer is injective on inputs bounded by
+  \isa{{\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ b}: two values with the same \isa{b}-bit
+  representation are equal.  Proven by induction on \isa{b}:
+  the head of the bit list determines the high bit \isa{n\ div\ {\isadigit{2}}}
+  (recursive case), and the tail single element determines the
+  low bit \isa{n\ mod\ {\isadigit{2}}}; combining via
+  \isa{n\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isasymcdot}\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ n\ mod\ {\isadigit{2}}} gives equality.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharunderscore}{\kern0pt}inj{\isacharunderscore}{\kern0pt}bounded{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}n{\isadigit{1}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ {\isachardoublequoteopen}n{\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ n{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ n{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}n{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ n{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ assms\isanewline
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ k\ arbitrary{\isacharcolon}{\kern0pt}\ n{\isadigit{1}}\ n{\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isadigit{0}}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ {\isacartoucheopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\ n{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\ n{\isadigit{2}}{\isacartoucheclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ eq{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n{\isadigit{1}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}if\ n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n{\isadigit{2}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}if\ n{\isadigit{2}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{hence}\isamarkupfalse%
+\ pref{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n{\isadigit{1}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n{\isadigit{2}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordTWO{and}\ suf{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}if\ n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}if\ n{\isadigit{2}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp{\isacharunderscore}{\kern0pt}all\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ suf{\isacharunderscore}{\kern0pt}eq\ \isakeywordONE{have}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}zero{\isacharunderscore}{\kern0pt}iff{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ {\isasymlongleftrightarrow}\ n{\isadigit{2}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ split{\isacharcolon}{\kern0pt}\ if{\isacharunderscore}{\kern0pt}split{\isacharunderscore}{\kern0pt}asm{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}n{\isadigit{2}}\ mod\ {\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp{\isacharunderscore}{\kern0pt}all\isanewline
+\ \ \isakeywordONE{with}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}zero{\isacharunderscore}{\kern0pt}iff\ \isakeywordONE{have}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ n{\isadigit{2}}\ mod\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ {\isachardoublequoteopen}n{\isadigit{1}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}{\isacharsemicolon}{\kern0pt}\ cases\ {\isachardoublequoteopen}n{\isadigit{2}}\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}{\isacharparenright}{\kern0pt}\ auto\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ {\isacartoucheopen}n{\isadigit{1}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ Suc\ k{\isacartoucheclose}\ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isadigit{1}}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}n{\isadigit{1}}\ div\ {\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ {\isacartoucheopen}n{\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ Suc\ k{\isacartoucheclose}\ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isadigit{2}}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}n{\isadigit{2}}\ div\ {\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ Suc{\isachardot}{\kern0pt}hyps{\isacharbrackleft}{\kern0pt}OF\ lt{\isadigit{1}}\ lt{\isadigit{2}}\ pref{\isacharunderscore}{\kern0pt}eq{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ div{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}n{\isadigit{1}}\ div\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ n{\isadigit{2}}\ div\ {\isadigit{2}}{\isachardoublequoteclose}\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}n{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ {\isacharparenleft}{\kern0pt}n{\isadigit{1}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ n{\isadigit{1}}\ mod\ {\isadigit{2}}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{from}\isamarkupfalse%
+\ div{\isacharunderscore}{\kern0pt}eq\ mod{\isacharunderscore}{\kern0pt}eq\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ {\isacharparenleft}{\kern0pt}n{\isadigit{2}}\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ n{\isadigit{2}}\ mod\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ n{\isadigit{2}}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Injectivity-on-\isa{{\isasymGamma}}: distinct source symbols in \isa{{\isasymGamma}}
+  produce distinct encoder images.  This is the load-bearing
+  property for language preservation: no two source symbols
+  collide under the encoder.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}inj{\isacharunderscore}{\kern0pt}on{\isacharunderscore}{\kern0pt}Gamma{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}y\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x\ {\isacharequal}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ y{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}x\ {\isacharequal}{\kern0pt}\ y{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ {\isacartoucheopen}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x\ {\isacharequal}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ y{\isacartoucheclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ bits{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\isanewline
+\ \ \ \ {\isachardoublequoteopen}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ y{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharunderscore}{\kern0pt}x{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}{\isacharcomma}{\kern0pt}\ of\ bl{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharunderscore}{\kern0pt}y{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ y\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}\ {\isacartoucheopen}y\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}{\isacharcomma}{\kern0pt}\ of\ bl{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharunderscore}{\kern0pt}inj{\isacharunderscore}{\kern0pt}bounded{\isacharbrackleft}{\kern0pt}OF\ lt{\isacharunderscore}{\kern0pt}x\ lt{\isacharunderscore}{\kern0pt}y\ bits{\isacharunderscore}{\kern0pt}eq{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ enum{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ y{\isachardoublequoteclose}\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}inj{\isacharunderscore}{\kern0pt}on\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{from}\isamarkupfalse%
+\ this\ enum{\isacharunderscore}{\kern0pt}eq\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}\ {\isacartoucheopen}y\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ inj{\isacharunderscore}{\kern0pt}onD{\isacharparenright}{\kern0pt}\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Structural properties of the input-word encoder.  These
+  follow directly from the \isa{concat\ {\isacharparenleft}{\kern0pt}map\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymdots}{\isacharparenright}{\kern0pt}} definition and are useful for the validation-phase
+  reach lemmas in later slices.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}Nil\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}append{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}w{\isadigit{1}}\ {\isacharat}{\kern0pt}\ w{\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharequal}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ w{\isadigit{1}}\ {\isacharat}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ w{\isadigit{2}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ length{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}length\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ w{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharasterisk}{\kern0pt}\ length\ w{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ w{\isacharparenright}{\kern0pt}\ auto%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Uniform-width block indexing: when every block \isa{f\ x}
+  has the same length \isa{K}, the \isa{{\isacharparenleft}{\kern0pt}i\ {\isasymcdot}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}}-th cell
+  of \isa{concat\ {\isacharparenleft}{\kern0pt}map\ f\ xs{\isacharparenright}{\kern0pt}} is the \isa{j}-th cell of the
+  \isa{i}-th block.  The list-level fact underlying the
+  initial-tape correspondence: \isa{encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar} is exactly
+  such a uniform concatenation, every block \isa{b}
+  wide by \isa{length{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ nth{\isacharunderscore}{\kern0pt}concat{\isacharunderscore}{\kern0pt}map{\isacharunderscore}{\kern0pt}uniform{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ K{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isasymAnd}x{\isachardot}{\kern0pt}\ length\ {\isacharparenleft}{\kern0pt}f\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ K{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ i{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}i\ {\isacharless}{\kern0pt}\ length\ xs{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordTWO{and}\ j{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}j\ {\isacharless}{\kern0pt}\ K{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}concat\ {\isacharparenleft}{\kern0pt}map\ f\ xs{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ f\ {\isacharparenleft}{\kern0pt}xs\ {\isacharbang}{\kern0pt}\ i{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ j{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ i\isanewline
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ xs\ arbitrary{\isacharcolon}{\kern0pt}\ i{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ Nil\isanewline
+\ \ \isakeywordONE{then}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}Cons\ x\ xs{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\isanewline
+\ \ \isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ i{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isadigit{0}}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}concat\ {\isacharparenleft}{\kern0pt}map\ f\ {\isacharparenleft}{\kern0pt}x\ {\isacharhash}{\kern0pt}\ xs{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}f\ x\ {\isacharat}{\kern0pt}\ concat\ {\isacharparenleft}{\kern0pt}map\ f\ xs{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ j{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ {\isadigit{0}}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ f\ x\ {\isacharbang}{\kern0pt}\ j{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ j\ K{\isacharbrackleft}{\kern0pt}of\ x{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ nth{\isacharunderscore}{\kern0pt}append{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{using}\isamarkupfalse%
+\ {\isadigit{0}}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}Suc\ i{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ i{\isacharprime}{\kern0pt}len{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}i{\isacharprime}{\kern0pt}\ {\isacharless}{\kern0pt}\ length\ xs{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ Cons{\isachardot}{\kern0pt}prems\ Suc\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ idx{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}i\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j\ {\isacharequal}{\kern0pt}\ length\ {\isacharparenleft}{\kern0pt}f\ x{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i{\isacharprime}{\kern0pt}\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ Suc\ K{\isacharbrackleft}{\kern0pt}of\ x{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}concat\ {\isacharparenleft}{\kern0pt}map\ f\ {\isacharparenleft}{\kern0pt}x\ {\isacharhash}{\kern0pt}\ xs{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ concat\ {\isacharparenleft}{\kern0pt}map\ f\ xs{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i{\isacharprime}{\kern0pt}\ {\isacharasterisk}{\kern0pt}\ K\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ idx\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ nth{\isacharunderscore}{\kern0pt}append{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ f\ {\isacharparenleft}{\kern0pt}xs\ {\isacharbang}{\kern0pt}\ i{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ j{\isachardoublequoteclose}\isanewline
+\ \ \ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ Cons{\isachardot}{\kern0pt}hyps{\isacharbrackleft}{\kern0pt}OF\ i{\isacharprime}{\kern0pt}len{\isacharbrackright}{\kern0pt}\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\ \ \ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{using}\isamarkupfalse%
+\ Suc\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{qed}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ nth{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}i\ {\isacharless}{\kern0pt}\ length\ w{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}j\ {\isacharless}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar\ {\isasymGamma}\ bl\ w\ {\isacharbang}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\ {\isacharplus}{\kern0pt}\ j{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}w\ {\isacharbang}{\kern0pt}\ i{\isacharparenright}{\kern0pt}\ {\isacharbang}{\kern0pt}\ j{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}input{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ nth{\isacharunderscore}{\kern0pt}concat{\isacharunderscore}{\kern0pt}map{\isacharunderscore}{\kern0pt}uniform{\isacharbrackleft}{\kern0pt}OF\ length{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ assms{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Per-symbol decoder helpers%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Bit value of a \isa{sym{\isadigit{4}}} cell.  \isa{BIT{\isadigit{1}}} contributes
+  1, every other symbol contributes 0; the non-bit symbols
+  (\isa{BIT{\isadigit{0}}}, \isa{LE{\isadigit{4}}}, \isa{BLANK{\isadigit{4}}}) are conflated to
+  zero — junk-in, junk-out — so the decoder produces a
+  well-defined nat even on malformed input.  Validity checking
+  is performed separately by \isa{decode{\isacharunderscore}{\kern0pt}symbol}'s cell-domain
+  test.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{fun}\isamarkupfalse%
+\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}sym{\isadigit{4}}\ {\isasymRightarrow}\ nat{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}bit{\isacharunderscore}{\kern0pt}value\ BIT{\isadigit{0}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+{\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}bit{\isacharunderscore}{\kern0pt}value\ BIT{\isadigit{1}}\ {\isacharequal}{\kern0pt}\ {\isadigit{1}}{\isachardoublequoteclose}\isanewline
+{\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}bit{\isacharunderscore}{\kern0pt}value\ LE{\isadigit{4}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+{\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}bit{\isacharunderscore}{\kern0pt}value\ BLANK{\isadigit{4}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Read a \isa{sym{\isadigit{4}}} list as a binary number, MSB at the
+  head (matches \isa{nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits}'s output shape).  Each
+  position contributes \isa{bit{\isacharunderscore}{\kern0pt}value} times the appropriate
+  power of two.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{fun}\isamarkupfalse%
+\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}sym{\isadigit{4}}\ list\ {\isasymRightarrow}\ nat{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharbrackleft}{\kern0pt}{\isacharbrackright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+{\isacharbar}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}b\ {\isacharhash}{\kern0pt}\ bs{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ b\ {\isacharasterisk}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ length\ bs\ {\isacharplus}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ bs{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Snoc-form of \isa{bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat}: appending a low bit
+  shifts the existing value left and adds the new bit.  This
+  is the inductive workhorse for the round-trip lemma — it
+  matches \isa{nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits}'s recursive shape (which appends
+  the LSB at the tail).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}snoc{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}xs\ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}b{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ xs\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ b{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ xs{\isacharparenright}{\kern0pt}\ auto%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Round-trip on bounded naturals: rendering \isa{n} as
+  a \isa{b}-bit list and reading it back recovers \isa{n},
+  provided \isa{n\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ b}.  Proof by induction on \isa{b}:
+  the snoc-form of \isa{bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat} peels off the
+  trailing bit, the IH handles the prefix \isa{n\ div\ {\isadigit{2}}}, and
+  \isa{n\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isasymcdot}\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ n\ mod\ {\isadigit{2}}} reassembles.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ bit{\isacharunderscore}{\kern0pt}value{\isacharunderscore}{\kern0pt}low{\isacharunderscore}{\kern0pt}bit{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}if\ n\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n\ mod\ {\isadigit{2}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ mod{\isacharunderscore}{\kern0pt}less{\isacharunderscore}{\kern0pt}divisor{\isacharbrackleft}{\kern0pt}of\ {\isadigit{2}}\ n{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ split{\isacharcolon}{\kern0pt}\ if{\isacharunderscore}{\kern0pt}split{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}n\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ n{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{using}\isamarkupfalse%
+\ assms\isanewline
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ k\ arbitrary{\isacharcolon}{\kern0pt}\ n{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isadigit{0}}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}n\ div\ {\isadigit{2}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ k{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ {\isacartoucheopen}n\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ Suc\ k{\isacartoucheclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\ n{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}if\ n\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits\ k\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}if\ n\ mod\ {\isadigit{2}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}\ then\ BIT{\isadigit{0}}\ else\ BIT{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}snoc{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ {\isacharparenleft}{\kern0pt}n\ div\ {\isadigit{2}}{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ {\isacharparenleft}{\kern0pt}n\ mod\ {\isadigit{2}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ Suc{\isachardot}{\kern0pt}hyps{\isacharbrackleft}{\kern0pt}OF\ lt{\isacharbrackright}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value{\isacharunderscore}{\kern0pt}low{\isacharunderscore}{\kern0pt}bit{\isacharbrackleft}{\kern0pt}of\ n{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ n{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ presburger\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Per-symbol decoder%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+Partial inverse of \isa{encode{\isacharunderscore}{\kern0pt}symbol}.  Returns
+\isa{Some\ x} when the input list:
+
+%
+\begin{enumerate}%
+\item has length \isa{b} (correct cell count);
+
+\item contains only \isa{BIT{\isadigit{0}}} / \isa{BIT{\isadigit{1}}} cells (no
+substrate-reserved markers); and
+
+\item has binary interpretation strictly below
+\isa{card\ {\isasymGamma}} (in the enumeration range).
+
+Otherwise returns \isa{None}.  The validation phase in
+later slices implements this check as a sequence of substep
+transitions; the abstract \isa{decode{\isacharunderscore}{\kern0pt}symbol} partial
+function is the specification target.%
+\end{enumerate}%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ decode{\isacharunderscore}{\kern0pt}symbol\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ sym{\isadigit{4}}\ list\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ option{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}decode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ ys\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}if\ length\ ys\ {\isacharequal}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ set\ ys\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ ys\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}\isanewline
+\ \ \ \ \ \ then\ Some\ {\isacharparenleft}{\kern0pt}inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ ys{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ else\ None{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Round-trip: decoding an encoded symbol from
+  \isa{{\isasymGamma}} recovers the source value.  All three validity
+  preconditions of \isa{decode{\isacharunderscore}{\kern0pt}symbol} are satisfied by the
+  encoder image; \isa{inv{\isacharunderscore}{\kern0pt}into} resolves to \isa{x} via
+  \isa{gamma{\isacharunderscore}{\kern0pt}enum}'s injectivity-on-\isa{{\isasymGamma}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ decode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}decode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ Some\ x{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{let}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}ys\ {\isacharequal}{\kern0pt}\ {\isachardoublequoteopen}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ len{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}length\ {\isacharquery}{\kern0pt}ys\ {\isacharequal}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ cd{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}set\ {\isacharquery}{\kern0pt}ys\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}cell{\isacharunderscore}{\kern0pt}domain{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharunderscore}{\kern0pt}x{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}{\isacharcomma}{\kern0pt}\ of\ bl{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ bn{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharquery}{\kern0pt}ys\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharbrackleft}{\kern0pt}OF\ lt{\isacharunderscore}{\kern0pt}x{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharunderscore}{\kern0pt}card{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharquery}{\kern0pt}ys\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ bn\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ inj{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}inj{\isacharunderscore}{\kern0pt}on\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ {\isacartoucheopen}finite\ {\isasymGamma}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ inv{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharquery}{\kern0pt}ys{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ x{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ bn\ inv{\isacharunderscore}{\kern0pt}into{\isacharunderscore}{\kern0pt}f{\isacharunderscore}{\kern0pt}f{\isacharbrackleft}{\kern0pt}OF\ inj\ {\isacartoucheopen}x\ {\isasymin}\ {\isasymGamma}{\isacartoucheclose}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ decode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ len\ cd\ lt{\isacharunderscore}{\kern0pt}card\ inv{\isacharunderscore}{\kern0pt}eq\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+A total form of the symbol decoder, indexed by a
+  natural number rather than a bit list.  For \isa{n\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}}, returns the unique \isa{x\ {\isasymin}\ {\isasymGamma}} with
+  \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharequal}{\kern0pt}\ n} (via \isa{inv{\isacharunderscore}{\kern0pt}into});
+  for \isa{n\ {\isasymge}\ card\ {\isasymGamma}}, returns the blank
+  \isa{bl} as a defensive fallback.  Used by
+  \isa{ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}read}'s per-bit accumulator to maintain
+  \isa{buf} as a partial-decoded \isa{{\isacharprime}{\kern0pt}a} value: at
+  every per-bit substep before the boundary, the partial nat is
+  strictly less than \isa{{\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ {\isacharparenleft}{\kern0pt}b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}}
+  (since \isa{b} is the *least* \isa{n}
+  with \isa{card\ {\isasymGamma}\ {\isasymle}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ n}), so the fallback is
+  never substantively reached for valid inputs; only the
+  boundary substep can land out of range under
+  non-encoder-image inputs, where the language theorem doesn't
+  care.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ nat\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ n\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}if\ n\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}\isanewline
+\ \ \ \ \ \ then\ inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ n\isanewline
+\ \ \ \ \ \ else\ bl{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Enumeration round-trips between \isa{gamma{\isacharunderscore}{\kern0pt}enum} and its
+  total inverse \isa{gamma{\isacharunderscore}{\kern0pt}unenum}, the arithmetic core the read
+  phase's incremental decode rests on.  \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymcirc}\ gamma{\isacharunderscore}{\kern0pt}unenum} is the identity on the in-range index set
+  \isa{{\isasymlbrace}{\isadigit{0}}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}card\ {\isasymGamma}{\isasymrbrace}} (where \isa{gamma{\isacharunderscore}{\kern0pt}unenum} resolves
+  to \isa{inv{\isacharunderscore}{\kern0pt}into} and \isa{gamma{\isacharunderscore}{\kern0pt}enum} is surjective onto that
+  set), and \isa{gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymcirc}\ gamma{\isacharunderscore}{\kern0pt}enum} is the identity on
+  \isa{{\isasymGamma}} (where \isa{gamma{\isacharunderscore}{\kern0pt}enum} is injective and lands
+  below \isa{card\ {\isasymGamma}}).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}n\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ n{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ img{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ {\isacharbackquote}{\kern0pt}\ {\isasymGamma}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}{\isachardot}{\kern0pt}{\isachardot}{\kern0pt}{\isacharless}{\kern0pt}card\ {\isasymGamma}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}n\ {\isasymin}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ {\isacharbackquote}{\kern0pt}\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ img\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{hence}\isamarkupfalse%
+\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ n{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ n{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ f{\isacharunderscore}{\kern0pt}inv{\isacharunderscore}{\kern0pt}into{\isacharunderscore}{\kern0pt}f{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{using}\isamarkupfalse%
+\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ x{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ inj{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}inj{\isacharunderscore}{\kern0pt}on\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ x{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ inv{\isacharunderscore}{\kern0pt}into{\isacharunderscore}{\kern0pt}f{\isacharunderscore}{\kern0pt}f{\isacharbrackleft}{\kern0pt}OF\ inj\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{using}\isamarkupfalse%
+\ lt\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Reading an encoded symbol back via \isa{bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat}
+  recovers its enumeration index, the named form of the local
+  \isa{bn} fact inside \isa{decode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol}.  Needed
+  by the read-phase accumulator below.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharunderscore}{\kern0pt}x{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharcircum}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharcomma}{\kern0pt}\ of\ bl{\isacharbrackright}{\kern0pt}\ card{\isacharunderscore}{\kern0pt}le{\isacharunderscore}{\kern0pt}two{\isacharunderscore}{\kern0pt}pow{\isacharunderscore}{\kern0pt}block{\isacharunderscore}{\kern0pt}width{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}bits{\isacharbrackleft}{\kern0pt}OF\ lt{\isacharunderscore}{\kern0pt}x{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The read-phase accumulator: one bit-cell folded into the
+  running symbol.  Mirrors the per-bit update the read substeps
+  perform — \isa{buf\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isasymcdot}\ gamma{\isacharunderscore}{\kern0pt}enum\ buf\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ c{\isacharparenright}{\kern0pt}} — reading the \isa{b}-cell block most-significant
+  bit first.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}acc\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ set\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ sym{\isadigit{4}}\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl\ b\ c\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ b\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ c{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Folding the accumulator from the seed \isa{gamma{\isacharunderscore}{\kern0pt}unenum\ {\isadigit{0}}}
+  over a bit list whose value is in enumeration range yields exactly
+  \isa{gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ ys{\isacharparenright}{\kern0pt}}.  Proof by \isa{rev{\isacharunderscore}{\kern0pt}induct}:
+  appending a low bit shifts the running value left and adds it
+  (\isa{bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}snoc}), the prefix value stays in range
+  (\isa{bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs\ {\isasymle}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}zs\ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}b{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}}, no separate
+  \isa{take}-bound lemma needed), and the \isa{gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymcirc}\ gamma{\isacharunderscore}{\kern0pt}unenum} round-trip cancels at each step.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ foldl{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}set\ ys\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}\ {\isasymLongrightarrow}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ ys\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymLongrightarrow}\ foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ ys\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ ys{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ ys\ rule{\isacharcolon}{\kern0pt}\ rev{\isacharunderscore}{\kern0pt}induct{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ Nil\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}snoc\ b\ zs{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ set{\isacharunderscore}{\kern0pt}zs{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}set\ zs\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ snoc{\isachardot}{\kern0pt}prems{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ snoc{\isacharunderscore}{\kern0pt}eq{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}zs\ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}b{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ b{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}snoc{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ bound{\isacharunderscore}{\kern0pt}zs{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ snoc{\isachardot}{\kern0pt}prems{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}\ snoc{\isacharunderscore}{\kern0pt}eq\ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ IH{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ zs\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ snoc{\isachardot}{\kern0pt}hyps\ set{\isacharunderscore}{\kern0pt}zs\ bound{\isacharunderscore}{\kern0pt}zs\ \isakeywordONE{by}\isamarkupfalse%
+\ blast\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ ge{\isacharunderscore}{\kern0pt}zs{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ zs{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ IH\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum{\isacharbrackleft}{\kern0pt}OF\ assms\ bound{\isacharunderscore}{\kern0pt}zs{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}zs\ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}b{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ zs{\isacharparenright}{\kern0pt}\ b{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ zs\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ b{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}def\ ge{\isacharunderscore}{\kern0pt}zs{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}zs\ {\isacharat}{\kern0pt}\ {\isacharbrackleft}{\kern0pt}b{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ snoc{\isacharunderscore}{\kern0pt}eq\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+Read-phase decode correctness: folding the accumulator over
+  a symbol's encoding recovers the symbol.  This is the arithmetic
+  content the read phase delivers — every tape's \isa{buf} field,
+  after walking its \isa{b}-cell block, holds the source cell's
+  value.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ foldl{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}x\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ x{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ cd{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}set\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isasymsubseteq}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ encode{\isacharunderscore}{\kern0pt}symbol{\isacharunderscore}{\kern0pt}cell{\isacharunderscore}{\kern0pt}domain{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ bn{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ lt{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ bn\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}lt{\isacharunderscore}{\kern0pt}card{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}bits{\isacharunderscore}{\kern0pt}to{\isacharunderscore}{\kern0pt}nat\ {\isacharparenleft}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ foldl{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}eq{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}\ cd\ lt{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ x{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ bn\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ x{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The decoder's neutral element is the blank: \isa{gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ bl}, since the anchor puts \isa{bl} at index
+  \isa{{\isadigit{0}}} and the enumeration is injective.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}zero{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}bl\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ bl{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ npos{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isadigit{0}}\ {\isacharless}{\kern0pt}\ card\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ assms\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}auto\ simp{\isacharcolon}{\kern0pt}\ card{\isacharunderscore}{\kern0pt}gt{\isacharunderscore}{\kern0pt}{\isadigit{0}}{\isacharunderscore}{\kern0pt}iff{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ inj{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}inj{\isacharunderscore}{\kern0pt}on\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}bij{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ bij{\isacharunderscore}{\kern0pt}betw{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isadigit{0}}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ npos\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\isanewline
+\ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ inv{\isacharunderscore}{\kern0pt}into\ {\isasymGamma}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}gamma{\isacharunderscore}{\kern0pt}enum\ {\isasymGamma}\ bl\ bl{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}blank{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ bl{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ inv{\isacharunderscore}{\kern0pt}into{\isacharunderscore}{\kern0pt}f{\isacharunderscore}{\kern0pt}f{\isacharbrackleft}{\kern0pt}OF\ inj\ assms{\isacharparenleft}{\kern0pt}{\isadigit{2}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+An all-\isa{BLANK{\isadigit{4}}} block decodes to the blank: \isa{bl} is a
+  fixpoint of the accumulator on a \isa{BLANK{\isadigit{4}}} cell (\isa{{\isadigit{2}}\ {\isasymcdot}\ gamma{\isacharunderscore}{\kern0pt}enum\ bl\ {\isacharplus}{\kern0pt}\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}, decoding back to \isa{bl}), so folding
+  any number of \isa{BLANK{\isadigit{4}}} cells from \isa{bl} stays \isa{bl}.
+  This is the read-phase decode correctness for the blank cell, the
+  \isa{BLANK{\isadigit{4}}} counterpart of \isa{foldl{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}encode{\isacharunderscore}{\kern0pt}symbol}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ foldl{\isacharunderscore}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}blank{\isacharcolon}{\kern0pt}\isanewline
+\ \ \isakeywordTWO{assumes}\ {\isachardoublequoteopen}finite\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordTWO{and}\ {\isachardoublequoteopen}bl\ {\isasymin}\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{shows}\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ bl\ {\isacharparenleft}{\kern0pt}replicate\ k\ BLANK{\isadigit{4}}{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ bl{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}induct\ k{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isadigit{0}}\isanewline
+\ \ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{next}\isamarkupfalse%
+\isanewline
+\ \ \isakeywordTHREE{case}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ step{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl\ bl\ BLANK{\isadigit{4}}\ {\isacharequal}{\kern0pt}\ bl{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}acc{\isacharunderscore}{\kern0pt}def\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ gamma{\isacharunderscore}{\kern0pt}enum{\isacharunderscore}{\kern0pt}blank{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharparenleft}{\kern0pt}{\isadigit{1}}{\isacharparenright}{\kern0pt}{\isacharbrackright}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum{\isacharunderscore}{\kern0pt}zero{\isacharbrackleft}{\kern0pt}OF\ assms{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ bl\ {\isacharparenleft}{\kern0pt}replicate\ {\isacharparenleft}{\kern0pt}Suc\ k{\isacharparenright}{\kern0pt}\ BLANK{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isacharequal}{\kern0pt}\ foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl\ bl\ BLANK{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}replicate\ k\ BLANK{\isadigit{4}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ replicate{\isacharunderscore}{\kern0pt}Suc{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ foldl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}acc\ {\isasymGamma}\ bl{\isacharparenright}{\kern0pt}\ bl\ {\isacharparenleft}{\kern0pt}replicate\ k\ BLANK{\isadigit{4}}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ \ \ \isakeywordONE{using}\isamarkupfalse%
+\ step\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\ \ \isakeywordONE{also}\isamarkupfalse%
+\ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isasymdots}\ {\isacharequal}{\kern0pt}\ bl{\isachardoublequoteclose}\ \isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}rule\ Suc{\isachardot}{\kern0pt}hyps{\isacharparenright}{\kern0pt}\isanewline
+\ \ \isakeywordONE{finally}\isamarkupfalse%
+\ \isakeywordTHREE{show}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}case\ \isakeywordONE{{\isachardot}{\kern0pt}}\isamarkupfalse%
+\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isakeywordTWO{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=$AFP/Multitape_Alphabet_Reduction/AlphabetReduction_Codec.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%27=5%:%
+%:%39=7%:%
+%:%40=8%:%
+%:%41=9%:%
+%:%42=10%:%
+%:%43=11%:%
+%:%44=12%:%
+%:%45=13%:%
+%:%46=14%:%
+%:%47=15%:%
+%:%48=16%:%
+%:%49=17%:%
+%:%50=18%:%
+%:%51=19%:%
+%:%52=20%:%
+%:%53=21%:%
+%:%54=22%:%
+%:%55=23%:%
+%:%56=24%:%
+%:%60=26%:%
+%:%61=27%:%
+%:%62=28%:%
+%:%64=30%:%
+%:%65=30%:%
+%:%66=31%:%
+%:%67=32%:%
+%:%68=32%:%
+%:%71=33%:%
+%:%75=33%:%
+%:%76=33%:%
+%:%77=33%:%
+%:%82=33%:%
+%:%85=34%:%
+%:%86=35%:%
+%:%87=35%:%
+%:%94=36%:%
+%:%95=36%:%
+%:%96=37%:%
+%:%97=37%:%
+%:%98=38%:%
+%:%99=38%:%
+%:%100=39%:%
+%:%101=39%:%
+%:%102=39%:%
+%:%103=40%:%
+%:%104=40%:%
+%:%105=41%:%
+%:%106=41%:%
+%:%107=41%:%
+%:%108=41%:%
+%:%109=42%:%
+%:%124=44%:%
+%:%136=46%:%
+%:%137=47%:%
+%:%138=48%:%
+%:%139=49%:%
+%:%140=50%:%
+%:%141=51%:%
+%:%142=52%:%
+%:%143=53%:%
+%:%144=54%:%
+%:%145=55%:%
+%:%146=56%:%
+%:%147=57%:%
+%:%148=58%:%
+%:%149=59%:%
+%:%150=60%:%
+%:%151=61%:%
+%:%152=62%:%
+%:%153=63%:%
+%:%154=64%:%
+%:%155=65%:%
+%:%156=66%:%
+%:%157=67%:%
+%:%158=68%:%
+%:%159=69%:%
+%:%160=70%:%
+%:%161=71%:%
+%:%162=72%:%
+%:%163=73%:%
+%:%165=75%:%
+%:%166=75%:%
+%:%167=76%:%
+%:%169=78%:%
+%:%170=79%:%
+%:%171=80%:%
+%:%172=81%:%
+%:%173=82%:%
+%:%174=83%:%
+%:%175=84%:%
+%:%176=85%:%
+%:%177=86%:%
+%:%178=87%:%
+%:%179=88%:%
+%:%180=89%:%
+%:%181=90%:%
+%:%182=91%:%
+%:%183=92%:%
+%:%185=94%:%
+%:%186=94%:%
+%:%187=95%:%
+%:%190=98%:%
+%:%191=99%:%
+%:%192=100%:%
+%:%193=101%:%
+%:%194=102%:%
+%:%195=103%:%
+%:%197=105%:%
+%:%198=105%:%
+%:%199=106%:%
+%:%200=107%:%
+%:%209=111%:%
+%:%221=113%:%
+%:%222=114%:%
+%:%223=115%:%
+%:%224=116%:%
+%:%225=117%:%
+%:%226=118%:%
+%:%227=119%:%
+%:%228=120%:%
+%:%229=121%:%
+%:%230=122%:%
+%:%231=123%:%
+%:%232=124%:%
+%:%234=126%:%
+%:%235=126%:%
+%:%236=127%:%
+%:%237=128%:%
+%:%239=130%:%
+%:%240=131%:%
+%:%242=133%:%
+%:%243=133%:%
+%:%244=134%:%
+%:%245=135%:%
+%:%252=137%:%
+%:%264=139%:%
+%:%265=140%:%
+%:%266=141%:%
+%:%268=143%:%
+%:%269=143%:%
+%:%270=144%:%
+%:%273=145%:%
+%:%277=145%:%
+%:%278=145%:%
+%:%283=145%:%
+%:%286=146%:%
+%:%287=147%:%
+%:%288=147%:%
+%:%289=148%:%
+%:%292=149%:%
+%:%296=149%:%
+%:%297=149%:%
+%:%298=149%:%
+%:%307=151%:%
+%:%308=152%:%
+%:%309=153%:%
+%:%310=154%:%
+%:%312=156%:%
+%:%313=156%:%
+%:%314=157%:%
+%:%317=158%:%
+%:%321=158%:%
+%:%322=158%:%
+%:%327=158%:%
+%:%330=159%:%
+%:%331=160%:%
+%:%332=160%:%
+%:%333=161%:%
+%:%336=162%:%
+%:%340=162%:%
+%:%341=162%:%
+%:%342=163%:%
+%:%343=163%:%
+%:%352=165%:%
+%:%353=166%:%
+%:%354=167%:%
+%:%355=168%:%
+%:%356=169%:%
+%:%360=171%:%
+%:%361=172%:%
+%:%362=173%:%
+%:%363=174%:%
+%:%364=175%:%
+%:%365=176%:%
+%:%366=177%:%
+%:%367=178%:%
+%:%368=179%:%
+%:%369=180%:%
+%:%371=182%:%
+%:%372=182%:%
+%:%373=183%:%
+%:%374=184%:%
+%:%375=185%:%
+%:%382=186%:%
+%:%383=186%:%
+%:%384=187%:%
+%:%385=187%:%
+%:%386=188%:%
+%:%387=188%:%
+%:%388=188%:%
+%:%389=189%:%
+%:%390=189%:%
+%:%391=190%:%
+%:%392=190%:%
+%:%393=191%:%
+%:%394=191%:%
+%:%395=192%:%
+%:%396=192%:%
+%:%397=193%:%
+%:%398=193%:%
+%:%399=193%:%
+%:%400=194%:%
+%:%401=194%:%
+%:%402=195%:%
+%:%403=195%:%
+%:%404=195%:%
+%:%405=196%:%
+%:%406=196%:%
+%:%407=196%:%
+%:%408=196%:%
+%:%409=197%:%
+%:%410=197%:%
+%:%411=197%:%
+%:%412=197%:%
+%:%413=198%:%
+%:%414=198%:%
+%:%415=199%:%
+%:%416=199%:%
+%:%417=200%:%
+%:%418=200%:%
+%:%419=200%:%
+%:%420=200%:%
+%:%421=201%:%
+%:%422=201%:%
+%:%423=201%:%
+%:%424=201%:%
+%:%425=202%:%
+%:%426=202%:%
+%:%427=203%:%
+%:%428=203%:%
+%:%429=204%:%
+%:%430=204%:%
+%:%431=204%:%
+%:%432=205%:%
+%:%433=205%:%
+%:%434=206%:%
+%:%435=206%:%
+%:%436=207%:%
+%:%437=207%:%
+%:%438=208%:%
+%:%439=208%:%
+%:%440=209%:%
+%:%441=209%:%
+%:%442=209%:%
+%:%443=210%:%
+%:%444=210%:%
+%:%445=211%:%
+%:%446=211%:%
+%:%447=211%:%
+%:%448=212%:%
+%:%449=212%:%
+%:%450=212%:%
+%:%451=212%:%
+%:%452=212%:%
+%:%453=213%:%
+%:%454=213%:%
+%:%455=213%:%
+%:%456=213%:%
+%:%457=214%:%
+%:%458=214%:%
+%:%459=215%:%
+%:%465=215%:%
+%:%468=216%:%
+%:%469=217%:%
+%:%470=217%:%
+%:%471=218%:%
+%:%472=219%:%
+%:%473=220%:%
+%:%476=221%:%
+%:%480=221%:%
+%:%481=221%:%
+%:%482=222%:%
+%:%483=222%:%
+%:%484=222%:%
+%:%489=222%:%
+%:%492=223%:%
+%:%493=224%:%
+%:%494=224%:%
+%:%495=225%:%
+%:%496=226%:%
+%:%499=227%:%
+%:%503=227%:%
+%:%504=227%:%
+%:%505=227%:%
+%:%514=229%:%
+%:%515=230%:%
+%:%516=231%:%
+%:%518=233%:%
+%:%519=233%:%
+%:%520=234%:%
+%:%521=235%:%
+%:%524=236%:%
+%:%528=236%:%
+%:%529=236%:%
+%:%530=236%:%
+%:%535=236%:%
+%:%538=237%:%
+%:%539=238%:%
+%:%540=238%:%
+%:%541=239%:%
+%:%542=240%:%
+%:%549=241%:%
+%:%550=241%:%
+%:%551=242%:%
+%:%552=242%:%
+%:%553=243%:%
+%:%554=243%:%
+%:%555=244%:%
+%:%556=244%:%
+%:%557=245%:%
+%:%558=245%:%
+%:%559=245%:%
+%:%560=246%:%
+%:%570=248%:%
+%:%571=249%:%
+%:%572=250%:%
+%:%573=251%:%
+%:%574=252%:%
+%:%576=254%:%
+%:%577=254%:%
+%:%584=255%:%
+%:%585=255%:%
+%:%586=256%:%
+%:%587=256%:%
+%:%588=257%:%
+%:%589=257%:%
+%:%590=257%:%
+%:%591=258%:%
+%:%592=258%:%
+%:%593=259%:%
+%:%594=259%:%
+%:%595=260%:%
+%:%596=260%:%
+%:%597=260%:%
+%:%598=261%:%
+%:%599=261%:%
+%:%600=262%:%
+%:%601=262%:%
+%:%602=262%:%
+%:%603=263%:%
+%:%604=263%:%
+%:%605=264%:%
+%:%606=264%:%
+%:%607=265%:%
+%:%608=265%:%
+%:%609=265%:%
+%:%610=265%:%
+%:%611=266%:%
+%:%621=268%:%
+%:%622=269%:%
+%:%623=270%:%
+%:%624=271%:%
+%:%625=272%:%
+%:%626=273%:%
+%:%627=274%:%
+%:%628=275%:%
+%:%629=276%:%
+%:%630=277%:%
+%:%631=278%:%
+%:%632=279%:%
+%:%633=280%:%
+%:%634=281%:%
+%:%636=283%:%
+%:%637=283%:%
+%:%638=284%:%
+%:%639=285%:%
+%:%646=286%:%
+%:%647=286%:%
+%:%648=287%:%
+%:%649=287%:%
+%:%650=288%:%
+%:%651=288%:%
+%:%652=288%:%
+%:%653=289%:%
+%:%654=289%:%
+%:%655=290%:%
+%:%656=290%:%
+%:%657=290%:%
+%:%658=290%:%
+%:%659=291%:%
+%:%660=291%:%
+%:%661=292%:%
+%:%662=292%:%
+%:%663=293%:%
+%:%664=293%:%
+%:%665=294%:%
+%:%666=294%:%
+%:%667=294%:%
+%:%668=294%:%
+%:%669=295%:%
+%:%670=295%:%
+%:%671=295%:%
+%:%672=295%:%
+%:%673=295%:%
+%:%674=296%:%
+%:%675=296%:%
+%:%676=296%:%
+%:%677=296%:%
+%:%678=297%:%
+%:%679=297%:%
+%:%680=298%:%
+%:%681=298%:%
+%:%682=298%:%
+%:%683=298%:%
+%:%684=299%:%
+%:%685=299%:%
+%:%686=299%:%
+%:%687=299%:%
+%:%688=300%:%
+%:%689=300%:%
+%:%690=300%:%
+%:%691=301%:%
+%:%692=301%:%
+%:%693=301%:%
+%:%694=302%:%
+%:%704=304%:%
+%:%705=305%:%
+%:%706=306%:%
+%:%707=307%:%
+%:%708=308%:%
+%:%709=309%:%
+%:%710=310%:%
+%:%712=312%:%
+%:%713=312%:%
+%:%714=313%:%
+%:%715=314%:%
+%:%716=315%:%
+%:%717=316%:%
+%:%720=317%:%
+%:%724=317%:%
+%:%725=317%:%
+%:%726=318%:%
+%:%727=318%:%
+%:%728=319%:%
+%:%729=319%:%
+%:%730=320%:%
+%:%731=320%:%
+%:%732=320%:%
+%:%733=321%:%
+%:%734=321%:%
+%:%735=322%:%
+%:%736=322%:%
+%:%737=323%:%
+%:%738=323%:%
+%:%739=324%:%
+%:%740=324%:%
+%:%741=325%:%
+%:%744=328%:%
+%:%745=329%:%
+%:%746=329%:%
+%:%747=330%:%
+%:%748=330%:%
+%:%749=331%:%
+%:%750=332%:%
+%:%751=333%:%
+%:%752=334%:%
+%:%753=335%:%
+%:%754=335%:%
+%:%755=336%:%
+%:%756=336%:%
+%:%757=336%:%
+%:%758=337%:%
+%:%759=338%:%
+%:%760=338%:%
+%:%761=339%:%
+%:%762=339%:%
+%:%763=339%:%
+%:%764=340%:%
+%:%765=340%:%
+%:%766=340%:%
+%:%767=341%:%
+%:%768=341%:%
+%:%769=342%:%
+%:%770=342%:%
+%:%771=342%:%
+%:%772=342%:%
+%:%773=343%:%
+%:%774=343%:%
+%:%775=343%:%
+%:%776=343%:%
+%:%777=344%:%
+%:%778=344%:%
+%:%779=345%:%
+%:%780=345%:%
+%:%781=345%:%
+%:%782=346%:%
+%:%783=346%:%
+%:%784=346%:%
+%:%785=347%:%
+%:%786=347%:%
+%:%787=347%:%
+%:%788=347%:%
+%:%789=348%:%
+%:%790=348%:%
+%:%791=349%:%
+%:%792=349%:%
+%:%793=349%:%
+%:%794=349%:%
+%:%795=350%:%
+%:%796=350%:%
+%:%797=350%:%
+%:%798=350%:%
+%:%799=351%:%
+%:%809=353%:%
+%:%810=354%:%
+%:%811=355%:%
+%:%812=356%:%
+%:%814=358%:%
+%:%815=358%:%
+%:%816=359%:%
+%:%817=360%:%
+%:%818=361%:%
+%:%819=362%:%
+%:%826=363%:%
+%:%827=363%:%
+%:%828=364%:%
+%:%829=364%:%
+%:%830=365%:%
+%:%831=365%:%
+%:%832=366%:%
+%:%833=367%:%
+%:%834=368%:%
+%:%835=368%:%
+%:%836=369%:%
+%:%837=369%:%
+%:%838=370%:%
+%:%839=370%:%
+%:%840=371%:%
+%:%841=372%:%
+%:%842=372%:%
+%:%843=373%:%
+%:%844=373%:%
+%:%845=374%:%
+%:%846=374%:%
+%:%847=375%:%
+%:%848=376%:%
+%:%849=376%:%
+%:%850=377%:%
+%:%851=377%:%
+%:%852=378%:%
+%:%853=378%:%
+%:%854=378%:%
+%:%855=379%:%
+%:%856=379%:%
+%:%857=380%:%
+%:%858=380%:%
+%:%859=381%:%
+%:%860=381%:%
+%:%861=382%:%
+%:%862=382%:%
+%:%863=382%:%
+%:%864=383%:%
+%:%865=383%:%
+%:%866=384%:%
+%:%876=386%:%
+%:%877=387%:%
+%:%877=388%:%
+%:%878=389%:%
+%:%880=391%:%
+%:%881=391%:%
+%:%882=392%:%
+%:%885=393%:%
+%:%889=393%:%
+%:%890=393%:%
+%:%891=393%:%
+%:%896=393%:%
+%:%899=394%:%
+%:%900=395%:%
+%:%901=395%:%
+%:%902=396%:%
+%:%903=397%:%
+%:%906=398%:%
+%:%910=398%:%
+%:%911=398%:%
+%:%912=398%:%
+%:%917=398%:%
+%:%920=399%:%
+%:%921=400%:%
+%:%922=400%:%
+%:%923=401%:%
+%:%926=402%:%
+%:%930=402%:%
+%:%931=402%:%
+%:%932=403%:%
+%:%933=403%:%
+%:%942=405%:%
+%:%943=406%:%
+%:%944=407%:%
+%:%945=408%:%
+%:%946=409%:%
+%:%947=410%:%
+%:%948=411%:%
+%:%950=412%:%
+%:%951=412%:%
+%:%952=413%:%
+%:%953=414%:%
+%:%954=415%:%
+%:%955=416%:%
+%:%958=417%:%
+%:%962=417%:%
+%:%963=417%:%
+%:%964=418%:%
+%:%965=418%:%
+%:%966=419%:%
+%:%967=419%:%
+%:%968=420%:%
+%:%969=420%:%
+%:%970=420%:%
+%:%971=420%:%
+%:%972=421%:%
+%:%973=421%:%
+%:%974=422%:%
+%:%975=422%:%
+%:%976=423%:%
+%:%977=423%:%
+%:%978=424%:%
+%:%979=424%:%
+%:%980=425%:%
+%:%981=425%:%
+%:%982=426%:%
+%:%983=426%:%
+%:%984=427%:%
+%:%985=428%:%
+%:%986=428%:%
+%:%987=428%:%
+%:%988=429%:%
+%:%989=429%:%
+%:%990=429%:%
+%:%991=430%:%
+%:%992=430%:%
+%:%993=430%:%
+%:%994=431%:%
+%:%995=431%:%
+%:%996=431%:%
+%:%997=431%:%
+%:%998=431%:%
+%:%999=432%:%
+%:%1000=432%:%
+%:%1001=433%:%
+%:%1002=433%:%
+%:%1003=434%:%
+%:%1004=434%:%
+%:%1005=434%:%
+%:%1006=434%:%
+%:%1007=435%:%
+%:%1008=435%:%
+%:%1009=436%:%
+%:%1010=436%:%
+%:%1011=436%:%
+%:%1012=437%:%
+%:%1013=437%:%
+%:%1014=438%:%
+%:%1015=439%:%
+%:%1016=439%:%
+%:%1017=439%:%
+%:%1018=440%:%
+%:%1019=440%:%
+%:%1020=440%:%
+%:%1021=441%:%
+%:%1022=441%:%
+%:%1023=441%:%
+%:%1024=442%:%
+%:%1025=442%:%
+%:%1026=442%:%
+%:%1027=442%:%
+%:%1028=442%:%
+%:%1029=443%:%
+%:%1030=443%:%
+%:%1031=444%:%
+%:%1037=444%:%
+%:%1040=445%:%
+%:%1041=446%:%
+%:%1042=446%:%
+%:%1043=447%:%
+%:%1044=448%:%
+%:%1045=449%:%
+%:%1048=450%:%
+%:%1052=450%:%
+%:%1053=450%:%
+%:%1054=451%:%
+%:%1055=451%:%
+%:%1069=453%:%
+%:%1081=455%:%
+%:%1082=456%:%
+%:%1083=457%:%
+%:%1084=458%:%
+%:%1085=459%:%
+%:%1086=460%:%
+%:%1087=461%:%
+%:%1089=463%:%
+%:%1090=463%:%
+%:%1091=464%:%
+%:%1092=465%:%
+%:%1093=466%:%
+%:%1094=467%:%
+%:%1096=469%:%
+%:%1097=470%:%
+%:%1098=471%:%
+%:%1099=472%:%
+%:%1101=474%:%
+%:%1102=474%:%
+%:%1103=475%:%
+%:%1104=476%:%
+%:%1106=478%:%
+%:%1107=479%:%
+%:%1108=480%:%
+%:%1109=481%:%
+%:%1110=482%:%
+%:%1112=484%:%
+%:%1113=484%:%
+%:%1114=485%:%
+%:%1117=486%:%
+%:%1121=486%:%
+%:%1122=486%:%
+%:%1131=488%:%
+%:%1132=489%:%
+%:%1133=490%:%
+%:%1134=491%:%
+%:%1135=492%:%
+%:%1136=493%:%
+%:%1138=495%:%
+%:%1139=495%:%
+%:%1140=496%:%
+%:%1143=497%:%
+%:%1147=497%:%
+%:%1148=497%:%
+%:%1149=497%:%
+%:%1154=497%:%
+%:%1157=498%:%
+%:%1158=499%:%
+%:%1159=499%:%
+%:%1160=500%:%
+%:%1161=501%:%
+%:%1164=502%:%
+%:%1168=502%:%
+%:%1169=502%:%
+%:%1170=503%:%
+%:%1171=503%:%
+%:%1172=504%:%
+%:%1173=504%:%
+%:%1174=505%:%
+%:%1175=505%:%
+%:%1176=505%:%
+%:%1177=506%:%
+%:%1178=506%:%
+%:%1179=507%:%
+%:%1180=507%:%
+%:%1181=508%:%
+%:%1182=508%:%
+%:%1183=509%:%
+%:%1184=509%:%
+%:%1185=509%:%
+%:%1186=510%:%
+%:%1187=510%:%
+%:%1190=513%:%
+%:%1191=514%:%
+%:%1192=514%:%
+%:%1193=515%:%
+%:%1194=515%:%
+%:%1195=515%:%
+%:%1197=517%:%
+%:%1198=518%:%
+%:%1199=518%:%
+%:%1200=519%:%
+%:%1201=519%:%
+%:%1202=519%:%
+%:%1203=520%:%
+%:%1204=520%:%
+%:%1205=520%:%
+%:%1206=521%:%
+%:%1207=521%:%
+%:%1208=521%:%
+%:%1209=521%:%
+%:%1210=522%:%
+%:%1211=522%:%
+%:%1212=522%:%
+%:%1213=522%:%
+%:%1214=523%:%
+%:%1229=525%:%
+%:%1241=527%:%
+%:%1242=528%:%
+%:%1246=529%:%
+%:%1248=530%:%
+%:%1249=531%:%
+%:%1251=532%:%
+%:%1252=533%:%
+%:%1254=535%:%
+%:%1255=536%:%
+%:%1256=537%:%
+%:%1257=538%:%
+%:%1260=540%:%
+%:%1261=540%:%
+%:%1262=541%:%
+%:%1263=542%:%
+%:%1270=549%:%
+%:%1271=550%:%
+%:%1272=551%:%
+%:%1273=552%:%
+%:%1274=553%:%
+%:%1276=555%:%
+%:%1277=555%:%
+%:%1278=556%:%
+%:%1279=557%:%
+%:%1286=558%:%
+%:%1287=558%:%
+%:%1288=559%:%
+%:%1289=559%:%
+%:%1290=560%:%
+%:%1291=560%:%
+%:%1292=560%:%
+%:%1293=561%:%
+%:%1294=561%:%
+%:%1295=562%:%
+%:%1296=562%:%
+%:%1297=563%:%
+%:%1298=563%:%
+%:%1299=564%:%
+%:%1300=564%:%
+%:%1301=565%:%
+%:%1302=566%:%
+%:%1303=566%:%
+%:%1304=567%:%
+%:%1305=567%:%
+%:%1306=568%:%
+%:%1307=568%:%
+%:%1308=569%:%
+%:%1309=569%:%
+%:%1310=570%:%
+%:%1311=570%:%
+%:%1312=571%:%
+%:%1313=571%:%
+%:%1314=571%:%
+%:%1315=572%:%
+%:%1316=572%:%
+%:%1317=573%:%
+%:%1318=573%:%
+%:%1319=574%:%
+%:%1320=574%:%
+%:%1321=575%:%
+%:%1322=575%:%
+%:%1323=576%:%
+%:%1324=576%:%
+%:%1325=576%:%
+%:%1326=577%:%
+%:%1327=577%:%
+%:%1328=578%:%
+%:%1329=578%:%
+%:%1330=579%:%
+%:%1331=579%:%
+%:%1332=579%:%
+%:%1333=580%:%
+%:%1343=582%:%
+%:%1344=583%:%
+%:%1344=584%:%
+%:%1345=585%:%
+%:%1346=586%:%
+%:%1347=587%:%
+%:%1348=588%:%
+%:%1349=589%:%
+%:%1350=590%:%
+%:%1351=591%:%
+%:%1352=592%:%
+%:%1353=593%:%
+%:%1354=594%:%
+%:%1355=595%:%
+%:%1356=596%:%
+%:%1357=597%:%
+%:%1359=599%:%
+%:%1360=599%:%
+%:%1361=600%:%
+%:%1366=605%:%
+%:%1367=606%:%
+%:%1368=607%:%
+%:%1368=608%:%
+%:%1369=609%:%
+%:%1370=610%:%
+%:%1371=611%:%
+%:%1372=612%:%
+%:%1373=613%:%
+%:%1375=615%:%
+%:%1376=615%:%
+%:%1377=616%:%
+%:%1378=617%:%
+%:%1385=618%:%
+%:%1386=618%:%
+%:%1387=619%:%
+%:%1388=619%:%
+%:%1389=620%:%
+%:%1390=620%:%
+%:%1391=620%:%
+%:%1392=621%:%
+%:%1393=621%:%
+%:%1394=621%:%
+%:%1395=621%:%
+%:%1396=622%:%
+%:%1397=622%:%
+%:%1398=623%:%
+%:%1399=623%:%
+%:%1400=624%:%
+%:%1401=624%:%
+%:%1402=624%:%
+%:%1403=624%:%
+%:%1404=625%:%
+%:%1410=625%:%
+%:%1413=626%:%
+%:%1414=627%:%
+%:%1415=627%:%
+%:%1416=628%:%
+%:%1417=629%:%
+%:%1424=630%:%
+%:%1425=630%:%
+%:%1426=631%:%
+%:%1427=631%:%
+%:%1428=632%:%
+%:%1429=632%:%
+%:%1430=633%:%
+%:%1431=633%:%
+%:%1432=634%:%
+%:%1433=634%:%
+%:%1434=634%:%
+%:%1435=635%:%
+%:%1436=635%:%
+%:%1437=636%:%
+%:%1438=636%:%
+%:%1439=637%:%
+%:%1440=637%:%
+%:%1441=637%:%
+%:%1442=637%:%
+%:%1443=638%:%
+%:%1453=640%:%
+%:%1454=641%:%
+%:%1455=642%:%
+%:%1456=643%:%
+%:%1458=645%:%
+%:%1459=645%:%
+%:%1460=646%:%
+%:%1461=647%:%
+%:%1468=648%:%
+%:%1469=648%:%
+%:%1470=649%:%
+%:%1471=649%:%
+%:%1472=650%:%
+%:%1473=650%:%
+%:%1474=651%:%
+%:%1475=651%:%
+%:%1476=652%:%
+%:%1477=652%:%
+%:%1478=653%:%
+%:%1479=653%:%
+%:%1480=653%:%
+%:%1481=654%:%
+%:%1491=656%:%
+%:%1492=657%:%
+%:%1493=658%:%
+%:%1493=659%:%
+%:%1494=660%:%
+%:%1496=662%:%
+%:%1497=662%:%
+%:%1498=663%:%
+%:%1500=665%:%
+%:%1501=666%:%
+%:%1502=667%:%
+%:%1503=668%:%
+%:%1504=669%:%
+%:%1505=670%:%
+%:%1506=671%:%
+%:%1506=672%:%
+%:%1508=674%:%
+%:%1509=674%:%
+%:%1510=675%:%
+%:%1511=676%:%
+%:%1513=678%:%
+%:%1520=679%:%
+%:%1521=679%:%
+%:%1522=680%:%
+%:%1523=680%:%
+%:%1524=681%:%
+%:%1525=681%:%
+%:%1526=681%:%
+%:%1527=682%:%
+%:%1528=682%:%
+%:%1529=683%:%
+%:%1530=683%:%
+%:%1531=684%:%
+%:%1532=684%:%
+%:%1533=684%:%
+%:%1534=684%:%
+%:%1535=685%:%
+%:%1536=685%:%
+%:%1537=686%:%
+%:%1538=686%:%
+%:%1539=687%:%
+%:%1540=687%:%
+%:%1541=688%:%
+%:%1542=688%:%
+%:%1543=688%:%
+%:%1544=689%:%
+%:%1545=689%:%
+%:%1546=690%:%
+%:%1547=691%:%
+%:%1548=691%:%
+%:%1549=691%:%
+%:%1550=692%:%
+%:%1551=692%:%
+%:%1553=694%:%
+%:%1554=695%:%
+%:%1555=695%:%
+%:%1556=695%:%
+%:%1557=696%:%
+%:%1558=696%:%
+%:%1560=698%:%
+%:%1561=699%:%
+%:%1562=699%:%
+%:%1563=700%:%
+%:%1564=700%:%
+%:%1565=700%:%
+%:%1566=701%:%
+%:%1567=701%:%
+%:%1568=702%:%
+%:%1569=702%:%
+%:%1570=702%:%
+%:%1571=703%:%
+%:%1572=703%:%
+%:%1573=703%:%
+%:%1574=704%:%
+%:%1575=704%:%
+%:%1576=704%:%
+%:%1577=704%:%
+%:%1578=705%:%
+%:%1588=707%:%
+%:%1589=708%:%
+%:%1590=709%:%
+%:%1591=710%:%
+%:%1592=711%:%
+%:%1594=713%:%
+%:%1595=713%:%
+%:%1596=714%:%
+%:%1597=715%:%
+%:%1604=716%:%
+%:%1605=716%:%
+%:%1606=717%:%
+%:%1607=717%:%
+%:%1608=718%:%
+%:%1609=718%:%
+%:%1610=719%:%
+%:%1611=719%:%
+%:%1612=720%:%
+%:%1613=720%:%
+%:%1614=721%:%
+%:%1615=721%:%
+%:%1616=722%:%
+%:%1617=722%:%
+%:%1618=722%:%
+%:%1619=723%:%
+%:%1620=723%:%
+%:%1621=724%:%
+%:%1622=725%:%
+%:%1623=725%:%
+%:%1624=726%:%
+%:%1625=726%:%
+%:%1626=726%:%
+%:%1627=726%:%
+%:%1628=726%:%
+%:%1629=727%:%
+%:%1630=727%:%
+%:%1631=727%:%
+%:%1632=727%:%
+%:%1633=728%:%
+%:%1634=728%:%
+%:%1635=728%:%
+%:%1636=728%:%
+%:%1637=729%:%
+%:%1647=731%:%
+%:%1647=732%:%
+%:%1648=733%:%
+%:%1650=735%:%
+%:%1651=735%:%
+%:%1652=736%:%
+%:%1653=737%:%
+%:%1660=738%:%
+%:%1661=738%:%
+%:%1662=739%:%
+%:%1663=739%:%
+%:%1664=739%:%
+%:%1665=739%:%
+%:%1666=740%:%
+%:%1667=740%:%
+%:%1668=741%:%
+%:%1669=741%:%
+%:%1670=741%:%
+%:%1671=742%:%
+%:%1672=742%:%
+%:%1673=743%:%
+%:%1674=743%:%
+%:%1675=743%:%
+%:%1676=744%:%
+%:%1677=744%:%
+%:%1678=744%:%
+%:%1679=745%:%
+%:%1680=746%:%
+%:%1681=746%:%
+%:%1682=746%:%
+%:%1683=747%:%
+%:%1684=747%:%
+%:%1685=747%:%
+%:%1686=747%:%
+%:%1687=748%:%
+%:%1688=748%:%
+%:%1689=748%:%
+%:%1690=748%:%
+%:%1691=749%:%
+%:%1701=751%:%
+%:%1702=752%:%
+%:%1702=753%:%
+%:%1703=754%:%
+%:%1704=755%:%
+%:%1705=756%:%
+%:%1707=758%:%
+%:%1708=758%:%
+%:%1709=759%:%
+%:%1710=760%:%
+%:%1717=761%:%
+%:%1718=761%:%
+%:%1719=762%:%
+%:%1720=762%:%
+%:%1721=763%:%
+%:%1722=763%:%
+%:%1723=763%:%
+%:%1724=764%:%
+%:%1725=764%:%
+%:%1726=765%:%
+%:%1727=765%:%
+%:%1728=766%:%
+%:%1729=766%:%
+%:%1730=767%:%
+%:%1731=767%:%
+%:%1732=768%:%
+%:%1733=768%:%
+%:%1734=768%:%
+%:%1735=769%:%
+%:%1736=769%:%
+%:%1738=771%:%
+%:%1739=772%:%
+%:%1740=772%:%
+%:%1741=773%:%
+%:%1742=773%:%
+%:%1743=773%:%
+%:%1744=774%:%
+%:%1745=774%:%
+%:%1746=774%:%
+%:%1747=775%:%
+%:%1748=775%:%
+%:%1749=775%:%
+%:%1750=775%:%
+%:%1751=776%:%
+%:%1752=776%:%
+%:%1753=776%:%
+%:%1754=776%:%
+%:%1755=777%:%
+%:%1761=777%:%
+%:%1766=778%:%
+%:%1771=779%:%

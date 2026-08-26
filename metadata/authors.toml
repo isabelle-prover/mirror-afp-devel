@@ -7002,6 +7002,25 @@ name = "Christian Saile"
 [saile.homepages]
 saile_homepage = "http://dss.in.tum.de/staff/christian-saile.html"
 
+[salamon]
+name = "András Z. Salamon"
+orcid = "0000-0002-1415-9712"
+
+[salamon.emails]
+
+[salamon.emails.salamon_email]
+user = [
+  "Andras",
+  "Salamon",
+]
+host = [
+  "st-andrews",
+  "ac",
+  "uk",
+]
+
+[salamon.homepages]
+
 [sanan]
 name = "David Sanan"
 
@@ -8978,6 +8997,23 @@ name = "Timmy Weerwag"
 [weerwag.emails]
 
 [weerwag.homepages]
+
+[wehar]
+name = "Michael Wehar"
+orcid = "0009-0007-9251-7128"
+
+[wehar.emails]
+
+[wehar.emails.wehar_email]
+user = [
+  "mwehar",
+]
+host = [
+  "haverford",
+  "edu",
+]
+
+[wehar.homepages]
 
 [weidner]
 name = "Arno Wilhelm-Weidner"

@@ -1,0 +1,26 @@
+chapter AFP
+
+session Multitape_Alphabet_Reduction = Multitape_TM_Substrate +
+  description "The determinism-preserving elementary alphabet-encoding combinator.
+    Sibling of Multitape_Alphabet_Enlargement over the shared Multitape_TM_Substrate parent; imports only
+    Multitape_Substrate, never any AE theory, so AR does not depend on AE."
+  options [timeout = 300]
+  theories
+    AlphabetReduction_Codec
+    AlphabetReduction_Stage
+    AlphabetReduction_Delta
+    AlphabetReduction_Determinism
+    AlphabetReduction_Simulation
+    AlphabetReduction_ForwardSubsteps
+    AlphabetReduction_ForwardRead
+    AlphabetReduction_ForwardWrite
+    AlphabetReduction_ForwardAdvance
+    AlphabetReduction_Forward
+    AlphabetReduction_Theorems
+    AlphabetReduction_Reverse
+  document_files
+    "root.tex"
+    "root.bib"
+    "acknowledgement.tex"
+    "sessionnames.tex"
+    "glossary.tex"

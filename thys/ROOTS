@@ -610,6 +610,10 @@ Multi_Party_Computation
 Multirelations
 Multirelations_Heterogeneous
 Multiset_Ordering_NPC
+Multitape_Alphabet_Enlargement
+Multitape_Alphabet_Reduction
+Multitape_Alphabet_Roundtrip
+Multitape_TM_Substrate
 Multitape_To_Singletape_TM
 Munta_Certificate_Checker
 Munta_Model_Checker

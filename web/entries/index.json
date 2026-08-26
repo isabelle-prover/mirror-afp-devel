@@ -222,6 +222,86 @@
   "year": "2026"
  },
  {
+  "abstract": "Machine-checked Isabelle/HOL proof of the linear speedup theorem for multitape Turing machines, in deterministic and nondeterministic form, via the alphabet-enlargement construction. The theorem originates with Hartmanis and Stearns; the textbook proof followed here, together with its nondeterministic corollary, is due to Hopcroft and Ullman.\nGiven a machine \\(M\\) and block size \\(c\\), the enlarged machine \\(M' = \\mathrm{alphabet\\_enlarge}\\, M\\), over alphabet \\(\\Sigma_M^c \\cup \\{\\Box, \\rhd\\}\\), simulates \\(c\\) steps of \\(M\\) per step, reading its input in blocks of \\(c\\) symbols; a wrapping step folds the block encoding back in so results compare languages over \\(M\\)'s original alphabet.\nThe session Multitape_Alphabet_Enlargement shows that \\(M'\\) accepts the encoded input iff \\(M\\) accepts \\(w\\), and that if \\(M\\) accepts \\(w\\) in time \\(T(n)\\) then \\(M'\\) does so in time \\(2\\lceil n/c\\rceil + 8\\lceil T(n)/c\\rceil + 4\\), with no determinism hypothesis. Wrapping this yields the Hopcroft–Ullman speedup corollaries, proved twice: for deterministic machines, where the result stays deterministic, and with no determinism hypothesis, giving \\(\\mathrm{NTIME}(cn) = \\mathrm{NTIME}((1+\\varepsilon)n)\\) and \\(\\mathrm{NTIME}(T(n)) = \\mathrm{NTIME}(c \\cdot T(n))\\), corollaries Hopcroft and Ullman state without proof. For a linear bound \\(T(n) \\le d_0 n\\) and \\(\\varepsilon = 1/q\\), a machine \\(M''\\) with \\(L(M'') = L(M)\\) runs in time \\((1+\\varepsilon)|w| + K\\), \\(K = 28 + 8d_0\\), matching Hopcroft–Ullman's \\((1+\\varepsilon)n\\); for super-linear \\(T\\), \\(M''\\) runs in time \\(\\varepsilon\\,T(|w|) + K\\). \\(K\\) is provably necessary: the clean bound \\((1+\\varepsilon)|w|\\) holds only once \\(|w|\\) passes the explicit threshold \\(q(q+1)K\\), witnessed by a minimal counterexample.\nThis session depends on Multitape_TM_Substrate and HOL-Library.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Enlargement.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Enlargement",
+  "title": "Multitape Alphabet Enlargement",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalises, in Isabelle/HOL, a reduction of an arbitrary finite tape alphabet on a nondeterministic multitape Turing machine to a fixed four-element alphabet \\(\\mathrm{sym4} = \\{\\mathrm{BLANK4}, \\mathrm{LE4}, \\mathrm{BIT0}, \\mathrm{BIT1}\\}\\) (a blank, a left-end marker, and the two bits \\(0\\) and \\(1\\)) while preserving the accepted language and the tape count, and determinism in the deterministic special case.\nGiven a well-formed machine \\(M\\) with tape alphabet \\(\\Gamma_M\\) of at least four symbols, the operation \\(\\mathrm{alphabet\\_reduce}\\,M\\) simulates \\(M\\) over \\(\\mathrm{sym4}\\) under a fixed per-symbol binary encoding, spelling each \\(\\Gamma_M\\)-symbol as a block of \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\) bits. If \\(M\\) accepts an input \\(w\\) within \\(T(|w|)\\) steps, the reduced machine accepts the correspondingly encoded input within \\((6k + 1)\\,b\\,T(|w|)\\) steps, where \\(k\\) is the number of tapes of \\(M\\); this is a single constant factor multiplying the running time, with no additive or lower-order term, fixed entirely by \\(M\\) (linearly in the tape count, logarithmically in the alphabet size), and independent of the input. A looser existential bound of the standard affine form \\(d\\,b\\,T(|w|) + e\\,b\\,|w| + f\\) follows as a corollary.\nThis mechanises the folklore alphabet-homomorphism construction stated, but not costed, by Balcázar, Díaz, and Gabarró, giving it an explicit, machine-checked constant. The development builds on the sibling Multitape_TM_Substrate entry and HOL-Library.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Reduction.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Reduction",
+  "title": "Multitape Alphabet Reduction",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry proves, in Isabelle/HOL, that the two multitape tape-alphabet transformations compose as machines, in both orders, with the accepted language preserved and the composed running time bounded by an explicit affine function of the source machine's running time.\nAlphabet enlargement (the Hartmanis–Stearns / Hopcroft–Ullman linear-speedup construction, packing \\(c\\) contiguous tape cells into one block) and alphabet reduction (the folklore per-symbol binary re-encoding of an arbitrary finite tape alphabet onto a fixed four-symbol alphabet, set within the wider machine-simulation landscape by van Emde Boas and Papadimitriou) are developed independently in the sibling sessions Multitape_Alphabet_Enlargement and Multitape_Alphabet_Reduction over the shared substrate Multitape_TM_Substrate. This session, Multitape_Alphabet_Roundtrip, composes them.\nFor a well-formed source machine \\(M\\) with \\(|\\Gamma_M| \\geq 4\\), and for each order, the entry establishes language preservation (an equivalence modulo the composed input re-encoding) and a composed linear-time bound with explicit constants. Writing \\(k\\) for the source tape count and \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\), reduce-then-enlarge runs in time \\(8(6k + 1)\\,b\\,T(|w|) + 2\\,b\\,|w| + 4\\), and enlarge-then-reduce in \\(8(6k + 1)\\,b'\\,T(|w| + c - 1) + 2(6k + 1)\\,b'\\,|w| + 4(6k + 1)\\,b'\\), where \\(c\\) is the block size and \\(b'\\) the block width of the enlarged alphabet; each bound also has an existential-shape corollary \\(\\exists A, B, C.\\ \\mathrm{time} \\leq A\\,T(|w|) + B\\,|w| + C\\). These composed constants are established here, not inherited from a prior result.\nNothing is re-proved: each headline chains the two sibling sessions' existing theorems. The explicit constants expose an order asymmetry hidden under \\(O(\\cdot)\\): the enlargement's block-speedup factor \\(c\\) cancels when the alphabet is reduced first, but survives when it is enlarged first.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Roundtrip.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Roundtrip",
+  "title": "Multitape Alphabet Roundtrip",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalises nondeterministic multitape Turing machines in Isabelle/HOL, depending only on HOL-Library.\nA machine's transition is a relation rather than a function: it may allow several moves at each step, so a machine can follow many different computations on one input (the machine is nondeterministic), and it accepts when at least one computation reaches an accepting state. Deterministic machines, which have a single move everywhere, are the special case. The number of tapes is ordinary data rather than fixed in the machine's type, so a single theorem can speak about machines with any number of tapes.\nEach tape carries a marker at its left end, and the model allows a machine to move that marker to the right, discarding a stretch of tape it can never return to. We prove that this relocation preserves the accepted language: a run before the move reaches an accepting state exactly when the matching run after it does.\nThe formalisation adapts Dalvit and Thiemann's multitape Turing machine development, the AFP entry Multitape_To_Singletape_TM, extending it in two ways: the number of tapes is part of a machine's data rather than fixed in its type, and a machine is itself an ordinary value that theorems can range over, rather than a fixed locale context.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_TM_Substrate.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_TM_Substrate.html",
+  "related": [],
+  "shortname": "Multitape_TM_Substrate",
+  "title": "Multitape Turing Machine Substrate",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We develop, in Isabelle/HOL, three embeddings of monadic second-order logic (MSO) into classical higher-order logic side by side: a deep embedding (an inductive datatype with an explicit satisfaction relation), a maximal-shallow embedding, and a minimal-shallow embedding \u0026mdash; the last a locale parametrised by an interpretation and by first- and second-order assignments. The enabling ingredient is a two-sorted capture-avoiding substitution apparatus (predication, substitution, alphabetic renaming, and a substitution lemma, developed once for each binder namespace), in which each binder is transparent for the other. Faithfulness of all three embeddings is mechanised and automated. The central result is a fully mechanised two-sorted downward L\u0026ouml;wenheim\u0026ndash;Skolem theorem. Its corollary identifies range-relative validity with the general (Henkin-style) reading of MSO, while comprehension witnesses that the standard reading is strictly stronger; an elementary-substructure refinement recovers the standard reading from the minimal embedding as well, so the two readings become one device under two interpretation classes. We further exercise the embeddings on classical MSO landmarks: Boolean closure and graph operations hold under the standard (full second-order) reading and fail under the general one, making the dichotomy concrete, while reachability and 2-colorability are non-theorems, refuted throughout with nitpick countermodels.",
   "authors": [
    "Christoph Benzmüller",

@@ -35,6 +35,18 @@
     <loc>https://isa-afp.org/entries/Equality_Saturation_Checker.html</loc>
     <lastmod>2026-07-14T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_TM_Substrate.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/MSOinHOL.html</loc>
     <lastmod>2026-07-13T00:00:00+00:00</lastmod>
   </url><url>
@@ -3539,6 +3551,8 @@
     <loc>https://isa-afp.org/authors/stell/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/schlichtkrull/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/salamon/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/platzer/</loc>
   </url><url>
@@ -18182,6 +18196,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/rawson/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/wehar/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/hirata/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/pagano/</loc>
@@ -18783,6 +18799,106 @@
     <loc>https://isa-afp.org/thys/Multiset_Ordering_NPC/Propositional_Formula.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Multiset_Ordering_NPC/RPO_NP_Hard.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Acceptance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_BufferArith.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Codec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ComputeCorrect.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Defs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Delta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardCells.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardStage.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardStep.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_OutputWF.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Pack.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Reverse.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Simulation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_SS4.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Substeps.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Uniqueness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ValidationBound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ValidationStep.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Window.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Base.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Canonical.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Convention.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Defs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Encoder.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Forcing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Language.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Reset.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Run.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Speedup.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Time.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Codec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Delta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Determinism.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Forward.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardAdvance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardRead.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardSubsteps.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardWrite.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Reverse.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Simulation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Stage.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Theorems.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Roundtrip/AlphabetRoundtrip.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Finite_Control.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Finite_Patch.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Origin_Float.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Substrate.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Substrate_Core.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Time_Convention.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Multitape_To_Singletape_TM/Multi_Single_TM_Translation.html</loc>
   </url><url>

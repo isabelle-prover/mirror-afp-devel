@@ -4,6 +4,34 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Multitape Turing Machine Substrate</title>
+  <link>https://isa-afp.org/entries/Multitape_TM_Substrate.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Turing Machine Substrate in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Roundtrip</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Roundtrip in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Reduction</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Reduction in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Enlargement</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Enlargement in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Certified Infinite Descent Criteria</title>
   <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>

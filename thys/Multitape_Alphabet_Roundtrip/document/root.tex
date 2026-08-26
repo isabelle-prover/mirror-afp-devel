@@ -1,0 +1,299 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{literal}
+
+% Provide any Isabelle symbols not defined by isabellesym.sty.
+\providecommand{\isasymto}{\ensuremath{\to}}
+\providecommand{\isasymrightarrow}{\ensuremath{\rightarrow}}
+\providecommand{\isasymsubseteq}{\ensuremath{\subseteq}}
+\providecommand{\isasymne}{\ensuremath{\neq}}
+
+% Session / entry names — single source of truth in sessionnames.tex (canonical
+% at t/document/, symlinked here and dereferenced into a real copy at release).
+% \sessART is defined there too and used only by this round-trip document.
+\input{sessionnames}
+
+% Combinator shorthands for the display formulas ('ae' / 'ar' are reserved
+% LaTeX ligatures, so the constructors are spelled out in \mathrm).
+\newcommand{\enl}{\mathrm{alphabet\_enlarge}}
+\newcommand{\red}{\mathrm{alphabet\_reduce}}
+
+\begin{document}
+
+% \sloppy: raise the line-breaking tolerance around long unbreakable \isa{}
+% identifier tokens rather than let them overrun the right page edge.
+\sloppy
+
+\title{Round-Trip Composition of the Alphabet Transformations\\[6pt]
+       \large Formal Proof in Isabelle/HOL}
+\author{Andr\'as Z.~Salamon \and Michael Wehar}
+\maketitle
+
+\begin{abstract}
+Machine-checked formal proof in Isabelle/HOL that the two multitape
+tape-alphabet transformations compose \emph{as machines}, in both orders,
+with the accepted language preserved and the composed running time bounded
+by an \emph{explicit} affine function of the source machine's running time.
+
+The two transformations are alphabet \emph{enlargement} ($\enl$) and
+alphabet \emph{reduction} ($\red$).  Enlargement is the
+Hartmanis--Stearns / Hopcroft--Ullman linear-speedup
+construction~\cite{Hartmanis1965:computational,Hopcroft1979:introduction},
+which packs $c$ contiguous tape cells into one block to run a machine
+$c$ times faster.  Reduction is the elementary per-symbol binary
+re-encoding of an arbitrary finite tape alphabet onto the fixed
+four-symbol alphabet $\mathrm{sym4}$ --- the folklore alphabet
+homomorphism~\cite[p.~23]{Balcazar1988:structural}, set within the wider
+machine-simulation landscape by van Emde Boas and
+Papadimitriou~\cite{vanEmdeBoas1990:machine,Papadimitriou1994:computational}.
+They are developed independently in the sibling sessions \sessAE{} and
+\sessAR{} over the shared nondeterministic multitape substrate
+\sessMTTM.  This session (\sessART) composes them.
+
+For a well-formed source $M$ with $|\Gamma_M| \geq 4$ and each order, the
+session establishes:
+
+\begin{itemize}
+\item \emph{Language preservation}, an equivalence modulo the composed
+  input re-encoding
+  (\texttt{alphabet\_reduce\_enlarge\_language} and
+  \texttt{alphabet\_enlarge\_reduce\_language});
+\item a \emph{composed linear-time bound with explicit constants}
+  (\texttt{alphabet\_reduce\_enlarge\_time\_explicit} and
+  \texttt{alphabet\_enlarge\_reduce\_time\_explicit}).  Writing $k$ for the
+  source tape count and $b = \lceil \log_2 |\Gamma_M| \rceil$ for its
+  per-symbol block width, reducing then enlarging runs in time
+  $8(6k + 1)\,b\,T(|w|) + 2\,b\,|w| + 4$, and enlarging then reducing in
+  $8(6k + 1)\,b'\,T(|w| + c - 1) + 2(6k + 1)\,b'\,|w| + 4(6k + 1)\,b'$, where
+  $c$ is the block size and $b'$ the block width of the enlarged alphabet.
+  Each bound is also given, as a same-named corollary, in the existential
+  shape $\exists\, A, B, C.\ \mathrm{time} \leq A\,T(|w|) + B\,|w| + C$ ---
+  these composed constants are established here, not inherited from a prior
+  result.
+\end{itemize}
+
+Nothing is re-proved: each headline chains the two sibling sessions'
+existing language-preservation and explicit-time theorems
+(\texttt{alphabet\_enlarge\_time\_explicit} and
+\texttt{alphabet\_reduce\_time\_explicit}).
+The composed constants
+expose an order asymmetry invisible under $O(\cdot)$: the enlargement's
+block-speedup factor $c$ \emph{cancels} when the alphabet is reduced first
+but \emph{survives} when it is enlarged first.
+\end{abstract}
+
+\input{acknowledgement}
+
+\tableofcontents
+
+\newpage
+
+\section{Overview}
+
+The substrate \sessMTTM{} is nondeterministic by default: a machine's
+transition is a relation, and $\mathrm{accepts\_in\_time\_mttm}\,
+M\, w\, t$ means \emph{some} run on $w$ reaches the accept state within $t$
+steps.  A tape-alphabet transformation is a total function on machines;
+each one changes only the alphabet and copies the tape count.  The two
+transformations run opposite ways:
+\begin{itemize}
+\item $M_e = \enl M$ groups $c = |{'c}|$ contiguous cells into one
+  block, so its tape alphabet is the block alphabet
+  $\mathrm{gamma\_block}\,\Gamma_M$ (all functions ${'c} \to \Gamma_M$, of
+  cardinality $|\Gamma_M|^{\,c}$) and it simulates $M$ with a
+  factor-$c$ speedup.  Its input is re-encoded by
+  $\mathrm{encode\_input}\, bl_M\, w$, of length $\lceil |w| / c \rceil$.
+\item $M_r = \red M$ spells each source symbol as a fixed-width block of
+  $\mathrm{sym4} = \{\mathrm{BLANK4}, \mathrm{LE4}, \mathrm{BIT0},
+  \mathrm{BIT1}\}$ cells and simulates $M$ with a slowdown logarithmic in
+  $|\Gamma_M|$.  Its input is re-encoded by
+  $\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w$, of length exactly
+  $b \cdot |w|$, where
+  $b = \max(1, \lceil \log_2 |\Gamma_M| \rceil)$ is the per-symbol
+  encoding width.
+\end{itemize}
+
+Because a composed term such as $\red(\enl M)$ names constants from
+\emph{both} sibling sessions, it cannot be stated inside either without a
+cross-import cycle (the sessions are deliberately independent:
+\sessAE{} and \sessAR{} never import each other).  \sessART{} is a new
+session whose parent is \sessMTTM{} and whose \texttt{ROOT} lists both
+siblings, giving the composition an honest home above both.
+
+This round trip (applying enlargement and reduction to the same
+machine, in sequence) does not appear in the classical literature, where
+the two constructions are presented separately.  It is at once a minimal
+worked example of using both transformations together and, through the
+explicit composed constants, a concrete illustration of how the
+\emph{order} of two linear-time transformations changes the constant that
+$O(\cdot)$ would hide.
+
+\paragraph{Terminology.}
+The names \emph{alphabet enlargement} and \emph{alphabet reduction} are
+ours, chosen to make the duality explicit: one grows the tape alphabet
+to buy speed, the other shrinks it to a fixed size.  In the classical
+literature the two carry different names and are not usually paired.
+Enlargement is the alphabet-growing half of the Hartmanis--Stearns
+tape-compression / linear-speedup
+theorem~\cite{Hartmanis1965:computational}, given a textbook proof by
+Hopcroft and Ullman~\cite[Theorems 12.3--12.4]{Hopcroft1979:introduction}.
+Reduction is the folklore normalisation that a multitape machine over
+$\Gamma$ is simulated over a fixed small alphabet at a per-machine
+constant-factor cost of $\lceil \log_2 |\Gamma| \rceil$ cells per
+symbol (a \emph{fixed} factor, not a $\log T$ slowdown; that slowdown
+belongs to the separate tape-count reduction); it is the alphabet
+homomorphism onto a two-or-more-symbol alphabet stated by Balc\'azar,
+D\'iaz, and Gabarr\'o~\cite[p.~23]{Balcazar1988:structural}, and sits
+within the general machine-model-simulation landscape surveyed by van Emde
+Boas~\cite{vanEmdeBoas1990:machine} and
+Papadimitriou~\cite{Papadimitriou1994:computational}.  Classic texts
+\emph{assume} the reduction rather than cost it.  Hopcroft and
+Ullman~\cite[\S7.2]{Hopcroft1969:formal} invoke it only to justify a
+universal machine over a fixed alphabet, with no time analysis.  The
+explicit constants below make visible a factor the classical
+presentations leave implicit.
+
+\paragraph{Related AFP developments.}
+The round trip itself --- applying both alphabet transformations to one
+machine --- has no formalised precedent; it composes the two sibling
+entries.  Among the neighbouring Isabelle/HOL developments, Balbach's
+\texttt{Cook\_Levin}~\cite{Balbach2023:Cook} is the closest in spirit, since
+it too composes verified machine transformations (and its
+\texttt{Two\_Four\_Symbols} encoding is the closest prior to the reduction
+half), but it neither enlarges an alphabet for speed nor tracks the composed
+constants that reordering the two transformations exposes.  Xu, Zhang,
+Urban, and Joosten's
+\texttt{Universal\_Turing\_Machine}~\cite{Xu2019:universal} works over a
+fixed binary alphabet, and Dalvit and Thiemann's
+\texttt{Multitape\_To\_Singletape\_TM}~\cite{Dalvit2022:verified} --- the
+substrate's model ancestor --- fixes the tape count in the machine's type,
+whereas our substrate makes it a value, so the round trip is stated once for
+machines of every tape count.
+
+\section{The round-trip theorems}
+
+Throughout, $M$ is a source machine with $\mathrm{well\_formed\_mttm}\, M$
+and $|\Gamma_M| \geq 4$; $k = k_{\mathrm{tm}}\, M$ is its tape count;
+$c = |{'c}|$ is the enlargement block size; and
+$b = \max(1, \lceil \log_2 |\Gamma_M| \rceil)$.  Both combinators
+preserve the tape count (\texttt{alphabet\_reduce\_preserves\_tape\_count}
+and \texttt{k\_tm\_alphabet\_enlarge}), so a single $k$ threads the
+whole composition.
+
+\subsection{Language preservation}
+
+Each direction chains the two sibling equivalences, discharging one seam
+locally: the reduced machine is well-formed for any valid four-symbol
+source (\texttt{alphabet\_reduce\_well\_formed}), and the enlarged
+machine's four-symbol lower bound follows from the constant-cell embedding
+of the source alphabet into the block alphabet
+(\texttt{card\_gamma\_block\_ge\_card}).
+
+\paragraph{Reduce, then enlarge.}
+\[
+  \begin{aligned}
+    &\mathrm{encode\_input}\, bl_{M_r}\, \\
+    &\qquad (\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w)
+      \in L\bigl(\enl(\red M)\bigr) \\
+    &\qquad\qquad \Longleftrightarrow\ w \in L(M)
+  \end{aligned}
+\]
+(\texttt{alphabet\_reduce\_enlarge\_language}).
+
+\paragraph{Enlarge, then reduce.}
+\[
+  \begin{aligned}
+    &\mathrm{encode\_input\_ar}\, \Gamma_{M_e}\, bl_{M_e}\, \\
+    &\qquad (\mathrm{encode\_input}\, bl_M\, w)
+      \in L\bigl(\red(\enl M)\bigr) \\
+    &\qquad\qquad \Longleftrightarrow\ w \in L(M)
+  \end{aligned}
+\]
+(\texttt{alphabet\_enlarge\_reduce\_language}).
+
+\subsection{Composed time bounds, with explicit constants}
+
+The composed slowdown is obtained by routing the \emph{inner} machine's
+running-time bound in as the \emph{outer} transformation's per-input time
+function.  Making the base bounds explicit makes the composed constants
+explicit too.  The base bounds are: enlargement in
+$2\lceil |w|/c \rceil + 8\lceil T(|w|)/c \rceil + 4$
+(\texttt{alphabet\_enlarge\_time\_explicit}, constants independent of the
+machine), and reduction in $(6k + 1)\, b\, T(|w|)$
+(\texttt{alphabet\_reduce\_time\_explicit}, with linear and additive terms
+zero).
+
+\paragraph{Reduce, then enlarge
+(\texttt{alphabet\_reduce\_enlarge\_time\_explicit}).}
+If $M$ accepts $w$ within $T(|w|)$ steps, then $\enl(\red M)$ accepts the
+composed encoding within
+\[
+  8\,(6k + 1)\, b\, T(|w|)
+  \;+\; 2\, b\, |w| \;+\; 4
+\]
+steps.  The enlargement's block factor $c$ \emph{cancels}: it divides both
+the intermediate length and the routed running time, but the ceiling
+divisions are discarded in the relaxation to the affine form, so $c$ does
+not appear.  Reducing first fixes the alphabet at four symbols; the
+subsequent block speedup then buys nothing on the dominant term.
+
+\paragraph{Enlarge, then reduce
+(\texttt{alphabet\_enlarge\_reduce\_time\_explicit}, assuming
+$\mathrm{mono}\, T$).}
+Writing $D = 6k + 1$ and
+$b' = \max(1, \lceil c \cdot \log_2 |\Gamma_M| \rceil)$ (the
+per-symbol width of the \emph{block} alphabet
+$\mathrm{gamma\_block}\, \Gamma_M$, of cardinality $|\Gamma_M|^{\,c}$): if
+$M$ accepts $w$ within $T(|w|)$ steps, then $\red(\enl M)$ accepts the
+composed encoding within
+\[
+  8\, D\, b'\, T(|w| + c - 1)
+  \;+\; 2\, D\, b'\, |w|
+  \;+\; 4\, D\, b'
+\]
+steps.  Here $c$ \emph{does not} cancel.  Enlarging first inflates the
+alphabet to $|\Gamma_M|^{\,c}$, so the reduction must spend
+$b' \approx c \cdot \log_2 |\Gamma_M|$ cells per symbol, exactly
+undoing the factor-$c$ speedup on the dominant term, and $c$ survives
+both in the time argument $T(|w| + c - 1)$ (the intermediate length is the
+lossy $\lceil |w|/c \rceil$, so $\mathrm{mono}\, T$ and a rounding to the
+next block boundary are needed) and, through $b'$, in every coefficient.
+
+\paragraph{The asymmetry.}
+The two orders' leading $T$-coefficients are $8(6k + 1)\, b$ for
+reduce-then-enlarge and $8(6k + 1)\, b'$ for enlarge-then-reduce.  Reducing
+first leaves this coefficient \emph{independent of the block size} $c$: the
+alphabet is already fixed at four symbols, so the enlargement's factor-$c$
+speedup is discarded in the relaxation to the affine form and $c$ drops out.
+Enlarging first instead inflates the alphabet to $|\Gamma_M|^{\,c}$, so its
+block width $b' = \lceil c \log_2 |\Gamma_M| \rceil \approx c\, b$ carries a
+factor of $c$ into every coefficient, and the leading term grows to
+$\approx c \cdot 8(6k + 1)\, b$.  The same two transformations, composed in
+opposite orders, thus differ by a factor of about $c$ in the leading
+constant --- under $O(\cdot)$ both are simply ``linear time'' and the
+distinction is lost; the explicit constants recover it.  These are upper
+bounds; matching lower bounds are future work (they require a
+minimum-displacement argument the one-directional simulation lemmas do not
+provide).
+
+\newpage
+
+% Isabelle's auto-generated session.tex contains the correct \input{}
+% sequence from this session's ROOT `theories` block.
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
