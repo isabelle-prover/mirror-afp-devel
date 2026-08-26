@@ -1,0 +1,24 @@
+chapter AFP
+
+session Trace_Based_Rely_Guarantee = 
+  "HOL-Library" + 
+  options [timeout = 900]
+
+  directories 
+    RG_Trace
+
+  theories
+    Prelim
+    Sequential_Par_While_Language
+
+    (**RG_Trace**)
+    RG_Semantics
+    RG_Inversion_Rules
+    RG_Abstract
+    RG_Soundness
+    RG_Abstract_Binary
+    RG_Soundness_Binary
+
+  document_files
+    "root.bib"
+    "root.tex"
