@@ -218,13 +218,6 @@ fun transform_prod :: "('n, 't) prod \<Rightarrow> ('n, ('n,'t) bracket3) prod" 
 
 subsection\<open>Homomorphisms\<close>
 
-text\<open>Definition of a monoid-homomorphism where multiplication is \<open>(@)\<close>:\<close>
-definition hom_list :: \<open>('a list \<Rightarrow> 'b list) \<Rightarrow> bool\<close> where
-\<open>hom_list h = (\<forall>a b. h (a @ b) = h a @ h b)\<close>
-
-lemma hom_list_Nil: "hom_list h \<Longrightarrow> h [] = []"
-  unfolding hom_list_def by (metis self_append_conv)
-
 text\<open>The homomorphism on single brackets:\<close>
 fun the_hom1 :: \<open>('n,'t) bracket3 \<Rightarrow> 't list\<close> where
   \<open>the_hom1 [\<^sup>1\<^bsub>(A, [Tm a])\<^esub> = [a]\<close> | 
