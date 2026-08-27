@@ -12,7 +12,7 @@ signature HEADER =
     val pos_map : (int -> Position.T) option  ref
 
     type inputSource
-    val newSource : string * TextIO.instream * TextIO.outstream -> inputSource
+    val newSource : string -> inputSource
     val error : pos * pos option -> string -> unit
     val warn : pos * pos option -> string -> unit
     val errorOccurred : inputSource -> unit -> bool

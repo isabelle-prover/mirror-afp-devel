@@ -854,7 +854,7 @@ precedences of the rule and the terminal are equal.
             printTokenStruct(values,names);
             sayln "end";
             printSigs(values,names,pr_sig);
-            MakeTable.Errs.printSummary (fn s => TextIO.output(TextIO.stdOut,s)) errs;
+            MakeTable.Errs.printSummary pide_warning errs;
             let val descOpt = if verbose then
                  let val descList = ref ([] : string list)
                      val say_desc = fn s => descList := s :: !descList
