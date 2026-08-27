@@ -58,6 +58,7 @@ thiemann = "thiemann_email"
 kirk = "kirk_email"
 
 [history]
+2026-08-27 = "more consist naming of rewrite-implementations: ..._impl"
 
 [extra]
 

@@ -163,6 +163,22 @@ lemma finite_funas_trs:
   unfolding funas_trs_def
   using assms finite_funas_rule by auto
 
+lemma finite_imp_fresh_sym: 
+  assumes "finite R" 
+  shows "\<exists> f n. (f,n) \<notin> funas_trs R \<and> n \<ge> k" 
+proof -
+  from assms have "finite (funas_trs R)" unfolding funas_trs_def 
+    using finite_funas_rule by blast 
+  hence "finite (snd ` funas_trs R)" by blast
+  from finite_list[OF this] obtain as where as: "set as = snd ` funas_trs R" by auto
+  let ?f = "(undefined, Suc k + (max_list as))" 
+  have "Suc k + (max_list as) \<notin> set as" 
+    using max_list by force
+  hence "?f \<notin> funas_trs R" unfolding as by force
+  thus ?thesis by fastforce
+qed
+
+
 lemma funas_empty[simp]: "funas_trs {} = {}" unfolding funas_trs_def by simp
 
 lemma funas_trs_union[simp]: "funas_trs (R \<union> S) = funas_trs R \<union> funas_trs S"
