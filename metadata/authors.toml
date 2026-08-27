@@ -1142,7 +1142,7 @@ host = [
 ]
 
 [brucker.homepages]
-brucker_homepage = "https://www.brucker.ch/"
+brucker_homepage = "https://brucker.ch/"
 
 [bruegger]
 name = "Lukas Brügger"
