@@ -152,21 +152,19 @@ structure LrParser :> LR_PARSER =
           noShift : term -> bool}
 
       local
-         val print = fn s => TextIO.output(TextIO.stdOut,s)
-         val println = fn s => (print s; print "\n")
          val showState = fn (STATE s) => "STATE " ^ (Int.toString s)
       in
         fun printStack(stack: ('a,'b) stack, n: int) =
          case stack
            of (state,_) :: rest =>
                  (print("\t" ^ Int.toString n ^ ": ");
-                  println(showState state);
+                  pide_writeln(showState state);
                   printStack(rest, n+1))
             | nil => ()
 
         fun prAction showTerminal
                  (stack as (state,_) :: _, next as (TOKEN (term,_),_), action) =
-             (println "Parse: state stack:";
+             (pide_writeln "Parse: state stack:";
               printStack(stack, 0);
               print("       state="
                          ^ showState state
@@ -175,10 +173,10 @@ structure LrParser :> LR_PARSER =
                          ^ " action="
                         );
               case action
-                of SHIFT state => println ("SHIFT " ^ (showState state))
-                 | REDUCE i => println ("REDUCE " ^ (Int.toString i))
-                 | ERROR => println "ERROR"
-                 | ACCEPT => println "ACCEPT")
+                of SHIFT state => pide_writeln ("SHIFT " ^ (showState state))
+                 | REDUCE i => pide_writeln ("REDUCE " ^ (Int.toString i))
+                 | ERROR => pide_writeln "ERROR"
+                 | ACCEPT => pide_writeln "ACCEPT")
         | prAction _ (_,_,action) = ()
      end
 
@@ -467,9 +465,9 @@ fun mkFixError({is_keyword,terms,errtermvalue,
 
                   val _ =
                       (if length l > 1 andalso DEBUG2 then
-                           (print "multiple fixes possible; could fix it by:\n";
+                           (pide_writeln "multiple fixes possible; could fix it by:";
                             app print_msg l;
-                            print "chosen correction:\n")
+                            pide_writeln "chosen correction:")
                        else ();
                        print_msg change)
 

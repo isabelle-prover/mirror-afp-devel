@@ -65,7 +65,6 @@ fun tok_val (yypos, yytext, markup, typ, sort, cons, value) =
 
 
 fun eof () = Tokens.EOF(Position.none, Position.none)
-fun error' (e, p: Position.T, _) = () 
 \<close>
 lex_definitions\<open>
 %header (functor CalcLexFun(structure Tokens: Calc_TOKENS));
@@ -270,6 +269,5 @@ calc2\<open>
     3
    * (201 - 7)
 \<close>
-
 
 end

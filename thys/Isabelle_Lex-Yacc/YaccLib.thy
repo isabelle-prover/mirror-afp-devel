@@ -31,6 +31,11 @@ theory
 imports
   Main
 begin 
+
+SML_import \<open>val pide_error = error \<close>
+SML_import \<open>val pide_warning = warning \<close>
+SML_import \<open>val pide_writeln = writeln \<close>
+
 SML_file\<open>mlyacc-polyml/mlyacc-lib/base.sig\<close> 
 SML_file\<open>mlyacc-polyml/mlyacc-lib/join.sml\<close>
 SML_file\<open>mlyacc-polyml/mlyacc-lib/lrtable.sml\<close>
