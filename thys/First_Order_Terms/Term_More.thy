@@ -22,6 +22,7 @@ theory Term_More
     Polynomial_Factorization.Missing_List
     Unification
     Fun_More2
+    Lists_are_Infinite
 begin
 
 lemma fun_merge_is_partition:
@@ -3657,6 +3658,102 @@ proof -
   also have "\<dots> = t \<cdot> \<sigma>"
     unfolding \<open>C\<langle>u\<rangle> |_ p = t\<close> ..
   finally show ?thesis .
+qed
+
+text \<open>Linear occurrence of a variable in a term\<close>
+
+definition linear_var :: "('f,'v)term \<Rightarrow> 'v \<Rightarrow> bool" where
+  "linear_var t x = (count (vars_term_ms t) x \<le> 1)"
+
+lemma split_vars_term_ms: assumes "i < length ts" 
+  shows "vars_term_ms (Fun f ts) = vars_term_ms (ts ! i) + 
+    \<Sum>\<^sub># (image_mset (\<lambda> j. vars_term_ms (ts ! j)) (mset_set {x. x < length ts \<and> i \<noteq> x}))" 
+proof -
+  from assms have id: "mset_set {x. x < length ts \<and> i \<noteq> x} = mset_set {0..<i} + mset_set {Suc i..<length ts}" 
+    by (subst mset_set_Union[symmetric], auto)
+  from assms have i: "i < length (map vars_term_ms ts)" by auto
+  show ?thesis unfolding vars_term_ms.simps
+      arg_cong[OF split_list_index[OF i], of mset]
+    using assms unfolding id
+    apply simp
+    apply (intro arg_cong2[of _ _ _ _ "(+)"])
+    apply (smt (verit, best) add.left_neutral diff_zero finite_set_mset_mset_set image_mset_cong
+        image_mset_is_empty_iff in_set_conv_nth le_simps(1) length_upt mset_set.infinite not_less nth_map
+        nth_upt order_trans set_upt)
+    by (smt (verit) Groups.add_ac(2) finite_set_mset_mset_set image_mset_cong image_mset_is_empty_iff
+        in_set_conv_nth length_upt less_diff_conv mset_set.infinite nth_map nth_upt set_upt)
+qed
+
+lemma linear_var_arg: assumes lin: "linear_var (Fun f ss) x" 
+  and i: "i < length ss" 
+  and x: "x \<in> vars_term (ss ! i)" 
+  and j: "j < length ss" 
+  and ji: "j \<noteq> i" 
+shows "x \<notin> vars_term (ss ! j)" 
+proof -
+  from x have "count (vars_term_ms (ss ! i)) x \<ge> Suc 0" by simp
+  with lin[unfolded linear_var_def split_vars_term_ms[OF i], simplified]
+  have "count (\<Sum>j\<in>#mset_set {x. x < length ss \<and> i \<noteq> x}. vars_term_ms (ss ! j)) x = 0" 
+    by linarith
+  thus ?thesis using j ji by (auto simp: count_eq_zero_iff)
+qed
+
+lemma non_linear_var_imp_var: "\<not> linear_var t x \<Longrightarrow> x \<in> vars_term t" 
+proof -
+  obtain V where V: "vars_term_ms t = V" by auto
+  show "\<not> linear_var t x \<Longrightarrow> x \<in> vars_term t"
+    unfolding linear_var_def set_mset_vars_term_ms[symmetric] V
+    by (auto split: if_splits) (metis count_inI le0)
+qed
+
+lemma count_sum_mset_image_mset: 
+  "count (sum_mset (image_mset f m)) x = sum_mset (image_mset (\<lambda> a. count (f a) x) m)"
+  by (induct m, auto)
+
+lemma non_linear_var_imp_poss: assumes "\<not> linear_var t x" 
+  shows "\<exists> p1 p2. {p1,p2} \<subseteq> var_poss t \<and> p1 \<bottom> p2 \<and> t |_ p1 = Var x \<and> t |_ p2 = Var x" 
+  using assms
+proof (induct t)
+  case (Var y)
+  thus ?case by (auto simp: linear_var_def split: if_splits)
+next
+  case (Fun f ts)
+  show ?case
+  proof (cases "Ball (set ts) (\<lambda> t. linear_var t x)")
+    case False
+    then obtain i where i: "i < length ts" and nlin: "\<not> linear_var (ts ! i) x" by (auto simp: set_conv_nth)
+    hence "ts ! i \<in> set ts" by auto
+    from Fun(1)[OF this nlin] i obtain p1 p2 where
+      *: "{p1, p2} \<subseteq> var_poss (ts ! i) \<and> p1 \<bottom> p2 \<and> ts ! i |_ p1 = Var x \<and> ts ! i |_ p2 = Var x" by auto
+    show ?thesis 
+      by (rule exI[of _ "i # p1"], rule exI[of _ "i # p2"], insert i *, auto simp: parallel_def)
+  next
+    case True
+    from non_linear_var_imp_var[OF Fun(2)] obtain i where i: "i < length ts" 
+      and xi: "x \<in> vars_term (ts ! i)" by (auto simp: set_conv_nth)
+    from True[rule_format, of "ts ! i"] i have lin: "linear_var (ts ! i) x" by auto
+    hence le1: "count (vars_term_ms (ts ! i)) x \<le> 1" unfolding linear_var_def by auto
+    show ?thesis
+    proof (cases "\<exists> j < length ts. j \<noteq> i \<and> x \<in> vars_term (ts ! j)")
+      case True
+      then obtain j where j: "j < length ts" and ji: "j \<noteq> i" and xj: "x \<in> vars_term (ts ! j)" by auto
+      from xj obtain pj where pj: "pj \<in> var_poss (ts ! j)" "ts ! j |_ pj = Var x" 
+        by (metis vars_term_var_poss_iff)
+      from xi obtain pi where pi: "pi \<in> var_poss (ts ! i)" "ts ! i |_ pi = Var x" 
+        by (metis vars_term_var_poss_iff)
+      show ?thesis by (rule exI[of _ "i # pi"], rule exI[of _ "j # pj"],
+          insert i j ji pi pj, auto)
+    next
+      case False
+      hence "j < length ts \<Longrightarrow> j \<noteq> i \<Longrightarrow> count (vars_term_ms (ts ! j)) x = 0" for j
+        by fastforce
+      hence "count (vars_term_ms (Fun f ts)) x = count (vars_term_ms (ts ! i)) x"
+        unfolding split_vars_term_ms[OF i, of f] 
+        by (simp add: count_sum_mset_image_mset)
+      with le1 Fun(2)[unfolded linear_var_def] have False by auto
+      thus ?thesis by simp
+    qed
+  qed
 qed
 
 end
