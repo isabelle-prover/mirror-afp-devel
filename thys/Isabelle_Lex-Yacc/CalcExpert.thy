@@ -119,8 +119,7 @@ yacc_definitions\<open>
 %verbose
 \<close>
 yacc_rules\<open>
-  START : PRINT EXP (print (Int.toString EXP);
-                     print "\n";
+  START : PRINT EXP (pide_writeln (Int.toString EXP);
                      SOME EXP)
         | EXP (SOME EXP)
         | (NONE)
