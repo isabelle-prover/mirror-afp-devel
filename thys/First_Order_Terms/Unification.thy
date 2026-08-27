@@ -145,6 +145,11 @@ lemma subst_of_apply:
   qed
 qed simp
 
+lemma subst_of_funas_term: assumes "\<Union> (funas_term ` snd ` set sigma) \<subseteq> F" 
+  shows "funas_term (subst_of sigma x) \<subseteq> F" 
+  using assms 
+  by (induct sigma arbitrary: x, auto simp: subst_compose_def funas_term_subst subst_def)
+
 
 text \<open>The concrete algorithm \<open>unify\<close> can be simulated by the inference
   rules of \<open>UNIF\<close>.\<close>
@@ -368,6 +373,17 @@ proof -
   then show ?thesis
     by (auto simp: unifiable_def)
 qed
+
+text \<open>Computing the mgu of a list of term pairs.\<close>
+definition mgu_list :: "(('f, 'v) term \<times> ('f,'v) term) list \<Rightarrow> ('f, 'v) subst option" where
+  "mgu_list pairs = map_option subst_of (unify pairs [])" 
+
+lemma mgu_list_None: "mgu_list pairs = None \<Longrightarrow> unifiers (set pairs) = {}"
+  unfolding mgu_list_def by (intro unify_complete, auto)
+
+lemma mgu_list_Some: "mgu_list pairs = Some \<tau> \<Longrightarrow> is_imgu \<tau> (set pairs)" 
+  unfolding mgu_list_def using unify_sound by blast
+
 
 lemma unify_append_prefix_same: \<^marker>\<open>contributor \<open>Martin Desharnais\<close>\<close>
   "(\<forall>e \<in> set es1. fst e = snd e) \<Longrightarrow> unify (es1 @ es2) bs = unify es2 bs"
