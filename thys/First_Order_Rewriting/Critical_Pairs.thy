@@ -334,6 +334,28 @@ lemma critical_Peak_to_pair: assumes "(l, m, r) \<in> critical_Peaks R R"
   shows "\<exists> b. (b, l, r) \<in> critical_pairs R R" 
   using assms unfolding critical_Peaks_def critical_pairs_def by blast
 
+lemma critical_Peaks_funas_term: 
+  assumes cp: "(t, s, u) \<in> critical_Peaks R S"
+  shows "funas_term s \<subseteq> funas_trs (R \<union> S)" 
+proof -
+  define F where "F = funas_trs (R \<union> S)" 
+  have ruleF: "(l,r) \<in> R \<union> S \<Longrightarrow> funas_term l \<subseteq> F \<and> funas_term r \<subseteq> F" for l r
+    unfolding F_def funas_trs_def funas_rule_def by force
+  from cp[unfolded critical_Peaks_def]
+  obtain r' l r l' C \<sigma> \<tau> where *: 
+    "s = (C \<cdot>\<^sub>c \<sigma>)\<langle>l' \<cdot> \<sigma>\<rangle>"
+    "(C\<langle>l'\<rangle>, r') \<in> R" 
+    "(l, r) \<in> S" 
+    "mgu_vd ren l' l = Some (\<sigma>, \<tau>)" 
+    by auto
+  from ruleF[OF UnI1[OF *(2)]] have C: "funas_ctxt C \<subseteq> F" and l': "funas_term l' \<subseteq> F"
+    by auto
+  from ruleF[OF UnI2[OF *(3)]] have l: "funas_term l \<subseteq> F" by auto
+  from mgu_vd_funas_term[OF l' l *(4)] C l'
+  have "funas_term s \<subseteq> F" unfolding *(1) by (auto simp: funas_term_subst)
+  thus ?thesis unfolding F_def .
+qed
+
 
 lemma critical_pairs_main:
   fixes R :: "('f, 'v) trs"
@@ -407,6 +429,22 @@ qed
 lemma critical_pairs_fork': assumes "(b,l,r) \<in> critical_pairs R S" 
   shows "(l,r) \<in> (rstep S)^-1 O rstep R" 
   using critical_pairs_fork[OF assms] by auto
+
+lemma critical_pairs_fork_funas_term:
+  assumes cp: "(b, l, r) \<in> critical_pairs R S"
+  shows "\<exists> s. funas_term s \<subseteq> funas_trs (R \<union> S) \<and> (s,l) \<in> rstep S \<and> (s,r) \<in> rstep R" 
+proof -
+  from cp obtain s where cp: "(l,s,r) \<in> critical_Peaks R S" 
+    unfolding critical_pairs_def critical_Peaks_def by blast
+  show ?thesis 
+  proof (intro exI conjI)
+    from critical_Peak_steps[OF cp]
+    show "(s,l) \<in> rstep S" "(s,r) \<in> rstep R" by auto
+    from critical_Peaks_funas_term[OF cp]
+    show "funas_term s \<subseteq> funas_trs (R \<union> S)" by auto
+  qed
+qed  
+
 
 (* in the following lemma infiniteness of 'v is crucial, if one restricts to well-formed terms:
    Consider that we only have 5 variables and build the following TRS R = {
