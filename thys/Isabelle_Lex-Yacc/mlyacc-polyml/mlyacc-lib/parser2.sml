@@ -157,8 +157,7 @@ structure LrParser :> LR_PARSER =
         fun printStack(stack: ('a,'b) stack, n: int) =
          case stack
            of (state,_) :: rest =>
-                 (print("\t" ^ Int.toString n ^ ": ");
-                  pide_writeln(showState state);
+                 (pide_writeln(("\t" ^ Int.toString n ^ ": ")^(showState state));
                   printStack(rest, n+1))
             | nil => ()
 
@@ -166,7 +165,7 @@ structure LrParser :> LR_PARSER =
                  (stack as (state,_) :: _, next as (TOKEN (term,_),_), action) =
              (pide_writeln "Parse: state stack:";
               printStack(stack, 0);
-              print("       state="
+              pide_writeln("       state="
                          ^ showState state
                          ^ " next="
                          ^ showTerminal term
@@ -326,11 +325,11 @@ fun mkFixError({is_keyword,terms,errtermvalue,
 
          val printChange = fn c =>
           let val CHANGE {distance,new,orig,pos,...} = c
-          in (print ("{distance= " ^ (Int.toString distance));
-              print (",orig ="); print(showTerms orig);
-              print (",new ="); print(showTerms new);
-              print (",pos= " ^ (Int.toString pos));
-              print "}\n")
+          in pide_writeln ("{distance= " ^ (Int.toString distance)
+                              ^",orig ="^(showTerms orig)
+                              ^",new ="^(showTerms new)
+                              ^",pos= "^(Int.toString pos)
+                              ^"}\n")
           end
 
         val printChangeList = app printChange
