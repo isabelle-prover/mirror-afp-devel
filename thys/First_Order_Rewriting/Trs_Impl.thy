@@ -128,6 +128,13 @@ proof -
   qed
   thus ?thesis by blast
 qed
+
+definition "rstep_refl_impl t = t # rewrite t" 
+
+lemma rstep_refl_impl: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
+  shows "set (rstep_refl_impl s) = {t. (s,t) \<in> (rstep (set R))\<^sup>=}"
+  using rewrite[OF assms, of s] unfolding rstep_refl_impl_def by auto
+
 end
 
 

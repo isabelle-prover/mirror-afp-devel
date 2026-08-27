@@ -2525,6 +2525,14 @@ lemma set_vars_term_list [simp]:
   "set (vars_term_list t) = vars_term t"
   by (induct t) simp_all
 
+lemma mset_vars_term_list[simp]: "mset (vars_term_list r) = vars_term_ms r" 
+proof (induct r)
+  case (Fun f rs)
+  thus ?case unfolding vars_term_list.simps vars_term_ms.simps
+    by (induct rs, auto)
+qed auto
+
+
 lemma unary_vars_term_list:
   assumes t: "funas_term t \<subseteq> F"
     and unary: "\<And> f n. (f, n) \<in> F \<Longrightarrow> n \<le> 1"

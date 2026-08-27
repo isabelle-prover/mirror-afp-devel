@@ -3034,10 +3034,14 @@ lemma map_vars_mctxt_map_vars_mctxt[simp]:
   shows "map_vars_mctxt f (map_vars_mctxt g C) = map_vars_mctxt (f \<circ> g) C"
   by (induct C) auto
 
+lemma funas_mctxt_subst: "funas_mctxt (C \<cdot>mc \<sigma>) = funas_mctxt C \<union> \<Union> ((\<lambda> x. funas_term (\<sigma> x)) ` vars_mctxt C)" 
+  by (induct C, auto)
+
 lemma funas_mctxt_fill_holes:
   assumes "num_holes C = length ts"
   shows "funas_term (fill_holes C ts) = funas_mctxt C \<union> \<Union>(set (map funas_term ts))"
   using funas_term_fill_holes_iff[OF assms] by auto
+
 
 lemma mctxt_neq_mholeE:
   "x \<noteq> MHole \<Longrightarrow> (\<And>v. x = MVar v \<Longrightarrow> P) \<Longrightarrow> (\<And>f Cs. x = MFun f Cs \<Longrightarrow> P) \<Longrightarrow> P"
@@ -3360,5 +3364,7 @@ proof (induct C D rule: inf_mctxt.induct)
   }
   ultimately show ?case using 4(2) by auto
 qed auto
+
+
 
 end
