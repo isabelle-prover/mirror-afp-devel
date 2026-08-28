@@ -395,6 +395,48 @@ next
 qed auto
 
 
+lemma mgu_list_funas_term: assumes "funas_trs (set eqs) \<subseteq> F" 
+  and "mgu_list eqs = Some \<sigma>" 
+shows "funas_term (\<sigma> x) \<subseteq> F" 
+proof -
+  from assms(2)[unfolded mgu_list_def]
+  obtain sigma where un: "unify eqs [] = Some sigma" and \<sigma>: "\<sigma> = subst_of sigma" 
+    by (cases "unify eqs []", auto)
+  from unify_funas_term[OF assms(1) _ un]
+  have "\<Union> (funas_term ` snd ` set sigma) \<subseteq> F" by auto
+  thus ?thesis unfolding \<sigma> by (meson subst_of_funas_term)
+qed
+
+lemma mgu_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F" 
+  and "mgu s t = Some \<sigma>" 
+shows "funas_term (\<sigma> x) \<subseteq> F" 
+proof -
+  have "mgu_list [(s,t)] = mgu s t" unfolding mgu_list_def mgu_def by (cases "unify [(s,t)] []", auto)
+  also have "\<dots> = Some \<sigma>" by fact
+  finally have "mgu_list [(s, t)] = Some \<sigma>" by auto
+  from mgu_list_funas_term[OF _ this, of F x] assms
+  show ?thesis by (auto simp: funas_trs_def funas_rule_def)
+qed
+
+lemma mgu_var_disjoint_generic_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F"
+  and "mgu_var_disjoint_generic vu wu s t = Some (\<delta>,\<tau>)" 
+shows "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" 
+proof -
+  from assms(3)[unfolded mgu_var_disjoint_generic_def]
+  obtain \<sigma> where mgu: "mgu (map_vars_term vu s) (map_vars_term wu t) = Some \<sigma>" (is "mgu ?s ?t = _")
+    and id: "\<delta> = \<sigma> o vu" "\<tau> = \<sigma> o wu" 
+    by (auto split: option.splits)
+  from assms have "funas_term ?s \<subseteq> F" "funas_term ?t \<subseteq> F" by auto
+  from mgu_funas_term[OF this mgu] have "funas_term (\<sigma> y) \<subseteq> F" for y by auto
+  thus "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" unfolding id o_def by auto
+qed
+
+lemma mgu_vd_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F"
+  and "mgu_vd ren s t = Some (\<delta>,\<tau>)" 
+shows "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" 
+  using mgu_var_disjoint_generic_funas_term[OF assms[unfolded mgu_vd_def]] by blast+
+
+
 subsection\<open>Closure Properties\<close>
 
 lemma ctxt_closed_R_imp_supt_R_distr:
