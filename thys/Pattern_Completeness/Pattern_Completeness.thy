@@ -287,12 +287,7 @@ proof -
         unfolding mp vars_mp_mset_def by auto
       from l linear have l: "linear_term l" by auto  
       hence dist: "distinct (vars_term_list l)" by (rule linear_term_distinct_vars) 
-      have id: "vars_term_ms l = mset (vars_term_list l)" 
-      proof (induct l)
-        case (Fun f ts)
-        thus ?case by (simp add: vars_term_list.simps, induct ts, auto)
-      qed (auto simp: vars_term_list.simps)
-      show "ll_mp (mp_list mp)" unfolding ll_mp_def vars id using dist
+      show "ll_mp (mp_list mp)" unfolding ll_mp_def vars using dist
         by (simp add: distinct_count_atmost_1)
     qed
   qed

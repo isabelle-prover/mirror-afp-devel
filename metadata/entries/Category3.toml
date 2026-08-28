@@ -102,7 +102,13 @@ Additions to CartesianCategory.  Added facts about dual equivalences of categori
 """
 2025-10-05 = """
 Added Colimit, which dualizes some of the definitions and facts in Limit.
-(revision ea931f162ae8)<br>"""
+(revision ea931f162ae8)<br>
+"""
+2026-08-19 = """
+Additional material added to Colimit, parallel to existing material in Limit.
+Minor name changes to disambiguate notions related to product from those related
+to pullback.
+(revision b252d248ad76)<br>"""
 
 [extra]
 

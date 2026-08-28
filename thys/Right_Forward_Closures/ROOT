@@ -1,0 +1,15 @@
+chapter AFP
+
+session Right_Forward_Closures = First_Order_Rewriting +
+  description "Right-Forward Closures"
+  options [timeout = 600]
+  theories
+    Innermost_Rewriting
+    Gramlich_Innermost_Switch
+  theories
+    Linear_Unification
+    Linear_Narrowing
+    Right_Forward_Closure
+  document_files
+    "root.tex"
+    "root.bib"

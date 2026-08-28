@@ -1142,7 +1142,7 @@ host = [
 ]
 
 [brucker.homepages]
-brucker_homepage = "https://www.brucker.ch/"
+brucker_homepage = "https://brucker.ch/"
 
 [bruegger]
 name = "Lukas Brügger"
@@ -3337,6 +3337,23 @@ host = [
 [hoelzl.homepages]
 hoelzl_homepage = "http://home.in.tum.de/~hoelzl"
 
+[hofbauer]
+name = "Dieter Hofbauer"
+orcid = "0000-0003-2094-6074"
+
+[hofbauer.emails]
+
+[hofbauer.emails.hofbauer_email]
+user = [
+  "message",
+]
+host = [
+  "dieter-hofbauer",
+  "de",
+]
+
+[hofbauer.homepages]
+
 [hofmann]
 name = "Martin Hofmann"
 
@@ -3459,6 +3476,13 @@ host = [
 
 [huffman.homepages]
 huffman_homepage = "http://cs.pdx.edu/~brianh/"
+
+[huitouze]
+name = "Ulysse Le Huitouze"
+
+[huitouze.emails]
+
+[huitouze.homepages]
 
 [hulak]
 name = "David Barros Hulak"
@@ -7818,7 +7842,7 @@ orcid = "0000-0003-0714-3269"
 
 [stell.emails.stell_email]
 user = [
-  "as1343",
+  "a.stell",
 ]
 host = [
   "exeter",
@@ -8818,6 +8842,23 @@ host = [
 ]
 
 [waldmann.homepages]
+
+[waldmannj]
+name = "Johannes Waldmann"
+
+[waldmannj.emails]
+
+[waldmannj.emails.waldmannj_email]
+user = [
+  "johannes",
+  "waldmann",
+]
+host = [
+  "htwk-leipzig",
+  "de",
+]
+
+[waldmannj.homepages]
 
 [wand]
 name = "Daniel Wand"

@@ -387,6 +387,9 @@ subsection \<open>More\<close>
 corollary Lang_unfold: "Lang P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang P) \<alpha>)"
   by(fact Lang_lfp_unfold[unfolded Lang_lfp_eq_Lang])
 
+lemma Lang_I: "(A, \<alpha>) \<in> P \<Longrightarrow> w \<in> inst_syms (Lang P) \<alpha> \<Longrightarrow> w \<in> Lang P A"
+  by (subst Lang_unfold) (auto simp: Rhss_def)
+
 corollary inst_syms_Lang_subset_Langs:
   "inst_syms (Lang P) \<alpha> \<subseteq> Langs P \<alpha>"
 using Langs_iff_derives derives_if_inst_syms by blast
@@ -403,5 +406,16 @@ qed
 
 lemma Langs_eq_inst_syms_Lang: "Langs P \<alpha> = inst_syms (Lang P) \<alpha>"
 using Langs_iff_derives inst_syms_LangI inst_syms_Lang_subset_Langs by blast
+
+lemma Lang_subset_if:
+  assumes "\<And>A \<alpha>. (A,\<alpha>) \<in> P \<Longrightarrow> inst_syms R \<alpha> \<subseteq> R A"
+  shows "Lang P A \<subseteq> R A"
+proof -
+  have "subst_lang P R \<le> R"
+    using assms by (fastforce simp: subst_lang_def le_fun_def Rhss_def)
+  hence "lfp (subst_lang P) \<le> R" by (rule lfp_lowerbound)
+  hence "Lang_lfp P \<le> R" by (simp add: Lang_lfp_def)
+  thus ?thesis by (simp add: Lang_lfp_eq_Lang le_fun_def)
+qed
 
 end

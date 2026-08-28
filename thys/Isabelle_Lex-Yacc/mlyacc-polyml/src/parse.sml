@@ -24,7 +24,7 @@ functor ParseGenParserFun(structure Header : HEADER
                       val result = String.substring(current, 0, take)
                       val _ = spec_ref := String.extract(current, take, NONE)
                   in result end
-              val source = Header.newSource("",TextIO.stdIn,TextIO.stdOut)
+              val source = Header.newSource("")
               val error = fn (s : string,left_pos:Header.pos,right_pos) =>
                               Header.error (left_pos, SOME right_pos) s
               val stream =  Parser.makeLexer read_fn source

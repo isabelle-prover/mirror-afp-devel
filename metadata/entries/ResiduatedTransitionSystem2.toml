@@ -42,6 +42,14 @@ email = "stark_email"
 stark = "stark_email"
 
 [history]
+2026-08-19 = """
+Rename some theories to make the names somewhat more descriptive and to avoid
+clashes with an anticipated future AFP submission.  Isolate smallness material
+now superseded by session Sets_Revisited and move it into new theory Smallness_old.
+Add sum RTS, indexed product RTS, and indexed sum RTS constructions.
+Remove some abbreviations from RTSCategory that tend to cause clashes when
+inheriting this theory and use full qualified names instead.
+(revision b252d248ad76)<br>"""
 
 [extra]
 

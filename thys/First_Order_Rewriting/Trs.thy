@@ -163,6 +163,22 @@ lemma finite_funas_trs:
   unfolding funas_trs_def
   using assms finite_funas_rule by auto
 
+lemma finite_imp_fresh_sym: 
+  assumes "finite R" 
+  shows "\<exists> f n. (f,n) \<notin> funas_trs R \<and> n \<ge> k" 
+proof -
+  from assms have "finite (funas_trs R)" unfolding funas_trs_def 
+    using finite_funas_rule by blast 
+  hence "finite (snd ` funas_trs R)" by blast
+  from finite_list[OF this] obtain as where as: "set as = snd ` funas_trs R" by auto
+  let ?f = "(undefined, Suc k + (max_list as))" 
+  have "Suc k + (max_list as) \<notin> set as" 
+    using max_list by force
+  hence "?f \<notin> funas_trs R" unfolding as by force
+  thus ?thesis by fastforce
+qed
+
+
 lemma funas_empty[simp]: "funas_trs {} = {}" unfolding funas_trs_def by simp
 
 lemma funas_trs_union[simp]: "funas_trs (R \<union> S) = funas_trs R \<union> funas_trs S"
@@ -329,6 +345,98 @@ lemma vars_rule_lhs:
 
 end
 
+lemma unify_funas_term: assumes "funas_trs (set eqs) \<subseteq> F" 
+  and "\<Union> (funas_term ` snd ` set sigma) \<subseteq> F" 
+  and "unify eqs sigma = Some delta" 
+shows "\<Union> (funas_term ` snd ` set delta) \<subseteq> F" 
+  using assms
+proof (induction eqs sigma rule: unify.induct)
+  case (2 f ss g ts E bs)
+  from 2(4) obtain us where dec: "decompose (Fun f ss) (Fun g ts) = Some us" (is "?e = _")
+    by (cases ?e, auto)
+  from 2(2) decompose_Some[OF dec] 
+  have "funas_trs (set (us @ E)) \<subseteq> F" 
+    unfolding funas_trs_def funas_rule_def by (auto elim!: in_set_zipE, blast+)
+  from 2(1)[OF dec this 2(3)] 2(4) dec show ?case by auto
+next
+  case (3 x t E bs)
+  show ?case
+  proof (cases "t = Var x")
+    case True
+    thus ?thesis using 3 by (auto simp: funas_trs_def)
+  next
+    case False
+    with 3 have xt: "x \<notin> vars_term t" by auto
+    from 3 False xt have "unify (subst_list (subst x t) E) ((x, t) # bs) = Some delta" by auto
+    note IH = 3(2)[OF False xt _ _ this]
+    from 3(3,4) have bs: "\<Union> (funas_term ` snd ` set ((x, t) # bs)) \<subseteq> F" 
+      unfolding funas_trs_def funas_rule_def by auto
+    from 3(3) have E: "funas_trs (set (subst_list (subst x t) E)) \<subseteq> F" 
+      unfolding funas_trs_def funas_rule_def 
+      by (auto simp: subst_set_def subst_def funas_term_subst split: if_splits)
+    from IH[OF E bs]
+    show ?thesis .
+  qed
+next
+  case (4 f ts x E bs)
+  let ?t = "Fun f ts" 
+  define t where "t = ?t" 
+  note 4 = 4[folded t_def]
+  note [simp] = unify.simps(4)[of f ts x E, folded t_def]
+  from 4(4) have xt: "x \<notin> vars_term t" by auto
+  from 4 xt have "unify (subst_list (subst x t) E) ((x, t) # bs) = Some delta" by auto
+  note IH = 4(1)[OF xt _ _ this]
+  from 4(2,3) have bs: "\<Union> (funas_term ` snd ` set ((x, t) # bs)) \<subseteq> F" 
+    unfolding funas_trs_def funas_rule_def by auto
+  from 4(2) have E: "funas_trs (set (subst_list (subst x t) E)) \<subseteq> F" 
+    unfolding funas_trs_def funas_rule_def 
+    by (auto simp: subst_set_def subst_def funas_term_subst split: if_splits)
+  from IH[OF E bs] show ?case .
+qed auto
+
+
+lemma mgu_list_funas_term: assumes "funas_trs (set eqs) \<subseteq> F" 
+  and "mgu_list eqs = Some \<sigma>" 
+shows "funas_term (\<sigma> x) \<subseteq> F" 
+proof -
+  from assms(2)[unfolded mgu_list_def]
+  obtain sigma where un: "unify eqs [] = Some sigma" and \<sigma>: "\<sigma> = subst_of sigma" 
+    by (cases "unify eqs []", auto)
+  from unify_funas_term[OF assms(1) _ un]
+  have "\<Union> (funas_term ` snd ` set sigma) \<subseteq> F" by auto
+  thus ?thesis unfolding \<sigma> by (meson subst_of_funas_term)
+qed
+
+lemma mgu_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F" 
+  and "mgu s t = Some \<sigma>" 
+shows "funas_term (\<sigma> x) \<subseteq> F" 
+proof -
+  have "mgu_list [(s,t)] = mgu s t" unfolding mgu_list_def mgu_def by (cases "unify [(s,t)] []", auto)
+  also have "\<dots> = Some \<sigma>" by fact
+  finally have "mgu_list [(s, t)] = Some \<sigma>" by auto
+  from mgu_list_funas_term[OF _ this, of F x] assms
+  show ?thesis by (auto simp: funas_trs_def funas_rule_def)
+qed
+
+lemma mgu_var_disjoint_generic_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F"
+  and "mgu_var_disjoint_generic vu wu s t = Some (\<delta>,\<tau>)" 
+shows "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" 
+proof -
+  from assms(3)[unfolded mgu_var_disjoint_generic_def]
+  obtain \<sigma> where mgu: "mgu (map_vars_term vu s) (map_vars_term wu t) = Some \<sigma>" (is "mgu ?s ?t = _")
+    and id: "\<delta> = \<sigma> o vu" "\<tau> = \<sigma> o wu" 
+    by (auto split: option.splits)
+  from assms have "funas_term ?s \<subseteq> F" "funas_term ?t \<subseteq> F" by auto
+  from mgu_funas_term[OF this mgu] have "funas_term (\<sigma> y) \<subseteq> F" for y by auto
+  thus "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" unfolding id o_def by auto
+qed
+
+lemma mgu_vd_funas_term: assumes "funas_term s \<subseteq> F" "funas_term t \<subseteq> F"
+  and "mgu_vd ren s t = Some (\<delta>,\<tau>)" 
+shows "funas_term (\<delta> x) \<subseteq> F" "funas_term (\<tau> x) \<subseteq> F" 
+  using mgu_var_disjoint_generic_funas_term[OF assms[unfolded mgu_vd_def]] by blast+
+
+
 subsection\<open>Closure Properties\<close>
 
 lemma ctxt_closed_R_imp_supt_R_distr:
@@ -437,7 +545,7 @@ lemma quasi_commute_rsteps_supt:
 
 lemma rstep_UN:
   "rstep (\<Union>i\<in>A. R i) = (\<Union>i\<in>A. rstep (R i))"
-  by (force)
+  by force
 
 definition
   rstep_r_p_s :: "('f, 'v) trs \<Rightarrow> ('f, 'v) rule \<Rightarrow> pos \<Rightarrow> ('f, 'v) subst \<Rightarrow> ('f, 'v) trs"
@@ -3028,6 +3136,19 @@ qed
 lemma all_ctxt_closed_rstep_conversion: 
   "all_ctxt_closed UNIV ((rstep R)\<^sup>\<leftrightarrow>\<^sup>*)" 
   unfolding conversion_def rstep_simps(5)[symmetric] by blast
+
+lemma arg_rstep_imp_rstep: assumes "(ss ! i, ti) \<in> rstep R" and "i < length ss" 
+  shows "(Fun f ss, Fun f (ss[i := ti])) \<in> rstep R" 
+  using assms by (metis nrrstep_iff_arg_rstep nrrstep_imp_rstep)
+
+lemma arg_rstep_opt_imp_rstep_opt: assumes "(ss ! i, ti) \<in> (rstep R)\<^sup>=" and "i < length ss"
+  shows "(Fun f ss, Fun f (ss[i := ti])) \<in> (rstep R)\<^sup>=" 
+  using assms by (metis arg_rstep_imp_rstep rstep_simps(1))
+
+lemma arg_rsteps_imp_rsteps: assumes "(ss ! i, ti) \<in> (rstep R)\<^sup>*" and "i < length ss"
+  shows "(Fun f ss, Fun f (ss[i := ti])) \<in> (rstep R)\<^sup>*" 
+  using assms
+  by (metis arg_rstep_imp_rstep rstep_rtrancl_idemp)
 
 
 definition instance_rule :: "('f, 'v) rule \<Rightarrow> ('f, 'w) rule \<Rightarrow> bool" where

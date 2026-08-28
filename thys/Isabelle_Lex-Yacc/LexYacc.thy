@@ -34,9 +34,6 @@ keywords "ml_lex_yacc" :: thy_decl
     "yacc_user_declarations" "yacc_definitions" "yacc_rules" :: quasi_command
 begin 
 
-SML_import \<open>val pide_error = error \<close>
-SML_import \<open>val pide_warning = warning \<close>
-SML_import \<open>val pide_writeln = writeln \<close>
 
 
 section\<open>ML Lex\<close>
@@ -54,7 +51,7 @@ SML_file\<open>mlyacc-polyml/src/verbose.sml\<close>
 SML_file\<open>mlyacc-polyml/src/coreutils.sml\<close> 
 SML_file\<open>mlyacc-polyml/src/grammar.sml\<close> 
 SML_file\<open>mlyacc-polyml/src/graph.sml\<close> 
-SML_file\<open>mlyacc-polyml/src/hdr.sml\<close> 
+SML_file\<open>mlyacc-polyml/src/hdr.sml\<close>
 SML_file\<open>mlyacc-polyml/src/lalr.sml\<close>  
 SML_file\<open>mlyacc-polyml/src/absyn.sig\<close> 
 SML_file\<open>mlyacc-polyml/src/absyn.sml\<close> 

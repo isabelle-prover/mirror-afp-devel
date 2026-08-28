@@ -3,10 +3,16 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Right_Forward_Closures.html</loc>
+    <lastmod>2026-07-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Equality_Saturation_Checker.html</loc>
     <lastmod>2026-07-14T00:00:00+00:00</lastmod>
@@ -46,6 +52,9 @@
   </url><url>
     <loc>https://isa-afp.org/entries/Incomplete_Gamma.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Conway_Circle.html</loc>
+    <lastmod>2026-06-27T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Perrons_Formula.html</loc>
     <lastmod>2026-06-17T00:00:00+00:00</lastmod>
@@ -190,9 +199,6 @@
   </url><url>
     <loc>https://isa-afp.org/entries/SWF_Impossibility.html</loc>
     <lastmod>2026-01-22T00:00:00+00:00</lastmod>
-  </url><url>
-    <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
-    <lastmod>2026-01-16T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Arbitrage_Probability_Correspondence.html</loc>
     <lastmod>2026-01-12T00:00:00+00:00</lastmod>
@@ -7603,6 +7609,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Continued_Fractions/Sqrt_Nat_Cfrac.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Conway_Circle/Conway_Circle.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Cook_Levin/Arithmetic.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Cook_Levin/Aux_TM_Reducing.html</loc>
@@ -8932,6 +8940,8 @@
     <loc>https://isa-afp.org/authors/marmsoler/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/schleicher/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/hofbauer/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Difference_Bound_Matrices/DBM.html</loc>
   </url><url>
@@ -12264,6 +12274,8 @@
     <loc>https://isa-afp.org/thys/HOL-Analysis/Homotopy.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Analysis/Improper_Integral.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL-Analysis/Infinite_Product.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Analysis/Infinite_Products.html</loc>
   </url><url>
@@ -16322,6 +16334,8 @@
     <loc>https://isa-afp.org/authors/borgstroem/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/hoelzl/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/waldmannj/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/derrick/</loc>
   </url><url>
@@ -22247,19 +22261,21 @@
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/ConcreteRTSCategory.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/Preliminaries.html</loc>
-  </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTS2_Preliminaries.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_Interp.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCategory.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_sim.html</loc>
   </url><url>
-    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCatx.html</loc>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCat_trn.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSCategory.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSConstructions.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/RTSEnrichedCategory.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/ResiduatedTransitionSystem2/Smallness_old.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Resolution_FOL/Completeness.html</loc>
   </url><url>
@@ -22388,6 +22404,16 @@
     <loc>https://isa-afp.org/thys/Riesz_Representation/Riesz_Representation.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Riesz_Representation/Urysohn_Locally_Compact_Hausdorff.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Right_Forward_Closures/Gramlich_Innermost_Switch.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Right_Forward_Closures/Innermost_Rewriting.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Right_Forward_Closures/Linear_Narrowing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Right_Forward_Closures/Linear_Unification.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Right_Forward_Closures/Right_Forward_Closure.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/RIPEMD-160-SPARK/RIPEMD_160_SPARK.html</loc>
   </url><url>
@@ -25481,6 +25507,8 @@
     <loc>https://isa-afp.org/thys/Types_To_Sets_Extension/VS_Vector_Spaces.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/sulejmani/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/authors/huitouze/</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Uncertainty_Principle/Uncertainty_Principle.html</loc>
   </url><url>

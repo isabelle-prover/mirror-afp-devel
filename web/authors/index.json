@@ -1338,6 +1338,16 @@
   "name": "Dierk Schleicher"
  },
  {
+  "emails": [
+   "eyJ1c2VyIjpbIm1lc3NhZ2UiXSwiaG9zdCI6WyJkaWV0ZXItaG9mYmF1ZXIiLCJkZSJdfQ=="
+  ],
+  "homepages": [],
+  "id": "hofbauer",
+  "link": "../authors/hofbauer/",
+  "name": "Dieter Hofbauer",
+  "orcid": "0000-0003-2094-6074"
+ },
+ {
   "emails": [],
   "homepages": [
    "http://research.microsoft.com/en-us/people/dimitris/"
@@ -2459,6 +2469,15 @@
   "id": "hoelzl",
   "link": "../authors/hoelzl/",
   "name": "Johannes Hölzl"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbImpvaGFubmVzIiwid2FsZG1hbm4iXSwiaG9zdCI6WyJodHdrLWxlaXB6aWciLCJkZSJdfQ=="
+  ],
+  "homepages": [],
+  "id": "waldmannj",
+  "link": "../authors/waldmannj/",
+  "name": "Johannes Waldmann"
  },
  {
   "emails": [
@@ -5027,6 +5046,13 @@
   "id": "sulejmani",
   "link": "../authors/sulejmani/",
   "name": "Ujkan Sulejmani"
+ },
+ {
+  "emails": [],
+  "homepages": [],
+  "id": "huitouze",
+  "link": "../authors/huitouze/",
+  "name": "Ulysse Le Huitouze"
  },
  {
   "emails": [],
