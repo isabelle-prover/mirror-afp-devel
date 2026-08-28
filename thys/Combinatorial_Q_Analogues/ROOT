@@ -7,7 +7,6 @@ session Combinatorial_Q_Analogues (AFP) = Lambert_Series +
     "HOL-Number_Theory"
     Gauss_Sums
   theories
-    More_Infinite_Products
     Q_Analogues
     Q_Pochhammer_Infinite
     Q_Binomial_Identities
