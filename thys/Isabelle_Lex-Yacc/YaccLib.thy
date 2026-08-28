@@ -63,19 +63,22 @@ signature ISABELLE_LEX_YACC =
 
 structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
   type pos = Position.T
-  val src = Unsynchronized.ref (Input.string "")
-  val ctxt = Unsynchronized.ref (Context.the_local_context ())
+  val src = Thread_Data.var () : Input.source Thread_Data.var;
+  val ctxt = Thread_Data.var () : Proof.context Thread_Data.var;
 
   fun set source ctx =
     let
-      val _ = src := source
-      val _ = ctxt := ctx
+      val _ = Thread_Data.put src (SOME (source))
+      val _ = Thread_Data.put ctxt (SOME (ctx))
     in () end
+
+  fun get_src () = the_default (Input.string "") (Thread_Data.get src)
+  fun get_ctxt () = the_default (Context.the_local_context ()) (Thread_Data.get ctxt)
 
   fun reset () =
     let
-      val _ = src := Input.string ""
-      val _ = ctxt := Context.the_local_context ()
+      val _ = Thread_Data.put src (SOME (Input.string ""))
+      val _ = Thread_Data.put ctxt (SOME (Context.the_local_context ()))
     in () end
 
   (* Helper: Explodes the source but strips the \<open> and \<close> markers so positions align with source_content *)
@@ -86,13 +89,14 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
       if length syms >= 2 then List.take (tl syms, length syms - 2) else syms
     end
 
+
   fun get_pos yypos  =
     let
-      val inner_syms = get_inner_syms (!src)
+      val inner_syms = get_inner_syms (get_src ())
       val pos_vec = Vector.fromList inner_syms
       val idx = yypos - 1
     in
-      if Vector.length pos_vec = 0 then Input.pos_of (!src)
+      if Vector.length pos_vec = 0 then Input.pos_of (the_default (Input.string "") (Thread_Data.get src))
       else if idx < 0 then #2 (Vector.sub (pos_vec, 0))
       else if idx >= Vector.length pos_vec then
         #2 (Vector.sub (pos_vec, Vector.length pos_vec - 1))
@@ -105,9 +109,9 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
               val p_end = get_pos (start_idx + len) 
               val p = Position.range_position (Position.range(p_start, p_end))
           in
-            Context_Position.report (!ctxt) p markup;
-            Context_Position.report_text (!ctxt) p Markup.typing (token_type);
-            Context_Position.report_text (!ctxt) p Markup.sorting(token_sort)
+            Context_Position.report (get_ctxt ()) p markup;
+            Context_Position.report_text (get_ctxt ()) p Markup.typing (token_type);
+            Context_Position.report_text (get_ctxt ()) p Markup.sorting(token_sort)
           end
         else ()
 
@@ -116,9 +120,9 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
 
   fun get_line_col p =
     let
-      val inner_syms = get_inner_syms (!src)
+      val inner_syms = get_inner_syms (the_default (Input.string "") (Thread_Data.get src))
       val pos_vec = Vector.fromList inner_syms
-      val (input_text, _) = Input.source_content (!src)
+      val (input_text, _) = Input.source_content (the_default (Input.string "") (Thread_Data.get src))
       val target_offset = Position.offset_of p
 
       fun is_target pos =
@@ -142,7 +146,7 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
 
   fun print_error (s, p: Position.T, p') =
     let
-      val start_line = the_default 1 (Position.line_of (Input.pos_of (!src)))
+      val start_line = the_default 1 (Position.line_of (Input.pos_of (the_default (Input.string "") (Thread_Data.get src))))
       val _ = Position.report (Position.range_position (Position.range(p,p')))  Markup.error 
       val (local_line, col) = get_line_col p
       val abs_line = start_line + local_line - 1
@@ -171,8 +175,11 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
       fun invoke lexstream =
         parse (0, lexstream, print_error, ())
       
-      val parsed = Unsynchronized.ref false
-      fun input_string _ = if !parsed then "" else (parsed := true; input_text)
+      val parsed = Thread_Data.var () : bool Thread_Data.var
+      fun get_parsed () = the_default false (Thread_Data.get parsed);
+      fun set_parsed v = Thread_Data.put parsed (SOME v)
+
+      fun input_string _  = if get_parsed () then "" else (set_parsed true; input_text)
       
       val lexer = makeLexer input_string
       
