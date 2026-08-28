@@ -441,7 +441,7 @@ C\<open>
     requires "valid(t+(0..n-1))"
     ensures "exists integer i; (0<=i<n && t[i] != 0) <==> result == 0"
     ensures "(forall integer i; 0<=i<n ==> t[i] == 0) <==> result == 1"
-    assigns nothing
+    assigns nothing 
  */
 
 int allzeros(int t[], int n) {
@@ -491,11 +491,11 @@ int binarysearch(int t[], int n, int v) {
 
 
 C\<open>
-/*@ requires "n >= 0"
-    requires "valid(t+(0..n-1))"
-    requires "(forall integer i,j; 0<=i<=j<n ==> t[i] <= t[j])"
-    ensures "exists integer i; (0<=i<n && t[i] == x) <==> result == 1"
-    ensures "(forall integer i; 0<=i<n ==> t[i] != x) <==> result == 0"
+/*@ requires \<open>n >= 0\<close>
+    requires \<open>valid(t+(0..n-1))\<close>
+    requires \<open>(forall integer i,j; 0<=i<=j<n ==> t[i] <= t[j])\<close>
+    ensures \<open>exists integer i; (0<=i<n && t[i] == x) <==> result == 1\<close>
+    ensures \<open>(forall integer i; 0<=i<n ==> t[i] != x) <==> result == 0\<close>
     assigns nothing
  */
 

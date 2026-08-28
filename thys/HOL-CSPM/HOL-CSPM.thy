@@ -47,12 +47,14 @@ chapter\<open> Main Entry Point \<close>
 theory "HOL-CSPM"
   imports Read_Write_CSPM_Laws CSPM_Laws CSPM_Deadlock_Results Events_Ticks_CSPM_Laws
 begin
-  (*>*)
+(*>*)
+
+ML_file "CSPM-API.ML"
 
 text \<open>This is where the theory \<^session>\<open>HOL-CSPM\<close> should be imported from.\<close>
 
 
 (*<*)
 end
-  (*>*)
+(*>*)
 
