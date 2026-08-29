@@ -342,11 +342,9 @@ struct
         $ mk_option \<^typ>\<open>dl_query\<close> (Option.map (mk_query ctxt) q_opt)
 end
 
-val global_datalog_lock = Thread.Mutex.mutex ();
-
 fun define_datalog (binding, source) lthy = 
     let 
-      val ast_opt = Multithreading.synchronized "Datalog." global_datalog_lock (fn () => Datalog.parse_source lthy source)
+      val ast_opt = Datalog.parse_source lthy source
     in  
       case ast_opt of
         SOME ast => 

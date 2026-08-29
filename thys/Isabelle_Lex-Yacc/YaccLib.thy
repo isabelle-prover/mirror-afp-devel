@@ -61,27 +61,24 @@ signature ISABELLE_LEX_YACC =
     val tok_val: int * string * Markup.T * string * string * ('a * Position.T * Position.T -> 'b) * 'a -> 'b
   end
 
-structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
+structure Isabelle_lex_yacc: ISABELLE_LEX_YACC = struct
   type pos = Position.T
-  val src = Thread_Data.var () : Input.source Thread_Data.var;
-  val ctxt = Thread_Data.var () : Proof.context Thread_Data.var;
+
+  (* Use a Synchronized variable instead of raw Thread_Data to coordinate state cleanly *)
+  type state = Input.source * Proof.context
+  val global_state : state Synchronized.var =
+    Synchronized.var "isabelle_lex_yacc_state" (Input.string "", Context.the_local_context ())
 
   fun set source ctx =
-    let
-      val _ = Thread_Data.put src (SOME (source))
-      val _ = Thread_Data.put ctxt (SOME (ctx))
-    in () end
+    Synchronized.change global_state (fn _ => (source, ctx))
 
-  fun get_src () = the_default (Input.string "") (Thread_Data.get src)
-  fun get_ctxt () = the_default (Context.the_local_context ()) (Thread_Data.get ctxt)
+  fun get_src () = #1 (Synchronized.value global_state)
+  fun get_ctxt () = #2 (Synchronized.value global_state)
 
   fun reset () =
-    let
-      val _ = Thread_Data.put src (SOME (Input.string ""))
-      val _ = Thread_Data.put ctxt (SOME (Context.the_local_context ()))
-    in () end
+    Synchronized.change global_state (fn _ => (Input.string "", Context.the_local_context ()))
 
-  (* Helper: Explodes the source but strips the \<open> and \<close> markers so positions align with source_content *)
+  (* Helper: Explodes the source but strips the ‹ and › markers *)
   fun get_inner_syms source =
     let
       val syms = Input.source_explode source
@@ -89,14 +86,14 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
       if length syms >= 2 then List.take (tl syms, length syms - 2) else syms
     end
 
-
-  fun get_pos yypos  =
+  fun get_pos yypos =
     let
-      val inner_syms = get_inner_syms (get_src ())
+      val src = get_src ()
+      val inner_syms = get_inner_syms src
       val pos_vec = Vector.fromList inner_syms
       val idx = yypos - 1
     in
-      if Vector.length pos_vec = 0 then Input.pos_of (the_default (Input.string "") (Thread_Data.get src))
+      if Vector.length pos_vec = 0 then Input.pos_of src
       else if idx < 0 then #2 (Vector.sub (pos_vec, 0))
       else if idx >= Vector.length pos_vec then
         #2 (Vector.sub (pos_vec, Vector.length pos_vec - 1))
@@ -104,25 +101,25 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
     end
 
   fun report_token (start_idx, len, markup, token_type, token_sort) =
-        if 0 < len then
-          let val p_start = get_pos start_idx 
-              val p_end = get_pos (start_idx + len) 
-              val p = Position.range_position (Position.range(p_start, p_end))
-          in
-            Context_Position.report (get_ctxt ()) p markup;
-            Context_Position.report_text (get_ctxt ()) p Markup.typing (token_type);
-            Context_Position.report_text (get_ctxt ()) p Markup.sorting(token_sort)
-          end
-        else ()
-
-
-
+    if 0 < len then
+      let 
+        val p_start = get_pos start_idx 
+        val p_end = get_pos (start_idx + len) 
+        val p = Position.range_position (Position.range(p_start, p_end))
+        val ctxt = get_ctxt ()
+      in
+        Context_Position.report ctxt p markup;
+        Context_Position.report_text ctxt p Markup.typing token_type;
+        Context_Position.report_text ctxt p Markup.sorting token_sort
+      end
+    else ()
 
   fun get_line_col p =
     let
-      val inner_syms = get_inner_syms (the_default (Input.string "") (Thread_Data.get src))
+      val src = get_src ()
+      val inner_syms = get_inner_syms src
       val pos_vec = Vector.fromList inner_syms
-      val (input_text, _) = Input.source_content (the_default (Input.string "") (Thread_Data.get src))
+      val (input_text, _) = Input.source_content src
       val target_offset = Position.offset_of p
 
       fun is_target pos =
@@ -146,19 +143,20 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
 
   fun print_error (s, p: Position.T, p') =
     let
-      val start_line = the_default 1 (Position.line_of (Input.pos_of (the_default (Input.string "") (Thread_Data.get src))))
-      val _ = Position.report (Position.range_position (Position.range(p,p')))  Markup.error 
+      val src = get_src ()
+      val start_line = the_default 1 (Position.line_of (Input.pos_of src))
+      val _ = Position.report (Position.range_position (Position.range(p, p'))) Markup.error 
       val (local_line, col) = get_line_col p
       val abs_line = start_line + local_line - 1
     in
       error ("Parse Error at line " ^ Int.toString abs_line ^
-             ", column " ^ Int.toString (col + 1) ^ ": " ^ s ^Position.here p)
+             ", column " ^ Int.toString (col + 1) ^ ": " ^ s ^ Position.here p)
     end
 
   fun tok (yypos, yytext, markup, typ, sort, cons) =
     let
       val p = get_pos yypos
-      val p' = get_pos (yypos+(String.size yytext))
+      val p' = get_pos (yypos + (String.size yytext))
       val _ = report_token (yypos, String.size yytext, markup, typ, sort)
     in cons (p, p') end
 
@@ -175,12 +173,14 @@ structure Isabelle_lex_yacc:ISABELLE_LEX_YACC = struct
       fun invoke lexstream =
         parse (0, lexstream, print_error, ())
       
-      val parsed = Thread_Data.var () : bool Thread_Data.var
-      fun get_parsed () = the_default false (Thread_Data.get parsed);
-      fun set_parsed v = Thread_Data.put parsed (SOME v)
+      (* Use a local synchronization variable for parsing state instead of thread-local cells *)
+      val parsed = Synchronized.var "parsed_flag" false
 
-      fun input_string _  = if get_parsed () then "" else (set_parsed true; input_text)
-      
+      fun input_string _ =
+        Synchronized.guarded_access parsed
+          (fn true => SOME ("", true)
+            | false => SOME (input_text, true))
+
       val lexer = makeLexer input_string
       
       val eof_pos = get_pos (String.size input_text + 1)
