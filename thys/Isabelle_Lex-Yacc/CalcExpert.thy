@@ -260,9 +260,11 @@ fun calc source thy =
       val _ = writeln(Int.toString (Calc.parse_source ctxt source)) 
     in thy end
 
+val global_calc2_lock = Thread.Mutex.mutex ();
 val _ = Outer_Syntax.command @{command_keyword "calc2"}
         "A simple inline calculator" 
-        (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (calc source)))
+        (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (
+          Multithreading.synchronized "Calc." global_calc2_lock (fn () => calc source))))
 \<close>
 
 calc2\<open>
