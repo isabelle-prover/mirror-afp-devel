@@ -340,8 +340,8 @@ proof -
   also have "\<dots> = 1/2 + (real_of_int q / real_of_int (2^d)) *
       abs (real_of_int (compress d x) - real_of_int (2^d) /
       real_of_int q * real_of_int x)"
-    by (subst abs_mult) (smt (verit, best) assms(2) 
-      less_divide_eq_1_pos of_int_add of_int_hom.hom_one 
+    by (subst abs_mult) (smt (cvc5, best) assms(2) 
+      less_divide_eq_1_pos of_int_add of_int_hom.hom_one
       of_int_power powr_realpow twod_lt_q zero_less_power)
   also have "\<dots> \<le> 1/2 + (real_of_int q / real_of_int (2^d)) * (1/2) "
     using compress_no_mod[OF assms] 

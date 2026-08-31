@@ -93,7 +93,7 @@ lemma tm8_tm: "turing_machine (k1 + k2) G tm8"
   unfolding tm8_def
   using tm7_tm tm_cp_until_tm turing_machine_def turing_machine_sequential_turing_machine k_ge(2)
   by (metis add.commute add_less_cancel_right add_strict_increasing nat_1_add_1
-    verit_comp_simplify1(3) zero_less_one)
+    alethe_comp_simplify1(3) zero_less_one)
 
 context
   fixes x :: string
@@ -165,7 +165,7 @@ proof -
   then have "(string_to_contents (f1 x)) i = \<box>" if "i > T1 n" for i
     using that tps1a(1) by simp
   then have "length (string_to_symbols (f1 x)) \<le> T1 n"
-    by (metis length_map order_refl verit_comp_simplify1(3) zero_neq_numeral zero_neq_one)
+    by (metis length_map order_refl alethe_comp_simplify1(3) zero_neq_numeral zero_neq_one)
   then show ?thesis
     by simp
 qed
@@ -530,7 +530,7 @@ proof -
   then have "(string_to_contents (f2 (f1 x))) i = \<box>" if "i > T2 m" for i
     using that tps6b(1) by simp
   then have "length (string_to_symbols (f2 (f1 x))) \<le> T2 m"
-    by (metis length_map order_refl verit_comp_simplify1(3) zero_neq_numeral zero_neq_one)
+    by (metis length_map order_refl alethe_comp_simplify1(3) zero_neq_numeral zero_neq_one)
   then show ?thesis
     by simp
 qed

@@ -578,7 +578,7 @@ proof -
   have "nlength (clause ! t mod 2) \<le> nllength \<sigma>"
     using assms(1) nlength_\<sigma>1 by (meson mod_less_eq_dividend nlength_mono order.trans)
   then have "nlength (clause ! t mod 2) \<le> nllength \<sigma> ^ 2"
-    using linear_le_pow by (metis nat_le_linear power2_nat_le_imp_le verit_la_disequality)
+    using linear_le_pow by (metis nat_le_linear power2_nat_le_imp_le alethe_la_disequality)
   then have "61 + 30 * (nllength \<sigma>)\<^sup>2 + (10 + 2 * nlength (clause ! t mod 2)) \<le> ttt"
     using assms(2) by simp
   then have "transforms tm8 (tpsL t) ttt (tps8 t)"
@@ -1873,7 +1873,7 @@ lemma tm2 [transforms_intros]:
 proof (tform tps: assms tps0 jk tps2_def tps1_def)
   show "tps2 = tps1[j + 6 := tps1 ! (j + 6) |:=| 0]"
     using tps2_def tps1_def jk onesie_write
-    by (smt (verit) list_update_beyond list_update_overwrite nth_list_update_eq verit_comp_simplify1(3))
+    by (smt (verit) list_update_beyond list_update_overwrite nth_list_update_eq alethe_comp_simplify1(3))
 qed
 
 definition "tps3 \<equiv> tps0
@@ -3290,7 +3290,7 @@ proof -
     have "(nlength (Suc idx) + nlength H) * H \<le> Suc (nlength (Suc idx) + nlength H) * H"
       by simp
     then have "(nlength (Suc idx) + nlength H) * H \<le> (Suc (nlength (Suc idx) + nlength H) * H) ^ 2"
-      by (metis nat_le_linear power2_nat_le_imp_le verit_la_disequality)
+      by (metis nat_le_linear power2_nat_le_imp_le alethe_la_disequality)
     then show ?thesis
       by linarith
   qed

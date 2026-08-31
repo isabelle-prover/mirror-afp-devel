@@ -35,10 +35,10 @@ proof -
     apply (simp add: norm_inverse cblinfun.scaleC_right)
     by (simp flip: cblinfun.scaleC_right)
   then show ?range
-    by (metis (mono_tags, lifting) pure_state_target_vector_def verit_sko_ex')
+    by (metis (mono_tags, lifting) pure_state_target_vector_def alethe_sko_ex')
   show ?norm
     apply (simp add: pure_state_target_vector_def)
-    using ex by (metis (mono_tags, lifting) verit_sko_ex')
+    using ex by (metis (mono_tags, lifting) alethe_sko_ex')
 qed
 
 

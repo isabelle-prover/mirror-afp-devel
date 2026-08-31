@@ -236,9 +236,9 @@ lemma matrix_inv_is_inv:
   shows "A ** (matrix_inv A) = mat 1" and "(matrix_inv A) ** A = mat 1"  
 proof -
   show "A ** matrix_inv A = mat 1" 
-    using assms unfolding invertible_def matrix_inv_def by (simp add: verit_sko_ex')
+    using assms unfolding invertible_def matrix_inv_def by (simp add: alethe_sko_ex')
   show "(matrix_inv A) ** A = mat 1" 
-    using assms unfolding invertible_def matrix_inv_def by (simp add: verit_sko_ex')
+    using assms unfolding invertible_def matrix_inv_def by (simp add: alethe_sko_ex')
 qed
 
 lemma invertible_imp_right_inverse_is_inverse:

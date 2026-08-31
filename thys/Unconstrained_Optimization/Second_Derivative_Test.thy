@@ -120,7 +120,7 @@ proof -
          moreover have "x \<in> U"
            using xmin_x_subset
            by (meson \<epsilon>_def atLeastAtMost_iff dual_order.strict_iff_not 
-               subset_eq verit_comp_simplify(2) x_min_lt_x)
+               subset_eq alethe_comp_simplify(2) x_min_lt_x)
          ultimately show "\<exists>y. (f has_real_derivative y) (at x) \<and> y < 0"
            using f_diff by blast      
        qed

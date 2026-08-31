@@ -264,7 +264,7 @@ lemma invertibleD[simp]:
   assumes "invertible A" 
   shows "A\<^sup>-\<^sup>1 ** A = mat 1" and "A ** A\<^sup>-\<^sup>1 = mat 1"
   using assms unfolding matrix_inv_def invertible_def
-  by (simp_all add: verit_sko_ex')
+  by (simp_all add: alethe_sko_ex')
 
 lemma matrix_inv_unique:
   assumes "A ** B = mat 1" and "B ** A = mat 1"

@@ -66,12 +66,12 @@ proof -
     define w where w_def:"w = m-3-l"
     have w_size:"w\<ge>0 \<and> w\<le>m-3" using w_def l_size l_def k1_def first_assum
       by (smt (verit, best) Euclidean_Rings.pos_mod_bound assms(1) le_antisym numeral_neq_zero
- of_nat_0_less_iff order_trans_rules(22) verit_comp_simplify(3) zero_le_numeral)
+ of_nat_0_less_iff order_trans_rules(22) alethe_comp_simplify(3) zero_le_numeral)
     have "k1 = w+3" using w_def k1_def l_def w_size first_assum by linarith
     hence "w+2 = k1-1" by auto
     hence "w+2 = (b1-1) mod m" using first_assum k1_def
       by (smt (verit, del_insts) Euclidean_Rings.pos_mod_bound assms(1)
- mod_diff_eq mod_pos_pos_trivial of_nat_le_0_iff verit_comp_simplify(8))
+ mod_diff_eq mod_pos_pos_trivial of_nat_le_0_iff alethe_comp_simplify(8))
     hence w_cover:"w+2 = k1-1" using k1_def using \<open>w + 2 = k1 - 1\<close> by fastforce
 
     have "\<exists>r::nat. (r\<le>m-3) \<and> [N=b1+r] (mod m)" if asm1:"N mod m \<ge> k1 \<and> N mod m \<le> m-1" for N
@@ -124,7 +124,7 @@ of_nat_numeral semiring_norm(172) w_def)
         by (metis \<open>w + 2 = (b1 - 1) mod int m\<close> add_diff_cancel_right' arith_special(3) int_ops(4)
             is_num_normalize(1) mod_add_left_eq mod_diff_left_eq of_nat_mod)
       thus ?thesis using c4_1 by (metis asm4 diff_le_mono2 nat_le_linear numeral_le_iff
-            verit_comp_simplify(10) verit_comp_simplify(13))
+            alethe_comp_simplify(10) alethe_comp_simplify(13))
     qed
     hence "\<exists>b::int. \<exists>r::nat. (r \<le> m-3) \<and> [N=b+r] (mod m) \<and> (b = b1 \<or> b = b2)"
       if asm4:"N mod m = w+1 \<or> N mod m = w+2" for N using asm4 by blast
@@ -174,7 +174,7 @@ not_numeral_le_zero of_nat_0_less_iff of_nat_le_0_iff)
             semiring_norm(172))
       hence "\<exists>r::nat. (r \<le> m-3) \<and> [N = b2+r] (mod m)" if case1_2_assum:"N mod m = m-2" for N
         using case1_2_assum
-        by (meson diff_le_mono2 less_num_simps(2) numeral_le_iff verit_comp_simplify(15))
+        by (meson diff_le_mono2 less_num_simps(2) numeral_le_iff alethe_comp_simplify(15))
       hence case1_2:"\<exists>b::int. \<exists>r::nat. (r \<le> m-3) \<and> [N=b+r] (mod m) \<and> (b = b1 \<or> b = b2)"
         if case1_2_assum:"N mod m = m-2" for N using case1_2_assum by blast
 
@@ -303,7 +303,7 @@ assms(1) bot_nat_0.extremum_uniqueI leI less_Suc_eq_le mod_less_divisor not_nume
         if case3_2_assum:"N mod m \<ge>2\<and>N mod m \<le> m-1" for N using case3_2_assum by blast
 
       have "\<forall>N::nat. N mod m = 0 \<or> (N mod m \<ge>1 \<and> N mod m \<le>m-1)" by (metis Suc_pred' assms(1)
-bot_nat_0.not_eq_extremum less_one mod_Suc_le_divisor rel_simps(76) verit_comp_simplify1(3))
+bot_nat_0.not_eq_extremum less_one mod_Suc_le_divisor rel_simps(76) alethe_comp_simplify1(3))
       hence "\<forall>N::nat. N mod m = 0 \<or> N mod m = 1 \<or> (N mod m \<ge>2 \<and> N mod m \<le>m-1)"
         by (metis Suc_eq_plus1 le_neq_implies_less le_simps(3) nat_1_add_1)
 
@@ -486,14 +486,14 @@ empty_subsetI even_plus_one_iff insert_commute insert_mono nat_arith.add1 numera
 
   have first_four:"\<forall>k\<le>3. \<exists>a. final! k = polygonal_number m a" using final_0th final_1st final_2nd final_3rd
     by (metis Suc_eq_plus1 add_leD2 arith_simps(50) le_simps(2) numeral_Bit0 numeral_Bit1
-        numeral_One verit_comp_simplify1(3) verit_la_disequality)
+        numeral_One alethe_comp_simplify1(3) alethe_la_disequality)
 
   have "length T = 4" using T_def by simp
   have "\<forall>k<length (ones@zeros). (ones@zeros)! k =1 \<or>  (ones@zeros)! k =0" using ones_def zeros_def
     by (simp add: nth_append)
   hence "final! k = 1 \<or> final! k = 0" if "k\<ge>4 \<and> k<(length final)" for k
     using \<open>length T = 4\<close> final_def that by (metis add_less_cancel_left le_add_diff_inverse
-        length_append nth_append verit_comp_simplify1(3))
+        length_append nth_append alethe_comp_simplify1(3))
   hence other_terms:"\<forall> k \<in> {4..m} . final! k = 0 \<or> final! k = 1" using final_length
     by (metis Suc_eq_plus1 atLeastAtMost_iff le_simps(2))
 

@@ -320,7 +320,7 @@ proof -
         from metric_LIMSEQ_D[OF "*", of \<open>restriction_\<sigma> N\<close>]
         have \<open>\<exists>N''. \<forall>n\<ge>N''. restriction_dist (\<sigma> n) \<Sigma> < restriction_\<sigma> N\<close>
           by (metis abs_of_nonneg i1.zero_le_restriction_\<sigma> i1.zero_less_restriction_\<sigma> norm_conv_dist order_trans real_norm_def
-              verit_comp_simplify1(3))
+              alethe_comp_simplify1(3))
         with "****" show False by fastforce
       qed
 
@@ -335,7 +335,7 @@ proof -
       thus \<open>\<exists>N. \<forall>n\<ge>N. dist (restriction_dist' (\<sigma> n) \<Sigma>) 0 < \<epsilon>\<close>
         by (metis abs_of_nonneg dist_0_norm dist_commute i2.not_related_imp_dist_restriction_is_some_restriction_\<sigma>
             i2.restriction_dist_eq_0_iff_related i2.zero_less_restriction_\<sigma> order_less_imp_not_less real_norm_def
-            verit_comp_simplify1(3))
+            alethe_comp_simplify1(3))
     qed }
   note * = this
 

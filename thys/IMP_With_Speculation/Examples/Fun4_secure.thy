@@ -352,7 +352,7 @@ lemma \<Delta>1'_implies: "\<Delta>1' num (pstate3,cfg3,cfgs3,ibT3,ibUT3,ls3)
   unfolding \<Delta>1'_defs 
   apply(intro conjI)
   apply simp_all 
-  using Suc_lessI startOfThenBranch_def verit_eq_simplify(10) zero_neq_numeral apply linarith
+  using Suc_lessI startOfThenBranch_def alethe_eq_simplify(10) zero_neq_numeral apply linarith
   by (metis list.map_disc_iff)
 
 

@@ -709,7 +709,7 @@ definition AOT_rel_equiv :: \<open><'a::AOT_IndividualTerm> \<Rightarrow> <'a> \
 lemma urrel_quotient3: \<open>Quotient3 AOT_rel_equiv rel_to_urrel urrel_to_rel\<close>
 proof (rule Quotient3I)
   have \<open>(\<lambda>u. Rep_urrel a (\<kappa>\<upsilon> (SOME x. \<kappa>\<upsilon> x = u))) = (\<lambda>u. Rep_urrel a u)\<close> for a
-    by (rule ext) (metis (mono_tags, lifting) \<kappa>\<upsilon>_surj surj_f_inv_f verit_sko_ex')
+    by (rule ext) (metis (mono_tags, lifting) \<kappa>\<upsilon>_surj surj_f_inv_f alethe_sko_ex')
   thus \<open>rel_to_urrel (urrel_to_rel a) = a\<close> for a
     by (simp add: Abs_rel_inverse rel_to_urrel_def urrel_to_rel_def
                   Rep_urrel_inverse)
@@ -908,10 +908,10 @@ next
     by (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
               AOT_model_denotes_rel.rep_eq \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1,2,3)
               \<open>AOT_model_denotes \<Pi>\<close> \<upsilon>.disc(8,9) \<upsilon>.distinct(3)
-              is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def verit_sko_ex')
+              is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def alethe_sko_ex')
   moreover have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_rel \<Pi> (SOME y. \<kappa>\<upsilon> y = \<omega>\<upsilon> x)\<close> for x
     by (metis (mono_tags, lifting) AOT_model_denotes_rel.rep_eq
-          AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den verit_sko_ex')
+          AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den alethe_sko_ex')
   ultimately have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> x)\<close> for x
     unfolding rel_to_urrel_def
     by (subst Abs_urrel_inverse) auto
@@ -989,10 +989,10 @@ next
     by (metis (mono_tags, lifting) AOT_model_denotes_\<kappa>_def
           AOT_model_denotes_rel.rep_eq \<kappa>.exhaust_disc \<kappa>\<upsilon>.simps(1,2,3)
           \<open>AOT_model_denotes \<Pi>\<close> \<upsilon>.disc(8) \<upsilon>.disc(9) \<upsilon>.distinct(3)
-          is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def verit_sko_ex')
+          is_\<alpha>\<kappa>_def is_\<omega>\<kappa>_def alethe_sko_ex')
   moreover have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_rel \<Pi> (SOME xa. \<kappa>\<upsilon> xa = \<omega>\<upsilon> x)\<close> for x
     by (metis (mono_tags, lifting) AOT_model_denotes_rel.rep_eq
-          AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den verit_sko_ex')
+          AOT_model_term_equiv_\<kappa>_def \<kappa>\<upsilon>.simps(1) \<Pi>_den alethe_sko_ex')
   ultimately have \<open>Rep_rel \<Pi> (\<omega>\<kappa> x) = Rep_urrel (rel_to_urrel \<Pi>) (\<omega>\<upsilon> x)\<close> for x
     unfolding rel_to_urrel_def
     by (subst Abs_urrel_inverse) auto

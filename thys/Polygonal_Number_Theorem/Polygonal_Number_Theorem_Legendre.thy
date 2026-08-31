@@ -266,12 +266,12 @@ proof -
       then have g_inj: "inj_on g {0..m-1}"
         by (meson inj_onI)
       have g_range2: "\<forall> i \<in> {0..m-1}. g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff alethe_comp_simplify1(3) zle_diff1_eq)
       hence image_subset: "g ` {0..m-1} \<subseteq> {0..m-1}" by blast
       have g_range: "i \<in> {0..m-1} \<Longrightarrow> g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff alethe_comp_simplify1(3) zle_diff1_eq)
       have card_ge_m: "card (g ` {0..m-1}) \<ge> m" using g_inj
-        by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 verit_comp_simplify1(2))
+        by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 alethe_comp_simplify1(2))
       have "card {0..m-1} = m" using m_pos by force
       hence card_le_m: "card (g ` {0..m-1}) \<le> m" using m_pos
         by (metis card_image g_inj le_refl)
@@ -290,7 +290,7 @@ proof -
         using m_pos by (simp add: of_nat_diff)
       ultimately have "S mod m \<in> {0..m-1}" by auto
       with surj m_pos have "\<exists> j \<in> {0..m-1}. [S mod m = f j] (mod m)"
-        by (metis atLeastAtMost_iff less_eq_nat.simps(1) nonneg_int_cases of_nat_less_iff verit_comp_simplify(3))
+        by (metis atLeastAtMost_iff less_eq_nat.simps(1) nonneg_int_cases of_nat_less_iff alethe_comp_simplify(3))
       thus ?thesis using cong_mod_right cong_sym by blast
     qed
     have "\<exists> b::int. [N = b] (mod m) \<and> odd b \<and> b \<in> I"
@@ -383,12 +383,12 @@ proof -
       then have g_inj: "inj_on g {0..m-1}"
         by (meson inj_onI)
       have g_range2: "\<forall> i \<in> {0..m-1}. g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff alethe_comp_simplify1(3) zle_diff1_eq)
       hence image_subset: "g ` {0..m-1} \<subseteq> {0..m-1}" by blast
       have g_range: "i \<in> {0..m-1} \<Longrightarrow> g i \<in> {0..m-1}" using \<open>g \<equiv> \<lambda>i. f i mod int m\<close>
-        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff verit_comp_simplify1(3) zle_diff1_eq)
+        by (metis m_pos Euclidean_Rings.pos_mod_bound Euclidean_Rings.pos_mod_sign atLeastAtMost_iff mod_by_1 mod_if not_gr0 of_nat_0_less_iff of_nat_1 of_nat_diff alethe_comp_simplify1(3) zle_diff1_eq)
       have card_ge_m: "card (g ` {0..m-1}) \<ge> m" using g_inj
-        by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 verit_comp_simplify1(2))
+        by (metis m_pos Suc_diff_1 card_atLeastAtMost card_image minus_nat.diff_0 alethe_comp_simplify1(2))
       have "card {0..m-1} = m" using m_pos by force
       hence card_le_m: "card (g ` {0..m-1}) \<le> m" using m_pos
         by (metis card_image g_inj le_refl)
@@ -407,7 +407,7 @@ proof -
         using m_pos by (simp add: of_nat_diff)
       ultimately have "S mod m \<in> {0..m-1}" by auto
       with surj m_pos have "\<exists> j \<in> {0..m-1}. [S mod m = f j] (mod m)"
-        by (metis atLeastAtMost_iff less_eq_nat.simps(1) nonneg_int_cases of_nat_less_iff verit_comp_simplify(3))
+        by (metis atLeastAtMost_iff less_eq_nat.simps(1) nonneg_int_cases of_nat_less_iff alethe_comp_simplify(3))
       thus ?thesis using cong_mod_right cong_sym by blast
     qed
     have thm_odd_n: ?thesis if "odd N"

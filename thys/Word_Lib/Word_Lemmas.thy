@@ -245,7 +245,7 @@ lemma le_shiftr:
 
 lemma le_shiftr':
   "\<lbrakk> u >> n \<le> v >> n ; u >> n \<noteq> v >> n \<rbrakk> \<Longrightarrow> (u::'a::len word) \<le> v"
-  by (metis le_cases le_shiftr verit_la_disequality)
+  by (metis le_cases le_shiftr alethe_la_disequality)
 
 lemma shiftr_mask_le:
   "n \<le> m \<Longrightarrow> mask n >> m = (0 :: 'a::len word)"

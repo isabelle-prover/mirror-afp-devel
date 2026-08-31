@@ -888,8 +888,7 @@ next
         case False \<comment> \<open>unstable cases\<close>
         from IH have \<open>strategy_formula_inner (Defender_Stable_Conj p Q') e \<chi>\<close> by simp
         hence \<open>\<exists>\<Phi>. \<chi> = StableConj Q' \<Phi>\<close> using strategy_formula_inner.simps
-          by (smt (verit) spectroscopy_defender.simps(4,7)
-              spectroscopy_position.distinct(37,41) spectroscopy_position.inject(6))
+          by blast
         then obtain \<Phi> where P: \<open>\<chi> = (StableConj Q' \<Phi>)\<close> by auto
         from IH(1) have \<open>Q' = {q \<in> Q. (\<nexists>q'. q \<mapsto>\<tau> q')}\<close>
           by (metis (full_types) local.late_stbl_conj option.distinct(1))

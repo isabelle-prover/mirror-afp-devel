@@ -26,7 +26,7 @@ lemma square_bounded_less:
   fixes a b::"'a :: linordered_ring_strict"
   shows "-a < b \<and> b < a \<Longrightarrow> b*b < a*a"
   by (metis (no_types, lifting) leD leI minus_less_iff minus_mult_minus mult_strict_mono'
-      neg_less_eq_nonneg neg_less_pos verit_minus_simplify(4) zero_le_mult_iff zero_le_square)
+      neg_less_eq_nonneg neg_less_pos alethe_minus_simplify(4) zero_le_mult_iff zero_le_square)
 
 lemma square_bounded_le: 
   fixes a b::"'a :: linordered_ring_strict"

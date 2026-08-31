@@ -350,7 +350,7 @@ proof
   have len: "llength QDs = \<infinity>"
     using inf_pick unfolding infinitely_often_alt_def
     by (metis Suc_ile_eq dual_order.strict_implies_order enat.exhaust enat_ord_simps(2)
-        verit_comp_simplify1(3))
+        alethe_comp_simplify1(3))
 
   {
     assume not_rem_step: "\<not> (\<exists>j \<ge> i. \<exists>ess. LCons e es \<in> set ess

@@ -1255,7 +1255,7 @@ proof -
       also have "... \<le> L2_op_nrm A * (L2_op_nrm B)" 
         using vprop rvec_normalize_leq_L2_op_nrm[of v] assms
         by (metis carrier_matD(2) more_arith_simps(6) mult_mono' mult_zero_right 
-            rvec_norm_geq_0 verit_comp_simplify1(2))
+            rvec_norm_geq_0 alethe_comp_simplify1(2))
       finally show "x \<le> L2_op_nrm A * L2_op_nrm B" .
     qed
   qed

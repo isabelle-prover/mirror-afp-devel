@@ -92,7 +92,7 @@ lemma tr1_shape:"Opt.validFromS ss tr1 \<Longrightarrow> completedFromO ss tr1 \
   unfolding Opt.validFromS_def Opt.validS_def final_iff 
   apply(cases tr1, auto split: if_splits) 
     by (metis One_nat_def State.distinct append_Nil append_butlast_last_id diff_is_0_eq length_butlast length_greater_0_conv
-        list.size(3) nth_Cons_0 nth_Cons_Suc verit_comp_simplify1(3))  
+        list.size(3) nth_Cons_0 nth_Cons_Suc alethe_comp_simplify1(3))
 
 lemma tr1_shape':"s1 = ss \<Longrightarrow> Opt.validFromS s1 tr1 \<Longrightarrow> completedFromO s1 tr1 \<Longrightarrow> tr1 = [ss, ss']"  
   using tr1_shape by auto

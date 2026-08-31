@@ -680,7 +680,7 @@ proof -
   have "(\<lambda>x. ln (real (m_of x) * (18 + 4 * real (n_of x)) + 1)) \<in> O[?F](\<lambda>x. ln (real (n_of x) * real (m_of x)))"
      apply (rule landau_ln_2[where a="2"], simp, simp)
       apply (rule evt[where m="2" and n="1"])
-     apply (metis dual_order.trans mult_left_mono mult_of_nat_commute of_nat_0_le_iff verit_prod_simplify(1))
+     apply (metis dual_order.trans mult_left_mono mult_of_nat_commute of_nat_0_le_iff alethe_prod_simplify(1))
     using l3_aux by simp
   also have "(\<lambda>x. ln (real (n_of x) * real (m_of x))) \<in> O[?F](\<lambda>x. ln (real (n_of x)) + ln(real (m_of x)))"
     by (intro landau_o.big_mono evt[where m=1 and n=1], auto simp add:ln_mult)

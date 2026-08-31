@@ -182,7 +182,7 @@ proof -
       "A.steps (y # ws @ [y'])" "list_all2 ?R xs ws" "y \<preceq> y'"
       by (smt (z3) list_all2_Cons1 list_all2_Nil list_all2_append1)
     then show ?thesis
-      using \<open>nxt _ = _\<close> unfolding nxt_def by (auto dest!: verit_sko_ex_indirect[OF sym])
+      using \<open>nxt _ = _\<close> unfolding nxt_def by (auto dest!: alethe_sko_ex_indirect[OF sym])
   qed
   let ?w = "flat (smap (\<lambda>(xs, y). xs @ [y]) (siterate nxt (xs, y)))"
   from assms have "A.run ?w"

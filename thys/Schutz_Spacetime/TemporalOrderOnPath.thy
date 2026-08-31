@@ -2323,7 +2323,7 @@ theorem (*9*) chain4_alt:
 proof -
   have abcd_neq: "a \<noteq> b \<and> a \<noteq> c \<and> a \<noteq> d \<and> b \<noteq> c \<and> b \<noteq> d \<and> c \<noteq> d"
     using abcd_distinct numeral_3_eq_3
-    by (smt (z3) card_1_singleton_iff card_2_iff card_3_dist insert_absorb2 insert_commute numeral_1_eq_Suc_0 numeral_eq_iff semiring_norm(85) semiring_norm(88) verit_eq_simplify(8))
+    by (smt (z3) card_1_singleton_iff card_2_iff card_3_dist insert_absorb2 insert_commute numeral_1_eq_Suc_0 numeral_eq_iff semiring_norm(85) semiring_norm(88) alethe_eq_simplify(2))
   have inQ: "a \<in> Q" "b \<in> Q" "c \<in> Q" "d \<in> Q"
     using abcd_inQ by auto
   show ?thesis using chain4[OF assms(1) inQ] abcd_neq by simp

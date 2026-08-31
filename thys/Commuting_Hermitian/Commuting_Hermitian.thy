@@ -1323,7 +1323,7 @@ next
     have "l = a#(tl l)" unfolding a_def using Suc by simp
     have "a \<le> n" using Suc unfolding a_def
       by (metis add_le_same_cancel1 elem_le_sum_list hd_conv_nth 
-          le_add2 le_trans verit_comp_simplify1(3))
+          le_add2 le_trans alethe_comp_simplify1(3))
     define B1 where "B1 = fst (split_block B a a)"
     define B2 where "B2 = fst (snd (split_block B a a))"
     define B3 where "B3 = fst (snd (snd (split_block B a a)))"

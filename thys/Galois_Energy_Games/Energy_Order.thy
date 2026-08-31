@@ -195,7 +195,7 @@ proof
                       hence "\<exists>x'. x = Suc x'"
                         by (simp add: not0_implies_Suc) 
                       then show ?thesis using Suc subsequence_index_Suc
-                        by (smt (verit, ccfv_SIG) Suc_leD diff_Suc_Suc diff_diff_cancel diff_le_self dual_order.strict_trans2 not_less_eq_eq verit_comp_simplify1(3) zero_less_diff)
+                        by (smt (verit, ccfv_SIG) Suc_leD diff_Suc_Suc diff_diff_cancel diff_le_self dual_order.strict_trans2 not_less_eq_eq alethe_comp_simplify1(3) zero_less_diff)
                     qed
                   qed
                 qed

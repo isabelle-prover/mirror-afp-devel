@@ -404,7 +404,7 @@ proof
               thus "False" using \<open>energy_Min A = {}\<close> by auto
             qed
             thus ?thesis unfolding enumerate_decreasing.simps
-              by (metis (mono_tags, lifting) empty_Collect_eq verit_sko_ex')
+              by (metis (mono_tags, lifting) empty_Collect_eq alethe_sko_ex')
           qed
 
           have "j - (Suc i) = x" using Suc

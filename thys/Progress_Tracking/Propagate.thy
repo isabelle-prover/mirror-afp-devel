@@ -812,7 +812,7 @@ proof -
   from t'(1) have cases: "0 > zcount (c_work c loc1) t' \<or>
              (t' \<in>#\<^sub>z (zmset_frontier (c_pts c loc1) + union_frontiers c loc1))"
     using assms(2)
-    apply (clarsimp intro!: verit_forall_inst(6) simp: inv_imps_work_sum_def not_less)
+    apply (clarsimp intro!: alethe_forall_inst(6) simp: inv_imps_work_sum_def not_less)
     apply (metis add_pos_nonneg mem_zmset_frontier member_frontier_pos_zmset obtain_frontier_elem zcount_empty zcount_ne_zero_iff zcount_union zmset_frontier_empty)
     done
   then show ?thesis

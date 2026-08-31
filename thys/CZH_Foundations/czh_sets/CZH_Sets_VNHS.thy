@@ -886,7 +886,7 @@ proof-
     have "y = 0 \<or> y \<in>\<^sub>\<circ> x"
     proof(cases \<open>x = 0\<close>)
       case False then show ?thesis 
-        unfolding y_def by (metis (mono_tags, lifting) verit_sko_ex' vemptyE)
+        unfolding y_def by (metis (mono_tags, lifting) alethe_sko_ex' vemptyE)
     qed (simp add: y_def)
     with \<open>x \<in>\<^sub>\<circ> A\<close> show "y \<in>\<^sub>\<circ> vinsert 0 (\<Union>\<^sub>\<circ>A)" by clarsimp
   qed

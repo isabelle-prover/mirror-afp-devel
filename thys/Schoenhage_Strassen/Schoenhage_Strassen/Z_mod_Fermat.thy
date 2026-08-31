@@ -712,7 +712,7 @@ lemma add_take_drop_carry_aux:
   assumes "length xs = e + 1"
   assumes "e \<ge> 1"
   shows "length xs' \<le> e \<or> (xs' = replicate e False @ [True] \<and> xs = replicate e True @ [True])"
-proof (intro verit_and_neg(3))
+proof (intro alethe_and_neg(3))
   assume a: "\<not> (length xs' \<le> e)"
   then have "length xs' \<ge> e + 1" by simp
   moreover have "length xs' \<le> e + 1"

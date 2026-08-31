@@ -199,7 +199,7 @@ proof (induct v i \<phi> rule: SAT_VIO.induct)
     from \<tau>_mono have j0: "\<tau> \<sigma> 0 \<le> \<tau> \<sigma> j" by auto
     then have "\<tau> \<sigma> i < \<tau> \<sigma> j + left I" using VOnceOut by linarith
     then have "\<delta> \<sigma> i j < left I"
-      using VOnceOut less_\<tau>D verit_comp_simplify1(3) by fastforce
+      using VOnceOut less_\<tau>D alethe_comp_simplify1(3) by fastforce
     then have "\<not> mem (\<delta> \<sigma> i j) I" by auto }
   then show ?case
     by auto

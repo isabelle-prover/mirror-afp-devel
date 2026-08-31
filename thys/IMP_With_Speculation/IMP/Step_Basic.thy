@@ -177,7 +177,7 @@ lemma finalB_iff:
   (\<exists>y. prog!pc = Input T y \<and> ibT = LNil) \<or> 
   (\<exists>y. prog!pc = Input U y \<and> ibUT = LNil)"
 using finalB_iff_aux[of pc s ibT ibUT] unfolding finalB_def final_def 
-using verit_comp_simplify1(3) by blast
+using alethe_comp_simplify1(3) by blast
 
 
 (* *)

@@ -469,7 +469,7 @@ lemma random_member_singleton [simp]: "random_member {|a|} = Some a"
 lemma random_member_is_member:
   "random_member ss = Some s \<Longrightarrow> s |\<in>| ss"
   apply (simp add: random_member_def)
-  by (metis equalsffemptyI option.distinct(1) option.inject verit_sko_ex_indirect)
+  by (metis equalsffemptyI option.distinct(1) option.inject alethe_sko_ex_indirect)
 
 lemma random_member_None[simp]: "random_member ss = None = (ss = {||})"
   by (simp add: random_member_def)

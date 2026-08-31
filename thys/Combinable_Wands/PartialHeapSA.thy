@@ -541,7 +541,7 @@ proof -
     have "pgte (get_m a l) (get_m b l)"
       by (meson assms(2) greater_mask_equiv_def)
     then have "get_m a l = padd (get_m b l) (SOME p. get_m a l = padd (get_m b l) p)"
-      by (simp add: p_greater_exists verit_sko_ex')
+      by (simp add: p_greater_exists alethe_sko_ex')
     then show "get_m a l = add_masks (get_m b) (\<lambda>l. SOME p. get_m a l = padd (get_m b l) p) l"
       by simp
   qed

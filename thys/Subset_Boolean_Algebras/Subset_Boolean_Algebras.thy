@@ -219,7 +219,7 @@ proof
     have 1169: "\<And>x y z . - x \<squnion> (- (- x \<squnion> - y) \<squnion> z) = y \<squnion> (- (x \<squnion> y) \<squnion> z)"
       using 1096 1122 by metis
     have 1227: "\<And>x y . - x \<squnion> - (- x \<squnion> (y \<squnion> (x \<squnion> - (- x \<squnion> - (y \<squnion> x))))) = - x \<squnion> - (y \<squnion> x)"
-      using 3 4 969 1122 by smt
+      using 3 4 969 1122 supply [[smt_trace,show_types]]by smt
     have 1230: "\<And>x y . - x \<squnion> - (- x \<squnion> (- y \<squnion> (- x \<squnion> - (y \<squnion> - (y \<squnion> x))))) = y \<squnion> - (y \<squnion> x)"
       using 3 4 966 1122 by smt
     have 1234: "\<And>x y . - x \<squnion> - (- x \<squnion> (- x \<squnion> (- y \<squnion> - (y \<squnion> - (x \<squnion> y))))) = y \<squnion> - (x \<squnion> y)"

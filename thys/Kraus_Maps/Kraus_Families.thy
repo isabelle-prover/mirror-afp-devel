@@ -5970,7 +5970,7 @@ next
   have *: \<open>{(F, xa). (F, xa) = x \<and> f xa = f y \<and> (\<exists>r>0. E = r *\<^sub>R F)} = {(E,y)}\<close>
     apply (subgoal_tac \<open>\<exists>r>0. E = r *\<^sub>R E\<close>)
      apply (auto intro!: simp: Ey)[1]
-    by (metis scaleR_simps(12) verit_comp_simplify(28))
+    by (metis scaleR_simps(12) alethe_comp_simplify(28))
   have 1: \<open>(norm E)\<^sup>2 = kf_element_weight (kf_filter (\<lambda>x. f x = f y) \<EE>) E\<close>
     by (auto simp add: kf_element_weight_def kf_similar_elements_def kf_filter.rep_eq * Rep\<EE>)
   have 2: \<open>z = f y\<close> if \<open>(norm F)\<^sup>2 = kf_element_weight (kf_filter (\<lambda>x. f x = z) \<EE>) F\<close> and \<open>F \<noteq> 0\<close> for F z

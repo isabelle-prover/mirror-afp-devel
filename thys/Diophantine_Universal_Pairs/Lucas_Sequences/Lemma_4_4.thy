@@ -43,7 +43,7 @@ proof -
     using lucas_exp_growth_lt[of "U*(V+1)" "2*X-2"] min_UV by auto
   have minU2V: "U^2*V > 1"
     using assms minU less_1_mult mult.right_neutral one_add_one power2_eq_square
-        verit_comp_simplify1(3) verit_la_disequality
+        alethe_comp_simplify1(3) alethe_la_disequality
     by (metis less_iff_succ_less_eq)
   hence min_1: "\<psi> (U^2*V) (X+1) \<ge> (U^2*V-1)^X"
     using lucas_exp_growth_gt[of "U^2*V" "X-1"] assms by auto

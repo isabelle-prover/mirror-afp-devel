@@ -84,7 +84,7 @@ next
     moreover have "f x < 1" "f x \<ge> 0" using insert.prems by auto
     ultimately show ?thesis
       by (metis basic_trans_rules(20) basic_trans_rules(23) more_arith_simps(6) 
-          mult_left_less_imp_less verit_comp_simplify1(3)) 
+          mult_left_less_imp_less alethe_comp_simplify1(3)) 
   qed
 qed
 
@@ -351,7 +351,7 @@ lemma Union_bound_obtain_compl:
 proof -
   have "prob (space M - \<Union>A) > 0" using Union_bound_avoid assms by simp
   then show ?thesis using that prob_gt_zero_obtain
-    by (metis all_not_in_conv measure_empty verit_comp_simplify(2) verit_comp_simplify1(3))
+    by (metis all_not_in_conv measure_empty alethe_comp_simplify(2) alethe_comp_simplify1(3))
 qed
 
 lemma Union_bound_obtain_compl_fun:

@@ -970,7 +970,7 @@ next
     moreover have "grd P' (i+2) = grd P (i+1)"
       using refine_grd_arg_gt[of "lower_tick P sqp" P sqp P' "i+1"] \<open>\<not> i < k\<close>
         assms calculation i_def k_def refine_eq
-      by (metis is_num_normalize(1) one_add_one verit_comp_simplify1(3)
+      by (metis is_num_normalize(1) one_add_one alethe_comp_simplify1(3)
           zle_add1_eq_le)
     ultimately show ?thesis unfolding grd_max_def idx_max_img_def i_def
       by (simp add: add.commute)
@@ -1358,7 +1358,7 @@ proof -
     have lq: "\<And>k. j \<le> k \<Longrightarrow> L k = L' k"
       by (metis L'_def L_def \<open>clmm_dsc P'\<close> assms(3) assms(5) clmm_dsc_grid(2)
           j_def lower_tick_eq lower_tick_lt order.trans restrict_pool_ge(1)
-          restrict_pool_grd verit_comp_simplify1(3))
+          restrict_pool_grd alethe_comp_simplify1(3))
     hence "L' j * (inverse sqp' - inverse (grd P' (j + 1))) =
         L j * (inverse sqp' - inverse (grd P (j + 1)))"
       using grd assms(3) by simp
@@ -1566,7 +1566,7 @@ lemma slice_pool_cst_fees:
   and "\<And>i. fee P i = phi"
 shows "\<And>i. fee P' i = phi"
   by (metis assms(2,3) refine_cst_fees restrict_pool_ge(2) restrict_pool_lt(2)
-      slice_poolD verit_comp_simplify1(3))
+      slice_poolD alethe_comp_simplify1(3))
 
 lemma slice_pool_quote_gross_leq:
   assumes "clmm_dsc P"
@@ -2988,7 +2988,7 @@ proof -
   have "0 \<le> y2'"
     by (metis \<open>clmm_dsc P''\<close> \<open>sqp1 < sqp'\<close> quote_gross_imp_sqp_lt
         diff_ge_0_iff_ge eucl_less_le_not_le linorder_less_linear
-        verit_comp_simplify1(2) assms(7))
+        alethe_comp_simplify1(2) assms(7))
   show "y = y1 + y2'"
   proof -
     have "quote_gross P sqp' = y + quote_gross P sqp1"
@@ -3159,7 +3159,7 @@ proof -
   have "0 \<le> y2'"
     by (metis \<open>clmm_dsc P''\<close> \<open>sqp1 < sqp'\<close> quote_gross_imp_sqp_lt
         diff_ge_0_iff_ge eucl_less_le_not_le linorder_less_linear
-        verit_comp_simplify1(2) y2'_def)
+        alethe_comp_simplify1(2) y2'_def)
   have "y = y1 + y2'" using assms combo_joint_quote_gross_decomp y2'_def P''_def
     by blast
   have "quote_swap P sqp1 y = base_net P sqp1 - base_net P sqp'"

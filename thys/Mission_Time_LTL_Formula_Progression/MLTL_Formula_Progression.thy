@@ -1446,7 +1446,7 @@ next
      (Until_mltl \<phi>1 (a - 1) (b - 1) \<phi>2)
     \<le> b + max (complen_mltl \<phi>1 - 1) (complen_mltl \<phi>2) - 1"
           using * ** unfolding complen_mltl.simps 
-          by (metis le_refl less_one ordered_cancel_comm_monoid_diff_class.add_diff_assoc2 verit_comp_simplify1(3))
+          by (metis le_refl less_one ordered_cancel_comm_monoid_diff_class.add_diff_assoc2 alethe_comp_simplify1(3))
         then have ?case
           using ***
           by auto
@@ -1481,7 +1481,7 @@ next
      (Until_mltl \<phi>1 (a - 1) (b - 1) \<phi>2)
     \<le> b + max (complen_mltl \<phi>1 - 1) (complen_mltl \<phi>2) - 1"
           using * ** unfolding complen_mltl.simps 
-          by (metis le_refl less_one ordered_cancel_comm_monoid_diff_class.add_diff_assoc2 verit_comp_simplify1(3))
+          by (metis le_refl less_one ordered_cancel_comm_monoid_diff_class.add_diff_assoc2 alethe_comp_simplify1(3))
         then have ?case
           using ***
           by auto

@@ -339,7 +339,7 @@ definition "(omega::(('a::prime_card) mod_ring)) =
 lemma omega_properties: "omega^n = 1" "omega \<noteq> 1" 
   "(\<forall> m. omega^m = 1 \<and> m\<noteq>0 \<longrightarrow> m \<ge> n)"
   unfolding omega_def using omega_exists 
-  by (smt (verit, best) verit_sko_ex')+
+  by (smt (verit, best) alethe_sko_ex')+
 
 text \<open>We define the multiplicative inverse $\mu$ of $\omega$.\<close>
 

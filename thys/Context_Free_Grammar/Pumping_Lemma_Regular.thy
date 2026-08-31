@@ -53,7 +53,7 @@ using assms proof (induction w arbitrary: P m rule: length_induct)
     from "1.prems"(2) w_len have "w \<noteq> []" by auto
     with "1.prems"(3) False have b_in: "\<exists>b\<noteq>a. b \<in> P" by force
     from a_in b_in "1.prems"(2) "1.prems"(1) have "m \<ge> 2"
-      by (metis Suc_1 card_1_singletonE not_less_eq_eq singletonD verit_la_disequality)
+      by (metis Suc_1 card_1_singletonE not_less_eq_eq singletonD alethe_la_disequality)
     hence a2: "m-1 \<ge> 1" by simp
     from False "1.prems"(3) have a3: "\<forall>i<length w. w ! i \<in> ?P'"
       using DiffD2 by auto

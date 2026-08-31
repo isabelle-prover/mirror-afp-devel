@@ -444,7 +444,7 @@ next
   then show ?case  
     using  hamming_update_2[of "x'#xs'" "ys"]
     by (metis  hamming_symmetry hamming_update_2 length_list_update list_update_beyond
-               list_update_id verit_comp_simplify1(3))
+               list_update_id alethe_comp_simplify1(3))
   qed
 
 lemma hamming_update_n:

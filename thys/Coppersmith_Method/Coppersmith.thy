@@ -713,7 +713,7 @@ proof -
         using h1 h2 prod_is by simp
       also have "... =
         root 2 (real (M ^ ((2 - 1) * d * 2)))"
-        using Groups.mult_ac(3) Suc_1 Suc_eq_plus1 add_diff_cancel_left' of_nat_0_le_iff pos2 power_0 power_mult real_root_pos2 semiring_1_class.of_nat_power verit_minus_simplify(1) verit_prod_simplify(2)
+        using Groups.mult_ac(3) Suc_1 Suc_eq_plus1 add_diff_cancel_left' of_nat_0_le_iff pos2 power_0 power_mult real_root_pos2 semiring_1_class.of_nat_power alethe_minus_simplify(1) alethe_prod_simplify(2)
         by (smt (verit, ccfv_threshold) h1 h2 of_nat_mult prod_is)
       finally have "real (\<Prod>k<d * h. M ^ (h - 1 - nat \<lfloor>real k / real d\<rfloor>)) =
     root 2 (real (M ^ ((h - 1) * d * h)))"
@@ -721,7 +721,7 @@ proof -
     } moreover {assume *: "h > 2"
       have prod_split: "real (\<Prod>k<d * h. M ^ (h - 1 - nat \<lfloor>real k / real d\<rfloor>)) =
         real (\<Prod>k<d*(h-1). M ^ (h - 1 - nat \<lfloor>real k / real d\<rfloor>)) * real (\<Prod>k\<in>{d*(h-1)..<d * h}. M ^ (h - 1 - nat \<lfloor>real k / real d\<rfloor>))"
-        by (smt (verit) Num.of_nat_simps(5) atLeast0LessThan diff_le_self mult.commute mult_less_cancel1 prod.atLeastLessThan_concat verit_comp_simplify1(3) zero_order(1))
+        by (smt (verit) Num.of_nat_simps(5) atLeast0LessThan diff_le_self mult.commute mult_less_cancel1 prod.atLeastLessThan_concat alethe_comp_simplify1(3) zero_order(1))
       have ind_dec: "(d * (h - 1)) < d * h"
         using less.prems by simp
       have ind_still: "1 < h - 1" using * by auto
@@ -749,7 +749,7 @@ proof -
         then have "M ^ ((h-1)- nat \<lfloor>real k / real d\<rfloor>)  = M^(1 + (h-1)- 1 -nat \<lfloor>real k / real d\<rfloor>)"
           by argo
         then show ?thesis using gteq sum_pow[of "1" "(h - 1) - 1 - nat \<lfloor>real k / real d\<rfloor>"]
-          by (metis (no_types, opaque_lifting) Groups.mult_ac(2) diff_commute div_le_dividend floor_divide_of_nat_eq k_is le_add_diff_inverse less_irrefl_nat less_mult_imp_div_less nat_int nonzero_mult_div_cancel_right power_one_right verit_prod_simplify(1) zero_less_diff zero_order(1))
+          by (metis (no_types, opaque_lifting) Groups.mult_ac(2) diff_commute div_le_dividend floor_divide_of_nat_eq k_is le_add_diff_inverse less_irrefl_nat less_mult_imp_div_less nat_int nonzero_mult_div_cancel_right power_one_right alethe_prod_simplify(1) zero_less_diff zero_order(1))
       qed
       then have "real (\<Prod>k<d * (h-1). M ^ ((h-1)- nat \<lfloor>real k / real d\<rfloor>)) = 
       real (\<Prod>k<d * (h-1). M* M ^ ((h-1) - 1 - nat \<lfloor>real k / real d\<rfloor>))"
@@ -869,7 +869,7 @@ proof -
     by (smt (verit, ccfv_SIG) Num.of_nat_simps(2) One_nat_def divide_less_cancel nat_less_real_le of_nat_0_less_iff of_nat_add of_nat_ceiling of_nat_diff of_nat_le_iff of_nat_less_0_iff plus_1_eq_Suc)
   then have "d*h \<ge> ((d-1)/(d*(eps)) + 1)"
     using assms 
-    by (metis Groups.mult_ac(2) Num.of_nat_simps(5) less_divide_eq of_nat_0_less_iff verit_comp_simplify1(3))
+    by (metis Groups.mult_ac(2) Num.of_nat_simps(5) less_divide_eq of_nat_0_less_iff alethe_comp_simplify1(3))
   then have "d*h - 1\<ge> (d-1)/(d*(eps))"
     using assms 
     by linarith

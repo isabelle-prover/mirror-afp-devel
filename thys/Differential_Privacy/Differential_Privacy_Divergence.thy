@@ -381,7 +381,7 @@ proof(subst DP_divergence_forall[THEN sym])
       proof(rule subsetI, safe)
         fix x assume "x \<in> space (sum_measure M N)" and "0 < (dM x - exp \<epsilon>1 * dN x) * min 1 (exp \<epsilon>2 * measure (g x) A)"
         hence "0 < (dM x - exp \<epsilon>1 * dN x) \<and> 0 < min 1 (exp \<epsilon>2 * measure (g x) A)"
-          by (metis exp_gt_zero lambda_one min.absorb4 min.order_iff mult_pos_pos vector_space_over_itself.scale_zero_right verit_comp_simplify1(3) zero_less_measure_iff zero_less_mult_pos2)
+          by (metis exp_gt_zero lambda_one min.absorb4 min.order_iff mult_pos_pos vector_space_over_itself.scale_zero_right alethe_comp_simplify1(3) zero_less_measure_iff zero_less_mult_pos2)
         thus "0 \<le> dM x - exp \<epsilon>1 * dN x"
           by auto
       qed

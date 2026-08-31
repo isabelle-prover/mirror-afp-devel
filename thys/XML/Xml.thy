@@ -828,7 +828,7 @@ proof -
   define d where "d = integer_of_char c" 
   have "d \<le> 59 \<longleftrightarrow> (d \<le> 57 \<or> d = 58 \<or> d = 59)" for d :: int by auto 
   hence "d \<le> 59 \<longleftrightarrow> (d \<le> 57 \<or> d = 58 \<or> d = 59)"
-    by (metis int_of_integer_numeral integer_eqI integer_less_eq_iff verit_comp_simplify1(2))
+    by (metis int_of_integer_numeral integer_eqI integer_less_eq_iff alethe_comp_simplify1(2))
   thus ?thesis 
     unfolding is_letter_pre_code in_set_simps Let_def d_def 
       less_eq_char_code char_eq_via_integer_eq

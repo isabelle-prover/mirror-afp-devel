@@ -535,7 +535,7 @@ proof -
       by (simp add: next_propagate'_def)
   }
   with propagate show ?thesis
-    by (simp add: verit_sko_ex')
+    by (simp add: alethe_sko_ex')
 qed
 
 lemma propagate_all_imp_InvGlobPointstampsEq:
@@ -576,7 +576,7 @@ lemma lift_propagate_inv_propagate_all:
   apply clarify
   subgoal for c loc
     apply (drule exists_next_propagate')
-    apply (simp add: assms(1) verit_sko_ex')
+    apply (simp add: assms(1) alethe_sko_ex')
     done
   done
 
@@ -1043,7 +1043,7 @@ proof -
       apply (rule while_option_rule[of P ?b ?f "prop_config c0 p"])
         apply (rule n_p)
          apply assumption
-        apply (rule iffD1[OF verit_sko_ex])
+        apply (rule iffD1[OF alethe_sko_ex])
         apply (elim exE)
         apply (rule exists_next_propagate')
         apply assumption

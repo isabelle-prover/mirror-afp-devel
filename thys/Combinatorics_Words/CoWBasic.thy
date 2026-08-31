@@ -233,7 +233,7 @@ lemmas concat_morph = concat_append
 lemmas cancel = same_append_eq and
   cancel_right = append_same_eq
 
-lemmas disjI = verit_and_neg(3)
+lemmas disjI = alethe_and_neg(3)
 
 lemma rev_in_conv: "rev u \<in> A \<longleftrightarrow> u \<in> rev ` A"
   by force
@@ -5101,7 +5101,7 @@ proof
   proof (rule conjI)
     show "\<pi> w = w \<or> \<pi> w \<cdot> w \<noteq> w \<cdot> \<pi> w"
       using comm_prim [OF min_per_primitive[OF \<open>w \<noteq> \<epsilon>\<close>] \<open>primitive w\<close>]
-      by (intro verit_or_neg(1))
+      by (intro alethe_or_neg(1))
   qed fact
 next
   assume asm: "w \<noteq> \<epsilon> \<and> (\<pi> w = w \<or> \<pi> w \<cdot> w \<noteq> w \<cdot> \<pi> w)"

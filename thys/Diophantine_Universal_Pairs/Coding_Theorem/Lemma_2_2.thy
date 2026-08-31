@@ -27,7 +27,7 @@ proof -
   hence "a^totient(nat m) mod m = 1"
     using  Residues.residues.euler_theorem[of "m" "a"] gcd 
     by (metis abs_le_zero_iff abs_one mod_pos_pos_trivial
-        residues.m_gt_one residues.res_eq_to_cong verit_la_generic)
+        residues.m_gt_one residues.res_eq_to_cong alethe_la_generic)
   hence 0: "(a^totient(nat m) - 1) mod m = 0 "
     by (metis diff_self mod_0 mod_diff_right_eq)
 

@@ -110,7 +110,7 @@ proof -
       {xors.  xor_hash \<omega>' xors = \<alpha>'} = 1/2^n"
       by (simp add: "*"(2) assms(1) prob_random_xors_xor_hash)
     ultimately have ?thesis
-      by (metis (full_types) Groups.mult_ac(2) four_x_squared power2_eq_square power_mult power_one_over verit_prod_simplify(2))
+      by (metis (full_types) Groups.mult_ac(2) four_x_squared power2_eq_square power_mult power_one_over alethe_prod_simplify(2))
   }
   moreover {
     assume *: "dom \<alpha> \<noteq> {..<n} \<or> dom \<alpha>' \<noteq> {..<n}"

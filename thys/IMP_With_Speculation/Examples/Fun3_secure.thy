@@ -131,7 +131,7 @@ lemma \<Delta>1_implies: "\<Delta>1 num
    cfgs4 = [] \<and> pcOf cfg4 \<noteq> 1 \<and> pcOf cfg4 < 8"
   unfolding \<Delta>1_defs 
   apply(intro conjI) apply simp_all
-  using One_nat_def verit_eq_simplify(10,12) apply linarith
+  using One_nat_def alethe_eq_simplify(10,12) apply linarith
   apply (metis list.map_disc_iff)
   by linarith
 

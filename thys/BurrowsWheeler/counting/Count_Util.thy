@@ -301,7 +301,7 @@ proof (rule ccontr)
   have "card {0..<i} = i"
     by auto
   ultimately show False
-    by (metis assms(2) card_mono finite_atLeastLessThan verit_comp_simplify1(3))
+    by (metis assms(2) card_mono finite_atLeastLessThan alethe_comp_simplify1(3))
 qed
 
 lemma sorted_nth_gr_gen:

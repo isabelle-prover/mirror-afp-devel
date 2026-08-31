@@ -636,7 +636,7 @@ lemma darcs_mset_count_le_subset:
 
 lemma wf_darcs_sub: "\<lbrakk>xs |\<subseteq>| ys; wf_darcs (Node r' ys)\<rbrakk> \<Longrightarrow> wf_darcs (Node r xs)"
   unfolding wf_darcs_def using darcs_mset_count_le_subset
-  by (smt (verit, best) count_greater_eq_one_iff le_trans verit_la_disequality)
+  by (smt (verit, best) count_greater_eq_one_iff le_trans alethe_la_disequality)
 
 lemma wf_darcs_sucs: "\<lbrakk>wf_darcs t; x \<in> fset (sucs t)\<rbrakk> \<Longrightarrow> wf_darcs (Node r {|x|})"
   using wf_darcs_sub[of "{|x|}" "sucs t" "root t"] by (simp add: less_eq_fset.rep_eq)

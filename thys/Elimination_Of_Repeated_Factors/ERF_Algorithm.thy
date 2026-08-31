@@ -519,7 +519,7 @@ proof -
     also have "\<dots> = radical f" 
     by (metis P1_P2_intersect \<open>P2 = {}\<close> f_nonzero fac_set_P1_P2 fac_set_def finites(2) finites(3) 
       fm_def one_neq_zero prime_factorization_1 prime_factorization_normalize prod.union_disjoint 
-      radical_1 radical_def set_mset_empty verit_prod_simplify(2))
+      radical_1 radical_def set_mset_empty alethe_prod_simplify(2))
     finally show ?thesis unfolding fm_def by auto
   qed
   show *: "degree f = 0 \<or> radical f = normalize f" using or rad by auto

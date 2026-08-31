@@ -117,7 +117,7 @@ next
   hence \<alpha>B2: "\<alpha> \<ge> sqrt 5"
     using DiscB4 apply simp by (metis DiscB4 \<alpha>_def of_int_le_iff of_int_numeral real_sqrt_le_iff)
   hence \<alpha>_pos: "\<alpha> > 0"
-    by (meson not_numeral_le_zero order.trans real_sqrt_le_0_iff verit_comp_simplify1(3))
+    by (meson not_numeral_le_zero order.trans real_sqrt_le_0_iff alethe_comp_simplify1(3))
   define \<beta>p where "\<beta>p = (A+\<alpha>)/2"
   define \<beta>m where "\<beta>m = (A-\<alpha>)/2"
   have "\<alpha>^2 < A^2" using \<alpha>_def2 by auto

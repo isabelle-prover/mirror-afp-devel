@@ -878,7 +878,7 @@ lemma curve_ord_n7:
   shows   "P [^]\<^bsub>curve\<^esub> d1 \<noteq> P [^]\<^bsub>curve\<^esub> d2"
   apply (cases "d1 < d2") 
   using assms curve_ord_n6 apply blast 
-  by (metis assms curve_ord_n6 verit_comp_simplify(3) verit_la_disequality) 
+  by (metis assms curve_ord_n6 alethe_comp_simplify(3) alethe_la_disequality) 
 
 lemma curve_cycle_n1:
   assumes "on_curve A B P"  "P \<noteq> \<one>\<^bsub>curve\<^esub>"  "point_mult A n P = \<one>\<^bsub>curve\<^esub>"  "prime (n::nat)" 

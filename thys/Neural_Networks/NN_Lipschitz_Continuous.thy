@@ -2662,7 +2662,7 @@ lemma relu_lipschitz_fv: "1-lipschitz_on (X::(real, 'b::finite) fixed_vec set) (
 lemma identity_lipschitz_fv: "1-lipschitz_on (X) (map_fixed_vec identity)"
   unfolding lipschitz_on_def relu_def map_fixed_vec_def  map_vec_def 
   by (auto, smt (verit) Rep_fixed_vec_inverse dim_vec eq_vecI identity_def 
-      index_vec verit_comp_simplify1(2)) 
+      index_vec alethe_comp_simplify1(2)) 
 
 lemma softplus_lipschitz': " \<And>x y. (x::(real, 'b::finite) fixed_vec) \<in> X \<Longrightarrow>
            (y::(real, 'b::finite) fixed_vec) \<in> X \<Longrightarrow>

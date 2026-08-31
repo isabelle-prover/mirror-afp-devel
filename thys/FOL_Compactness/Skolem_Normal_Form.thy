@@ -313,7 +313,7 @@ proof -
         qed
         then show "I\<^bold>,\<beta> (x := thex (map \<beta> (sorted_list_of_set (FV (\<^bold>\<exists>x\<^bold>. \<phi>))))) \<Turnstile> \<phi>"
           by (metis (mono_tags, lifting) dom_M_I_eq ex_a_mod_phi is_valuation_def that thex_def
-              verit_sko_ex')
+              alethe_sko_ex')
         show "dom I = dom M"
           using dom_M_I_eq by auto
         show "\<And>p. intrp_rel I p = intrp_rel M p"

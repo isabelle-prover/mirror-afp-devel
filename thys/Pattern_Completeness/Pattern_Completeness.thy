@@ -149,7 +149,7 @@ proof -
         imp_conjL flip:ex_simps(1) all_simps(6) split: prod.splits
         cong: all_cong1 ex_cong1 conj_cong imp_cong)
     apply (subst all_comm)
-    by (simp add: ac_simps verit_bool_simplify(4) o_def)
+    by (simp add: ac_simps alethe_bool_simplify(4) o_def)
   also have "?L = dom \<T>\<^sub>B(?C,?D,\<emptyset>)" (is "_ = ?R") 
   proof 
     {
