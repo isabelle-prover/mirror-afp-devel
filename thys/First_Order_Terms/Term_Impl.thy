@@ -226,6 +226,15 @@ private fun in_poss :: "pos \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
 
 lemma poss_code[code_unfold]:
   "p \<in> poss t = in_poss p t" by (induct rule: in_poss.induct) auto
+
+private fun in_funposs :: "pos \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+  where
+    "in_funposs (Cons i p) (Fun f ts) \<longleftrightarrow> i < length ts \<and> in_funposs p (ts ! i)" |
+    "in_funposs [] (Fun _ _) \<longleftrightarrow> True" |
+    "in_funposs p (Var _) \<longleftrightarrow> False"
+
+lemma funposs_code[code_unfold]:
+  "p \<in> fun_poss t = in_funposs p t" by (induct rule: in_funposs.induct) auto
 end
 
 subsection\<open>List of Distinct Variables\<close>
