@@ -60,9 +60,9 @@ session CakeML = LEM +
     CakeML_Quickcheck
     CakeML_Compiler
 
-  theories [condition = "ISABELLE_CAKEML_HOME,ISABELLE_CC", document = false]
+  theories [condition = "$ISABELLE_CAKEML_HOME,$ISABELLE_CC", document = false]
     "Tests/Compiler_Test"
-  theories [condition = "ISABELLE_GHC", document = false]
+  theories [condition = "$ISABELLE_GHC", document = false]
     "Tests/Code_Test_Haskell"
 
   document_files
