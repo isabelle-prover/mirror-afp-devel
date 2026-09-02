@@ -122,6 +122,82 @@ proof -
     by (simp add: z0_def)
 qed
 
+(* TODO Move *)
+definition theta_11' :: "complex \<Rightarrow> complex" ("\<theta>\<^sub>1\<^sub>1'''(_')") where
+  "theta_11' = deriv theta_11"
+
+lemma has_field_derivative_theta_11' [derivative_intros]:
+  assumes "(f has_field_derivative f') (at x within A)"
+  shows   "((\<lambda>x. theta_11 (f x)) has_field_derivative (f' * theta_11' (f x))) (at x within A)"
+proof -
+  have *: "theta_11 analytic_on {f x}" using Im_ratio_pos
+    by (auto simp: theta_11_def [abs_def] intro!: analytic_intros)
+  have "((theta_11 \<circ> f) has_field_derivative (theta_11' (f x) * f')) (at x within A)"
+    by (rule DERIV_chain) (auto simp: theta_11'_def intro!: analytic_derivI assms *)
+  thus ?thesis
+    by (simp add: mult_ac o_def)
+qed
+
+lemma theta_11'_uminus: "\<theta>\<^sub>1\<^sub>1'(-z) = \<theta>\<^sub>1\<^sub>1'(z)" for z
+proof -
+  have "((theta_11 \<circ> (\<lambda>z. -z)) has_field_derivative (\<theta>\<^sub>1\<^sub>1'(-z) * (-1))) (at z)" 
+    by (rule DERIV_chain) (auto intro!: derivative_eq_intros)
+  also have "theta_11 \<circ> (\<lambda>z. -z) = (\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z))"
+    by (auto simp: o_def theta_11_def)
+  finally have "((\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z)) has_field_derivative (-\<theta>\<^sub>1\<^sub>1'(-z))) (at z)"
+    by simp
+  moreover have "((\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z)) has_field_derivative (-\<theta>\<^sub>1\<^sub>1'(z))) (at z)"
+    by (auto intro!: derivative_eq_intros)
+  ultimately have "-\<theta>\<^sub>1\<^sub>1'(-z) = -\<theta>\<^sub>1\<^sub>1'(z)"
+    by (rule DERIV_unique)
+  thus ?thesis
+    by simp
+qed
+
+(* TODO Move *)
+definition fps_theta_11 :: "complex fps" 
+  where "fps_theta_11 = fps_expansion theta_11 0"
+
+lemma has_fps_expansion_theta_11 [fps_expansion_intros]: "theta_11 has_fps_expansion fps_theta_11"
+  unfolding fps_theta_11_def theta_11_def
+  by (intro analytic_at_imp_has_fps_expansion_0 analytic_intros) (use Im_ratio_pos in auto)
+
+lemma fps_theta_11_0 [simp]: "fps_nth fps_theta_11 0 = 0"
+  using has_fps_expansion_imp_0_eq_fps_nth_0[OF has_fps_expansion_theta_11]
+  by (simp add: theta_11_def)
+
+lemma fps_theta_11_1: "fps_nth fps_theta_11 (Suc 0) = \<theta>\<^sub>1\<^sub>1'(0)"
+  using fps_nth_fps_expansion[OF has_fps_expansion_theta_11, of 1] by (simp add: theta_11'_def)
+
+lemma theta_11'_0_eq: "\<theta>\<^sub>1\<^sub>1'(0) = -of_real pi * \<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0) / \<omega>1"
+proof -
+  have "(((\<lambda>x. jacobi_theta_11 x \<tau>) \<circ> (\<lambda>x. x / \<omega>1)) has_field_derivative 
+          (deriv (\<lambda>x. jacobi_theta_11 x \<tau>) (0 / \<omega>1) * (1 / \<omega>1))) (at 0)"
+    unfolding fps_theta_11_1 using Im_ratio_pos
+    by (intro DERIV_chain analytic_derivI analytic_intros)
+       (auto intro!: derivative_eq_intros)
+  hence "(theta_11 has_field_derivative (deriv (\<lambda>x. jacobi_theta_11 x \<tau>) 0 / \<omega>1)) (at 0)"
+    by (simp add: o_def theta_11_def [abs_def])
+  hence "fps_nth fps_theta_11 (Suc 0) = 
+               -(of_real pi * theta_00 0 * theta_01 0 * theta_10 0 / \<omega>1)"
+    unfolding fps_theta_11_1 theta_11'_def using Im_ratio_pos
+    by (intro DERIV_imp_deriv) 
+       (simp add: deriv_jacobi_theta_11_at_0 theta_00_def theta_01_def theta_10_def mult_ac)
+  thus ?thesis
+    by (simp add: fps_theta_11_1)
+qed
+
+lemma theta_11'_0_nonzero [simp]: "\<theta>\<^sub>1\<^sub>1'(0) \<noteq> 0"
+  by (auto simp: theta_11'_0_eq theta_00_eq_0_iff theta_01_eq_0_iff theta_10_eq_0_iff rel_def 
+                 uminus_in_lattice_iff)
+
+lemma fps_theta_11_nonzero [simp]: "fps_theta_11 \<noteq> 0"
+  using theta_11'_0_nonzero unfolding fps_theta_11_1 [symmetric] by auto
+
+lemma subdegree_fps_theta_11 [simp]: "subdegree fps_theta_11 = 1"
+  by (rule subdegreeI) (auto simp: fps_theta_11_1 theta_11'_0_nonzero)
+
+
 text \<open>
   By comparing the zeros of $\wp(z) - e_2$ and $(\vartheta_{01}(z)/\vartheta_{11}(z))^2$ we
   find that the two functions are identical up to a constant factor, which we then determine
@@ -224,12 +300,8 @@ proof -
   qed
 
   define A where "A = fps_expansion theta_01 0"
-  define B where "B = fps_expansion theta_11 0"
   have A[fps_expansion_intros]: "theta_01 has_fps_expansion A"
     unfolding A_def theta_01_def
-    by (intro analytic_at_imp_has_fps_expansion_0 analytic_intros) (use Im_ratio_pos in auto)
-  have B[fps_expansion_intros]: "theta_11 has_fps_expansion B"
-    unfolding B_def theta_11_def
     by (intro analytic_at_imp_has_fps_expansion_0 analytic_intros) (use Im_ratio_pos in auto)
 
   have A0: "fps_nth A 0 = \<theta>\<^sub>0\<^sub>1(0)"
@@ -245,34 +317,6 @@ proof -
     by (rule subdegree_eq_0)
        (use theta_01_eq_0_iff[of 0] in \<open>auto simp: A0 rel_def uminus_in_lattice_iff\<close>)
 
-  have B0: "fps_nth B 0 = 0"
-    using has_fps_expansion_imp_0_eq_fps_nth_0[OF B] by (simp add: theta_11_def)
-  have B1: "fps_nth B (Suc 0) = deriv theta_11 0"
-    using fps_nth_fps_expansion[OF B, of 1] by simp
-  have B1': "fps_nth B (Suc 0) = 
-               -(of_real pi * theta_00 0 * theta_01 0 * theta_10 0 / \<omega>1)"
-  proof -
-    have "(((\<lambda>x. jacobi_theta_11 x \<tau>) \<circ> (\<lambda>x. x / \<omega>1)) has_field_derivative 
-            (deriv (\<lambda>x. jacobi_theta_11 x \<tau>) (0 / \<omega>1) * (1 / \<omega>1))) (at 0)"
-      unfolding B1 using Im_ratio_pos
-      by (intro DERIV_chain analytic_derivI analytic_intros)
-         (auto intro!: derivative_eq_intros)
-    hence "(theta_11 has_field_derivative  (deriv (\<lambda>x. jacobi_theta_11 x \<tau>) 0 / \<omega>1)) (at 0)"
-      by (simp add: o_def theta_11_def [abs_def])
-    thus ?thesis
-      unfolding B1 using Im_ratio_pos
-      by (intro DERIV_imp_deriv) 
-         (simp add: deriv_jacobi_theta_11_at_0 theta_00_def theta_01_def theta_10_def mult_ac)
-  qed
-  have B1_nz: "fps_nth B (Suc 0) \<noteq> 0"
-    by (auto simp: B1' theta_00_eq_0_iff theta_01_eq_0_iff theta_10_eq_0_iff 
-                   rel_def uminus_in_lattice_iff)
-  have [simp]: "B \<noteq> 0"
-    using B1_nz by auto
-  have [simp]: "subdegree B = 1"
-    by (rule subdegreeI) (auto simp: B1_nz B0)
-  have B1_nz: "fps_nth B (Suc 0) \<noteq> 0"
-    using nth_subdegree_nonzero[of B] by (simp del: nth_subdegree_nonzero)
   obtain c where "\<forall>\<^sub>\<approx>z. g z = c * (\<Prod>w\<in>Z. (\<wp> z - \<wp> w) powi h w)"
     using g.in_terms_of_weierstrass_fun_even_aux[OF g_nz]
     unfolding h_def unfolding Z_def by blast
@@ -319,7 +363,8 @@ proof -
       using that by auto
   qed (auto intro!: analytic_intros)
 
-  define F where "F = ((fps_to_fls A / fps_to_fls B) ^ 2 - fls_const c * (fls_weierstrass - fls_const \<e>\<^sub>2))"
+  define F where "F = ((fps_to_fls A / fps_to_fls fps_theta_11) ^ 2 - 
+                        fls_const c * (fls_weierstrass - fls_const \<e>\<^sub>2))"
 
   have "(\<lambda>z. g z - c * (\<wp> z - \<e>\<^sub>2)) has_laurent_expansion F"
     unfolding F_def g_def
@@ -336,27 +381,29 @@ proof -
 
   have "0 = fls_nth F (-2)"
     by (simp add: \<open>F = 0\<close>)
-  also have "\<dots> = fls_nth ((fps_to_fls A / fps_to_fls B)\<^sup>2) (- 2) - c"
+  also have "\<dots> = fls_nth ((fps_to_fls A / fps_to_fls fps_theta_11)\<^sup>2) (- 2) - c"
     by (simp add: fls_weierstrass_def F_def)
-  also have "-2 = int 2 * fls_subdegree (fps_to_fls A / fps_to_fls B)"
+  also have "-2 = int 2 * fls_subdegree (fps_to_fls A / fps_to_fls fps_theta_11)"
     by (subst fls_divide_subdegree) (auto simp: fls_subdegree_fls_to_fps)
-  also have "fls_nth ((fps_to_fls A / fps_to_fls B) ^ 2) \<dots> = 
-               (fls_nth (fps_to_fls A / fps_to_fls B) (-1))\<^sup>2"
+  also have "fls_nth ((fps_to_fls A / fps_to_fls fps_theta_11) ^ 2) \<dots> = 
+               (fls_nth (fps_to_fls A / fps_to_fls fps_theta_11) (-1))\<^sup>2"
     by (subst fls_pow_base) (auto simp: fls_divide_subdegree fls_subdegree_fls_to_fps)
-  also have "-1 = fls_subdegree (fps_to_fls A) - fls_subdegree (fps_to_fls B)"
+  also have "-1 = fls_subdegree (fps_to_fls A) - fls_subdegree (fps_to_fls fps_theta_11)"
     by (simp add: fls_subdegree_fls_to_fps)
-  also have "fls_nth (fps_to_fls A / fps_to_fls B) \<dots> = \<theta>\<^sub>0\<^sub>1(0) / fps_nth B (Suc 0)"
+  also have "fls_nth (fps_to_fls A / fps_to_fls fps_theta_11) \<dots> =
+               \<theta>\<^sub>0\<^sub>1(0) / fps_nth fps_theta_11 (Suc 0)"
     by (subst fls_divide_nth_base) 
-       (auto simp: fls_subdegree_fls_to_fps A0 B1 theta_01_def)
-  finally have c_eq: "c = (\<theta>\<^sub>0\<^sub>1(0) / fps_nth B (Suc 0)) ^ 2"
+       (auto simp: fls_subdegree_fls_to_fps A0 theta_01_def)
+  finally have c_eq: "c = (\<theta>\<^sub>0\<^sub>1(0) / fps_nth fps_theta_11 (Suc 0)) ^ 2"
     by simp
 
-  have "\<wp> z = \<e>\<^sub>2 + (fps_nth B 1 / \<theta>\<^sub>0\<^sub>1(0)) ^ 2 * \<theta>\<^sub>0\<^sub>1(z) ^ 2 / \<theta>\<^sub>1\<^sub>1(z) ^ 2"
-    using g_eq'[of z] theta_01_eq_0_iff[of 0] theta_11_eq_0_iff[of z] z B1_nz
-    by (auto simp: c_eq g_def rel_def uminus_in_lattice_iff field_simps)
-  also have "(fps_nth B 1 / \<theta>\<^sub>0\<^sub>1(0)) ^ 2 * \<theta>\<^sub>0\<^sub>1(z) ^ 2 / \<theta>\<^sub>1\<^sub>1(z) ^ 2 =
+  have "\<wp> z = \<e>\<^sub>2 + (fps_nth fps_theta_11 1 / \<theta>\<^sub>0\<^sub>1(0)) ^ 2 * \<theta>\<^sub>0\<^sub>1(z) ^ 2 / \<theta>\<^sub>1\<^sub>1(z) ^ 2"
+    using g_eq'[of z] theta_01_eq_0_iff[of 0] theta_11_eq_0_iff[of z] z
+    by (auto simp: c_eq g_def rel_def uminus_in_lattice_iff field_simps fps_theta_11_1)
+  also have "(fps_nth fps_theta_11 1 / \<theta>\<^sub>0\<^sub>1(0)) ^ 2 * \<theta>\<^sub>0\<^sub>1(z) ^ 2 / \<theta>\<^sub>1\<^sub>1(z) ^ 2 =
                (of_real pi * \<theta>\<^sub>1\<^sub>0(0) * \<theta>\<^sub>0\<^sub>0(0) / \<omega>1)\<^sup>2 * \<theta>\<^sub>0\<^sub>1(z)\<^sup>2 / \<theta>\<^sub>1\<^sub>1(z)\<^sup>2"
-    by (simp add: B1' field_simps theta_01_eq_0_iff rel_def uminus_in_lattice_iff)
+    by (simp add: field_simps theta_01_eq_0_iff rel_def uminus_in_lattice_iff fps_theta_11_1
+                  theta_11'_0_eq)
   finally show ?thesis .
 qed
 

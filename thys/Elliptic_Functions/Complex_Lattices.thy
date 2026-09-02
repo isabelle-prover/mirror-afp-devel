@@ -1845,6 +1845,10 @@ lemma eventually_not_in_lattice_cosparse:
   "eventually (\<lambda>z. z \<notin> \<Lambda>) (cosparse UNIV)"
   using eventually_not_in_cosparse lattice_sparse by blast
 
+lemma eventually_not_in_lattice_at:
+  "eventually (\<lambda>z. z \<notin> \<Lambda>) (at z)"
+  using eventually_not_in_lattice_cosparse by (auto simp: eventually_cosparse_open_eq)
+
 lemma eventually_not_rel_cosparse:
   "eventually (\<lambda>z. \<not>rel z w) (cosparse UNIV)"
 proof -
@@ -1858,6 +1862,10 @@ proof -
   finally show ?thesis
     using eventually_not_in_lattice_cosparse by blast
 qed
+
+lemma eventually_not_rel_at:
+  "eventually (\<lambda>z. \<not>rel z w) (at x)"
+  using eventually_not_rel_cosparse[of w] by (auto simp: eventually_cosparse_open_eq)
 
 text \<open>
   Any non-empty set of lattice points has one lattice point that is closer to the origin 

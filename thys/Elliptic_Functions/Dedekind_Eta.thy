@@ -359,6 +359,18 @@ lemma jacobi_theta_00_01_10_nw_conv_dedekind_eta:
   using t by (simp add: jacobi_theta_00_nw_conv_dedekind_eta' field_simps eval_nat_numeral
                 jacobi_theta_01_nw_conv_dedekind_eta jacobi_theta_10_nw_conv_dedekind_eta)
 
+lemma (in complex_lattice_Im_pos) theta_11'_conv_dedekind_eta:
+  "theta_11' 0 = -2 * pi / \<omega>1 * \<eta> \<tau> ^ 3"
+proof -
+  have "theta_11' 0 = -of_real pi * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0)) / \<omega>1"
+    by (simp add: theta_11'_0_eq)
+  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0) = 2 * \<eta> \<tau> ^ 3"
+    using jacobi_theta_00_01_10_nw_conv_dedekind_eta[of \<tau>] Im_ratio_pos
+    by (simp add: theta_00_def theta_01_def theta_10_def)
+  finally show ?thesis
+    by simp
+qed
+
 
 text \<open>
   Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
