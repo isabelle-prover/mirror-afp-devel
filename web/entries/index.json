@@ -585,6 +585,27 @@
   "year": "2026"
  },
  {
+  "abstract": "Abstract: We formalise the classical theorem of algebraic topology that the fundamental group of the circle is isomorphic to the additive group of the integers, $\\pi_1(S^1) \\cong \\mathbb{Z}$.  The circle is modelled as the unit sphere in the complex plane with basepoint $1$, and the carrier of the fundamental group is the set of path-homotopy classes of loops based at $1$, with concatenation as the group operation. The group laws are obtained from the homotopy groupoid laws of the Isabelle Analysis library.  The isomorphism with $\\mathbb{Z}$ is given by the degree map, sending a homotopy class to the winding number about the origin of any representative loop. That this is a bijective group homomorphism follows from the winding-number classification of loops in the punctured plane, together with a radial retraction onto the circle. The entry is self-contained on top of the Isabelle distribution.  AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-02",
+  "link": "../entries/Fundamental_Group_Circle.html",
+  "permalink": "https://isa-afp.org/entries/Fundamental_Group_Circle.html",
+  "related": [],
+  "shortname": "Fundamental_Group_Circle",
+  "title": "The Fundamental Group of the Circle",
+  "topic_links": [
+   "../topics/mathematics/topology/"
+  ],
+  "topics": [
+   "Mathematics/Topology"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "We formalize **Conway’s circle theorem** in Isabelle/HOL.  For a nondegenerate Euclidean triangle (ABC) with side lengths  $$ a = |BC|,\\qquad b = |CA|,\\qquad c = |AB|, $$  extend the two side-lines meeting at each vertex past that vertex by the length of the side opposite that vertex:  $$ \\begin{aligned} \u0026\\text{at } A,\\text{ both adjacent sides are extended by } a,\\ \u0026\\text{at } B,\\text{ both adjacent sides are extended by } b,\\ \u0026\\text{at } C,\\text{ both adjacent sides are extended by } c. \\end{aligned} $$  The six resulting endpoints lie on one circle. Its center is the incenter (I) of the triangle, and its radius is  $$ \\sqrt{r^{2}+s^{2}}, $$  where (r) is the inradius and  $$ s=\\frac{a+b+c}{2} $$  is the semiperimeter.  We give the result in three equivalent forms: as six explicit distance equations, as a subset relation (\\subseteq) into the corresponding (\\mathsf{sphere}), and as a single bounded-universal statement over the six-point set. A separate construction-correctness theorem records that each Conway point lies on the intended side line and at the declared extension length from the adjacent vertex.  AI assistance was used for proof engineering.",
   "authors": [
    "Arthur Freitas Ramos",

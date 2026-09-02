@@ -197,6 +197,13 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
+  <title>The Fundamental Group of the Circle</title>
+  <link>https://isa-afp.org/entries/Fundamental_Group_Circle.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Fundamental Group of the Circle in the AFP</description>
+    <category>Mathematics/Topology</category>
+</item>
+<item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Conway_Circle.html</link>
   <pubDate>Sat, 27 Jun 2026 00:00:00 +0000</pubDate>
