@@ -882,7 +882,7 @@ proof (induction "length xs + length ys" arbitrary: xs ys rule: nat_less_induct)
                list_split' zs x \<and> list_split' zs' ls' \<and> (\<forall>n m. n < length x \<longrightarrow> m < length ls' \<longrightarrow> zs ! n ! m = zs' ! m ! n) \<and> list_all (\<lambda>l. length l = length ls') zs \<and> list_all (\<lambda>l. length l = length x) zs')"
     obtain x x' xs' where xs_def: "xs = x # x' # xs'" and xs'_nil: "xs' \<noteq> []"
       using len
-      by (metis One_nat_def Suc_1 Suc_eq_plus1 length_0_conv length_Cons less_nat_zero_code list.exhaust not_add_less1 verit_comp_simplify1(1))
+      by (metis (no_types, opaque_lifting) length_0_conv length_Suc_conv less_2_cases_iff less_Suc_eq less_trans_Suc nat_neq_iff neq_Nil_conv)
     have "\<exists> zs zs'. list_split' zs ((x + x') # xs') \<and>
        list_split' zs' ys \<and>
        (\<forall>n m. n < length ((x + x') # xs') \<longrightarrow> m < length ys \<longrightarrow> zs ! n ! m = zs' ! m ! n) \<and>

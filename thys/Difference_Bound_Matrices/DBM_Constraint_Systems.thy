@@ -831,7 +831,17 @@ lemma close_lu_equiv:
       by (intro add_mono) auto
     finally show ?thesis .
   qed
-  by (smt (verit) leI le_zero_eq order_trans | metis le0)+
+  subgoal for u c1 c2
+    by (metis zero_le)
+  subgoal for u c1 c2
+    by (metis zero_le)
+  subgoal for u
+    by (metis not_gr_zero)
+  subgoal for u
+    by (smt (verit, ccfv_threshold) not_gr_zero order_trans)
+  subgoal for u
+    by (smt (verit, ccfv_threshold) not_gr_zero order_trans)
+  done
 
 lemma close_lu_closed:
   "lower_upper_closed (dbm_to_cs n v (close_lu M))" if "M 0 0 \<ge> 0"

@@ -499,8 +499,8 @@ proof-
     then obtain v1 v2 where v1v2: "v1 \<noteq> v2 \<and> {v1, v2} \<subseteq> set vts
         \<and> v1 \<in> interior ?P1 \<and> v2 \<in> interior ?P2"
       using convex_cut frontier_P1 interior_P1 interior_P2 v by metis
-    then obtain i j where ij: "vts!i = v1 \<and> vts!j = v2
-        \<and> 2 \<le> i \<and> 2 \<le> j \<and> i \<noteq> j \<and> i < length vts - 1 \<and> j < length vts - 1"
+    then obtain i j where ij: "vts!i = v1" "vts!j = v2"
+        "2 \<le> i" "2 \<le> j" "i \<noteq> j" "i < length vts - 1" "j < length vts - 1"
     proof-
       obtain i j where "vts!i = v1 \<and> vts!j = v2 \<and> i \<noteq> j \<and> i < length vts \<and> j < length vts"
         by (metis in_set_conv_nth insert_subset v1v2)
@@ -546,8 +546,17 @@ proof-
       moreover have "(vts!?i' = v1 \<and> vts!?j' = v2) \<or> (vts!?i' = v2 \<and> vts!?j' = v1)"
         using ij by linarith
       moreover have "pathstart ?p' = ?vts'!0 \<and> pathfinish ?p' = ?vts'!(?j' - ?i')"
-        using ij min_diff polygon_pathfinish polygon_pathstart
-        by (smt (verit, ccfv_SIG) add_diff_cancel_right' add_diff_inverse_nat length_drop length_take less_diff_conv max.commute max_min_same(1) min.absorb4 nat_minus_add_max not_add_less2 plus_1_eq_Suc plus_nat.simps(2) take_eq_Nil zero_less_one)
+      proof -
+        have "?vts' \<noteq> []"
+          using ij(6) by auto
+        moreover have "?p' = make_polygonal_path ?vts'" ..
+        ultimately have "pathstart ?p' = ?vts' ! 0" and "pathfinish ?p' = ?vts' ! (length ?vts' - 1)"
+          by (rule polygon_pathstart polygon_pathfinish)+
+        moreover have "length ?vts' - 1 = ?j' - ?i'"
+          using ij(6,7) by simp
+        ultimately show ?thesis
+          by metis
+      qed
       ultimately show ?thesis by auto
     qed
     then have "path_image ?p' \<inter> interior ?P2 \<noteq> {} \<and> path_image ?p' \<inter> interior ?P1 \<noteq> {}"

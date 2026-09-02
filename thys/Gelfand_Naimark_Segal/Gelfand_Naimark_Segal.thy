@@ -792,9 +792,7 @@ proof -
     have 1: "norm ?y < d"
     proof -
       have "norm x * inverse (norm x) < 2 \<and> 0 \<le> d"
-        by (metis d(1) less_le linorder_not_le mult_zero_left
-            numeral_One numeral_less_iff right_inverse semiring_norm(83)
-            verit_comp_simplify(21) zero_less_numeral)
+        using d(1) by (smt (verit) mult_eq_0_iff right_inverse)
       thus ?thesis
         by (simp add: Groups.mult_ac(2) d(1))
     qed
@@ -981,7 +979,7 @@ lemma action_injective_on_quotient: "\<exists>I. \<omega> (I\<^sup>\<dagger> * I
   if "\<forall>x. action_gns_precomplete a x = action_gns_precomplete b x"
   for a b :: "'a::cstar_state" and x :: "'a gns_precomplete"
     using that apply transfer
-    by (metis verit_prod_simplify(2))
+    by (metis UNIV_I cstar1.amult_id(2))
 
 \<comment> \<open>We already know this action outputs \<^term>\<open>bounded_clinear\<close> maps.
   We don't yet know it is linear itself.\<close>

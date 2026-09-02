@@ -124,6 +124,14 @@ proof -
           fix h :: real
           assume h_pos: "0 < \<bar>h\<bar>" 
           assume h_lt_\<delta>: "\<bar>h\<bar> < \<delta>"
+
+          have "(x powr y) powr (1 / y) = x" if "0 \<le> x" and "y \<noteq> 0" for x y :: real
+            using that(1) that(2) by (simp add: powr_powr)
+
+          have "\<epsilon> \<noteq> 0"
+            using \<epsilon>_pos by linarith
+          hence "\<epsilon> / 3 \<noteq> 0"
+            by linarith
   
           have "\<bar>(f (0 + h) - f 0) / h - 0\<bar> = \<bar>f h / h\<bar>"
             by (simp add: f_def)
@@ -142,9 +150,8 @@ proof -
           also have "... < 3 * \<delta>^3"
             using power_strict_mono[of "\<bar>h\<bar>" \<delta> 3] by (simp add: h_lt_\<delta> power_abs)
           also have "... = 3 * (\<epsilon> / 3)"
-            by (metis \<delta>_def \<epsilon>_pos div_self less_le more_arith_simps(5)
-                      mult_eq_0_iff pos_le_divide_eq powr_numeral powr_one_gt_zero_iff
-                      powr_powr times_divide_eq_left alethe_comp_simplify(19) zero_neq_numeral)
+            unfolding \<delta>_def powr_power[OF \<open>\<epsilon> / 3 \<noteq> 0\<close>]
+            using \<epsilon>_pos by simp
           also have "... = \<epsilon>"
             by simp
           finally show "\<bar>(f (0 + h) - f 0) / h - 0\<bar> < \<epsilon>".
@@ -1031,7 +1038,7 @@ proof -
                     have i1: "64 / pi^2 < 8"
                     proof -
                       have "pi*pi > 3*3"
-                        by (meson pi_gt3 mult_strict_mono pi_gt_zero alethe_comp_simplify(7))
+                        using mult_strict_mono pi_gt3 by fastforce
                       then have "pi^2 > 9"
                         by (simp add: power2_eq_square)       
                       then have "64/pi^2 < 64/8"
@@ -1044,7 +1051,7 @@ proof -
                     have i2: "96/pi < 32"                    
                     proof - 
                       have "96/pi < 96/3"
-                        by (meson frac_less2 order.refl pi_gt3 alethe_comp_simplify(19))
+                        by (smt (verit, best) frac_less2 pi_gt3)
                       also have "... = 32"
                         by eval
                       finally show ?thesis.
@@ -1220,7 +1227,8 @@ proof -
       define x_seq where
         "x_seq n = (SOME y. y \<in> {left_seq (n+1)..right_seq (n+1)} \<and> local_minimizer f y)" for n
       have x_seq_prop: "\<forall>n. x_seq n \<in> {left_seq (n+1)..right_seq (n+1)} \<and> local_minimizer f (x_seq n)"
-        by (metis (mono_tags, lifting) seq_of_local_minizers_exists someI_ex alethe_eq_simplify(7) x_seq_def zero_eq_add_iff_both_eq_0)
+        using x_seq_def seq_of_local_minizers_exists
+        by (metis (no_types, lifting) Suc_eq_plus1 nat.simps(3) some_eq_ex)
       
       from x_seq_prop have bounds: "\<forall>n. left_seq (n+1) \<le> x_seq n \<and> x_seq n \<le> right_seq (n+1)"
         by auto

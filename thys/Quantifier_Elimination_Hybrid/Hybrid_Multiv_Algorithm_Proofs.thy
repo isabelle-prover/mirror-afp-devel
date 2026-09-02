@@ -568,8 +568,8 @@ next
       by (metis "*" Pair_inject Rec.prems(3) list.set_intros(1)) 
     then have h3: "Sturm_Tarski.sign (Polynomial.lead_coeff (eval_mpoly_poly val q)) = (1::int)"
       unfolding satisfies_evaluation_def eval_mpoly_def
-      by (metis Sturm_Tarski.sign_def h2 lead_coeff_valuation of_int_hom.injectivity one_neq_zero satisfies_evaluation_def alethe_comp_simplify(28))
-        (* may take a second to load *)
+      using eval_mpoly_def[of val "Polynomial.lead_coeff q"] h2 lead_coeff_valuation[of val q 1]
+      by auto
     have "Sturm_Tarski.sign (lookup_assump (Polynomial.lead_coeff q) a) = 
       ((Sturm_Tarski.sign (Polynomial.lead_coeff (eval_mpoly_poly val q))))"
       using h1 h3 
@@ -583,8 +583,13 @@ next
       by (metis "*" Pair_inject Rec.prems(3) list.set_intros(1)) 
     then have h3: "rat_of_int (Sturm_Tarski.sign (Polynomial.lead_coeff (eval_mpoly_poly val q))) = (-1::rat)"
       unfolding satisfies_evaluation_def eval_mpoly_def
-      by (metis Sturm_Tarski.sign_def degree_valuation eval_mpoly_def eval_mpoly_map_poly_comm_ring_hom.base.coeff_map_poly_hom eval_mpoly_poly_def h2 of_int_hom.hom_one of_int_hom.injectivity of_int_minus rel_simps(88) sign_uminus alethe_comp_simplify(28))
-        (* May take a second to load *)
+      using h2
+      by (metis Sturm_Tarski.sign_def[of 1] class_field.neg_1_not_0 degree_valuation[of val q "- 1"]
+          eval_mpoly_def[of val "Polynomial.lead_coeff q"]
+          eval_mpoly_map_poly_comm_ring_hom.base.coeff_map_poly_hom[of val q "Polynomial.degree q"]
+          eval_mpoly_poly_def[of val q] int_SN.default_gt_zero of_int_eq_1_iff[of 1]
+          of_int_hom.hom_uminus[of "1"] of_int_hom.injectivity[of "- Sturm_Tarski.sign 1"]
+          of_int_pos[of 1] sign_uminus[of 1])
     have "Sturm_Tarski.sign (lookup_assump (Polynomial.lead_coeff q) a) = 
       ((Sturm_Tarski.sign (Polynomial.lead_coeff (eval_mpoly_poly val q))))"
       using h1 h3

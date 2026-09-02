@@ -702,9 +702,11 @@ next
     show ?thesis
     proof (cases "i = length (numlist ns) - 1")
       case True
-      then show ?thesis
+      then have False
         using \<open>last (numlist ns) = \<bar>\<close> \<open>ns \<noteq> []\<close> Cons.prems(2) * ** numlist_Nil numlist_inj
-        by (metis last_conv_nth num.simps(8) numeral_eq_iff semiring_norm(83) alethe_eq_simplify(8))
+        by (metis One_nat_def Suc_1 Suc_inject add_2_eq_Suc last_conv_nth nat.simps(3) numeral_3_eq_3
+            numeral_Bit0)
+      then show ?thesis ..
     next
       case False
       then have "i < length (numlist ns) - 1"

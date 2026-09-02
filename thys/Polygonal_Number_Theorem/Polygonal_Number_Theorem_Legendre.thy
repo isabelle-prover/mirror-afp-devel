@@ -125,8 +125,9 @@ b = s+t+u+v" by auto
   moreover have "2 dvd m * t * (t-1)" by simp
   moreover have "2 dvd m * u * (u-1)" by simp
   moreover have "2 dvd m * v * (v-1)" by simp
-  ultimately have "N = m * s * (s-1) div 2 + m * t * (t-1) div 2 + m * u * (u-1) div 2 + m * v *(v-1) div 2 + s+t+u+v" by fastforce
-  hence N_expr3: "N = m * s * (s-1) div 2 + s + m * t * (t-1) div 2 + t + m * u * (u-1) div 2 + u + m * v * (v-1) div 2 + v" by auto
+  ultimately have "N = m * s * (s-1) div 2 + m * t * (t-1) div 2 + m * u * (u-1) div 2 + m * v *(v-1) div 2 + s+t+u+v"
+    by (metis div_plus_div_distrib_dvd_right[of "2 :: int"])
+  hence N_expr3: "N = m * s * (s-1) div 2 + s + m * t * (t-1) div 2 + t + m * u * (u-1) div 2 + u + m * v * (v-1) div 2 + v" by presburger
   define sn::nat where "sn = nat s"
   define tn::nat where "tn = nat t"
   define un::nat where "un = nat u"
@@ -581,8 +582,9 @@ proof -
       moreover have "2 dvd m * t * (t-1)" by simp
       moreover have "2 dvd m * u * (u-1)" by simp
       moreover have "2 dvd m * v * (v-1)" by simp
-      ultimately have "N = m * s * (s-1) div 2 + m * t * (t-1) div 2 + m * u * (u-1) div 2 + m * v *(v-1) div 2 + s+t+u+v + 1" by fastforce
-      hence N_expr3: "N = m * s * (s-1) div 2 + s + m * t * (t-1) div 2 + t + m * u * (u-1) div 2 + u + m * v * (v-1) div 2 + v + 1" by auto
+      ultimately have "N = m * s * (s-1) div 2 + m * t * (t-1) div 2 + m * u * (u-1) div 2 + m * v *(v-1) div 2 + s+t+u+v + 1"
+        by (metis div_plus_div_distrib_dvd_right[of "2 :: int"])
+      hence N_expr3: "N = m * s * (s-1) div 2 + s + m * t * (t-1) div 2 + t + m * u * (u-1) div 2 + u + m * v * (v-1) div 2 + v + 1" by presburger
       define sn::nat where "sn = nat s"
       define tn::nat where "tn = nat t"
       define un::nat where "un = nat u"

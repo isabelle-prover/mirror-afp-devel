@@ -67,13 +67,13 @@ fun is_valid_type (T as (Type (\<^type_name>\<open>IEEE_Single_NaN.floatSingleNa
   floating-point type is encountered among the terms. Isabelle's SMTLIB_Interface unfortunately
   does not provide a modular way to indicate that a problem requires the floating-point (FP) theory.
 *)
-fun smtlib_logic _ ts =
+fun smtlib_logic _ ts _ =
   let
     fun is_float_or_rm (Type (\<^type_name>\<open>IEEE.roundmode\<close>, _)) = true
       | is_float_or_rm T = is_float T
   in
     if exists (Term.exists_type (Term.exists_subtype is_float_or_rm)) ts then
-      SOME "ALL" (*FIXME: There are currently three SMT solvers available in Isabelle: cvc4, verit,
+      SOME SMT_Translate.ALL (*FIXME: There are currently three SMT solvers available in Isabelle: cvc4, verit,
                           and z3. verit currently does not support the FP theory at all. z3
                           currently does not support the "ALL" logic but ignores it gracefully.*)
     else

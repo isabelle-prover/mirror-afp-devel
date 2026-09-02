@@ -60,8 +60,7 @@ proof -
   show ?thesis
     unfolding epsilon.simps[of N C]
     using Collect_eq_if_Uniq[OF Uniq_epsilon]
-    by (smt (verit, best) Collect_cong Collect_empty_eq Uniq_def Uniq_epsilon case_prod_conv
-        insertCI mem_Collect_eq)
+    by meson
 qed
 
 definition rewrite_sys where

@@ -5256,7 +5256,7 @@ proof (induction xs arbitrary: m l m' cd x m'' rule: list_nonempty_induct)
     apply (metis fst_conv write_obtain nth_safe_prefix option.distinct(1) single.prems(1,3) snd_conv)
     apply (case_tac a,auto simp add:nth_safe_def length_append_def split:if_split_asm prod.split_asm)
     apply (metis length_append_singleton lessI mdata.distinct(1) nth_append_left nth_append_length prefix_def)
-    by (metis fold_map_length fst_eqD length_append_singleton mdata.inject(2) not_less_eq nth_append_left nth_append_length prefix_def verit_comp_simplify1(1))
+    by (metis fold_map_length fst_eqD length_append_singleton mdata.inject(2) not_less_eq nth_append_left nth_append_length prefix_def alethe_comp_simplify1(1))
 next
   case (cons i0 is0)
 

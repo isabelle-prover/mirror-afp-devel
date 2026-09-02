@@ -35,11 +35,12 @@ lemma cycle_elim:"\<not>(\<exists>c. basicCycle c \<and> set c = V') \<Longright
 lemma basicCycle_set_eq:"basicCycle c \<Longrightarrow> set c = set (butlast c)"
 apply(standard)
   unfolding basicCycle_def cycleG_def
-  using path_length_ge2[of c] 
-  apply (metis append_butlast_last_id basicCycleI
-      basicCycle_not_nil cycle_Cons hd_append2 hd_in_set
-      list.simps(3) not_path_singl self_append_conv2
-      set_ConsD sset_cycle stream.set_intros(2)
+  using path_length_ge2[of c]
+   apply (metis append_butlast_last_id[of c] basicCycleI[of c] basicCycle_not_nil[of "[]"]
+      cycle_Cons[of "last c" "butlast c"] hd_append2[of "butlast c" "[last c]"]
+      hd_in_set[of "butlast c"] list.simps(3) not_path_singl[of "last c"]
+      self_append_conv2[of "[last c]" "[]"] set_ConsD[of _ "last c" "butlast c"]
+      sset_cycle[of c] sset_cycle[of "last c # butlast c"] stream.set_intros(2)
       subset_code(1))
   by (meson in_set_butlastD subset_code(1))
 
@@ -176,9 +177,10 @@ proof -
       using assms(2) by auto
 
     hence c_eq:"c = take j c @ drop j (take (Suc i) (butlast c)) @ drop (Suc i) c" 
-      by (metis All_less_Suc True add_diff_cancel_left' add_increasing append_take_drop_id assms(2) diff_Suc_1'
-          drop_take_drop_unsplit le_simps(2) less_diff_conv less_eqE nat_geq_1_eq_neqz nat_in_between_eq(2) plus_1_eq_Suc
-          semiring_norm(174) take_butlast)
+      by (metis All_less_Suc True add_diff_cancel_left' add_increasing[of "1" j i]
+          append_take_drop_id[of j c] assms(2) diff_Suc_1' drop_take_drop_unsplit[of j "Suc i" c]
+          le_simps(2) less_diff_conv nat_geq_1_eq_neqz nat_in_between_eq(2) plus_1_eq_Suc
+          semiring_norm(174) take_butlast[of "Suc i" c])
 
     have c_alt_dist:"distinct (butlast c_alt)"
       unfolding c_alt'
@@ -279,7 +281,7 @@ proof -
 
     hence first:"hd c_alt = c ! j"  unfolding c_alt 
       by (metis butlast_conv_take drop_eq_Nil2 hd_append hd_drop_conv_nth j(1) length_butlast nth_take
-          verit_comp_simplify1(3))
+          alethe_comp_simplify1(3))
     hence hd_last:"hd c_alt = last c_alt" by (simp add: c_alt)
 
 
@@ -370,7 +372,7 @@ proof -
     unfolding Graph.pathCon_def using Graph.not_path_Nil path_length_ge2 
     by (metis Graph.path_length_ge2 Suc_1 Suc_to_right
         not_numeral_le_zero nz_le_conv_less
-        verit_comp_simplify1(3))
+        alethe_comp_simplify1(3))
 
   hence cycFrom:"Graph.cycleFrom V' E' v p" unfolding Graph.cycleFrom_def Graph.cycleG_def by auto
 
@@ -704,9 +706,11 @@ proof-
       next
         case (Suc k)
         have c'_eq:"butlast c' ! (n mod length (butlast c')) =c' ! Suc (k mod length (butlast c'))"
-          by (metis Graph.basicCycle_set_eq Suc c'_prop(1,3,4) hd_conv_nth last_conv_nth
-              length_butlast length_greater_0_conv list.size(3) mod_Suc mod_less_divisor
-              nth_butlast set_empty2)
+          by (metis Graph.basicCycle_set_eq[of Node edge c'] Suc c'_prop(1,3,4) hd_conv_nth
+              last_conv_nth length_butlast length_greater_0_conv list.size(3)
+              mod_Suc[of k "length (butlast c')"]
+              mod_less_divisor[of "length (butlast c')" n]
+              nth_butlast[of "n mod length (butlast c')" c'] set_empty2)
         also have k_le:"k mod length (butlast c') < length c' - 1" using Suc length_butlast
           by (metis Graph.ipath_iff_snth c_prop(2) final_ipath length_butlast
               length_pos_if_in_set lim_c' mod_less_divisor numeral_nat(7))

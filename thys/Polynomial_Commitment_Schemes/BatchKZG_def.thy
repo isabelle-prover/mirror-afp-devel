@@ -30,7 +30,15 @@ fun r :: "'e argument set \<Rightarrow> 'e mod_ring poly \<Rightarrow>'e batch_e
   \<phi> mod prod_B}"
 
 lemma deg_r: "degree (r B \<phi>) \<le> degree \<phi>"
-  by (smt (verit) add.right_neutral bot_nat_0.not_eq_extremum degree_0 degree_mod_less' div_poly_eq_0_iff less_or_eq_imp_le mod_div_mult_eq mult_eq_0_iff nat_le_linear order_trans_rules(21) r.simps)
+proof -
+  have "degree (r B \<phi>) = degree (\<phi> mod (\<Prod>i\<in>B. [:- i, 1:]))"
+    unfolding r.simps Let_def ..
+  also have "\<dots> \<le> degree \<phi>"
+    using degree_mod_less'[of "\<Prod>i\<in>B. [:- i, 1:]" \<phi>, simplified]
+    by (metis (no_types, lifting) bot_nat_0.extremum degree_0 mod_poly_less nat_le_linear
+        order_le_less_trans)
+  finally show ?thesis .
+qed
 
 text \<open>calculate \<open>(\<phi>(x) - r(x))/\<Prod>i\<in>B.(x-i)\<close>\<close>
 fun \<psi>\<^sub>B :: "'e argument set \<Rightarrow> 'e mod_ring poly \<Rightarrow> 'e mod_ring poly" where
@@ -60,10 +68,20 @@ proof -
 qed
 
 lemma deg_r_B_le: "degree (r B \<phi>) \<le> card B"
-  by (metis (no_types, lifting) card_0_eq deg_Prod degree_0 degree_mod_less' less_or_eq_imp_le not_gr0 prod.empty prod.infinite r.simps verit_eq_simplify(24))
+proof -
+  have "degree (r B \<phi>) = degree (\<phi> mod (\<Prod>i\<in>B. [:- i, 1:]))"
+    unfolding r.simps Let_def ..
+  also have "\<dots> \<le> degree (\<Prod>i\<in>B. [:- i, 1:])"
+    using degree_mod_less'[of "\<Prod>i\<in>B. [:- i, 1:]" \<phi>, simplified]
+    by fastforce
+  also have "\<dots> = card B"
+    using deg_Prod .
+  finally show ?thesis .
+qed
 
 lemma deg_r_B_less: "B \<noteq> {} \<Longrightarrow> degree \<phi> > card B \<Longrightarrow> degree (r B \<phi>) < card B"
-  by (metis card_eq_0_iff card_gt_0_iff deg_Prod degree_0 degree_mod_less' finite r.simps)
+  unfolding r.simps Let_def
+  by (metis card_eq_0_iff card_gt_0_iff deg_Prod degree_0 degree_mod_less' finite)
 
 lemma deg_div: "degree ((x::'e mod_ring poly) div y) \<le> degree x"
   by (metis (no_types, lifting) Polynomial.degree_div_less add_diff_cancel_left' bot_nat_0.extremum_strict degree_0 degree_mod_less' degree_mult_right_le diff_zero div_poly_eq_0_iff gr0I less_or_eq_imp_le mod_div_mult_eq)
@@ -97,7 +115,7 @@ lemma r_eq_\<phi>_on_B:
 proof -
   let ?prod_B = "prod (\<lambda>i. [:-i,1:]) B"
   have "poly \<phi> i = poly (\<phi> div ?prod_B * ?prod_B) i + poly (\<phi> mod ?prod_B) i"
-    by (metis div_mult_mod_eq poly_hom.hom_add)
+    by (metis (no_types) div_mult_mod_eq poly_hom.hom_add)
   moreover have "poly (\<phi> div ?prod_B * ?prod_B) i = 0"
     using i_in_B_prod_B_zero[OF assms] by simp
   ultimately have "poly \<phi> i = poly (\<phi> mod ?prod_B) i"

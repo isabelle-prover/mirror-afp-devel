@@ -109,7 +109,7 @@ proof -
     also have "\<dots> = (\<^bold>g\<^bsub>G\<^sub>p\<^esub> ^\<^bsub>G\<^sub>p\<^esub> (\<psi>\<^sub>i - \<psi>\<^sub>i')) ^\<^bsub>G\<^sub>p\<^esub> (1 / (\<phi>'_of_i - \<phi>_of_i))"
       using mod_ring_pow_mult_inv_G\<^sub>p by presburger
     also have "\<dots> = \<^bold>g\<^bsub>G\<^sub>p\<^esub> ^\<^bsub>G\<^sub>p\<^esub> ((\<psi>\<^sub>i - \<psi>\<^sub>i')/(\<phi>'_of_i - \<phi>_of_i))"
-      by (metis mod_ring_pow_pow_G\<^sub>p times_divide_eq_right verit_prod_simplify(2))
+      by (metis mod_ring_pow_pow_G\<^sub>p times_divide_eq_right alethe_prod_simplify(2))
     finally show ?thesis .
   qed
   ultimately show ?thesis by fastforce

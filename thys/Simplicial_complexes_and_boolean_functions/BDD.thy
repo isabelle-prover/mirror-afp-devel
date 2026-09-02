@@ -78,9 +78,8 @@ lemma sc_threshold_2_3_ftff:
 lemma sc_threshold_2_3_tfff:
   "boolfunc_from_sc 4 sc_threshold_2_3 (a(0:=True,1:=False,2:=False,3:=False)) = False"
   unfolding hlp1 boolfunc_from_sc_def sc_threshold_2_3_def
-  by simp (smt (z3) eval_nat_numeral(3) insertI1 insert_commute insert_iff
-      n_not_Suc_n numeral_1_eq_Suc_0 numeral_2_eq_2
-      numeral_eq_iff singletonD alethe_eq_simplify(12))
+  unfolding numeral_2_eq_2 numeral_3_eq_3
+  by fastforce
 
 lemma sc_threshold_2_3_fftt:
   "boolfunc_from_sc 4 sc_threshold_2_3 (a(0:=False,1:=False,2:=True,3:=True)) = True"

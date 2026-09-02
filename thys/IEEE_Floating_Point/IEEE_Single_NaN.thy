@@ -144,7 +144,8 @@ lift_definition fdiv :: "roundmode \<Rightarrow> ('e ,'f) floatSingleNaN \<Right
 subsubsection \<open>Fused multiplication and addition; $(x \cdot y) + z$\<close>
 
 lift_definition fmul_add :: "roundmode \<Rightarrow> ('e ,'f) floatSingleNaN \<Rightarrow> ('e ,'f) floatSingleNaN \<Rightarrow> ('e ,'f) floatSingleNaN \<Rightarrow> ('e ,'f) floatSingleNaN" is IEEE.fmul_add
-  unfolding is_nan_equivalent_def by (smt (verit) IEEE.fmul_add_def)
+  unfolding is_nan_equivalent_def
+  by (smt (cvc5) IEEE.fmul_add_def)
 
 subsubsection \<open>Square root\<close>
 

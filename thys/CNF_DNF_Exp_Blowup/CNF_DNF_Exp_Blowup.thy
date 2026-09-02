@@ -970,7 +970,7 @@ proof -
 
   have T_of_conj_of_eps_in_Ts: "conj_of_eps eps \<in> set Ts" if "length eps = n" for eps
     unfolding conj_of_eps_def
-    by (smt (verit, best) ex_T_cont_pos_var_eps that verit_sko_ex')
+    by (smt (verit, best) ex_T_cont_pos_var_eps someI_ex that)
 
   have "2^n = card {eps :: bool list. length eps = n}"
     using card_lists_length_eq[of "UNIV :: bool set" n, simplified, symmetric] .

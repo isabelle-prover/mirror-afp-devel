@@ -7,6 +7,18 @@ theory Polygonal_Number_Theorem_Cauchy
   imports Polygonal_Number_Theorem_Gauss
 begin
 
+lemma odd_mod_imp_odd_modulus:
+  fixes b :: "'a :: {semidom_modulo,semiring_parity}"
+  assumes "odd b" and "even (b mod m)"
+  shows "odd m"
+  using assms dvd_mod_iff by blast
+
+lemma mod_add_no_wrap:
+  fixes a k z :: int
+  assumes "a mod z = r" and "0 \<le> r + k" and "r + k < z"
+  shows "(a + k) mod z = r + k"
+  using assms by (metis mod_add_left_eq mod_pos_pos_trivial)
+
 text\<open>The following lemma shows there are two consecutive odd integers in any four consecutive
 integers.\<close>
 
@@ -69,9 +81,10 @@ proof -
  of_nat_0_less_iff order_trans_rules(22) alethe_comp_simplify(3) zero_le_numeral)
     have "k1 = w+3" using w_def k1_def l_def w_size first_assum by linarith
     hence "w+2 = k1-1" by auto
-    hence "w+2 = (b1-1) mod m" using first_assum k1_def
-      by (smt (verit, del_insts) Euclidean_Rings.pos_mod_bound assms(1)
- mod_diff_eq mod_pos_pos_trivial of_nat_le_0_iff alethe_comp_simplify(8))
+    hence "w+2 = (b1-1) mod m"
+      using first_assum w_size
+      unfolding w_def l_def k1_def
+      by (smt (verit, del_insts) pos_zmod_mult_2[of m] zmod_zminus1_eq_if)
     hence w_cover:"w+2 = k1-1" using k1_def using \<open>w + 2 = k1 - 1\<close> by fastforce
 
     have "\<exists>r::nat. (r\<le>m-3) \<and> [N=b1+r] (mod m)" if asm1:"N mod m \<ge> k1 \<and> N mod m \<le> m-1" for N
@@ -123,8 +136,9 @@ of_nat_numeral semiring_norm(172) w_def)
       hence "[N = b2+(m-4)] (mod m)" if asm6:"N mod m = w+1" for N using asm6
         by (metis \<open>w + 2 = (b1 - 1) mod int m\<close> add_diff_cancel_right' arith_special(3) int_ops(4)
             is_num_normalize(1) mod_add_left_eq mod_diff_left_eq of_nat_mod)
-      thus ?thesis using c4_1 by (metis asm4 diff_le_mono2 nat_le_linear numeral_le_iff
-            alethe_comp_simplify(10) alethe_comp_simplify(13))
+      thus ?thesis using c4_1 asm4
+        by (metis Suc_eq_plus1 add_2_eq_Suc' diff_diff_left diff_le_self le_less numeral_Bit0
+            numeral_Bit1)
     qed
     hence "\<exists>b::int. \<exists>r::nat. (r \<le> m-3) \<and> [N=b+r] (mod m) \<and> (b = b1 \<or> b = b2)"
       if asm4:"N mod m = w+1 \<or> N mod m = w+2" for N using asm4 by blast
@@ -174,7 +188,7 @@ not_numeral_le_zero of_nat_0_less_iff of_nat_le_0_iff)
             semiring_norm(172))
       hence "\<exists>r::nat. (r \<le> m-3) \<and> [N = b2+r] (mod m)" if case1_2_assum:"N mod m = m-2" for N
         using case1_2_assum
-        by (meson diff_le_mono2 less_num_simps(2) numeral_le_iff alethe_comp_simplify(15))
+        by (metis diff_diff_left diff_le_self numeral.simps(3) numeral_Bit0 numeral_code(1))
       hence case1_2:"\<exists>b::int. \<exists>r::nat. (r \<le> m-3) \<and> [N=b+r] (mod m) \<and> (b = b1 \<or> b = b2)"
         if case1_2_assum:"N mod m = m-2" for N using case1_2_assum by blast
 
@@ -257,11 +271,13 @@ assms(1) bot_nat_0.extremum_uniqueI leI less_Suc_eq_le mod_less_divisor not_nume
     have case3:"\<forall>N::nat. \<exists>b::int. \<exists>r::nat. (r \<le> m-3) \<and> [N=b+r] (mod m) \<and> (b = b1 \<or> b = b2)"
       if case3_assum:"b1 mod m = 2"
     proof -
-      have case3b2:"b2 mod m = 4"
-        using assms case3_assum
-        by (smt (verit, ccfv_SIG) Euclidean_Rings.pos_mod_sign dvd_mod_imp_dvd even_numeral int_ops(2)
-                int_ops(4) mod_diff_eq mod_pos_pos_trivial nat_1_add_1 numeral_Bit0 of_nat_le_iff
-                of_nat_numeral plus_1_eq_Suc)
+      have "odd m"
+        using odd_mod_imp_odd_modulus[of b1 "int m"]
+        using assms(2) case3_assum by simp
+      then have case3b2:"b2 mod m = 4"
+        unfolding \<open>b2 = b1 + 2\<close>
+        using mod_add_no_wrap[of b1 "int m" 2 2, simplified]
+        using assms(1) case3_assum by (metis even_numeral le_eq_less_or_eq)
 
       have "\<exists>r::nat. (r\<le>m-3)\<and> [N = b2+r] (mod m)" if case3_1_assum:"N mod m = 0 \<or> N mod m =1" for N
       proof -

@@ -345,7 +345,7 @@ proof -
               assume "x \<in> set [0..<max_deg + 1]"
               then show "(\<lambda>acc. acc \<otimes> map (\<lambda>t. \<^bold>g ^ \<alpha> ^ t) [0..<max_deg + 1] ! x ^ of_int_mod_ring (cvec ! x)) = (\<lambda>acc. acc \<otimes> ck ! x [^] cvec ! x)"
                 unfolding ck_def length_eq_max_deg using mod_ring_trnsf_eq_plain 
-                by (metis (no_types, lifting) G\<^sub>p.generator_closed G\<^sub>p.int_pow_closed atLeastLessThan_iff length_upt nth_map set_upt verit_minus_simplify(2))
+                by (metis (no_types, lifting) G\<^sub>p.generator_closed G\<^sub>p.int_pow_closed atLeastLessThan_iff length_upt nth_map set_upt alethe_minus_simplify(2))
             qed (simp add: ck_def)+
           qed
           also have "\<dots> = c" 

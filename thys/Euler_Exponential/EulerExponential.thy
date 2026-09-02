@@ -569,7 +569,7 @@ proof -
      unfolding N_def
      by (metis Infinitesimal_hfloor_divide_mult approx_hpow approx_minus_cancel base_finite 
          base_greater_1 exponentz_HFinite infinitesimal_e infinitesimal_e_gt_zero mult_minus_left 
-         of_hypnat_hypnat_of_hypint order_less_le verit_minus_simplify(4) ze_pos)
+         of_hypnat_hypnat_of_hypint order_less_le alethe_minus_simplify(4) ze_pos)
     ultimately show ?thesis
       by (metis approx_sym base_greater_1 dual_order.strict_trans hpow_hyperpow_eq_hpow zero_less_one)
   qed
@@ -636,9 +636,12 @@ proof -
       have z_pow_HFinite: "z pow of_nat i \<in> HFinite"
         by (metis DiffE hrealpow_HFinite hyperpow_of_nat z_HFinite_not_Infinitesimal) 
       have "- e * hypreal_of_hypnat (hypnat (hfloor(-z/e))) \<approx> z"
-        using Infinitesimal_hfloor_divide_mult z_less_0 infinitesimal_e e_gt_0
-        by (metis HNatInfinite_of_hypnat_gt_zero HNatInfinite_ze add.inverse_inverse approx_minus 
-              hypint_hypnat_eq linorder_neq_iff mult_minus_left of_hypint_of_hypnat)
+        using Infinitesimal_hfloor_divide_mult[of e "- z"] z_less_0 infinitesimal_e e_gt_0
+        by (metis add.inverse_inverse[of z] of_hypint_of_hypnat[of "hypnat \<lfloor>- z / e\<rfloor>"]
+            hypint_hypnat_eq[of "\<lfloor>- z / e\<rfloor>"] HNatInfinite_ze linorder_neq_iff[of e e]
+            linorder_neq_iff[of "0" "0"] mult_minus_left[of e "hypreal_of_hypnat (hypnat \<lfloor>- z / e\<rfloor>)"]
+            HNatInfinite_of_hypnat_gt_zero[of "hypnat \<lfloor>- z / e\<rfloor>"]
+            approx_minus[of "e * hypreal_of_hypnat (hypnat \<lfloor>- z / e\<rfloor>)" "- z"])
       then have "(-e * of_hypnat(hypnat(hfloor(-z/e)))) pow of_nat i \<approx> z pow of_nat i"
         by (meson DiffD1 approx_sym hyperpow_approx z_HFinite_not_Infinitesimal)
       then have  "(hfallfactpow (of_hypnat(hypnat(hfloor(-z/e)))) (of_nat i)) /
@@ -686,7 +689,7 @@ proof -
              k pow of_nat i * (hfallfactpow (hypreal_of_hypnat (hypnat (hfloor(-z / e)))) (of_nat i) * (-e) pow of_nat i)"
     using HFinite_not_Infinitesimal_pow_of_nat_eq_hfallfactpow_neg approx_mult2 e_gt_0 infinitesimal_e z_HFinite_not_Infinitesimal z_less_0 by blast
   then show ?thesis
-    by (metis hyperpow_mult mult.left_commute)
+    by (metis (mono_tags) hyperpow_mult mult.left_commute)
 qed            
 
 lemma HFinite_not_Infinitesimal_pow_of_nat_eq_hfallfactpow_divide:
@@ -1366,9 +1369,10 @@ proof -
   qed
   have geo_bound: "\<Sum>\<^sub>h ((pow) (1 / 2)) {0..<N} < (2::hypreal)"
     using geometric_half_sum_lt_two [of "N - 1"]
-    by (metis atLeastLessThanhSuc_atLeastAtMost diff_numeral_special(9) divide_eq_0_iff divide_eq_eq_1
-        hSuc_eq_add_one hyperpow_zero hypersum_geometric hypnat_le_add_diff_inverse2 hypnat_less_one not_less
-        numeral_eq_one_iff verit_eq_simplify(10) zero_less_numeral)
+    by (metis alethe_eq_simplify(4,46) atLeastLessThanhSuc_atLeastAtMost[of "0" "N - 1"]
+        diff_numeral_special(9) divide_eq_0_iff[of "0" "1 / 2 - 1"] divide_eq_eq_1
+        hSuc_eq_add_one[of "N - 1"] hyperpow_zero[of "1 div 2"] hypersum_geometric[of "1 / 2" N]
+        hypnat_le_add_diff_inverse2[of "1" N] hypnat_less_one[of N] not_less numeral_eq_one_iff)
   show ?thesis
     using split geo_bound hSuc_eq_add_one tail_bound by force
 qed
@@ -1909,7 +1913,9 @@ proof -
     using  sums_approx approx_sym approx_trans 
     by blast
   then have "\<ee> hpow ?z \<approx> of_real (exp z)"
-    by (metis Euler_exp_powseries HFinite_star_of approx_trans2 of_real_eq_star_of)
+    using [[metis_instantiate, show_types = false]]
+    by (metis Euler_exp_powseries[of "hypreal_of_real z"] HFinite_star_of[of z]
+        approx_trans2[of "\<ee> hpow hypreal_of_real z" _ "hypreal_of_real (exp z)"] of_real_eq_star_of)
   then show ?thesis
     using starfun_exp_of_real
     by simp

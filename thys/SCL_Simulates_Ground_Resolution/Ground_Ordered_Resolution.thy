@@ -499,8 +499,7 @@ proof -
   show ?thesis
     unfolding production.simps[of N C]
     using Collect_eq_if_Uniq[OF Uniq_production]
-    by (smt (verit, best) Collect_cong Collect_empty_eq Uniq_def Uniq_production case_prod_conv
-        insertCI mem_Collect_eq)
+    by metis
 qed
 
 lemma production_eq_singleton_if_atom_in_production:
@@ -784,7 +783,6 @@ lemma lift_entailment_to_Union:
     R\<^sub>D_entails_D: "interp N D \<TTurnstile> D"
   shows
     "(\<Union>C \<in> N. production N C) \<TTurnstile> D"
-  using lift_interp_entails
   by (smt (verit, best) D_in R\<^sub>D_entails_D UN_iff produces_imp_in_interp split_Union_production'
       subsetD sup_ge1 true_cls_def true_lit_iff)
 
@@ -1021,7 +1019,7 @@ proof (induction C arbitrary: D rule: wfp_induct_rule)
   have i: "interp N C \<TTurnstile> C \<longleftrightarrow> (production N C = {})"
   proof (rule iffI)
     show "interp N C \<TTurnstile> C \<Longrightarrow> production N C = {}"
-      by (smt (z3) Collect_empty_eq interp_def production.elims)
+      by (simp add: production_unfold')
   next
     assume "production N C = {}"
     show "interp N C \<TTurnstile> C"
@@ -1267,9 +1265,10 @@ lemma lesser_atoms_not_in_previous_interp_are_not_in_final_interp_if_not_product
   assumes "literal_order.is_maximal_in_mset C L" and "production (fset N) C = {}"
   shows "\<And>A'. A' \<prec>\<^sub>t atm_of L \<Longrightarrow> A' \<notin> interp (fset N) C \<Longrightarrow> A' \<notin> (\<Union>D \<in> fset N. production (fset N) D)"
   using assms
-  by (metis (no_types, lifting) UN_E UnCI less_trm_if_neg lesseq_trm_if_pos
-      literal_order.is_maximal_in_mset_iff term_order.less_imp_not_less term_order.not_le
-      not_interp_to_Interp_imp_le)
+  using [[show_types = false, metis_instantiate]]
+  by (metis (no_types, lifting) UN_E UnCI less_trm_if_neg[of C _ _ "fset N" L]
+      lesseq_trm_if_pos[of C _ _ "fset N" L] literal_order.is_maximal_in_mset_iff
+      term_order.less_imp_not_less term_order.not_le not_interp_to_Interp_imp_le[of _ "fset N" C])
 
 lemma lesser_atoms_not_in_previous_interp_are_not_in_final_interp:
   fixes A
@@ -1856,9 +1855,7 @@ proof -
   have "interp N C1 = {}"
     unfolding interp_def N_def
     using cls_order
-    by (smt (verit, best) Collect_empty_eq bot_fset.rep_eq ccSUP_empty finsertCI fset_simps(2)
-        clause_order.dual_order.strict_implies_not_eq clause_order.is_minimal_in_fset_finsertI
-        clause_order.is_minimal_in_fset_iff singletonD)
+    by fastforce
   hence "production N C1 = {}"
     unfolding production_unfold C1_def by simp
   hence "interp N C1 \<union> production N C1 \<TTurnstile> C1"

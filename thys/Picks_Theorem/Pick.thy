@@ -2581,14 +2581,16 @@ proof-
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "a < ((1 - u) *\<^sub>R x + u *\<^sub>R y)$1"
-      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      unfolding vector_component
+      using that by (smt (verit, del_insts) scaleR_collapse scaleR_left_mono)
   qed
   have 2: "\<forall>u \<in> {0..1}. ((1 - u) *\<^sub>R x + u *\<^sub>R y)$1 < b" if "x$1 < b \<and> y$1 < b"
   proof clarify
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "((1 - u) *\<^sub>R x + u *\<^sub>R y)$1 < b"
-      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      unfolding vector_component
+      using that by (smt (verit, del_insts) scaleR_collapse scaleR_left_mono)
   qed
   show "a < x$1 \<and> a < y$1 \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). a < v$1" using * 1 by fastforce
   show "x$1 < b \<and> y$1 < b \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). v$1 < b" using * 2 by fastforce
@@ -2606,14 +2608,16 @@ proof-
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
     then show "a < ((1 - u) *\<^sub>R x + u *\<^sub>R y)$2"
-      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+      unfolding vector_component
+      using that by (smt (verit, del_insts) scaleR_collapse scaleR_left_mono)
   qed
   have 2: "\<forall>u \<in> {0..1}. ((1 - u) *\<^sub>R x + u *\<^sub>R y)$2 < b" if "x$2 < b \<and> y$2 < b"
   proof clarify
     fix u assume "u \<in> {0..1::real}"
     then have *: "u \<ge> 0 \<and> 1 - u \<ge> 0" by simp
-    then show "((1 - u) *\<^sub>R x + u *\<^sub>R y)$2 < b"
-      by (smt (verit) that scaleR_collapse scaleR_left_mono vector_add_component vector_scaleR_component)
+    then show "((1 - u) *\<^sub>R x + u *\<^sub>R y) $ 2 < b"
+      unfolding vector_component
+      using that by (smt (verit, del_insts) scaleR_collapse scaleR_left_mono)
   qed
   show "a < x$2 \<and> a < y$2 \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). a < v$2" using * 1 by fastforce
   show "x$2 < b \<and> y$2 < b \<Longrightarrow> \<forall>v \<in> path_image (linepath x y). v$2 < b" using * 2 by fastforce
@@ -4972,6 +4976,18 @@ proof-
     unfolding polygon_def
     by (metis closed_path_def UNIV_def append_is_Nil_conv filled_p_def filled_vts hd_append2 last.simps last_conv_nth last_filled lf_filled list.discI list.exhaust_sel make_polygonal_path_gives_path nth_Cons_0 polygon_pathfinish polygon_pathstart polygonal_path_def rangeI simple_path_def)
 
+
+  have "sublist pocket_path_vts vts"
+    by (simp add: construct_pocket_0_def pocket_path_vts_def)
+  have "loop_free ?p"
+    using assms(1) polygon_def simple_path_def by blast
+  have "length pocket_path_vts \<ge> 3"
+    using assms(1,2,3,5) construct_pocket_is_pocket is_pocket_0_def by blast
+  then have "length pocket_path_vts \<ge> 2"
+    by linarith
+  have "length vts \<ge> 2"
+    using 2 by linarith
+
   (* good_pocket_path_vts forms a good_polygonal_path of filled_vts from a to b*)
   have "{a, b} \<subseteq> set filled_vts"
     using filled_vts by (smt (verit) UnCI empty_set list.simps(15) set_append subset_iff)
@@ -5038,17 +5054,8 @@ proof-
       by (metis "1" Diff_subset_conv a_def a_neq_b b_def hd_Nil_eq_last hd_conv_nth last_conv_nth polygon_pathfinish polygon_pathstart simple_path_endless sup_commute)
   qed
   moreover have loop_free_pocket_path: "loop_free ?pocket_path"
-  proof-
-    have "sublist pocket_path_vts vts"
-      by (simp add: construct_pocket_0_def pocket_path_vts_def)
-    moreover have "loop_free ?p"
-      using assms(1) polygon_def simple_path_def by blast
-    moreover have "length pocket_path_vts \<ge> 2"
-      by (metis Suc_1 a_def a_neq_b b_def diff_is_0_eq' hd_Nil_eq_last hd_conv_nth last_conv_nth not_less_eq_eq)
-    moreover have "length vts \<ge> 2"
-      by (meson calculation(1) calculation(3) le_trans sublist_length_le)
-    ultimately show ?thesis using sublist_is_loop_free by blast
-  qed
+    using \<open>sublist pocket_path_vts vts\<close> \<open>2 \<le> length pocket_path_vts\<close> \<open>2 \<le> length vts\<close>
+      \<open>loop_free (make_polygonal_path vts)\<close> sublist_is_loop_free by blast
   ultimately have good_polygonal_path: "good_polygonal_path a good_pocket_path_vts b filled_vts"
     by (metis a_neq_b filled_p_def good_polygonal_path_def)
 
@@ -5095,12 +5102,12 @@ proof-
 
   (* filled_vts is missing at least one vertex from vts *)
   have "card (set vts) = card (set (butlast vts))"
-    by (smt (verit,del_insts) Cons_nth_drop_Suc List.finite_set One_nat_def Suc_1 Suc_le_lessD two_vts_on_frontier distinct_vts hd_last_vts frontier_vts_subset butlast.simps(1) butlast_conv_take card_insert_if card_length card_mono distinct_card drop0 drop_eq_Nil dual_order.trans last_in_set last_tl length_butlast length_greater_0_conv length_tl list.collapse list.sel(3) list.simps(15) set_take_subset alethe_la_disequality)
+    using distinct_vts \<open>card (set vts) = length (butlast vts)\<close>
+    by (metis distinct_card)
   moreover have "length good_pocket_path_vts \<ge> 1"
-    unfolding good_pocket_path_vts_def pocket_path_vts_def construct_pocket_0_def
-    using convex_hull_of_nonconvex_polygon_strict_subset[OF _ assms(4), of vts]
-    using Suc_le_eq assms(1) assms(2) assms(3) construct_pocket_0_def construct_pocket_is_pocket is_pocket_0_def numeral_3_eq_3
-    by auto
+    unfolding good_pocket_path_vts_def length_tl length_butlast
+    using \<open>length pocket_path_vts \<ge> 3\<close>
+    by linarith
   ultimately show "card (set filled_vts) < card (set vts)"
       (* smt call may take 5+ seconds to terminate *)
     unfolding filled_vts_def fill_pocket_0_def good_pocket_path_vts_def pocket_path_vts_def

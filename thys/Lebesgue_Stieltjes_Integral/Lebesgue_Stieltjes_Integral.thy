@@ -738,9 +738,8 @@ corollary nn_integral_interval_measure_deriv:
   assumes "mono F" "\<And>x. continuous (at_right x) F" "F differentiable_on UNIV" and
     "g \<in> borel_measurable lborel"
   shows "(\<integral>\<^sup>+x. g x \<partial>(interval_measure F)) = (\<integral>\<^sup>+x. g x * deriv F x \<partial>lborel)"
-  using set_nn_integral_interval_measure_deriv einterval_eq_UNIV indicator_UNIV assms
-  by (metis (mono_tags, lifting) mult.right_neutral nn_integral_cong
-      space_in_borel alethe_eq_simplify(6))
+  using set_nn_integral_interval_measure_deriv[OF assms(1,2) _ assms(4)] assms(3) einterval_eq_UNIV indicator_UNIV
+  by (metis (mono_tags, lifting) mult.right_neutral nn_integral_cong space_in_borel alethe_eq_simplify(1))
 
 corollary Ioi_nn_integral_interval_measure_deriv:
   fixes F :: "real \<Rightarrow> real" and g :: "real \<Rightarrow> ennreal" and r::real
