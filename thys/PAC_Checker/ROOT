@@ -27,7 +27,7 @@ session PAC_Checker = "Sepref_IICF" +
     PAC_Checker_Init
     PAC_Version
     PAC_Checker_Synthesis
-  theories [condition=ISABELLE_MLTON]
+  theories [condition = "$ISABELLE_MLTON"]
     PAC_Checker_MLton
   document_files
     "root.tex"
