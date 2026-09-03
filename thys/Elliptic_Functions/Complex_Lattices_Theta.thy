@@ -1,6 +1,6 @@
 section \<open>Connection between complex lattices and theta functions\<close>
 theory Complex_Lattices_Theta
-  imports Eisenstein_Series "Theta_Functions.Theta_Nullwert"
+  imports Weierstrass_Sigma_Zeta "Theta_Functions.Theta_Nullwert"
 begin
 
 (* TODO Move. Or rather, fix whatever causes these problems. *)
@@ -582,6 +582,362 @@ proof -
     unfolding e12_conv_theta e13_conv_theta e32_conv_theta
     by (simp add: power_mult_distrib power_divide)
   finally show ?thesis .
+qed
+
+text \<open>
+  Next, we derive two identities relating the Weierstra\ss\ \<open>\<sigma>\<close> and \<open>\<eta>\<close> functions to the Jacobi
+  theta functions. We start with the following one:
+  \[\zeta(z) = \frac{\vartheta_{11}'(z)}{\vartheta_{11}(z)} + \frac{\eta(\omega_1)}{\omega_1}z\ .\]
+\<close>
+theorem weierstrass_zeta_conv_jacobi_theta: 
+  assumes z: "z \<notin> \<Lambda>"
+  shows "weierstrass_zeta z = \<theta>\<^sub>1\<^sub>1'(z) / \<theta>\<^sub>1\<^sub>1(z) + weierstrass_eta \<omega>1 / \<omega>1 * z"
+proof -
+  write weierstrass_zeta ("\<zeta>")
+  write weierstrass_eta ("\<eta>")
+
+  text \<open>
+    First, we let 
+      $f(z) = \zeta(z) - \vartheta_{11}'(z)/\vartheta_{11}(z) - \eta(\omega_1)/\omega_1 z$,
+    i.e.\ the difference of the two sides of the identity.
+  \<close>
+  define f_aux where "f_aux = (\<lambda>z. \<zeta> z - \<theta>\<^sub>1\<^sub>1'(z) / \<theta>\<^sub>1\<^sub>1(z) - \<eta> \<omega>1 / \<omega>1 * z)"
+  define f where "f = remove_sings f_aux"
+  have f_aux_ana: "f_aux analytic_on {z}" if "z \<notin> \<Lambda>" for z
+    unfolding f_def f_aux_def using Im_ratio_pos theta_11_eq_0_iff[of z] using that
+    by (auto intro!: remove_sings_analytic_on analytic_intros
+             simp: theta_11_def[abs_def] theta_11'_def)
+  have f_ana: "f analytic_on {z}" if z: "z \<notin> \<Lambda>" for z
+    using z unfolding f_def by (intro remove_sings_analytic_on f_aux_ana)
+
+  text \<open>
+    We note that $f$ is an odd function for later.
+  \<close>
+  have f_uminus: "f (-z) = -f z" if z: "z \<notin> \<Lambda>" for z
+  proof -
+    have "f (-z) = f_aux (-z)" unfolding f_def 
+      by (rule remove_sings_at_analytic) 
+         (use z in \<open>auto intro!: f_aux_ana simp: uminus_in_lattice_iff\<close>)
+    also have "f_aux (-z) = -f_aux z" using z
+      by (auto simp: f_aux_def weierstrass_zeta_uminus theta_11'_uminus theta_11_def)
+    also have "f_aux z = f z" unfolding f_def
+      by (rule sym, rule remove_sings_at_analytic) (use z in \<open>auto intro!: f_aux_ana\<close>)
+    finally show ?thesis .
+  qed
+
+  text \<open>
+    Next, we show that $f$ is an elliptic function. This is relatively straightforward, but it
+    does require Legendre's relation in the second part. Also, for technical reasons, we must
+    use the \<^const>\<open>remove_sings\<close> operator to ensure periodicity even at the singularities. 
+  \<close>
+  interpret f: elliptic_function \<omega>1 \<omega>2 f
+  proof
+    show "f meromorphic_on UNIV"
+      unfolding f_def f_aux_def theta_11'_def theta_11_def [abs_def] using Im_ratio_pos
+      by (intro meromorphic_intros) (auto intro!: analytic_on_imp_meromorphic_on analytic_intros)
+  next
+    fix z :: complex
+    have eq: "f_aux (z + \<omega>1) = f_aux z" if z: "z \<notin> \<Lambda>" for z
+    proof -
+      have "\<theta>\<^sub>1\<^sub>1'(z+\<omega>1) = deriv (\<lambda>z. \<theta>\<^sub>1\<^sub>1(z + \<omega>1)) z"
+        unfolding theta_11'_def by (simp add: deriv_shift_0' o_def add_ac)
+      also have "\<dots> = deriv (\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z)) z"
+        by (simp add: theta_11_def add_divide_distrib jacobi_theta_11_plus1_left)
+      also have "\<dots> = -\<theta>\<^sub>1\<^sub>1'(z)"
+        by (auto intro!: DERIV_imp_deriv derivative_eq_intros)
+      finally show "f_aux (z + \<omega>1) = f_aux z" using z
+        by (simp add: f_aux_def weierstrass_zeta_plus_lattice add_divide_distrib ring_distribs
+                      theta_11_def jacobi_theta_11_plus1_left)
+    qed
+    have "\<forall>\<^sub>F z in at z. f_aux (z + \<omega>1) = f_aux z"
+      using eventually_not_in_lattice_at by eventually_elim (simp add: eq)
+    hence "remove_sings (\<lambda>z. f_aux (z + \<omega>1)) z = remove_sings f_aux z"
+      by (intro remove_sings_cong refl)
+    thus "f (z + \<omega>1) = f z"
+      by (simp add: remove_sings_shift_0' f_def add_ac)
+  next
+    fix z :: complex
+    have eq: "f_aux (z + \<omega>2) = f_aux z" if z: "z \<notin> \<Lambda>" for z
+    proof -
+      have "\<theta>\<^sub>1\<^sub>1'(z+\<omega>2) = deriv (\<lambda>z. \<theta>\<^sub>1\<^sub>1(z + \<omega>2)) z"
+        unfolding theta_11'_def by (simp add: deriv_shift_0' o_def add_ac)
+      also have "\<dots> = deriv (\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z) / to_nome (\<tau> + 2*z/\<omega>1)) z"
+        by (simp add: theta_11_def add_divide_distrib jacobi_theta_11_plus_quasiperiod ratio_def)
+      also have "(\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z) / to_nome (\<tau> + 2*z/\<omega>1)) = (\<lambda>z. -\<theta>\<^sub>1\<^sub>1(z) * to_nome (-\<tau> - 2*z/\<omega>1))"
+        unfolding to_nome_diff to_nome_minus to_nome_add by (rule ext) (auto simp: field_simps)
+      also have "deriv \<dots> z = to_nome (-\<tau> - 2*z/\<omega>1) * (2 * \<i> * pi * \<theta>\<^sub>1\<^sub>1(z) / \<omega>1 - \<theta>\<^sub>1\<^sub>1'(z))"
+        by (auto intro!: DERIV_imp_deriv derivative_eq_intros simp: ring_distribs mult_ac)
+      finally have *: "\<theta>\<^sub>1\<^sub>1'(z+\<omega>2) = to_nome (-\<tau> - 2*z/\<omega>1) * (2 * \<i> * pi * \<theta>\<^sub>1\<^sub>1(z) / \<omega>1 - \<theta>\<^sub>1\<^sub>1'(z))" .
+
+      have "\<theta>\<^sub>1\<^sub>1(z+\<omega>2) = \<theta>\<^sub>1\<^sub>1(z / \<omega>1 + \<tau> ; \<tau>)"
+        by (simp add: theta_11_def add_divide_distrib ratio_def)
+      also have "\<dots> = - \<theta>\<^sub>1\<^sub>1(z) / to_nome (\<tau> + 2*z/\<omega>1)"
+        by (subst jacobi_theta_11_plus_quasiperiod) (auto simp: theta_11_def)
+      finally have **: "\<theta>\<^sub>1\<^sub>1(z + \<omega>2) = - \<theta>\<^sub>1\<^sub>1(z) / to_nome (\<tau> + 2 * z / \<omega>1)" .
+
+      have "f_aux (z + \<omega>2) = \<zeta> z - \<theta>\<^sub>1\<^sub>1'(z+\<omega>2) / \<theta>\<^sub>1\<^sub>1(z+\<omega>2) - \<eta> \<omega>1 * z / \<omega>1 - 
+                               (\<omega>2 * \<eta> \<omega>1 - \<omega>1 * \<eta> \<omega>2) / \<omega>1"
+        using z by (simp add: f_aux_def weierstrass_zeta_plus_lattice add_divide_distrib
+                              ring_distribs diff_divide_distrib)
+      also have "\<omega>2 * \<eta> \<omega>1 - \<omega>1 * \<eta> \<omega>2 = 2 * pi * \<i>"
+        using Im_ratio_pos by (subst legendre_relation) (auto simp: ratio_def)
+      also have "\<theta>\<^sub>1\<^sub>1'(z + \<omega>2) / \<theta>\<^sub>1\<^sub>1(z + \<omega>2) = 
+                   \<theta>\<^sub>1\<^sub>1'(z) / \<theta>\<^sub>1\<^sub>1(z) - 2 * \<i> * pi / \<omega>1" using z
+        unfolding * ** to_nome_diff to_nome_minus to_nome_add
+        by (simp add: theta_11_eq_0_iff field_simps)
+      finally show ?thesis
+        by (simp add: f_aux_def)
+    qed
+    have "\<forall>\<^sub>F z in at z. f_aux (z + \<omega>2) = f_aux z"
+      using eventually_not_in_lattice_at by eventually_elim (simp add: eq)
+    hence "remove_sings (\<lambda>z. f_aux (z + \<omega>2)) z = remove_sings f_aux z"
+      by (intro remove_sings_cong refl)
+    thus "f (z + \<omega>2) = f z"
+      by (simp add: remove_sings_shift_0' f_def add_ac)
+  qed
+
+  interpret f: nicely_elliptic_function \<omega>1 \<omega>2 f
+  proof
+    show "f nicely_meromorphic_on UNIV"
+      unfolding f_def f_aux_def theta_11'_def theta_11_def [abs_def] using Im_ratio_pos
+      by (intro meromorphic_intros remove_sings_nicely_meromorphic)
+         (auto intro!: analytic_on_imp_meromorphic_on analytic_intros)
+  qed
+
+  text \<open>
+    Next, we examing the series expansion of $f(z)$ at $z = 0$ to show that the poles cancel.
+  \<close>
+
+  have [simp]: "fps_nth fps_theta_11 (Suc 0) \<noteq> 0"
+    by (auto simp: fps_theta_11_1 theta_11'_0_nonzero)
+  have [simp]: "subdegree (fps_deriv fps_theta_11) = 0"
+    by (rule subdegreeI) auto
+  have [simp]: "fps_deriv fps_theta_11 \<noteq> 0"
+  proof -
+    have "fps_nth (fps_deriv fps_theta_11) 0 \<noteq> fps_nth 0 0"
+      by auto
+    thus ?thesis
+      by metis
+  qed
+
+  define C where "C = fps_to_fls (fps_deriv fps_theta_11) / fps_to_fls fps_theta_11"
+  have "fls_subdegree C = -1" unfolding C_def
+    by (subst fls_divide_subdegree) 
+       (auto simp: fls_subdegree_fls_to_fps simp del: fps_deriv_eq_0_iff)
+
+  define F where "F = fls_weierstrass_zeta - C - fls_const (\<eta> \<omega>1 / \<omega>1) * fls_X"
+  have F: "f has_laurent_expansion F"
+    unfolding f_def f_aux_def theta_11'_def C_def F_def
+    by (intro laurent_expansion_intros has_laurent_expansion_fps fps_expansion_intros)
+
+  have "fls_subdegree F \<ge> 0"
+  proof (rule fls_subdegree_ge0I)
+    show "fls_nth F n = 0" if n: "n < 0" for n
+    proof (cases "n = -1")
+      case [simp]: True
+      have "fls_nth C (-1) = 1"
+        unfolding C_def 
+        using fls_divide_nth_base[of "fps_to_fls (fps_deriv fps_theta_11)" "fps_to_fls fps_theta_11"]
+        by (simp add: fls_subdegree_fls_to_fps)
+      thus ?thesis
+        by (auto simp: F_def fls_weierstrass_zeta_def)
+    next
+      case False
+      have "fls_nth C n = 0"
+        using \<open>fls_subdegree C = -1\<close> n False by simp
+      thus ?thesis using n False
+        by (auto simp: F_def fls_weierstrass_zeta_def)
+    qed
+  qed
+  hence "\<not>is_pole f 0"
+    using is_pole_0_imp_neg_fls_subdegree[OF F] by auto
+
+  have "\<not>is_pole f z" for z
+  proof (cases "z \<in> \<Lambda>")
+    case True
+    thus ?thesis
+      using \<open>\<not>is_pole f 0\<close> f.poles.lattice_cong[of z 0] by (auto simp: rel_def)
+  next
+    case False
+    hence "f analytic_on {z}"
+      unfolding f_def f_aux_def using Im_ratio_pos theta_11_eq_0_iff[of z]
+      by (auto intro!: remove_sings_analytic_on analytic_intros
+               simp: theta_11_def[abs_def] theta_11'_def)
+    thus ?thesis
+      using analytic_at_imp_no_pole by auto
+  qed
+
+  text \<open>
+    It follows that $f(z) = c$ for some constant $c$.
+  \<close>
+  hence "elliptic_order f = 0"
+    using f.elliptic_order_eq_0_iff_no_poles by blast
+  hence "f constant_on UNIV"
+    using f.elliptic_order_eq_0_iff by metis
+  then obtain c where c: "\<And>z. f z = c"
+    by (auto simp: constant_on_def)
+
+  text \<open>
+    Since $f$ is odd, this constant must be 0. This concludes the proof.
+  \<close>
+  have "c = 0"
+  proof -
+    have "f (-(\<omega>1 / 2)) = -f (\<omega>1 / 2)"
+      by (rule f_uminus) auto
+    thus ?thesis
+      by (simp add: c)
+  qed
+
+  have "f_aux z = f z"
+    unfolding f_def by (rule sym, rule remove_sings_at_analytic) (auto intro!: f_aux_ana z)
+  also have "\<dots> = 0"
+    using c by (simp add: \<open>c = 0\<close>)
+  finally show "\<zeta> z = \<theta>\<^sub>1\<^sub>1'(z) / \<theta>\<^sub>1\<^sub>1(z) + \<eta> \<omega>1 / \<omega>1 * z"
+    unfolding f_aux_def by (simp add: field_simps)
+qed
+
+text \<open>
+  Next, we show that:
+    \[\sigma(z) = \frac{\vartheta_{11}(z)}{\vartheta_{11}'(0)}\,
+         \exp\left(z^2 \frac{\eta(\omega_1)}{2\omega_1}\right)\]
+\<close>
+theorem weierstrass_sigma_conv_jacobi_theta:
+  assumes z: "z \<notin> \<Lambda>"
+  shows "weierstrass_sigma z = \<theta>\<^sub>1\<^sub>1(z) / \<theta>\<^sub>1\<^sub>1'(0) * exp (z ^ 2 * weierstrass_eta \<omega>1 / (2 * \<omega>1))"
+proof -
+  write weierstrass_sigma ("\<sigma>")
+  write weierstrass_zeta ("\<zeta>")
+  write weierstrass_eta ("\<eta>")
+
+  text \<open>
+    We first let $f(z) = \exp(\eta(\omega_1)z^2/(2\omega_1))$ and 
+    $g(z) = \sigma(z)/(f(z)\vartheta_{11}(z))$.
+  \<close>
+  define f where "f = (\<lambda>z. exp (\<eta> \<omega>1 * z^2 / (2*\<omega>1)))"
+  define g where "g = (\<lambda>z. \<sigma> z / (f z * \<theta>\<^sub>1\<^sub>1(z)))"
+
+  have [derivative_intros]: "(f has_field_derivative (\<eta> \<omega>1 / \<omega>1 * z * f z)) (at z)" for z
+    by (auto simp: f_def intro!: derivative_eq_intros)
+  have [simp]: "f z \<noteq> 0" for z
+    by (auto simp: f_def)
+
+  text \<open>
+    With our previous identity for $\zeta$, we can easily see that $g'$ vanishes everywhere and
+    therefore $g$ is constant.
+  \<close>
+  have "g constant_on (-\<Lambda>)"
+  proof (rule has_field_derivative_0_imp_constant_on)
+    show "(g has_field_derivative 0) (at z)" if z: "z \<in> -\<Lambda>" for z using z
+      by (auto simp: g_def theta_11_eq_0_iff field_simps weierstrass_zeta_conv_jacobi_theta
+               intro!: derivative_eq_intros)
+  next
+    have "connected (UNIV - \<Lambda>)"
+      by (rule connected_open_diff_countable) auto
+    also have "UNIV - \<Lambda> = -\<Lambda>"
+      by auto
+    finally show "connected (-\<Lambda>)" .
+  qed (use closed_lattice in auto)
+  then obtain c where c: "g z = c" if "z \<notin> \<Lambda>" for z
+    by (auto simp: constant_on_def)
+
+  text \<open>
+    By examining the limit of $g(z)$ as $z\to 1$, we find that $c = 1/\vartheta_{11}'(0)$.
+    This concludes the proof.
+  \<close>
+  have c_eq: "c = 1 / \<theta>\<^sub>1\<^sub>1'(0)"
+  proof -
+    have "(\<lambda>z. weierstrass_sigma.f z / (f z * (\<theta>\<^sub>1\<^sub>1(z) / z))) \<midarrow>0\<rightarrow>
+            (weierstrass_sigma.f 0 / (f 0 * \<theta>\<^sub>1\<^sub>1'(0)))"
+    proof (intro tendsto_intros isContD[of _ weierstrass_sigma.f] isContD[of _ f])
+      have "(theta_11 has_field_derivative \<theta>\<^sub>1\<^sub>1'(0)) (at 0)"
+        by (auto intro!: derivative_eq_intros)
+      thus "(\<lambda>x. \<theta>\<^sub>1\<^sub>1(x) / x) \<midarrow>0\<rightarrow> \<theta>\<^sub>1\<^sub>1'(0)"
+        by (simp add: has_field_derivative_iff theta_11_def)
+    qed (auto simp: f_def intro!: analytic_at_imp_isCont analytic_intros)
+    also have "?this \<longleftrightarrow> ((\<lambda>_::complex. c) \<midarrow>0\<rightarrow> (1 / \<theta>\<^sub>1\<^sub>1'(0)))"
+    proof (intro filterlim_cong arg_cong[of _ _ nhds])
+      show "\<forall>\<^sub>F z in at 0. weierstrass_sigma.f z / (f z * (\<theta>\<^sub>1\<^sub>1(z) / z)) = c"
+        using eventually_neq_at_within[of 0] eventually_not_in_lattice_at
+      proof eventually_elim
+        case (elim z)
+        have "weierstrass_sigma.f z / (f z * (\<theta>\<^sub>1\<^sub>1(z) / z)) = g z"
+          by (auto simp: weierstrass_sigma_def g_def)
+        thus ?case
+          using elim by (simp add: c)
+      qed
+    qed (auto simp: f_def)
+    finally show "c = 1 / \<theta>\<^sub>1\<^sub>1'(0)"
+      by (simp add: tendsto_const_iff)
+  qed
+
+  have "g z = c"
+    using z by (rule c)
+  thus ?thesis
+    by (simp add: g_def c_eq f_def field_simps)
+qed
+
+text \<open>
+  As a useful corollary, we deduce the following expression for the $z^3$ coefficient in
+  the series expansion of $\vartheta_{11}$. This will later lead us to a formula relating
+  $\eta(\omega_1)$ and $\eta(\omega_2)$ to $G_2$.
+\<close>
+lemma fps_theta_11_3: "fps_nth fps_theta_11 3 = -\<theta>\<^sub>1\<^sub>1'(0) * weierstrass_eta \<omega>1 / (2 * \<omega>1)"
+proof -
+  write weierstrass_zeta ("\<zeta>")
+  write weierstrass_eta ("\<eta>")
+  define B where "B = fps_nth fps_theta_11 3"
+  define f where "f = (\<lambda>z. \<zeta> z - \<theta>\<^sub>1\<^sub>1'(z) / \<theta>\<^sub>1\<^sub>1(z) - \<eta> \<omega>1 / \<omega>1 * z)"
+  define H where "H = fps_to_fls (fps_deriv fps_theta_11) / fps_to_fls fps_theta_11"
+  define F where "F = fls_weierstrass_zeta - H - fls_const (\<eta> \<omega>1 / \<omega>1) * fls_X"
+
+  have "F = 0"
+  proof (rule zero_has_laurent_expansion_imp_eq_0)
+    have "f has_laurent_expansion F" unfolding f_def F_def H_def
+      by (intro laurent_expansion_intros has_laurent_expansion_fps fps_expansion_intros)
+    also have "?this \<longleftrightarrow> (\<lambda>_. 0) has_laurent_expansion F"
+    proof (rule has_laurent_expansion_cong)
+      show "\<forall>\<^sub>F z in at 0. f z = 0"
+        using eventually_not_in_lattice_at
+        by eventually_elim (auto simp: f_def weierstrass_zeta_conv_jacobi_theta)
+    qed auto
+    finally show "(\<lambda>_. 0) has_laurent_expansion F" .
+  qed
+
+  have [simp]: "subdegree (fps_deriv fps_theta_11) = 0"
+    by (rule subdegreeI) (auto simp: fps_theta_11_1)
+
+  have H1: "fls_nth H 1 = 2 * B / \<theta>\<^sub>1\<^sub>1'(0)"
+  proof -
+    define H1 where "H1 = fps_deriv fps_theta_11"
+    define H2 where "H2 = fps_shift 1 fps_theta_11"
+    have "fps_nth H2 0 \<noteq> 0"
+      by (auto simp: H2_def fps_theta_11_1)
+    hence [simp]: "H2 \<noteq> 0" and [simp]: "subdegree H2 = 0"
+      by auto
+    note [simp] = \<open>fps_nth H2 0 \<noteq> 0\<close>
+    have *: "fps_nth (inverse H2) 2 = -B / \<theta>\<^sub>1\<^sub>1'(0) ^ 2"
+      by (simp add: fps_inverse_def eval_nat_numeral H2_def fps_theta_11_1 field_simps B_def)
+
+    have "H = fps_to_fls H1 / fps_to_fls (fps_X * H2)"
+      using fps_conv_fps_X_power_mult_fps_shift[of fps_theta_11 1]
+      by (simp add: H_def H1_def H2_def)
+    also have "\<dots> = fls_shift 1 (fps_to_fls H1 / fps_to_fls H2)"
+      by (simp add: fls_times_fps_to_fls field_simps fls_X_times_conv_shift(1) fls_divide_shift_denom)
+    also have "fps_to_fls H1 / fps_to_fls H2 = fps_to_fls (H1 / H2)"
+      by (rule fls_divide_fps_to_fls) auto
+    also have "fls_nth (fls_shift 1 \<dots>) 1 = fps_nth (H1 * inverse H2) 2"
+      by (simp add: fps_divide_unit)
+    also have "\<dots> = 2 * B / \<theta>\<^sub>1\<^sub>1'(0)"
+      using * by (simp add: fps_mult_nth eval_nat_numeral H1_def H2_def fps_theta_11_1 field_simps B_def)
+    finally show "fls_nth H 1 = 2 * B / \<theta>\<^sub>1\<^sub>1'(0)"
+      by simp
+  qed
+
+  have "0 = fls_nth F 1"
+    by (simp add: \<open>F = 0\<close>)
+  thus ?thesis
+    by (auto simp: field_simps F_def fls_weierstrass_zeta_def B_def
+                   fps_weierstrass_zeta_def H1 add_eq_0_iff)
 qed
 
 end

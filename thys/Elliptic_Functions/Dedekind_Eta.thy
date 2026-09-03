@@ -410,6 +410,49 @@ qed
 
 
 text \<open>
+  Combining this with our previous formula relating $\vartheta_{11}'''(0)$ to $\eta(\omega_1)$
+  (where $\eta$ stands for the Weierstra\ss\ $\eta$ function, not the Dedekind $\eta$ function),
+  we can now easily obtain identities relating $\eta(\omega_1)$ and $\eta(\omega_2)$ to $G_2$:
+\<close>
+context complex_lattice_Im_pos
+begin
+
+theorem weierstrass_eta1_eq: "weierstrass_eta \<omega>1 = \<omega>1 * G 2"
+proof -
+  have "-\<theta>\<^sub>1\<^sub>1'(0) * weierstrass_eta \<omega>1 / (2 * \<omega>1) = fps_nth fps_theta_11 3"
+    by (simp add: fps_theta_11_3)
+  also have "\<dots> = of_real pi / \<omega>1 * dedekind_eta \<tau> ^ 3 * eisenstein_series 2"
+    using Im_ratio_pos
+    by (simp add: fps_theta_11_conv_theta_11_coeffs theta_11_coeffs_3_conv_dedekind_eta fact_numeral 
+                  power_numeral_reduce field_simps eisenstein_series_eq_Eisenstein_G ratio_def)
+  finally show ?thesis
+    by (simp add: field_simps Im_ratio_pos theta_11'_conv_dedekind_eta)
+qed
+
+corollary weierstrass_eta2_eq: "weierstrass_eta \<omega>2 = \<omega>2 * G 2 - 2 * pi * \<i> / \<omega>1"
+proof -
+  have "weierstrass_eta \<omega>2 = (\<omega>2 * weierstrass_eta \<omega>1 - 2 * pi * \<i>) / \<omega>1"
+    using legendre_relation Im_ratio_pos by (auto simp: field_simps ratio_def)
+  also have "\<dots> = \<omega>2 * G 2 - 2 * pi * \<i> / \<omega>1"
+    by (auto simp: weierstrass_eta1_eq field_simps)
+  finally show ?thesis .
+qed
+
+text \<open>
+  By linearity, we get the following expression for $\eta(\omega)$ for an arbitrary 
+  lattice point $\omega$.
+\<close>
+corollary weierstrass_eta_of_\<omega>12_coords':
+  fixes a b :: int
+  defines "\<omega> \<equiv> of_\<omega>12_coords (of_int a, of_int b)"
+  shows "weierstrass_eta \<omega> = eisenstein_series 2 * \<omega> - 2 * of_int b * of_real pi * \<i> / \<omega>1"
+  unfolding weierstrass_eta_of_\<omega>12_coords \<omega>_def
+  by (simp add: weierstrass_eta1_eq weierstrass_eta2_eq ring_distribs mult_ac of_\<omega>12_coords_def)
+
+end
+
+
+text \<open>
   Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
   we also get the following deep connection between the discriminant of a complex lattice
   and $\eta$.
