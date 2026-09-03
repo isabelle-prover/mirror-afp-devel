@@ -359,6 +359,43 @@ lemma jacobi_theta_00_01_10_nw_conv_dedekind_eta:
   using t by (simp add: jacobi_theta_00_nw_conv_dedekind_eta' field_simps eval_nat_numeral
                 jacobi_theta_01_nw_conv_dedekind_eta jacobi_theta_10_nw_conv_dedekind_eta)
 
+lemma theta_11_coeffs_3_conv_dedekind_eta:
+  assumes t: "Im t > 0"
+  shows "theta_11_coeffs 3 t = 3 / (4 * pi ^ 2) * dedekind_eta t ^ 3 * Eisenstein_G 2 t"
+proof -
+  note [derivative_intros] = has_field_derivative_dedekind_eta
+
+  have "(theta_11_coeffs 1 has_field_derivative (\<i> * pi * theta_11_coeffs (1+2) t)) (at t)"
+    by (intro has_field_derivative_theta_11_coeffs t)
+  also have "?this \<longleftrightarrow> ((\<lambda>t. dedekind_eta t ^ 3) 
+                         has_field_derivative (\<i> * pi * theta_11_coeffs (1+2) t)) (at t)"
+  proof (rule DERIV_cong_ev)
+    have "eventually (\<lambda>w. w \<in> {w. Im w > 0}) (nhds t)"
+      by (intro eventually_nhds_in_open open_halfspace_Im_gt) (use t in auto)
+    thus "eventually (\<lambda>w. theta_11_coeffs 1 w = dedekind_eta w ^ 3) (nhds t)"
+    proof eventually_elim
+      case (elim w)
+      hence "theta_11_coeffs 1 w = -deriv (\<lambda>z. jacobi_theta_11 z w) 0 / (2 * pi)"
+        using higher_deriv_jacobi_theta_11_conv_theta_11_coeffs[of w 1] by (auto simp: field_simps)
+      also have "\<dots> = jacobi_theta_00 0 w * jacobi_theta_01 0 w * jacobi_theta_10 0 w / 2"
+        by (subst deriv_jacobi_theta_11_at_0) (use elim in auto)
+      also have "\<dots> = dedekind_eta w ^ 3"
+        by (subst jacobi_theta_00_01_10_nw_conv_dedekind_eta) (use elim in auto)
+      finally show ?case .
+    qed 
+  qed auto
+  finally have "((\<lambda>t. dedekind_eta t ^ 3) has_field_derivative (\<i> * pi * theta_11_coeffs 3 t)) (at t)"
+    by (simp add: eval_nat_numeral)
+  moreover have "((\<lambda>t. dedekind_eta t ^ 3) has_field_derivative 
+                   (3 / (4 * pi) * \<i> * dedekind_eta t ^ 3 * Eisenstein_G 2 t)) (at t)"
+    using t by (auto intro!: derivative_eq_intros 
+                     simp: dedekind_eta_nonzero field_simps power_numeral_reduce)
+  ultimately have "\<i> * pi * theta_11_coeffs 3 t = 3 / (4 * pi) * \<i> * dedekind_eta t ^ 3 * Eisenstein_G 2 t"
+    by (rule DERIV_unique)
+  thus ?thesis
+    by (simp add: field_simps power2_eq_square)
+qed
+
 lemma (in complex_lattice_Im_pos) theta_11'_conv_dedekind_eta:
   "theta_11' 0 = -2 * pi / \<omega>1 * \<eta> \<tau> ^ 3"
 proof -

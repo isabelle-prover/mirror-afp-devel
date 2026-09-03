@@ -162,9 +162,34 @@ lemma has_fps_expansion_theta_11 [fps_expansion_intros]: "theta_11 has_fps_expan
   unfolding fps_theta_11_def theta_11_def
   by (intro analytic_at_imp_has_fps_expansion_0 analytic_intros) (use Im_ratio_pos in auto)
 
+lemma has_fps_expansion_theta_11' [fps_expansion_intros]:
+  "theta_11' has_fps_expansion fps_deriv fps_theta_11"
+  unfolding theta_11'_def by (intro fps_expansion_intros)
+
+lemma fps_theta_11_nth_even_eq_0 [simp]:
+  assumes "even n"
+  shows   "fps_nth fps_theta_11 n = 0"
+proof -
+  have "(\<lambda>z. theta_11 z + (theta_11 \<circ> (\<lambda>z. -z)) z) has_fps_expansion 
+          (fps_theta_11 + fps_compose fps_theta_11 (-fps_X))"
+    by (intro fps_expansion_intros) auto
+  also have "(\<lambda>z. theta_11 z + (theta_11 \<circ> (\<lambda>z. -z)) z) = (\<lambda>_. 0)"
+    by (simp add: theta_11_def)
+  finally have "(\<lambda>z. 0) has_fps_expansion fps_theta_11 + (fps_theta_11 oo - fps_X)" .
+  moreover have "(\<lambda>z. 0) has_fps_expansion 0" by simp
+  ultimately have "fps_theta_11 + (fps_compose fps_theta_11 (-fps_X)) = 0"
+    using fps_expansion_unique_complex by blast
+  hence "0 = fps_nth (fps_theta_11 + (fps_compose fps_theta_11 (-fps_X))) n"
+    by simp
+  also have "\<dots> = 2 * fps_nth fps_theta_11 n"
+    using fps_nth_compose_linear[of fps_theta_11 "-1"] assms
+    by (auto simp del: fps_nth_compose_linear simp flip: fps_const_neg)
+  finally show ?thesis
+    by simp
+qed 
+
 lemma fps_theta_11_0 [simp]: "fps_nth fps_theta_11 0 = 0"
-  using has_fps_expansion_imp_0_eq_fps_nth_0[OF has_fps_expansion_theta_11]
-  by (simp add: theta_11_def)
+  by simp
 
 lemma fps_theta_11_1: "fps_nth fps_theta_11 (Suc 0) = \<theta>\<^sub>1\<^sub>1'(0)"
   using fps_nth_fps_expansion[OF has_fps_expansion_theta_11, of 1] by (simp add: theta_11'_def)
@@ -196,6 +221,20 @@ lemma fps_theta_11_nonzero [simp]: "fps_theta_11 \<noteq> 0"
 
 lemma subdegree_fps_theta_11 [simp]: "subdegree fps_theta_11 = 1"
   by (rule subdegreeI) (auto simp: fps_theta_11_1 theta_11'_0_nonzero)
+
+lemma fps_theta_11_conv_theta_11_coeffs:
+  "fps_nth fps_theta_11 n = \<i> * (2 * of_real pi * \<i>) ^ n / (\<omega>1 ^ n * fact n) * theta_11_coeffs n \<tau>"
+proof -
+  have "fps_nth fps_theta_11 n = (deriv ^^ n) theta_11 0 / fact n"
+    using fps_nth_fps_expansion[OF has_fps_expansion_theta_11, of n] by simp
+  also have "(deriv ^^ n) theta_11 0 = (deriv ^^ n) ((\<lambda>z. \<theta>\<^sub>1\<^sub>1(z ; \<tau>)) \<circ> (\<lambda>z. 1 / \<omega>1 * z)) 0"
+    by (simp add: theta_11_def [abs_def] o_def)
+  also have "\<dots> = (deriv ^^ n) (\<lambda>z. \<theta>\<^sub>1\<^sub>1(z ; \<tau>)) 0 / \<omega>1 ^ n"
+    by (subst higher_deriv_scale) (auto intro!: analytic_intros simp: field_simps Im_ratio_pos)
+  also have "\<dots> / fact n = \<i> * (2 * of_real pi * \<i>) ^ n / (\<omega>1 ^ n * fact n) * theta_11_coeffs n \<tau>"
+    by (subst higher_deriv_jacobi_theta_11_conv_theta_11_coeffs) (auto simp: Im_ratio_pos field_simps)
+  finally show ?thesis .
+qed
 
 
 text \<open>

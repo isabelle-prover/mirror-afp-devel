@@ -192,4 +192,17 @@ lemma filterlim_at_0_to_nome:
   shows   "filterlim (\<lambda>x. to_nome (f x)) (at 0) F"
   by (intro filterlim_atI tendsto_0_to_nome assms) auto
 
+lemma deriv_to_nome: "deriv to_nome z = of_real pi * \<i> * to_nome z"
+  by (intro DERIV_imp_deriv) (auto intro!: derivative_eq_intros)
+
+lemma higher_deriv_to_nome: "(deriv ^^ n) to_nome z = (of_real pi * \<i>) ^ n * to_nome z"
+proof (induction n arbitrary: z)
+  case (Suc n z)
+  have "(deriv ^^ Suc n) to_nome z = deriv (\<lambda>z. (of_real pi * \<i>) ^ n * to_nome z) z"
+    by (simp add: Suc.IH [abs_def])
+  also have "\<dots> = (of_real pi * \<i>) ^ Suc n * to_nome z"
+    by (subst deriv_cmult') (auto simp: deriv_to_nome intro!: analytic_intros)
+  finally show ?case .
+qed auto
+
 end
