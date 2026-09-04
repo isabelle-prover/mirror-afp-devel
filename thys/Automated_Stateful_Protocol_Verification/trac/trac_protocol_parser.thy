@@ -14,10 +14,12 @@ theory
     "Isabelle_Lex-Yacc.LexYacc"
 begin
 
+SML_import \<open>val error = error\<close>
+SML_import \<open>structure Symbol_Pos = Symbol_Pos\<close>
+SML_import \<open>structure Position = struct open Position end\<close>
 SML_import \<open>structure TracProtocol=TracProtocol\<close>
 SML_import \<open>structure Trac_Term=Trac_Term\<close>
 SML_import \<open>structure Trac_Utils=Trac_Utils\<close>
-SML_import \<open>val error = error\<close>
 
 ml_lex_yacc[expert] TracTransaction where 
 lex_user_declarations \<open>
@@ -25,24 +27,62 @@ structure Tokens = Tokens
 
 open TracProtocol
   
-type pos = int * int * int
+type pos = Position.T
 type svalue = Tokens.svalue
 
 type ('a,'b) token = ('a,'b) Tokens.token
-type lexresult= (svalue,pos) token
+type lexresult = (svalue, pos) token
 
-val pos = ref (0,0,0)
+val source_pos_array = ref (Array.array (0, Position.none))
 
-fun eof () = Tokens.EOF((!pos,!pos))
-fun error' (e,p : (int * int * int),_) = error (
-							 String.concat[
-								       "Line ", (Int.toString (#1 p)), "/",
-								       (Int.toString (#2 p - #3 p)),": ", e, "\n"
-								       ])
-  
-fun inputPos yypos = ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))),
-                      (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))
-fun inputPos_half yypos = (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))
+fun get_pos yypos =
+  let val arr = !source_pos_array
+      val len = Array.length arr
+  in 
+    if yypos < 0 then Position.none
+    else if yypos >= len then 
+      if len > 0 then Array.sub (arr, len - 1) else Position.none
+    else Array.sub (arr, yypos)
+  end
+
+fun get_range yypos yylen =
+  if yylen <= 0 then get_pos yypos
+  else 
+    (Position.range_position (get_pos yypos, get_pos (yypos + yylen)))
+    handle _ => get_pos yypos | Fail _ => get_pos yypos
+
+fun report_kw yypos yylen mk = 
+  let val pos = get_range yypos yylen in
+    if pos = Position.none then () else Position.report pos mk
+  end
+
+fun report_comment yypos yylen = 
+  let val pos = get_range yypos yylen in
+    if pos = Position.none then () else Position.report pos Markup.comment
+  end
+
+fun report_var yypos yylen name =
+  let val pos = get_range yypos yylen in
+    if pos = Position.none then () else (
+      Position.report pos Markup.free;
+      Position.report pos (Markup.entity "free" name)
+    )
+  end
+
+fun report_fun yypos yylen name =
+  let val pos = get_range yypos yylen in
+    if pos = Position.none then () else (
+      Position.report pos (Markup.entity "constant" name)
+    )
+  end
+
+fun report_str yypos yylen =
+  let val pos = get_range yypos yylen in
+    if pos = Position.none then () else Position.report pos Markup.inner_string
+  end
+
+fun eof () = Tokens.EOF(Position.none, Position.none)
+fun error' (e, p: Position.T, _) = error (e ^ Position.here p)
 \<close>
 lex_definitions\<open>
 %header (functor TracTransactionLexFun(structure Tokens: TracTransaction_TOKENS));
@@ -50,84 +90,82 @@ alpha=[A-Za-z_];
 upper=[A-Z];
 lower=[a-z];
 digit=[0-9];
-ws = [\ \t];
+ws = [\ \t\r\127];
 \<close>
 lex_rules\<open>
-\n       => (pos := ((#1 (!pos)) + 1, yypos - (#3(!pos)),yypos  ); lex());
-{ws}+    => (pos := (#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))); lex()); 
+\n       => (lex());
+{ws}+    => (lex()); 
 
-(#)[^\n]*\n                    => (pos := ((#1 (!pos)) + 1, yypos - (#3(!pos)),yypos  ); lex());
+(#)[^\n]*\n                    => (report_comment yypos (size yytext); lex());
 
-"/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/" => (lex());
+"/*""/"*([^*/]|[^*]"/"|"*"[^/])*"*"*"*/" => (report_comment yypos (size yytext); lex());
 
-"("             => (Tokens.OPENP(yytext,inputPos_half yypos,inputPos_half yypos));
-")"             => (Tokens.CLOSEP(yytext,inputPos_half yypos,inputPos_half yypos));
-"{"             => (Tokens.OPENB(yytext,inputPos_half yypos,inputPos_half yypos));
-"}"             => (Tokens.CLOSEB(yytext,inputPos_half yypos,inputPos_half yypos));
-"{|"            => (Tokens.OPENSCRYPT(yytext,inputPos_half yypos,inputPos_half yypos));
-"|}"            => (Tokens.CLOSESCRYPT(yytext,inputPos_half yypos,inputPos_half yypos));
-":"             => (Tokens.COLON(yytext,inputPos_half yypos,inputPos_half yypos));
-";"             => (Tokens.SEMICOLON(yytext,inputPos_half yypos,inputPos_half yypos));
-"->"            => (Tokens.ARROW(yytext,inputPos_half yypos,inputPos_half yypos));
-"%"             => (Tokens.PERCENT(yytext,inputPos_half yypos,inputPos_half yypos));
-"!="            => (Tokens.UNEQUAL(yytext,inputPos_half yypos,inputPos_half yypos));
-"!"             => (Tokens.EXCLAM (yytext,inputPos_half yypos,inputPos_half yypos));
-"."             => (Tokens.DOT(yytext,inputPos_half yypos,inputPos_half yypos));
-","             => (Tokens.COMMA(yytext,inputPos_half yypos,inputPos_half yypos));
-"["             => (Tokens.OPENSQB(yytext,inputPos_half yypos,inputPos_half yypos));
-"]"             => (Tokens.CLOSESQB(yytext,inputPos_half yypos,inputPos_half yypos));
-"++"            => (Tokens.UNION(yytext,inputPos_half yypos,inputPos_half yypos));
-"{..}"          => (Tokens.INFINITESET(yytext,inputPos_half yypos,inputPos_half yypos));
-"Protocol"      => (Tokens.PROTOCOL(yytext,inputPos_half yypos,inputPos_half yypos));
-"Knowledge"     => (Tokens.KNOWLEDGE(yytext,inputPos_half yypos,inputPos_half yypos));
-"where"         => (Tokens.WHERE(yytext,inputPos_half yypos,inputPos_half yypos));
-"Types"         => (Tokens.TYPES(yytext,inputPos_half yypos,inputPos_half yypos));
-"Enumerations"  => (Tokens.ENUMERATIONS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Actions"       => (Tokens.ACTIONS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Abstraction"   => (Tokens.ABSTRACTION(yytext,inputPos_half yypos,inputPos_half yypos));
-"Goals"         => (Tokens.GOALS(yytext,inputPos_half yypos,inputPos_half yypos));
-"authenticates" => (Tokens.AUTHENTICATES(yytext,inputPos_half yypos,inputPos_half yypos));
-"weakly"        => (Tokens.WEAKLY(yytext,inputPos_half yypos,inputPos_half yypos));
-"on"            => (Tokens.ON(yytext,inputPos_half yypos,inputPos_half yypos));
-"secret"        => (Tokens.TSECRET(yytext,inputPos_half yypos,inputPos_half yypos));
-"between"       => (Tokens.TBETWEEN(yytext,inputPos_half yypos,inputPos_half yypos));
-"Sets"          => (Tokens.SETS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Functions"     => (Tokens.FUNCTIONS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Public"        => (Tokens.PUBLIC(yytext,inputPos_half yypos,inputPos_half yypos));
-"Private"       => (Tokens.PRIVATE(yytext,inputPos_half yypos,inputPos_half yypos));
-"Analysis"      => (Tokens.ANALYSIS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Transactions"  => (Tokens.TRANSACTIONS(yytext,inputPos_half yypos,inputPos_half yypos));
-"Abbreviations" => (Tokens.ABBREVIATIONS(yytext,inputPos_half yypos,inputPos_half yypos));
-"receive"       => (Tokens.RECEIVE(yytext,inputPos_half yypos,inputPos_half yypos));
-"send"          => (Tokens.SEND(yytext,inputPos_half yypos,inputPos_half yypos));
-"let"           => (Tokens.LET(yytext,inputPos_half yypos,inputPos_half yypos));
-"in"            => (Tokens.IN(yytext,inputPos_half yypos,inputPos_half yypos));
-"notin"         => (Tokens.NOTIN(yytext,inputPos_half yypos,inputPos_half yypos));
-"insert"        => (Tokens.INSERT(yytext,inputPos_half yypos,inputPos_half yypos));
-"delete"        => (Tokens.DELETE(yytext,inputPos_half yypos,inputPos_half yypos));
-"new"           => (Tokens.NEW(yytext,inputPos_half yypos,inputPos_half yypos));
-"attack"        => (Tokens.ATTACK(yytext,inputPos_half yypos,inputPos_half yypos));
-"/"             => (Tokens.SLASH(yytext,inputPos_half yypos,inputPos_half yypos));
-"//"            => (Tokens.DOUBLESLASH(yytext,inputPos_half yypos,inputPos_half yypos));
-"?"             => (Tokens.QUESTION(yytext,inputPos_half yypos,inputPos_half yypos));
-"="             => (Tokens.EQUAL(yytext,inputPos_half yypos,inputPos_half yypos));
-"=="            => (Tokens.DOUBLEEQUAL(yytext,inputPos_half yypos,inputPos_half yypos));
-"_"             => (Tokens.UNDERSCORE(yytext,inputPos_half yypos,inputPos_half yypos));
-"*"             => (Tokens.STAR(yytext,inputPos_half yypos,inputPos_half yypos));
-"of"            => (Tokens.OF(yytext,inputPos_half yypos,inputPos_half yypos));
-"or"            => (Tokens.OR(yytext,inputPos_half yypos,inputPos_half yypos));
-"forall"        => (Tokens.FORALL(yytext,inputPos_half yypos,inputPos_half yypos));
-
-
-{digit}+                          => (Tokens.INTEGER_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
-"'"({alpha}|{ws}|{digit})*(("."|"_"|"/"|"-")*({alpha}|{ws}|{digit})*)*"'"  => (Tokens.STRING_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
-{lower}({alpha}|{digit})*("'")*   => (Tokens.LOWER_STRING_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
-{upper}({alpha}|{digit})*("'")*   => (Tokens.UPPER_STRING_LITERAL(yytext,inputPos_half yypos,inputPos_half yypos));
+"("             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.OPENP(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+")"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.CLOSEP(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"{"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.OPENB(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"}"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.CLOSEB(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"{|"            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.OPENSCRYPT(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"|}"            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.CLOSESCRYPT(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+":"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.COLON(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+";"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.SEMICOLON(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"->"            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.ARROW(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"%"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.PERCENT(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"!="            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.UNEQUAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"!"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.EXCLAM (yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"."             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.DOT(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+","             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.COMMA(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"["             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.OPENSQB(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"]"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.CLOSESQB(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"++"            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.UNION(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"{..}"          => (report_kw yypos (size yytext) Markup.keyword3; Tokens.INFINITESET(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Protocol"      => (report_kw yypos (size yytext) Markup.keyword1; Tokens.PROTOCOL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Knowledge"     => (report_kw yypos (size yytext) Markup.keyword1; Tokens.KNOWLEDGE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"where"         => (report_kw yypos (size yytext) Markup.keyword2; Tokens.WHERE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Types"         => (report_kw yypos (size yytext) Markup.keyword1; Tokens.TYPES(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Enumerations"  => (report_kw yypos (size yytext) Markup.keyword1; Tokens.ENUMERATIONS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Actions"       => (report_kw yypos (size yytext) Markup.keyword1; Tokens.ACTIONS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Abstraction"   => (report_kw yypos (size yytext) Markup.keyword1; Tokens.ABSTRACTION(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Goals"         => (report_kw yypos (size yytext) Markup.keyword1; Tokens.GOALS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"authenticates" => (report_kw yypos (size yytext) Markup.keyword2; Tokens.AUTHENTICATES(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"weakly"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.WEAKLY(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"on"            => (report_kw yypos (size yytext) Markup.keyword2; Tokens.ON(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"secret"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.TSECRET(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"between"       => (report_kw yypos (size yytext) Markup.keyword2; Tokens.TBETWEEN(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Sets"          => (report_kw yypos (size yytext) Markup.keyword1; Tokens.SETS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Functions"     => (report_kw yypos (size yytext) Markup.keyword1; Tokens.FUNCTIONS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Public"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.PUBLIC(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Private"       => (report_kw yypos (size yytext) Markup.keyword2; Tokens.PRIVATE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Analysis"      => (report_kw yypos (size yytext) Markup.keyword1; Tokens.ANALYSIS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Transactions"  => (report_kw yypos (size yytext) Markup.keyword1; Tokens.TRANSACTIONS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"Abbreviations" => (report_kw yypos (size yytext) Markup.keyword1; Tokens.ABBREVIATIONS(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"receive"       => (report_kw yypos (size yytext) Markup.keyword2; Tokens.RECEIVE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"send"          => (report_kw yypos (size yytext) Markup.keyword2; Tokens.SEND(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"let"           => (report_kw yypos (size yytext) Markup.keyword2; Tokens.LET(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"in"            => (report_kw yypos (size yytext) Markup.keyword2; Tokens.IN(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"notin"         => (report_kw yypos (size yytext) Markup.keyword2; Tokens.NOTIN(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"insert"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.INSERT(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"delete"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.DELETE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"new"           => (report_kw yypos (size yytext) Markup.keyword2; Tokens.NEW(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"attack"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.ATTACK(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"/"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.SLASH(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"//"            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.DOUBLESLASH(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"?"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.QUESTION(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"="             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.EQUAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"=="            => (report_kw yypos (size yytext) Markup.keyword3; Tokens.DOUBLEEQUAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"_"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.UNDERSCORE(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"*"             => (report_kw yypos (size yytext) Markup.keyword3; Tokens.STAR(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"of"            => (report_kw yypos (size yytext) Markup.keyword2; Tokens.OF(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"or"            => (report_kw yypos (size yytext) Markup.keyword2; Tokens.OR(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"forall"        => (report_kw yypos (size yytext) Markup.keyword2; Tokens.FORALL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
 
 
-.      => (error' ("Bad character: "^yytext,
-		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos)))),
-		    ((#1 (!pos), yypos - (#3(!pos)), (#3 (!pos))))));
+{digit}+                                                                  => (Tokens.INTEGER_LITERAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+"'"({alpha}|{ws}|{digit})*(("."|"_"|"/"|"-")*({alpha}|{ws}|{digit})*)*"'" => (report_str yypos (size yytext); Tokens.STRING_LITERAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+{lower}({alpha}|{digit})*("'")*   => (report_fun yypos (size yytext) yytext; Tokens.LOWER_STRING_LITERAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+{upper}({alpha}|{digit})*("'")*   => (report_var yypos (size yytext) yytext; Tokens.UPPER_STRING_LITERAL(yytext, get_pos yypos, get_pos (yypos + size yytext)));
+
+
+.      => (error' ("Bad character: "^yytext, get_pos yypos, get_pos yypos));
 \<close>
 and
 yacc_user_declarations\<open>
@@ -212,7 +250,7 @@ yacc_definitions\<open>
     | OF of string
     | OR of string
     | FORALL of string
-                   
+                    
 %nonterm START of TracProtocol.protocol
        | name of string 
        | arity of int 
@@ -267,13 +305,13 @@ yacc_definitions\<open>
        | abbrev_decl of TracProtocol.abbreviation
        | abbrev_spec of TracProtocol.abbreviation list
                      
-%pos (int * int * int)
+%pos Position.T
 
 %noshift EOF
 \<close>
 yacc_rules\<open>
-START:         trac_protocol                                    (trac_protocol)
-trac_protocol: PROTOCOL COLON name protocol_spec                (TracProtocol.update_name protocol_spec name)
+START:         trac_protocol                                      (trac_protocol)
+trac_protocol: PROTOCOL COLON name protocol_spec                  (TracProtocol.update_name protocol_spec name)
 
 protocol_spec: TYPES COLON enum_specs protocol_spec                       (error "Using the name \"Types\" for the section containing the enumeration declarations is deprecated - use \"Enumerations\" instead.")
              | ENUMERATIONS COLON enum_specs protocol_spec                (TracProtocol.update_enum_spec protocol_spec enum_specs)
@@ -313,11 +351,11 @@ fun_specs: fun_spec                                           ([fun_spec])
 fun_spec:      lident SLASH arity                             ((lident, arity, NONE))
         |      lident SLASH arity COLON typ                   ((lident, arity, SOME(typ)))
 
-analysis_spec: rule                        	              ([rule])
-             | rule analysis_spec                         (rule::analysis_spec)
+analysis_spec: rule                                           ([rule])
+             | rule analysis_spec                             (rule::analysis_spec)
              
-rule: head ARROW result                                   ((head,[],result)) 
-    | head QUESTION keys ARROW result                     ((head,keys,result)) 
+rule: head ARROW result                                       ((head,[],result)) 
+    | head QUESTION keys ARROW result                         ((head,keys,result)) 
 
 head: LOWER_STRING_LITERAL OPENP head_params CLOSEP       ((LOWER_STRING_LITERAL,head_params))
 
@@ -453,7 +491,8 @@ abbrev_spec: abbrev_decl                              ([abbrev_decl])
 
 ML\<open>
 structure TracProtocolParser : sig  
-		   val parse_file: string -> TracProtocol.protocol
+       val parse_source: Input.source -> TracProtocol.protocol
+       val parse_file: string -> TracProtocol.protocol
        val parse_str:  string -> TracProtocol.protocol
 end = 
 struct
@@ -466,51 +505,75 @@ struct
 
   structure TracParser =
     Join(structure LrParser = LrParser
-	 structure ParserData = TracLrVals.ParserData
-	 structure Lex = TracLex)
+     structure ParserData = TracLrVals.ParserData
+     structure Lex = TracLex)
   
   fun invoke lexstream =
-      let fun print_error (s,i:(int * int * int),_) =
-	      error("Error, line .... " ^ (Int.toString (#1 i)) ^"."^(Int.toString (#2 i ))^ ", " ^ s ^ "\n")
-       in TracParser.parse(0,lexstream,print_error,())
+      let fun print_error (s, p: Position.T, _) =
+          error("Error at " ^ Position.here p ^ ", " ^ s)
+       in TracParser.parse(0, lexstream, print_error, ())
       end
 
- fun parse_fp lexer =  let
-	  val dummyEOF = TracLrVals.Tokens.EOF((0,0,0),(0,0,0))
-	  fun loop lexer =
-	      let 
-		  val _ = (TracLex.UserDeclarations.pos := (0,0,0);())
-		  val (res,lexer) = invoke lexer
-		  val (nextToken,lexer) = TracParser.Stream.get lexer
-	       in if TracParser.sameToken(nextToken,dummyEOF) then ((),res)
-		  else loop lexer
-	      end
+ fun parse_fp lexer =  
+   let
+      val dummyEOF = TracLrVals.Tokens.EOF(Position.none, Position.none)
+      fun loop lexer =
+          let 
+          val (res, lexer) = invoke lexer
+          val (nextToken, lexer) = TracParser.Stream.get lexer
+         in if TracParser.sameToken(nextToken, dummyEOF) then ((), res)
+          else loop lexer
+          end
        in  (#2(loop lexer))
       end
 
+ fun init_pos_array syms =
+   let
+     val total_bytes = fold (fn (s, _) => fn acc => acc + size s) syms 0
+     val arr = Array.array (total_bytes + 1, Position.none)
+     fun fill [] _ = ()
+       | fill ((s, p) :: rest) idx =
+           let
+             val n = size s
+             fun loop i = if i < n then (Array.update (arr, idx + i, p); loop (i + 1)) else ()
+             val _ = loop 0
+           in fill rest (idx + n) end
+     val _ = fill syms 0
+     val last_pos = if null syms then Position.none else #2 (List.last syms)
+     val _ = Array.update (arr, total_bytes, last_pos)
+   in arr end
+
+ fun parse_syms (content, syms) =
+   let
+     val _ = TracLex.UserDeclarations.source_pos_array := init_pos_array syms
+     val parsed = Unsynchronized.ref false
+     fun input_string _ = if !parsed then "" else (parsed := true; content)
+     val lexer = TracParser.makeLexer input_string
+   in parse_fp lexer end
+
+ fun parse_source source =
+   let
+     val syms = Input.source_explode source
+     val content = Symbol_Pos.content syms
+   in parse_syms (content, syms) end
+   handle LrParser.ParseError => TracProtocol.empty 
+
  fun parse_file tracFile = 
-     let
-	        val infile = TextIO.openIn tracFile
-	        val lexer = TracParser.makeLexer  (fn _ => case ((TextIO.inputLine) infile) of
-                                                           SOME s => s
-                                                          | NONE   => "")
-     in
-       parse_fp lexer
-      handle LrParser.ParseError => TracProtocol.empty 
-     end
+   let
+     val content_raw = File.read (Path.explode tracFile)
+     val syms = Symbol_Pos.explode (content_raw, Position.file tracFile)
+     val content = Symbol_Pos.content syms
+   in parse_syms (content, syms) end
+   handle LrParser.ParseError => TracProtocol.empty 
 
  fun parse_str str = 
-     let
-          val parsed = Unsynchronized.ref false 
-          fun input_string _  = if !parsed then "" else (parsed := true ;str)
-	        val lexer = TracParser.makeLexer input_string
-     in
-       parse_fp lexer
-      handle LrParser.ParseError => TracProtocol.empty 
-     end
+   let
+     val syms = Symbol_Pos.explode (str, Position.none)
+     val content = Symbol_Pos.content syms
+   in parse_syms (content, syms) end
+   handle LrParser.ParseError => TracProtocol.empty 
 
 end
 \<close>
-
 
 end
