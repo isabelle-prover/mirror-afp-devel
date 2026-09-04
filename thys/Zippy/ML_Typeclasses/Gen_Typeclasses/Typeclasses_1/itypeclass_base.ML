@@ -25,12 +25,12 @@ open F
 fun x <&> f = map f x
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "IFUNCTOR_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "IFUNCTOR_MORPH"\<close> =
 sig
   (*the base functor to transform*)
   structure F : \<^eval>\<open>sfx_ParaT_nargs "FUNCTOR_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "IFUNCTOR_BASE"\<close>
-  val lift : (@{ParaT_args} 'a) F.t -> (@{ParaT_args} 'i, 'i, 'a) t
+  val morph : (@{ParaT_args} 'a) F.t -> (@{ParaT_args} 'i, 'i, 'a) t
 end
 
 signature \<^eval>\<open>sfx_ParaT_nargs "IAPPLICATIVE_BASE"\<close> =
@@ -64,13 +64,13 @@ fun m >>= f = bind m f
 fun join x = bind x I
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "IMONAD_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "IMONAD_MORPH"\<close> =
 sig
   (*the base monad to transform*)
   structure M : \<^eval>\<open>sfx_ParaT_nargs "MONAD_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "IMONAD_BASE"\<close>
 
-  val lift : (@{ParaT_args} 'a) M.t -> (@{ParaT_args} 'i, 'i, 'a) t
+  val morph : (@{ParaT_args} 'a) M.t -> (@{ParaT_args} 'i, 'i, 'a) t
 end
 
 signature \<^eval>\<open>sfx_ParaT_nargs "IMONAD_ZERO_BASE"\<close> =
