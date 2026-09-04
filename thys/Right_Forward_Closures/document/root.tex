@@ -1,0 +1,79 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+\usepackage{amssymb}
+\usepackage{authblk}
+
+%\usepackage{eurosym}
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+
+%\usepackage{eufrak}
+
+%\usepackage{textcomp}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\newcommand\isafor{\textsf{Isa\kern-0.15exF\kern-0.15exo\kern-0.15exR}}
+\newcommand\ceta{\textsf{C\kern-0.15exe\kern-0.45exT\kern-0.45exA}}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Termination Restricted to Right-Forward Closures}
+\author{René Thiemann}
+\affil{University of Innsbruck, Austria}
+\author{Dieter Hofbauer}
+\affil{ASW Saarland, Germany}
+\author{Ulysse {Le Huitouze}}
+\affil{University of Rennes, France}
+\author{Johannes Waldmann}
+\affil{HTWK Leipzig, Germany}
+\maketitle
+
+\begin{abstract}
+  In this AFP entry we formalize Dershowitz' theorem 
+  that termination of a term rewrite system (TRS) starting from arbitrary
+  terms is equivalent to termination starting from
+  terms in the right-forward closures of right-hand sides, 
+  provided that the TRS is right-linear or orthogonal \cite{Der81}. Our proof
+  deviates from the original one in that no reorderings of steps in infinite
+  derivations are required, making it more precise in its argumentation. We also
+  integrate a later result that one can weaken orthogonality to locally confluent
+  overlay TRSs \cite{DershowitzH95}. 
+  
+  In order to arrive at these statements, we had to formalize two further results:  
+  Following Gramlich, we prove that for locally confluent overlay TRSs the notions of termination
+  and innermost termination coincide \cite{Gramlich92}; and we verify that narrowing 
+  with a right-linear TRS preserves linearity of terms.
+  
+  For further details, we refer to our FSCD 2026 paper \cite{FSCD2026}.
+\end{abstract}
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:

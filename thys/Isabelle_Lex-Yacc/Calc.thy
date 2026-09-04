@@ -85,8 +85,7 @@ yacc_definitions\<open>
 %verbose
 \<close>
 yacc_rules\<open>
-  START : PRINT EXP (print (Int.toString EXP);
-                     print "\n";
+  START : PRINT EXP (pide_writeln(Int.toString EXP);
                      SOME EXP)
         | EXP (SOME EXP)
         | (NONE)
@@ -110,6 +109,7 @@ fun calc source thy =
       val _ = writeln((Int.toString (the (Calc.parse_source ctxt source))))
     in thy end
 
+
 val _ = Outer_Syntax.command @{command_keyword "calc"}
         "A simple inline calculator" 
         (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (calc source)))
@@ -117,7 +117,7 @@ val _ = Outer_Syntax.command @{command_keyword "calc"}
 
 calc\<open>
 1
-  /
+  +
     3
    * (201 - 7)
 \<close>

@@ -2215,6 +2215,82 @@ qed
 end
 
 
+context
+  fixes f :: "int set \<Rightarrow> complex \<times> complex \<Rightarrow> complex"
+  defines "f \<equiv> (\<lambda>N (z, t). \<Sum>n\<in>N. \<i> * (-1) powi n * to_nome ((of_int n + 1/2) ^ 2 * t + (2 * of_int n + 1) * z))"
+begin
+
+lemma uniform_limit_jacobi_theta_11:
+  fixes A B :: "complex set"
+  assumes compact: "compact A" "compact B"
+  assumes B_subset: "B \<subseteq> {t. Im t > 0}"
+  shows "uniform_limit (A \<times> B) f (\<lambda>(z,t). jacobi_theta_11 z t) finite_sets_at_top"
+proof -
+  define A' where "A' = (undefined :: complex set)"
+  define g where "g = (\<lambda>N (z, t). \<Sum>n\<in>N. to_nome (of_int n ^ 2 * t + 2 * of_int n * z))"
+  define h where "h = (\<lambda>(z :: complex, t). (z + t/2 + 1/2, t))"
+  define h' where "h' = (\<lambda>(z,t). to_nome (z + t / 4 + 1 / 2))"
+  define A' where "A' = (\<lambda>(z,t). z + t/2 + 1/2) ` (A \<times> B)"
+  have "compact A'"
+    unfolding A'_def h_def case_prod_unfold using assms
+    by (intro compact_continuous_image) (auto intro!: continuous_intros compact_Times)
+
+  have 1: "uniform_limit (A \<times> B) (\<lambda>N. g N \<circ> h) ((\<lambda>(z, t). jacobi_theta_00 z t) \<circ> h) finite_sets_at_top"
+    unfolding o_def using [[unify_trace_failure]]
+  proof (rule uniform_limit_compose'[where h = h])
+    show "uniform_limit (A' \<times> B) g (\<lambda>x. case x of (z, t) \<Rightarrow> jacobi_theta_00 z t) finite_sets_at_top"
+      unfolding g_def by (rule uniform_limit_jacobi_theta_00) (use assms \<open>compact A'\<close> in auto)
+  next
+    show "h \<in> A \<times> B \<rightarrow> A' \<times> B"
+      by (auto simp: A'_def h_def)
+  qed
+
+  have "uniform_limit (A \<times> B) (\<lambda>N zt. h' zt * g N (h zt)) 
+          (\<lambda>zt. h' zt * (case h zt of (z, t) \<Rightarrow> jacobi_theta_00 z t)) finite_sets_at_top"
+  proof (rule bounded_bilinear_bounded_uniform_limit_intros)
+    show "uniform_limit (A \<times> B) (\<lambda>a b. g a (h b)) 
+            (\<lambda>a. case h a of (z, t) \<Rightarrow> jacobi_theta_00 z t) finite_sets_at_top"
+      using 1 by (simp add: o_def)
+  next
+    show "uniform_limit (A \<times> B) (\<lambda>a. h') h' finite_sets_at_top"
+      by (rule uniform_limit_const)
+  next
+    show "bounded (h' ` (A \<times> B))"
+      unfolding h'_def using assms
+      by (intro compact_imp_bounded compact_continuous_image) 
+         (auto simp: case_prod_unfold compact_Times intro!: continuous_intros)
+  next
+    show "bounded ((\<lambda>a. case h a of (z, t) \<Rightarrow> jacobi_theta_00 z t) ` (A \<times> B))"
+      unfolding h_def using assms
+      by (intro compact_imp_bounded compact_continuous_image) 
+         (auto simp: case_prod_unfold compact_Times intro!: continuous_intros)
+  qed
+  also have "(\<lambda>zt. h' zt * (case h zt of (z, t) \<Rightarrow> jacobi_theta_00 z t)) =
+             (\<lambda>(z,t). jacobi_theta_11 z t)"
+    by (simp add: h'_def h_def case_prod_unfold jacobi_theta_11_def)
+  also have "(\<lambda>N zt. h' zt * g N (h zt)) = f"
+    apply (auto simp: fun_eq_iff h'_def g_def h_def f_def sum_distrib_left intro!: sum.cong)
+    apply (auto simp: algebra_simps power2_eq_square to_nome_add to_nome_diff)?
+    done
+  finally show ?thesis .
+qed
+
+lemma has_sum_jacobi_theta_11:
+  assumes t: "Im t > 0"
+  shows "((\<lambda>n. \<i> * (-1) powi n * to_nome ((of_int n + 1/2) ^ 2 * t + (2 * of_int n + 1) * z)) 
+           has_sum jacobi_theta_11 z t) UNIV"
+proof -
+  have "uniform_limit ({z} \<times> {t}) f (\<lambda>(z,t). jacobi_theta_11 z t) finite_sets_at_top"
+    by (rule uniform_limit_jacobi_theta_11) (use t in auto)
+  also have "{z} \<times> {t} = {(z,t)}"
+    by auto
+  finally show ?thesis
+    by (simp add: f_def has_sum_def)
+qed
+
+end
+
+
 subsection \<open>The heat equation\<close>
 
 text \<open>
@@ -2364,6 +2440,217 @@ proof -
       by simp
   qed auto
 qed
+
+
+text \<open>
+  The following function $f_k(t)$ gives us 
+  $\frac{\partial^k}{\partial z^k} \vartheta_{11}(z,t)$ at $z = 0$, up to a constant factor.
+
+  We will show, by term-wise differentiation, that it satisfies the recurrence 
+  $f_k(t)' = i\pi f_{k+2}(t)$, which is essentially a different form of the heat equation. It
+  allows us to trade two $z$-derivatives for a single $t$-derivative, which will be crucial
+  in determining $\vartheta_{11}'''(0)$. 
+\<close>
+definition theta_11_coeffs :: "nat \<Rightarrow> complex \<Rightarrow> complex" where
+  "theta_11_coeffs k t = (\<Sum>\<^sub>\<infinity>n. (-1) powi n * (n + 1/2)^k * to_nome ((n + 1/2)^2 * t))"
+
+lemma
+  assumes t: "Im t > 0"
+  shows  has_sum_theta_11_coeffs:
+           "((\<lambda>n. (-1) powi n * (n + 1/2)^k * to_nome ((n + 1/2)^2 * t)) has_sum theta_11_coeffs k t) UNIV"
+    and  higher_deriv_jacobi_theta_11_conv_theta_11_coeffs: 
+           "(deriv ^^ k) (\<lambda>z. jacobi_theta_11 z t) 0 = \<i> * (2 * of_real pi * \<i>) ^ k * theta_11_coeffs k t"
+proof -
+  define f where "f = (\<lambda>N (z, t). \<Sum>n\<in>N. \<i> * (-1) powi n * to_nome ((of_int n + 1/2) ^ 2 * t + (2 * of_int n + 1) * z))"
+  define g where "g = (\<lambda>n. (-1) powi n * (of_int n + 1/2) ^ k * to_nome ((of_int n + 1/2) ^ 2 * t))"
+  define r where "r = Im t / 2"
+  define B where "B = cball t r"
+  have B: "compact B" "B \<subseteq> {t. Im t > 0}"
+  proof -
+    have "Im w > 0" if w: "w \<in> B" for w
+      using abs_Im_le_cmod[of "t - w"] t w
+      by (auto simp: B_def dist_norm r_def)
+    thus "B \<subseteq> {t. Im t > 0}"
+      by auto
+  qed (auto simp: B_def)
+
+  have 1: "uniform_limit (cball 0 1) (\<lambda>N z. f N (z, t)) (\<lambda>z. jacobi_theta_11 z t) finite_sets_at_top"
+    using uniform_limit_compose'[OF uniform_limit_jacobi_theta_11[where A = "cball 0 1" and B = "{t}"], 
+        where h = "\<lambda>z. (z, t)"] t
+    unfolding f_def by auto
+  have 2: "uniform_limit (ball 0 1) (\<lambda>N z. f N (z, t)) (\<lambda>z. jacobi_theta_11 z t) finite_sets_at_top"
+    using 1 by (rule uniform_limit_on_subset) (auto simp: B_def)
+  have "((\<lambda>N. (deriv ^^ k) (\<lambda>z. f N (z, t)) 0) \<longlongrightarrow> (deriv ^^ k) (\<lambda>z. jacobi_theta_11 z t) 0) 
+             finite_sets_at_top"
+    using 2
+  proof (rule higher_deriv_complex_uniform_limit)
+    show "\<forall>\<^sub>F N in finite_sets_at_top. (\<lambda>z. f N (z, t)) holomorphic_on ball 0 1"
+      by (auto intro!: always_eventually holomorphic_intros simp: f_def)
+  qed (use assms in \<open>auto simp: r_def\<close>)
+  also have "(\<lambda>N. (deriv ^^ k) (\<lambda>z. f N (z, t)) 0) = 
+             (\<lambda>N. \<i> * (2 * pi * \<i>) ^ k * (\<Sum>n\<in>N. g n))"
+    (is "?lhs = ?rhs")
+  proof
+    fix N :: "int set"
+    have "(deriv ^^ k) (\<lambda>z. f N (z, t)) 0 = 
+            (\<Sum>n\<in>N. (deriv ^^ k) (\<lambda>z. \<i> * (-1) powi n * 
+                      to_nome ((of_int n + 1 / 2)\<^sup>2 * t + (2 * of_int n + 1) * z)) 0)"
+      unfolding f_def prod.case
+      by (subst higher_deriv_sum_at) (auto intro!: analytic_intros)
+    also have "\<dots> = (\<Sum>n\<in>N. \<i> * (-1) powi n * 
+           (deriv ^^ k) ((\<lambda>z. to_nome ((of_int n + 1 / 2)\<^sup>2 * t + z)) \<circ> (\<lambda>z. (2 * of_int n + 1) * z)) 0)"
+      by (subst higher_deriv_cmult') (auto intro!: analytic_intros simp: o_def)
+    also have "\<dots> = (\<Sum>n\<in>N. \<i> * (-1) powi n * (2 * of_int n + 1) ^ k *
+                      (deriv ^^ k) (\<lambda>z. to_nome ((of_int n + 1 / 2)\<^sup>2 * t + z)) 0)"
+      by (subst higher_deriv_scale) (auto intro!: analytic_intros simp: mult_ac)
+    also have "\<dots> = (\<Sum>n\<in>N. \<i> * (-1) powi n * (2 * of_int n + 1) ^ k *
+                      (deriv ^^ k) to_nome ((of_int n + 1 / 2)\<^sup>2 * t))"
+      by (simp add: higher_deriv_shift_0' o_def)
+    also have "(\<lambda>n. 2 * of_int n + 1) = (\<lambda>n. 2 * (of_int n + 1 / 2) :: complex)"
+      by (simp add: field_simps fun_eq_iff)
+    also have "(\<Sum>n\<in>N. \<i> * (-1) powi n * \<dots> n ^ k * 
+                 (deriv ^^ k) to_nome ((of_int n + 1 / 2)\<^sup>2 * t)) =
+                 \<i> * (2 * pi * \<i>) ^ k * (\<Sum>n\<in>N. g n)"
+      unfolding power_mult_distrib
+      by (simp add: higher_deriv_to_nome g_def sum_distrib_left sum_distrib_right mult_ac power_mult_distrib)
+    finally show "?lhs N = ?rhs N" .
+  qed
+  finally have 3: "((\<lambda>N. \<i> * (2 * pi * \<i>) ^ k * (\<Sum>n\<in>N. g n)) \<longlongrightarrow>
+                     (deriv ^^ k) (\<lambda>z. jacobi_theta_11 z t) 0) finite_sets_at_top" .
+  have 4: "(g has_sum (1 / (\<i> * (2 * pi * \<i>) ^ k) * (deriv ^^ k) (\<lambda>z. jacobi_theta_11 z t) 0)) UNIV"
+    using tendsto_mult[OF tendsto_const[of "1 / (\<i> * (2 * of_real pi * \<i>) ^ k)"] 3]
+    by (simp add: has_sum_def)
+
+  from 4 have 5: "(g has_sum theta_11_coeffs k t) UNIV"
+    by (simp add: theta_11_coeffs_def has_sum_iff g_def power_mult)
+  thus "((\<lambda>n. (-1) powi n * (n + 1/2)^k * to_nome ((n + 1/2)^2 * t)) has_sum theta_11_coeffs k t) UNIV"
+    by (simp add: g_def power_mult)
+
+  show "(deriv ^^ k) (\<lambda>z. jacobi_theta_11 z t) 0 = \<i> * (2 * of_real pi * \<i>) ^ k * theta_11_coeffs k t"
+    using has_sum_unique[OF 4 5] by (simp add: field_simps)
+qed
+
+lemma uniform_limit_theta_11_coeffs:
+  fixes k :: nat
+  defines "g \<equiv> (\<lambda>n t. (-1) powi n * (n + 1/2) ^ k * to_nome ((n + 1/2) ^ 2 * t))"
+  assumes A: "compact A" "A \<subseteq> {t. Im t > 0}"
+  shows   "uniform_limit A (\<lambda>N t. \<Sum>n\<in>N. g n t) (theta_11_coeffs k) (finite_subsets_at_top UNIV)"
+proof -
+  have compact: "compact (Im ` A)"
+    by (intro compact_continuous_image continuous_intros A)
+  hence bdd: "bdd_below (Im ` A)"
+    by (intro bounded_imp_bdd_below compact_imp_bounded)
+  define T where "T = (if A = {} then 1/2 else Inf (Im ` A))"
+  have Im_ge: "Im t \<ge> T" if t: "t \<in> A" for t
+    unfolding T_def using cInf_lower[OF _ bdd] t by auto
+  have "T > 0"
+    using closed_contains_Inf[OF _ bdd] compact A unfolding T_def
+    by (cases "A = {}") (force dest!: compact_imp_closed)+
+
+  define h where "h = (\<lambda>n. \<bar>real_of_int n + 1 / 2\<bar> ^ k * exp (- pi * (real_of_int n + 1 / 2)\<^sup>2 * T))"
+  have *: "abs (- x - y) = abs (x + y)" for x y :: real
+    by linarith
+  have **: "(-x - y) ^ 2 = (x + y) ^ 2" for x y :: real
+    by (auto simp: power2_eq_square algebra_simps)
+  have h_transform: "h (-n-1) = h n" for n
+    by (auto simp: h_def * ** add_ac)
+
+  have "uniform_limit A (\<lambda>N t. \<Sum>n\<in>N. g n t) (\<lambda>t. \<Sum>\<^sub>\<infinity>n. g n t) (finite_subsets_at_top UNIV)"
+  proof (rule Weierstrass_m_test_general)
+    fix n :: int and t :: complex
+    assume t: "t \<in> A"
+    have "norm (g n t) = norm (complex_of_int n + 1 / 2) ^ k *
+                           exp (-pi * (of_int n + 1/2)\<^sup>2 * Im t)"
+      by (simp add: g_def norm_mult norm_power_int norm_power norm_to_nome)
+    also have "(complex_of_int n + 1 / 2) = of_real (of_int n + 1 / 2)"
+      by simp
+    also have "norm \<dots> = \<bar>n + 1/2\<bar>"
+      by (subst norm_of_real) auto
+    also have "\<bar>real_of_int n + 1 / 2\<bar> ^ k * exp (- pi * (real_of_int n + 1 / 2)\<^sup>2 * Im t) \<le> h n"
+      unfolding h_def using \<open>T > 0\<close> t by (intro mult_left_mono) (auto simp: mult_left_mono Im_ge)
+    finally show "norm (g n t) \<le> h n" .
+  next
+    have "summable (\<lambda>n. norm (h (int n)))"
+    proof (rule summable_comparison_test_bigo)
+      have "(\<lambda>n. norm (h (int n))) = (\<lambda>n. (real n + 1 / 2) ^ k * exp (- (pi * (real n + 1 / 2)\<^sup>2 * T)))"
+        by (simp add: h_def)
+      also have "\<dots> \<in> O(\<lambda>n. real n powr (-2))"
+        using \<open>T > 0\<close> by real_asymp
+      finally show "(\<lambda>n. norm (h (int n))) \<in> O(\<lambda>n. real n powr (-2))"
+        by simp
+    next
+      show "summable (\<lambda>n. norm (real n powr (-2)))"
+        by (simp add: summable_real_powr_iff)
+    qed
+    hence "(\<lambda>n. h (int n)) summable_on UNIV"
+      by (metis norm_summable_imp_summable_on)
+    also have "?this \<longleftrightarrow> h summable_on {0..}"
+      by (rule summable_on_reindex_bij_witness[of _ nat int]) auto
+    finally have "h summable_on {0..}" .
+    also have "?this \<longleftrightarrow> h summable_on {..-1}"
+      by (rule summable_on_reindex_bij_witness[of _ "\<lambda>n. -n-1" "\<lambda>n. -n-1"]) (auto simp: h_transform)
+    finally have "h summable_on {..-1}" .
+    with \<open>h summable_on {0..}\<close> have "h summable_on ({0..} \<union> {..-1})"
+      by (intro summable_on_union)
+    also have "{0..} \<union> {..-1::int} = UNIV"
+      by auto
+    finally show "h summable_on UNIV" .
+  qed
+  thus ?thesis
+    by (simp add: theta_11_coeffs_def[abs_def] g_def)
+qed
+
+lemma has_field_derivative_theta_11_coeffs:
+  fixes k :: nat and t :: complex
+  assumes t: "Im t > 0"
+  shows   "(theta_11_coeffs k has_field_derivative (\<i> * pi * theta_11_coeffs (k+2) t)) (at t)"
+proof -
+  define g where "g = (\<lambda>k n t. (-1) powi n * (n + 1/2) ^ k * to_nome ((n + 1/2) ^ 2 * t))"
+  define r where "r = Im t / 2"
+  have "r > 0"
+    using t by (auto simp: r_def)
+  have "cball t r \<subseteq> {t. Im t > 0}"
+  proof
+    fix w assume "w \<in> cball t r"
+    thus "w \<in> {t. Im t > 0}"
+      using abs_Im_le_cmod[of "t - w"] t by (auto simp: r_def dist_norm)
+  qed
+
+  have 1: "uniform_limit (cball t r) (\<lambda>N t. \<Sum>n\<in>N. g k n t) (theta_11_coeffs k) (finite_subsets_at_top UNIV)"
+    unfolding g_def by (rule uniform_limit_theta_11_coeffs) (use t  \<open>cball t _ \<subseteq> _\<close> in auto)
+
+  have 2: "\<forall>\<^sub>F N in finite_sets_at_top. continuous_on (cball t r) (\<lambda>t. \<Sum>n\<in>N. g k n t) \<and>
+              (\<forall>w\<in>ball t r. ((\<lambda>t. \<Sum>n\<in>N. g k n t) has_field_derivative 
+                              ((\<Sum>n\<in>N. \<i> * pi *  g (k+2) n w))) (at w))"
+  proof (intro eventually_finite_subsets_at_top_weakI conjI ballI)
+    fix N :: "int set"
+    show "continuous_on (cball t r) (\<lambda>t. \<Sum>n\<in>N. g k n t)"
+      by (auto simp: g_def intro!: continuous_intros)
+  next
+    fix N :: "int set" and t :: complex
+    show "((\<lambda>t. \<Sum>n\<in>N. g k n t) has_field_derivative ((\<Sum>n\<in>N. \<i> * pi * g (k+2) n t))) (at t)"
+      by (auto simp: g_def mult_ac power2_eq_square
+               intro!: derivative_eq_intros)
+  qed    
+
+  obtain h where h:
+     "(theta_11_coeffs k has_field_derivative h w) (at w) \<and>
+        ((\<lambda>n. (\<Sum>n\<in>n. \<i> * pi * g (k + 2) n w)) \<longlongrightarrow> h w) finite_sets_at_top"
+   if "w \<in> ball t r" for w
+     using has_complex_derivative_uniform_limit[OF 2 1 finite_subsets_at_top_neq_bot \<open>r > 0\<close>]
+     by metis
+
+  have "((\<lambda>n. \<i> * pi * g (k + 2) n t) has_sum h t) UNIV"
+    using h[of t] \<open>r > 0\<close> by (auto simp: has_sum_def)
+  moreover have "((\<lambda>n. \<i> * pi * g (k + 2) n t) has_sum (\<i> * pi * theta_11_coeffs (k+2) t)) UNIV"
+    unfolding g_def using has_sum_theta_11_coeffs[of t "k+2"] t by (intro has_sum_cmult_right) auto
+  ultimately have "h t = \<i> * pi * theta_11_coeffs (k+2) t"
+    using has_sum_unique by blast
+  hence "(theta_11_coeffs k has_field_derivative (\<i> * pi * theta_11_coeffs (k+2) t)) (at t)"
+    using h[of t] \<open>r > 0\<close> by auto
+  thus ?thesis .
+qed
+
 
 bundle jacobi_theta_notation
 begin

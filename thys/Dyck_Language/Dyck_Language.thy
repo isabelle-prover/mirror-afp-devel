@@ -59,6 +59,11 @@ lemma bal_stk_split:
   "bal_stk s xs = (s',xs') \<Longrightarrow> \<exists>us. xs = us@xs' \<and> bal_stk s us = (s',[])"
 by(induction s xs rule:bal_stk.induct) (auto split: if_splits)
 
+lemma bal_stk_append_split:
+  assumes "bal_stk s (xs @ ys) = (t, [])"
+  obtains s' where "bal_stk s xs = (s', [])" and "bal_stk s' ys = (t, [])"
+  using assms by (auto simp: bal_stk_append split: prod.splits if_splits)
+
 
 subsection "Equivalence of @{const bal} and @{const bal_stk}"
 
@@ -115,6 +120,33 @@ qed (auto)
 
 corollary bal_iff_bal_stk: "bal w \<longleftrightarrow> bal_stk [] w = ([],[])"
 using bal_if_bal_stk[of "[]"] bal_stk_if_bal by auto
+
+
+subsection "\<open>replicate\<close>"
+
+lemma bal_stk_replicate_Open: "bal_stk s (replicate i (Open a)) = (replicate i a @ s, [])"
+by (induction i arbitrary: s) (auto simp: replicate_append_same)
+
+lemma bal_stk_replicate_Close: "bal_stk (replicate i a @ t) (replicate i (Close a)) = (t, [])"
+by (induction i arbitrary: t) auto
+
+lemma bal_replicate_if: assumes "bal xs" shows "bal (replicate n (Open a) @ xs @ replicate n (Close a))"
+unfolding bal_iff_bal_stk
+using assms by (metis bal_stk_append_if bal_stk_if_bal bal_stk_replicate_Close bal_stk_replicate_Open)
+
+lemma bal_stk_replicate_Close_inv:
+  "bal_stk s (replicate i (Close a) @ rest) = (t, []) \<Longrightarrow>
+   \<exists>s'. s = replicate i a @ s' \<and> bal_stk s' rest = (t, [])"
+proof (induction i arbitrary: s)
+  case 0 thus ?case by auto
+next
+  case (Suc i)
+  from Suc.prems obtain b s1 where t: "s = b # s1" by (cases s) auto
+  with Suc.prems have "a = b" "bal_stk s1 (replicate i (Close a) @ rest) = (t, [])"
+    by (auto split: if_splits)
+  with Suc.IH obtain s' where "s1 = replicate i a @ s'" "bal_stk s' rest = (t, [])" by blast
+  with t \<open>a = b\<close> show ?case by auto
+qed
 
 
 subsection "A rewriting approach: successively remove () pairs"

@@ -22,7 +22,7 @@ session "Solidity" = "HOL-Library" +
     Weakest_Precondition
     Reentrancy
     Constant_Folding
-  theories [condition = ISABELLE_GHC]
+  theories [condition = "$ISABELLE_GHC"]
     Compile_Evaluator
   document_files
     "root.tex"

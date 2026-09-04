@@ -571,6 +571,258 @@ section "Diagrams and Cocones"
     obtains a \<pi> where "coproduct_cocone J C D a \<pi>"
       using assms has_as_coproduct_def by metis
 
+    definition has_colimits_of_shape
+    where "has_colimits_of_shape J \<equiv> \<forall>D. diagram J C D \<longrightarrow> (\<exists>a \<chi>. colimit_cocone J C D a \<chi>)"
+
+    definition has_colimits
+    where "has_colimits (_ :: 'j) \<equiv> \<forall>J :: 'j comp. category J \<longrightarrow> has_colimits_of_shape J"
+
+    lemma has_coproducts_if_has_colimits:
+    assumes "has_colimits (undefined :: 'j)" and "I \<noteq> (UNIV :: 'j set)"
+    shows "has_coproducts I"
+    proof (unfold has_coproducts_def, intro conjI allI impI)
+      show "I \<noteq> UNIV" by fact
+      fix J D
+      assume D: "discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I"
+      interpret D: discrete_diagram J C D
+        using D by simp
+      have 1: "\<exists>a. D.has_as_colimit a"
+        using assms D D.diagram_axioms D.J.category_axioms
+
+        by (simp add: has_colimits_of_shape_def has_colimits_def)
+      show "\<exists>a. has_as_coproduct J D a"
+        using 1 has_as_coproduct_def D.coproduct_coconeI by blast
+    qed
+
+    lemma has_finite_coproducts_if_has_finite_colimits:
+    assumes "\<And>J :: 'j comp. (finite (Collect (partial_composition.arr J)))
+                       \<Longrightarrow> has_colimits_of_shape J"
+    and "finite (I :: 'j set)" and "I \<noteq> UNIV"
+    shows "has_coproducts I"
+    proof (unfold has_coproducts_def, intro conjI allI impI)
+      show "I \<noteq> UNIV" by fact
+      fix J D
+      assume D: "discrete_diagram J C D \<and> Collect (partial_composition.arr J) = I"
+      interpret D: discrete_diagram J C D
+        using D by simp
+      have 1: "\<exists>a. D.has_as_colimit a"
+        using assms D has_colimits_of_shape_def D.diagram_axioms by auto
+      show "\<exists>a. has_as_coproduct J D a"
+        using 1 has_as_coproduct_def D.coproduct_coconeI by blast
+    qed
+
+    lemma has_coproducts_preserved_by_bijection:
+    assumes "has_coproducts I" and "bij_betw \<phi> I I'" and "I' \<noteq> UNIV"
+    shows "has_coproducts I'"
+    proof (unfold has_coproducts_def, intro conjI allI impI)
+      show "I' \<noteq> UNIV" by fact
+      show "\<And>J' D'. discrete_diagram J' C D' \<and> Collect (partial_composition.arr J') = I'
+                     \<Longrightarrow> \<exists>a. has_as_coproduct J' D' a"
+      proof -
+        fix J' D'
+        assume 1: "discrete_diagram J' C D' \<and> Collect (partial_composition.arr J') = I'"
+        interpret J': category J'
+          using 1 by (simp add: discrete_diagram_def)
+        interpret D': discrete_diagram J' C D'
+          using 1 by simp
+        interpret J: discrete_category I \<open>SOME x. x \<notin> I\<close>
+          using assms has_coproducts_def [of I] someI_ex [of "\<lambda>x. x \<notin> I"]
+          by unfold_locales auto
+        have 2: "Collect J.arr = I \<and> Collect J'.arr = I'"
+          using 1 by auto
+        have \<phi>: "bij_betw \<phi> (Collect J.arr) (Collect J'.arr)"
+          using 2 assms(2) by simp
+        let ?\<phi> = "\<lambda>j. if J.arr j then \<phi> j else J'.null"
+        let ?\<phi>' = "\<lambda>j'. if J'.arr j' then the_inv_into I \<phi> j' else J.null"
+        interpret \<phi>: "functor" J.comp J' ?\<phi>
+        proof -
+          have "\<phi> ` I = I'"
+            using \<phi> 2 bij_betw_def [of \<phi> I I'] by simp
+          hence "\<And>j. J.arr j \<Longrightarrow> J'.arr (?\<phi> j)"
+            using 1 D'.is_discrete by auto
+          thus "functor J.comp J' ?\<phi>"
+            using D'.is_discrete J.is_discrete J.seqE
+            by unfold_locales auto
+        qed
+        interpret \<phi>': "functor" J' J.comp ?\<phi>'
+        proof -
+          have "the_inv_into I \<phi> ` I' = I"
+            using assms(2) \<phi> bij_betw_the_inv_into bij_betw_imp_surj_on by metis
+          hence "\<And>j'. J'.arr j' \<Longrightarrow> J.arr (?\<phi>' j')"
+            using 2 D'.is_discrete J.is_discrete by auto
+          thus "functor J' J.comp ?\<phi>'"
+            using D'.is_discrete J.is_discrete J'.seqE
+            by unfold_locales auto
+        qed
+        let ?D = "\<lambda>i. D' (\<phi> i)"
+        interpret D: discrete_diagram_from_map I C ?D \<open>SOME j. j \<notin> I\<close>
+          using assms 1 D'.is_discrete bij_betw_imp_surj_on \<phi>.preserves_ide
+          by unfold_locales auto
+        obtain a where a: "has_as_coproduct J.comp D.map a"
+          using assms D.discrete_diagram_axioms has_coproducts_def [of I] by auto
+        obtain \<iota> where \<iota>: "coproduct_cocone J.comp C D.map a \<iota>"
+          using a has_as_coproduct_def by blast
+        interpret \<iota>: coproduct_cocone J.comp C D.map a \<iota>
+          using \<iota> by simp
+        let ?\<iota>' = "\<iota> o ?\<phi>'"
+        interpret A: constant_functor J' C a
+          using \<iota>.ide_apex by unfold_locales simp
+        interpret \<iota>': natural_transformation J' C D' A.map ?\<iota>'
+        proof -
+          have "\<iota>.A.map \<circ> ?\<phi>' = A.map"
+            using \<phi> A.map_def \<phi>'.preserves_arr \<iota>.A.extensionality J.not_arr_null by auto
+          moreover have "D.map \<circ> ?\<phi>' = D'"
+          proof
+            fix j'
+            have "J'.arr j' \<Longrightarrow> (D.map \<circ> ?\<phi>') j' = D' j'"
+            proof -
+              assume 2: "J'.arr j'"
+              have 3: "inj_on \<phi> I"
+                using assms(2) bij_betw_imp_inj_on by auto
+              have "\<phi> ` I = I'"
+                by (metis (no_types) assms(2) bij_betw_imp_surj_on)
+              hence "\<phi> ` I = Collect J'.arr"
+                using 1 by force
+              thus ?thesis
+                using 2 3 D.map_def \<phi>'.preserves_arr f_the_inv_into_f by fastforce
+            qed
+            moreover have "\<not> J'.arr j' \<Longrightarrow> (D.map \<circ> ?\<phi>') j' = D' j'"
+              using D.extensionality D'.extensionality
+              by (simp add: J.Null_not_in_Obj J.null_char)
+            ultimately show "(D.map \<circ> ?\<phi>') j' = D' j'" by blast
+          qed
+          ultimately show "natural_transformation J' C D' A.map ?\<iota>'"
+            using \<iota>.natural_transformation_axioms \<phi>'.as_nat_trans.natural_transformation_axioms
+                  horizontal_composite [of J' J.comp ?\<phi>' ?\<phi>' ?\<phi>' C _ _ \<iota>]
+            by force
+        qed
+        interpret \<iota>': cocone J' C D' a ?\<iota>' ..
+        interpret \<iota>': coproduct_cocone J' C D' a ?\<iota>'
+        proof
+          fix a' \<chi>'
+          assume \<chi>': "D'.cocone a' \<chi>'"
+          interpret \<chi>': cocone J' C D' a' \<chi>'
+            using \<chi>' by simp
+          show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D'.cocones_map f (\<iota> \<circ> ?\<phi>') = \<chi>'"
+          proof -
+            let ?\<chi> = "\<chi>' o ?\<phi>"
+            interpret A': constant_functor J.comp C a'
+              using \<chi>'.ide_apex by unfold_locales simp
+            interpret \<chi>: natural_transformation J.comp C D.map A'.map ?\<chi>
+            proof -
+              have "\<chi>'.A.map \<circ> ?\<phi> = A'.map"
+                using \<phi> \<phi>.preserves_arr A'.map_def \<chi>'.A.extensionality by auto
+              moreover have "D' \<circ> ?\<phi> = D.map"
+                using \<phi> D.map_def D'.extensionality by auto
+              ultimately show "natural_transformation J.comp C D.map A'.map ?\<chi>"
+                using \<chi>'.natural_transformation_axioms
+                      \<phi>.as_nat_trans.natural_transformation_axioms
+                      horizontal_composite [of J.comp J' ?\<phi> ?\<phi> ?\<phi> C _ _ \<chi>']
+                by force
+            qed
+            interpret \<chi>: cocone J.comp C D.map a' ?\<chi> ..
+            have *: "\<exists>!f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D.cocones_map f \<iota> = ?\<chi>"
+              using \<iota>.is_couniversal \<chi>.cocone_axioms by simp
+            show "\<exists>!f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D'.cocones_map f ?\<iota>' = \<chi>'"
+            proof -
+              have "\<exists>f. \<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D'.cocones_map f ?\<iota>' = \<chi>'"
+              proof -
+                obtain f where f: "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright> \<and> D.cocones_map f \<iota> = ?\<chi>"
+                  using * by blast
+                have "D'.cocones_map f ?\<iota>' = \<chi>'"
+                proof
+                  fix j'
+                  show "D'.cocones_map f ?\<iota>' j' = \<chi>' j'"
+                  proof (cases "J'.arr j'")
+                    assume j': "\<not> J'.arr j'"
+                    show "D'.cocones_map f ?\<iota>' j' = \<chi>' j'"
+                      using f j' \<chi>'.extensionality \<iota>'.cocone_axioms by auto
+                    next
+                    assume j': "J'.arr j'"
+                    show "D'.cocones_map f ?\<iota>' j' = \<chi>' j'"
+                    proof -
+                      have "D'.cocones_map f ?\<iota>' j' = f \<cdot> \<iota> (the_inv_into I \<phi> j')"
+                        using f j' \<iota>'.cocone_axioms by auto
+                      also have "... = D.cocones_map f \<iota> (the_inv_into I \<phi> j')"
+                      proof -
+                        have "arr f \<and> dom f = a \<and> cod f = a'"
+                          using f by blast
+                        thus ?thesis
+                          using \<phi>'.preserves_arr \<iota>.is_cocone j' by auto
+                      qed
+                      also have "... = (\<chi>' \<circ> ?\<phi>) (the_inv_into I \<phi> j')"
+                        using f by simp
+                      also have "... = \<chi>' j'"
+                        using assms(2) j' 2 bij_betw_def [of \<phi> I I'] bij_betw_imp_inj_on
+                              \<phi>'.preserves_arr f_the_inv_into_f
+                        by fastforce
+                      finally show ?thesis by simp
+                    qed
+                  qed
+                qed
+                thus ?thesis using f by blast
+              qed
+              moreover have "\<And>f f'. \<lbrakk> \<guillemotleft>f : a \<rightarrow> a'\<guillemotright>; D'.cocones_map f ?\<iota>' = \<chi>';
+                                      \<guillemotleft>f' : a \<rightarrow> a'\<guillemotright>; D'.cocones_map f' ?\<iota>' = \<chi>' \<rbrakk>
+                                         \<Longrightarrow> f = f'"
+              proof -
+                fix f f'
+                assume f: "\<guillemotleft>f : a \<rightarrow> a'\<guillemotright>" and f': "\<guillemotleft>f' : a \<rightarrow> a'\<guillemotright>"
+                and f\<chi>': "D'.cocones_map f ?\<iota>' = \<chi>'" and f'\<chi>': "D'.cocones_map f' ?\<iota>' = \<chi>'"
+                have "D.cocones_map f \<iota> = \<chi>' \<circ> ?\<phi> \<and> D.cocones_map f' \<iota> = \<chi>' o ?\<phi>"
+                proof (intro conjI)
+                  show "D.cocones_map f \<iota> = \<chi>' \<circ> ?\<phi>"
+                  proof
+                    fix j
+                    have "\<not> J.arr j \<Longrightarrow> D.cocones_map f \<iota> j = (\<chi>' \<circ> ?\<phi>) j"
+                      using f f\<chi>' \<iota>.cocone_axioms \<chi>.extensionality by auto
+                    moreover have "J.arr j \<Longrightarrow> D.cocones_map f \<iota> j = (\<chi>' \<circ> ?\<phi>) j"
+                    proof -
+                      assume j: "J.arr j"
+                      have 1: "j = the_inv_into I \<phi> (\<phi> j)"
+                        using assms(2) j \<phi> the_inv_into_f_f bij_betw_imp_inj_on J.arr_char
+                        by metis
+                      have "D.cocones_map f \<iota> j = D.cocones_map f \<iota> (the_inv_into I \<phi> (\<phi> j))"
+                        using 1 by simp
+                      also have "... = (\<chi>' \<circ> ?\<phi>) j"
+                        using f j f\<chi>' 1 \<iota>.cocone_axioms \<iota>'.cocone_axioms \<phi>.preserves_arr by auto
+                      finally show "D.cocones_map f \<iota> j = (\<chi>' \<circ> ?\<phi>) j" by blast
+                    qed
+                    ultimately show "D.cocones_map f \<iota> j = (\<chi>' \<circ> ?\<phi>) j" by blast
+                  qed
+                  show "D.cocones_map f' \<iota> = \<chi>' \<circ> ?\<phi>"
+                  proof
+                    fix j
+                    have "\<not> J.arr j \<Longrightarrow> D.cocones_map f' \<iota> j = (\<chi>' \<circ> ?\<phi>) j"
+                      using f' f\<chi>' \<iota>.cocone_axioms \<chi>.extensionality by auto
+                    moreover have "J.arr j \<Longrightarrow> D.cocones_map f' \<iota> j = (\<chi>' \<circ> ?\<phi>) j"
+                    proof -
+                      assume j: "J.arr j"
+                      have 1: "j = the_inv_into I \<phi> (\<phi> j)"
+                        using assms(2) j \<phi> the_inv_into_f_f bij_betw_imp_inj_on J.arr_char
+                        by metis
+                      have "D.cocones_map f' \<iota> j = D.cocones_map f' \<iota> (the_inv_into I \<phi> (\<phi> j))"
+                        using 1 by simp
+                      also have "... = (\<chi>' \<circ> ?\<phi>) j"
+                        using f' j f'\<chi>' 1 \<iota>.cocone_axioms \<iota>'.cocone_axioms \<phi>.preserves_arr by auto
+                      finally show "D.cocones_map f' \<iota> j = (\<chi>' \<circ> ?\<phi>) j" by blast
+                    qed
+                    ultimately show "D.cocones_map f' \<iota> j = (\<chi>' \<circ> ?\<phi>) j" by blast
+                  qed
+                qed
+                thus "f = f'"
+                  using f f' * by auto
+              qed
+              ultimately show ?thesis by blast
+            qed
+          qed
+        qed
+        have "has_as_coproduct J' D' a"
+          using has_as_coproduct_def \<iota>'.coproduct_cocone_axioms by auto
+        thus "\<exists>a. has_as_coproduct J' D' a" by blast
+      qed
+    qed
+
   end
 
   subsection "Coequalizers"
@@ -855,6 +1107,17 @@ section "Diagrams and Cocones"
             D.parallel_pair_diagram_axioms)
       show T
         by (metis (lifting) HOL.ext assms(2) cod_comp coequalizes in_homI is_couniversal' seqE)
+    qed
+
+    lemma coequalizer_is_epi:
+    assumes "has_as_coequalizer f g e"
+    shows "epi e"
+    proof
+      show "arr e"
+        using assms by blast
+      show "\<And>h h'. \<lbrakk>seq h e; h \<cdot> e = h' \<cdot> e\<rbrakk> \<Longrightarrow> h = h'"
+        using assms has_as_coequalizerE [of f g e]
+        by (metis comp_assoc match_4)
     qed
 
   end

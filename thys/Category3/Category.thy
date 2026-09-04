@@ -105,6 +105,11 @@ begin
     where "ide a \<equiv> a \<cdot> a \<noteq> null \<and>
                    (\<forall>f. (f \<cdot> a \<noteq> null \<longrightarrow> f \<cdot> a = f) \<and> (a \<cdot> f \<noteq> null \<longrightarrow> a \<cdot> f = f))"
 
+    lemma ide_is_isolated:
+    assumes "ide a" and "ide a'" and "a \<cdot> a' \<noteq> null"
+    shows "a = a'"
+      using assms ide_def by fastforce
+
     text \<open>
       A \emph{domain} of an element \<open>f\<close> is an identity \<open>a\<close> for which composition of
       \<open>f\<close> with \<open>a\<close> on the right is defined.

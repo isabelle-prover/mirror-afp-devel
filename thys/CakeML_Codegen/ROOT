@@ -78,7 +78,7 @@ session CakeML_Codegen = CakeML +
     "Test/Test_Embed_Data2"
     "Test/Test_Embed_Tree"
 
-  theories [condition = "ISABELLE_CAKEML_HOME,ISABELLE_CC", document = false]
+  theories [condition = "$ISABELLE_CAKEML_HOME,$ISABELLE_CC", document = false]
     "Test/Test_Datatypes"
 
   document_files

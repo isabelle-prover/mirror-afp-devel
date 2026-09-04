@@ -34,9 +34,6 @@ keywords "ml_lex_yacc" :: thy_decl
     "yacc_user_declarations" "yacc_definitions" "yacc_rules" :: quasi_command
 begin 
 
-SML_import \<open>val pide_error = error \<close>
-SML_import \<open>val pide_warning = warning \<close>
-SML_import \<open>val pide_writeln = writeln \<close>
 
 
 section\<open>ML Lex\<close>
@@ -54,7 +51,7 @@ SML_file\<open>mlyacc-polyml/src/verbose.sml\<close>
 SML_file\<open>mlyacc-polyml/src/coreutils.sml\<close> 
 SML_file\<open>mlyacc-polyml/src/grammar.sml\<close> 
 SML_file\<open>mlyacc-polyml/src/graph.sml\<close> 
-SML_file\<open>mlyacc-polyml/src/hdr.sml\<close> 
+SML_file\<open>mlyacc-polyml/src/hdr.sml\<close>
 SML_file\<open>mlyacc-polyml/src/lalr.sml\<close>  
 SML_file\<open>mlyacc-polyml/src/absyn.sig\<close> 
 SML_file\<open>mlyacc-polyml/src/absyn.sml\<close> 
@@ -399,6 +396,7 @@ structure MlLexYacc = struct
 
   fun generate verbose expert no_reflect no_linking yacc_only lex_only name lex_decl lex_defs lex_rules yacc_decl yacc_defs yacc_rules thy = 
       let
+        
         fun trace s = if verbose then writeln s else ()
         val no_linking = if no_reflect orelse yacc_only orelse lex_only then true else no_linking 
         fun store show_msg ext data  =
@@ -555,6 +553,7 @@ local
     (\<^keyword>\<open>yacc_definitions\<close> |-- Parse.input Parse.cartouche) --
     (\<^keyword>\<open>yacc_rules\<close> |-- Parse.input Parse.cartouche)
 in
+  val global_lex_yacc_lock = Thread.Mutex.mutex ();
   val _ = Outer_Syntax.command @{command_keyword "ml_lex_yacc"}
           "Generate and load SML parser based on lex/yacc specifications." 
         (
@@ -571,9 +570,10 @@ in
               val lex_only = member (op =) opts "lex_only" 
             in
               Toplevel.theory (fn thy => 
+               Multithreading.synchronized "Lex/Yacc generation." global_lex_yacc_lock (fn () =>
                 MlLexYacc.generate is_verbose is_expert no_reflect no_linking lex_only yacc_only name 
                   lex_user lex_defs lex_rules 
-                  yacc_user yacc_defs yacc_rules thy)
+                  yacc_user yacc_defs yacc_rules thy))
             end)
         )
 end

@@ -34,14 +34,8 @@ by eval
 lemma mono_nullable_step: "mono (nullable_step P)"
 unfolding mono_def nullable_step_def nullables_wrt_def by auto
 
-(* TODO mv? *)
-lemma while_option_Some_closed:
-  fixes f :: "'a::complete_lattice \<Rightarrow> 'a"
-  assumes "while_option (\<lambda>x. f x \<noteq> x) f bot = Some x" shows "f x = x"
-using while_option_stop2[OF assms(1)] by fastforce
-
 lemma nullable_fun_Some_closed: "nullable_fun P = Some N \<Longrightarrow> nullable_step P N = N"
-unfolding nullable_fun_def using while_option_Some_closed[of "nullable_step P"] by blast
+unfolding nullable_fun_def using while_option_stop by fastforce
 
 lemma Nullable_if_nullable_fun:
 assumes "finite P" "nullable_fun P = Some N" shows "\<forall>A\<in>N. Nullable P (Nt A)"

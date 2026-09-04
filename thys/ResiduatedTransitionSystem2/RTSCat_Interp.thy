@@ -6,29 +6,29 @@
 section "Top-Level Interpretation"
 
 theory RTSCat_Interp
-imports RTSCatx RTSCat
+imports RTSCat_trn RTSCat_sim
 begin
 
   text\<open>
     The purpose of this section is simply to demonstrate the possibility of making
-    top-level interpretations of locales @{locale rtscatx} and @{locale rtscat}.
+    top-level interpretations of locales @{locale rtscat_trn} and @{locale rtscat_sim}.
     It is important to do this because some kinds of clashes that occur when the same names
     are used in multiple sublocales only cause a problem when an attempt is made to instantiate
     the locale in the top-level name space.
   \<close>
 
-  interpretation RTSx: rtscatx \<open>TYPE(V)\<close>
+  interpretation RTS\<^sub>t\<^sub>r\<^sub>n: rtscat_trn \<open>TYPE(V)\<close>
   proof -
     interpret V: universe \<open>TYPE(V)\<close>
       using V_is_universe by auto
-    show "rtscatx (TYPE(V))" ..
+    show "rtscat_trn (TYPE(V))" ..
   qed
 
-  interpretation RTS: rtscat \<open>TYPE(V)\<close>
+  interpretation RT\<^sub>s\<^sub>i\<^sub>m: rtscat_sim \<open>TYPE(V)\<close>
   proof -
     interpret V: universe \<open>TYPE(V)\<close>
       using V_is_universe by auto
-    show "rtscat (TYPE(V))" ..
+    show "rtscat_sim (TYPE(V))" ..
   qed
 
 end

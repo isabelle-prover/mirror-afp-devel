@@ -152,8 +152,8 @@ begin
         using assms 2 3 composition_of_pushouts pushouts_unique
         by (metis (full_types))
       show "\<i>\<^sub>0[v \<cdot> u, t] = \<i>\<^sub>0[v, \<i>\<^sub>0[t, u]] \<cdot> \<i>\<^sub>0[u, t]"
-        using assms 2 3 composition_of_pushouts pushouts_unique inj_sym
-        by metis
+        by (metis (mono_tags, lifting) 2 3 composition_of_pushouts inj_sym
+            category_of_transitions.pushouts_unique(1) category_of_transitions_axioms)
     qed
 
     lemma inj_prefix:
@@ -612,9 +612,8 @@ section "Extensional RTS's with Composites as Categories"
         obtain w' where w': "\<i>\<^sub>0[\<i>\<^sub>0[v, u], \<i>\<^sub>0[t, u]] = w' \<cdot> \<i>\<^sub>0[\<i>\<^sub>0[v, t], \<i>\<^sub>0[u, t]]"
           using 0 vu_tu * null_is_zero(2) by metis
         have "C.ide (w \<cdot> w')"
-          using w w' vt_ut
-          by (metis C.comp_cod_arr C.ext C.ide_cod C.inj_prefix(1-2) C.seqE
-              null_char)
+          by (metis C.comp_ide_self C.ext C.ide_cod C.inj_prefix(1,2) C.inj_sym C.seqE
+              null_char vu_tu w w')
         hence "C.ide w"
           using w w'
           by (metis C.comp_arr_ide C.ide_compE C.inj_arr_dom(1) C.inj_prefix(2)
@@ -649,9 +648,8 @@ section "Extensional RTS's with Composites as Categories"
       show "\<And>t. arr t \<Longrightarrow> ide (trg t)"
         by (metis arr_char C.eq_iff_ide_inj ide_char resid_arr_self)
       thus "\<And>t u. con t u \<Longrightarrow> \<exists>a. ide a \<and> con a t \<and> con a u"
-        using con_char ide_char
-        by (metis C.ide_dom C.inj_arr_dom(1) C.pushout_commutes
-            C.commutative_squareE con_implies_arr(1) con_sym arr_resid_iff_con)
+        by (metis C.bounded_spanE C.commutative_squareE C.inj_arr_dom(1)
+            arr_resid_iff_con C.ide_dom ide_char con_sym arr_char con_char)
       show "\<And>t u v. \<lbrakk>ide \<i>\<^sub>0[t, u]; con u v\<rbrakk> \<Longrightarrow> con \<i>\<^sub>0[t, u] \<i>\<^sub>0[v, u]"
         by (metis (no_types, lifting) C.dom_inj(1) C.ideD(2) C.inj_arr_dom(1)
             arr_char con_char ide_char arr_resid_iff_con con_sym ide_implies_arr)

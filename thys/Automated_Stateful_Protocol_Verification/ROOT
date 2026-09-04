@@ -4,6 +4,7 @@ session "Automated_Stateful_Protocol_Verification" = "Stateful_Protocol_Composit
   options [timeout = 3600]
   sessions 
     "HOL-Eisbach"
+    "Isabelle_Lex-Yacc"
   directories
     "trac"
     "examples"

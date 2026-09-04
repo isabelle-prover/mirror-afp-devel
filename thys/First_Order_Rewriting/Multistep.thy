@@ -20,6 +20,16 @@ lemma mstep_refl [simp]:
   "(t, t) \<in> mstep R"
   by (induct t) (auto intro: mstep.intros)
 
+lemma mstep_subst: assumes "(s,t) \<in> mstep R" 
+  shows "(s \<cdot> \<sigma>, t \<cdot> \<sigma>) \<in> mstep R" 
+  using assms
+proof (induct s t)
+next
+  case (rule l r \<sigma>' \<tau>)
+  then show ?case
+    by (simp add: eval_subst mstep.rule subst_compose_def)
+qed (auto intro: mstep.intros)
+
 lemma mstep_ctxt:
   assumes "(s, t) \<in> mstep R"
   shows "(C\<langle>s\<rangle>, C\<langle>t\<rangle>) \<in> mstep R"

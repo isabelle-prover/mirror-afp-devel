@@ -283,7 +283,7 @@ is true.
                                              first=first,
                                              rules=rules,
                                              epsProds=epsProds,
-                                             print=(fn s=>TextIO.output(TextIO.stdOut,s)),
+                                             print=pide_writeln,
                                              termToString = termToString,
                                              nontermToString = nontermToString}
 

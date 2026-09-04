@@ -21,7 +21,7 @@ session ROBDD = Sepref_Prereq +
     BDD_Examples
     Option_Helpers
     Pointer_Map
-  theories [condition = ISABELLE_GHC]
+  theories [condition = "$ISABELLE_GHC"]
     BDD_Code
   document_files
     "root.tex"

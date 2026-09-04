@@ -794,7 +794,7 @@ $$\xymatrix{
         using 0 by simp
       show 3: "\<guillemotleft>chine_hcomp \<nu> \<mu> : \<nu>.dom.leg0 \<down>\<down> \<mu>.dom.leg1 \<rightarrow>\<^sub>C \<nu>.cod.leg0 \<down>\<down> \<mu>.cod.leg1\<guillemotright>"
         unfolding chine_hcomp_def
-        using assms 0 src_def trg_def C.tuple_in_hom by auto
+        using assms 0 src_def trg_def C.pbtuple_in_hom by auto
       show "C.commutative_square \<p>\<^sub>1[\<nu>.cod.leg0, \<mu>.cod.leg1] \<nu>.chine
                (chine_hcomp \<nu> \<mu>) \<p>\<^sub>1[\<nu>.dom.leg0, \<mu>.dom.leg1]"
         using assms src_def trg_def 1 3 by auto
@@ -916,7 +916,7 @@ $$\xymatrix{
                   \<p>\<^sub>0[g.dom.leg0, f.dom.leg1] \<cdot> (g.dom.leg0 \<down>\<down> f.dom.leg1)\<rangle>"
         using assms 1 C.comp_arr_dom by simp
       also have "... = g.dom.leg0 \<down>\<down> f.dom.leg1"
-        using 1 C.pullback_commutes C.tuple_prj by simp
+        using 1 C.pullback_commutes C.pbtuple_prj by simp
       finally show ?thesis by simp
     qed
 
@@ -1118,7 +1118,7 @@ $$\xymatrix{
               chine_hcomp_props(5) src_vcomp trg_vcomp)
         moreover have "\<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp (\<nu>' \<bullet> \<nu>) (\<mu>' \<bullet> \<mu>) =
                        \<p>\<^sub>1[\<nu>'.cod.leg0, \<mu>'.cod.leg1] \<cdot> chine_hcomp \<nu>' \<mu>' \<cdot> chine_hcomp \<nu> \<mu>"
-          by (metis (no_types, lifting) "1" "3" C.comp_assoc C.prj_tuple(2) C1 C2 Chn_vcomp
+          by (metis (no_types, lifting) "1" "3" C.comp_assoc C.prj_pbtuple(2) C1 C2 Chn_vcomp
               assms(1-3,8) chine_hcomp_def chine_hcomp_props(6))
         ultimately show ?thesis
           using C.prj_joint_monic
@@ -1283,7 +1283,7 @@ $$\xymatrix{
             qed
             also have "... = \<mu>.chine \<cdot> \<p>\<^sub>0[C.cod \<mu>.dom.leg1, \<mu>.dom.leg1]"
               using \<mu> C.in_homE C.pullback_commutes [of "C.cod \<mu>.dom.leg1" "\<mu>.dom.leg1"]
-                    C.comp_reduce ide_char C.prj_tuple(1)
+                    C.comp_reduce ide_char C.prj_pbtuple(1)
               by auto
             also have "... = Chn (map \<mu> \<bullet> \<l> (dom \<mu>))"
               using \<mu> par seq_char dom_char vcomp_eq map_simp by simp
@@ -1483,7 +1483,7 @@ $$\xymatrix{
                 using \<mu> by (auto simp add: cod_char)
             qed
             also have "... = \<mu>.chine \<cdot> \<p>\<^sub>1[\<mu>.dom.leg0, C.cod \<mu>.dom.leg0]"
-              using \<mu> ide_char C.prj_tuple(2)
+              using \<mu> ide_char C.prj_pbtuple(2)
                     C.in_homE C.pullback_commutes [of "\<mu>.dom.leg0" "C.cod \<mu>.dom.leg0"]
                     C.comp_reduce
               by auto
@@ -2322,7 +2322,7 @@ $$\xymatrix{
         thus ?thesis
            unfolding hcomp_def chine_hcomp_def dom_char
            using \<mu>\<nu>.composable \<nu>\<pi>.composable src_def trg_def dom_char chine_hcomp_props
-                 C.comp_tuple_arr C.pullback_commutes C.comp_assoc
+                 C.comp_pbtuple_arr C.pullback_commutes C.comp_assoc
            by auto
       qed
       show "\<mu>\<nu>\<pi>.chine = \<langle>\<mu>.chine \<cdot> doms.Prj\<^sub>1
@@ -2333,7 +2333,7 @@ $$\xymatrix{
         thus ?thesis
            unfolding hcomp_def chine_hcomp_def dom_char
            using \<mu>\<nu>.composable \<nu>\<pi>.composable src_def trg_def dom_char chine_hcomp_props
-                 C.comp_tuple_arr C.pullback_commutes C.comp_assoc
+                 C.comp_pbtuple_arr C.pullback_commutes C.comp_assoc
            by auto
       qed
     qed
@@ -3249,7 +3249,7 @@ $$\xymatrix{
           by simp
         show "\<mu>.leg0 \<cdot> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>1\<^sub>1 =
               (\<nu>\<pi>.leg1 \<cdot> \<nu>\<pi>_\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>\<pi>.leg0, \<rho>.leg1\<rbrakk> \<mu>_\<nu>\<pi>_\<rho>.Prj\<^sub>0\<rangle>"
-          by (metis (no_types, lifting) "1" C.comp_assoc C.prj_tuple(2) C.pullback_commutes'
+          by (metis (no_types, lifting) "1" C.comp_assoc C.prj_pbtuple(2) C.pullback_commutes'
               \<mu>_\<nu>\<pi>_\<rho>.cospan_\<mu>\<nu>)
       qed
       show "C.commutative_square \<mu>.leg0 (\<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1) \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1
@@ -3263,7 +3263,7 @@ $$\xymatrix{
           using \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu> by simp
         show "\<mu>.leg0 \<cdot> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>1\<^sub>1 =
               (\<nu>.leg1 \<cdot> \<nu>_\<pi>\<rho>.prj\<^sub>1) \<cdot> \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle>"
-          by (metis (no_types, lifting) "2" C.comp_assoc C.prj_tuple(2) C.pullback_commutes'
+          by (metis (no_types, lifting) "2" C.comp_assoc C.prj_pbtuple(2) C.pullback_commutes'
               \<mu>_\<nu>_\<pi>\<rho>.cospan_\<mu>\<nu>)
       qed
     qed
@@ -3438,7 +3438,7 @@ $$\xymatrix{
               by auto
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>1 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              by (metis (no_types, lifting) C.comp_assoc C.prj_tuple(2) \<mu>\<nu>.leg0_composite
+              by (metis (no_types, lifting) C.comp_assoc C.prj_pbtuple(2) \<mu>\<nu>.leg0_composite
                   \<mu>\<nu>\<pi>.leg0_composite(2) \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(1) \<pi>\<rho>.leg1_composite
                   commutative_squares(2))
             finally show ?thesis by simp
@@ -3475,7 +3475,7 @@ $$\xymatrix{
               by fastforce
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>1\<^sub>0 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              by (metis C.comp_assoc C.tuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
+              by (metis C.comp_assoc C.pbtuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
                         \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(2) \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
                         \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<pi>\<rho>.leg1_composite)
             finally show ?thesis by blast
@@ -3515,7 +3515,7 @@ $$\xymatrix{
                         prj_in_homs(4))
             also have "... = \<nu>\<pi>\<rho>.Prj\<^sub>0\<^sub>0 \<cdot>
                              \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
-              by (metis C.comp_assoc C.tuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
+              by (metis C.comp_assoc C.pbtuple_prj \<mu>\<nu>.leg0_composite \<mu>\<nu>_\<pi>.leg0_composite
                         \<mu>\<nu>_\<pi>_\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
                         \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<pi>\<rho>.leg1_composite)
             finally show ?thesis by blast
@@ -3578,7 +3578,7 @@ $$\xymatrix{
         also have "... = \<langle>\<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<^sub>1 \<lbrakk>\<nu>.leg0, \<pi>\<rho>.leg1\<rbrakk> \<mu>_\<nu>_\<pi>\<rho>.Prj\<^sub>0\<rangle> \<cdot> \<mu>\<nu>_\<pi>_\<rho>.chine_assoc"
           using * by simp
         also have "... = \<p>\<^sub>0[\<mu>.leg0, H\<nu>H\<pi>\<rho>.leg1] \<cdot> Chn ?RHS"
-          by (metis C.comp_assoc C.tuple_prj R \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
+          by (metis C.comp_assoc C.pbtuple_prj R \<mu>_\<nu>_\<pi>\<rho>.cospan_\<nu>\<pi> \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(2)
                     \<mu>_\<nu>_\<pi>\<rho>.prj_chine_assoc(3) \<mu>_\<nu>_\<pi>\<rho>.prj_simps(2) \<nu>_\<pi>\<rho>.leg1_composite)
         finally show ?thesis by blast
       qed
@@ -3790,7 +3790,7 @@ $$\xymatrix{
               also have "... = \<langle>f_src_src.Prj\<^sub>1 \<cdot> f_src_src.chine_assoc
                                   \<lbrakk>f.leg0, src.leg1\<rbrakk>
                                 f_src_src.Prj\<^sub>1\<^sub>0 \<cdot> f_src_src.chine_assoc\<rangle>"
-                using C.comp_assoc C.comp_tuple_arr C.pullback_commutes'
+                using C.comp_assoc C.comp_pbtuple_arr C.pullback_commutes'
                       f_src_src.cospan_\<mu>\<nu> f_src_src.cospan_\<nu>\<pi>
                 by simp
               also have "... = \<langle>f_src_src.Prj\<^sub>1\<^sub>1 \<lbrakk>f.leg0, src.leg1\<rbrakk> f_src_src.Prj\<^sub>0\<^sub>1\<rangle>"
@@ -3949,7 +3949,7 @@ $$\xymatrix{
                 moreover have "C.seq trg_trg_f.Prj\<^sub>0\<^sub>1 trg_trg_f.chine_assoc'"
                   by blast
                 ultimately show ?thesis
-                  using C.comp_tuple_arr [of trg.leg0 f.leg1 trg_trg_f.Prj\<^sub>0\<^sub>1 trg_trg_f.Prj\<^sub>0
+                  using C.comp_pbtuple_arr [of trg.leg0 f.leg1 trg_trg_f.Prj\<^sub>0\<^sub>1 trg_trg_f.Prj\<^sub>0
                                              trg_trg_f.chine_assoc']
                   by auto
               qed
@@ -4401,7 +4401,7 @@ $$\xymatrix{
         interpret \<eta>: arrow_of_spans C \<eta>
           using f g_def \<eta>_def hcomp_def src_def trg_def f.arrow_of_spans_axioms
                 g.arrow_of_spans_axioms arr_char C.comp_arr_inv'
-                C.tuple_in_hom [of f.leg1 f.leg1 "C.inv f.leg0" "C.inv f.leg0"]
+                C.pbtuple_in_hom [of f.leg1 f.leg1 "C.inv f.leg0" "C.inv f.leg0"]
                 Dom_src.apex_def Dom_gf.apex_def
           apply unfold_locales by (simp_all add: C.comp_assoc)
         have unit_in_hom: "\<guillemotleft>\<eta> : src f \<Rightarrow> hcomp g f\<guillemotright>"
@@ -4445,7 +4445,7 @@ $$\xymatrix{
               using f ide_in_hom [of f] adj.triangle_in_hom(3)
               by (metis (no_types, lifting) in_homE)
             show "Chn (\<l>[f] \<bullet> (\<epsilon> \<star> f) \<bullet> \<a>\<^sup>-\<^sup>1[f, g, f] \<bullet> (f \<star> \<eta>) \<bullet> \<r>\<^sup>-\<^sup>1[f]) = f.chine"
-              using f g_def \<eta>_def Chn_triangle_eq(1) C.comp_tuple_arr C.comp_inv_arr' by simp
+              using f g_def \<eta>_def Chn_triangle_eq(1) C.comp_pbtuple_arr C.comp_inv_arr' by simp
           qed
           thus ?thesis
             using adj.triangle_equiv_form by simp
@@ -4458,7 +4458,7 @@ $$\xymatrix{
               using adj.ide_right ide_in_hom [of g] adj.triangle_in_hom(4)
               by (metis (no_types, lifting) in_homE)
             show "Chn (\<r>[g] \<bullet> (g \<star> \<epsilon>) \<bullet> \<a>[g, f, g] \<bullet> (\<eta> \<star> g) \<bullet> \<l>\<^sup>-\<^sup>1[g]) = g.chine"
-              using f g_def \<eta>_def Chn_triangle_eq(2) C.comp_tuple_arr C.comp_inv_arr' by simp
+              using f g_def \<eta>_def Chn_triangle_eq(2) C.comp_pbtuple_arr C.comp_inv_arr' by simp
           qed
           thus ?thesis
             using adj.triangle_equiv_form by simp

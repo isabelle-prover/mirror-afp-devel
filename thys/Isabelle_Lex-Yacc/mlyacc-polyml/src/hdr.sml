@@ -12,13 +12,11 @@ functor HeaderFun () : HEADER =
         val pos_map = ref NONE
         val text = ref (nil: string list)
         type inputSource = {name : string,
-                            errStream : TextIO.outstream,
-                            inStream : TextIO.instream,
                             errorOccurred : bool ref}
 
         val newSource =
-          fn (s : string,i : TextIO.instream ,errs : TextIO.outstream) =>
-              {name=s,errStream=errs,inStream=i,
+          fn (s : string) =>
+              {name=s,
                errorOccurred = ref false}
 
         val errorOccurred = fn (s : inputSource) =>fn () => !(#errorOccurred s)

@@ -18,29 +18,29 @@ type_synonym ('f, 'v) rules = "('f, 'v) rule list"
 context fixes R :: "('f,'v)rules" 
 begin
 
-definition rrewrite :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list"
+definition rrstep_impl :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list"
   where
-    "rrewrite s = List.maps (\<lambda> (l, r) . case match s l of
+    "rrstep_impl s = List.maps (\<lambda> (l, r) . case match s l of
       None \<Rightarrow> []
     | Some \<sigma> \<Rightarrow> [r \<cdot> \<sigma>]) R"
 
-lemma rrewrite_sound: "t \<in> set (rrewrite s) \<Longrightarrow> (s,t) \<in> rrstep (set R)" 
-  unfolding rrewrite_def using match_matches[of s]
+lemma rrstep_impl_sound: "t \<in> set (rrstep_impl s) \<Longrightarrow> (s,t) \<in> rrstep (set R)" 
+  unfolding rrstep_impl_def using match_matches[of s]
   by force
 
-lemma rrewrite_complete: assumes "(s,t) \<in> rrstep (set R)"
-  shows "\<exists> u. u \<in> set (rrewrite s)"
+lemma rrstep_impl_complete: assumes "(s,t) \<in> rrstep (set R)"
+  shows "\<exists> u. u \<in> set (rrstep_impl s)"
 proof -
   from assms obtain l r \<sigma> where lr: "(l,r) \<in> set R" and s: "s = l \<cdot> \<sigma>" and t: "t = r \<cdot> \<sigma>" 
     by (rule rrstepE)
   from match_complete'[OF s[symmetric]] obtain \<tau> where match: "match s l = Some \<tau>" 
     by auto
-  with lr match have "r \<cdot> \<tau> \<in> set (rrewrite s)" unfolding rrewrite_def by force
+  with lr match have "r \<cdot> \<tau> \<in> set (rrstep_impl s)" unfolding rrstep_impl_def by force
   thus ?thesis ..
 qed
 
-lemma rrewrite: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
-  shows "set (rrewrite s) = {t. (s,t) \<in> rrstep (set R)}"
+lemma rrstep_impl: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
+  shows "set (rrstep_impl s) = {t. (s,t) \<in> rrstep (set R)}"
 proof (standard; clarify)
   fix t
   assume "(s,t) \<in> rrstep (set R)" 
@@ -50,27 +50,27 @@ proof (standard; clarify)
     and vars: "\<And> x. x \<in> vars_term l \<Longrightarrow> \<sigma> x = \<tau> x" by auto
   have vars': "\<And> x. x \<in> vars_term r \<Longrightarrow> \<sigma> x = \<tau> x" using assms[OF lr] vars by auto
   have t: "t = r \<cdot> \<tau>" unfolding t using vars' by (intro term_subst_eq, auto)
-  with lr match show "t \<in> set (rrewrite s)" unfolding rrewrite_def by force
-qed (rule rrewrite_sound)
+  with lr match show "t \<in> set (rrstep_impl s)" unfolding rrstep_impl_def by force
+qed (rule rrstep_impl_sound)
 
-fun rewrite :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list" where
-  "rewrite s = (rrewrite s @ (case s of Var _ \<Rightarrow> [] | Fun f ss \<Rightarrow> 
-    concat (map (\<lambda> (i, si). map (\<lambda> ti. Fun f (ss[i := ti])) (rewrite si))
+fun rstep_impl :: "('f, 'v) term \<Rightarrow> ('f, 'v) term list" where
+  "rstep_impl s = (rrstep_impl s @ (case s of Var _ \<Rightarrow> [] | Fun f ss \<Rightarrow> 
+    concat (map (\<lambda> (i, si). map (\<lambda> ti. Fun f (ss[i := ti])) (rstep_impl si))
      (zip [0..< length ss] ss))))"
 
-declare rewrite.simps[simp del]
+declare rstep_impl.simps[simp del]
 
-lemma rewrite_sound: "t \<in> set (rewrite s) \<Longrightarrow> (s,t) \<in> rstep (set R)"
-proof (induct s arbitrary: t rule: rewrite.induct)
+lemma rstep_impl_sound: "t \<in> set (rstep_impl s) \<Longrightarrow> (s,t) \<in> rstep (set R)"
+proof (induct s arbitrary: t rule: rstep_impl.induct)
   case (1 s t)
-  note [simp] = rewrite.simps[of s]
-  from 1(2) consider (root) "t \<in> set (rrewrite s)" | 
-    (arg) f ss ti i where "s = Fun f ss" "i < length ss" "ti \<in> set (rewrite (ss ! i))" "t = Fun f (ss[i := ti])" 
+  note [simp] = rstep_impl.simps[of s]
+  from 1(2) consider (root) "t \<in> set (rrstep_impl s)" | 
+    (arg) f ss ti i where "s = Fun f ss" "i < length ss" "ti \<in> set (rstep_impl (ss ! i))" "t = Fun f (ss[i := ti])" 
     by (auto simp: set_zip)
   thus ?case
   proof cases
     case root
-    with rrewrite_sound[of t s] have "(s,t) \<in> rrstep (set R)" by auto
+    with rrstep_impl_sound[of t s] have "(s,t) \<in> rrstep (set R)" by auto
     thus ?thesis by (rule rrstep_imp_rstep)
   next
     case (arg f ss ti i)
@@ -84,43 +84,43 @@ proof (induct s arbitrary: t rule: rewrite.induct)
 qed
 
 
-lemma rewrite: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
-  shows "set (rewrite s) = {t. (s,t) \<in> rstep (set R)}"
+lemma rstep_impl: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
+  shows "set (rstep_impl s) = {t. (s,t) \<in> rstep (set R)}"
 proof (standard; clarify)
   fix t
   assume "(s,t) \<in> rstep (set R)" 
   then obtain C u v where s: "s = C\<langle>u\<rangle>" and t: "t = C\<langle>v\<rangle>" and step: "(u,v) \<in> rrstep (set R)" 
     by blast
-  from rrewrite[OF assms, of u] step have step: "v \<in> set (rrewrite u)" by auto
-  show "t \<in> set (rewrite s)" unfolding s t
+  from rrstep_impl[OF assms, of u] step have step: "v \<in> set (rrstep_impl u)" by auto
+  show "t \<in> set (rstep_impl s)" unfolding s t
   proof (induct C)
     case Hole
-    then show ?case using step by (auto simp: rewrite.simps[of u])
+    then show ?case using step by (auto simp: rstep_impl.simps[of u])
   next
     case (More f bef C aft)
     show ?case 
-      apply (simp add: rewrite.simps[of "Fun f _"] set_zip)
+      apply (simp add: rstep_impl.simps[of "Fun f _"] set_zip)
       apply (intro disjI2)
       apply (intro exI[of _ "C\<langle>u\<rangle>"] exI)
       apply (intro conjI exI[of _ "length bef"])
       using More by (auto simp: nth_append)
   qed
-qed (rule rewrite_sound)
+qed (rule rstep_impl_sound)
 
-lemma rewrite_complete: assumes "(s,t) \<in> rstep (set R)"
-  shows "\<exists> w. w \<in> set (rewrite s)" 
+lemma rstep_impl_complete: assumes "(s,t) \<in> rstep (set R)"
+  shows "\<exists> w. w \<in> set (rstep_impl s)" 
 proof -
   from assms obtain C u v where s: "s = C\<langle>u\<rangle>" and t: "t = C\<langle>v\<rangle>" and step: "(u,v) \<in> rrstep (set R)" 
     by blast
-  from rrewrite_complete[OF step] obtain v where step: "v \<in> set (rrewrite u)" by auto
-  have "C\<langle>v\<rangle> \<in> set (rewrite s)" unfolding s 
+  from rrstep_impl_complete[OF step] obtain v where step: "v \<in> set (rrstep_impl u)" by auto
+  have "C\<langle>v\<rangle> \<in> set (rstep_impl s)" unfolding s 
   proof (induct C)
     case Hole
-    then show ?case using step by (auto simp: rewrite.simps[of u])
+    then show ?case using step by (auto simp: rstep_impl.simps[of u])
   next
     case (More f bef C aft)
     show ?case 
-      apply (simp add: rewrite.simps[of "Fun f _"] set_zip)
+      apply (simp add: rstep_impl.simps[of "Fun f _"] set_zip)
       apply (intro disjI2)
       apply (intro exI[of _ "C\<langle>u\<rangle>"] exI)
       apply (intro conjI exI[of _ "length bef"])
@@ -128,60 +128,78 @@ proof -
   qed
   thus ?thesis by blast
 qed
+
+definition "rstep_refl_impl t = t # rstep_impl t" 
+
+lemma rstep_refl_sound: assumes "t \<in> set (rstep_refl_impl s)" 
+  shows "(s,t) \<in> (rstep (set R))\<^sup>=" 
+  using assms unfolding rstep_refl_impl_def using rstep_impl_sound[of t s] by auto
+
+lemma rstep_refl_impl: assumes "\<And> l r. (l,r) \<in> set R \<Longrightarrow> vars_term l \<supseteq> vars_term r" 
+  shows "set (rstep_refl_impl s) = {t. (s,t) \<in> (rstep (set R))\<^sup>=}"
+  using rstep_impl[OF assms, of s] unfolding rstep_refl_impl_def by auto
+
 end
 
 
-lemma rrewrite_mono: "set R \<subseteq> set S \<Longrightarrow> set (rrewrite R s) \<subseteq> set (rrewrite S s)" 
-  unfolding rrewrite_def by auto 
+lemma rrstep_impl_mono: "set R \<subseteq> set S \<Longrightarrow> set (rrstep_impl R s) \<subseteq> set (rrstep_impl S s)" 
+  unfolding rrstep_impl_def by auto 
 
 lemma Union_image_mono: "(\<And> x. x \<in> A \<Longrightarrow> f x \<subseteq> g x) \<Longrightarrow> \<Union> (f ` A) \<subseteq> \<Union> (g ` A)"
   by blast
 
-lemma rewrite_mono: assumes "set R \<subseteq> set S"
-  shows "set (rewrite R s) \<subseteq> set (rewrite S s)" 
+lemma rstep_impl_mono: assumes "set R \<subseteq> set S"
+  shows "set (rstep_impl R s) \<subseteq> set (rstep_impl S s)" 
 proof -
-  note rrewrite = rrewrite_mono[OF assms]
+  note rrstep_impl = rrstep_impl_mono[OF assms]
   show ?thesis
   proof (induct s)
     case (Var x)
-    thus ?case using rrewrite unfolding rewrite.simps[of _ "Var x"] by auto
+    thus ?case using rrstep_impl unfolding rstep_impl.simps[of _ "Var x"] by auto
   next
     case (Fun f ss)
-    show ?case unfolding rewrite.simps[of _ "Fun f ss"]
+    show ?case unfolding rstep_impl.simps[of _ "Fun f ss"]
         set_append term.simps set_concat set_map image_comp set_zip o_def
-      apply (intro Un_mono, rule rrewrite)
+      apply (intro Un_mono, rule rrstep_impl)
       by (intro Union_image_mono, insert Fun, force simp: set_conv_nth[of ss])
   qed
 qed
 
 
-definition first_rewrite :: "('f,'v)rules \<Rightarrow> ('f,'v)term \<Rightarrow> ('f,'v)term option"
-  where "first_rewrite R s \<equiv> case rewrite R s of Nil \<Rightarrow> None | Cons t _ \<Rightarrow> Some t"
+definition some_rstep :: "('f,'v)rules \<Rightarrow> ('f,'v)term \<Rightarrow> ('f,'v)term option"
+  where "some_rstep R s \<equiv> case rstep_impl R s of Nil \<Rightarrow> None | Cons t _ \<Rightarrow> Some t"
+
+lemma some_rstep_Some: "some_rstep R s = Some t \<Longrightarrow> (s,t) \<in> rstep (set R)" 
+  unfolding some_rstep_def using rstep_impl_sound[of t R s] by (auto split: list.splits)
+
+lemma some_rstep_None: "some_rstep R s = None \<Longrightarrow> s \<in> NF (rstep (set R))" 
+  unfolding some_rstep_def using rstep_impl_complete[of s _ R]
+  by (auto split: list.splits)
 
 
 subsubsection\<open>Checking a Single Rewrite Step\<close>
 
-definition is_root_step :: "('f, 'v)trs \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
+definition is_rrstep :: "('f, 'v)trs \<Rightarrow> ('f, 'v) term \<Rightarrow> ('f, 'v) term \<Rightarrow> bool"
   where
-    "is_root_step R s t = (\<exists> (l, r) \<in> R. case match_list Var [(l,s),(r,t)] of
+    "is_rrstep R s t = (\<exists> (l, r) \<in> R. case match_list Var [(l,s),(r,t)] of
       None \<Rightarrow> False
     | Some _ \<Rightarrow> True)"
 
-lemma rrstep_code[code_unfold]: "(s,t) \<in> rrstep R \<longleftrightarrow> is_root_step R s t"
+lemma rrstep_code[code_unfold]: "(s,t) \<in> rrstep R \<longleftrightarrow> is_rrstep R s t"
 proof
-  show "is_root_step R s t \<Longrightarrow> (s, t) \<in> rrstep R"  
-    unfolding is_root_step_def rrstep_def rstep_r_p_s_def'
+  show "is_rrstep R s t \<Longrightarrow> (s, t) \<in> rrstep R"  
+    unfolding is_rrstep_def rrstep_def rstep_r_p_s_def'
     by (auto split: option.splits) (force dest: match_list_matches)
   assume "(s, t) \<in> rrstep R"
   then obtain \<sigma> l r where lr: "(l,r) \<in> R" and id: "s = l \<cdot> \<sigma>" "t = r \<cdot> \<sigma>" 
     by (metis rrstepE)
-  show "is_root_step R s t" unfolding id
-    unfolding is_root_step_def 
+  show "is_rrstep R s t" unfolding id
+    unfolding is_rrstep_def 
     by (cases "match_list Var [(l, l \<cdot> \<sigma>), (r, r \<cdot> \<sigma>)]",
         auto intro!: bexI[OF _ lr] dest!: match_list_complete)
 qed
 
-lemma is_root_step: "is_root_step R s t \<Longrightarrow> (s, t) \<in> rrstep R"
+lemma is_rrstep: "is_rrstep R s t \<Longrightarrow> (s, t) \<in> rrstep R"
   unfolding rrstep_code .
 
 fun is_rstep :: "('f,'v)trs \<Rightarrow> ('f,'v)term \<Rightarrow> ('f,'v)term \<Rightarrow> bool" where
@@ -239,44 +257,32 @@ subsection\<open>Computation of a Normal Form\<close>
 
 
 definition compute_rstep_NF :: "('f,'v)rules \<Rightarrow> ('f,'v)term \<Rightarrow> ('f,'v)term option"
-  where "compute_rstep_NF R s \<equiv> compute_NF (first_rewrite R) s"
+  where "compute_rstep_NF R s \<equiv> compute_NF (some_rstep R) s"
 
 lemma compute_rstep_NF_sound:
   assumes res: "compute_rstep_NF R s = Some t"
   shows "(s, t) \<in> (rstep (set R))^*" using res[unfolded compute_rstep_NF_def]
 proof (rule compute_NF_sound)
   fix s t
-  assume "first_rewrite R s = Some t"
-  from this[unfolded first_rewrite_def] obtain ts where "rewrite R s = t # ts"
-    by (cases "rewrite R s", auto)
-  then have t: "t \<in> set (rewrite R s)" by simp
-  from rewrite_sound[OF this] show "(s,t) \<in> rstep (set R)" .
+  assume "some_rstep R s = Some t"
+  from some_rstep_Some[OF this] show "(s,t) \<in> rstep (set R)" .
 qed
 
 lemma compute_rstep_NF_complete: assumes res: "compute_rstep_NF R s = Some t"
-  shows "t \<in> NF (rstep (set R))" using res[unfolded compute_rstep_NF_def]
+  shows "t \<in> NF (rstep (set R))" 
+  using res[unfolded compute_rstep_NF_def]
 proof (rule compute_NF_complete)
   fix s
-  assume "first_rewrite R s = None"
-  from this[unfolded first_rewrite_def] have empty: "rewrite R s = []" 
-    by (cases "rewrite R s", auto)
-  have False if "(s,t) \<in> rstep (set R)" for t 
-    using rewrite_complete[OF that] arg_cong[OF empty, of set] by auto
-  thus "s \<in> NF (rstep (set R))" by blast
+  assume "some_rstep R s = None"
+  from some_rstep_None[OF this]
+  show "s \<in> NF (rstep (set R))" by blast
 qed
 
 lemma compute_rstep_NF_SN: assumes SN: "SN (rstep (set R))"
   shows "\<exists> t. compute_rstep_NF R s = Some t"
 proof -
-  have "\<exists> t. compute_NF (first_rewrite R) s = Some t"
-  proof (rule compute_NF_SN[OF SN])
-    fix s t
-    assume "first_rewrite R s = Some t"
-    from this[unfolded first_rewrite_def] have
-      rewrite: "t \<in> set (rewrite R s)" by (auto split: list.splits)
-    from rewrite_sound[OF this]
-    show "(s,t) \<in> rstep (set R)" .
-  qed  
+  have "\<exists> t. compute_NF (some_rstep R) s = Some t"
+    by (rule compute_NF_SN[OF SN], rule some_rstep_Some)
   then show ?thesis unfolding compute_rstep_NF_def .
 qed
 
@@ -288,7 +294,7 @@ fun reachable_terms ::
     "reachable_terms R s 0 = [s]"
   | "reachable_terms R s (Suc n) = (
   let ts = (reachable_terms R s n) in
-    remdups (ts@(concat (map (\<lambda> t. rewrite R t) ts)))
+    remdups (ts@(concat (map (\<lambda> t. rstep_impl R t) ts)))
   )"
 
 lemma reachable_terms_nat:
@@ -303,17 +309,17 @@ next
   let ?R = "\<lambda> j. (rstep (set R))^^j"
   from Suc(2)
   have "t \<in> set (reachable_terms R s i)
-    \<or> (\<exists> u \<in> set (reachable_terms R s i). t \<in> set (rewrite R u))" by (simp add: Let_def)
+    \<or> (\<exists> u \<in> set (reachable_terms R s i). t \<in> set (rstep_impl R u))" by (simp add: Let_def)
   then show ?case
   proof
     assume "t \<in> set (reachable_terms R s i)"
     from Suc(1)[OF this] obtain j where "j \<le> i" and "(s,t) \<in> ?R j" by auto 
     then show ?thesis by (intro exI[of _ j], auto)
   next
-    assume "\<exists> u \<in> set (reachable_terms R s i). t \<in> set (rewrite R u)"
+    assume "\<exists> u \<in> set (reachable_terms R s i). t \<in> set (rstep_impl R u)"
     then obtain u where u: "u \<in> set (reachable_terms R s i)"
-      and 1: "t \<in> set (rewrite R u)" by auto
-    from rewrite_sound[OF 1] have ut: "(u,t) \<in> rstep (set R)" .
+      and 1: "t \<in> set (rstep_impl R u)" by auto
+    from rstep_impl_sound[OF 1] have ut: "(u,t) \<in> rstep (set R)" .
     from Suc(1)[OF u] obtain j where j: "j \<le> i" and su: "(s,u) \<in> ?R j" by auto
     from su ut have "(s,t) \<in> ?R (Suc j)" by auto
     with j show ?thesis by (intro exI[of _ "Suc j"], auto)
@@ -446,7 +452,7 @@ definition
   where
     "showsl_trs' fun var name arr R = showsl name \<circ> showsl (STR ''\<newline>\<newline>'') \<circ> showsl_rules' fun var arr R"
 
-definition "showsl_trs \<equiv> showsl_trs' showsl showsl (STR ''rewrite system:'') (STR '' -> '')"
+definition "showsl_trs \<equiv> showsl_trs' showsl showsl (STR ''rstep_impl system:'') (STR '' -> '')"
 
 
 subsubsection\<open>Computing Syntactic Properties of TRSs\<close>
@@ -670,6 +676,10 @@ proof -
   from assms have "\<not> wf_trs (set R)" unfolding check_not_wf_trs_def by auto
   with SN_rstep_imp_wf_trs show ?thesis by auto
 qed
+
+lemma wf_trs_code[code]: "wf_trs R = (\<forall> lr \<in> R. is_Fun (fst lr) \<and> vars_term (fst lr) \<supseteq> vars_term (snd lr))" 
+  unfolding wf_trs_def by force
+
 
 lemma instance_rule_code[code]:
   "instance_rule lr st \<longleftrightarrow> match_list (\<lambda> _. fst lr) [(fst st, fst lr), (snd st, snd lr)] \<noteq> None"

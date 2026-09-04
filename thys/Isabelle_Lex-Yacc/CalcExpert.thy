@@ -65,7 +65,6 @@ fun tok_val (yypos, yytext, markup, typ, sort, cons, value) =
 
 
 fun eof () = Tokens.EOF(Position.none, Position.none)
-fun error' (e, p: Position.T, _) = () 
 \<close>
 lex_definitions\<open>
 %header (functor CalcLexFun(structure Tokens: Calc_TOKENS));
@@ -120,8 +119,7 @@ yacc_definitions\<open>
 %verbose
 \<close>
 yacc_rules\<open>
-  START : PRINT EXP (print (Int.toString EXP);
-                     print "\n";
+  START : PRINT EXP (pide_writeln (Int.toString EXP);
                      SOME EXP)
         | EXP (SOME EXP)
         | (NONE)
@@ -229,8 +227,11 @@ struct
             CalcParser.parse(0,lexstream,print_error,())
           end
 
-        val parsed = Unsynchronized.ref false
-        fun input_string _  = if !parsed then "" else (parsed := true; input_text)
+        val parsed = Thread_Data.var () : bool Thread_Data.var
+        fun get_parsed () = the_default false (Thread_Data.get parsed);
+        fun set_parsed v = Thread_Data.put parsed (SOME v)
+
+        fun input_string _  = if get_parsed () then "" else (set_parsed true; input_text)
         val lexer = CalcParser.makeLexer input_string
         
         val eof_pos = lookup_fn (String.size input_text + 1)
@@ -259,9 +260,11 @@ fun calc source thy =
       val _ = writeln(Int.toString (Calc.parse_source ctxt source)) 
     in thy end
 
+val global_calc2_lock = Thread.Mutex.mutex ();
 val _ = Outer_Syntax.command @{command_keyword "calc2"}
         "A simple inline calculator" 
-        (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (calc source)))
+        (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (
+          Multithreading.synchronized "Calc." global_calc2_lock (fn () => calc source))))
 \<close>
 
 calc2\<open>
@@ -270,6 +273,5 @@ calc2\<open>
     3
    * (201 - 7)
 \<close>
-
 
 end

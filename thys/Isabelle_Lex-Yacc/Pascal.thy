@@ -379,10 +379,11 @@ func_id:        YID    ()
 
 text\<open>Defining a simple Isar-toplevel command to test the Parser\<close>
 ML\<open>
-fun run_pascal source thy = 
+
+fun run_pascal source thy =
     let 
       val ctxt = Proof_Context.init_global thy
-      val _ = Pascal.parse_source ctxt source 
+      val _ = Pascal.parse_source ctxt source
     in thy end
 
 val _ = Outer_Syntax.command @{command_keyword "pascal"}

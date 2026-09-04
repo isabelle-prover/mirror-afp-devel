@@ -132,7 +132,7 @@ subsection\<open>Code generation\<close>
 
 lemma subclsRp_code [code_pred_intro]:
   "\<lbrakk> class P C = \<lfloor>(Bs, rest)\<rfloor>; Predicate_Compile.contains (set Bs) (Repeats D) \<rbrakk> \<Longrightarrow> subclsRp P C D"
-by(auto intro: subclsRp.intros simp add: contains_def)
+by(auto intro: subclsRp.intros simp add: Predicate_Compile.contains_def)
 
 code_pred
   (modes: i \<Rightarrow> i \<Rightarrow> i \<Rightarrow> bool, i \<Rightarrow> i \<Rightarrow> o \<Rightarrow> bool)

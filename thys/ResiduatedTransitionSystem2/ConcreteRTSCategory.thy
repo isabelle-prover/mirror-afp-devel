@@ -651,7 +651,7 @@ begin
     sublocale cod: simulation resid resid H.cod
       using simulation_cod by blast
 
-    sublocale VV: fibered_product_rts resid resid resid H.dom H.cod ..
+    sublocale VV: fiber_product_rts resid resid resid H.dom H.cod ..
 
     sublocale H\<^sub>V\<^sub>V: simulation VV.resid resid
                      \<open>\<lambda>t. if VV.arr t then fst t \<star> snd t else V.null\<close>
@@ -785,9 +785,15 @@ begin
     and "\<And>a. obj a \<Longrightarrow> mkobj (Dom a) = a"
     and "bij_betw mkobj Obj (Collect obj)"
     and "bij_betw Dom (Collect obj) Obj"
-      using obj_mkobj obj_char arr_char
-      apply auto[6]
-      by (intro bij_betwI, auto)+
+    proof -
+      show 1: "mkobj \<in> Obj \<rightarrow> Collect obj" and 2: "Dom \<in> Collect obj \<rightarrow> Obj"
+      and 3: "\<And>A. Dom (mkobj A) = A" and 4: "\<And>a. obj a \<Longrightarrow> mkobj (Dom a) = a"
+        using obj_mkobj obj_char arr_char by auto
+      show "bij_betw mkobj Obj (Collect obj)"
+        using 1 2 3 4 by (intro bij_betwI) auto
+      show "bij_betw Dom (Collect obj) Obj"
+        using 1 2 3 4 by (intro bij_betwI) auto
+    qed
 
     abbreviation MkArr\<^sub>e\<^sub>x\<^sub>t
     where "MkArr\<^sub>e\<^sub>x\<^sub>t A B \<equiv>
@@ -836,17 +842,17 @@ begin
       qed
       show "inverse_simulations (Hom A B) (HOM ?a ?b) ?G ?F"
       proof
-        show "?F \<circ> ?G = I HOM_ab.resid"
+        show "?F \<circ> ?G = identity_simulation.map (HOM ?a ?b)"
         proof
           fix t
-          show "(?F \<circ> ?G) t = I HOM_ab.resid t"
+          show "(?F \<circ> ?G) t = identity_simulation.map (HOM ?a ?b) t"
             using assms a b MkArr_Trn HOM_ab.arr_char HOM_ab.null_char
                   arr_char null_char
             apply auto[1]
              apply (metis Cod_dom Dom_cod H.in_homE HOM_ab.inclusion mkobj_simps(1-2))
             by (metis Cod_dom Dom_cod H.in_homE H_arr_char mkobj_simps(1-2))
         qed
-        show "?G \<circ> ?F = I (Hom A B)"
+        show "?G \<circ> ?F = identity_simulation.map (Hom A B)"
           using assms a b by auto
       qed
     qed

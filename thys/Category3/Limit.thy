@@ -3400,6 +3400,17 @@ begin
         by (metis arr_iff_in_hom assms(2) dom_comp equalizes is_universal' seqE)
     qed
 
+    lemma equalizer_is_mono:
+    assumes "has_as_equalizer f g e"
+    shows "mono e"
+    proof
+      show "arr e"
+        using assms by blast
+      show "\<And>h h'. \<lbrakk>seq e h; e \<cdot> h = e \<cdot> h'\<rbrakk> \<Longrightarrow> h = h'"
+        using assms has_as_equalizerE [of f g e]
+        by (metis comp_assoc match_4)
+    qed
+
   end
 
   section "Limits by Products and Equalizers"
