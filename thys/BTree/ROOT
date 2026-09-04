@@ -15,7 +15,7 @@ session "BTree" = "Refine_Imperative_HOL" +
     BPlusTree_Set
     BPlusTree_Range
     BPlusTree_SplitCE
-  theories [condition = ISABELLE_OCAMLFIND]
+  theories [condition = "$ISABELLE_OCAMLFIND"]
     Array_SBlit
     Partially_Filled_Array
     BTree_Imp
