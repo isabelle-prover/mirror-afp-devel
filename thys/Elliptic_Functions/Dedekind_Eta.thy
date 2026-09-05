@@ -359,6 +359,21 @@ lemma jacobi_theta_00_01_10_nw_conv_dedekind_eta:
   using t by (simp add: jacobi_theta_00_nw_conv_dedekind_eta' field_simps eval_nat_numeral
                 jacobi_theta_01_nw_conv_dedekind_eta jacobi_theta_10_nw_conv_dedekind_eta)
 
+text \<open>
+  An important corollary of this is that the modular discriminant \<open>\<Delta>\<close> is, up to a constant factor,
+  the 24-th power of \<open>\<eta>\<close>. This can also be shown easily using the valence formula for modular forms, 
+  but given all the facts we already have the following is even easier.
+\<close>
+corollary modular_discr_conv_dedekind_eta:
+  assumes z: "Im z > 0"
+  shows   "modular_discr z = (2 * of_real pi) ^ 12 * \<eta> z ^ 24"
+  using z by (simp add: modular_discr_conv_theta jacobi_theta_00_01_10_nw_conv_dedekind_eta)
+
+corollary (in complex_lattice_Im_pos) discr_conv_dedekind_eta:
+  "discr = (2 * of_real pi / \<omega>1) ^ 12 * \<eta> \<tau> ^ 24"
+  using modular_discr_conv_dedekind_eta[of \<tau>] Im_ratio_pos
+  by (simp add: discr_eq_modular_discr ratio_def field_simps)
+
 lemma theta_11_coeffs_3_conv_dedekind_eta:
   assumes t: "Im t > 0"
   shows "theta_11_coeffs 3 t = 3 / (4 * pi ^ 2) * dedekind_eta t ^ 3 * Eisenstein_G 2 t"
@@ -450,33 +465,6 @@ corollary weierstrass_eta_of_\<omega>12_coords':
   by (simp add: weierstrass_eta1_eq weierstrass_eta2_eq ring_distribs mult_ac of_\<omega>12_coords_def)
 
 end
-
-
-text \<open>
-  Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
-  we also get the following deep connection between the discriminant of a complex lattice
-  and $\eta$.
-
-  This can also alternatively be derived very elegantly using modular forms. More precisely: 
-  $\eta^24$ and the modular discriminant are both cusp forms of weight 12 and that the space of
-  cusp forms of weight 12 is one-dimensional. However, since we already have access to the theta
-  functions and the above connections to the lattice properties, this proof is very simple now as
-  well, without using the heavy tooling of modular forms.
-\<close>
-theorem (in complex_lattice_Im_pos) discr_conv_dedekind_eta:
-  "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
-proof -
-  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
-    by (simp add: discr_altdef power2_commute power_mult_distrib)
-  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
-    unfolding discr_altdef unfolding e12_conv_theta e13_conv_theta e32_conv_theta
-    by (simp add: power_mult_distrib power_divide mult_ac)
-  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0) = 2 * dedekind_eta \<tau> ^ 3 "
-    by (simp add: theta_00_def theta_01_def theta_10_def 
-                  jacobi_theta_00_01_10_nw_conv_dedekind_eta Im_ratio_pos)
-  finally show "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
-    by (simp add: power_mult_distrib)
-qed
 
 
 
@@ -590,7 +578,7 @@ proof -
     using t by (simp add: jacobi_theta_10_def dedekind_eta_conv_jacobi_theta_01)
   finally show ?thesis
     by simp
-qed
+qed 
 
 
 subsection \<open>General transformation law\<close>
