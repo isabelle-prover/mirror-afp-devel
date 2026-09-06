@@ -3,6 +3,8 @@ theory Padic_Field_Polynomials
 
 begin
 
+hide_const (open) Polynomial.monom
+
 (**************************************************************************************************)
 (**************************************************************************************************)
 section\<open>$p$-adic Univariate Polynomials and Hensel's Lemma\<close>

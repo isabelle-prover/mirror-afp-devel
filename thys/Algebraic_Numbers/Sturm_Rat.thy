@@ -13,8 +13,6 @@ imports
   Berlekamp_Zassenhaus.Square_Free_Int_To_Square_Free_GFp
 begin
 
-hide_const (open) UnivPoly.coeff
-
 (* TODO: Move *)
 lemma root_primitive_part [simp]:
   fixes p :: "'a :: {semiring_gcd, semiring_no_zero_divisors} poly"

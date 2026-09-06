@@ -129,7 +129,7 @@ proof -
     using \<open>\<forall>n. (\<Prod>k\<le>n. real_of_int (a k)) > 0\<close>[rule_format,of n] by auto
   ultimately have "\<forall>\<^sub>F n in sequentially. norm (b n / (\<Prod>k\<le>n. a k)) 
                         < (a (n-1) * a n) / (\<Prod>k\<le>n. a k)"
-    by algebra
+    by (metis (lifting) ext)
   moreover have "summable (\<lambda>n. (a (n-1) * a n) / (\<Prod>k\<le>n. a k))" 
   proof -
     obtain s where a_gt_1:"\<forall> n\<ge>s. a n >1"
