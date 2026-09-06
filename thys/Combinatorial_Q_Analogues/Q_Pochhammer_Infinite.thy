@@ -1,7 +1,6 @@
 section \<open>The infinite $q$-Pochhammer symbol $(a; q)_\infty$\<close>
 theory Q_Pochhammer_Infinite
 imports
-  More_Infinite_Products
   Q_Analogues
   Primitive_Roots
 begin

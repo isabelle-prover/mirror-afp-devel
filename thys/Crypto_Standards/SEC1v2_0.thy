@@ -1297,18 +1297,18 @@ sublocale EPF: ell_prime_field p R a b
   using ECparamsValid paramsValidEllPrimeField' apply blast
   by (simp add: R_def) 
 
-lemma order_EPF_curve: "order EPF.curve = n*h"
-  using order_def ECparamsValid ECdomainParametersValid_def EPF.curve_def
+lemma order_EPF_curve: "Coset.order EPF.curve = n*h"
+  using Coset.order_def ECparamsValid ECdomainParametersValid_def EPF.curve_def
   by (metis partial_object.select_convs(1)) 
 
 lemma order_EPF_curve_h1: 
   assumes "h = 1"
-  shows   "order EPF.curve = n"
+  shows   "Coset.order EPF.curve = n"
   using assms order_EPF_curve by simp
 
 lemma order_EPF_curve_h1': 
   assumes "h = 1"
-  shows   "prime (order EPF.curve)"
+  shows   "prime (Coset.order EPF.curve)"
   using assms order_EPF_curve_h1 ECparamsValid ECdomainParametersValid_def by blast
 
 text \<open>When h=1, then all points on the curve can be written as some power of the generator G.  
@@ -1322,7 +1322,7 @@ proof -
     using ECparamsValid ECdomainParametersValid_def by blast 
   let ?S1 = "carrier EPF.curve"
   let ?S2 = "{Q. (\<exists>d<n. Q = point_mult' d G)}"
-  have 1: "card ?S1 = n"  by (metis assms(1) order_EPF_curve_h1 order_def) 
+  have 1: "card ?S1 = n"  by (metis assms(1) order_EPF_curve_h1 Coset.order_def) 
   have 2: "card ?S2 = n"  using EPF.curve_cycle_n2[of G n] H by fast
   have 3: "\<forall>d. on_curve' (point_mult' d G)" by (simp add: H point_mult_closed)
   have 4: "?S2 \<subseteq> ?S1"     using 3 EPF.curve_def by force

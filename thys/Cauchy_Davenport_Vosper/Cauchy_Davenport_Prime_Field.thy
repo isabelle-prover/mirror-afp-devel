@@ -3,6 +3,7 @@ theory Cauchy_Davenport_Prime_Field
     Sumset_Basics
     "HOL-Computational_Algebra.Computational_Algebra"
     "HOL-Number_Theory.Number_Theory"
+    "HOL-Algebra.Residues_Algebra"
 begin
 
 section \<open>Cauchy-Davenport over prime fields\<close>
@@ -475,16 +476,7 @@ qed
 lemma prime_card_eq_char:
   assumes prime_card: "prime (card (UNIV :: 'a::finite_field set))"
   shows "CHAR('a) = card (UNIV :: 'a set)"
-proof -
-  have "CHAR('a) dvd card (UNIV :: 'a set)"
-    by (rule CHAR_dvd_CARD)
-  moreover from prime_card have "\<And>m. m dvd card (UNIV :: 'a set) \<Longrightarrow> m = 1 \<or> m = card (UNIV :: 'a set)"
-    by (simp add: prime_nat_iff)
-  ultimately have "CHAR('a) = 1 \<or> CHAR('a) = card (UNIV :: 'a set)"
-    by blast
-  with CHAR_prime show ?thesis
-    by auto
-qed
+  by (simp add: CHAR_dvd_CARD prime_card primes_dvd_imp_eq)
 
 lemma of_nat_binomial_ne_zero:
   assumes prime_card: "prime (card (UNIV :: 'a::finite_field set))"

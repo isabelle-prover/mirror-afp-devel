@@ -1,7 +1,7 @@
 theory Pairing 
 
 imports  "CryptHOL.CryptHOL" "CryptHOL.Cyclic_Group" Berlekamp_Zassenhaus.Finite_Field
-  "Sigma_Commit_Crypto.Cyclic_Group_Ext" "HOL-Number_Theory.Cong"
+  "Sigma_Commit_Crypto.Cyclic_Group_Ext" "HOL-Number_Theory.Cong" "HOL-Algebra.Multiplicative_Group"
 begin
 
 section \<open>Pairings\<close>
@@ -88,12 +88,15 @@ lemma e_g_g_in_carrier_GT[simp]: "e \<^bold>g\<^bsub>G\<^sub>p\<^esub> \<^bold>g
 text \<open>mod relations on the exponent (typically useful for cryptographic proofs)\<close>
 
 lemma pow_on_eq_card_GT[simp]: "(\<^bold>g\<^bsub>G\<^sub>T\<^esub> [^]\<^bsub>G\<^sub>T\<^esub> (x::int) = \<^bold>g\<^bsub>G\<^sub>T\<^esub> [^]\<^bsub>G\<^sub>T\<^esub> (y::int)) = ([x= y] (mod p))"
- by (metis (no_types, lifting) CARD_G\<^sub>T G\<^sub>T.finite_carrier G\<^sub>T.gen_power_0 G\<^sub>T.generator_closed G\<^sub>T.int_pow_eq G\<^sub>T.ord_ge_1 G\<^sub>T.ord_le_group_order G\<^sub>T.pow_ord_eq_1 One_nat_def add_diff_inverse_nat arith_extra_simps(6) cong_iff_dvd_diff diff_is_0_eq' less_eq_Suc_le
-      zero_order(5))
+  using CARD_G\<^sub>T G\<^sub>T.generator_closed G\<^sub>T.group_axioms G\<^sub>T.ord_dvd_group_order G\<^sub>T.ord_eq_1
+    G\<^sub>T.order_gt_1_gen_not_1 p_prime
+  by (metis cong_iff_dvd_diff group.int_pow_eq prime_nat_iff prime_nat_int_transfer)
 
 lemma pow_on_eq_card_GT_carrier_ext'[simp]: 
   "((e \<^bold>g\<^bsub>G\<^sub>p\<^esub> \<^bold>g\<^bsub>G\<^sub>p\<^esub>)) [^]\<^bsub>G\<^sub>T\<^esub> x = ((e \<^bold>g\<^bsub>G\<^sub>p\<^esub> \<^bold>g\<^bsub>G\<^sub>p\<^esub>)) [^]\<^bsub>G\<^sub>T\<^esub> y \<longleftrightarrow> [x= y] (mod p)"
-  by (metis CARD_G\<^sub>T G\<^sub>T.finite_carrier G\<^sub>T.int_pow_eq G\<^sub>T.ord_dvd_group_order G\<^sub>T.ord_eq_1 G\<^sub>T.ord_id G\<^sub>T.pow_ord_eq_ord_iff G\<^sub>T.pow_order_eq_1 cong_iff_dvd_diff dvd_antisym e_from_generators_ne_1 e_g_g_in_carrier_GT p_prime prime_imp_coprime prime_nat_int_transfer)
+  using CARD_G\<^sub>T G\<^sub>T.int_pow_eq G\<^sub>T.ord_dvd_group_order G\<^sub>T.ord_eq_1 e_from_generators_ne_1
+    e_g_g_in_carrier_GT p_prime
+  by (metis cong_iff_dvd_diff prime_nat_iff prime_nat_int_transfer)
 
 end
 

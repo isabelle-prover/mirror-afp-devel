@@ -9,6 +9,8 @@ theory Residues_Nat
   imports Algebraic_Auxiliaries
 begin            
 
+hide_const (open) Polynomial.order
+
 subsection \<open>The multiplicative group of residues modulo \<open>n\<close>\<close>
 
 definition Residues_Mult :: "'a :: {linordered_semidom, euclidean_semiring} \<Rightarrow> 'a monoid" where
@@ -60,7 +62,7 @@ lemma nat_pow_eq': "([^]\<^bsub>G\<^esub>) = (\<lambda>x k. (x ^ k) mod n)"
   by (intro ext) simp
 
 lemma order_eq: "order G = totient n"
-  by (simp add: order_def totient_def)
+  by (simp add: Coset.order_def totient_def)
 
 lemma order_less: "\<not>prime n \<Longrightarrow> order G < n - 1"
   using totient_less_not_prime[of n] n_gt_1
@@ -68,15 +70,15 @@ lemma order_less: "\<not>prime n \<Longrightarrow> order G < n - 1"
 
 lemma ord_residue_mult_group:
   assumes "a \<in> totatives n"
-  shows   "local.ord a = Pocklington.ord n a"
+  shows   "local.ord a = Residues.ord n a"
 proof (rule dvd_antisym)
   have "[a ^ local.ord a = 1] (mod n)"
     using pow_ord_eq_1[of a] assms by (auto simp: cong_def)
-  thus "Pocklington.ord n a dvd local.ord a"
+  thus "Residues.ord n a dvd local.ord a"
     by (subst (asm) ord_divides)
 next
-  show "local.ord a dvd Pocklington.ord n a"
-    using assms Pocklington.ord[of a n] n_gt_1 pow_eq_id by (simp add: cong_def)
+  show "local.ord a dvd Residues.ord n a"
+    using assms Residues.ord[of a n] n_gt_1 pow_eq_id by (simp add: cong_def)
 qed
 
 end
@@ -144,7 +146,8 @@ next
   then obtain y where "y < n" "[x * y = 1] (mod n)"
     using coprime_iff_invertible'_nat[of n x] by (auto simp: totatives_def)
   with x show "x \<in> Units R"
-    using n_gt_1 by (auto simp: Units_def mult_ac cong_def totatives_less)
+    using n_gt_1
+    by (auto simp: Units_def cong_def mult.commute dest: Totient.totatives_less)
 qed
 
 sublocale units: residues_mult_nat n "units_of R"

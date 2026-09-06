@@ -59,8 +59,8 @@ locale residues_nat =
   defines "G \<equiv> residue_mult_group n"
 begin
 
-lemma order [simp]: "order G = totient n"
-  by (simp add: order_def G_def totient_def residue_mult_group_def)
+lemma order [simp]: "Coset.order G = totient n"
+  by (simp add: Coset.order_def G_def totient_def residue_mult_group_def)
 
 lemma totatives_mod [simp]: "x \<in> totatives n \<Longrightarrow> x mod n = x"
   using n by (intro mod_less) (auto simp: totatives_def intro!: order.not_eq_order_implies_strict)
@@ -322,7 +322,7 @@ lemma (in dcharacter) sum_dcharacter_totatives:
 proof -
   from n have "(\<Sum>x\<in>totatives n. \<chi> x) = (\<Sum>x\<in>carrier G. dc2c \<chi> x)"
     by (intro sum.cong) (auto simp: totatives_def dc2c_def G_def residue_mult_group_def)
-  also have "\<dots> = (if dc2c \<chi> = principal_char G then of_nat (order G) else 0)"
+  also have "\<dots> = (if dc2c \<chi> = principal_char G then of_nat (Coset.order G) else 0)"
     by (rule dc2c.sum_character)
   also have "dc2c \<chi> = principal_char G \<longleftrightarrow> \<chi> = principal_dchar n"
     by (metis c2dc_dc2c dc2c_principal principal_dchar_altdef)
@@ -412,7 +412,7 @@ proof (cases "coprime x n")
     by (rule sum.reindex_bij_betw [OF bij_betw_characters_dcharacters, symmetric])
   also from x have "\<dots> = (\<Sum>\<chi>\<in>characters G. \<chi> (x mod n))"
     by (simp add: c2dc_def)
-  also from x have "\<dots> = (if x mod n = 1 then order G else 0)"
+  also from x have "\<dots> = (if x mod n = 1 then Coset.order G else 0)"
     by (subst sum_characters) (unfold G_def residue_mult_group_def, auto)
   also from n have "x mod n = 1 \<longleftrightarrow> [x = 1] (mod n)"
     by (simp add: cong_def)

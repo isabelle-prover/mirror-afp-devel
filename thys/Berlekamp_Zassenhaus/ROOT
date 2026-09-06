@@ -5,6 +5,7 @@ session Berlekamp_Zassenhaus = Subresultants +
   options [timeout = 1200]
   sessions
     "HOL-Number_Theory"
+    "HOL-Algebra"
     "HOL-Types_To_Sets"
     Polynomial_Factorization
     Polynomial_Interpolation

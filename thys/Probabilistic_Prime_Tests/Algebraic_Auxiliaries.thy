@@ -12,7 +12,7 @@ theory Algebraic_Auxiliaries
     "HOL-Number_Theory.Number_Theory"
 begin
           
-hide_const (open) Divisibility.prime
+hide_const (open) Divisibility.prime Polynomial.order
 
 lemma sum_of_bool_eq_card:
   assumes "finite S"
@@ -36,12 +36,12 @@ lemma (in group) r_coset_is_image: "H #> a = (\<lambda> x. x \<otimes> a) ` H"
 lemma (in group) FactGroup_order:
   assumes "subgroup H G" "finite H"
   shows "order G = order (G Mod H) * card H"
-using lagrange assms unfolding FactGroup_def order_def by simp
+using lagrange assms unfolding FactGroup_def Coset.order_def by simp
 
 corollary (in group) FactGroup_order_div:
   assumes "subgroup H G" "finite H"
-  shows "order (G Mod H) = order G div card H" 
-using assms FactGroup_order subgroupE(2)[OF \<open>subgroup H G\<close>] by (auto simp: order_def)
+  shows "order (G Mod H) = order G div card H"
+  using FactGroup_order assms subgroup_nonempty by force 
 
 lemma group_hom_imp_group_hom_image:
   assumes "group_hom G G h"
@@ -57,15 +57,7 @@ theorem homomorphism_thm:
 lemma is_iso_imp_same_card:
   assumes "H \<cong> G "
   shows "order H = order G"
-proof -
-  from assms obtain h where "bij_betw h (carrier H) (carrier G)"
-    unfolding is_iso_def iso_def
-    by blast
-
-  then show ?thesis
-    unfolding order_def 
-    by (rule bij_betw_same_card)
-qed
+  by (simp add: Coset.order_def assms iso_same_card)
 
 corollary homomorphism_thm_order:
   assumes "group_hom G G h" 
@@ -80,7 +72,7 @@ proof -
   ultimately show ?thesis
     using \<open>group_hom G G h\<close> and group_hom_imp_group_hom_image[OF \<open>group_hom G G h\<close>] 
     unfolding FactGroup_def
-    by (simp add: group.lagrange group_hom.subgroup_kernel order_def)
+    by (simp add: group.lagrange group_hom.subgroup_kernel Coset.order_def)
 qed
 
 lemma (in group_hom) kernel_subset: "kernel G H h \<subseteq> carrier G"
@@ -369,12 +361,6 @@ proof -
 
   ultimately show ?thesis using \<open>1 < m\<close> by blast
 qed
-
-(* TODO Remove *)
-lemma prime_factorization_eqI:
-  assumes "\<And>p. p \<in># P \<Longrightarrow> prime p" "prod_mset P = n"
-  shows   "prime_factorization n = P"
-  using prime_factorization_prod_mset_primes[of P] assms by simp
 
 lemma prime_factorization_prime_elem:
   assumes "prime_elem p"
