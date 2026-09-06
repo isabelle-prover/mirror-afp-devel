@@ -3,7 +3,7 @@ section \<open>Validating the Specification\<close>
 theory Elliptic_Test
 imports
   Elliptic_Locale
-  "HOL-Number_Theory.Residues"
+  "HOL-Algebra.Residues_Algebra"
 begin
 
 subsection \<open>Specialized Definitions for Prime Fields\<close>

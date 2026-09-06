@@ -3,7 +3,7 @@ section "Preliminaries"
 text "Some general preliminaries."
 
 theory Karatsuba_Preliminaries
-  imports Main "Expander_Graphs.Extra_Congruence_Method" "HOL-Number_Theory.Residues"
+  imports Main "Expander_Graphs.Extra_Congruence_Method" "HOL-Algebra.Residues_Algebra"
 begin
 
 lemma prop_ifI:

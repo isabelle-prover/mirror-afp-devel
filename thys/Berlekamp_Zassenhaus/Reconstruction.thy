@@ -21,8 +21,6 @@ imports
   Poly_Mod
 begin
 
-hide_const coeff monom
-
 paragraph \<open>Misc lemmas\<close>
 
 lemma foldr_of_Cons[simp]: "foldr Cons xs ys = xs @ ys" by (induct xs, auto)

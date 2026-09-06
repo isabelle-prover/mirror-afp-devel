@@ -2,7 +2,7 @@ theory Words
   imports  
     More_Bit_Operations_Nat    
     "HOL.Transcendental" 
-    "HOL-Number_Theory.Residues"
+    "HOL-Algebra.Residues_Algebra"
 begin
 
 text \<open>This theory implements the conversion from non-negative integers to a string of "octets"

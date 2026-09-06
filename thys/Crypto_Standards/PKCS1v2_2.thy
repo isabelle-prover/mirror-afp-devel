@@ -1,6 +1,7 @@
 theory PKCS1v2_2
   imports  
     Words
+    "HOL-Number_Theory.Residues"
           
 begin
 

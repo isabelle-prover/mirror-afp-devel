@@ -2,7 +2,8 @@ subsection\<open>Chaum-Pedersen \<open>\<Sigma>\<close>-protocol\<close>
 
 text\<open>The Chaum-Pedersen \<open>\<Sigma>\<close>-protocol \<^cite>\<open>"DBLP:conf/crypto/ChaumP92"\<close> considers a relation of equality of discrete logs.\<close>
 
-theory Chaum_Pedersen_Sigma_Commit imports
+theory Chaum_Pedersen_Sigma_Commit 
+  imports
   Commitment_Schemes
   Sigma_Protocols
   Cyclic_Group_Ext
@@ -188,8 +189,8 @@ next
         by (metis g'_carrier int_pow_diff int_pow_int) 
       also have "... = g' [^] ((order \<G>)*w*c) \<otimes> inv (h' [^] c)"
         by(simp add: nat_pow_pow assms)
-      also have "... = \<one> \<otimes> inv (h' [^] c)" 
-        by (metis g'_carrier nat_pow_one nat_pow_pow pow_order_eq_1)
+      also have "... = \<one> \<otimes> inv (h' [^] c)"
+        using g'_def g'_in_carrier generator_pow_order nat_pow_one nat_pow_pow power_swap by metis 
       ultimately show ?thesis
         by (simp add: assms(1)) 
     qed

@@ -1,5 +1,8 @@
 theory Lemma_2_2                                 
-  imports "HOL-Number_Theory.Number_Theory" "../Coding/Utils"
+  imports 
+    "HOL-Number_Theory.Number_Theory"   
+    "HOL-Algebra.Residues_Algebra"
+    "../Coding/Utils"
 begin
 
 subsection \<open>Increasing the base b appropriately\<close>
@@ -25,7 +28,7 @@ proof -
   have "residues m" 
     using posit residues_def by auto 
   hence "a^totient(nat m) mod m = 1"
-    using  Residues.residues.euler_theorem[of "m" "a"] gcd 
+    using residues.euler_theorem[of "m" "a"] gcd 
     by (metis abs_le_zero_iff abs_one mod_pos_pos_trivial
         residues.m_gt_one residues.res_eq_to_cong verit_la_generic)
   hence 0: "(a^totient(nat m) - 1) mod m = 0 "

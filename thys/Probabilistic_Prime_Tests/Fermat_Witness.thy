@@ -9,6 +9,8 @@ theory Fermat_Witness
   imports Euler_Witness Carmichael_Numbers
 begin
 
+hide_const (open) Polynomial.order
+
 definition divide_out :: "'a :: factorial_semiring \<Rightarrow> 'a \<Rightarrow> 'a \<times> nat" where
   "divide_out p x = (x div p ^ multiplicity p x, multiplicity p x)"
 
@@ -362,7 +364,7 @@ proof -
       using a by (intro imageI) (auto simp: totatives_def)
   qed auto
   also have "\<dots> * card ker = order G"
-    using homomorphism_thm_order[OF h.group_hom_axioms] by (simp add: ker_def order_def)
+    using homomorphism_thm_order[OF h.group_hom_axioms] by (simp add: ker_def Coset.order_def)
   also have "order G < n - 1"
     using totient_less_not_prime[of n] assms by (simp add: order_eq)
   finally have "card ker < (n - 1) div 2"

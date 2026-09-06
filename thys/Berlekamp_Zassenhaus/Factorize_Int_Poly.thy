@@ -11,12 +11,14 @@ text \<open>We combine the factorization algorithm for square-free integer polyn
   a factorization algorithm for integer polynomials which does not make
   any assumptions.\<close>
 theory Factorize_Int_Poly
-imports
+  imports
+  "HOL-Computational_Algebra.Polynomial" (*Beware clashes with Univ_Poly monom and coeff*)
   Berlekamp_Zassenhaus
   Square_Free_Factorization_Int
 begin
 
-hide_const coeff monom
+hide_const (open) up_ring.coeff 
+
 lifting_forget poly.lifting
 
 typedef int_poly_factorization_algorithm = "{alg. 
