@@ -20,7 +20,7 @@ theory LLL_Factorization_Impl
     Berlekamp_Zassenhaus.Berlekamp_Zassenhaus
 begin
 
-hide_const (open) up_ring.coeff up_ring.monom
+hide_const (open) up_ring.coeff 
   Unique_Factorization.factors Divisibility.factors
   Unique_Factorization.factor Divisibility.factor 
   Divisibility.prime

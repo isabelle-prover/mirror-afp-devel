@@ -15,7 +15,6 @@ begin
 
 subsection \<open>Preliminaries\<close>
 
-hide_const (open) up_ring.monom
 hide_const (open) MPoly_Type.monom
 
 lemma map_mpoly_Const: "f 0 = 0 \<Longrightarrow> map_mpoly f (Const i) = Const (f i)" 
