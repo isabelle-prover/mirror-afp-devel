@@ -12,8 +12,6 @@ theory Uniqueness_Hermite_JNF
   Smith_Normal_Form.Finite_Field_Mod_Type_Connection
 begin  
 
-hide_const (open) residues
-
 text \<open>We first define some properties that currently exist in HOL Analysis, but not in
 JNF, namely a predicate for being in echelon form, another one for being in Hermite normal form,
 definition of a row of zeros up to a concrete position, and so on.\<close>
