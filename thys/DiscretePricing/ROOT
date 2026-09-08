@@ -2,7 +2,6 @@ chapter AFP
 
 session "DiscretePricing" = "HOL-Probability" +
   options [timeout = 600]
-
   theories
     Generated_Subalgebra
     Filtration
@@ -12,7 +11,6 @@ session "DiscretePricing" = "HOL-Probability" +
     Infinite_Coin_Toss_Space
     Fair_Price
     CRR_Model
-	Option_Price_Examples
-
+    Option_Price_Examples
   document_files
     "root.tex"
