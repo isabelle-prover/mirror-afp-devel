@@ -2,6 +2,8 @@ theory Padic_Semialgebraic_Function_Ring
   imports Padic_Field_Powers
 begin
 
+hide_const (open) Polynomial.lead_coeff
+
 section\<open>Rings of Semialgebraic Functions\<close>
 
 text\<open>

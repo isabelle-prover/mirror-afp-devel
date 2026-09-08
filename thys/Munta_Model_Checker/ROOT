@@ -62,7 +62,7 @@ session Munta_Model_Checker = Munta_Base +
     "Deadlock/Deadlock_Impl"
     "Deadlock/Deadlock_Checking"
     "Model_Checking/Simple_Network_Language_Export_Code"
-  theories [condition = ISABELLE_MLTON]
+  theories [condition = "$ISABELLE_MLTON"]
     "Munta_MLton/Munta_Compile_MLton"
   document_files
     "root.tex"

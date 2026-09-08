@@ -17,7 +17,7 @@ session Munta_Certificate_Checker = Munta_Model_Checker +
     "Certification/Normalized_Zone_Semantics_Certification_Impl2"
   theories
     Simple_Network_Language_Certificate_Code
-  theories [condition = ISABELLE_MLTON]
+  theories [condition = "$ISABELLE_MLTON"]
     Munta_Certificate_Compile_MLton
     Munta_Certificate_Compile_Poly
   document_files

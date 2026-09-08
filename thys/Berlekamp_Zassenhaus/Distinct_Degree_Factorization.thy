@@ -6,7 +6,8 @@
 *)
 section \<open>Distinct Degree Factorization\<close>
 theory Distinct_Degree_Factorization
-imports 
+  imports 
+  "HOL-Algebra.Multiplicative_Group"
   Finite_Field
   Polynomial_Factorization.Square_Free_Factorization 
   Berlekamp_Type_Based

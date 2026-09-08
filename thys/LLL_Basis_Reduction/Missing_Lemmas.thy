@@ -23,7 +23,7 @@ theory Missing_Lemmas
     Berlekamp_Zassenhaus.Berlekamp_Hensel (* for unique_factorization_m_factor *)
 begin
 
-hide_const(open) module.smult up_ring.monom up_ring.coeff
+hide_const(open) module.smult up_ring.coeff
 
 (* missing lemma on logarithms *)
 lemma log_prod: assumes "0 < a" "a \<noteq> 1" "\<And> x. x \<in> X \<Longrightarrow> 0 < f x" 

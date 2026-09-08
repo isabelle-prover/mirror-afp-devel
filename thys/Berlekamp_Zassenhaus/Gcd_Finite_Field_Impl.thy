@@ -14,7 +14,11 @@ theory Gcd_Finite_Field_Impl
 imports 
   Suitable_Prime
   "HOL-Library.Code_Target_Int" (* to be able to efficiently primality of medium large numbers *)
+  "HOL-Computational_Algebra.Polynomial" (*Beware clashes with Univ_Poly monom and coeff*)
+
 begin
+
+hide_const (open) module.smult
 
 definition coprime_approx_main :: "int \<Rightarrow> 'i arith_ops_record \<Rightarrow> int poly \<Rightarrow> int poly \<Rightarrow> bool" where
   "coprime_approx_main p ff_ops f g = (gcd_poly_i ff_ops (of_int_poly_i ff_ops (poly_mod.Mp p f))

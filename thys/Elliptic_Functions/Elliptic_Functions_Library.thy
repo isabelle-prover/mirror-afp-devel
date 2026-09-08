@@ -7,6 +7,12 @@ imports
   "Dirichlet_Series.Dirichlet_Series_Analysis"
 begin
 
+lemma exp_sum_mset: "exp (sum_mset M :: 'a :: {real_normed_field, banach}) = (\<Prod>x\<in>#M. exp x)"
+  by (induction M) (simp_all add: exp_add)
+
+lemma exp_sum_mset': "exp (\<Sum>x\<in>#M. f x :: 'a :: {real_normed_field, banach}) = (\<Prod>x\<in>#M. exp (f x))"
+  by (induction M) (simp_all add: exp_add)
+
 (* TODO: Move? *)
 lemma continuous_within_poly2:
   fixes f g :: "'a :: t2_space \<Rightarrow> 'b :: {real_normed_field}"

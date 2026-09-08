@@ -1,6 +1,6 @@
 theory Chevalley_Warning
   imports
-    "HOL-Number_Theory.Residues"
+    "HOL-Algebra.Residues_Algebra"
     "HOL-Computational_Algebra.Polynomial"
     "HOL-Library.FuncSet"
     "Polynomials.Polynomials"

@@ -359,32 +359,112 @@ lemma jacobi_theta_00_01_10_nw_conv_dedekind_eta:
   using t by (simp add: jacobi_theta_00_nw_conv_dedekind_eta' field_simps eval_nat_numeral
                 jacobi_theta_01_nw_conv_dedekind_eta jacobi_theta_10_nw_conv_dedekind_eta)
 
+text \<open>
+  An important corollary of this is that the modular discriminant \<open>\<Delta>\<close> is, up to a constant factor,
+  the 24-th power of \<open>\<eta>\<close>. This can also be shown easily using the valence formula for modular forms, 
+  but given all the facts we already have the following is even easier.
+\<close>
+corollary modular_discr_conv_dedekind_eta:
+  assumes z: "Im z > 0"
+  shows   "modular_discr z = (2 * of_real pi) ^ 12 * \<eta> z ^ 24"
+  using z by (simp add: modular_discr_conv_theta jacobi_theta_00_01_10_nw_conv_dedekind_eta)
+
+corollary (in complex_lattice_Im_pos) discr_conv_dedekind_eta:
+  "discr = (2 * of_real pi / \<omega>1) ^ 12 * \<eta> \<tau> ^ 24"
+  using modular_discr_conv_dedekind_eta[of \<tau>] Im_ratio_pos
+  by (simp add: discr_eq_modular_discr ratio_def field_simps)
+
+lemma theta_11_coeffs_3_conv_dedekind_eta:
+  assumes t: "Im t > 0"
+  shows "theta_11_coeffs 3 t = 3 / (4 * pi ^ 2) * dedekind_eta t ^ 3 * Eisenstein_G 2 t"
+proof -
+  note [derivative_intros] = has_field_derivative_dedekind_eta
+
+  have "(theta_11_coeffs 1 has_field_derivative (\<i> * pi * theta_11_coeffs (1+2) t)) (at t)"
+    by (intro has_field_derivative_theta_11_coeffs t)
+  also have "?this \<longleftrightarrow> ((\<lambda>t. dedekind_eta t ^ 3) 
+                         has_field_derivative (\<i> * pi * theta_11_coeffs (1+2) t)) (at t)"
+  proof (rule DERIV_cong_ev)
+    have "eventually (\<lambda>w. w \<in> {w. Im w > 0}) (nhds t)"
+      by (intro eventually_nhds_in_open open_halfspace_Im_gt) (use t in auto)
+    thus "eventually (\<lambda>w. theta_11_coeffs 1 w = dedekind_eta w ^ 3) (nhds t)"
+    proof eventually_elim
+      case (elim w)
+      hence "theta_11_coeffs 1 w = -deriv (\<lambda>z. jacobi_theta_11 z w) 0 / (2 * pi)"
+        using higher_deriv_jacobi_theta_11_conv_theta_11_coeffs[of w 1] by (auto simp: field_simps)
+      also have "\<dots> = jacobi_theta_00 0 w * jacobi_theta_01 0 w * jacobi_theta_10 0 w / 2"
+        by (subst deriv_jacobi_theta_11_at_0) (use elim in auto)
+      also have "\<dots> = dedekind_eta w ^ 3"
+        by (subst jacobi_theta_00_01_10_nw_conv_dedekind_eta) (use elim in auto)
+      finally show ?case .
+    qed 
+  qed auto
+  finally have "((\<lambda>t. dedekind_eta t ^ 3) has_field_derivative (\<i> * pi * theta_11_coeffs 3 t)) (at t)"
+    by (simp add: eval_nat_numeral)
+  moreover have "((\<lambda>t. dedekind_eta t ^ 3) has_field_derivative 
+                   (3 / (4 * pi) * \<i> * dedekind_eta t ^ 3 * Eisenstein_G 2 t)) (at t)"
+    using t by (auto intro!: derivative_eq_intros 
+                     simp: dedekind_eta_nonzero field_simps power_numeral_reduce)
+  ultimately have "\<i> * pi * theta_11_coeffs 3 t = 3 / (4 * pi) * \<i> * dedekind_eta t ^ 3 * Eisenstein_G 2 t"
+    by (rule DERIV_unique)
+  thus ?thesis
+    by (simp add: field_simps power2_eq_square)
+qed
+
+lemma (in complex_lattice_Im_pos) theta_11'_conv_dedekind_eta:
+  "theta_11' 0 = -2 * pi / \<omega>1 * \<eta> \<tau> ^ 3"
+proof -
+  have "theta_11' 0 = -of_real pi * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0)) / \<omega>1"
+    by (simp add: theta_11'_0_eq)
+  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0) * \<theta>\<^sub>1\<^sub>0(0) = 2 * \<eta> \<tau> ^ 3"
+    using jacobi_theta_00_01_10_nw_conv_dedekind_eta[of \<tau>] Im_ratio_pos
+    by (simp add: theta_00_def theta_01_def theta_10_def)
+  finally show ?thesis
+    by simp
+qed
+
 
 text \<open>
-  Since theta nullwert functions can be expressed as quotients of Dedekind's $\eta$ function,
-  we also get the following deep connection between the discriminant of a complex lattice
-  and $\eta$.
-
-  This can also alternatively be derived very elegantly using modular forms. More precisely: 
-  $\eta^24$ and the modular discriminant are both cusp forms of weight 12 and that the space of
-  cusp forms of weight 12 is one-dimensional. However, since we already have access to the theta
-  functions and the above connections to the lattice properties, this proof is very simple now as
-  well, without using the heavy tooling of modular forms.
+  Combining this with our previous formula relating $\vartheta_{11}'''(0)$ to $\eta(\omega_1)$
+  (where $\eta$ stands for the Weierstra\ss\ $\eta$ function, not the Dedekind $\eta$ function),
+  we can now easily obtain identities relating $\eta(\omega_1)$ and $\eta(\omega_2)$ to $G_2$:
 \<close>
-theorem (in complex_lattice_Im_pos) discr_conv_dedekind_eta:
-  "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
+context complex_lattice_Im_pos
+begin
+
+theorem weierstrass_eta1_eq: "weierstrass_eta \<omega>1 = \<omega>1 * G 2"
 proof -
-  have "discr = (4 * (\<e>\<^sub>1 - \<e>\<^sub>2) * (\<e>\<^sub>1 - \<e>\<^sub>3) * (\<e>\<^sub>3 - \<e>\<^sub>2))\<^sup>2"
-    by (simp add: discr_altdef power2_commute power_mult_distrib)
-  also have "\<dots> = 16 * (pi / \<omega>1) ^ 12 * (\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0)) ^ 8"
-    unfolding discr_altdef unfolding e12_conv_theta e13_conv_theta e32_conv_theta
-    by (simp add: power_mult_distrib power_divide mult_ac)
-  also have "\<theta>\<^sub>0\<^sub>0(0) * \<theta>\<^sub>0\<^sub>1(0)* \<theta>\<^sub>1\<^sub>0(0) = 2 * dedekind_eta \<tau> ^ 3 "
-    by (simp add: theta_00_def theta_01_def theta_10_def 
-                  jacobi_theta_00_01_10_nw_conv_dedekind_eta Im_ratio_pos)
-  finally show "discr = 4096 * (pi / \<omega>1) ^ 12 * dedekind_eta \<tau> ^ 24"
-    by (simp add: power_mult_distrib)
+  have "-\<theta>\<^sub>1\<^sub>1'(0) * weierstrass_eta \<omega>1 / (2 * \<omega>1) = fps_nth fps_theta_11 3"
+    by (simp add: fps_theta_11_3)
+  also have "\<dots> = of_real pi / \<omega>1 * dedekind_eta \<tau> ^ 3 * eisenstein_series 2"
+    using Im_ratio_pos
+    by (simp add: fps_theta_11_conv_theta_11_coeffs theta_11_coeffs_3_conv_dedekind_eta fact_numeral 
+                  power_numeral_reduce field_simps eisenstein_series_eq_Eisenstein_G ratio_def)
+  finally show ?thesis
+    by (simp add: field_simps Im_ratio_pos theta_11'_conv_dedekind_eta)
 qed
+
+corollary weierstrass_eta2_eq: "weierstrass_eta \<omega>2 = \<omega>2 * G 2 - 2 * pi * \<i> / \<omega>1"
+proof -
+  have "weierstrass_eta \<omega>2 = (\<omega>2 * weierstrass_eta \<omega>1 - 2 * pi * \<i>) / \<omega>1"
+    using legendre_relation Im_ratio_pos by (auto simp: field_simps ratio_def)
+  also have "\<dots> = \<omega>2 * G 2 - 2 * pi * \<i> / \<omega>1"
+    by (auto simp: weierstrass_eta1_eq field_simps)
+  finally show ?thesis .
+qed
+
+text \<open>
+  By linearity, we get the following expression for $\eta(\omega)$ for an arbitrary 
+  lattice point $\omega$.
+\<close>
+corollary weierstrass_eta_of_\<omega>12_coords':
+  fixes a b :: int
+  defines "\<omega> \<equiv> of_\<omega>12_coords (of_int a, of_int b)"
+  shows "weierstrass_eta \<omega> = eisenstein_series 2 * \<omega> - 2 * of_int b * of_real pi * \<i> / \<omega>1"
+  unfolding weierstrass_eta_of_\<omega>12_coords \<omega>_def
+  by (simp add: weierstrass_eta1_eq weierstrass_eta2_eq ring_distribs mult_ac of_\<omega>12_coords_def)
+
+end
 
 
 
@@ -498,7 +578,7 @@ proof -
     using t by (simp add: jacobi_theta_10_def dedekind_eta_conv_jacobi_theta_01)
   finally show ?thesis
     by simp
-qed
+qed 
 
 
 subsection \<open>General transformation law\<close>

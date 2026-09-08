@@ -4,7 +4,8 @@
 *)
 section \<open>The Voronoi congruence\<close>
 theory Voronoi_Congruence
-  imports Kummer_Library Rat_Congruence
+  imports Kummer_Library Rat_Congruence "HOL-Algebra.Residues_Algebra"
+
 begin
 
 unbundle bernoulli_syntax

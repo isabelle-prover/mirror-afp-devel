@@ -7,17 +7,16 @@
 subsection \<open>Record Based Version\<close>
 theory Finite_Field_Factorization_Record_Based
 imports
+  "HOL-Types_To_Sets.Types_To_Sets"
+  "HOL-Computational_Algebra.Polynomial" (*Beware clashes with Univ_Poly monom and coeff*)
   Finite_Field_Factorization 
   Matrix_Record_Based
   Poly_Mod_Finite_Field_Record_Based
-  "HOL-Types_To_Sets.Types_To_Sets"
   Jordan_Normal_Form.Matrix_IArray_Impl
   Jordan_Normal_Form.Gauss_Jordan_IArray_Impl  
   Polynomial_Interpolation.Improved_Code_Equations
   Polynomial_Factorization.Missing_List
 begin
-
-hide_const(open) monom coeff
 
 text \<open>Whereas @{thm finite_field_factorization} provides a result for a polynomials over GF(p),
   we now develop a theorem which speaks about integer polynomials modulo p.\<close>
@@ -420,7 +419,7 @@ proof (induct f g d res arbitrary: F G Res rule: dist_degree_factorize_main.indu
       note simp = simp[unfolded this if_False]
       let ?P = "power_poly_f_mod_i ff_ops (\<lambda>f. mod_field_poly_i ff_ops f V) W (nat p)" 
       let ?G = "gcd_poly_i ff_ops (minus_poly_i ff_ops ?P [?ze, ?on]) V" 
-      let ?g = "gcd (w ^ CARD('a) mod v - monom 1 1) v" 
+      let ?g = "gcd (w ^ CARD('a) mod v - Polynomial.monom 1 1) v" 
       define G where "G = ?G" 
       define g where "g = ?g"
       note simp = simp[unfolded Let_def, folded G_def g_def]

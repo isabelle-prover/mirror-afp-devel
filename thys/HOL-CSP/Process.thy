@@ -10,6 +10,7 @@
  *
  * Copyright (c) 2009 Université Paris-Sud, France
  * Copyright (c) 2025 Université Paris-Saclay, France
+ * Copyright (c) 2026 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -63,7 +64,7 @@ default_sort type
 section\<open>Pre-Requisite: Basic Traces and tick-Freeness\<close>
 
 text\<open>The denotational semantics of CSP assumes a distinguishable
-special event, called \verb+tick+ and written $\checkmark$, that is required
+special event, called \<^verbatim>\<open>tick\<close> and written $\checkmark$, that is required
 to occur only in the end of traces in order to signalize successful termination of
 a process. (In the original text of Hoare, this treatment was more
 liberal and lead to foundational problems: the process invariant
@@ -111,30 +112,6 @@ lemma range_tick_Un_range_ev_is_UNIV [simp] : \<open>range tick \<union> range e
 text \<open>The generalization is done in a very straightforward way:
       the old version is recovered by considering \<^typ>\<open>('a, unit) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>.\<close>
 
-(* 
-typedef ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>UNIV :: ('a + 'r) set\<close>
-  morphisms event_of_sum sum_of_event by simp
-
-setup_lifting type_definition_event
-
-lift_definition ev :: \<open>'a \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> is \<open>\<lambda>a. Inl a\<close> .
-lift_definition tick :: \<open>'r \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>\<checkmark>'(_')\<close>) is \<open>\<lambda>r. Inr r\<close> .
-
-free_constructors event for is_ev : ev of_ev | is_tick : tick of_tick
-proof transfer
-  show \<open>(\<And>x1. y = Inl x1 \<Longrightarrow> P) \<Longrightarrow> (\<And>x2. y = Inr x2 \<Longrightarrow> P) \<Longrightarrow> P\<close> for y :: \<open>'a + 'b\<close> and P
-    by (metis isl_def sum.collapse(2))
-next
-  show \<open>ev x = ev y \<longleftrightarrow> x = y\<close> for x y :: 'a by (metis ev.rep_eq sum.inject(1))
-next
-  show \<open>\<checkmark>(x) = \<checkmark>(y) \<longleftrightarrow> x = y\<close> for x y :: 'r by (metis sum.inject(2) tick.rep_eq)
-next
-  show \<open>ev x \<noteq> \<checkmark>(y)\<close> for x :: 'a and y :: 'r
-    by (metis Inl_Inr_False ev.rep_eq tick.rep_eq)
-qed
-
-this looks more natural, but does not work fine with the typedef of process
- *)
 
 lemma not_is_ev   [simp] : \<open>\<not> is_ev   e \<longleftrightarrow> is_tick e\<close>
   and not_is_tick [simp] : \<open>\<not> is_tick e \<longleftrightarrow> is_ev   e\<close>
@@ -226,8 +203,8 @@ lemma suffixes_fin: \<open>finite {t. \<exists>t1. s = t1 @ t}\<close>
 text\<open>For the process invariant, it is a key element to
 reduce the notion of traces to traces that may only contain
 one tick event at the very end. This is captured by the definition
-of the predicate \verb+front_tickFree+ and its stronger version
-\verb+tickFree+. Here is the theory of this concept.\<close>
+of the predicate \<^verbatim>\<open>front_tickFree\<close> and its stronger version
+\<^verbatim>\<open>tickFree\<close>. Here is the theory of this concept.\<close>
 
 definition tickFree :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (\<open>tF\<close>)
   where \<open>tF s \<equiv> range tick \<inter> set s = {}\<close>
@@ -401,72 +378,6 @@ lemma is_process1 : \<open>([], {}) \<in> FAILURES P\<close>
   using \<open>is_process P\<close> unfolding is_process_def by metis+
 
 
-(* 
-lemma is_process3_S_pref: \<open>\<lbrakk>is_process P; (t, {}) \<in> FAILURES P; s \<le> t\<rbrakk> \<Longrightarrow> (s, {}) \<in> FAILURES P\<close>
-  by (metis prefixE is_process3)
-
-lemma is_process4: \<open>is_process P \<Longrightarrow> \<forall>s X Y. (s, Y) \<notin> FAILURES P \<or> \<not> X \<subseteq> Y \<or> (s, X) \<in> FAILURES P\<close>
-  by (simp only: is_process_spec) simp
-
-lemma is_process4_S: \<open>\<lbrakk>is_process P; (s, Y) \<in> FAILURES P; X \<subseteq> Y\<rbrakk> \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
-  by (drule is_process4, auto)
-
-lemma is_process4_S1: \<open>\<lbrakk>is_process P; x \<in> FAILURES P; X \<subseteq> snd x\<rbrakk> \<Longrightarrow> (fst x, X) \<in> FAILURES P\<close>
-  by (drule is_process4_S, auto)
-
-lemma is_process5:
-  \<open>is_process P \<Longrightarrow> \<forall>s X Y. (s, X) \<in> FAILURES P \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> FAILURES P)
-                            \<longrightarrow> (s, X \<union> Y) \<in> FAILURES P\<close>
-  by (drule is_process_spec[THEN iffD1],metis)
-
-lemma is_process5_S:
-  \<open>\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; \<forall>c. c \<in> Y \<longrightarrow> (sa @ [c], {}) \<notin> FAILURES P\<rbrakk>
-   \<Longrightarrow> (sa, X \<union> Y) \<in> FAILURES P\<close>
-  by (drule is_process5, metis)
-
-lemma is_process5_S1:
-  \<open>\<lbrakk>is_process P; (sa, X) \<in> FAILURES P; (sa, X \<union> Y) \<notin> FAILURES P\<rbrakk>
-   \<Longrightarrow> \<exists>c. c \<in> Y \<and> (sa @ [c], {}) \<in> FAILURES P\<close>
-  by (erule contrapos_np, drule is_process5_S, simp_all)
-
-lemma is_process6: \<open>is_process P \<Longrightarrow> \<forall>s X. (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P\<close>
-  by (drule is_process_spec[THEN iffD1], metis)
-
-lemma is_process6_S: \<open>is_process P \<Longrightarrow> (s @ [\<checkmark>(r)], {}) \<in> FAILURES P \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> FAILURES P\<close>
-  by (simp add: is_process6)
-
-lemma is_process7:
-  \<open>is_process P \<Longrightarrow> \<forall> s t. s \<notin> DIVERGENCES P \<or> \<not> tickFree s \<or> \<not> front_tickFree t \<or> s @ t \<in> DIVERGENCES P\<close>
-  by (drule is_process_spec[THEN iffD1], metis)
-
-lemma is_process7_S:
-  \<open>is_process P \<Longrightarrow> s \<in> DIVERGENCES P \<Longrightarrow> tickFree s \<Longrightarrow>
-   front_tickFree t \<Longrightarrow> s @ t \<in> DIVERGENCES P\<close>
-  by (drule is_process7, metis)
-
-lemma is_process8: \<open>is_process P \<Longrightarrow> \<forall>s X. s \<notin> DIVERGENCES P \<or> (s, X) \<in> FAILURES P\<close>
-  by (drule is_process_spec[THEN iffD1], metis)
-
-lemma is_process8_S: \<open>is_process P \<Longrightarrow> s \<in> DIVERGENCES P \<Longrightarrow> (s, X) \<in> FAILURES P\<close>
-  by (drule is_process8, metis)
-
-lemma is_process9: \<open>is_process P \<Longrightarrow> \<forall>s. s @ [tick] \<notin> DIVERGENCES P \<or> s \<in> DIVERGENCES P\<close>
-  by (drule is_process_spec[THEN iffD1], metis)
-
-lemma is_process9_S: \<open>is_process P \<Longrightarrow> s @ [tick] \<in> DIVERGENCES P \<Longrightarrow> s \<in> DIVERGENCES P\<close>
-  by (drule is_process9, metis)
-
-lemma Failures_implies_Traces: \<open> \<lbrakk>is_process P; (s, X) \<in> FAILURES P\<rbrakk> \<Longrightarrow> s \<in> TRACES P\<close>
-  by( simp add: TRACES_def, metis)
-
-lemma is_process5_sing: 
-  \<open>is_process P \<Longrightarrow> (s, {x}) \<notin> FAILURES P \<Longrightarrow> (s, {}) \<in> FAILURES P \<Longrightarrow> (s @ [x], {}) \<in> FAILURES P\<close>
-  by (drule_tac X = \<open>{}\<close> in is_process5_S1, auto)
-
-lemma is_process5_singT: 
-  \<open>is_process P \<Longrightarrow> (s, {x}) \<notin> FAILURES P \<Longrightarrow> (s, {}) \<in> FAILURES P \<Longrightarrow> s @ [x] \<in> TRACES P\<close>
-  by (drule is_process5_sing) (auto simp add: TRACES_def)
- *)
 
 lemma trace_with_Tick_imp_tickFree_front :
   \<open>is_process P \<Longrightarrow> t @ [\<checkmark>(r)] \<in> TRACES P \<Longrightarrow> tF t\<close>
@@ -487,6 +398,9 @@ text \<open>Again, the old version without parameterized termination can be reco
       by considering \<^typ>\<open>('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>.\<close>
 
 type_synonym 'a process = \<open>('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+
+translations
+  (type) "'a process"  \<rightleftharpoons> (type)  "('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
 
 setup_lifting type_definition_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 
@@ -565,7 +479,7 @@ lemma process_charn:
 
 
 
-text\<open> split of \verb+is_processT+: \<close>
+text\<open> split of \<^verbatim>\<open>is_processT\<close>: \<close>
 
 lemma is_processT1          : \<open>([], {}) \<in> \<F> P\<close>
   and is_processT1_TR       : \<open>[] \<in> \<T> P\<close>
@@ -606,87 +520,6 @@ lemma div_butlast_when_non_tickFree_iff :
     (metis front_tickFree_Cons_iff is_processT7 is_processT9 is_tick_def)
 
 
-(* lemma is_processT8_Pair: \<open>fst s \<in> \<D> P \<Longrightarrow> s \<in> \<F> P\<close>
-  by (metis eq_fst_iff is_processT8)
-
-lemma is_processT9: \<open>s @ [tick] \<in> \<D> P \<Longrightarrow> s \<in> \<D> P\<close>
-  by (insert process_charn[of P], metis)
-
-  by (simp add:process_charn)
-
-lemma is_processT2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> front_tickFree s\<close>
-by(simp add:process_charn)
-
-lemma is_processT2_TR : \<open>s \<in> \<T> P \<Longrightarrow> front_tickFree s\<close>
-  by (simp add: Traces.rep_eq Traces_def TRACES_def Failures.rep_eq[symmetric])
-     (use is_processT2 in blast)
-  
-(* 
-lemma is_proT2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tick \<notin> set (tl (rev s))\<close>
-  using front_tickFree_def is_processT2 tickFree_def by blast
- *)
-
-lemma is_processT3 : \<open>(s @ t, {}) \<in> \<F> P \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
-  by (metis process_charn)
-
-lemma is_processT3_S_pref : \<open>(t, {}) \<in> \<F> P \<Longrightarrow> s \<le> t \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
-  by (metis is_processT3 le_list_def)
-
-
-lemma  is_processT4 : \<open>(s, Y) \<in> \<F> P \<Longrightarrow> X \<subseteq> Y \<Longrightarrow> (s, X) \<in> \<F> P\<close>
-  by (meson process_charn)
-
-lemma is_processT4_S1 : \<open>x \<in> \<F> P \<Longrightarrow> X \<subseteq> snd x \<Longrightarrow> (fst x, X) \<in> \<F> P\<close>
-  by (metis is_processT4 prod.collapse)
-
-lemma is_processT5:
-  \<open>(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, X \<union> Y) \<in> \<F> P\<close>
-  by (simp add: process_charn)
-
-lemma is_processT5_S1: 
-  \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> Y) \<notin> \<F> P \<Longrightarrow> \<exists>c. c \<in> Y \<and> (s @ [c], {}) \<in> \<F> P\<close>
-  by (erule contrapos_np, simp add: is_processT5)
-
-lemma is_processT5_S2: \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<in> \<F> P\<close>
-  using is_processT5_S1 by blast
-
-lemma is_processT5_S2a: \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
-  using is_processT5_S2 by blast
-
-lemma  is_processT5_S3: \<open>(s, {}) \<in> \<F> P \<Longrightarrow> (s @ [c], {}) \<notin> \<F> P \<Longrightarrow> (s, {c}) \<in> \<F> P\<close>
-  using is_processT5_S2a by auto
-
-   
-lemma is_processT5_S4: \<open>(s, {}) \<in> \<F> P \<Longrightarrow> (s, {c}) \<notin> \<F> P \<Longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
-  by (erule contrapos_np, simp add: is_processT5_S3)
-
-
-lemma is_processT5_S5:
-  \<open>(s, X) \<in> \<F> P \<Longrightarrow> \<forall>c. c \<in> Y \<longrightarrow> (s, X \<union> {c}) \<notin> \<F> P \<Longrightarrow>
-    \<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<in> \<F> P\<close>
-  by (simp add: is_processT5_S2a)
-
-lemma is_processT5_S6: \<open>([], {c}) \<notin> \<F> P \<Longrightarrow> ([c], {}) \<in> \<F> P\<close>
-  by (metis append_self_conv2 is_processT1 is_processT5_S4)
-
-lemma is_processT6: \<open>(s @ [tick], {}) \<in> \<F> P \<Longrightarrow> (s, X - {tick}) \<in> \<F> P\<close>
-  by (simp add: process_charn)
-
-lemma is_processT7: \<open>s \<in> \<D> P \<Longrightarrow> tickFree s \<Longrightarrow> front_tickFree t \<Longrightarrow> s @ t \<in> \<D> P\<close>
-  by (insert process_charn[of P], metis)
-
-lemma is_processT8: \<open>s \<in> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P\<close>
-  by (insert process_charn[of P], metis)
-
-lemma is_processT8_Pair: \<open>fst s \<in> \<D> P \<Longrightarrow> s \<in> \<F> P\<close>
-  by (metis eq_fst_iff is_processT8)
-
-lemma is_processT9: \<open>s @ [tick] \<in> \<D> P \<Longrightarrow> s \<in> \<D> P\<close>
-  by (insert process_charn[of P], metis)
-
-lemma is_processT9_S_swap: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [tick] \<notin> \<D> P\<close>
-  by (erule contrapos_nn, simp add: is_processT9)
- *)
 
 section\<open> Some Consequences of the Process Characterization\<close>
 
@@ -699,42 +532,6 @@ lemma T_F: \<open>s \<in> \<T> P \<Longrightarrow> (s, {}) \<in> \<F> P\<close>
 lemmas D_T = is_processT8 [THEN F_T]
 
 lemmas is_processT4_empty [elim!] = F_T [THEN T_F]
-
-
-(* 
-lemma no_Trace_implies_no_Failure: \<open>s \<notin> \<T> P \<Longrightarrow> (s, {}) \<notin> \<F> P\<close>
-  by (simp add: T_F_spec)
-
-lemmas  NT_NF = no_Trace_implies_no_Failure
-
-
-
-lemma D_T_subset : \<open>\<D> P \<subseteq> \<T> P\<close> by(auto intro!:D_T)
-
-lemma NF_ND : \<open>(s, X) \<notin> \<F> P \<Longrightarrow> s \<notin> \<D> P\<close>
-  by (erule contrapos_nn, simp add: is_processT8)
-
-lemmas NT_ND = D_T_subset[THEN Set.contra_subsetD]
-
-lemma F_T1: \<open>a \<in> \<F> P \<Longrightarrow> fst a \<in> \<T> P\<close>
-  by (rule_tac X=\<open>snd a\<close> in F_T, simp)
-
-
-
-lemma NF_NT: \<open>(s, {}) \<notin> \<F> P \<Longrightarrow> s \<notin> \<T> P\<close>
-  by (erule contrapos_nn, simp only: T_F)
-
-lemma  is_processT6_S1: \<open>\<checkmark>(r) \<notin> X \<Longrightarrow> (s @ [\<checkmark>(r)], {}) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> P\<close>
-  by (metis Diff_insert_absorb is_processT6)
-
-lemmas is_processT3_ST = T_F [THEN is_processT3, THEN F_T]
-
-lemmas is_processT3_ST_pref = T_F [THEN is_processT3_S_pref, THEN F_T]
-
-lemmas is_processT3_SR = F_T [THEN T_F, THEN is_processT3]
- *)
-
-
 
 
 lemma is_processT5_S7: \<open>t \<in> \<T> P \<Longrightarrow> (t, A) \<notin> \<F> P \<Longrightarrow> \<exists>x. x \<in> A \<and> t @ [x] \<in> \<T> P\<close>
@@ -774,15 +571,6 @@ lemma append_T_imp_tickFree:  \<open>t @ s \<in> \<T> P \<Longrightarrow> s \<no
 lemma tick_T_F: \<open>t @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (t @ [\<checkmark>(r)], X) \<in> \<F> P\<close>
   by (meson append_T_imp_tickFree is_processT5_S7 list.discI non_tickFree_tick tickFree_append_iff)
 
-(* corollary append_single_T_imp_tickFree : \<open>t @ [a] \<in> \<T> P \<Longrightarrow> tickFree t\<close>
-  by (simp add: append_T_imp_tickFree) *)
-
-(* lemma F_subset_imp_T_subset: \<open>\<F> P \<subseteq> \<F> Q \<Longrightarrow> \<T> P \<subseteq> \<T> Q\<close>
-  by (auto simp: subsetD T_F_spec[symmetric]) *)
-
-(* lemma is_processT6_S2: \<open>\<checkmark>(r) \<notin> X \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> ([], X) \<in> \<F> P\<close>
-  by (metis Diff_insert_absorb append_Nil is_processT6_TR) *)
-
 lemma is_processT9_tick: \<open>[\<checkmark>(r)] \<in> \<D> P \<Longrightarrow> ftF s \<Longrightarrow> s \<in> \<D> P\<close>
   by (metis append_Nil is_processT7 is_processT9 tickFree_Nil)
 
@@ -793,13 +581,13 @@ lemma T_nonTickFree_imp_decomp: \<open>t \<in> \<T> P \<Longrightarrow> \<not> t
 
 section\<open> Process Approximation is a Partial Ordering, a Cpo, and a Pcpo \<close>
 text\<open>The Failure/Divergence Model of CSP Semantics provides two orderings:
-The \emph{approximation ordering} (also called \emph{process ordering})
+The \<^emph>\<open>approximation ordering\<close> (also called \<^emph>\<open>process ordering\<close>)
 will be used for giving semantics to recursion (fixpoints) over processes,
-the \emph{refinement ordering} captures our intuition that a more concrete
+the \<^emph>\<open>refinement ordering\<close> captures our intuition that a more concrete
 process is more deterministic and more defined than an abstract one.
 
 We start with the key-concepts of the approximation ordering, namely
-the predicates $min\_elems$ and \<open>\<R>\<^sub>a\<close> (abbreviating \emph{refusals after}).
+the predicates $min\_elems$ and \<open>\<R>\<^sub>a\<close> (abbreviating \<^emph>\<open>refusals after\<close>).
 The former provides just a set of minimal elements from a given set
 of elements of type-class $ord$ \ldots \<close>
 
@@ -864,7 +652,7 @@ instantiation
   process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  ::  (type, type) below     
 begin
 text\<open> declares approximation ordering $\_ \sqsubseteq \_$ also written 
-        \verb+_ << _+. \<close>
+        \<^verbatim>\<open>_ << _\<close>. \<close>
 
 
 definition le_approx_def : \<open>P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and>
@@ -935,27 +723,25 @@ qed
 
 
 text\<open> At this point, we inherit quite a number of facts from the underlying
-HOLCF theory, which comprises a library of facts such as \verb+chain+,
-\verb+directed+(sets), upper bounds and least upper bounds, etc. \<close>
+HOLCF theory, which comprises a library of facts such as \<^verbatim>\<open>chain\<close>,
+\<^verbatim>\<open>directed\<close>(sets), upper bounds and least upper bounds, etc. \<close>
 
 text\<open>
 Some facts from the theory of complete partial orders:
-\begin{itemize}
-\item \verb+po_class.chainE+ : @{thm po_class.chainE}
-\item \verb+po_class.chain_mono+ : @{thm po_class.chain_mono}
-\item \verb+po_class.is_ubD+ : @{thm po_class.is_ubD}
-\item \verb+po_class.ub_rangeI+ : \\ @{thm po_class.ub_rangeI}
-\item \verb+po_class.ub_imageD+ : @{thm po_class.ub_imageD}
-\item \verb+po_class.is_ub_upward+ : @{thm po_class.is_ub_upward}
-\item \verb+po_class.is_lubD1+ : @{thm po_class.is_lubD1}
-\item \verb+po_class.is_lubI+ : @{thm po_class.is_lubI}
-\item \verb+po_class.is_lub_maximal+ : @{thm po_class.is_lub_maximal}
-\item \verb+po_class.is_lub_lub+ : @{thm po_class.is_lub_lub}
-\item \verb+po_class.is_lub_range_shift+: \\ @{thm po_class.is_lub_range_shift}
-\item \verb+po_class.is_lub_rangeD1+: @{thm po_class.is_lub_rangeD1}
-\item \verb+po_class.lub_eqI+: @{thm po_class.lub_eqI}
-\item \verb+po_class.is_lub_unique+:@{thm po_class.is_lub_unique}
-\end{itemize}
+    \<^item> \<^verbatim>\<open>po_class.chainE\<close> : @{thm po_class.chainE}
+    \<^item> \<^verbatim>\<open>po_class.chain_mono\<close> : @{thm po_class.chain_mono}
+    \<^item> \<^verbatim>\<open>po_class.is_ubD\<close> : @{thm po_class.is_ubD}
+    \<^item> \<^verbatim>\<open>po_class.ub_rangeI\<close> : \\ @{thm po_class.ub_rangeI}
+    \<^item> \<^verbatim>\<open>po_class.ub_imageD\<close> : @{thm po_class.ub_imageD}
+    \<^item> \<^verbatim>\<open>po_class.is_ub_upward\<close> : @{thm po_class.is_ub_upward}
+    \<^item> \<^verbatim>\<open>po_class.is_lubD1\<close> : @{thm po_class.is_lubD1}
+    \<^item> \<^verbatim>\<open>po_class.is_lubI\<close> : @{thm po_class.is_lubI}
+    \<^item> \<^verbatim>\<open>po_class.is_lub_maximal\<close> : @{thm po_class.is_lub_maximal}
+    \<^item> \<^verbatim>\<open>po_class.is_lub_lub\<close> : @{thm po_class.is_lub_lub}
+    \<^item> \<^verbatim>\<open>po_class.is_lub_range_shift\<close>: \\ @{thm po_class.is_lub_range_shift}
+    \<^item> \<^verbatim>\<open>po_class.is_lub_rangeD1\<close>: @{thm po_class.is_lub_rangeD1}
+    \<^item> \<^verbatim>\<open>po_class.lub_eqI\<close>: @{thm po_class.lub_eqI}
+    \<^item> \<^verbatim>\<open>po_class.is_lub_unique\<close>:@{thm po_class.is_lub_unique}
 \<close>
 
 
@@ -1067,7 +853,7 @@ text \<open>By exiting the context, terms like \<open>\<F> lim_proc\<close> will
 section\<open> Process Refinement is a Partial Ordering\<close>
 
 text\<open> The following type instantiation declares the refinement order
-$\_ \le \_ $ written \verb+_  <= _+. It captures the intuition that more
+$\_ \le \_ $ written \<^verbatim>\<open>_  <= _\<close>. It captures the intuition that more
 concrete processes should be more deterministic and more defined.\<close>
 
 instantiation process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) ord
@@ -1124,13 +910,6 @@ lemma lim_proc_is_ub: \<open>chain S \<Longrightarrow> range S <| lim_proc S\<cl
       use D_T chain_lemma le_approx2T le_approx_def in blast)
 
 
-(* 
-lemma lim_proc_is_lub3a: \<open>front_tickFree s \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> t \<in> \<D> P \<Longrightarrow> \<not> t < s @ [c]\<close>
-  by (auto simp: le_list_def  less_list_def)
-     (metis butlast_append butlast_snoc front_tickFree_append_iff process_charn self_append_conv)
- *)
-
-
 lemma chain_min_elem_div_is_min_for_sequel:
   \<open>chain S \<Longrightarrow> s \<in> min_elems (\<D> (S i)) \<Longrightarrow> i \<le> j \<Longrightarrow> s \<in> \<D> (S j) \<Longrightarrow> s \<in> min_elems (\<D> (S j))\<close>
   by (metis elem_min_elems insert_absorb insert_subset le_approx1 
@@ -1168,9 +947,89 @@ next
   qed
 qed
 
+subsubsection\<open>Some basic facts over chain, limproc, and lub's\<close>
+text\<open>Facts that are missing in HOLCF, unfortunately.\<close>
 
 lemma limproc_is_thelub: \<open>chain S \<Longrightarrow> (\<Squnion>i. S i) = lim_proc S\<close>
   by (frule limproc_is_lub, frule po_class.lub_eqI, simp)
+
+
+lemma interate_vs_compower : "cont F \<Longrightarrow>  iterate i\<cdot>(Abs_cfun F)\<cdot>\<bottom> = (F ^^ i) \<bottom>"
+  by(induct "i")(auto)
+
+lemma fix_def_alt : "cont F \<Longrightarrow> (\<Squnion>i. (F ^^ i) \<bottom>) =  (fix \<cdot> (Abs_cfun F))" 
+  unfolding fix_def cfun_def 
+  by(subst beta_cfun,simp)(simp add: interate_vs_compower)
+
+lemma fix_def_alt': "cont F \<Longrightarrow> (\<Squnion>i. (F ^^ i) \<bottom>) = (\<mu> x . F x)"
+  using fix_def_alt by blast
+
+lemma cont_compow [simp] :
+  fixes f :: \<open>'a::cpo \<Rightarrow> 'a\<close>
+  assumes \<open>cont f\<close>
+  shows \<open>cont (f ^^ n)\<close>
+proof (induct n)
+  case 0
+  show ?case by (simp add: id_def)
+next
+  case (Suc n)
+  then show ?case by (simp add: comp_def cont_compose assms)
+qed
+
+lemma chain_compow_bot :
+  fixes f :: \<open>'a::pcpo \<Rightarrow> 'a\<close>
+  assumes \<open>cont f\<close> shows \<open>chain (\<lambda>i. (f ^^ i) \<bottom>)\<close>
+  using chain_iterate[of \<open>Abs_cfun f\<close>] by (simp add: interate_vs_compower[OF assms])
+
+text\<open>We now formalize a general domain-theoretic fact:
+for a continuous \<^term>\<open>f\<close> on a pointed cpo, the least fixed point of \<^term>\<open>f\<close> coincides
+with the least fixed point of any finite iterate \<^term>\<open>f ^^ Suc n\<close> of \<^term>\<open>f\<close>. This is
+Kleene's theorem applied to the fact that the Kleene chain of \<^term>\<open>f\<close> and the (cofinal)
+subchain obtained by keeping only every \<^term>\<open>Suc n\<close>-th element have the \<^emph>\<open>same\<close> least 
+upper bound.\<close>
+
+lemma lub_cofinal_compow :
+  fixes f :: \<open>'a::pcpo \<Rightarrow> 'a\<close>
+  assumes \<open>cont f\<close>
+  shows \<open>(\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>) = (\<Squnion>k. (f ^^ k) \<bottom>)\<close>
+proof (rule below_antisym)
+  have chain : \<open>chain (\<lambda>k. (f ^^ k) \<bottom>)\<close> by (rule chain_compow_bot[OF assms])
+  have chain2 : \<open>chain (\<lambda>i. (f ^^ (Suc n * i)) \<bottom>)\<close>
+    by (rule chainI, rule chain_mono[OF chain]) simp
+  show \<open>(\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>) \<sqsubseteq> (\<Squnion>k. (f ^^ k) \<bottom>)\<close>
+    by (rule lub_below[OF chain2], rule is_ub_thelub[OF chain])
+next
+  have chain : \<open>chain (\<lambda>k. (f ^^ k) \<bottom>)\<close> by (rule chain_compow_bot[OF assms])
+  have chain2 : \<open>chain (\<lambda>i. (f ^^ (Suc n * i)) \<bottom>)\<close>
+    by (rule chainI, rule chain_mono[OF chain]) simp
+  show \<open>(\<Squnion>k. (f ^^ k) \<bottom>) \<sqsubseteq> (\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>)\<close>
+  proof (rule lub_below[OF chain])
+    fix k
+    have \<open>(f ^^ k) \<bottom> \<sqsubseteq> (f ^^ (Suc n * k)) \<bottom>\<close>
+      by (rule chain_mono[OF chain]) (metis le_add1 mult_Suc)
+    also have \<open>\<dots> \<sqsubseteq> (\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>)\<close>
+      by (rule is_ub_thelub[OF chain2])
+    finally show \<open>(f ^^ k) \<bottom> \<sqsubseteq> (\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>)\<close> .
+  qed
+qed
+
+lemma fix_funpow_eq :
+  fixes f :: \<open>'a::pcpo \<Rightarrow> 'a\<close>
+  assumes cont_f : \<open>cont f\<close>
+  shows \<open>(\<mu> x. (f ^^ Suc n) x) = (\<mu> x. f x)\<close>
+proof -
+  define g where g_def : \<open>g \<equiv> f ^^ Suc n\<close>
+  have cont_g : \<open>cont g\<close> unfolding g_def by (rule cont_compow[OF cont_f])
+  have \<open>(\<mu> x. g x) = (\<Squnion>i. (g ^^ i) \<bottom>)\<close>
+    by (simp add: fix_def_alt'[OF cont_g])
+  also have \<open>\<dots> = (\<Squnion>i. (f ^^ (Suc n * i)) \<bottom>)\<close>
+    unfolding g_def by (simp only: funpow_mult)
+  also have \<open>\<dots> = (\<Squnion>k. (f ^^ k) \<bottom>)\<close>
+    by (rule lub_cofinal_compow[OF cont_f])
+  also have \<open>\<dots> = (\<mu> x. f x)\<close>
+    by (simp add: fix_def_alt'[OF cont_f])
+  finally show ?thesis unfolding g_def .
+qed
 
 
 instance process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) cpo
@@ -1286,4 +1145,4 @@ method prove_finite_subset_of_prefixes for t :: \<open>('a, 'r) trace\<^sub>p\<^
 
 (*<*)
 end
-  (*>*)
+(*>*)

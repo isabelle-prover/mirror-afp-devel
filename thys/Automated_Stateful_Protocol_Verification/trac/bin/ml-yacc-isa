@@ -1,6 +1,0 @@
-#!/bin/bash
-# SPDX-License-Identifier: BSD-3-Clause
-
-ml-yacc "$1"
-sed -i -e '1s/^/ (***** GENERATED FILE -- DO NOT EDIT ****)\n/'\
-       -e "s/\\bref\\b/Unsynchronized.ref/g" "$1.sml"

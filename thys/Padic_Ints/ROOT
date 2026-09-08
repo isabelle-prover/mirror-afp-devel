@@ -1,9 +1,9 @@
 chapter AFP
 
-session Padic_Ints = "HOL-Algebra" +
+session Padic_Ints = "HOL-Number_Theory" +
   options [timeout = 1200]
   sessions
-    "HOL-Number_Theory"
+    "HOL-Algebra"
   theories
     Function_Ring
     Cring_Poly

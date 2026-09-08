@@ -1548,6 +1548,8 @@ subsection \<open>The modular $\lambda$ function\<close>
 definition modular_lambda :: "complex \<Rightarrow> complex" where
   "modular_lambda z = (if z \<in> \<real> then 0 else complex_lattice.modulus 1 z)"
 
+lemma modular_lambda_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> modular_lambda z = 0"
+  by (simp add: modular_lambda_def)
 
 lemma (in complex_lattice) modulus_eq_modular_lambda:
   "modulus = modular_lambda (\<omega>2 / \<omega>1)"
@@ -1562,9 +1564,33 @@ proof -
     by simp
 qed
 
-lemma modular_lambda_real_eq_0 [simp]: "z \<in> \<real> \<Longrightarrow> modular_lambda z = 0"
-  by (simp add: modular_lambda_def)
 
+text \<open>
+  The modulus is never 0 or 1:
+\<close>
+lemma modular_lambda_neq_0:
+  assumes "z \<notin> \<real>"
+  shows   "modular_lambda z \<noteq> 0"
+proof -
+  interpret complex_lattice 1 z
+    by standard (use assms in \<open>auto simp: fundpair_def\<close>)
+  show ?thesis
+    using modulus_neq_0 modulus_eq_modular_lambda by simp
+qed
+
+lemma modular_lambda_neq_1: "modular_lambda z \<noteq> 1"
+proof (cases "z \<in> \<real>")
+  case False
+  interpret complex_lattice 1 z
+    by standard (use False in \<open>auto simp: fundpair_def\<close>)
+  show ?thesis
+    using modulus_neq_1 modulus_eq_modular_lambda by simp
+qed (auto simp: modular_lambda_def)
+
+
+text \<open>
+  We show the transformation laws for $\lambda$:
+\<close>
 lemma modular_lambda_cnj: "modular_lambda (cnj z) = cnj (modular_lambda z)"
 proof (cases "z \<in> \<real>")
   case False
@@ -1607,8 +1633,83 @@ proof (cases "z \<in> \<real>")
              intro: lattice1.lattice_intros)
   thus ?thesis
     by (simp add: lattice1.modulus_eq_modular_lambda lattice2.modulus_eq_modular_lambda)
-qed (auto simp: modular_lambda_def)  
+qed (auto simp: modular_lambda_def)
 
+lemma modular_lambda_minus_one_over:
+  assumes z: "z \<notin> \<real>"
+  shows "modular_lambda (-1/z) = 1 - modular_lambda z"
+proof -
+  interpret complex_lattice 1 z
+    by unfold_locales (use z in \<open>auto simp: fundpair_def\<close>)
+  interpret complex_lattice_apply_modgrp 1 z S_modgrp ..
+  have e1_eq: "transformed.number_e1 = number_e2"
+    unfolding transformed.number_e1_def weierstrass_fun_transformed unfolding \<omega>1'_def
+    by (simp add: number_e2_def)
+  have e2_eq: "transformed.number_e2 = number_e1"
+    unfolding transformed.number_e2_def weierstrass_fun_transformed unfolding \<omega>2'_def
+    by (simp add: number_e1_def weierstrass_fun_minus)
+  have e3_eq: "transformed.number_e3 = number_e3"
+    unfolding transformed.number_e3_def weierstrass_fun_transformed unfolding \<omega>1'_def \<omega>2'_def
+    using weierstrass_fun.f_periodic[of "(z - 1) / 2"]
+    by (simp add: number_e3_def weierstrass_fun_minus add_divide_distrib diff_divide_distrib)
+  have "transformed.modulus = 1 - modulus"
+    unfolding transformed.modulus_def e1_eq e2_eq e3_eq modulus_def
+    using distinct_e123 by (auto simp: modulus_def field_simps)
+  thus ?thesis
+    using modulus_eq_modular_lambda transformed.modulus_eq_modular_lambda
+    unfolding \<omega>1'_def \<omega>2'_def by simp
+qed
+
+lemma modular_lambda_plus1:
+  assumes z: "z \<notin> \<real>"
+  shows "modular_lambda (z + 1) = modular_lambda z / (modular_lambda z - 1)"
+proof -
+  interpret complex_lattice 1 z
+    by unfold_locales (use z in \<open>auto simp: fundpair_def\<close>)
+  interpret complex_lattice_apply_modgrp 1 z T_modgrp ..
+  have e1_eq: "transformed.number_e1 = number_e1"
+    unfolding transformed.number_e1_def weierstrass_fun_transformed unfolding \<omega>1'_def
+    by (simp add: number_e1_def)
+  have e2_eq: "transformed.number_e2 = number_e3"
+    unfolding transformed.number_e2_def weierstrass_fun_transformed unfolding \<omega>2'_def
+    by (simp add: number_e3_def weierstrass_fun_minus add_ac)
+  have e3_eq: "transformed.number_e3 = number_e2"
+    unfolding transformed.number_e3_def weierstrass_fun_transformed unfolding \<omega>1'_def \<omega>2'_def
+    using weierstrass_fun.f_periodic[of "z / 2"]
+    by (simp add: number_e2_def weierstrass_fun_minus add_divide_distrib diff_divide_distrib add_ac)
+  have "transformed.modulus = modulus / (modulus - 1)"
+    unfolding transformed.modulus_def e1_eq e2_eq e3_eq modulus_def
+    using distinct_e123 by (auto simp: modulus_def divide_simps) (auto simp: algebra_simps)?
+  thus ?thesis
+    using modulus_eq_modular_lambda transformed.modulus_eq_modular_lambda
+    unfolding \<omega>1'_def \<omega>2'_def by simp
+qed
+
+lemma modular_lambda_plus2:
+  assumes z: "z \<notin> \<real>"
+  shows "modular_lambda (z + 2) = modular_lambda z"
+proof -
+  have "modular_lambda (z + 2) = modular_lambda (z + 1 + 1)"
+    by (simp add: add_ac)
+  also have "\<dots> = modular_lambda (z + 1) / (modular_lambda (z + 1) - 1)"
+    by (rule modular_lambda_plus1) (use z in \<open>auto simp: complex_is_Real_iff\<close>)
+  also have "\<dots> = modular_lambda z / ((modular_lambda z - 1) * (modular_lambda z / (modular_lambda z - 1) - 1))"
+    by (subst (1 2) modular_lambda_plus1) (use z in auto)
+  also have "\<dots> = modular_lambda z"
+    using modular_lambda_neq_1[of z] modular_lambda_neq_0[OF z] by (simp add: divide_simps)
+  finally show ?thesis .
+qed
+
+text \<open>
+  A simple consequence: $\lambda(i) = \frac{1}{2}$.
+\<close>
+lemma modular_lambda_ii [simp]: "modular_lambda \<i> = 1 / 2"
+  using modular_lambda_minus_one_over[of \<i>] by (simp add: mult_ac)
+
+text \<open>
+  An alternative definition of the modulus in the upper half plane is given by the 
+  Jacobi theta functions:
+\<close>
 lemma modular_lambda_conv_jacobi_theta:
   assumes z: "Im z > 0"
   shows   "modular_lambda z = jacobi_theta_10 0 z ^ 4 / jacobi_theta_00 0 z ^ 4"

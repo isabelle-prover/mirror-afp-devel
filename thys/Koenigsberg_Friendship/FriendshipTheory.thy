@@ -7,6 +7,8 @@ theory FriendshipTheory
   imports MoreGraph  "HOL-Number_Theory.Number_Theory"
 begin
 
+hide_const (open) Polynomial.degree
+
 (*Proofs in this section are the common steps for both combinatorial and algebraic proofs for the
 Friendship Theorem*)
 section\<open>Common steps\<close>
@@ -468,7 +470,7 @@ proof -
           hence "x1=v1" and "x3=v1" using \<open>V={v1}\<close> E_validD by auto
           thus False using no_id x by auto
         qed
-      hence "degree v1 G=0" unfolding degree_def by auto
+      hence "degree v1 G=0" unfolding MoreGraph.degree_def by auto
       thus  "\<forall>v\<in>V. degree v G =0" using \<open>V={v1}\<close>by auto
     qed
   moreover have "card V=0 \<Longrightarrow> ?thesis"

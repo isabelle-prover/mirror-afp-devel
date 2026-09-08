@@ -681,8 +681,7 @@ proof (rule ccontr) \<comment> \<open>The proof is done by contradiction.\<close
       assume \<open>\<not> ([a = 0] (mod q) \<or> [b = 0] (mod q) \<or> [c = 0] (mod q))\<close>
       hence \<open>[a \<noteq> 0] (mod q)\<close> \<open>[b \<noteq> 0] (mod q)\<close> \<open>[c \<noteq> 0] (mod q)\<close> by simp_all
       from \<open>[c \<noteq> 0] (mod q)\<close> have \<open>gcd c q = 1\<close>
-        by (meson aux_prime auxiliary_prime_def cong_0_iff coprime_iff_gcd_eq_1
-            residues_prime.p_coprime_right_int residues_prime_def)
+        using wlog_keep.prime_int_q by (metis cong_0_iff gcd.commute gcd_prime_int)
       from bezout_int[of c q, unfolded this]
       obtain u v where \<open>u * c + v * int q = 1\<close> by blast
       with \<open>[a \<noteq> 0] (mod q)\<close> have \<open>[u \<noteq> 0] (mod q)\<close>

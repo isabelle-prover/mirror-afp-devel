@@ -3,6 +3,7 @@ theory More_Residues
 imports 
   "HOL-Decision_Procs.Algebra_Aux"
   "HOL-Number_Theory.Residues"
+  "HOL-Algebra.Residues_Algebra"
 
 begin
 

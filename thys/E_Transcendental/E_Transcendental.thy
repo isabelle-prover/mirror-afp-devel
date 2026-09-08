@@ -5,18 +5,15 @@
   A proof that e (Euler's number) is transcendental.
   Could possibly be extended to a transcendence proof for pi or
   the very general Lindemann-Weierstrass theorem.
+  [Now in the AFP at https://isa-afp.org/entries/Hermite_Lindemann.html]
 *)
 section \<open>Proof of the Transcendence of $e$\<close>
 theory E_Transcendental
   imports
     "HOL-Complex_Analysis.Complex_Analysis"
     "HOL-Number_Theory.Number_Theory"
-    "HOL-Computational_Algebra.Polynomial"
     "Polynomial_Interpolation.Ring_Hom_Poly"
 begin
-
-hide_const (open) UnivPoly.coeff  UnivPoly.up_ring.monom 
-hide_const (open) Module.smult  Coset.order
 
 subsection \<open>Various auxiliary facts\<close>
 

@@ -12,6 +12,7 @@ section \<open>Perfect Fields\<close>
 theory Perfect_Fields
 imports
   "HOL-Computational_Algebra.Computational_Algebra"
+  "HOL-Algebra.Residues_Algebra"
   "Berlekamp_Zassenhaus.Finite_Field" 
 begin
 

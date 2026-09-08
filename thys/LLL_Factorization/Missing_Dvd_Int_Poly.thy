@@ -23,6 +23,8 @@ imports
   Perron_Frobenius.Cancel_Card_Constraint
 begin
 
+hide_const (open) Module.smult
+
 (*In mathematics, this lemma also works if q = 0 since degree 0 = -\<infinity>, but in Isabelle degree 0 = 0.*)
 lemma degree_div_mod_smult:
   fixes g::"int poly"

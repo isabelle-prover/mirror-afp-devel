@@ -1,9 +1,0 @@
-#!/bin/bash
-# SPDX-License-Identifier: BSD-3-Clause
-
-ml-lex "$1"
-sed -i -e '1s/^/ (***** GENERATED FILE -- DO NOT EDIT ****)\n/'\
-       -e "s/\\bref\\b/Unsynchronized.ref/g" \
-       -e "s/\\bUnsafe.\\b//g" \
-       -e "s/structure YYPosInt : INTEGER = Int/structure YYPosInt = Int/" \
-    "$1.sml"

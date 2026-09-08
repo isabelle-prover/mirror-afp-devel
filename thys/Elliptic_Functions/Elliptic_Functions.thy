@@ -935,7 +935,7 @@ text \<open>
 lemma sum_residues_eq_0_aux:
   defines "Q \<equiv> (\<lambda>orig. {z\<in>period_parallelogram orig. is_pole f z})"
   defines "S \<equiv> (\<lambda>orig. \<Sum>z\<in>Q orig. residue f z)"
-  shows   "S orig \<in> \<Lambda>"
+  shows   "S orig = 0"
 proof (cases "f = (\<lambda>_. 0)")
   case True
   hence "elliptic_order f = 0"
@@ -979,7 +979,7 @@ next
       using h' by (rule sum.reindex_bij_betw)
     also have "\<dots> = S orig"
       by (simp add: S_def)
-    also have "S orig \<in> \<Lambda>"
+    also have "S orig = 0"
       by fact
     finally show ?case .
   next
@@ -1169,6 +1169,68 @@ lemma avoid: "elliptic_order f > 0 \<Longrightarrow> \<forall>\<^sub>\<approx>z\
 lemma avoid': "elliptic_order f > 0 \<Longrightarrow> eventually (\<lambda>z. f z \<noteq> c) (at z)"
   using avoid eventually_cosparse_imp_eventually_at by blast
 
+lemma
+  assumes "elliptic_order f > 0"
+  shows   isolated_zero_iff_zorder_pos: "isolated_zero f z \<longleftrightarrow> zorder f z > 0"
+    and   is_pole_iff_zorder_neg: "is_pole f z \<longleftrightarrow> zorder f z < 0"
+proof -
+  have [simp]: "isolated_singularity_at f z" for z
+    by (intro meromorphic_on_isolated_singularity meromorphic_intros)
+  have ev_nz: "\<forall>\<^sub>F w in at z. f w \<noteq> 0" for z
+    using avoid'[of 0 z] assms by auto
+  show "isolated_zero f z \<longleftrightarrow> zorder f z > 0" for z
+    using zorder_isolated_zero_pos'[of f z]
+          zorder_pos_imp_isolated_zero[OF meromorphic', of z] ev_nz by auto
+  show "is_pole f z \<longleftrightarrow> zorder f z < 0" for z
+    using isolated_pole_imp_neg_zorder[of f z]
+          zorder_neg_imp_is_pole[OF meromorphic', of z] ev_nz by auto
+qed
+
+lemma zorder_0_iff: "elliptic_order f > 0 \<Longrightarrow> zorder f z = 0 \<longleftrightarrow> \<not>isolated_zero f z \<and> \<not>is_pole f z"
+  using isolated_zero_iff_zorder_pos is_pole_iff_zorder_neg by force
+
+lemma finite_zorder_nz:
+  assumes "elliptic_order f > 0"
+  shows   "finite {z\<in>period_parallelogram orig. zorder f z \<noteq> 0}"
+proof (rule finite_subset)
+  show "finite ({z \<in> period_parallelogram orig. isolated_zero f z} \<union> 
+                {z \<in> period_parallelogram orig. is_pole f z})"
+    using finite_poles_in_parallelogram[of orig] finite_zeros_in_parallelogram[of orig] by blast
+qed (use assms in \<open>auto simp: zorder_0_iff\<close>)
+  
+lemma has_sum_zorder_0:
+  assumes "elliptic_order f > 0"
+  shows   "((\<lambda>z. zorder f z) has_sum 0) (period_parallelogram orig)"
+proof -
+  define P where "P = period_parallelogram orig"
+  note fin = finite_poles_in_parallelogram[of orig, folded P_def]
+             finite_zeros_in_parallelogram[of orig, folded P_def]
+
+  have "((\<lambda>z. zorder f z) has_sum (\<Sum>z | z \<in> P \<and> zorder f z \<noteq> 0. zorder f z)) {z\<in>P. zorder f z \<noteq> 0}"
+    using finite_zorder_nz[OF assms, of orig, folded P_def] by (rule has_sum_finite)
+  also have "(\<Sum>z | z \<in> P \<and> zorder f z \<noteq> 0. zorder f z) = 0"
+  proof -
+    have "0 = int (\<Sum>z | z \<in> P \<and> isolated_zero f z. nat (zorder f z)) - 
+              int (\<Sum>z | z \<in> P \<and> is_pole f z. nat (-zorder f z))"
+      unfolding P_def zeros_eq_elliptic_order[of orig] poles_eq_elliptic_order[of orig] by simp
+    also have "\<dots> = (\<Sum>z | z \<in> P \<and> isolated_zero f z. zorder f z) - 
+                    (\<Sum>z | z \<in> P \<and> is_pole f z. -zorder f z)"
+      unfolding of_nat_sum using assms
+      by (intro arg_cong2[of _ _ _ _ "(-)"] sum.cong refl)
+         (auto simp: is_pole_iff_zorder_neg isolated_zero_iff_zorder_pos)
+    also have "\<dots> = (\<Sum>z\<in>{z\<in>P. isolated_zero f z}\<union>{z\<in>P. is_pole f z}. zorder f z)"
+      using fin pole_is_not_zero
+      by (subst sum.union_disjoint) (auto simp: sum_negf)
+    also have "{z\<in>P. isolated_zero f z}\<union>{z\<in>P. is_pole f z} = {z\<in>P. zorder f z \<noteq> 0}"
+      using assms by (auto simp: zorder_0_iff)
+    finally show ?thesis ..
+  qed
+  also have "(zorder f has_sum 0) {z \<in> P. zorder f z \<noteq> 0} \<longleftrightarrow> (zorder f has_sum 0) P"
+    by (rule has_sum_cong_neutral) auto
+  finally show ?thesis
+    by (simp add: P_def)
+qed
+
 theorem sum_zeros_poles_in_lattice:
   fixes orig :: complex
   defines "Z \<equiv> {z\<in>period_parallelogram orig. isolated_zero f z \<or> is_pole f z}"
@@ -1179,7 +1241,7 @@ theorem sum_zeros_poles_in_lattice:
 theorem sum_residues_eq_0:
   fixes orig :: complex
   defines "Q \<equiv> {z\<in>period_parallelogram orig. is_pole f z}"
-  shows   "(\<Sum>z\<in>Q. residue f z) \<in> \<Lambda>"
+  shows   "(\<Sum>z\<in>Q. residue f z) = 0"
   using remove_sings.sum_residues_eq_0_aux[of orig] by (simp add: Q_def)
 
 text \<open>

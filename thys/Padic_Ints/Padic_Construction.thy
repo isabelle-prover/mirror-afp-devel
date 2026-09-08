@@ -1,5 +1,7 @@
 theory Padic_Construction
-imports "HOL-Number_Theory.Residues" "HOL-Algebra.RingHom" "HOL-Algebra.IntRing"
+  imports 
+    "HOL-Number_Theory.Residues" "HOL-Algebra.Residues_Algebra" 
+    "HOL-Algebra.RingHom" "HOL-Algebra.IntRing"
 begin
 
 type_synonym padic_int = "nat \<Rightarrow> int"

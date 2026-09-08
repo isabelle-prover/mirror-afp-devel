@@ -1735,33 +1735,40 @@ structure trac = struct
 end
 \<close>
 
-
-ML\<open>
+ML \<open>
   val fileNameP = Parse.name -- Parse.name
 
   val _ = Outer_Syntax.local_theory @{command_keyword "trac"}
           "Define protocol and (optionally) fixpoint using trac format."
-          ((Parse.cartouche -- Scan.optional Parse.cartouche "" >> (
-            fn (trac,fp) => fn lthy =>
-          let
-            val opt_fp = if fp = "" then NONE else SOME fp
-            val trac = trac.def_trac trac opt_fp true #> snd
-          in
-            trac_time.ap_lthy lthy ("trac") trac lthy 
-          end)));
+          ((Parse.input Parse.cartouche -- Scan.option (Parse.input Parse.cartouche) >> (
+            fn (trac_src, opt_fp_src) =>
+              let
+                val _ = TracProtocolParser.parse_source trac_src
+                val _ = case opt_fp_src of
+                          SOME fp_src => (TracFpParser.parse_source fp_src; ())
+                        | NONE => ()
+                val trac_str = Input.text_of trac_src
+                val opt_fp_str = Option.map Input.text_of opt_fp_src
+              in
+                fn lthy =>
+                  let
+                    val trac_update = trac.def_trac trac_str opt_fp_str true #> snd
+                  in
+                    trac_time.ap_lthy lthy ("trac") trac_update lthy 
+                  end
+              end)));
 
   val _ = Outer_Syntax.local_theory @{command_keyword "trac_import"} 
           "Import protocol and (optionally) fixpoint from trac files." 
           ((Parse.name -- Scan.optional Parse.name "" >> (
             fn (trac_filename, fp_filename) => fn lthy =>
-          let
-            val opt_fp_filename = if fp_filename = "" then NONE else SOME fp_filename
-            val trac = trac.def_trac_file trac_filename opt_fp_filename true #> snd
-          in
-            trac_time.ap_lthy lthy ("trac_import") trac lthy 
-          end)));
+              let
+                val opt_fp_filename = if fp_filename = "" then NONE else SOME fp_filename
+                val trac_update = trac.def_trac_file trac_filename opt_fp_filename true #> snd
+              in
+                trac_time.ap_lthy lthy ("trac_import") trac_update lthy 
+              end)));
 \<close>
-
 ML\<open>
 val name_prefix_parser = Parse.!!! (Parse.name --| Parse.$$$ ":" -- Parse.name)
 

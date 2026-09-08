@@ -8,7 +8,7 @@ session Diophantine_Eqns_Lin_Hom = HOL +
     Sorted_Wrt
     Minimize_Wrt
     Algorithm
-  theories [document = false, condition = ISABELLE_GHC]
+  theories [document = false, condition = "$ISABELLE_GHC"]
     Solver_Code
   document_files
     "root.bib"

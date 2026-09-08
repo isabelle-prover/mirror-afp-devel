@@ -31,12 +31,12 @@ fun x <&> f = map f x
 
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "FUNCTOR_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "FUNCTOR_MORPH"\<close> =
 sig
   (*the base functor to transform*)
   structure F : \<^eval>\<open>sfx_ParaT_nargs "FUNCTOR_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "FUNCTOR_BASE"\<close>
-  val lift : (@{ParaT_args} 'a) F.t -> (@{ParaT_args} 'a) t
+  val morph : (@{ParaT_args} 'a) F.t -> (@{ParaT_args} 'a) t
 end
 
 signature \<^eval>\<open>sfx_ParaT_nargs "APPLICATIVE_BASE"\<close> =
@@ -61,12 +61,12 @@ fun liftA2 f x = curry (op <*>) (A.map f x)
 
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "APPLICATIVE_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "APPLICATIVE_MORPH"\<close> =
 sig
   (*the base applicative to transform*)
   structure A : \<^eval>\<open>sfx_ParaT_nargs "APPLICATIVE_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "APPLICATIVE_BASE"\<close>
-  val lift : (@{ParaT_args} 'a) A.t -> (@{ParaT_args} 'a) t
+  val morph : (@{ParaT_args} 'a) A.t -> (@{ParaT_args} 'a) t
 end
 
 signature \<^eval>\<open>sfx_ParaT_nargs "MONAD_BASE"\<close> =
@@ -96,13 +96,13 @@ fun flat2 fm x = M.map (fn f => f x) fm |> flat1
 
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "MONAD_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "MONAD_MORPH"\<close> =
 sig
   (*the base monad to transform*)
   structure M : \<^eval>\<open>sfx_ParaT_nargs "MONAD_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "MONAD_BASE"\<close>
 
-  val lift : (@{ParaT_args} 'a) M.t -> (@{ParaT_args} 'a) t
+  val morph : (@{ParaT_args} 'a) M.t -> (@{ParaT_args} 'a) t
 end
 
 signature \<^eval>\<open>sfx_ParaT_nargs "ALTERNATIVE_BASE"\<close> =
@@ -245,11 +245,11 @@ fun sequence x = traverse I x
 
 end
 
-signature \<^eval>\<open>sfx_ParaT_nargs "TRAVERSABLE_TRANS"\<close> =
+signature \<^eval>\<open>sfx_ParaT_nargs "TRAVERSABLE_MORPH"\<close> =
 sig
   (*the base traversable to transform*)
   structure T : \<^eval>\<open>sfx_ParaT_nargs "TRAVERSABLE_BASE"\<close>
   include \<^eval>\<open>sfx_ParaT_nargs "TRAVERSABLE_BASE"\<close>
-  val lift : (@{ParaT_args} 'a) T.t -> (@{ParaT_args} 'a) t
+  val morph : (@{ParaT_args} 'a) T.t -> (@{ParaT_args} 'a) t
 end
 

@@ -11,10 +11,6 @@ theory
   trac_term
   imports
     "First_Order_Terms.Term"
-    "ml_yacc_lib"
-    (* Alternatively (provides, as a side-effect,  ml-yacc-lib):
-      "HOL-TPTP.TPTP_Parser" 
-    *)
 begin
 ML\<open>
 structure Trac_Utils = 
