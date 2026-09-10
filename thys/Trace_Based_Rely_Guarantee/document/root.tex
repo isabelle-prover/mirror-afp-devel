@@ -1,0 +1,40 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% this should be the last package used
+%\usepackage{url}
+%\usepackage{hyperref}
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+
+\begin{document}
+
+\title{Trace Based Semantics for Rely-Guarantee}
+\author{Marialena Hadjikosti, Andrei Popescu \& Jamie Wright}
+\maketitle
+
+\begin{abstract}
+We formalize a trace-based Rely-Guarantee semantics based on the work of Xu et al. The foundation includes an abstract Sequential/While/Parallel programming language equipped with operational semantics designed for concurrent reasoning. Upon this, we build a reasoning infrastructure that includes Rely-Guarantee inversion rules, alongside abstract definitions and standard soundness proofs for both unary and binary settings. 
+\end{abstract} 
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% include generated text of all theories
+\input{session}
+
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+
+\bibliographystyle{IEEEtranS}
+\bibliography{root}
+\end{document}

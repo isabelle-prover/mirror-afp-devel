@@ -4,6 +4,14 @@
     <title>Jamie Wright</title>
     <link>https://isa-afp.org/authors/wright/</link>
     <description>AFP entries of Jamie Wright</description><item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Certified Infinite Descent Criteria</title>
   <link>https://isa-afp.org/entries/Infinite_Descent_Criteria.html</link>
   <pubDate>Thu, 11 Jun 2026 00:00:00 +0000</pubDate>

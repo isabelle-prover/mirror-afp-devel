@@ -54,7 +54,7 @@
    "eyJ1c2VyIjpbImFkYnJ1Y2tlciJdLCJob3N0IjpbIjB4NWYiLCJvcmciXX0="
   ],
   "homepages": [
-   "https://www.brucker.ch/"
+   "https://brucker.ch/"
   ],
   "id": "brucker",
   "link": "../authors/brucker/",
@@ -302,7 +302,7 @@
  },
  {
   "emails": [
-   "eyJ1c2VyIjpbImFzMTM0MyJdLCJob3N0IjpbImV4ZXRlciIsImFjIiwidWsiXX0="
+   "eyJ1c2VyIjpbImEiLCJzdGVsbCJdLCJob3N0IjpbImV4ZXRlciIsImFjIiwidWsiXX0="
   ],
   "homepages": [
    "https://computerscience.exeter.ac.uk/staff/as1343?sm=as1343"
@@ -322,6 +322,16 @@
   "id": "schlichtkrull",
   "link": "../authors/schlichtkrull/",
   "name": "Anders Schlichtkrull"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIkFuZHJhcyIsIlNhbGFtb24iXSwiaG9zdCI6WyJzdC1hbmRyZXdzIiwiYWMiLCJ1ayJdfQ=="
+  ],
+  "homepages": [],
+  "id": "salamon",
+  "link": "../authors/salamon/",
+  "name": "András Z. Salamon",
+  "orcid": "0000-0002-1415-9712"
  },
  {
   "emails": [
@@ -1572,7 +1582,8 @@
   "homepages": [],
   "id": "lyu",
   "link": "../authors/lyu/",
-  "name": "Feier Lyu"
+  "name": "Feier Lyu",
+  "orcid": "0009-0000-5670-8831"
  },
  {
   "emails": [
@@ -3210,6 +3221,14 @@
  {
   "emails": [],
   "homepages": [],
+  "id": "hadjikosti",
+  "link": "../authors/hadjikosti/",
+  "name": "Marialena Hadjikosti",
+  "orcid": "0009-0004-8021-075X"
+ },
+ {
+  "emails": [],
+  "homepages": [],
   "id": "fernandezm",
   "link": "../authors/fernandezm/",
   "name": "Maribel Fernández"
@@ -3598,6 +3617,16 @@
   "id": "rawson",
   "link": "../authors/rawson/",
   "name": "Michael Rawson"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIm13ZWhhciJdLCJob3N0IjpbImhhdmVyZm9yZCIsImVkdSJdfQ=="
+  ],
+  "homepages": [],
+  "id": "wehar",
+  "link": "../authors/wehar/",
+  "name": "Michael Wehar",
+  "orcid": "0009-0007-9251-7128"
  },
  {
   "emails": [

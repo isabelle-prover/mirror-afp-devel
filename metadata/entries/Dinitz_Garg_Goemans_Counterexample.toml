@@ -1,0 +1,41 @@
+title = "A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture"
+date = 2026-07-22
+topics = [
+  "Computer science/Algorithms/Graph",
+  "Mathematics/Combinatorics",
+]
+abstract = "Dinitz, Garg, and Goemans proved that a feasible fractional single-source flow can be rounded to an unsplittable flow with additive congestion bounded by the largest demand. Goemans conjectured that the rounding can simultaneously preserve cost. This entry verifies the finite counterexample announced by Dmitry Rybin in July 2026. It defines a generic finite path-flow model and realizes the displayed instance as a directed graph with seven vertices, nine arcs, and three terminal demands. Isabelle classifies every source-to-terminal path and checks a feasible fractional flow of cost \\(58\\) that saturates every arc. The maximum demand is \\(15\\). Any unsplittable routing whose load on every arc is at most the fractional load plus \\(15\\) must choose at least two positive-cost routes, each costing \\(30\\), and therefore costs at least \\(60\\). Consequently no cost-preserving rounding exists, even under the weaker non-strict congestion bound."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/s004930050043",
+  "10.1007/s10107-026-02365-x",
+]
+pubs = [
+  "Dmitry Rybin, <em>Counterexample to the Dinitz-Garg-Goemans Cost Conjecture</em>, <a href=\"https://x.com/DmitryRybin1\">post on X</a>, July 22, 2026.",
+]

@@ -1,0 +1,44 @@
+chapter AFP
+
+session Multitape_Alphabet_Enlargement = Multitape_TM_Substrate +
+  description "Alphabet enlargement and the Hopcroft-Ullman linear speedup. Sibling of Multitape_Alphabet_Reduction over the
+    shared Multitape_TM_Substrate substrate; imports only Multitape_TM_Substrate.Multitape_Substrate."
+  options [timeout = 300]
+  theories
+    AlphabetEnlargement_Defs
+    AlphabetEnlargement_Substeps
+    AlphabetEnlargement_Delta
+    AlphabetEnlargement_Simulation
+    AlphabetEnlargement_Uniqueness
+    AlphabetEnlargement_BufferArith
+    AlphabetEnlargement_Window
+    AlphabetEnlargement_Codec
+    AlphabetEnlargement_ValidationStep
+    AlphabetEnlargement_ValidationBound
+    AlphabetEnlargement_ComputeCorrect
+    AlphabetEnlargement_SS4
+    AlphabetEnlargement_OutputWF
+    AlphabetEnlargement_ForwardCells
+    AlphabetEnlargement_ForwardStep
+    AlphabetEnlargement_ForwardStage
+    AlphabetEnlargement_Acceptance
+    AlphabetEnlargement
+    AlphabetEnlargement_Reverse
+    Wrap_Base
+    AlphabetEnlargement_Pack
+    Wrap_Defs
+    Wrap_Reset
+    Wrap_Run
+    Wrap_Encoder
+    Wrap_Forcing
+    Wrap_Canonical
+    Wrap_Language
+    Wrap_Time
+    Wrap_Speedup
+    Wrap_Convention
+  document_files
+    "root.tex"
+    "root.bib"
+    "acknowledgement.tex"
+    "sessionnames.tex"
+    "glossary.tex"

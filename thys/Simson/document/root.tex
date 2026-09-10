@@ -1,0 +1,155 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Wallace--Simson Line Theorem in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+We formalize the Wallace--Simson line theorem in Isabelle/HOL.  Let \(ABC\) be
+a nondegenerate triangle and let \(M\) be a point on its circumcircle.  Dropping
+the perpendiculars from \(M\) to the three side lines \(BC\), \(CA\), \(AB\)
+gives feet \(P\), \(Q\), \(R\); the theorem asserts that \(P\), \(Q\), \(R\) are
+collinear.  The line through them is the \emph{Simson line}, also called the
+\emph{Wallace line} after William Wallace, whose published work on geometrical
+porisms is the standard early source for this result.  We also prove the
+converse: if the three feet are collinear, then \(M\) lies on the circumcircle
+of \(ABC\).
+
+The development uses complex coordinates.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The Wallace--Simson line is a classical incidence result about a triangle and a
+point on its circumcircle~\cite{coxeter1967,johnson1929,wallace1798}.  Given a
+nondegenerate triangle \(ABC\) and a point \(M\) on its circumcircle, the feet
+of the three perpendiculars from \(M\) to the side lines \(BC\), \(CA\), \(AB\)
+are collinear.  The line so obtained is usually named after Robert Simson, but
+it is due to William Wallace~\cite{wallace1798}.  The converse also holds and
+characterises the circumcircle: the feet are collinear \emph{only} when the
+point lies on the circumcircle.
+
+Our formalization works in the complex plane.  It builds on the published
+\emph{Complex Geometry} development~\cite{Complex_Geometry-AFP} for its basic
+complex-plane notions; reducing the incidence statement to complex algebra then
+turns both directions of the theorem into short computations.
+
+\section{Complex-coordinate setup}
+
+We identify the Euclidean plane with \(\mathbb{C}\).  A point \(z\) lies on the
+circle of centre \(c\) and radius \(R\) when \(\lvert z-c\rvert = R\), and a
+point \(z\) lies on the line through \(a\) and \(b\) when \(z = a + t\,(b-a)\)
+for some real \(t\).  Three points \(a\), \(b\), \(c\) are collinear when
+\[
+  \operatorname{Im}\bigl(\overline{(b-a)}\,(c-a)\bigr) = 0,
+\]
+a real multiple of the planar cross product, and two displacement vectors
+\(u\), \(v\) are perpendicular when \(\operatorname{Re}(\overline{u}\,v)=0\),
+their Euclidean inner product.  A basic lemma records that collinearity is
+equivalent to the ratio \((c-a)/(b-a)\) being real whenever the three points are
+distinct enough for the ratio to be defined, and this real-ratio form is what
+the main proofs ultimately use.
+
+\section{The foot of a perpendicular}
+
+The foot of the perpendicular from \(m\) to the line through \(a\) and \(b\) is
+\[
+  \operatorname{foot}(a,b,m)
+    = \frac{a+m}{2}
+      + \frac{(b-a)\,\overline{(m-a)}}{2\,\overline{(b-a)}}.
+\]
+We verify that this closed form is meaningful: \(\operatorname{foot}(a,b,m)\)
+lies on the line \(ab\), and the residual \(m - \operatorname{foot}(a,b,m)\) is
+perpendicular to the direction \(b-a\).  These properties also uniquely
+characterise the point on every nondegenerate line.  Thus the three points named
+\(P\), \(Q\), \(R\) in the statement really are the feet of the perpendiculars
+onto the side lines, and the theorem is a statement about that geometric
+configuration rather than about an unmotivated algebraic expression.
+
+\section{The cross-ratio criterion}
+
+Four complex numbers \(w\), \(x\), \(y\), \(z\) have cross ratio
+\[
+  (w,x;y,z) = \frac{(w-y)\,(x-z)}{(w-z)\,(x-y)}.
+\]
+For four suitably distinct points, being concyclic is equivalent to this cross
+ratio being real.  We need the forward direction: if \(w\), \(x\), \(y\), \(z\)
+lie on a circle of centre \(o\) and radius \(R>0\), then each point satisfies
+\(\overline{z-o} = R^{2}/(z-o)\); substituting this into the conjugate of the
+cross ratio, every factor \(R^{2}\) and every factor \((\cdot-o)\) cancels,
+leaving the cross ratio itself, so it equals its own conjugate and is real.
+
+\section{The forward theorem}
+
+Assume \(M\) lies on the circumcircle of \(ABC\).  Working relative to the
+centre \(o\), each pairwise difference of feet on the circle collapses to a
+clean product; concretely
+\[
+  \operatorname{foot}(b,c,m) - \operatorname{foot}(a,b,m)
+    = \frac{(c-a)\,(m-b)}{2\,(m-o)},
+  \qquad
+  \operatorname{foot}(c,a,m) - \operatorname{foot}(a,b,m)
+    = \frac{(c-b)\,(m-a)}{2\,(m-o)}.
+\]
+Their ratio is
+\[
+  \frac{\operatorname{foot}(b,c,m) - \operatorname{foot}(a,b,m)}
+       {\operatorname{foot}(c,a,m) - \operatorname{foot}(a,b,m)}
+    = \frac{(c-a)\,(m-b)}{(c-b)\,(m-a)}
+    = (c,m;a,b),
+\]
+the cross ratio of the four concyclic points \(c\), \(m\), \(a\), \(b\).  By the
+cross-ratio criterion this ratio is real, and reality of the ratio of the two
+foot differences is exactly the collinearity of the three feet.  (The
+degenerate case \(m=a\), where two of the feet coincide, is handled separately.)
+
+\section{The converse}
+
+For the converse we drop the assumption that \(M\) lies on the circle and assume
+instead that the three feet are collinear.  Using the same closed forms for the
+foot differences --- now keeping the conjugate substitutions symbolic --- the
+collinearity relation \(\operatorname{Im}\bigl(\overline{(P-R)}\,(Q-R)\bigr)=0\)
+becomes, after clearing the three circle denominators \((a-o)\), \((b-o)\),
+\((c-o)\), a single algebraic identity whose right-hand side factors as
+\[
+  R^{4}\,(a-b)\,(a-c)\,(b-c)\,\bigl(R^{2} - \overline{(m-o)}\,(m-o)\bigr).
+\]
+The three vertex differences are nonzero because \(ABC\) is nondegenerate, and
+the vanishing of the left-hand side forces \(\overline{(m-o)}\,(m-o) = R^{2}\),
+that is \(\lvert m-o\rvert = R\).  Hence \(M\) lies on the circumcircle.
+
+\section{Formalization notes}
+
+The development uses the published \texttt{Complex\_Geometry} session for its
+basic collinearity infrastructure.  The forward
+theorem \texttt{simson\_line} takes a point on the circumcircle and concludes
+collinearity of the three feet; the converse
+\texttt{simson\_line\_converse} takes collinearity of the feet and concludes
+that the point lies on the circumcircle.  The theorem
+\texttt{simson\_line\_iff} combines them into the corresponding
+characterisation.  The only structural hypothesis is that \(A\), \(B\), \(C\)
+are not collinear, together with a positive radius; the distinctness of the
+vertices is derived from non-collinearity.  The closed-form foot is shown to be
+the unique point on the side line whose displacement from \(M\) is
+perpendicular to that line, so the formal statements precisely capture the
+Wallace--Simson line theorem and its converse.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

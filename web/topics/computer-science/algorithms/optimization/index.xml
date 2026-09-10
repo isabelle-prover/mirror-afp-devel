@@ -4,6 +4,14 @@
     <title>Computer science/Algorithms/Optimization</title>
     <link>https://isa-afp.org/topics/computer-science/algorithms/optimization/</link>
     <description>AFP entries in Optimization</description><item>
+  <title>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Projected_Gradient_Descent.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Formalization of Lower-Bound Certificates for Optimal Classical Planning</title>
   <link>https://isa-afp.org/entries/Lower_Bound_Certificates_Planning.html</link>
   <pubDate>Sat, 13 Jun 2026 00:00:00 +0000</pubDate>

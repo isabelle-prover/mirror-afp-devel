@@ -236,6 +236,7 @@ Digit_Expansions
 DigitsInBase
 Dijkstra_Shortest_Path
 Dilworth
+Dinitz_Garg_Goemans_Counterexample
 Diophantine_Eqns_Lin_Hom
 Diophantine_Universal_Pairs
 Directed_Sets
@@ -339,6 +340,7 @@ Frequency_Moments
 Fresh_Identifiers
 FunWithFunctions
 FunWithTilings
+Fundamental_Group_Circle
 Functional-Automata
 Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
@@ -383,12 +385,13 @@ Gromov_Hyperbolicity
 Grothendieck_Schemes
 Group-Ring-Module
 GyrovectorSpaces
+HOL_in_HOL_Deep
 HOL-CSP
-HOL-CSPM
 HOL-CSP_OpSem
 HOL-CSP_Proc-Omata
 HOL-CSP_PTick
 HOL-CSP_RS
+HOL-CSPM
 HOLCF-Prelude
 HRB-Slicing
 Hahn_Jordan_Decomposition
@@ -465,6 +468,7 @@ Isabelle_Marries_Dirac
 Isabelle_Meta_Model
 Isabelle-Solidity
 Iteration_Algebra
+Jacobian_Counterexample
 Jacobson_Basic_Algebra
 Jinja
 JinjaDCI
@@ -518,6 +522,7 @@ Laplace_Transform
 Latin_Square
 LatticeProperties
 Launchbury
+Laurent_Annulus
 Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
@@ -586,6 +591,7 @@ MiniSail
 Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
+Miquel
 Mission_Time_LTL
 Mission_Time_LTL_Formula_Progression
 Mission_Time_LTL_Language_Partition
@@ -606,6 +612,10 @@ Multi_Party_Computation
 Multirelations
 Multirelations_Heterogeneous
 Multiset_Ordering_NPC
+Multitape_Alphabet_Enlargement
+Multitape_Alphabet_Reduction
+Multitape_Alphabet_Roundtrip
+Multitape_TM_Substrate
 Multitape_To_Singletape_TM
 Munta_Certificate_Checker
 Munta_Model_Checker
@@ -721,6 +731,7 @@ Probability_Inequality_Completeness
 ProcessComposition
 Program-Conflict-Analysis
 Progress_Tracking
+Projected_Gradient_Descent
 Projective_Geometry
 Projective_Measurements
 Promela
@@ -737,6 +748,7 @@ Ptolemys_Theorem
 Public_Announcement_Logic
 Pushdown_Automata
 Pushdown_Systems
+Q0_Completeness
 Q0_Metatheory
 Q0_Soundness
 QBF_Solver_Verification
@@ -860,6 +872,7 @@ Simple_Firewall
 Simplex
 Simplicial_complexes_and_boolean_functions
 SimplifiedOntologicalArgument
+Simson
 Skew_Heap
 Skip_Lists
 Slicing
@@ -935,6 +948,7 @@ Topological_Groups
 Topological_Semantics
 Topology
 TortoiseHare
+Trace_Based_Rely_Guarantee
 Transcendence_Series_Hancl_Rucki
 Transformer_Semantics
 Transition_Systems_and_Automata

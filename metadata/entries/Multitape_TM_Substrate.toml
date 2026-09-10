@@ -1,0 +1,66 @@
+title = "Multitape Turing Machine Substrate"
+date = 2026-07-14
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+<p>This entry formalises nondeterministic multitape Turing machines in Isabelle/HOL, depending only on <tt>HOL-Library</tt>.</p>
+
+<p>A machine's transition is a relation rather than a function: it may allow several moves at each step, so a machine can follow many different computations on one input (the machine is nondeterministic), and it accepts when at least one computation reaches an accepting state. Deterministic machines, which have a single move everywhere, are the special case. The number of tapes is ordinary data rather than fixed in the machine's type, so a single theorem can speak about machines with any number of tapes.</p>
+
+<p>Each tape carries a marker at its left end, and the model allows a machine to move that marker to the right, discarding a stretch of tape it can never return to. We prove that this relocation preserves the accepted language: a run before the move reaches an accepting state exactly when the matching run after it does.</p>
+
+<p>The formalisation adapts Dalvit and Thiemann's multitape Turing machine development, the AFP entry <tt>Multitape_To_Singletape_TM</tt>, extending it in two ways: the number of tapes is part of a machine's data rather than fixed in its type, and a machine is itself an ordinary value that theorems can range over, rather than a fixed locale context.</p>
+
+<p>The Claude family of AI models, via Claude Code, was used for proof engineering.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI was used for proof engineering and to write descriptions of the results, together with human design, steering, and review.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.salamon]
+email = "salamon_email"
+
+[authors.wehar]
+email = "wehar_email"
+
+[contributors]
+
+[notify]
+salamon = "salamon_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

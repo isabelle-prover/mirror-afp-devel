@@ -1,0 +1,35 @@
+title = "The Wallace--Simson Line Theorem in Isabelle/HOL"
+date = 2026-08-03
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = "We formalize the Wallace--Simson line theorem in Isabelle/HOL. Let \\(ABC\\) be a nondegenerate triangle and let \\(M\\) be a point on its circumcircle. Dropping the perpendiculars from \\(M\\) to the three side lines \\(BC\\), \\(CA\\), \\(AB\\) gives feet \\(P\\), \\(Q\\), \\(R\\); the theorem asserts that \\(P\\), \\(Q\\), \\(R\\) are collinear. The line through them is the <em>Simson line</em>, also called the <em>Wallace line</em> after William Wallace, whose published work on geometrical porisms is the standard early source for this result. We also prove the converse: if the three feet are collinear, then \\(M\\) lies on the circumcircle of \\(ABC\\). The development uses complex coordinates."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

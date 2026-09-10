@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{pdfsetup}
+\urlstyle{rm}\isabellestyle{it}
+% suppress "theory ... imports ... begin" headers and trailing "end"s
+\isadroptag{theory}
+\hyphenation{Benz-m\"ul-ler Kohl-hase Kirch-ner Isa-belle}
+\begin{document}
+\title{A deep embedding of HOL in HOL:\\ soundness, completeness, consistency}
+\author{Christoph Benzm\"uller \and Daniel Kirchner}
+\maketitle
+\begin{abstract}
+This entry presents a minimal, machine-checked deep embedding of
+classical higher-order logic (HOL) in Isabelle/HOL, following
+Benzm\"uller, Brown and Kohlhase (BKK)~\cite{BBK04}.  Throughout, HOL
+means Church's simple theory of types~\cite{Church40}: it is the
+embedded \emph{object} logic, while Isabelle/HOL serves as the ambient
+meta-logic.  The language of BKK~\S2 is formalised in a \emph{locally
+nameless} representation, which makes BKK's convention of identifying
+$\alpha$-equivalent terms literally true and eliminates capture-avoiding
+substitution and renaming machinery altogether.  The semantics of
+BKK~\S3 is rendered abstractly: applicative structures,
+$\Sigma$-evaluations $(D,@,E)$ subject to BKK's four conditions on the
+evaluation function, $\Sigma$-models $(D,@,E,\upsilon)$, and the class
+$\mathcal{M}_{\beta\mathfrak{f}\mathfrak{b}}$ of $\Sigma$-Henkin models
+(BKK's property q is automatic here, since primitive equality is part of
+the signature).
+Standard models arise as the full special case, and the familiar
+recursive denotation over frames enters only as the canonical way of
+constructing concrete models.
+
+On this basis we prove the natural-deduction calculus $\mathrm{NK}$ of
+BKK~\S7 sound (Theorem~7.3, including BKK's evaluation-variant
+argument) and complete in the sense of Henkin, via the
+abstract-consistency and model-existence method of BKK~\S6, with the
+term model realised as a term evaluation.  Completeness is
+established in a form stronger than BKK's Corollary~7.7: it holds at
+every infinite value carrier, for every signature with infinitely
+many parameters, and for open formulas.  Consistency follows by exhibiting a concrete
+$\Sigma$-standard model over finite domains.  The signature includes
+BKK's optional primitive equality (Remark~7.9) and---going beyond BKK,
+following Andrews~\cite{Andrews72}---typed description operators.  As
+an illustration, Cantor's theorem is derived \emph{inside}
+$\mathrm{NK}$, in surjective and injective form and at every type, with
+the Cantor sentences stated as in the Stanford Encyclopedia entry on
+Church's type theory~\cite{SEPChurchTT}.
+\end{abstract}
+
+\paragraph{What is new.}
+To the best of our knowledge, this entry contains the first
+machine-checked \emph{completeness} proof for a deep embedding of HOL in
+HOL.  The most closely related AFP entry, \emph{Metatheory of
+$\mathcal{Q}_0$} by D\'iaz~\cite{Q0MetatheoryAFP}, formalises Andrews'
+system $\mathcal{Q}_0$ (\cite{Andrews02}, Chapter~5) with named
+variables up to and including soundness and consistency; completeness is
+not covered there.  Harrison's classic self-verification of HOL
+Light~\cite{Harrison06} likewise concerns soundness and consistency of
+HOL in HOL, not completeness.  The nearest completeness mechanisations
+concern weaker logics: Koch and Kirst~\cite{KochKirst22} prove
+completeness of second-order logic with respect to Henkin semantics in
+Coq, by translation to mono-sorted first-order logic --- second-order
+logic is a proper fragment of Church's type theory, and the translation
+route differs from a direct model-existence proof for a higher-order
+calculus --- and From~\cite{From25} provides a synthetic-completeness
+framework in Isabelle/HOL, instantiated to propositional, first-order,
+modal and hybrid logic.  Second, the entry demonstrates that BKK's abstract
+consistency / model-existence technique (BKK~\S6)---the basis of their
+uniform completeness proofs for the whole landscape of model
+classes---can indeed be formalised.  Third, the formalisation
+\emph{extends} BKK by typed description operators, following
+Andrews~\cite{Andrews72}: the rule $NK(\iota)$ and the corresponding
+model condition are carried through soundness, model existence and
+completeness.  Finally, completeness is established in a form stronger
+than BKK's Corollary~7.7: for open formulas, at every infinite value
+carrier, and for every signature with infinitely many parameters,
+with no cardinality link between signature and carrier.
+
+\medskip\noindent
+This contribution is part of the LogiKEy project
+(\url{https://logikey.org}).
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+\input{session}
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}

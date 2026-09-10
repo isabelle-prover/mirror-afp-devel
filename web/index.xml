@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Laurent Series Expansions on an Annulus</title>
+  <link>https://isa-afp.org/entries/Laurent_Annulus.html</link>
+  <pubDate>Sat, 22 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Laurent Series Expansions on an Annulus in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
   <title>Actuarial Mathematics</title>
   <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
   <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
@@ -11,11 +18,94 @@
     <category>Mathematics/Games and economics</category>
 </item>
 <item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>A deep embedding of HOL in HOL: soundness, completeness, consistency</title>
+  <link>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</link>
+  <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
+  <description>A deep embedding of HOL in HOL: soundness, completeness, consistency in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
+  <title>The Wallace--Simson Line Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Simson.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Wallace--Simson Line Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>Completeness of the Q0 Higher-Order Logic</title>
+  <link>https://isa-afp.org/entries/Q0_Completeness.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Completeness of the Q0 Higher-Order Logic in the AFP</description>
+    <category>Logic/General logic</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture</title>
+  <link>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</link>
+  <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
+  <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
+  <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Termination Restricted to Right-Forward Closures</title>
   <link>https://isa-afp.org/entries/Right_Forward_Closures.html</link>
   <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
   <description>Termination Restricted to Right-Forward Closures in the AFP</description>
     <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Multitape Turing Machine Substrate</title>
+  <link>https://isa-afp.org/entries/Multitape_TM_Substrate.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Turing Machine Substrate in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Roundtrip</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Roundtrip in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Reduction</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Reduction in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Enlargement</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Enlargement in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
 </item>
 <item>
   <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
@@ -111,6 +201,21 @@
   <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
   <description>Complete Elliptic Integrals and the Arithmetic–Geometric Mean in the AFP</description>
     <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Projected_Gradient_Descent.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Fundamental Group of the Circle</title>
+  <link>https://isa-afp.org/entries/Fundamental_Group_Circle.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Fundamental Group of the Circle in the AFP</description>
+    <category>Mathematics/Topology</category>
 </item>
 <item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>

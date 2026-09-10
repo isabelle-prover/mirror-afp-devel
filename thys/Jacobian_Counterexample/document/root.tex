@@ -1,0 +1,47 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Formal Verification of an Explicit Counterexample to the Jacobian Conjecture}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+The Jacobian conjecture asks whether a polynomial self-map of affine space
+over a field of characteristic zero has a polynomial inverse whenever its
+Jacobian determinant is a nonzero constant
+\cite{Keller1939,vanDenEssen2000}.  This entry gives an independent
+Isabelle/HOL verification of the explicit three-dimensional map announced by
+Levent Alpöge on July 20, 2026 \cite{Alpoge2026}.  The announcement credits
+Akhil Mathew with prompting the question and the AI system Claude Fable with
+work leading to the map; stable Lean and independent verification repositories
+appeared the same day \cite{Cureton2026,Harrison2026}.
+
+Isabelle proves that the formal Jacobian entries are the corresponding complex
+analytic partial derivatives and that the determinant is identically $-2$.
+It verifies that three distinct rational points have the same image.  Scaling
+the first output coordinate yields determinant exactly $1$ while preserving
+noninjectivity.  The theory defines polynomial invertibility and proves that
+the map has no polynomial inverse.  It also constructs identity-padded
+polynomial maps, proves their block-Jacobian determinant is unchanged, and
+thereby obtains counterexamples in every finite dimension at least three.  The
+development makes no claim about the two-dimensional conjecture.
+\end{abstract}
+
+\newpage
+\tableofcontents
+\newpage
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

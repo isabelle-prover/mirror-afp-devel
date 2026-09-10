@@ -1,0 +1,61 @@
+title = "Multitape Alphabet Roundtrip"
+date = 2026-07-14
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+<p>This entry proves, in Isabelle/HOL, that the two multitape tape-alphabet transformations compose <em>as machines</em>, in both orders, with the accepted language preserved and the composed running time bounded by an <em>explicit</em> affine function of the source machine's running time.</p>
+
+<p>Alphabet <em>enlargement</em> (the Hartmanis–Stearns / Hopcroft–Ullman linear-speedup construction, packing \\(c\\) contiguous tape cells into one block) and alphabet <em>reduction</em> (the folklore per-symbol binary re-encoding of an arbitrary finite tape alphabet onto a fixed four-symbol alphabet, set within the wider machine-simulation landscape by van Emde Boas and Papadimitriou) are developed independently in the sibling sessions <tt>Multitape_Alphabet_Enlargement</tt> and <tt>Multitape_Alphabet_Reduction</tt> over the shared substrate <tt>Multitape_TM_Substrate</tt>. This session, <tt>Multitape_Alphabet_Roundtrip</tt>, composes them.</p>
+
+<p>For a well-formed source machine \\(M\\) with \\(|\\Gamma_M| \\geq 4\\), and for each order, the entry establishes language preservation (an equivalence modulo the composed input re-encoding) and a composed linear-time bound with explicit constants. Writing \\(k\\) for the source tape count and \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\), reduce-then-enlarge runs in time \\(8(6k + 1)\\,b\\,T(|w|) + 2\\,b\\,|w| + 4\\), and enlarge-then-reduce in \\(8(6k + 1)\\,b'\\,T(|w| + c - 1) + 2(6k + 1)\\,b'\\,|w| + 4(6k + 1)\\,b'\\), where \\(c\\) is the block size and \\(b'\\) the block width of the enlarged alphabet; each bound also has an existential-shape corollary \\(\\exists A, B, C.\\ \\mathrm{time} \\leq A\\,T(|w|) + B\\,|w| + C\\). These composed constants are established here, not inherited from a prior result.</p>
+
+<p>Nothing is re-proved: each headline chains the two sibling sessions' existing theorems. The explicit constants expose an order asymmetry hidden under \\(O(\\cdot)\\): the enlargement's block-speedup factor \\(c\\) cancels when the alphabet is reduced first, but survives when it is enlarged first.</p>
+
+<p>The Claude family of AI models, via Claude Code, was used for proof engineering.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI was used for proof engineering and to write descriptions of the results, together with human design, steering, and review.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.salamon]
+email = "salamon_email"
+
+[authors.wehar]
+email = "wehar_email"
+
+[contributors]
+
+[notify]
+salamon = "salamon_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

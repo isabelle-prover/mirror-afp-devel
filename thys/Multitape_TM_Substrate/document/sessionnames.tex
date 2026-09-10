@@ -1,0 +1,12 @@
+% Single source of truth for the locked AFP entry / session names, shared by
+% all four Multitape_* documents.  The canonical copy lives here at
+% t/document/sessionnames.tex and is symlinked into each session's document/
+% dir (and listed in that session's ROOT document_files), exactly like
+% glossary.tex / acknowledgement.tex / root.bib.  bin/release-alphabet.py
+% dereferences the symlink into a real per-entry copy when staging thys/, so
+% each shipped entry stays self-contained.  A rename is one edit here and can
+% never drift across the four root.tex preambles.
+\newcommand{\sessMTTM}{\texttt{Multitape\_TM\_Substrate}}
+\newcommand{\sessAE}{\texttt{Multitape\_Alphabet\_Enlargement}}
+\newcommand{\sessAR}{\texttt{Multitape\_Alphabet\_Reduction}}
+\newcommand{\sessART}{\texttt{Multitape\_Alphabet\_Roundtrip}}

@@ -4,6 +4,22 @@
     <title>Mathematics/Analysis</title>
     <link>https://isa-afp.org/topics/mathematics/analysis/</link>
     <description>AFP entries in Analysis</description><item>
+  <title>Laurent Series Expansions on an Annulus</title>
+  <link>https://isa-afp.org/entries/Laurent_Annulus.html</link>
+  <pubDate>Sat, 22 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Laurent Series Expansions on an Annulus in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
+  <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>The Incomplete Gamma Function</title>
   <link>https://isa-afp.org/entries/Incomplete_Gamma.html</link>
   <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
@@ -36,6 +52,14 @@
   <link>https://isa-afp.org/entries/Arithmetic_Geometric_Mean.html</link>
   <pubDate>Fri, 03 Jul 2026 00:00:00 +0000</pubDate>
   <description>Complete Elliptic Integrals and the Arithmetic–Geometric Mean in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Projected_Gradient_Descent.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the AFP</description>
+    <category>Computer science/Algorithms/Optimization</category>
     <category>Mathematics/Analysis</category>
 </item>
 <item>

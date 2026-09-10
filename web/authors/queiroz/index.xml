@@ -4,6 +4,37 @@
     <title>Ruy Jose Guerra Barretto de Queiroz</title>
     <link>https://isa-afp.org/authors/queiroz/</link>
     <description>AFP entries of Ruy Jose Guerra Barretto de Queiroz</description><item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>The Wallace--Simson Line Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Simson.html</link>
+  <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Wallace--Simson Line Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture</title>
+  <link>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</link>
+  <pubDate>Wed, 22 Jul 2026 00:00:00 +0000</pubDate>
+  <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
+    <category>Computer science/Algorithms/Graph</category>
+    <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
+  <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Analysis</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
   <link>https://isa-afp.org/entries/Equality_Saturation_Checker.html</link>
   <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
@@ -16,6 +47,13 @@
   <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
   <description>The Chevalley-Warning Theorem in the AFP</description>
     <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Fundamental Group of the Circle</title>
+  <link>https://isa-afp.org/entries/Fundamental_Group_Circle.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Fundamental Group of the Circle in the AFP</description>
+    <category>Mathematics/Topology</category>
 </item>
 <item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>
