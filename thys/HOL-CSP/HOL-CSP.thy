@@ -46,16 +46,12 @@
 
 chapter\<open> Main Entry Point \<close>
 
-(*<*)
 theory "HOL-CSP"
   imports Read_Write_CSP_Laws CSP_Laws Induct_CSP_Rules CSP_Assertions
 begin
-  (*>*)
 
 text \<open>This is where the session \<^session>\<open>HOL-CSP\<close> should be imported from.\<close>
 
-
-
 (*<*)
 end
-  (*>*)
+(*>*)

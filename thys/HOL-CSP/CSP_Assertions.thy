@@ -112,8 +112,21 @@ definition non_terminating :: \<open>('a,'r) process\<^sub>p\<^sub>t\<^sub>i\<^s
   where \<open>non_terminating P \<equiv> RUN UNIV \<sqsubseteq>\<^sub>T P\<close>
 
 
+fun RUN\<^sub>k :: \<open>nat \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> ('a, 'b) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> 
+  where \<open>RUN\<^sub>k 0 A R = SKIPS R\<close>
+      | \<open>RUN\<^sub>k (Suc n) A R =  \<box>a\<in>A \<rightarrow> RUN\<^sub>k n A R\<close>
+
+text\<open>In contrast to the assertion \<^term>\<open>non_terminating\<close>, which reauires
+a process to terminate \<^emph>\<open>nowhere\<close>, \<^term>\<open>strictly_terminating\<close> requires a process
+to terminate \<^emph>\<open>everywhere\<close>.\<close>
+
+definition strictly_terminating where \<open>strictly_terminating P \<equiv> (\<exists> n. RUN\<^sub>k n UNIV UNIV \<sqsubseteq>\<^sub>F\<^sub>D P )\<close>
+
 
 section \<open>Properties\<close>
+
+lemma deadlock_free_mono_FD : \<open>deadlock_free P \<Longrightarrow> P \<sqsubseteq>\<^sub>F\<^sub>D Q \<Longrightarrow> deadlock_free Q\<close>
+  by (meson deadlock_free_def trans_FD)
 
 lemma DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD_DF : \<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R \<sqsubseteq>\<^sub>F\<^sub>D DF A\<close>
 proof (subst DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def, induct rule: fix_ind)
@@ -833,7 +846,115 @@ lemmas non_terminating_Par = non_terminating_Sync[where A = \<open>UNIV\<close>]
   and non_terminating_Inter = non_terminating_Sync[where A = \<open>{}\<close>]
 
 
+section\<open>Derived co-induction principles\<close>
+
+lemma lasso_equiv_gen_n :
+  \<open>DF A = (\<mu> x. ((\<lambda>X. \<sqinter>a\<in>A \<rightarrow> X) ^^ Suc n) x)\<close>
+  unfolding DF_def
+  by (rule fix_funpow_eq[where f = \<open>\<lambda>X. \<sqinter>a\<in>A \<rightarrow> X\<close>, symmetric]) simp
+
+text\<open>Example instance of the lasso-scheme: a lasso of length 3.
+     This also explains why this repetition of non-deterministic
+     choices is called a ``lasso'' following the intuition from
+     the operational semantics:\<close>
+lemma deadlock_free_3_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow> \<sqinter>a\<in>UNIV \<rightarrow> \<sqinter>a\<in>UNIV \<rightarrow> \<sqinter>a\<in>UNIV \<rightarrow> x \<sqsubseteq>\<^sub>F\<^sub>D P)
+         \<Longrightarrow> deadlock_free (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  apply(rule DF_Univ_freeness[of UNIV], simp_all add: lasso_equiv_gen_n[where n = 2])
+  by (rule fix_ind) (simp_all add: eval_nat_numeral)
+
+text\<open>And now the general case: \<close>
+
+
+lemma deadlock_free_n_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow> \<sqinter>a\<in>UNIV \<rightarrow> ((\<lambda> X. \<sqinter>a\<in>UNIV \<rightarrow> X)^^n) x \<sqsubseteq>\<^sub>F\<^sub>D P)
+   \<Longrightarrow> deadlock_free (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  apply(rule DF_Univ_freeness[of UNIV], simp_all add: lasso_equiv_gen_n[where n = n])
+  by (rule fix_ind) simp_all
+
+text\<open>... or even more general: \<close>
+lemma deadlock_free_gen_n_coinduct :
+ \<open> A \<noteq> {} \<Longrightarrow> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow> \<sqinter>a\<in>A \<rightarrow> ((\<lambda> X. \<sqinter>a\<in>A \<rightarrow> X)^^n) x \<sqsubseteq>\<^sub>F\<^sub>D P)
+          \<Longrightarrow> deadlock_free (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  apply (rule DF_Univ_freeness[of A], assumption)
+  apply (simp add: lasso_equiv_gen_n[where n = n])
+  by (rule fix_ind) simp_all
+
+
+text\<open>The very same argument applies verbatim to the potentially terminating reference
+process \<^const>\<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close> and its assertion \<^const>\<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close>: \<^term>\<open>fix_funpow_eq\<close>
+only needs continuity of the recursive step function, and
+\<^term>\<open>\<lambda>X. (\<sqinter>a\<in>UNIV \<rightarrow> X) \<sqinter> SKIPS UNIV\<close> is continuous just like \<^term>\<open>\<lambda>X. \<sqinter>a\<in>UNIV \<rightarrow> X\<close> is.
+Note that, as for \<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_Univ_freeness\<close>, the coinduction hypothesis is still
+phrased with \<^term>\<open>(\<sqsubseteq>\<^sub>F\<^sub>D)\<close>, only the concluding assertion \<^const>\<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close>
+is the coarser \<^term>\<open>(\<sqsubseteq>\<^sub>F)\<close>-based one.\<close>
+
+lemma lasso_equiv\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n :
+  \<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV = (\<mu> x. ((\<lambda>X. (\<sqinter>a\<in>UNIV \<rightarrow> X) \<sqinter> SKIPS UNIV) ^^ Suc n) x)\<close>
+  unfolding DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def
+  by (rule fix_funpow_eq[where f = \<open>\<lambda>X. (\<sqinter>a\<in>UNIV \<rightarrow> X) \<sqinter> SKIPS UNIV\<close>, symmetric]) simp
+
+lemma deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow>
+       (\<sqinter>a\<in>UNIV \<rightarrow> ((\<lambda>X. (\<sqinter>a\<in>UNIV \<rightarrow> X) \<sqinter> SKIPS UNIV) ^^ n) x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F\<^sub>D P)
+         \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  apply(rule DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_Univ_freeness[of UNIV UNIV], simp_all add: lasso_equiv\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n[where n = n])
+  by (rule fix_ind) simp_all
+
+text\<open>Once more, the same domain-theoretic fact \<^term>\<open>fix_funpow_eq\<close> yields the
+analogous coinduction schemes for the liveness (livelock-freeness) assertions,
+whose reference process is \<^const>\<open>CHAOS\<close> instead of \<^const>\<open>DF\<close>. Since both
+\<^const>\<open>lifelock_free\<close> and \<^const>\<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close> are already stated with
+\<^term>\<open>(\<sqsubseteq>\<^sub>F\<^sub>D)\<close> (unlike \<^const>\<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close>, which is \<^term>\<open>(\<sqsubseteq>\<^sub>F)\<close>-based), no
+\<open>_Univ_freeness\<close>-style bridging lemma is needed: we may unfold the assertion directly.\<close>
+
+lemma lasso_equiv_CHAOS_n :
+  \<open>CHAOS UNIV = (\<mu> x. ((\<lambda>X. STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)) ^^ Suc n) x)\<close>
+  unfolding CHAOS_def
+  by (rule fix_funpow_eq[where f = \<open>\<lambda>X. STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)\<close>, symmetric]) simp
+
+lemma lifelock_free_n_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow>
+       STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> ((\<lambda>X. STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)) ^^ n) x) \<sqsubseteq>\<^sub>F\<^sub>D P)
+         \<Longrightarrow> lifelock_free (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  unfolding lifelock_free_def
+  apply (simp add: lasso_equiv_CHAOS_n[where n = n])
+  by (rule fix_ind) simp_all
+
+
+
+text\<open>Since \<^const>\<open>lifelock_free\<close> and \<^const>\<open>non_terminating\<close> are already known to be the
+very same predicate (\<^term>\<open>lifelock_free_is_non_terminating\<close> : \<^term>\<open>lifelock_free P = non_terminating P\<close>,
+both being \<^term>\<open>CHAOS UNIV \<sqsubseteq>\<^sub>F\<^sub>D P\<close> in disguise), \<^term>\<open>lifelock_free_n_coinduct\<close> transports
+verbatim into a coinduction scheme for \<^const>\<open>non_terminating\<close>: no new domain-theoretic
+argument is required, only the substitution of the assertion via this equivalence.\<close>
+
+lemma non_terminating_n_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow>
+       STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> ((\<lambda>X. STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)) ^^ n) x) \<sqsubseteq>\<^sub>F\<^sub>D P)
+         \<Longrightarrow> non_terminating (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  using lifelock_free_n_coinduct[of P n] lifelock_free_is_non_terminating[of P] by blast
+
+lemma lasso_equiv_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n :
+  \<open>CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV =
+   (\<mu> x. ((\<lambda>X. SKIPS UNIV \<sqinter> STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)) ^^ Suc n) x)\<close>
+  unfolding CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def
+  by (rule fix_funpow_eq[where f = \<open>\<lambda>X. SKIPS UNIV \<sqinter> STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)\<close>, symmetric]) simp
+
+lemma lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n_coinduct :
+ \<open> (\<And>x. x \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow>
+       SKIPS UNIV \<sqinter> STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> ((\<lambda>X. SKIPS UNIV \<sqinter> STOP \<sqinter> (\<box>a\<in>UNIV \<rightarrow> X)) ^^ n) x)
+         \<sqsubseteq>\<^sub>F\<^sub>D P)
+         \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (P::('\<alpha>, '\<delta>) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close>
+  unfolding lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def
+  apply (simp add: lasso_equiv_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_n[where n = n])
+  by (rule fix_ind) simp_all
+
+
+
+
+
 
 (*<*)
 end
-  (*>*)
+(*>*)
