@@ -62,7 +62,7 @@ named_theorems type_rule
 declare id_type[type_rule]
 declare comp_type[type_rule]
 
-ML_file \<open>typecheck.ml\<close>
+ML_file \<open>typecheck.ML\<close>
 
 subsubsection \<open>typecheck\_cfuncs: Tactic to Construct Type Facts\<close>
 
