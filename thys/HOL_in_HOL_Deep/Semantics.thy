@@ -16,7 +16,7 @@ text \<open>The semantics in BKK's own layered terminology, in their order: @{em
   After the abstract notions, the recursive denotation \<open>\<lparr>t\<rparr>\<^bsub>\<xi>\<^esub>\<close> is introduced as the
   @{emph \<open>canonical construction\<close>} of an evaluation function over frame-like structures
   (BKK's \<open>\<Sigma>\<close>-evaluations over frames); it is the vehicle for building concrete models
-  (the standard models here, and the term model of the completeness proof in Section 3).\<close>
+  (the standard models here, and the term model of the completeness proof).\<close>
 
 subsection \<open>Assignment update\<close>
 
@@ -33,21 +33,26 @@ lemma upd_comm: "(x, \<sigma>) \<noteq> (w, \<tau>) \<Longrightarrow> (\<xi>(x\<
 
 subsection \<open>Applicative structures (BKK Definition 3.1)\<close>
 
-text \<open>A typed collection of non-empty domains with an application operator.  BKK's
-  typing discipline \<open>@ : D\<^bsub>\<alpha>\<rightarrow>\<beta>\<^esub> \<times> D\<^bsub>\<alpha>\<^esub> \<rightarrow> D\<^bsub>\<beta>\<^esub>\<close> becomes a closure condition on the
-  one abstract operator.  BKK's @{emph \<open>frames\<close>} (Definition 3.4, \<open>D\<^bsub>\<alpha>\<rightarrow>\<beta>\<^esub> \<subseteq> F(D\<^bsub>\<alpha>\<^esub>; D\<^bsub>\<beta>\<^esub>)\<close>)
-  are a set-theoretic notion with no direct analogue over an abstract carrier; by BKK
-  Remark 3.6 every frame is functional, and it is @{emph \<open>functionality\<close>} (BKK
-  Definition 3.5; named property f in Definition 3.46) that all mathematical arguments consume, so
-      the model class below
-  is delineated by functionality.\<close>
+text \<open>An applicative structure (BKK Definition 3.1) is a family of non-empty domains
+  \<open>D\<^bsub>\<tau>\<^esub>\<close>, one per type, with an application operator.  By BKK's Currying remark
+  (Remark 3.3) one binary operator suffices.  The point of the
+  notion is its generality: a member of \<open>D\<^bsub>\<alpha>\<rightarrow>\<beta>\<^esub>\<close> need not be a function, and distinct
+  members may behave identically under application.  BKK's term structures
+  (Example 3.8), with well-formed formulae as domains and syntactic application, are the
+  guiding example --- their \<open>\<beta>\<eta>\<close>-quotient over a signature with a single constant even
+  fails functionality (Remark 3.15) --- and the term model of the completeness proof
+  below is such a quotient structure.  A @{emph \<open>frame\<close>} (Definition 3.4) is the
+  set-theoretic special case in which the function domains consist of actual functions;
+  every frame is @{emph \<open>functional\<close>}: members of \<open>D\<^bsub>\<alpha>\<rightarrow>\<beta>\<^esub>\<close> that agree on all arguments
+  are equal (Definition 3.5, Remark 3.6; property f of Definition 3.46).  Functionality
+  is the one consequence of being a frame that the proofs use, so the model class below
+  is delineated by it, and frames themselves are not needed.\<close>
 
 locale app_struct = fixes Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
   assumes as_nonempty: "\<exists>a. Dm \<alpha> a" and as_appTy: "Dm (\<alpha> \<^bold>\<Rightarrow> \<beta>) f \<Longrightarrow> Dm \<alpha> a \<Longrightarrow> Dm \<beta> (Ap f a)"
 begin
 
-text \<open>Variable assignments into the structure (BKK Definition 3.17); the update \<open>\<xi>(x\<^bsub>\<sigma>\<^esub> := d)\<close> is
-    BKK's \<open>\<phi>,[d/X]\<close>.\<close>
+text \<open>Variable assignments into the structure (BKK Definition 3.17).\<close>
 
 definition asg :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> bool" where "asg \<xi> \<equiv> \<forall>n \<tau>. Dm \<tau> (\<xi> n \<tau>)"
 
@@ -83,16 +88,33 @@ locale sigma_eval = app_struct Dm Ap for Dm :: "ty \<Rightarrow> 'u \<Rightarrow
 begin
 
 text \<open>The derived \<open>\<beta>\<close>-application law: the denotation of an abstraction is determined
-    applicatively by the openings of 
-  its body (from conditions (1), (2), (4) and coincidence; the vehicle
-      for all abstraction reasoning below).\<close>
+  applicatively by the openings of its body (from conditions (1), (2), (4) and coincidence;
+  the vehicle for all abstraction reasoning below).  In the sharpened form the fresh-name
+  condition only concerns the typed occurrence \<open>(x, \<sigma>)\<close>, not the bare name (a name may
+  occur at several types).\<close>
+
+lemma ev_abs_app_occ:
+  assumes wb: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)" and xi: "asg \<xi>"
+    and x: "(x, \<sigma>) \<notin> occ b" and d: "Dm \<sigma> d"
+  shows "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
+proof -
+  let ?\<xi>' = "\<xi>(x\<^bsub>\<sigma>\<^esub> := d)"
+  have xi': "asg ?\<xi>'" by (rule asg_upd[OF xi d])
+  have coin: "Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b) = Ee ?\<xi>' (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)"
+    by (rule ev_coin[OF wb xi xi']) (use x in \<open>auto simp: upd_def\<close>)
+  have "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d = Ap (Ee ?\<xi>' (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) (Ee ?\<xi>' (x\<^sup>f\<^bsub>\<sigma>\<^esub>))"
+    by (simp add: coin ev_var[OF xi'])
+  also have "\<dots> = Ee ?\<xi>' ((\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b) \<^bold>\<cdot> (x\<^sup>f\<^bsub>\<sigma>\<^esub>))"
+    by (rule ev_app[OF wb wff_Fre xi', symmetric])
+  also have "\<dots> = Ee ?\<xi>' (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
+    by (rule ev_beta[OF beta[OF wb wff_Fre] xi'])
+  finally show ?thesis .
+qed
 
 lemma ev_abs_app:
   assumes wb: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)" and xi: "asg \<xi>" and x: "x \<notin> fvs b" and d: "Dm \<sigma> d"
-  shows "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)" 
-  by (smt (verit, del_insts) asg_upd beta d fvs.simps(10) fvs_eq_fst_occ image_eqI prod.sel(1)
-      sigma_eval.ev_app sigma_eval.ev_beta sigma_eval.ev_coin sigma_eval.ev_var sigma_eval_axioms
-      upd_def wb wff_Fre x xi)
+  shows "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
+  by (metis d ev_abs_app_occ fst_conv fvs_eq_fst_occ image_eqI wb x xi)
 
 end
 
@@ -104,8 +126,8 @@ text \<open>A \<open>\<Sigma>\<close>-valuation is a (total) function \<open>\<u
   Following BKK Definition 3.41 (and Remark 3.42) we include primitive equality
   \<open>L\<^sup>\<alpha>\<^sub>=(E(=\<^sub>\<alpha>))\<close>, and --- extending BKK Definition 3.41, whose \<open>\<Sigma>\<close>-models have no
   description operator --- a description property for \<open>E(\<iota>\<^sub>\<alpha>)\<close>, matching \<open>NK(\<iota>)\<close>.  Since the logical
-      constants are closed, their denotations are assignment-
-  independent (coincidence); we fix a canonical assignment to name them.\<close>
+  constants are closed, their denotations are assignment-independent (coincidence);
+  we fix a canonical assignment to name them.\<close>
 
 locale sigma_model = sigma_eval Dm Ap Ee for
   Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u" and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" +
@@ -163,7 +185,7 @@ text \<open>Evaluating \<open>\<^bold>\<bottom> = \<^bold>\<Pi>\<^bsub>\<o>\<^es
 lemma vl_FalseB: assumes xi: "asg \<xi>" shows "vl (Ee \<xi> \<^bold>\<bottom>) \<longleftrightarrow> (\<forall>d. Dm \<o> d \<longrightarrow> vl d)"
 proof -
   have wI: "wff\<^bsub>\<o>\<^bold>\<Rightarrow>\<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<o>\<^esub> (Bnd 0) :: 'p tm)"
-      by (rule wff_AbsI) (simp add: wff_Fre)
+    by (rule wff_AbsI) (simp add: wff_Fre)
   have e: "Ee \<xi> (\<^bold>\<bottom> :: 'p tm) = Ap (Ee \<xi> (Pi \<o>)) (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<o>\<^esub> (Bnd 0)))"
       by (metis FalseB_def Forall_def ev_app wI wff_Pi xi)
   have b: "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<o>\<^esub> (Bnd 0))) d = d" if d: "Dm \<o> d" for d
@@ -175,8 +197,8 @@ text \<open>BKK Lemma 3.43: \<open>\<upsilon>(E(\<^bold>\<top>)) \<equiv> T\<clo
   true and a false object (BKK Remark 3.44).\<close>
 
 lemma vl_TF: assumes xi: "asg \<xi>" shows "vl (Ee \<xi> \<^bold>\<top>) \<and> \<not> vl (Ee \<xi> \<^bold>\<bottom>)" 
-  by (metis (mono_tags, lifting) TrueB_def sigma_eval.ev_app sigma_eval.ev_type sigma_eval_axioms
-      vl_FalseB vl_neg wff_FalseB wff_Neg wff_TrueB xi)
+  by (metis (mono_tags, lifting) TrueB_def sigma_eval.ev_app sigma_eval.ev_type
+      sigma_eval_axioms vl_FalseB vl_neg wff_FalseB wff_Neg wff_TrueB xi)
 
 end
 
@@ -208,6 +230,17 @@ definition bkk_consequence :: "'u itself \<Rightarrow> 'p tm set \<Rightarrow> '
 syntax "_bkk_consequence" :: "logic \<Rightarrow> type \<Rightarrow> logic \<Rightarrow> logic"  (\<open>_ \<Turnstile>'(_') _\<close> [61, 1000, 61] 60)
 syntax_consts "_bkk_consequence" == bkk_consequence
 translations "_bkk_consequence \<Gamma> t A" == "CONST bkk_consequence (_TYPE t) \<Gamma> A"
+
+text \<open>Note the well-formedness conjunct in the antecedent: a context containing an
+  ill-formed member entails everything, vacuously.  This is deliberate --- the relation is
+  only ever applied to well-formed contexts, and every exported theorem carries explicit
+  \<open>wff\<close> hypotheses --- but it is worth stating.
+
+  Consequence is monotone in the hypotheses: enlarging the context only narrows the
+  models that must be checked.\<close>
+
+lemma bkk_consequence_mono: "\<Gamma>0 \<Turnstile>('u) A \<Longrightarrow> \<Gamma>0 \<subseteq> \<Gamma> \<Longrightarrow> \<Gamma> \<Turnstile>('u) A"
+  unfolding bkk_consequence_def by blast
 
 subsection \<open>\<open>\<Sigma>\<close>-evaluations over frames: the canonical construction\<close>
 
@@ -401,27 +434,76 @@ lemma sat_Forall: assumes wA: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<o>\<^es
   shows "vl (Ee \<xi> (\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> b)) \<longleftrightarrow> (\<forall>d. Dm \<sigma> d \<longrightarrow> vl (Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d))  (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)))"
   unfolding Forall_def using sat_Pi wA xi ev_abs_app x by auto
 
-text \<open>BKK Lemma 4.2: in a \<open>\<Sigma>\<close>-model with primitive equality (which gives property q with
-  witness \<open>E(=\<^bsub>\<alpha>\<^esub>)\<close>), Leibniz equality is satisfied exactly by equal denotations.\<close>
+text \<open>Satisfaction of Leibniz equality (BKK Lemma 4.2): in a \<open>\<Sigma>\<close>-model with primitive
+  equality, Leibniz equality holds exactly at identical denotations.\<close>
+
+lemma sat_Leib: assumes wA: "wff\<^bsub>\<alpha>\<^esub>(A)" and wB: "wff\<^bsub>\<alpha>\<^esub>(B)" and xi: "asg \<xi>"
+  shows "vl (Ee \<xi> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B)) \<longleftrightarrow> Ee \<xi> A = Ee \<xi> B"
+proof -
+  have lcA: "lc A" and lcB: "lc B" using wA wB by (auto intro: wff_lc)
+  define p where "p = fresh (fvs A \<union> fvs B)"
+  have p: "p \<notin> fvs A" "p \<notin> fvs B"
+    unfolding p_def using fresh_notin[of "fvs A \<union> fvs B"] by auto
+  let ?b = "(Bnd 0 \<^bold>\<cdot> A) \<^bold>\<supset> (Bnd 0 \<^bold>\<cdot> B)"
+  have wI: "wff\<^bsub>(\<alpha>\<^bold>\<Rightarrow>\<o>)\<^bold>\<Rightarrow>\<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub> ?b)"
+    by (smt (verit, del_insts) ImpB_def lcA lcB opn.simps(1,4,5,9) opn_lc wA wB
+        wff_AbsI wff_App wff_Fre wff_ImpB)
+  have pf: "p \<notin> fvs ?b" using p by (auto simp: ImpB_def)
+  have unf: "vl (Ee \<xi> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B)) \<longleftrightarrow> (\<forall>r. Dm (\<alpha> \<^bold>\<Rightarrow> \<o>) r
+      \<longrightarrow> (vl (Ap r (Ee \<xi> A)) \<longrightarrow> vl (Ap r (Ee \<xi> B))))"
+  proof -
+    have "vl (Ee (\<xi>(p\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> := r)) (?b\<^bold>\<langle>p\<^sup>f\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub>\<^bold>\<rangle>))
+        \<longleftrightarrow> (vl (Ap r (Ee \<xi> A)) \<longrightarrow> vl (Ap r (Ee \<xi> B)))"
+      if r: "Dm (\<alpha> \<^bold>\<Rightarrow> \<o>) r" for r
+    proof -
+      let ?\<xi> = "\<xi>(p\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> := r)"
+      have ob: "?b\<^bold>\<langle>p\<^sup>f\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub>\<^bold>\<rangle> = (p\<^sup>f\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>\<cdot> A) \<^bold>\<supset> (p\<^sup>f\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>\<cdot> B)"
+        by (simp add: opn_lc[OF lcA] opn_lc[OF lcB])
+      have cA: "Ee ?\<xi> A = Ee \<xi> A"
+        using p ev_coin[OF wA asg_upd[OF xi r] xi]
+        unfolding upd_def fvs_eq_fst_occ image_iff by force
+      have cB: "Ee ?\<xi> B = Ee \<xi> B"
+        using p ev_coin[OF wB asg_upd[OF xi r] xi]
+        unfolding upd_def fvs_eq_fst_occ image_iff by force
+      show ?thesis unfolding ob
+        by (smt (verit, del_insts) asg_upd cA cB ev_app ev_var sat_ImpB that upd_same wA wB
+            wff_App wff_AppE wff_App_FreFre wff_FreE xi)
+    qed
+    thus ?thesis
+      unfolding ev_beta[OF Leib_beq[OF wA wB] xi] sat_Forall[OF wI pf xi]
+      by blast
+  qed
+  show ?thesis
+  proof
+    assume L: "vl (Ee \<xi> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B))"
+    let ?r = "Ap (Ee \<xi> (Eq \<alpha>)) (Ee \<xi> A)"
+    have rA: "vl (Ap ?r (Ee \<xi> A))"
+      using vl_eq[OF xi ev_type[OF wA xi] ev_type[OF wA xi]] by simp
+    have "vl (Ap ?r (Ee \<xi> B))"
+      using unf L as_appTy[OF ev_type[OF wff_Eq xi] ev_type[OF wA xi]] rA by blast
+    thus "Ee \<xi> A = Ee \<xi> B"
+      using vl_eq[OF xi ev_type[OF wA xi] ev_type[OF wB xi]] by simp
+  qed(simp add: unf)
+qed
 
 end
 
 subsection \<open>\<open>\<Sigma>\<close>-Henkin models: the general-model locale (BKK Definition 3.50)\<close>
 
 text \<open>BKK's soundness and completeness theorems (BKK Theorem 7.3, Corollary 7.7) cover all
-  eight model classes \<open>\<M>\<^sub>*\<close>; this development instantiates the most specialised one, the
-  class \<open>\<M>\<^sub>\<beta>\<^sub>f\<^sub>b\<close> of @{emph \<open>\<open>\<Sigma>\<close>-Henkin models\<close>} (BKK Definition 3.50): \<open>\<Sigma>\<close>-models (BKK
+  eight model classes \<open>\<M>\<^sub>*\<close>; we instantiate the most specialised one, the
+  class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> of @{emph \<open>\<open>\<Sigma>\<close>-Henkin models\<close>} (BKK Definition 3.50): \<open>\<Sigma>\<close>-models (BKK
   Definition 3.41) satisfying property b, property f (functionality), and property q (BKK
   Definitions 3.46 and 3.49).  Crucially the function domains need not be full (BKK
   Definition 3.5): following Henkin --- in BKK's words, it is sufficient to require that \<open>\<D>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub>\<close>
   ``has enough members that any well-formed formula can be evaluated'' (BKK
-  Section 2.3.1).  We therefore
-  require the \<open>\<lambda>\<close>-conditions --- \<open>\<lambda>\<close>-comprehension \<open>gm_lamTy\<close> and the \<open>\<beta>\<close>-condition \<open>gm_beta\<close>
-  of the \<open>\<Sigma>\<close>-evaluation (BKK Definition 3.18) --- only for the functions that are
-  @{emph \<open>denotations of \<open>\<lambda>\<close>-terms\<close>}; equivalently, every wff denotes.  A term model cannot be
-  full: with property b the domain \<open>\<D>\<^bsub>\<iota>\<^bold>\<Rightarrow>\<o>\<^esub>\<close> of a full frame over infinite \<open>\<D>\<^bsub>\<iota>\<^esub>\<close> would be
-  uncountable, whereas the term model is countable.  (BKK avoid Andrews' term
-  @{emph \<open>general models\<close>} for this notion; we keep it in the locale name
+  Section 2.3.1).  We therefore require the \<open>\<lambda>\<close>-conditions --- \<open>\<lambda>\<close>-comprehension \<open>gm_lamTy\<close> and
+  the \<open>\<beta>\<close>-condition \<open>gm_beta\<close> of the \<open>\<Sigma>\<close>-evaluation (BKK Definition 3.18) --- only for the
+  functions that are @{emph \<open>denotations of \<open>\<lambda>\<close>-terms\<close>}; equivalently, every wff denotes.
+  A term model cannot be full: with property b the domain \<open>\<D>\<^bsub>\<iota>\<^bold>\<Rightarrow>\<o>\<^esub>\<close> of a full frame over
+  infinite \<open>\<D>\<^bsub>\<iota>\<^esub>\<close> would be uncountable, whereas the term model over a countable signature
+  is countable.
+  (BKK avoid Andrews' term @{emph \<open>general models\<close>} for this notion; we keep it in the locale name
   \<open>general_model\<close>, in Andrews' sense.)  Standard models --- the full case, BKK
   Definition 3.51 --- appear at the end of this section as a sublocale.  Beyond BKK, the locale
   carries the description condition \<open>gm_descB\<close> for the typed description operators \<open>Iota \<sigma>\<close>
@@ -434,10 +516,8 @@ text \<open>BKK's soundness and completeness theorems (BKK Theorem 7.3, Corollar
 
 
 locale general_model = frame_sig +
-  \<comment> \<open>every domain is inhabited (part of BKK Definition 3.1, applicative structures)\<close>
-  assumes gm_nonempty: "\<exists>d. \<D>\<^bsub>\<sigma>\<^esub> d"
-    \<comment> \<open>property b (BKK Definition 3.46): \<open>\<D>\<^bsub>\<o>\<^esub> = {Tv, Fv}\<close>\<close>
-    and gm_TF: "Tv \<noteq> Fv" and gm_boolean: "\<D>\<^bsub>\<o>\<^esub> a \<longleftrightarrow> a = Tv \<or> a = Fv"
+  \<comment> \<open>property b (BKK Definition 3.46): \<open>\<D>\<^bsub>\<o>\<^esub> = {Tv, Fv}\<close>\<close>
+  assumes gm_TF: "Tv \<noteq> Fv" and gm_boolean: "\<D>\<^bsub>\<o>\<^esub> a \<longleftrightarrow> a = Tv \<or> a = Fv"
     \<comment> \<open>application stays in the codomain, and the constants inhabit their domains\<close>
     and gm_appTy: "\<lbrakk>\<D>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> f; \<D>\<^bsub>\<sigma>\<^esub> a\<rbrakk> \<Longrightarrow> \<D>\<^bsub>\<tau>\<^esub> (f \<^bold>@ a)"
     and gm_negTy: "\<D>\<^bsub>\<o>\<^bold>\<Rightarrow>\<o>\<^esub> Ngv" and gm_disTy: "\<D>\<^bsub>\<o>\<^bold>\<Rightarrow>\<o>\<^bold>\<Rightarrow>\<o>\<^esub> Dsv"
@@ -465,14 +545,17 @@ locale general_model = frame_sig +
                    \<Longrightarrow> \<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> bd\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a = \<lparr>bd\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := a)\<^esub>"
 begin
 
-text \<open>An assignment is @{emph \<open>total\<close>} (@{term resp}, respects the domains everywhere) if it
-    maps
-  every typed variable into the matching domain --- BKK's assignment @{emph \<open>into\<close>} the
-      structure.\<close>
+text \<open>Every domain is inhabited (part of BKK Definition 3.1) --- not an axiom: the parameter
+  interpretation \<open>Jv\<close> already inhabits every domain.\<close>
 
-definition resp where "resp \<xi> \<longleftrightarrow> (\<forall>(n::nat) \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>))"
+lemma gm_nonempty: "\<exists>d. \<D>\<^bsub>\<sigma>\<^esub> d" using gm_parTy by blast
+
+text \<open>An assignment is @{emph \<open>type-respecting\<close>} (@{term resp}) if it maps every typed variable
+  into the matching domain --- BKK's assignment @{emph \<open>into\<close>} the structure.\<close>
+
+definition resp where "resp \<xi> \<equiv> \<forall>n \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>)"
 lemma Tv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Tv" and Fv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Fv"
-    using gm_boolean by auto
+  using gm_boolean by auto
 
 text \<open>Every well-formed term denotes in the domain of its type (BKK Definition 3.18): the
   \<open>\<lambda>\<close>-comprehension condition \<open>gm_lamTy\<close> is exactly what makes the abstraction case go through.\<close>
@@ -502,102 +585,293 @@ proof -
   finally show ?thesis.
 qed
 
+text \<open>\<open>\<beta>\<close>-convertible terms denote the same object under any total assignment
+  (BKK Remark 3.19); the abstraction-congruence case uses functionality (property f).\<close>
+
+lemma beq_den: "s \<approx>\<^bsub>\<rho>\<^esub> t \<Longrightarrow> \<forall>n \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>) \<Longrightarrow> \<lparr>s\<rparr>\<^bsub>\<xi>\<^esub> = \<lparr>t\<rparr>\<^bsub>\<xi>\<^esub>"
+proof (induction arbitrary: \<xi> rule: beq.induct)
+  case beta thus ?case using den_App_Abs resp_def by blast
+next
+  case (abs L b \<sigma> \<tau> b')
+  define x where "x = fresh (L \<union> fvs b \<union> fvs b')"
+  have xL: "x \<notin> L" and xb: "x \<notin> fvs b" and xb': "x \<notin> fvs b'"
+    using fresh_notin[of "L \<union> fvs b \<union> fvs b'"] abs unfolding x_def by auto
+  have wb: "wff\<^bsub>\<tau>\<^esub>(b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)" and wb': "wff\<^bsub>\<tau>\<^esub>(b'\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
+    using beq_wffL beq_wffR abs xL by blast+
+  {
+    fix a
+    assume a: "\<D>\<^bsub>\<sigma>\<^esub> a"
+    hence tot: "\<forall>n \<gamma>. \<D>\<^bsub>\<gamma>\<^esub> (\<xi>(x\<^bsub>\<sigma>\<^esub> := a) n \<gamma>)"
+      using abs.prems by (auto simp: upd_def)
+    have "\<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a = \<lparr>b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := a)\<^esub>"
+        by (rule gm_beta[OF wb xb abs.prems a])
+    also have "\<dots> = \<lparr>b'\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := a)\<^esub>"
+      using abs.IH[OF xL, of "\<xi>(x\<^bsub>\<sigma>\<^esub> := a)"] tot by blast
+    also have "\<dots> = \<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b'\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a"
+      using gm_beta wb' xb' abs.prems a by simp
+    finally have "\<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a = \<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b'\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a".
+  }
+  thus ?case
+    using gm_funct gm_lamTy wff_Abs_open_rev wb xb abs.prems wb' xb' by blast
+qed(auto simp: den.simps(8))
+
 end
 
-subsection \<open>Closed well-formed terms and simultaneous substitution\<close>
+text \<open>Every \<open>\<Sigma>\<close>-Henkin general model --- the frame-based canonical construction --- is a
+  BKK model: take \<open>E := den\<close> and \<open>\<upsilon> := (\<lambda>a. a = Tv)\<close>.  The four evaluation conditions are
+  the denotation lemmas, and the \<open>L\<close>-properties are the \<open>gm\<close>-conditions.\<close>
 
-text \<open>A @{emph \<open>closed\<close>} well-formed term, BKK's \<open>cwff\<^bsub>\<sigma>\<^esub>\<close> (BKK Section 2.2; BKK reserve
-  @{emph \<open>sentence\<close>} for closed formulae of type \<open>\<o>\<close> --- parameters are allowed,
-  they play the role of BKK's constants).  These are the carriers of the term model.\<close>
+sublocale general_model \<subseteq> bkkA: app_struct Dm Ap
+  by unfold_locales (use gm_nonempty gm_appTy in blast)+
 
-definition cwff :: "ty \<Rightarrow> 'p tm \<Rightarrow> bool" where "cwff \<sigma> A \<longleftrightarrow> wff\<^bsub>\<sigma>\<^esub>(A) \<and> fvs A = {}"
-lemma cwffI: "wff\<^bsub>\<sigma>\<^esub>(A) \<Longrightarrow> fvs A = {} \<Longrightarrow> cwff \<sigma> A" by (simp add: cwff_def)
-lemma cwff_wff: "cwff \<sigma> A \<Longrightarrow> wff\<^bsub>\<sigma>\<^esub>(A)" by (simp add: cwff_def)
-lemma cwff_closed: "cwff \<sigma> A \<Longrightarrow> fvs A = {}" by (simp add: cwff_def)
-lemma cwff_lc: "cwff \<sigma> A \<Longrightarrow> lc A" by (metis cwff_def wff_lc)
-lemma cwff_Neg: "cwff (\<o>\<^bold>\<Rightarrow>\<o>) Neg"
-  and cwff_Dis: "cwff (\<o>\<^bold>\<Rightarrow>\<o>\<^bold>\<Rightarrow>\<o>) Dis"
-  and cwff_Pi: "cwff ((\<sigma>\<^bold>\<Rightarrow>\<o>)\<^bold>\<Rightarrow>\<o>) (Pi \<sigma>)" 
-  and cwff_Iota: "cwff ((\<sigma>\<^bold>\<Rightarrow>\<o>)\<^bold>\<Rightarrow>\<sigma>) (Iota \<sigma>)"
-  and cwff_TrueB: "cwff \<o> \<^bold>\<top>"
-  and cwff_FalseB: "cwff \<o> \<^bold>\<bottom>" 
-  by (auto simp: cwff_def wff_Neg wff_Dis wff_Pi wff_Iota)
-lemma cwff_Eq: "cwff (\<sigma>\<^bold>\<Rightarrow>\<sigma>\<^bold>\<Rightarrow>\<o>) (Eq \<sigma>)" by (simp add: cwff_def wff_Eq)
-lemma cwff_Par: "cwff \<sigma> (p\<^sup>p\<^bsub>\<sigma>\<^esub>)" by (simp add: cwff_def wff_Par)
-lemma cwff_App: "cwff (\<sigma>\<^bold>\<Rightarrow>\<tau>) s \<Longrightarrow> cwff \<sigma> t \<Longrightarrow> cwff \<tau> (s \<^bold>\<cdot> t)"
-  by (auto simp: cwff_def intro: wff.wff_App)
-lemma cwff_opn: "cwff (\<sigma>\<^bold>\<Rightarrow>\<tau>) (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b) \<Longrightarrow> cwff \<sigma> a \<Longrightarrow> cwff \<tau> (b\<^bold>\<langle>a\<^bold>\<rangle>)" 
-  by (metis (no_types, opaque_lifting) cwff_def fvs.simps(10) fvs_opn
-      subset_empty sup.idem wff_opn) 
-lemma cwff_unique: "cwff \<sigma> A \<Longrightarrow> cwff \<tau> A \<Longrightarrow> \<sigma> = \<tau>"
-  by (auto simp: cwff_def dest: wff_unique)
+sublocale general_model \<subseteq> bkk: bkk_model Dm Ap "\<lambda>\<xi> A. \<lparr>A\<rparr>\<^bsub>\<xi>\<^esub>" "\<lambda>a. a = Tv"
+  by (unfold_locales;
+      auto simp: bkkA.functional_def general_model_axioms[unfolded general_model_def]
+                 bkkA.asg_def frame_sig.den.simps(8) resp_def
+         intro: beq_den den_coincidence den_dom)
 
-text \<open>Converse of @{thm wff_Abs_open}: a body that is well-typed when opened with @{emph \<open>one\<close>}
-  fresh variable yields a well-typed abstraction (all fresh openings are \<open>\<alpha>\<close>-variants).\<close>
+text \<open>Reusable satisfaction facts for the defined connectives and the named binders,
+  holding in @{emph \<open>any\<close>} \<open>\<Sigma>\<close>-Henkin general model: they peel \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>.\<close>, \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>.\<close> and
+  the connectives down to the underlying domains, reducing satisfaction of a closed
+  formula to a first-order statement about the carrier's domains --- the model-side
+  counterparts of the syntactic derived rules in \<open>Calculus\<close>.\<close>
 
-lemma wff_Abs_open_rev: "wff\<^bsub>\<tau>\<^esub>(b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>) \<Longrightarrow> x \<notin> fvs b \<Longrightarrow> wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)"
-  by (metis fsub_intro wff_AbsI wff_Fre wff_fsub)
+context general_model
+begin
 
-text \<open>Simultaneous substitution of a (closed) term for every free variable --- the analogue of
-  the closing substitution \<open>\<sigma>\<close> in BKK's term evaluation (BKK Definition 3.35).  Because the
-  replacements are closed, it commutes with opening --- the locally-nameless analogue of BKK's
-  parallel substitution, with no binder renaming.\<close>
+lemma sat_NegB:
+  assumes "wff\<^bsub>\<o>\<^esub>(A)" and "bkkA.asg \<xi>"
+  shows "(\<lparr>\<^bold>\<not> A\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> \<not> (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub> = Tv)"
+  using bkk.sat_Neg[OF assms] by simp
 
-primrec msub :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm) \<Rightarrow> 'p tm \<Rightarrow> 'p tm" where
-    "msub \<rho> (Bnd i) = Bnd i"
-  | "msub \<rho> (n\<^sup>f\<^bsub>\<tau>\<^esub>) = \<rho> n \<tau>"
-  | "msub \<rho> (p\<^sup>p\<^bsub>\<tau>\<^esub>) = p\<^sup>p\<^bsub>\<tau>\<^esub>"
-  | "msub \<rho> Neg = Neg"
-  | "msub \<rho> Dis = Dis"
-  | "msub \<rho> (Pi \<tau>) = Pi \<tau>"
-  | "msub \<rho> (Iota \<tau>) = Iota \<tau>"
-  | "msub \<rho> (Eq \<tau>) = Eq \<tau>"
-  | "msub \<rho> (s \<^bold>\<cdot> t) = (msub \<rho> s) \<^bold>\<cdot> (msub \<rho> t)"
-  | "msub \<rho> (\<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> b) = \<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> (msub \<rho> b)"
+lemma sat_DisB:
+  assumes "wff\<^bsub>\<o>\<^esub>(A)" and "wff\<^bsub>\<o>\<^esub>(B)" and "bkkA.asg \<xi>"
+  shows "(\<lparr>A \<^bold>\<or> B\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<or> (\<lparr>B\<rparr>\<^bsub>\<xi>\<^esub> = Tv)"
+  using bkk.sat_Dis[OF assms] by simp
 
-text \<open>Parallel-substitution notation: \<open>u\<^bold>\<lbrakk>\<rho>\<^bold>\<rbrakk>\<close> applies the substitution \<open>\<rho>\<close>
-  to every free variable of \<open>u\<close>.\<close>
+lemma sat_ImpBB:
+  assumes "wff\<^bsub>\<o>\<^esub>(A)" and "wff\<^bsub>\<o>\<^esub>(B)" and "bkkA.asg \<xi>"
+  shows "(\<lparr>A \<^bold>\<supset> B\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> ((\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longrightarrow> (\<lparr>B\<rparr>\<^bsub>\<xi>\<^esub> = Tv))"
+  using bkk.sat_ImpB[OF assms] by simp
 
-syntax "_msub" :: "logic \<Rightarrow> logic \<Rightarrow> logic"  (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [1000, 0] 1000)
-syntax_consts "_msub" == "msub"
-translations "u\<^bold>\<lbrakk>\<rho>\<^bold>\<rbrakk>" \<rightleftharpoons> "CONST msub \<rho> u"
+lemma sat_AndB:
+  assumes "wff\<^bsub>\<o>\<^esub>(A)" and "wff\<^bsub>\<o>\<^esub>(B)" and "bkkA.asg \<xi>"
+  shows "(\<lparr>A \<^bold>\<and> B\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<and> (\<lparr>B\<rparr>\<^bsub>\<xi>\<^esub> = Tv)"
+  unfolding AndB_def
+  using sat_NegB[OF wff_Or[OF wff_Not[OF assms(1)] wff_Not[OF assms(2)]] assms(3)]
+        sat_DisB[OF wff_Not[OF assms(1)] wff_Not[OF assms(2)] assms(3)]
+        sat_NegB[OF assms(1) assms(3)] sat_NegB[OF assms(2) assms(3)]
+  by blast
 
-lemma msub_opn: "(\<And>n \<tau>. lc (\<rho> n \<tau>)) \<Longrightarrow> msub \<rho> (opn k u t) = opn k (msub \<rho> u) (msub \<rho> t)" 
-  by (induction t arbitrary: k) auto
-lemma msub_cong: "(\<And>n \<tau>. (n, \<tau>) \<in> occ t \<Longrightarrow> \<rho> n \<tau> = \<rho>' n \<tau>) \<Longrightarrow> msub \<rho> t = msub \<rho>' t" 
-  by (induction t) auto
-lemma fvs_msub: "(\<And>n \<tau>. fvs (\<rho> n \<tau>) = {}) \<Longrightarrow> fvs (msub \<rho> t) = {}"
-  by (induction t) auto
-lemma wff_msub:
-  "wff\<^bsub>\<sigma>\<^esub>(t) \<Longrightarrow> (\<And>n \<tau>. wff\<^bsub>\<tau>\<^esub>(\<rho> n \<tau>)) \<Longrightarrow> wff\<^bsub>\<sigma>\<^esub>(msub \<rho> t)"
-proof (induction \<sigma> t arbitrary: \<rho> rule: wff.induct)
-  case (wff_Abs L \<tau> b \<sigma>)
-  have lcr: "lc (\<rho> n \<tau>')" for n \<tau>' using wff_Abs.prems
-    by (rule wff_lc)
-  have "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> (msub \<rho> b))"
-  proof (rule wff.wff_Abs[of "L \<union> fvs b"])
-    fix y assume y: "y \<notin> L \<union> fvs b"
-    let ?\<rho> = "\<rho>(y := (\<rho> y)(\<sigma> := y\<^sup>f\<^bsub>\<sigma>\<^esub>))"
-    have e: "msub ?\<rho> (b\<^bold>\<langle>y\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>) = (msub \<rho> b)\<^bold>\<langle>y\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>"
-      by (smt (verit, ccfv_SIG) Un_iff fun_upd_other fun_upd_same 
-              fvs_eq_fst_occ image_eqI lc_Fre lcr msub.simps(2)
-              msub_cong msub_opn prod.sel(1) y)
-    have "wff\<^bsub>\<tau>\<^esub>(msub ?\<rho> (b\<^bold>\<langle>y\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>))"
-      using wff_Abs wff.wff_Fre y by (metis Un_iff fun_upd_other fun_upd_same)
-    thus "wff\<^bsub>\<tau>\<^esub>((msub \<rho> b)\<^bold>\<langle>y\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)" using e by simp
-  qed (simp add: wff_Abs)
-  thus ?case by simp
-qed(auto intro: wff.intros)
+lemma sat_PEqB:
+  assumes wa: "wff\<^bsub>\<sigma>\<^esub>(A)" and wb: "wff\<^bsub>\<sigma>\<^esub>(B)" and xi: "bkkA.asg \<xi>"
+  shows "(\<lparr>A \<^bold>=\<^bsub>\<sigma>\<^esub> B\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub> = \<lparr>B\<rparr>\<^bsub>\<xi>\<^esub>)"
+proof -
+  have dA: "\<D>\<^bsub>\<sigma>\<^esub> (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub>)" using bkk.ev_type[OF wa xi] by simp
+  have dB: "\<D>\<^bsub>\<sigma>\<^esub> (\<lparr>B\<rparr>\<^bsub>\<xi>\<^esub>)" using bkk.ev_type[OF wb xi] by simp
+  have "\<lparr>A \<^bold>=\<^bsub>\<sigma>\<^esub> B\<rparr>\<^bsub>\<xi>\<^esub> = (Ev \<sigma>) \<^bold>@ (\<lparr>A\<rparr>\<^bsub>\<xi>\<^esub>) \<^bold>@ (\<lparr>B\<rparr>\<^bsub>\<xi>\<^esub>)"
+    by (simp add: den.simps(8))
+  thus ?thesis using bkk.vl_eq[OF xi dA dB] by simp
+qed
 
-text \<open>A well-formed term becomes a @{emph \<open>closed\<close>} well-formed term under a closed simultaneous
-  substitution --- the instance used to build the term model.\<close>
+text \<open>Peeling a defined quantifier down to the carrier.\<close>
 
-lemma cwff_msub: "wff\<^bsub>\<sigma>\<^esub>(t) \<Longrightarrow> (\<And>n \<tau>. cwff \<tau> (\<rho> n \<tau>)) \<Longrightarrow> cwff \<sigma> (msub \<rho> t)"
-  by (metis cwff_def wff_msub fvs_msub)
+lemma sat_AllN:
+  assumes wb: "wff\<^bsub>\<o>\<^esub>(b)" and xi: "bkkA.asg \<xi>"
+  shows "(\<lparr>\<^bold>\<Pi>v\<^bsub>\<sigma>\<^esub>. b\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> (\<forall>d. \<D>\<^bsub>\<sigma>\<^esub> d \<longrightarrow> \<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv)"
+proof -
+  note lcb = wff_lc[OF wb]
+  define x where "x = fresh (fvs b)"
+  have xnb: "x \<notin> fvs b" unfolding x_def by (rule fresh_notin[OF finite_fvs])
+  have wf: "wff\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> (clos 0 v \<sigma> b))" by (rule wff_LamN_clos[OF wb])
+  have xnc: "x \<notin> fvs (clos 0 v \<sigma> b)" using xnb fvs_clos[of 0 v \<sigma> b] by blast
+  have sub: "(clos 0 v \<sigma> b)\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle> = fsub v \<sigma> (x\<^sup>f\<^bsub>\<sigma>\<^esub>) b"
+    by (rule opn_clos_sub[OF opn_lc[OF lcb]])
+  have ev: "\<lparr>(clos 0 v \<sigma> b)\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := d)\<^esub> = \<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub>" for d
+  proof -
+    have "\<lparr>(clos 0 v \<sigma> b)\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := d)\<^esub>
+          = \<lparr>b\<rparr>\<^bsub>(\<xi>(x\<^bsub>\<sigma>\<^esub> := d))(v\<^bsub>\<sigma>\<^esub> := \<lparr>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := d)\<^esub>)\<^esub>"
+      by (simp only: sub den_fsub[OF lc_Fre])
+    also have "\<dots> = \<lparr>b\<rparr>\<^bsub>(\<xi>(x\<^bsub>\<sigma>\<^esub> := d))(v\<^bsub>\<sigma>\<^esub> := d)\<^esub>" by simp
+    also have "\<dots> = \<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub>"
+    proof (rule den_coincidence)
+      fix n \<tau> assume o: "(n, \<tau>) \<in> occ b"
+      show "((\<xi>(x\<^bsub>\<sigma>\<^esub> := d))(v\<^bsub>\<sigma>\<^esub> := d)) n \<tau> = (\<xi>(v\<^bsub>\<sigma>\<^esub> := d)) n \<tau>"
+      proof (cases "n = x \<and> \<tau> = \<sigma>")
+        case True thus ?thesis using o xnb by (auto simp: fvs_eq_fst_occ image_iff)
+      next
+        case False thus ?thesis by (auto simp: upd_def)
+      qed
+    qed
+    finally show ?thesis .
+  qed
+  have "(\<lparr>\<^bold>\<Pi>v\<^bsub>\<sigma>\<^esub>. b\<rparr>\<^bsub>\<xi>\<^esub> = Tv)
+        = (\<forall>d. \<D>\<^bsub>\<sigma>\<^esub> d \<longrightarrow> \<lparr>(clos 0 v \<sigma> b)\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv)"
+    unfolding AllN_def using bkk.sat_Forall[OF wf xnc xi] by simp
+  thus ?thesis using ev by simp
+qed
 
-text \<open>A closed term is untouched by simultaneous substitution.\<close>
+lemma sat_ExN:
+  assumes wb: "wff\<^bsub>\<o>\<^esub>(b)" and xi: "bkkA.asg \<xi>"
+  shows "(\<lparr>\<^bold>\<exists>v\<^bsub>\<sigma>\<^esub>. b\<rparr>\<^bsub>\<xi>\<^esub> = Tv) \<longleftrightarrow> (\<exists>d. \<D>\<^bsub>\<sigma>\<^esub> d \<and> \<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv)"
+proof -
+  have e: "(\<^bold>\<exists>v\<^bsub>\<sigma>\<^esub>. b) = \<^bold>\<not> (\<^bold>\<Pi>v\<^bsub>\<sigma>\<^esub>. (\<^bold>\<not> b))"
+    by (simp add: ExN_def AllN_def)
+  have wnb: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<not> b)" using wb by (rule wff_Not)
+  have wAll: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<Pi>v\<^bsub>\<sigma>\<^esub>. (\<^bold>\<not> b))" by (rule wff_AllN[OF wnb])
+  have negd: "(\<lparr>\<^bold>\<not> b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv) = (\<not> (\<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv))"
+    if "\<D>\<^bsub>\<sigma>\<^esub> d" for d
+    using sat_NegB[OF wb bkkA.asg_upd[OF xi that]] .
+  have "(\<lparr>\<^bold>\<exists>v\<^bsub>\<sigma>\<^esub>. b\<rparr>\<^bsub>\<xi>\<^esub> = Tv) = (\<not> (\<lparr>\<^bold>\<Pi>v\<^bsub>\<sigma>\<^esub>. (\<^bold>\<not> b)\<rparr>\<^bsub>\<xi>\<^esub> = Tv))"
+    unfolding e using sat_NegB[OF wAll xi] by simp
+  also have "\<dots> = (\<not> (\<forall>d. \<D>\<^bsub>\<sigma>\<^esub> d \<longrightarrow> \<lparr>\<^bold>\<not> b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv))"
+    using sat_AllN[OF wnb xi] by simp
+  also have "\<dots> = (\<exists>d. \<D>\<^bsub>\<sigma>\<^esub> d \<and> \<lparr>b\<rparr>\<^bsub>\<xi>(v\<^bsub>\<sigma>\<^esub> := d)\<^esub> = Tv)"
+    using negd by blast
+  finally show ?thesis .
+qed
 
-lemma msub_closed: "fvs t = {} \<Longrightarrow> msub \<rho> t = t" by (induction t) auto
+end
+
+subsection \<open>Substitution-value laws\<close>
+
+text \<open>The substitution-value law for abstract \<open>\<Sigma>\<close>-evaluations (BKK Lemma 3.20 for a
+  single free variable): substituting @{emph \<open>any\<close>} well-formed term equals updating
+  the assignment with its value.\<close>
+
+context sigma_eval
+begin
+
+lemma ev_fsub_one:
+  assumes wA: "wff\<^bsub>\<tau>\<^esub>(A)" and wu: "wff\<^bsub>\<sigma>\<^esub>(u)" and xi: "asg \<xi>"
+  shows "Ee \<xi> (fsub x \<sigma> u A) = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> u)) A"
+proof -
+  have opnA: "opn 0 v A = A" for v by (simp add: wff_lc[OF wA])
+  let ?B = "clos 0 x \<sigma> A"
+  have wAbs: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)"
+    by (rule wff_AbsI) (simp add: opn_clos_sub[OF opnA] wff_fsub[OF wA
+        wff_Fre])
+  have du: "Dm \<sigma> (Ee \<xi> u)" by (rule ev_type[OF wu xi])
+  have "Ee \<xi> (fsub x \<sigma> u A) = Ee \<xi> ((\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> u)"
+    unfolding opn_clos_sub[OF opnA, symmetric]
+    by (rule ev_beta[OF beq.sym[OF beq.beta[OF wAbs wu]] xi])
+  also have "\<dots> = Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)) (Ee \<xi> u)"
+    by (rule ev_app[OF wAbs wu xi])
+  also have "\<dots> = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> u)) (?B\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
+    by (rule ev_abs_app_occ[OF wAbs xi occ_clos du])
+  also have "?B\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle> = A"
+    by (simp add: opn_clos_sub[OF opnA] fsub_id)
+  finally show ?thesis .
+qed
+
+text \<open>The @{emph \<open>simultaneous\<close>} substitution-value law (the simultaneous form of BKK
+  Lemma 3.20), for replacements that are closed wherever they act: evaluating
+  \<open>msub \<rho> A\<close> equals evaluating \<open>A\<close> under the assignment that sends each variable to the
+  value of its replacement.\<close>
+
+lemma asg_msub:
+  assumes xi: "asg \<xi>" and wr: "\<And>n \<tau>'. wff\<^bsub>\<tau>'\<^esub>(\<rho> n \<tau>')"
+  shows "asg (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>'))"
+  using ev_type[OF wr xi] by (auto simp: asg_def)
+
+lemma ev_msub_aux:
+  shows "card {q \<in> occ A. \<rho> (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>} \<le> m \<Longrightarrow>
+    wff\<^bsub>\<tau>\<^esub>(A) \<Longrightarrow> asg \<xi> \<Longrightarrow> (\<And>n \<tau>'. wff\<^bsub>\<tau>'\<^esub>(\<rho> n \<tau>')) \<Longrightarrow>
+    (\<And>n \<tau>'. \<rho> n \<tau>' \<noteq> n\<^sup>f\<^bsub>\<tau>'\<^esub> \<Longrightarrow> fvs (\<rho> n \<tau>') = {}) \<Longrightarrow>
+    Ee \<xi> (msub \<rho> A) = Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>')) A"
+proof (induction m arbitrary: A \<rho>)
+  case (0 A \<rho>)
+  have fin: "finite {q \<in> occ A. \<rho> (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>}"
+    by (rule finite_subset[OF _ finite_occ]) auto
+  hence e: "{q \<in> occ A. \<rho> (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>} = {}"
+    using 0(1) by simp
+  have idA: "msub \<rho> A = A"
+    by (subst msub_cong[where \<rho>' = "\<lambda>n \<tau>'. n\<^sup>f\<^bsub>\<tau>'\<^esub>"]) (use e in \<open>auto simp: msub_id\<close>)
+  have "Ee \<xi> A = Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>')) A"
+    by (rule ev_coin[OF 0(2) 0(3) asg_msub[OF 0(3) 0(4)]])
+       (use e ev_var[OF 0(3)] in fastforce)
+  thus ?case by (simp add: idA)
+next
+  case (Suc m A \<rho>)
+  show ?case
+  proof (cases "{q \<in> occ A. \<rho> (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>} = {}")
+    case True
+    have idA: "msub \<rho> A = A"
+      by (subst msub_cong[where \<rho>' = "\<lambda>n \<tau>'. n\<^sup>f\<^bsub>\<tau>'\<^esub>"]) (use True in \<open>auto simp: msub_id\<close>)
+    have "Ee \<xi> A = Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>')) A"
+      by (rule ev_coin[OF Suc.prems(2) Suc.prems(3) asg_msub[OF Suc.prems(3) Suc.prems(4)]])
+         (use True ev_var[OF Suc.prems(3)] in fastforce)
+    thus ?thesis by (simp add: idA)
+  next
+    case False
+    then obtain x \<sigma> where xs: "(x, \<sigma>) \<in> occ A" and ne: "\<rho> x \<sigma> \<noteq> x\<^sup>f\<^bsub>\<sigma>\<^esub>" by auto
+    have cl: "fvs (\<rho> x \<sigma>) = {}" by (rule Suc.prems(5)[OF ne])
+    have occu: "occ (\<rho> x \<sigma>) = {}" using cl by (simp add: fvs_eq_fst_occ)
+    define A1 where "A1 = fsub x \<sigma> (\<rho> x \<sigma>) A"
+    define \<rho>1 where "\<rho>1 = (\<lambda>n \<tau>'. if n = x \<and> \<tau>' = \<sigma> then n\<^sup>f\<^bsub>\<tau>'\<^esub> else \<rho> n \<tau>')"
+    have wA1: "wff\<^bsub>\<tau>\<^esub>(A1)" unfolding A1_def by (rule wff_fsub[OF Suc.prems(2) Suc.prems(4)])
+    have wr1: "wff\<^bsub>\<tau>'\<^esub>(\<rho>1 n \<tau>')" for n \<tau>'
+      unfolding \<rho>1_def using Suc.prems(4) by (auto intro: wff_Fre)
+    have cr1: "\<rho>1 n \<tau>' \<noteq> n\<^sup>f\<^bsub>\<tau>'\<^esub> \<Longrightarrow> fvs (\<rho>1 n \<tau>') = {}" for n \<tau>'
+      unfolding \<rho>1_def using Suc.prems(5) by (auto split: if_splits)
+    have step: "msub \<rho> A = msub \<rho>1 A1"
+      unfolding A1_def \<rho>1_def by (rule msub_step[of \<rho> x \<sigma>]) (rule cl)
+    have occA1: "occ A1 = occ A - {(x, \<sigma>)}"
+      unfolding A1_def by (rule occ_fsub_closed[OF occu])
+    have card1: "card {q \<in> occ A1. \<rho>1 (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>} \<le> m"
+    proof -
+      let ?S = "{q \<in> occ A. \<rho> (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>}"
+      have finS: "finite ?S" by (rule finite_subset[OF _ finite_occ]) auto
+      have mem: "(x, \<sigma>) \<in> ?S" using xs ne by simp
+      have sub: "{q \<in> occ A1. \<rho>1 (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>} \<subseteq> ?S - {(x, \<sigma>)}"
+        unfolding occA1 \<rho>1_def by (auto split: if_splits)
+      have "card {q \<in> occ A1. \<rho>1 (fst q) (snd q) \<noteq> (fst q)\<^sup>f\<^bsub>snd q\<^esub>}
+          \<le> card (?S - {(x, \<sigma>)})"
+        by (rule card_mono[OF finite_Diff[OF finS] sub])
+      also have "\<dots> = card ?S - 1" by (rule card_Diff_singleton[OF mem])
+      also have "\<dots> \<le> m" using Suc.prems(1) by simp
+      finally show ?thesis .
+    qed
+    have a1: "asg (\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>'))" by (rule asg_msub[OF Suc.prems(3) wr1])
+    have "Ee \<xi> (msub \<rho> A) = Ee \<xi> (msub \<rho>1 A1)" by (simp add: step)
+    also have "\<dots> = Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>')) A1"
+      by (rule Suc.IH[OF card1 wA1 Suc.prems(3) wr1 cr1])
+    also have "\<dots> = Ee ((\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>'))(x\<^bsub>\<sigma>\<^esub> := Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>')) (\<rho> x \<sigma>))) A"
+      unfolding A1_def by (rule ev_fsub_one[OF Suc.prems(2) Suc.prems(4) a1])
+    also have "Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>')) (\<rho> x \<sigma>) = Ee \<xi> (\<rho> x \<sigma>)"
+      by (rule ev_coin[OF Suc.prems(4) a1 Suc.prems(3)]) (simp add: occu)
+    also have "(\<lambda>n \<tau>'. Ee \<xi> (\<rho>1 n \<tau>'))(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> (\<rho> x \<sigma>))
+        = (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>'))"
+      unfolding \<rho>1_def by (auto simp: upd_def fun_eq_iff)
+    finally show ?thesis .
+  qed
+qed
+
+lemma ev_msub:
+  assumes "wff\<^bsub>\<tau>\<^esub>(A)" and "asg \<xi>"
+      and "\<And>n \<tau>'. wff\<^bsub>\<tau>'\<^esub>(\<rho> n \<tau>')"
+      and "\<And>n \<tau>'. \<rho> n \<tau>' \<noteq> n\<^sup>f\<^bsub>\<tau>'\<^esub> \<Longrightarrow> fvs (\<rho> n \<tau>') = {}"
+  shows "Ee \<xi> (msub \<rho> A) = Ee (\<lambda>n \<tau>'. Ee \<xi> (\<rho> n \<tau>')) A"
+  by (rule ev_msub_aux[OF order_refl assms])
+
+text \<open>The parameter-valued instance: the simultaneous closure \<open>vpar S \<pi>\<close> evaluates like
+  the assignment that reads off the parameter values on \<open>S\<close>.\<close>
+
+lemma ev_vpar:
+  assumes wA: "wff\<^bsub>\<tau>\<^esub>(A)" and xi: "asg \<xi>"
+  shows "Ee \<xi> (vpar S \<pi> A) = Ee (\<lambda>n \<sigma>. if (n, \<sigma>) \<in> S then Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>) else \<xi> n \<sigma>) A"
+proof -
+  have "Ee \<xi> (vpar S \<pi> A)
+      = Ee (\<lambda>n \<sigma>. Ee \<xi> (if (n, \<sigma>) \<in> S then (\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub> else n\<^sup>f\<^bsub>\<sigma>\<^esub>)) A"
+    unfolding vpar_def
+    by (rule ev_msub[OF wA xi]) (auto intro: wff_Par wff_Fre split: if_splits)
+  also have "(\<lambda>n \<sigma>. Ee \<xi> (if (n, \<sigma>) \<in> S then (\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub> else n\<^sup>f\<^bsub>\<sigma>\<^esub>))
+      = (\<lambda>n \<sigma>. if (n, \<sigma>) \<in> S then Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>) else \<xi> n \<sigma>)"
+    by (auto simp: fun_eq_iff ev_var[OF xi])
+  finally show ?thesis .
+qed
+
+end
 
 subsection \<open>The valuation locale\<close>
 
@@ -651,18 +925,15 @@ text \<open>A valuation extends to an evaluation function by simultaneous substi
 context valuation
 begin
 
-definition vresp where "vresp \<xi> \<longleftrightarrow> (\<forall>(n::nat) \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>))"
+definition vresp where "vresp \<xi> \<equiv> \<forall>n \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>)"
 definition rep_of where "rep_of \<xi> (n::nat) \<tau> = (SOME t. cwff \<tau> t \<and> \<xi> n \<tau> = \<V> t)"
-lemma rep_of_spec: assumes "vresp \<xi>" shows "cwff \<tau> (rep_of \<xi> n \<tau>) \<and> \<xi> n \<tau> = \<V> (rep_of \<xi> n \<tau>)"
-proof -
-  have "\<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>)" using assms[unfolded vresp_def] by blast
-  hence "\<exists>t. cwff \<tau> t \<and> \<xi> n \<tau> = \<V> t" using v_dom by blast
-  thus ?thesis unfolding rep_of_def by (rule someI_ex)
-qed
+lemma rep_of_spec:
+  assumes "vresp \<xi>" shows "cwff \<tau> (rep_of \<xi> n \<tau>) \<and> \<xi> n \<tau> = \<V> (rep_of \<xi> n \<tau>)"
+  by (smt (verit, del_insts) assms rep_of_def someI_ex v_dom valuation.vresp_def
+      valuation_axioms)
 
 text \<open>The valuation respects \<open>\<beta>\<close>-conversion under closing substitutions (BKK's quotient
-  of the term structure by \<open>\<beta>\<close>, Section 6): the abstraction case is pointwise by \<open>v_beta\<close>
-      and closed by \<open>v_ext\<close>.\<close>
+  of the term structure by \<open>\<beta>\<close>, Section 6).\<close>
 
 lemma beq_V: "s \<approx>\<^bsub>\<rho>'\<^esub> t \<Longrightarrow> (\<And>n \<tau>. cwff \<tau> (\<rho> n \<tau>)) \<Longrightarrow> \<V> (msub \<rho> s) = \<V> (msub \<rho> t)"
 proof (induction arbitrary: \<rho> rule: beq.induct)
@@ -708,13 +979,13 @@ next case (abs L b \<sigma> \<tau> b')
       by (smt (verit, ccfv_threshold) Un_iff fst_conv fun_upd_other)
     have e2: "msub ?\<rho> ((x\<^sup>f\<^bsub>\<sigma>\<^esub>) :: 'p tm) = a" by simp
     have ob: "msub ?\<rho> (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>) = (msub \<rho> b)\<^bold>\<langle>a\<^bold>\<rangle>"
-        by (simp only: msub_opn[OF lcr] e2 mb)
+      by (simp only: msub_opn[OF lcr] e2 mb)
     have ob': "msub ?\<rho> (b'\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>) = (msub \<rho> b')\<^bold>\<langle>a\<^bold>\<rangle>"
-        by (simp only: msub_opn[OF lcr] e2 mb')
+      by (simp only: msub_opn[OF lcr] e2 mb')
     have IH: "\<V> (msub ?\<rho> (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)) = \<V> (msub ?\<rho> (b'\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>))"
-        by (rule abs.IH) (use x cr in auto)
+      by (rule abs.IH) (use x cr in auto)
     have "\<V> ((msub \<rho> b)\<^bold>\<langle>a\<^bold>\<rangle>) = \<V> ((msub \<rho> b')\<^bold>\<langle>a\<^bold>\<rangle>)" using IH
-        by (simp only: ob ob')
+      by (simp only: ob ob')
     thus ?thesis using v_beta calculation a by simp
   qed
   ultimately show ?case using v_ext by simp
@@ -731,24 +1002,24 @@ text \<open>Every valuation is a \<open>\<Sigma>\<close>-model in the class \<op
 
 sublocale valuation \<subseteq> bkkA: app_struct Dv Vap 
 proof (unfold_locales, goal_cases)
-  case (1 \<alpha>) show ?case using v_domI[OF cwff_Par] by blast
-next case (2 \<alpha> \<beta> f a) thus ?case  using cwff_App v_dom valuation.v_app
+  case 1 show ?case using v_domI[OF cwff_Par] by blast
+next case 2 thus ?case  using cwff_App v_dom valuation.v_app
     valuation_axioms by fastforce 
 qed
 
 sublocale valuation \<subseteq> bkkM: bkk_model Dv Vap Ev "\<lambda>a. a = \<V> \<^bold>\<top>"
 proof (unfold_locales, goal_cases)
-  case (1 \<tau> A \<xi>) thus ?case
+  case 1 thus ?case
     by (metis Ev_def bkkA.asg_def cwff_msub rep_of_spec v_domI vresp_def)
-next case (2 \<xi> n \<sigma>) thus ?case
-  using Ev_def bkkA.asg_def rep_of_spec vresp_def by auto 
-next case (3 \<sigma> \<tau> F A \<xi>) thus ?case
+next case 2 thus ?case
+  using Ev_def bkkA.asg_def rep_of_spec vresp_def by (metis msub.simps(2))
+next case 3 thus ?case
   by (metis Ev_def bkkA.asg_def cwff_msub msub.simps(9) rep_of_spec v_app vresp_def)
 next case (4 \<tau> A \<xi> \<xi>') 
   hence "rep_of \<xi> n \<sigma> = rep_of \<xi>' n \<sigma>" if "(n, \<sigma>) \<in> occ A" for n \<sigma>
     using that by (auto simp: rep_of_def)
   thus ?case unfolding Ev_def by (simp cong: msub_cong)
-next case 5 thus ?case using Ev_def beq_V bkkA.asg_def rep_of_spec vresp_def by auto
+next case 5 thus ?case using Ev_def beq_V bkkA.asg_def rep_of_spec vresp_def by metis
 next case 6 thus ?case by (metis Ev_def cwff_Neg msub.simps(4) v_TF v_app v_dom v_neg)
 next case (7 \<xi> a b) 
   then obtain \<phi> \<psi> where ab: "a = \<V> \<phi>" "b = \<V> \<psi>" and c: "cwff \<o> \<phi>" "cwff \<o> \<psi>"
@@ -765,7 +1036,8 @@ next case (8 \<xi> \<sigma> f)
   show ?case unfolding e fg using v_TF
       by (auto simp: v_app[OF cwff_Pi cg, symmetric] v_pi[OF cg] q)
 next case 9 thus ?case using Ev_def v_dom v_eq by fastforce
-next case 10 thus ?case by (smt (verit, best) Ev_def cwff_Iota msub.simps(7) v_app v_desc v_dom)
+next case 10 thus ?case
+  by (smt (verit, best) Ev_def cwff_Iota msub.simps(7) v_app v_desc v_dom)
 next case 11 thus ?case by (smt (verit, ccfv_threshold) bkkA.functional_def v_dom v_ext)
 next case 12 thus ?case by (metis v_bool v_dom)
 qed
@@ -810,15 +1082,14 @@ text \<open>As in @{locale general_model}, membership of the truth values follow
 lemma Tv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Tv" and Fv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Fv"
     by (simp_all add: boolean)
 
-text \<open>In a full frame every domain is inhabited (for \<open>\<o>\<close> by \<open>Tv\<close>, for \<open>\<iota>\<close> by applying \<open>Iv\<close>
-  to a representable predicate, for function types by a constant function).  BKK build
-  non-emptiness into the applicative structure (BKK Definition 3.1).\<close>
+text \<open>In a full frame every domain is inhabited --- the interpretation \<open>Jv\<close> of a parameter
+  provides a witness at every type.  BKK build non-emptiness into the applicative structure
+  (BKK Definition 3.1).\<close>
 
 lemma dom_nonempty: "\<exists>d. \<D>\<^bsub>\<tau>\<^esub> d" by (metis Jv_dom)
 
 text \<open>In a full frame every well-formed term denotes in the domain of its type (the standard
-  homomorphic construction, BKK Section 2.3.1): the abstraction case is immediate from
-      fullness.\<close>
+  homomorphic construction, BKK Section 2.3.1).\<close>
 
 lemma std_den_dom: "wff\<^bsub>\<sigma>\<^esub>(t) \<Longrightarrow> \<forall>n \<rho>. \<D>\<^bsub>\<rho>\<^esub> (\<xi> n \<rho>) \<Longrightarrow> \<D>\<^bsub>\<sigma>\<^esub> (\<lparr>t\<rparr>\<^bsub>\<xi>\<^esub>)"
 proof (induction arbitrary: \<xi> rule: wff.induct)
@@ -838,7 +1109,7 @@ end
 
 text \<open>Every standard model is a \<open>\<Sigma>\<close>-Henkin general model (BKK Definition 3.51 is a special
   case of Definition 3.50): the universal abstraction laws specialise to the denotation
-      functions.\<close>
+  functions.\<close>
 
 sublocale standard_model \<subseteq> general_model Dm Ap Lm Tv Fv Ngv Dsv Iv Ev Piv Jv
 proof
@@ -858,5 +1129,111 @@ next
   ultimately show \<open>\<lparr>\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> bd\<rparr>\<^bsub>\<xi>\<^esub> \<^bold>@ a = \<lparr>bd\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>\<rparr>\<^bsub>\<xi>(x\<^bsub>\<sigma>\<^esub> := a)\<^esub>\<close> by simp
 qed(safe intro!: Lall Ldis Lneg Leq Jv_dom Ev_dom Iv_dom Piv_dom Dsv_dom Ngv_dom Ap_dom TF
                  descB dom_nonempty)
+
+subsection \<open>Constructing the logical constants over a \<open>\<lambda>\<close>-universe\<close>
+
+text \<open>A \<open>\<Sigma>\<close>-standard model need not be @{emph \<open>given\<close>} its logical constants: over any
+  universe with full function spaces (\<open>\<beta>\<close>-abstraction with its typing, extensionality),
+  booleans and a domain-respecting parameter interpretation, they can be
+  @{emph \<open>constructed\<close>} --- negation, disjunction, quantification and equality by
+  \<open>\<lambda>\<close>-abstraction over the domains, description by definite description (\<open>THE\<close>, not
+  Hilbert choice).\<close>
+
+locale lambda_universe =
+  fixes Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
+    and Lm :: "ty \<Rightarrow> ('u \<Rightarrow> 'u) \<Rightarrow> 'u" and Tv Fv :: 'u and Jv :: "'p \<Rightarrow> ty \<Rightarrow> 'u"
+  assumes beta: "\<lbrakk>\<And>d. Dm \<sigma> d \<Longrightarrow> Dm \<tau> (h d); Dm \<sigma> a\<rbrakk> \<Longrightarrow> Ap (Lm \<sigma> h) a = h a"
+    and Lm_dom: "(\<And>d. Dm \<sigma> d \<Longrightarrow> Dm \<tau> (h d)) \<Longrightarrow> Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) (Lm \<sigma> h)"
+    and Ap_dom: "\<lbrakk>Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) f; Dm \<sigma> a\<rbrakk> \<Longrightarrow> Dm \<tau> (Ap f a)"
+    and funct: "\<lbrakk>Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) g; Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) k; \<And>a. Dm \<sigma> a \<Longrightarrow> Ap g a = Ap k a\<rbrakk> \<Longrightarrow> g = k"
+    and TF: "Tv \<noteq> Fv"
+    and boolean: "Dm \<o> a \<longleftrightarrow> a = Tv \<or> a = Fv"
+    and Jv_dom: "Dm \<sigma> (Jv p \<sigma>)"
+begin
+
+lemma bTv [simp]: "Dm \<o> Tv" and bFv [simp]: "Dm \<o> Fv" using boolean by auto
+
+definition Ngv :: 'u where "Ngv = Lm \<o> (\<lambda>a. if a = Tv then Fv else Tv)"
+definition Dsv :: 'u where
+  "Dsv = Lm \<o> (\<lambda>a. Lm \<o> (\<lambda>b. if a = Tv \<or> b = Tv then Tv else Fv))"
+definition Piv :: "ty \<Rightarrow> 'u" where
+  "Piv \<sigma> = Lm (\<sigma> \<^bold>\<Rightarrow> \<o>) (\<lambda>f. if \<forall>d. Dm \<sigma> d \<longrightarrow> Ap f d = Tv then Tv else Fv)"
+definition Ev :: "ty \<Rightarrow> 'u" where
+  "Ev \<sigma> = Lm \<sigma> (\<lambda>a. Lm \<sigma> (\<lambda>b. if a = b then Tv else Fv))"
+definition Iv :: "ty \<Rightarrow> 'u" where
+  "Iv \<sigma> = Lm (\<sigma> \<^bold>\<Rightarrow> \<o>)
+     (\<lambda>f. if \<exists>a. Dm \<sigma> a \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a))
+          then THE a. Dm \<sigma> a \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a))
+          else Jv undefined \<sigma>)"
+
+lemma Ngv_dom: "Dm (\<o> \<^bold>\<Rightarrow> \<o>) Ngv" unfolding Ngv_def by (rule Lm_dom) simp
+lemma Dsv_dom: "Dm (\<o> \<^bold>\<Rightarrow> \<o> \<^bold>\<Rightarrow> \<o>) Dsv" unfolding Dsv_def by (intro Lm_dom) simp
+lemma Piv_dom: "Dm ((\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<o>) (Piv \<sigma>)" unfolding Piv_def by (rule Lm_dom) simp
+lemma Ev_dom: "Dm (\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>) (Ev \<sigma>)" unfolding Ev_def by (intro Lm_dom) simp
+
+lemma Ngv_app: "Dm \<o> a \<Longrightarrow> Ap Ngv a = (if a = Tv then Fv else Tv)"
+  unfolding Ngv_def by (rule beta[where \<tau> = \<o>]) simp_all
+lemma Piv_app: "Dm (\<sigma> \<^bold>\<Rightarrow> \<o>) f \<Longrightarrow> Ap (Piv \<sigma>) f = (if \<forall>d. Dm \<sigma> d \<longrightarrow> Ap f d = Tv then Tv else Fv)"
+  unfolding Piv_def by (rule beta[where \<tau> = \<o>]) simp_all
+lemma Dsv_app: "\<lbrakk>Dm \<o> a; Dm \<o> b\<rbrakk> \<Longrightarrow> Ap (Ap Dsv a) b = (if a = Tv \<or> b = Tv then Tv else Fv)"
+proof -
+  assume a: "Dm \<o> a" and b: "Dm \<o> b"
+  have "Ap Dsv a = Lm \<o> (\<lambda>b. if a = Tv \<or> b = Tv then Tv else Fv)"
+    unfolding Dsv_def by (auto intro!: beta[where \<tau> = "\<o> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
+  moreover have "Ap (Lm \<o> (\<lambda>b. if a = Tv \<or> b = Tv then Tv else Fv)) b
+               = (if a = Tv \<or> b = Tv then Tv else Fv)"
+    by (rule beta[where \<tau> = \<o>, OF _ b]) simp
+  ultimately show ?thesis by simp
+qed
+lemma Ev_app: "\<lbrakk>Dm \<sigma> a; Dm \<sigma> b\<rbrakk> \<Longrightarrow> Ap (Ap (Ev \<sigma>) a) b = (if a = b then Tv else Fv)"
+proof -
+  assume a: "Dm \<sigma> a" and b: "Dm \<sigma> b"
+  have "Ap (Ev \<sigma>) a = Lm \<sigma> (\<lambda>b. if a = b then Tv else Fv)"
+    unfolding Ev_def by (auto intro!: beta[where \<tau> = "\<sigma> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
+  moreover have "Ap (Lm \<sigma> (\<lambda>b. if a = b then Tv else Fv)) b = (if a = b then Tv else Fv)"
+    by (rule beta[where \<tau> = \<o>, OF _ b]) simp
+  ultimately show ?thesis by simp
+qed
+
+lemma Iv_body_dom: "Dm (\<sigma> \<^bold>\<Rightarrow> \<o>) f \<Longrightarrow>
+    Dm \<sigma> (if \<exists>a. Dm \<sigma> a \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a))
+            then THE a. Dm \<sigma> a \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a))
+            else Jv undefined \<sigma>)"
+  by (smt (verit, ccfv_SIG) Jv_dom Uniq_I the1_equality')
+
+lemma Iv_dom: "Dm ((\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>) (Iv \<sigma>)"
+  unfolding Iv_def by (rule Lm_dom) (rule Iv_body_dom)
+
+lemma Iv_app_desc:
+  assumes f: "Dm (\<sigma> \<^bold>\<Rightarrow> \<o>) f" and a: "Dm \<sigma> a"
+    and s: "\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a)"
+  shows "Ap (Iv \<sigma>) f = a"
+proof -
+  have "(THE a'. Dm \<sigma> a' \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a'))) = a"
+    using a s by auto
+  moreover have "Ap (Iv \<sigma>) f
+      = (if \<exists>a'. Dm \<sigma> a' \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a'))
+         then THE a'. Dm \<sigma> a' \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a'))
+         else Jv undefined \<sigma>)"
+    unfolding Iv_def by (rule beta[OF Iv_body_dom f])
+  ultimately show ?thesis
+    by (metis a s)
+qed
+
+theorem is_standard_model: "standard_model Dm Ap Lm Tv Fv Ngv Dsv Iv Ev Piv Jv"
+proof unfold_locales
+  show "\<And>a. Dm \<o> a \<Longrightarrow> (Ap Ngv a = Tv) = (a \<noteq> Tv)"
+    using Ngv_app TF by auto
+  show "\<And>a b. Dm \<o> a \<Longrightarrow> Dm \<o> b \<Longrightarrow> (Ap (Ap Dsv a) b = Tv) = (a = Tv \<or> b = Tv)"
+    using Dsv_app TF by auto
+  show "\<And>\<sigma> f. Dm (\<sigma> \<^bold>\<Rightarrow> \<o>) f \<Longrightarrow> (Ap (Piv \<sigma>) f = Tv) = (\<forall>d. Dm \<sigma> d \<longrightarrow> Ap f d = Tv)"
+    using Piv_app TF by auto
+  show "\<And>\<sigma> a b. Dm \<sigma> a \<Longrightarrow> Dm \<sigma> b \<Longrightarrow> (Ap (Ap (Ev \<sigma>) a) b = Tv) = (a = b)"
+    using Ev_app TF by auto
+qed(auto intro: Iv_app_desc funct Jv_dom Ev_dom Iv_dom Piv_dom Lm_dom Ap_dom
+                beta Ngv_dom Dsv_dom
+         simp: TF boolean)
+
+end
 
 end

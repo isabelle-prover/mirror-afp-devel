@@ -1,13 +1,13 @@
 theory Cantor
-  imports Consistency
+  imports Calculus
 begin
 
 
 section \<open>Example: Cantor's theorem\<close>
 
-text \<open>The surjective and the injective Cantor theorem, at every type \<open>\<sigma>\<close>: there is no
-  surjection from \<open>\<sigma>\<close> onto \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close>, and no injection from \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close> into \<open>\<sigma>\<close>.  Both are
-  derived @{emph \<open>inside the calculus\<close>}: genuine \<open>NK\<close>-derivations via the diagonal
+text \<open>Can Cantor's theorem be proved inside \<open>NK\<close> itself? Yes --- in both forms, at every type
+  \<open>\<sigma>\<close>: there is no surjection from \<open>\<sigma>\<close> onto \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close>, and no injection from \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close> into
+  \<open>\<sigma>\<close>.  Both are derived @{emph \<open>inside the calculus\<close>}: genuine \<open>NK\<close>-derivations via the diagonal
   predicate (for the injective version via the description operator \<open>NK(\<iota>)\<close>, following
   Andrews 1972).  The Cantor sentences are stated as in the @{emph \<open>Stanford
   Encyclopedia of Philosophy\<close>} entry on Church's type theory (Benzm\"uller and
@@ -15,7 +15,7 @@ text \<open>The surjective and the injective Cantor theorem, at every type \<ope
 
 subsection \<open>The defined existential quantifier, and the Cantor sentences\<close>
 
-text \<open>The Cantor sentences are stated literally, as in the cited encyclopedia entry: no surjection
+text \<open>The Cantor sentences: no surjection
   \<open>\<G> : \<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<close> onto \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close>, and no injection \<open>\<I> : (\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<close>.  The
   following lemmas record their locally-nameless normal forms (by computation) and
   the closedness facts used by the derivations.  The right-hand sides deliberately
@@ -41,19 +41,13 @@ lemma inj_norm:
 lemma wff_surj:
   "wff\<^bsub>\<o>\<^esub>(\<^bold>\<exists>\<G>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<exists>\<X>\<^bsub>\<sigma>\<^esub>.
       ((\<G>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>\<cdot> \<X>\<^sup>f\<^bsub>\<sigma>\<^esub>) \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))"
-  unfolding surj_norm
-  by (intro wff_Not wff_Forall)
-     (auto del: wff_Not wff_PEq wff_Forall
-           intro!: wff_Not wff_Forall wff_PEq wff_Eq wff_App wff_Fre)
+  by wffs
 
 lemma wff_inj:
   "wff\<^bsub>\<o>\<^esub>(\<^bold>\<exists>\<I>\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<H>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>.
       (((\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>) \<^bold>=\<^bsub>\<sigma>\<^esub> (\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))
        \<^bold>\<supset> (\<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>)))"
-  unfolding inj_norm
-  by (intro wff_Not wff_Forall)
-     (auto del: wff_Not wff_Forall wff_ImpB wff_PEq
-           intro!: wff_Not wff_Forall wff_ImpB wff_PEq wff_Eq wff_App wff_Fre)
+  by wffs
 
 lemma fvs_surj [simp]:
   "fvs (\<^bold>\<not> (\<^bold>\<exists>\<G>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<exists>\<X>\<^bsub>\<sigma>\<^esub>.
@@ -108,8 +102,10 @@ subsection \<open>The surjective Cantor theorem in \<open>NK\<close>\<close>
 theorem nk_surjective_cantor: fixes \<sigma> :: ty shows
   "\<turnstile> (\<^bold>\<not> (\<^bold>\<exists>\<G>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<exists>\<X>\<^bsub>\<sigma>\<^esub>.
      ((\<G>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>\<cdot> \<X>\<^sup>f\<^bsub>\<sigma>\<^esub>) \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>)) :: 'p::infinite tm)"
-    (is "\<turnstile> \<^bold>\<not> ?S")
 proof -
+  \<comment> \<open>abbreviate the Cantor sentence under the negation\<close>
+  let ?S = "\<^bold>\<exists>\<G>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<exists>\<X>\<^bsub>\<sigma>\<^esub>.
+     ((\<G>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>\<cdot> \<X>\<^sup>f\<^bsub>\<sigma>\<^esub>) \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>) :: 'p tm"
   \<comment> \<open>two distinct parameters: the assumed surjection \<open>g\<close>, the inner witness \<open>a\<close>\<close>
   obtain g a :: 'p where ag: "a \<noteq> g"
     by (metis (full_types) ex_new_if_finite finite.emptyI
@@ -124,8 +120,8 @@ proof -
   \<comment> \<open>bookkeeping, once and for all: typing and parameter-freshness\<close>
   have wF: "wff\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>(?F)" by (rule wff_diag)
   have lcF: "lc ?F" by (rule wff_lc[OF wF])
-  have fp1: "freep {?S, ?Sg}" and fp2: "freep {?S, ?Sg, ?E}"
-    by (intro freep_finite, simp)+
+  have fp2: "freep {?S, ?Sg, ?E}"
+    by (intro freep_finite) simp
   \<comment> \<open>the derivation, innermost context first\<close>
   have 1: "{?S, ?Sg, ?E} \<turnstile> ?E"  \<comment> \<open>\<open>NK(Hyp)\<close>\<close>
     by (auto intro: bprov.Hyp)
@@ -163,7 +159,7 @@ qed
 
 subsection \<open>The injective Cantor theorem in \<open>NK\<close>\<close>
 
-  text \<open>Typing of the description-based diagonal predicate.\<close>
+text \<open>Typing of the description-based diagonal predicate.\<close>
 
 lemma wff_desc_diag: 
   "wff\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> (\<^bold>\<not> (((Iota (\<sigma> \<^bold>\<Rightarrow> \<o>)) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> (((Par i ((\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>)) \<^bold>\<cdot>
@@ -186,8 +182,11 @@ theorem nk_injective_cantor: fixes \<sigma> :: ty shows
   "\<turnstile> (\<^bold>\<not> (\<^bold>\<exists>\<I>\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<H>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>.
      (((\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>) \<^bold>=\<^bsub>\<sigma>\<^esub> (\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))
       \<^bold>\<supset> (\<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))) :: 'p::infinite tm)"
-  (is "\<turnstile> \<^bold>\<not> ?S")
 proof -
+  \<comment> \<open>abbreviate the Cantor sentence under the negation\<close>
+  let ?S = "\<^bold>\<exists>\<I>\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<H>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>.
+     (((\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>) \<^bold>=\<^bsub>\<sigma>\<^esub> (\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))
+      \<^bold>\<supset> (\<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>)) :: 'p tm"
   \<comment> \<open>The same narrative as for the surjective theorem, with the diagonal
     formed through the description operator: steps (1)-(2) instantiate the
     assumed injectivity; step (3) shows that, by injectivity, the singleton

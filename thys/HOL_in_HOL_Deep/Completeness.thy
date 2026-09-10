@@ -4,105 +4,22 @@ begin
 
 section \<open>Completeness\<close>
 
-text \<open>Henkin completeness via the model-existence / abstract-consistency method
-  of BKK Section 6 (Corollary 7.7), with the term model realised as a
-  term evaluation (BKK Definition 3.35) --- then strengthened to arbitrary infinite value
-  carriers, signatures with infinitely many parameters, and open formulas.\<close>
+text \<open>Henkin completeness for \<open>NK\<close>, with the term model realised as a term evaluation
+  (BKK Definition 3.35).  The result is then strengthened to arbitrary infinite value
+  carriers, signatures with infinitely many parameters, and open formulas, and extended to
+  derivation from hypotheses --- up to arbitrary parameter-rich contexts of open formulas
+  at @{emph \<open>any\<close>} signature cardinality; the carrier need only be at least as large as
+  the signature.  For the hypothesis relation \<open>\<tturnstile>\<close> of \<open>Calculus\<close> even the
+  parameter-rich proviso disappears (\<open>completeness_fprov\<close>).\<close>
 
 subsection \<open>Model existence and completeness (BKK Section 6, Corollary 7.7)\<close>
 
 text \<open>We build a Henkin term model from a maximal consistent, saturated set of sentences, following
-  BKK's model-existence route (BKK Section 6).  This file develops \<open>NK\<close>-consistency and its
-  closure properties (BKK Lemma 7.5), the maximal saturated extension (BKK Lemma 6.32), the term
+  BKK's model-existence route (BKK Section 6).  \<open>NK\<close>-consistency and its closure properties
+  (BKK Definition 7.4, Lemma 7.5) live in \<open>Calculus\<close>; here we develop the witnessing step,
+  the maximal saturated extension (BKK Lemma 6.32), the term
   model with its truth lemma (BKK Theorem 6.33), and the completeness theorem itself
   (BKK Corollary 7.7).\<close>
-
-subsubsection \<open>Consistency (BKK Definition 7.4)\<close>
-
-text \<open>A set of sentences is @{emph \<open>NK-consistent\<close>} (BKK Definition 7.4) if falsity is not derivable
-  from it.\<close>
-
-definition con :: "'p tm set \<Rightarrow> bool" where "con \<Phi> \<longleftrightarrow> \<not> (\<Phi> \<turnstile> \<^bold>\<bottom>)"
-lemma con_I: "(\<Phi> \<turnstile> \<^bold>\<bottom> \<Longrightarrow> False) \<Longrightarrow> con \<Phi>" by (auto simp: con_def)
-
-text \<open>Subsets of a consistent set are consistent (using weakening).\<close>
-
-lemma con_mono: "con \<Psi> \<Longrightarrow> \<Phi> \<subseteq> \<Psi> \<Longrightarrow> freep \<Psi> \<Longrightarrow> con \<Phi>" unfolding con_def
-    using bprov_weaken by blast
-
-text \<open>Consistency is of finite character (compactness, BKK Definition 6.1): a set is consistent
-  as soon as all its finite subsets are.\<close>
-
-lemma con_compact:
-  "(\<And>\<Phi>0::'p::infinite tm set. finite \<Phi>0 \<Longrightarrow> \<Phi>0 \<subseteq> \<Phi> \<Longrightarrow> con \<Phi>0) \<Longrightarrow> con \<Phi>"
-  using bprov_finite unfolding con_def by blast
-
-text \<open>The central step of a maximal-consistent extension (the \<open>\<nabla>\<^sub>s\<^sub>a\<^sub>t\<close> case of BKK Lemma 7.5;
-  property \<open>\<nabla>\<^sub>s\<^sub>a\<^sub>t\<close> is BKK Definition 6.5): from a consistent set, adding a proposition or its
-  negation keeps it consistent.\<close>
-
-lemma con_split: assumes "con \<Phi>" and "wff\<^bsub>\<o>\<^esub>(A)"
-  shows "con (insert A \<Phi>) \<or> con (insert (\<^bold>\<not> A) \<Phi>)"
-proof (rule ccontr)
-  assume "\<not>?thesis"
-  hence "\<Phi> \<union> {A} \<turnstile> \<^bold>\<bottom>" and "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<bottom>" by (auto simp: con_def)
-  from \<open>\<Phi> \<union> {A} \<turnstile> \<^bold>\<bottom>\<close> have "\<Phi> \<turnstile> \<^bold>\<not> A" using assms(2)
-      by (rule bprov.NegI)
-  moreover from \<open>\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<bottom>\<close> have "\<Phi> \<turnstile> A" using assms(2)
-      by (rule bprov.Contr)
-  ultimately have "\<Phi> \<turnstile> \<^bold>\<bottom>" using wff_FalseB by (rule bprov.NegE)
-  thus False using assms(1) by (simp add: con_def)
-qed
-
-text \<open>A consistent set does not contain both a proposition and its negation.\<close>
-
-lemma con_not_both: "con \<Phi> \<Longrightarrow> A \<in> \<Phi> \<Longrightarrow> \<^bold>\<not> A \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(A) \<Longrightarrow> False"
-  by (metis con_def wff_FalseB NegE Hyp)
-
-subsubsection \<open>Some admissible rules\<close>
-
-lemma freep_un: "freep \<Phi> \<Longrightarrow> freep (\<Phi> \<union> {A})"
-  by (metis freep_add Un_insert_right sup_bot.right_neutral)
-
-text \<open>Double-negation elimination (derivable from the classical rule \<open>NK(Contr)\<close>).\<close>
-
-lemma dneg: "\<Phi> \<turnstile> \<^bold>\<not> (Neg \<^bold>\<cdot> X) \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(X) \<Longrightarrow> freep \<Phi> \<Longrightarrow> \<Phi> \<turnstile> X"
-  by (metis (no_types, lifting) Contr Hyp NegE Un_insert_right bprov_weaken
-            freep_add insertI1 subset_insertI sup_bot.right_neutral wff_FalseB)
-
-text \<open>Excluded middle and implication introduction (derivable in the classical calculus).\<close>
-
-lemma bprov_em: assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" shows "\<Phi> \<turnstile> (\<^bold>\<not> A) \<^bold>\<or> A"
-proof -
-  let ?D = "(\<^bold>\<not> A) \<^bold>\<or> A"
-  have wnA: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<not> A)" using wA by (rule wff_Not)
-  have wD: "wff\<^bsub>\<o>\<^esub>(?D)" using wnA wA by (rule wff_Or)
-  have "\<Phi> \<union> {\<^bold>\<not> ?D} \<turnstile> \<^bold>\<not> A"
-  proof (rule bprov.NegI[OF _ wA])
-    have "(\<Phi> \<union> {\<^bold>\<not> ?D}) \<union> {A} \<turnstile> A" by (auto intro: bprov.Hyp)
-    hence "(\<Phi> \<union> {\<^bold>\<not> ?D}) \<union> {A} \<turnstile> ?D" using wnA by (rule bprov.DisIR)
-    moreover have "(\<Phi> \<union> {\<^bold>\<not> ?D}) \<union> {A} \<turnstile> \<^bold>\<not> ?D"
-        by (auto intro: bprov.Hyp)
-    ultimately show "(\<Phi> \<union> {\<^bold>\<not> ?D}) \<union> {A} \<turnstile> \<^bold>\<bottom>" using wff_FalseB
-        by (metis bprov.NegE)
-  qed
-  hence "\<Phi> \<union> {\<^bold>\<not> ?D} \<turnstile> ?D" using wA by (rule bprov.DisIL)
-  moreover have "\<Phi> \<union> {\<^bold>\<not> ?D} \<turnstile> \<^bold>\<not> ?D" by (auto intro: bprov.Hyp)
-  ultimately have "\<Phi> \<union> {\<^bold>\<not> ?D} \<turnstile> \<^bold>\<bottom>" using wff_FalseB by (metis bprov.NegE)
-  thus ?thesis using wD by (rule bprov.Contr)
-qed
-lemma bprov_ImpE: assumes AB: "\<Phi> \<turnstile> A \<^bold>\<supset> B" and A: "\<Phi> \<turnstile> A"
-    and fp: "freep \<Phi>"
-    and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wB: "wff\<^bsub>\<o>\<^esub>(B)" shows "\<Phi> \<turnstile> B"
-proof -
-  have wnA: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<not> A)" using wA by (rule wff_Not)
-  have disj: "\<Phi> \<turnstile> (\<^bold>\<not> A) \<^bold>\<or> B" using AB by (simp add: ImpB_def)
-  have b1: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> B"
-    by (meson A Hyp NegE bprov_weaken fp freep_un inf_sup_ord(4) insertCI sup_ge1 wB)
-  have b2: "\<Phi> \<union> {B} \<turnstile> B" by (auto intro: bprov.Hyp)
-  show ?thesis by (rule bprov.DisE[OF disj b1 b2 wnA wB])
-qed
-lemma bprov_TrueB: "\<Phi> \<turnstile> \<^bold>\<top>" by (simp add: Hyp TrueB_def bprov.intros(3))
 
 subsubsection \<open>Witnessing a false universal
   (BKK property \<open>\<nabla>\<^sub>\<exists>\<close>, Definition 6.5; the \<open>\<nabla>\<^sub>\<exists>\<close> case of Lemma 7.5)\<close>
@@ -133,11 +50,165 @@ proof (rule con_I)
   thus False using con by (simp add: con_def \<Gamma>_def)
 qed
 
+subsubsection \<open>Signatures of arbitrary cardinality: the parameter reserve\<close>
+
+text \<open>BKK run their extension lemma at any infinite signature cardinality \<open>\<aleph>\<^sub>s\<close> (BKK
+  Remark 3.16).  To follow them beyond countable signatures, the enumeration of sentences
+  below walks a well-order of the @{emph \<open>term type\<close>} instead of \<open>\<nat>\<close>, and the freshness
+  argument becomes quantitative: the reserve of unused parameters must be as large as the
+  @{emph \<open>signature\<close>}, not merely infinite.  The predicate \<open>richp\<close> ("parameter-rich")
+  captures this, in the cardinal order \<open>\<le>o\<close> of the Isabelle/HOL library; over a countable
+  signature it collapses to \<open>freep\<close> (@{emph \<open>infinite\<close>} reserve, BKK Definition 6.3).\<close>
+
+unbundle cardinal_syntax
+
+definition richp :: "'p tm set \<Rightarrow> bool" where "richp \<Phi> \<equiv> |UNIV :: 'p set| \<le>o |- usedp \<Phi>|"
+
+lemma richp_freep:
+  assumes "richp (\<Phi> :: 'p::infinite tm set)" shows "freep \<Phi>"
+proof -
+  have "|UNIV :: nat set| \<le>o |UNIV :: 'p set|"
+    using infinite_iff_card_of_nat infinite_UNIV by blast
+  from ordLeq_transitive[OF this assms[unfolded richp_def]]
+  show ?thesis unfolding freep_def using infinite_iff_card_of_nat by blast
+qed
+
+lemma richp_iff_freep:
+  fixes \<Phi> :: "'p::{countable,infinite} tm set"
+  shows "richp \<Phi> \<longleftrightarrow> freep \<Phi>"
+proof
+  assume "richp \<Phi>" thus "freep \<Phi>" by (rule richp_freep)
+next
+  assume "freep \<Phi>"
+  hence n: "|UNIV :: nat set| \<le>o |- usedp \<Phi>|"
+    unfolding freep_def using infinite_iff_card_of_nat by blast
+  have "|UNIV :: 'p set| \<le>o |UNIV :: nat set|"
+    using card_of_ordLeq by fastforce
+  thus "richp \<Phi>" unfolding richp_def using n ordLeq_transitive by blast
+qed
+
+lemma infinite_tm_UNIV: "infinite (UNIV :: 'p tm set)"
+proof -
+  have "inj (Bnd :: nat \<Rightarrow> 'p tm)" by (simp add: inj_on_def)
+  thus ?thesis by (metis finite_imageD infinite_UNIV_nat infinite_super top_greatest)
+qed
+
+text \<open>Over an infinite signature there are at most as many terms as parameters: an infinite
+  type absorbs pairing (\<open>|'p \<times> 'p| =o |'p|\<close>), so the whole term algebra encodes injectively
+  into \<open>'p\<close> itself --- the nontrivial half of the identity \<open>|'p tm| = max(\<aleph>\<^sub>0, |'p|)\<close>, and
+  the only half needed here.
+  The encoder \<open>tmenc\<close> tags each constructor and recurses through an injective pairing.\<close>
+
+primrec tmenc :: "('u \<times> 'u \<Rightarrow> 'u) \<Rightarrow> (nat \<Rightarrow> 'u) \<Rightarrow> ('p \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" where
+  "tmenc pr2 nt pt (Bnd n) = pr2 (nt 0, nt n)"
+| "tmenc pr2 nt pt (Fre n \<sigma>) = pr2 (nt 1, pr2 (nt n, nt (to_nat \<sigma>)))"
+| "tmenc pr2 nt pt (Par p \<sigma>) = pr2 (nt 2, pr2 (pt p, nt (to_nat \<sigma>)))"
+| "tmenc pr2 nt pt Neg = pr2 (nt 3, nt 0)"
+| "tmenc pr2 nt pt Dis = pr2 (nt 4, nt 0)"
+| "tmenc pr2 nt pt (Pi \<sigma>) = pr2 (nt 5, nt (to_nat \<sigma>))"
+| "tmenc pr2 nt pt (Iota \<sigma>) = pr2 (nt 6, nt (to_nat \<sigma>))"
+| "tmenc pr2 nt pt (Eq \<sigma>) = pr2 (nt 7, nt (to_nat \<sigma>))"
+| "tmenc pr2 nt pt (App s t) = pr2 (nt 8, pr2 (tmenc pr2 nt pt s, tmenc pr2 nt pt t))"
+| "tmenc pr2 nt pt (Abs \<sigma> b) = pr2 (nt 9, pr2 (nt (to_nat \<sigma>), tmenc pr2 nt pt b))"
+
+lemma tmenc_inj:
+  assumes p2: "inj pr2" and nt: "inj nt" and pt: "inj pt"
+  shows "tmenc pr2 nt pt s = tmenc pr2 nt pt t \<Longrightarrow> s = t"
+  by (induction s arbitrary: t)
+     (case_tac t; force dest!: injD[OF p2] injD[OF nt] injD[OF pt])+
+
+lemma card_of_tm: "|UNIV :: 'p tm set| \<le>o |UNIV :: 'p::infinite set|"
+proof -
+  have "|UNIV :: ('p \<times> 'p) set| =o |UNIV :: 'p set|"
+    using card_of_Times_same_infinite[OF infinite_UNIV] by simp
+  hence "|UNIV :: ('p \<times> 'p) set| \<le>o |UNIV :: 'p set|"
+    by (rule ordIso_imp_ordLeq)
+  then obtain pr2 :: "'p \<times> 'p \<Rightarrow> 'p" where p2: "inj pr2"
+    by (meson card_of_ordLeq)
+  obtain nt :: "nat \<Rightarrow> 'p" where nt: "inj nt"
+    using infinite_UNIV infinite_countable_subset by blast
+  have idp: "inj (id :: 'p \<Rightarrow> 'p)" by (simp add: inj_on_def)
+  have "inj (tmenc pr2 nt id)"
+    using tmenc_inj[OF p2 nt idp] by (auto intro: injI)
+  thus ?thesis by (simp add: card_of_ordLeqI)
+qed
+
+lemma richp_reserve:
+  assumes "richp (\<Phi> :: 'p::infinite tm set)"
+  shows "|UNIV :: 'p tm set| \<le>o |- usedp \<Phi>|"
+  by (rule ordLeq_transitive[OF card_of_tm assms[unfolded richp_def]])
+
+text \<open>Two small counting facts: a finite set is strictly smaller than any infinite type, and
+  a union of fewer-than-\<open>|'k|\<close> finite sets stays strictly smaller than \<open>|'k|\<close> --- no
+  regularity of the cardinal is needed, because the members are finite.\<close>
+
+lemma card_of_finite_infinite:
+  assumes "finite (A :: 'a set)" and "infinite (B :: 'b set)"
+  shows "|A| <o |B|"
+  using assms
+  by (intro finite_ordLess_infinite) (auto simp: Field_card_of card_of_well_order_on)
+
+lemma card_of_UNION_finite_small:
+  fixes F :: "'i \<Rightarrow> 'a set"
+  assumes small: "|I| <o |UNIV :: 'k set|" and inf: "infinite (UNIV :: 'k set)"
+      and fin: "\<And>i. i \<in> I \<Longrightarrow> finite (F i)"
+  shows "|\<Union>i\<in>I. F i| <o |UNIV :: 'k set|"
+proof (cases "finite I")
+  case True
+  hence "finite (\<Union>i\<in>I. F i)" using fin by blast
+  thus ?thesis using inf by (rule card_of_finite_infinite)
+next
+  case False
+  have "|\<Union>i\<in>I. F i| \<le>o |I|"
+  proof (rule card_of_UNION_ordLeq_infinite[OF False])
+    show "|I| \<le>o |I|" by (rule ordLeq_reflexive[OF card_of_Well_order])
+    show "\<forall>i\<in>I. |F i| \<le>o |I|"
+      using fin False by (blast intro: ordLess_imp_ordLeq card_of_finite_infinite)
+  qed
+  thus ?thesis using small by (rule ordLeq_ordLess_trans)
+qed
+
+text \<open>A full-size reserve survives removing finitely many elements --- the workhorse
+  behind the closure properties of \<open>richp\<close>.\<close>
+
+lemma card_of_diff_finite:
+  assumes rich: "|UNIV :: 'a::infinite set| \<le>o |R :: 'a set|" and fin: "finite F"
+  shows "|UNIV :: 'a set| \<le>o |R - F|"
+proof (rule ccontr)
+  assume "\<not> |UNIV :: 'a set| \<le>o |R - F|"
+  hence l: "|R - F| <o |UNIV :: 'a set|"
+    by (metis card_of_Well_order not_ordLeq_iff_ordLess)
+  have "R \<subseteq> (R - F) \<union> F" by blast
+  hence "|R| \<le>o |(R - F) \<union> F|" by (rule card_of_mono1)
+  moreover have "|(R - F) \<union> F| <o |UNIV :: 'a set|"
+    by (rule card_of_Un_ordLess_infinite[OF infinite_UNIV l
+          card_of_finite_infinite[OF fin infinite_UNIV]])
+  ultimately show False
+    using rich by (meson ordLeq_ordLess_trans ordLeq_transitive ordLess_irreflexive)
+qed
+
+text \<open>Like \<open>freep\<close>, richness survives adding one formula: only finitely many parameters
+  are lost.\<close>
+
+lemma richp_add:
+  assumes "richp (\<Phi> :: 'p::infinite tm set)" shows "richp (insert B \<Phi>)"
+proof -
+  have "- usedp \<Phi> - pars B \<subseteq> - usedp (insert B \<Phi>)"
+    by (auto simp: usedp_def)
+  hence "|- usedp \<Phi> - pars B| \<le>o |- usedp (insert B \<Phi>)|"
+    by (rule card_of_mono1)
+  thus ?thesis
+    unfolding richp_def
+    using card_of_diff_finite[OF assms[unfolded richp_def] finite_pars]
+          ordLeq_transitive by blast
+qed
+
 subsubsection \<open>Maximal consistent, saturated extension (BKK's abstract extension lemma 6.32)\<close>
 
-text \<open>We enumerate the (countably many) sentences and, step by step, decide each one or its
-  negation (\<open>con_split\<close>), immediately adding a Henkin witness for a decided negated universal
-  (\<open>con_witness\<close>).  The union of the chain is a maximal consistent, saturated set.\<close>
+text \<open>We enumerate the sentences along a well-order of the term type and, step by step,
+  decide each one or its negation (\<open>con_split\<close>), immediately adding a Henkin witness for a
+  decided negated universal (\<open>con_witness\<close>).  The union of the chain is a maximal
+  consistent, saturated set.\<close>
 
 definition freshc :: "'p tm set \<Rightarrow> 'p tm \<Rightarrow> 'p" where
  "freshc S G \<equiv> SOME c. c \<notin> usedp S \<and> c \<notin> pars G"
@@ -159,32 +230,139 @@ definition step :: "'p tm set \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" where
    then (if con (insert A S) then insert A S \<union> wit S A else insert (\<^bold>\<not> A) S)
    else S"
 
-primrec ext :: "'p::{countable,infinite} tm set \<Rightarrow> nat \<Rightarrow> 'p tm set" where
-  "ext \<Phi> 0 = \<Phi>"
-| "ext \<Phi> (Suc n) = step (ext \<Phi> n) (from_nat n)"
+text \<open>The enumeration order: a well-order of the term type of @{emph \<open>minimal\<close>} order type,
+  the cardinal \<open>|UNIV|\<close> of \<open>'p tm\<close> as provided by the library.  Strictly below any stage lie
+  @{emph \<open>fewer\<close>} terms than there are terms in total (@{thm [source] card_of_underS}).\<close>
 
-definition Hset :: "'p::{countable,infinite} tm set \<Rightarrow> 'p tm set" where
-  "Hset \<Phi> = (\<Union>n. ext \<Phi> n)"
+definition tmord :: "('p tm \<times> 'p tm) set" where
+  "tmord = |UNIV :: 'p tm set|"
 
-text \<open>The chain is increasing and each stage stays finite-in-parameters and consistent.\<close>
+lemma tmord_wo: "wo_rel (tmord :: ('p tm \<times> 'p tm) set)"
+  by (simp add: wo_rel_def tmord_def card_of_Well_order)
 
-lemma ext_mono: "ext \<Phi> n \<subseteq> ext \<Phi> (Suc n)"
-  by (induct n) (auto simp: step_def)
-lemma ext_mono': "m \<le> n \<Longrightarrow> ext \<Phi> m \<subseteq> ext \<Phi> n"
-    using ext_mono lift_Suc_mono_le by blast
-lemma freep_un_finite: "freep S \<Longrightarrow> finite T \<Longrightarrow> freep (S \<union> T)"
-proof -
-  assume "freep S" "finite T"
-  hence "finite (usedp T)" by (auto simp: usedp_def)
-  moreover have "- usedp (S \<union> T) = - usedp S - usedp T"
-    by (auto simp: usedp_def)
-  ultimately show ?thesis using \<open>freep S\<close>
-    by (metis freep_def Diff_infinite_finite)
+lemma tmord_wf: "wf (tmord - Id :: ('p tm \<times> 'p tm) set)"
+  using card_of_well_order_on[of "UNIV :: 'p tm set"]
+  unfolding well_order_on_def tmord_def by blast
+
+lemma tmord_lin: "linear_order_on UNIV (tmord :: ('p tm \<times> 'p tm) set)"
+  using card_of_well_order_on[of "UNIV :: 'p tm set"]
+  unfolding well_order_on_def tmord_def by blast
+
+lemma tmord_total: "a \<noteq> b \<Longrightarrow> (a, b) \<in> tmord \<or> (b, a) \<in> tmord"
+  using tmord_lin unfolding linear_order_on_def total_on_def by blast
+
+lemma tmord_trans: "(a, b) \<in> tmord \<Longrightarrow> (b, c) \<in> tmord \<Longrightarrow> (a, c) \<in> tmord"
+  using tmord_lin
+  unfolding linear_order_on_def partial_order_on_def preorder_on_def
+  by (blast dest: transD)
+
+lemma tmord_refl: "(a, a) \<in> tmord"
+  using tmord_lin
+  unfolding linear_order_on_def partial_order_on_def preorder_on_def refl_on_def by blast
+
+lemma tmord_induct [case_names below]:
+  assumes "\<And>a. (\<And>b. b \<in> underS tmord a \<Longrightarrow> P b) \<Longrightarrow> P a"
+  shows "P (a :: 'p tm)"
+proof (rule wf_induct_rule[OF tmord_wf])
+  fix a :: "'p tm" assume IH: "\<And>b. (b, a) \<in> tmord - Id \<Longrightarrow> P b"
+  show "P a"
+  proof (rule assms)
+    fix b assume "b \<in> underS tmord a"
+    hence "(b, a) \<in> tmord - Id" by (auto simp: underS_def)
+    thus "P b" by (rule IH)
+  qed
 qed
+
+lemma tmord_underS_small: "|underS tmord (a :: 'p tm)| <o |UNIV :: 'p tm set|"
+proof -
+  have co: "Card_order (tmord :: ('p tm \<times> 'p tm) set)"
+    unfolding tmord_def by (rule card_of_Card_order)
+  have fld: "(a :: 'p tm) \<in> Field tmord"
+    by (simp add: tmord_def Field_card_of)
+  from card_of_underS[OF co fld] show ?thesis
+    by (simp add: tmord_def)
+qed
+
+lemma tmord_under: "under tmord a = insert a (underS tmord a)"
+  by (auto simp: under_def underS_def tmord_refl)
+
+text \<open>The extension, by well-order recursion: at stage \<open>a\<close> the term \<open>a\<close> itself is decided
+  over the union of all earlier stages (a no-op unless \<open>a\<close> is a sentence) --- each term is
+  its own index, so no enumeration function is needed.\<close>
+
+definition ext :: "'p tm set \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" where
+  "ext \<Phi> = wo_rel.worec tmord (\<lambda>f a. step (\<Phi> \<union> (\<Union>b \<in> underS tmord a. f b)) a)"
+
+lemma ext_unfold:
+  fixes \<Phi> :: "'p tm set"
+  shows "ext \<Phi> a = step (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b)) a"
+proof -
+  have adm: "wo_rel.adm_wo tmord (\<lambda>f a. step (\<Phi> \<union> (\<Union>b \<in> underS tmord a. f b)) a)"
+  proof -
+    { fix f g :: "'p tm \<Rightarrow> 'p tm set" and x :: "'p tm"
+      assume "\<forall>y \<in> underS tmord x. f y = g y"
+      hence "(\<Union>b \<in> underS tmord x. f b) = (\<Union>b \<in> underS tmord x. g b)" by auto
+      hence "step (\<Phi> \<union> (\<Union>b \<in> underS tmord x. f b)) x
+           = step (\<Phi> \<union> (\<Union>b \<in> underS tmord x. g b)) x" by simp }
+    thus ?thesis unfolding wo_rel.adm_wo_def[OF tmord_wo] by blast
+  qed
+  show ?thesis
+    using fun_cong[OF wo_rel.worec_fixpoint[OF tmord_wo adm], of a]
+    unfolding ext_def by simp
+qed
+
+definition Hset :: "'p tm set \<Rightarrow> 'p tm set" where
+  "Hset \<Phi> = (\<Union>a. ext \<Phi> a)"
+
+text \<open>The chain is directed, each stage extends \<open>\<Phi>\<close>, and each stage stays \<open>freep\<close> and consistent.\<close>
+
+lemma step_expand: "S \<subseteq> step S A"
+  by (auto simp: step_def)
+
+text \<open>Statement preserved verbatim from the published version of this entry (compatibility
+  export); the transfinite chain below tracks parameter usage by counting instead.\<close>
+
 lemma freep_step: "freep S \<Longrightarrow> freep (step S A)"
   by (simp add: finite_wit freep_add freep_un_finite step_def)
-lemma freep_ext: "freep \<Phi> \<Longrightarrow> freep (ext \<Phi> n)"
-  by (induction n) (auto simp: freep_step)
+
+lemma ext_stage_sub: "\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b) \<subseteq> ext \<Phi> a"
+  by (subst ext_unfold) (rule step_expand)
+
+lemma Phi_sub_ext: "\<Phi> \<subseteq> ext \<Phi> a"
+  using ext_stage_sub by blast
+
+lemma ext_mono: "b \<in> underS tmord a \<Longrightarrow> ext \<Phi> b \<subseteq> ext \<Phi> a"
+  using ext_stage_sub by blast
+
+lemma ext_finite_ub:
+  assumes "finite B" and "B \<noteq> {}"
+  shows "\<exists>b \<in> B. \<forall>c \<in> B. ext \<Phi> c \<subseteq> ext \<Phi> b"
+  using assms
+proof (induction B rule: finite_ne_induct)
+  case (singleton x) show ?case by blast
+next
+  case (insert x B)
+  then obtain b where b: "b \<in> B" "\<forall>c\<in>B. ext \<Phi> c \<subseteq> ext \<Phi> b" by blast
+  consider "x = b" | "x \<in> underS tmord b" | "b \<in> underS tmord x"
+    using tmord_total by (auto simp: underS_def)
+  thus ?case
+  proof cases
+    case 1 thus ?thesis using b by blast
+  next
+    case 2 thus ?thesis using b ext_mono by blast
+  next
+    case 3
+    hence bx: "ext \<Phi> b \<subseteq> ext \<Phi> x" by (rule ext_mono)
+    thus ?thesis using b by blast
+  qed
+qed
+
+lemma ext_directed: "\<exists>c. ext \<Phi> a \<subseteq> ext \<Phi> c \<and> ext \<Phi> b \<subseteq> ext \<Phi> c"
+proof -
+  have "\<exists>d \<in> {a, b}. \<forall>c \<in> {a, b}. ext \<Phi> c \<subseteq> ext \<Phi> d"
+    by (rule ext_finite_ub) auto
+  thus ?thesis by blast
+qed
 lemma con_step: assumes "con S" and "freep S" shows "con (step S A)"
 proof (cases "cwff \<o> A")
   case False
@@ -216,72 +394,203 @@ next case True
     thus ?thesis using True \<open>cwff \<o> A\<close> by (simp add: step_def)
   qed
 qed
-lemma con_ext: "con \<Phi> \<Longrightarrow> freep \<Phi> \<Longrightarrow> con (ext \<Phi> n)"
-  by (induction n) (auto simp: con_step freep_ext)
+text \<open>Bookkeeping for freshness: each stage consumes only finitely many parameters (the
+  sentence decided, plus at most one witness), and below any stage there are fewer stages
+  than terms --- while the \<open>richp\<close> reserve holds at least \<open>|'p tm|\<close>-many parameters
+  (@{thm [source] richp_reserve}).  So every stage stays \<open>freep\<close> --- which is all
+  that \<open>con_step\<close> asks for.\<close>
+
+definition stagep :: "'p tm set \<Rightarrow> 'p tm \<Rightarrow> 'p set" where
+  "stagep \<Phi> b = pars b \<union> usedp (wit (\<Phi> \<union> (\<Union>c \<in> underS tmord b. ext \<Phi> c)) b)"
+
+lemma finite_stagep: "finite (stagep \<Phi> b)"
+  by (simp add: stagep_def finite_wit usedp_def)
+
+lemma usedp_step_sub: "usedp (step S A) \<subseteq> usedp S \<union> pars A \<union> usedp (wit S A)"
+  by (auto simp: step_def usedp_def)
+
+lemma usedp_ext_bound:
+  "usedp (ext \<Phi> a) \<subseteq> usedp \<Phi> \<union> (\<Union>b \<in> under tmord a. stagep \<Phi> b)"
+proof (induction a rule: tmord_induct)
+  case (below a)
+  have su: "c \<in> under tmord a" if "b \<in> underS tmord a" "c \<in> under tmord b" for b c
+    using that by (auto simp: under_def underS_def intro: tmord_trans)
+  have "usedp (ext \<Phi> a)
+        \<subseteq> usedp (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b)) \<union> stagep \<Phi> a"
+    using usedp_step_sub[of "\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b)" a]
+    by (subst ext_unfold) (auto simp: stagep_def)
+  moreover have "usedp (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b))
+        = usedp \<Phi> \<union> (\<Union>b \<in> underS tmord a. usedp (ext \<Phi> b))"
+    by (auto simp: usedp_def)
+  moreover have "usedp (ext \<Phi> b) \<subseteq> usedp \<Phi> \<union> (\<Union>c \<in> under tmord a. stagep \<Phi> c)"
+    if b: "b \<in> underS tmord a" for b
+    using below.IH[OF b] su[OF b] by blast
+  moreover have "a \<in> under tmord a" by (simp add: tmord_under)
+  ultimately show ?case by blast
+qed
+
+lemma ext_reserve:
+  assumes rp: "richp (\<Phi> :: 'p::infinite tm set)"
+  shows "freep (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b))" and "freep (ext \<Phi> a)"
+proof -
+  define X where "X = (\<Union>b \<in> under tmord a. stagep \<Phi> b)"
+  have "under tmord (a :: 'p tm) = {a} \<union> underS tmord a"
+    by (auto simp: tmord_under)
+  hence "|under tmord (a :: 'p tm)| <o |UNIV :: 'p tm set|"
+    using card_of_Un_ordLess_infinite[OF infinite_tm_UNIV
+          card_of_finite_infinite[OF _ infinite_tm_UNIV] tmord_underS_small,
+          of "{a}"] by simp
+  hence Xsmall: "|X| <o |UNIV :: 'p tm set|"
+    unfolding X_def
+    by (rule card_of_UNION_finite_small[OF _ infinite_tm_UNIV]) (rule finite_stagep)
+  have su: "c \<in> under tmord a" if "b \<in> underS tmord a" "c \<in> under tmord b" for b c
+    using that by (auto simp: under_def underS_def intro: tmord_trans)
+  have bound': "usedp (ext \<Phi> b) \<subseteq> usedp \<Phi> \<union> X" if b: "b \<in> under tmord a" for b
+  proof (cases "b = a")
+    case True
+    thus ?thesis using usedp_ext_bound[of \<Phi> b] unfolding X_def by simp
+  next
+    case False
+    hence bS: "b \<in> underS tmord a" using b by (auto simp: under_def underS_def)
+    have "(\<Union>c \<in> under tmord b. stagep \<Phi> c) \<subseteq> X"
+      unfolding X_def using su[OF bS] by blast
+    thus ?thesis using usedp_ext_bound[of \<Phi> b] by blast
+  qed
+  have bound: "usedp (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b)) \<subseteq> usedp \<Phi> \<union> X"
+  proof -
+    have "usedp (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b))
+        = usedp \<Phi> \<union> (\<Union>b \<in> underS tmord a. usedp (ext \<Phi> b))"
+      by (auto simp: usedp_def)
+    moreover have "usedp (ext \<Phi> b) \<subseteq> usedp \<Phi> \<union> X" if "b \<in> underS tmord a" for b
+      using bound' that by (auto simp: under_def underS_def)
+    ultimately show ?thesis by blast
+  qed
+  have inf: "infinite (- (usedp \<Phi> \<union> X))"
+  proof
+    assume fin: "finite (- (usedp \<Phi> \<union> X))"
+    have "- usedp \<Phi> \<subseteq> X \<union> (- (usedp \<Phi> \<union> X))" by blast
+    hence "|- usedp \<Phi>| \<le>o |X \<union> (- (usedp \<Phi> \<union> X))|" by (rule card_of_mono1)
+    moreover have "|X \<union> (- (usedp \<Phi> \<union> X))| <o |UNIV :: 'p tm set|"
+      by (rule card_of_Un_ordLess_infinite[OF infinite_tm_UNIV Xsmall
+            card_of_finite_infinite[OF fin infinite_tm_UNIV]])
+    ultimately have "|UNIV :: 'p tm set| <o |UNIV :: 'p tm set|"
+      using richp_reserve[OF rp] by (meson ordLeq_ordLess_trans ordLeq_transitive)
+    thus False using ordLess_irreflexive by blast
+  qed
+  show "freep (\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b))"
+    unfolding freep_def by (rule infinite_super[OF _ inf]) (use bound in blast)
+  have aa: "a \<in> under tmord a" by (simp add: under_def tmord_refl)
+  show "freep (ext \<Phi> a)"
+    unfolding freep_def
+    by (rule infinite_super[OF _ inf]) (use bound'[OF aa] in blast)
+qed
+
+lemma con_ext:
+  assumes con\<Phi>: "con \<Phi>" and rp: "richp (\<Phi> :: 'p::infinite tm set)"
+  shows "con (ext \<Phi> a)"
+proof (induction a rule: tmord_induct)
+  case (below a)
+  let ?S = "\<Phi> \<union> (\<Union>b \<in> underS tmord a. ext \<Phi> b)"
+  have conS: "con ?S"
+  proof (rule con_compact)
+    fix F :: "'p tm set" assume finF: "finite F" and subF: "F \<subseteq> ?S"
+    show "con F"
+    proof (cases "F \<subseteq> \<Phi>")
+      case True
+      show ?thesis by (rule con_mono[OF con\<Phi> True richp_freep[OF rp]])
+    next
+      case False
+      have "\<forall>x \<in> F - \<Phi>. \<exists>b. b \<in> underS tmord a \<and> x \<in> ext \<Phi> b"
+        using subF by blast
+      then obtain f where f: "\<And>x. x \<in> F - \<Phi> \<Longrightarrow> f x \<in> underS tmord a \<and> x \<in> ext \<Phi> (f x)"
+        by (metis bchoice)
+      have finB: "finite (f ` (F - \<Phi>))" and neB: "f ` (F - \<Phi>) \<noteq> {}"
+        and subB: "f ` (F - \<Phi>) \<subseteq> underS tmord a"
+        using finF False f by auto
+      obtain b where b: "b \<in> f ` (F - \<Phi>)" "\<And>c. c \<in> f ` (F - \<Phi>) \<Longrightarrow> ext \<Phi> c \<subseteq> ext \<Phi> b"
+        using ext_finite_ub[where \<Phi> = \<Phi>, OF finB neB] by blast
+      have FbF: "F \<subseteq> ext \<Phi> b"
+      proof
+        fix x assume x: "x \<in> F"
+        show "x \<in> ext \<Phi> b"
+        proof (cases "x \<in> \<Phi>")
+          case True thus ?thesis using Phi_sub_ext by blast
+        next
+          case False
+          hence "x \<in> ext \<Phi> (f x)" and "f x \<in> f ` (F - \<Phi>)" using f x by auto
+          thus ?thesis using b(2) by blast
+        qed
+      qed
+      have conb: "con (ext \<Phi> b)" using below.IH b(1) subB by blast
+      show ?thesis by (rule con_mono[OF conb FbF ext_reserve(2)[OF rp]])
+    qed
+  qed
+  show ?case by (subst ext_unfold) (rule con_step[OF conS ext_reserve(1)[OF rp]])
+qed
 
 text \<open>\<open>Hset \<Phi>\<close> extends \<open>\<Phi>\<close> and, by compactness, is consistent.\<close>
 
-lemma Phi_sub_Hset: "\<Phi> \<subseteq> Hset \<Phi>" unfolding Hset_def using ext.simps(1)
-  by blast
-lemma finite_sub_ext: "finite F \<Longrightarrow> F \<subseteq> Hset \<Phi> \<Longrightarrow> \<exists>N. F \<subseteq> ext \<Phi> N"
+lemma Phi_sub_Hset: "\<Phi> \<subseteq> Hset \<Phi>"
+  unfolding Hset_def using Phi_sub_ext by blast
+
+lemma finite_sub_ext: "finite F \<Longrightarrow> F \<subseteq> Hset \<Phi> \<Longrightarrow> \<exists>a. F \<subseteq> ext \<Phi> a"
 proof (induction F rule: finite_induct)
   case empty thus ?case by blast
 next
   case (insert x F)
-  then obtain N where N: "F \<subseteq> ext \<Phi> N" by auto
-  from insert.prems obtain M where M: "x \<in> ext \<Phi> M"
-    by (auto simp: Hset_def)
-  have "insert x F \<subseteq> ext \<Phi> (max N M)"
-    using N M ext_mono'[of N "max N M" \<Phi>] ext_mono'[of M "max N M" \<Phi>] by auto
-  thus ?case by blast
+  then obtain a where a: "F \<subseteq> ext \<Phi> a" by auto
+  from insert.prems obtain b where b: "x \<in> ext \<Phi> b" by (auto simp: Hset_def)
+  obtain c where "ext \<Phi> a \<subseteq> ext \<Phi> c" and "ext \<Phi> b \<subseteq> ext \<Phi> c"
+    using ext_directed by blast
+  thus ?case using a b by blast
 qed
-lemma con_Hset: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes "con \<Phi>" and "freep \<Phi>"
+
+lemma con_Hset: fixes \<Phi> :: "'p::infinite tm set"
+  assumes "con \<Phi>" and "richp \<Phi>"
   shows "con (Hset \<Phi>)"
-  by (metis assms(1,2) con_compact con_ext con_mono finite_sub_ext freep_ext)
+  by (meson assms con_compact con_ext con_mono ext_reserve(2) finite_sub_ext)
 
 text \<open>Crucially, \<open>freep (Hset \<Phi>)\<close> fails (a maximal set uses every parameter), so we never weaken
-  @{emph \<open>to\<close>} \<open>Hset\<close>.  Instead we use that every @{emph \<open>finite\<close>} subset of \<open>Hset\<close> is consistent
-      ---
-  finite contexts are always \<open>freep\<close>, which is all the proof rules need.\<close>
+  @{emph \<open>to\<close>} \<open>Hset\<close>.  Instead we use that every @{emph \<open>finite\<close>} subset of \<open>Hset\<close> is
+  consistent --- finite contexts are always \<open>freep\<close>, which is all the proof rules need.\<close>
 
-lemma Hset_finite_con: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes "con \<Phi>" and "freep \<Phi>" and "finite F" and "F \<subseteq> Hset \<Phi>"
-  shows "con F" 
-  by (meson assms(1,2,3,4) con_ext con_mono finite_sub_ext freep_ext)
+lemma Hset_finite_con: fixes \<Phi> :: "'p::infinite tm set"
+  assumes "con \<Phi>" and "richp \<Phi>" and "finite F" and "F \<subseteq> Hset \<Phi>"
+  shows "con F"
+  by (meson assms con_ext con_mono ext_reserve(2) finite_sub_ext)
 
 text \<open>\<open>Hset\<close> decides every sentence --- BKK call this @{emph \<open>saturated\<close>}, property \<open>\<^sub>~\<nabla>\<^sub>s\<^sub>a\<^sub>t\<close>
   (BKK Definition 6.24) --- and has the Henkin witness property \<open>\<^sub>~\<nabla>\<^sub>\<exists>\<close> (BKK Definition 6.19).
   We call the former @{emph \<open>maximality\<close>} and reserve @{emph \<open>saturation\<close>} for the witness
   property; the lemma names below follow this convention.\<close>
 
-lemma Hset_maximal: fixes \<Phi> :: "'p::{countable,infinite} tm set"
+lemma Hset_maximal:
   assumes c: "cwff \<o> A" shows "A \<in> Hset \<Phi> \<or> \<^bold>\<not> A \<in> Hset \<Phi>"
 proof -
-  have "A \<in> ext \<Phi> (Suc (to_nat A)) \<or> \<^bold>\<not> A \<in> ext \<Phi> (Suc (to_nat A))"
-    using c by (auto simp: step_def)
+  have "A \<in> ext \<Phi> A \<or> \<^bold>\<not> A \<in> ext \<Phi> A"
+    using c by (subst (1 2) ext_unfold) (simp add: step_def)
   thus ?thesis unfolding Hset_def by blast
 qed
-lemma Hset_saturated: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp: "freep \<Phi>"
+lemma Hset_saturated: fixes \<Phi> :: "'p::infinite tm set"
+  assumes con\<Phi>: "con \<Phi>" and fp: "richp \<Phi>"
   and cA: "cwff \<o> (\<^bold>\<not> ((Pi \<alpha>) \<^bold>\<cdot> G))" and inH: "\<^bold>\<not> ((Pi \<alpha>) \<^bold>\<cdot> G) \<in> Hset \<Phi>"
 shows "\<exists>c. \<^bold>\<not> (G \<^bold>\<cdot> (c\<^sup>p\<^bsub>\<alpha>\<^esub>)) \<in> Hset \<Phi>"
 proof -
-  note wA = cwff_wff[OF cA] and fvsA = cwff_closed[OF cA]
+  note wA = cwff_wff[OF cA]
   let ?A = "\<^bold>\<not> ((Pi \<alpha>) \<^bold>\<cdot> G)"
-  let ?S = "ext \<Phi> (to_nat ?A)"
-  have step: "ext \<Phi> (Suc (to_nat ?A)) = step ?S ?A"
-    by simp
+  let ?S = "\<Phi> \<union> (\<Union>b \<in> underS tmord ?A. ext \<Phi> b)"
+  have step: "ext \<Phi> ?A = step ?S ?A"
+    by (rule ext_unfold)
   have "con (insert ?A ?S)"
   proof (rule ccontr)
     assume "\<not> con (insert ?A ?S)"
-    hence "\<^bold>\<not> ?A \<in> ext \<Phi> (Suc (to_nat ?A))" using cA step
+    hence "\<^bold>\<not> ?A \<in> ext \<Phi> ?A" using cA step
         by (auto simp: step_def)
     hence "\<^bold>\<not> ?A \<in> Hset \<Phi>" unfolding Hset_def by blast
     thus False using con_not_both[OF con_Hset[OF con\<Phi> fp] inH _ wA]
         by blast
   qed
-  hence "wit ?S ?A \<subseteq> ext \<Phi> (Suc (to_nat ?A))" using cA step
+  hence "wit ?S ?A \<subseteq> ext \<Phi> ?A" using cA step
     by (auto simp: step_def)
   moreover have "wit ?S ?A = {\<^bold>\<not> (G \<^bold>\<cdot> ((freshc ?S G)\<^sup>p\<^bsub>\<alpha>\<^esub>))}"
     by simp
@@ -290,126 +599,14 @@ proof -
   thus ?thesis by blast
 qed
 
-subsubsection \<open>Leibniz equality is reflexive (BKK property \<open>\<nabla>\<^sub>r\<close>, Lemma 6.25)\<close>
-
-lemma leib_refl: assumes fp: "freep \<Phi>" and wa: "wff\<^bsub>\<alpha>\<^esub>(A)"
-  shows "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A" by (simp add: EqL EqR wa)
-
-text \<open>Leibniz substitution (the substitutivity built into BKK's Leibniz equality, Section 2.2;
-cf.\ the \<open>\<nabla>\<close>-properties of BKK Lemma 6.12): equals may replace equals
-in any predicate.  Instantiating \<open>P\<close> with suitable predicates yields symmetry, transitivity
-and congruence.\<close>
-
-lemma leib_subst:
-  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B" and fp: "freep \<Phi>" and wa: "wff\<^bsub>\<alpha>\<^esub>(A)" and wb: "wff\<^bsub>\<alpha>\<^esub>(B)"
-      and wP: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub>(P)" and PA: "\<Phi> \<turnstile> P \<^bold>\<cdot> A"
-    shows "\<Phi> \<turnstile> P \<^bold>\<cdot> B"
-proof -
-  let ?body = "(Bnd 0) \<^bold>\<cdot> A \<^bold>\<supset> (Bnd 0) \<^bold>\<cdot> B"
-  have "\<Phi> \<turnstile> \<^bold>\<Pi>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub> ?body"
-    using Leib_beq[OF wa wb] AB by (rule bprov.Beta)
-  hence "\<Phi> \<turnstile> (Pi (\<alpha> \<^bold>\<Rightarrow> \<o>)) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> ?body)" by (simp add: Forall_def)
-  hence P: "\<Phi> \<turnstile> (\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> ?body) \<^bold>\<cdot> P" using wP by (rule bprov.PiE)
-  have wAbs: "wff\<^bsub>(\<alpha>\<^bold>\<Rightarrow>\<o>)\<^bold>\<Rightarrow>\<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> ?body)"
-    by (auto simp: opn_lc[OF wff_lc[OF wa]] opn_lc[OF wff_lc[OF wb]]
-             intro!: wff_App wff_Fre wa wb wff_AbsI)
-  have "(\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> ?body) \<^bold>\<cdot> P \<approx>\<^bsub>\<o>\<^esub> P \<^bold>\<cdot> A \<^bold>\<supset> P \<^bold>\<cdot> B"
-  proof -
-    have "(\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub> ?body) \<^bold>\<cdot> P \<approx>\<^bsub>\<o>\<^esub> ?body\<^bold>\<langle>P\<^bold>\<rangle>"
-      by (rule beq.beta[OF wAbs wP])
-    thus ?thesis
-      by (simp add: opn_lc[OF wff_lc[OF wa]] opn_lc[OF wff_lc[OF wb]])
-  qed
-  from bprov.Beta[OF this P] have "\<Phi> \<turnstile> P \<^bold>\<cdot> A \<^bold>\<supset> P \<^bold>\<cdot> B".
-  moreover have "wff\<^bsub>\<o>\<^esub>(P \<^bold>\<cdot> A)" by (rule wff_App[OF wP wa])
-  moreover have "wff\<^bsub>\<o>\<^esub>(P \<^bold>\<cdot> B)" by (rule wff_App[OF wP wb])
-  ultimately show ?thesis using PA fp by (metis bprov_ImpE)
-qed
-lemma leib_sym:
-  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B" and fp: "freep \<Phi>" and wa: "wff\<^bsub>\<alpha>\<^esub>(A)" and wb: "wff\<^bsub>\<alpha>\<^esub>(B)"
-  shows "\<Phi> \<turnstile> B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A"
-proof -
-  have lcA: "lc A" using wa by (rule wff_lc)
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<alpha>\<^esub> (((Leib \<alpha>) \<^bold>\<cdot> (Bnd 0)) \<^bold>\<cdot> A)" \<comment> \<open>the predicate \<open>\<lambda>x. x \<^bold>\<doteq> A\<close>\<close>
-  have wP: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)" by (auto simp: opn_lc[OF lcA] intro!: wff_Fre wa wff_AbsI)
-  have PbA: "?P \<^bold>\<cdot> A \<approx>\<^bsub>\<o>\<^esub> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)"
-    using beq.beta[OF wP wa] by (simp add: opn_lc[OF lcA])
-  have PbB: "?P \<^bold>\<cdot> B \<approx>\<^bsub>\<o>\<^esub> (B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)"
-    using beq.beta[OF wP wb] by (simp add: opn_lc[OF lcA])
-  have "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A" using fp wa by (rule leib_refl)
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> A"
-    using beq.sym[OF PbA] by (rule bprov.Beta[rotated])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> B" using leib_subst[OF AB fp wa wb wP] by auto
-  thus ?thesis by (rule bprov.Beta[OF PbB])
-qed
-lemma leib_trans:
-  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B" and BC: "\<Phi> \<turnstile> B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C" and fp: "freep \<Phi>"
-      and wa: "wff\<^bsub>\<alpha>\<^esub>(A)" and wb: "wff\<^bsub>\<alpha>\<^esub>(B)" and wc: "wff\<^bsub>\<alpha>\<^esub>(C)"
-    shows "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C"
-proof -
-  have lcA: "lc A" using wa by (rule wff_lc)
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<alpha>\<^esub> (((Leib \<alpha>) \<^bold>\<cdot> A) \<^bold>\<cdot> (Bnd 0))" \<comment> \<open>the predicate \<open>\<lambda>x. A \<^bold>\<doteq> x\<close>\<close>
-  have wP: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)"
-    by (auto simp: opn_lc[OF lcA] intro!: wff_Fre wa wff_AbsI)
-  have PbB: "?P \<^bold>\<cdot> B \<approx>\<^bsub>\<o>\<^esub> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B)"
-    using beq.beta[OF wP wb] by (simp add: opn_lc[OF lcA])
-  have PbC: "?P \<^bold>\<cdot> C \<approx>\<^bsub>\<o>\<^esub> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C)"
-    using beq.beta[OF wP wc] by (simp add: opn_lc[OF lcA])
-  from AB have "\<Phi> \<turnstile> ?P \<^bold>\<cdot> B" by (rule bprov.Beta[OF beq.sym[OF PbB]])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> C" using leib_subst[OF BC fp wb wc wP] by auto
-  thus ?thesis by (rule bprov.Beta[OF PbC])
-qed
-lemma leib_cong2:
-  assumes AA: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A'" and fp: "freep \<Phi>"
-  and wa: "wff\<^bsub>\<alpha>\<^esub>(A)" and wa': "wff\<^bsub>\<alpha>\<^esub>(A')" and wC: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub>(C)"
-  shows "\<Phi> \<turnstile> (C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (C \<^bold>\<cdot> A')"
-proof -
-  have lcC: "lc C" using wC by (rule wff_lc)
-  have lcA: "lc A" using wa by (rule wff_lc)
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<alpha>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> (Bnd 0))"   \<comment> \<open>\<open>\<lambda>x. (C A) \<^bold>\<doteq> (C x)\<close>\<close>
-  have wP: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)"
-    by (auto simp: opn_lc[OF lcC] opn_lc[OF lcA]
-             intro!: wff_AbsI wff_App wff_Fre wC wa wff_App[OF wC wa])
-  have PbA: "?P \<^bold>\<cdot> A \<approx>\<^bsub>\<o>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> A)"
-    using beq.beta[OF wP wa] by (simp add: opn_lc[OF lcC] opn_lc[OF lcA])
-  have PbA': "?P \<^bold>\<cdot> A' \<approx>\<^bsub>\<o>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> A')"
-    using beq.beta[OF wP wa'] by (simp add: opn_lc[OF lcC] opn_lc[OF lcA])
-  have "\<Phi> \<turnstile> C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> A" using fp wff_App[OF wC wa]
-      by (rule leib_refl)
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> A" by (rule bprov.Beta[OF beq.sym[OF PbA]])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> A'" using leib_subst[OF AA fp wa wa' wP] by auto
-  thus ?thesis by (rule bprov.Beta[OF PbA'])
-qed
-lemma leib_cong1:
-  assumes CC: "\<Phi> \<turnstile> C \<^bold>\<doteq>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub> C'" and fp: "freep \<Phi>"
-      and wC: "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub>(C)" and wC': "wff\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub>(C')" and wa: "wff\<^bsub>\<alpha>\<^esub>(A)"
-    shows "\<Phi> \<turnstile> (C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (C' \<^bold>\<cdot> A)"
-proof -
-  have lcC: "lc C" using wC by (rule wff_lc)
-  have lcA: "lc A" using wa by (rule wff_lc)
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<beta>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (Bnd 0) \<^bold>\<cdot> A)"   \<comment> \<open>\<open>\<lambda>f. (C A) \<^bold>\<doteq> (f A)\<close>\<close>
-  have wP: "wff\<^bsub>(\<alpha>\<^bold>\<Rightarrow>\<beta>)\<^bold>\<Rightarrow>\<o>\<^esub>(?P)"
-    by (auto simp: opn_lc[OF lcC] opn_lc[OF lcA]
-             intro!: wff_AbsI wff_App wff_Fre wC wa wff_App[OF wC wa])
-  have PbC: "?P \<^bold>\<cdot> C \<approx>\<^bsub>\<o>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> A)"
-    using beq.beta[OF wP wC] by (simp add: opn_lc[OF lcC] opn_lc[OF lcA])
-  have PbC': "?P \<^bold>\<cdot> C' \<approx>\<^bsub>\<o>\<^esub> (C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C' \<^bold>\<cdot> A)"
-    using beq.beta[OF wP wC'] by (simp add: opn_lc[OF lcC] opn_lc[OF lcA])
-  have "\<Phi> \<turnstile> C \<^bold>\<cdot> A \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> C \<^bold>\<cdot> A"
-    using fp wff_App[OF wC wa] by (rule leib_refl)
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> C" by (rule bprov.Beta[OF beq.sym[OF PbC]])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> C'" using leib_subst[OF CC fp wC wC' wP] by auto
-  thus ?thesis by (rule bprov.Beta[OF PbC'])
-qed
-
 subsubsection \<open>Deductive closure of the Hintikka set\<close>
 
 text \<open>Since \<open>Hset\<close> is maximal and each of its finite subsets is consistent, every sentence
     provable from a finite subset already belongs to \<open>Hset\<close> (deductive closure --- a consequence
     of the maximality of the extension, BKK Lemma 6.32).\<close>
 
-lemma Hset_deduct: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
+lemma Hset_deduct: fixes \<Phi> :: "'p::infinite tm set"
+  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "richp \<Phi>"
       and finF: "finite F" and subF: "F \<subseteq> Hset \<Phi>" and FS: "F \<turnstile> S"
       and cS: "cwff \<o> S" shows "S \<in> Hset \<Phi>"
 proof (rule ccontr)
@@ -424,87 +621,84 @@ proof (rule ccontr)
   ultimately show False by (simp add: con_def)
 qed
 
-text \<open>In particular, Leibniz equality is reflexive on \<open>Hset\<close> --- BKK's property \<open>\<nabla>\<^sub>r\<close>
-  for saturated Hintikka sets (Lemma 6.25; Lemma 6.23 gives the negative form
-  \<open>\<^sub>~\<nabla>\<^sub>=\<^sub>r\<close>); symmetry, transitivity and congruence follow below.\<close>
+subsection \<open>The term model (BKK Section 6, the Hintikka lemma)\<close>
 
-lemma Hset_leib_refl: fixes \<Phi> :: "'p::{countable,infinite} tm set" 
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>" and ca: "cwff \<alpha> A"
-  shows "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A) \<in> Hset \<Phi>"
+text \<open>Fix a consistent, parameter-rich set \<open>\<Phi>\<close>; its Hintikka extension \<open>H\<close> is maximal, consistent
+  and saturated.  The @{emph \<open>term model\<close>} has as its domain the closed well-formed terms quotiented
+  by provable Leibniz equality \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq> B) \<in> H\<close>; this quotient is what forces property q.\<close>
+
+locale hintikka_model = fixes \<Phi> :: "'p::infinite tm set"
+  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "richp \<Phi>"
+begin
+
+text \<open>Leibniz equality is reflexive on \<open>Hset\<close> --- BKK's property \<open>\<nabla>\<^sub>r\<close> for saturated
+  Hintikka sets (Lemma 6.25; Lemma 6.23 gives the negative form \<open>\<^sub>~\<nabla>\<^sub>=\<^sub>r\<close>); symmetry,
+  transitivity, congruence and truth-transfer follow, all by @{thm [source] Hset_deduct}
+  over the corresponding derived rules of the calculus.\<close>
+
+lemma Hset_leib_refl: assumes ca: "cwff \<alpha> A" shows "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A) \<in> Hset \<Phi>"
 proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>, of "{}"])
-  note wa = cwff_wff[OF ca] and cA = cwff_closed[OF ca]
   show "finite {}" by simp
   show "{} \<subseteq> Hset \<Phi>" by simp
-  show "{} \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A"
-    by (rule leib_refl[OF freep_finite[OF finite.emptyI] wa])
-  show "cwff \<o> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)"
-    by (rule cwffI[OF wff_LeibE[OF wa wa]]) (simp add: Leib_def cA)
+  show "{} \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A" by (rule leib_refl[OF cwff_wff[OF ca]])
+  show "cwff \<o> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)" by (rule cwff_LeibE[OF ca ca])
 qed
-lemma Hset_leib_sym: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
-    and ca: "cwff \<alpha> A" and cb: "cwff \<alpha> B" and AB: "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B) \<in> Hset \<Phi>"
+
+lemma Hset_leib_sym:
+  assumes ca: "cwff \<alpha> A" and cb: "cwff \<alpha> B" and AB: "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B) \<in> Hset \<Phi>"
   shows "(B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A) \<in> Hset \<Phi>"
 proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>])
-  note wa = cwff_wff[OF ca] and cA = cwff_closed[OF ca] and
-       wb = cwff_wff[OF cb] and cB = cwff_closed[OF cb]
+  note wa = cwff_wff[OF ca] and wb = cwff_wff[OF cb]
   show "finite {A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B}" by simp
   show "{A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B} \<subseteq> Hset \<Phi>" using AB by simp
   show "{A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B} \<turnstile> B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A"
     by (simp add: Hyp freep_finite leib_sym wa wb)
-  show "cwff \<o> (B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)"
-    by (rule cwffI[OF wff_LeibE[OF wb wa]]) (simp add: Leib_def cA cB)
+  show "cwff \<o> (B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A)" by (rule cwff_LeibE[OF cb ca])
 qed
-lemma Hset_leib_trans: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
-  and ca: "cwff \<alpha> A" and wb: "wff\<^bsub>\<alpha>\<^esub>(B)" and cc: "cwff \<alpha> C"
+
+lemma Hset_leib_trans:
+  assumes ca: "cwff \<alpha> A" and wb: "wff\<^bsub>\<alpha>\<^esub>(B)" and cc: "cwff \<alpha> C"
   and AB: "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B) \<in> Hset \<Phi>" and BC: "(B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C) \<in> Hset \<Phi>"
   shows "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C) \<in> Hset \<Phi>"
 proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>])
-  note wa = cwff_wff[OF ca] and cA = cwff_closed[OF ca] and
-       wc = cwff_wff[OF cc] and cC = cwff_closed[OF cc]
+  note wa = cwff_wff[OF ca] and wc = cwff_wff[OF cc]
   let ?F = "{A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B, B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C}"
   show "finite ?F" by simp
   show "?F \<subseteq> Hset \<Phi>" using AB BC by simp
   show "?F \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C"
     by (meson Hyp \<open>finite {A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B, B \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C}\<close> freep_finite insertCI
         leib_trans wa wb wc)
-  show "cwff \<o> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C)"
-    by (rule cwffI[OF wff_LeibE[OF wa wc]]) (simp add: Leib_def cA cC)
+  show "cwff \<o> (A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> C)" by (rule cwff_LeibE[OF ca cc])
 qed
-lemma Hset_leib_cong: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
-      and cc: "cwff (\<alpha>\<^bold>\<Rightarrow>\<beta>) C" and cc': "cwff (\<alpha>\<^bold>\<Rightarrow>\<beta>) C'" and ca: "cwff \<alpha> A"
+
+lemma Hset_leib_cong:
+  assumes cc: "cwff (\<alpha>\<^bold>\<Rightarrow>\<beta>) C" and cc': "cwff (\<alpha>\<^bold>\<Rightarrow>\<beta>) C'" and ca: "cwff \<alpha> A"
       and ca': "cwff \<alpha> A'"
       and CC: "(C \<^bold>\<doteq>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub> C') \<in> Hset \<Phi>" and AA: "(A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A') \<in> Hset \<Phi>"
     shows "((C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (C' \<^bold>\<cdot> A')) \<in> Hset \<Phi>"
 proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>])
-  note wC = cwff_wff[OF cc] and cC = cwff_closed[OF cc] and
-       wC' = cwff_wff[OF cc'] and cC' = cwff_closed[OF cc'] and
-       wA = cwff_wff[OF ca] and cA = cwff_closed[OF ca] and
-       wA' = cwff_wff[OF ca'] and cA' = cwff_closed[OF ca']
+  note wC = cwff_wff[OF cc] and wC' = cwff_wff[OF cc'] and
+       wA = cwff_wff[OF ca] and wA' = cwff_wff[OF ca']
   let ?F = "{C \<^bold>\<doteq>\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<beta>\<^esub> C', A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> A'}"
   have fp: "freep ?F" using freep_finite[of ?F] by simp
   show "finite ?F" by simp
   show "?F \<subseteq> Hset \<Phi>" using CC AA by simp
   show "?F \<turnstile> (C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (C' \<^bold>\<cdot> A')"
-    by (meson Hyp fp insertCI leib_cong1 leib_cong2 leib_trans wA wA' wC wC' 
+    by (meson Hyp fp insertCI leib_cong1 leib_cong2 leib_trans wA wA' wC wC'
               wff_App[OF wC' wA] wff_App[OF wC' wA'] wff_App[OF wC wA])
   show "cwff \<o> ((C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (C' \<^bold>\<cdot> A'))"
-    by (rule cwffI[OF wff_LeibE[OF wff_App[OF wC wA] wff_App[OF wC' wA']]])
-       (simp add: Leib_def cC cA cC' cA')
+    by (rule cwff_LeibE[OF cwff_App[OF cc ca] cwff_App[OF cc' ca']])
 qed
 
-text \<open>Leibniz-equal propositions have the same truth (membership transfers along \<open>\<sim>\<close> at type \<open>\<o>\<close>);
-proved by Leibniz substitution with the identity predicate.\<close>
+text \<open>Leibniz-equal propositions have the same truth (membership transfers along \<open>\<sim>\<close> at
+  type \<open>\<o>\<close>); by Leibniz transport with the identity predicate.\<close>
 
-lemma Hset_leib_mp: fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
-      and ca: "cwff \<o> A" and cb: "cwff \<o> B" and AB: "(A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B) \<in> Hset \<Phi>"
+lemma Hset_leib_mp:
+  assumes ca: "cwff \<o> A" and cb: "cwff \<o> B" and AB: "(A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B) \<in> Hset \<Phi>"
       and A: "A \<in> Hset \<Phi>"
     shows "B \<in> Hset \<Phi>"
 proof (rule Hset_deduct[OF con\<Phi> fp\<Phi> _ _ _ cb])
-  note wA = cwff_wff[OF ca] and cA = cwff_closed[OF ca] and
-       wB = cwff_wff[OF cb] and cB = cwff_closed[OF cb]
+  note wA = cwff_wff[OF ca] and wB = cwff_wff[OF cb]
   let ?F = "{A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B, A}"
   let ?P = "\<^bold>\<Lambda>\<^bsub>\<o>\<^esub> (Bnd 0)"   \<comment> \<open>the identity predicate\<close>
   have wP: "wff\<^bsub>\<o>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)" by (rule wff_AbsI) (simp add: wff_Fre)
@@ -514,37 +708,18 @@ proof (rule Hset_deduct[OF con\<Phi> fp\<Phi> _ _ _ cb])
   show "finite ?F" by simp
   show "?F \<subseteq> Hset \<Phi>" using AB A by simp
   have s1: "?F \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B" by (auto intro: bprov.Hyp)
-  have s2: "?F \<turnstile> ?P \<^bold>\<cdot> A"
-    by (rule bprov.Beta[OF beq.sym[OF PA]]) (auto intro: bprov.Hyp)
-  have "?F \<turnstile> ?P \<^bold>\<cdot> B" by (rule leib_subst[OF s1 fp wA wB wP s2])
-  thus "?F \<turnstile> B" by (rule bprov.Beta[OF PB])
+  show "?F \<turnstile> B"
+    by (rule leib_transport[OF s1 fp wA wB wP PA PB]) (auto intro: bprov.Hyp)
 qed
 
-subsection \<open>The term model (BKK Section 6, the Hintikka lemma)\<close>
-
-text \<open>Fix a consistent, parameter-rich set \<open>\<Phi>\<close>; its Hintikka extension \<open>H\<close> is maximal, consistent
-  and saturated.  The @{emph \<open>term model\<close>} has as its domain the closed well-formed terms quotiented
-  by provable Leibniz equality \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq> B) \<in> H\<close>; this quotient is what forces property q.\<close>
-
-locale hintikka_model = fixes \<Phi> :: "'p::{countable,infinite} tm set"
-  assumes con\<Phi>: "con \<Phi>" and fp\<Phi>: "freep \<Phi>"
-begin
-
 text \<open>The \<open>\<sim>\<close>-equivalence classes of closed well-formed terms (@{const cwff} from
-  Section 2): \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> H\<close> --- the Leibniz quotient of BKK's model-existence proof
+  Section 1): \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> H\<close> --- the Leibniz quotient of BKK's model-existence proof
   (BKK Theorem 6.33); the \<open>\<^sub>~\<nabla>\<close>-properties of Leibniz equality in \<open>H\<close> are BKK Lemma 6.23.\<close>
 
 definition cls :: "'p tm \<Rightarrow> 'p tm set" where
   "cls A \<equiv> {B. \<exists>\<sigma>. cwff \<sigma> A \<and> cwff \<sigma> B \<and> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> Hset \<Phi>}"
 lemma cls_self: "cwff \<sigma> A \<Longrightarrow> A \<in> cls A"
-  using Hset_leib_refl[OF con\<Phi> fp\<Phi>] by (auto simp: cls_def cwff_def)
-lemma leib_sym':
-  "cwff \<sigma> A \<Longrightarrow> cwff \<sigma> B \<Longrightarrow> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> Hset \<Phi> \<Longrightarrow> (B \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> A) \<in> Hset \<Phi>" 
-  using Hset_leib_sym[OF con\<Phi> fp\<Phi>] by (auto simp: cwff_def)
-lemma leib_trans':
-  "cwff \<sigma> A \<Longrightarrow> cwff \<sigma> B \<Longrightarrow> cwff \<sigma> C \<Longrightarrow> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> Hset \<Phi>
-    \<Longrightarrow> (B \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> C) \<in> Hset \<Phi> \<Longrightarrow> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> C) \<in> Hset \<Phi>"
-  using Hset_leib_trans[OF con\<Phi> fp\<Phi>] by (auto simp: cwff_def)
+  using Hset_leib_refl by (auto simp: cls_def)
 
 text \<open>The quotient is faithful: two classes coincide exactly when the terms are Leibniz-equal in
   \<open>H\<close>.  This is what will give property q in the model.\<close>
@@ -552,8 +727,8 @@ text \<open>The quotient is faithful: two classes coincide exactly when the term
 lemma cls_eq_iff:
   assumes wA: "cwff \<sigma> A" and wB: "cwff \<sigma> B"
     shows "(cls A = cls B) \<longleftrightarrow> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> Hset \<Phi>" 
-  by (smt (verit, best) Collect_cong cls_def cls_self cwff_unique
-      leib_sym' leib_trans' mem_Collect_eq wA wB)
+  by (smt (verit, best) Collect_cong cls_def cls_self cwff_unique cwff_wff
+      Hset_leib_sym Hset_leib_trans mem_Collect_eq wA wB)
 
 lemma cls_rep:
   assumes "cwff \<sigma> A"
@@ -584,7 +759,7 @@ proof -
   have wAB: "cwff \<beta> (A \<^bold>\<cdot> B)" using wA wB
     by (auto simp: cwff_def intro: wff_App)
   have "((A \<^bold>\<cdot> B) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> ((SOME A'. A' \<in> cls A) \<^bold>\<cdot> (SOME B'. B' \<in> cls B))) \<in> Hset \<Phi>"
-    using Hset_leib_cong[OF con\<Phi> fp\<Phi>] wA a(1) wB b(1) a(2) b(2) by (auto simp: cwff_def)
+    using Hset_leib_cong wA a(1) wB b(1) a(2) b(2) by (auto simp: cwff_def)
   moreover have "cwff \<beta> ((SOME A'. A' \<in> cls A) \<^bold>\<cdot> (SOME B'. B' \<in> cls B))" 
     using a(1) b(1) cwff_App by blast 
   ultimately have "cls (A \<^bold>\<cdot> B) = cls ((SOME A'. A' \<in> cls A) \<^bold>\<cdot> (SOME B'. B' \<in> cls B))"
@@ -592,8 +767,6 @@ proof -
   thus ?thesis by (simp add: Ap_def)
 qed
 lemma Dm_cls: "cwff \<sigma> A \<Longrightarrow> Dm \<sigma> (cls A)" by (auto simp: Dm_def)
-lemma Ap_dom: "Dm (\<alpha> \<^bold>\<Rightarrow> \<beta>) X \<Longrightarrow> Dm \<alpha> Y \<Longrightarrow> Dm \<beta> (Ap X Y)" 
-  by (auto simp: Dm_def Ap_cls cwff_def intro: wff_App)
 
 text \<open>Truth and falsity behave (the analogue of BKK Lemma 3.43 / property b): \<open>\<^bold>\<top> \<in> H\<close>, \<open>\<^bold>\<bottom> \<notin> H\<close>,
   so \<open>cls \<^bold>\<top> \<noteq> cls \<^bold>\<bottom>\<close>.\<close>
@@ -707,7 +880,7 @@ proof
   proof (rule ccontr)
     assume "\<not> (\<phi> \<in> Hset \<Phi> \<or> \<psi> \<in> Hset \<Phi>)"
     hence np: "\<^bold>\<not> \<phi> \<in> Hset \<Phi>" and nq: "\<^bold>\<not> \<psi> \<in> Hset \<Phi>"
-        using Hset_maximal[OF wp] Hset_maximal[OF wq] by blast+
+      using Hset_maximal[OF wp] Hset_maximal[OF wq] by blast+
     let ?F = "{\<phi> \<^bold>\<or> \<psi>, \<^bold>\<not> \<phi>, \<^bold>\<not> \<psi>}"
     have "?F \<turnstile> \<phi> \<^bold>\<or> \<psi>" by (auto intro: bprov.Hyp)
     moreover have "?F \<union> {\<phi>} \<turnstile> \<^bold>\<bottom>"
@@ -758,7 +931,7 @@ next
     have cPf: "fvs ((Pi \<sigma>) \<^bold>\<cdot> f) = {}"
       using cwff_closed[OF wf] by simp
     have n: "\<^bold>\<not> ((Pi \<sigma>) \<^bold>\<cdot> f) \<in> Hset \<Phi>"
-        using Hset_maximal[OF cwffI[OF wPf cPf]] npf by blast
+      using Hset_maximal[OF cwffI[OF wPf cPf]] npf by blast
     have wn: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<not> ((Pi \<sigma>) \<^bold>\<cdot> f))" using wPf by (rule wff_Not)
     have cn: "fvs (\<^bold>\<not> ((Pi \<sigma>) \<^bold>\<cdot> f)) = {}" using cPf by simp
     obtain c where nc: "\<^bold>\<not> (f \<^bold>\<cdot> (c\<^sup>p\<^bsub>\<sigma>\<^esub>)) \<in> Hset \<Phi>"
@@ -803,11 +976,26 @@ lemma cls_type:
 text \<open>Property q (BKK Definition 3.46): the Leibniz combinator itself is the identity
   relation of the term model, by @{thm cls_eq_iff}.\<close>
 
-lemma cwff_Leib: "cwff (\<sigma>\<^bold>\<Rightarrow>\<sigma>\<^bold>\<Rightarrow>\<o>) (Leib \<sigma>)" by (simp add: cwff_def)
+text \<open>The one step behind functionality and description: if every instance of an abstracted
+  body lies in \<open>H\<close>, the \<open>\<Pi>\<close>-sentence lies in \<open>H\<close> by saturation (@{thm [source] Hset_pi_iff}),
+  and anything derivable from it is in \<open>H\<close> by @{thm [source] Hset_deduct}.\<close>
+
+lemma Hset_forall_intro:
+  assumes wB: "cwff (\<sigma>\<^bold>\<Rightarrow>\<o>) (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> body)"
+      and inst: "\<And>a. cwff \<sigma> a \<Longrightarrow> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> body) \<^bold>\<cdot> a \<in> Hset \<Phi>"
+      and drv: "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> body} \<turnstile> S"
+      and cS: "cwff \<o> S"
+    shows "S \<in> Hset \<Phi>"
+proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>, of "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> body}"])
+  show "finite {\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> body}" by simp
+  show "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> body} \<subseteq> Hset \<Phi>"
+    unfolding Forall_def using Hset_pi_iff[OF wB] inst by blast
+  show "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> body} \<turnstile> S" by (rule drv)
+  show "cwff \<o> S" by (rule cS)
+qed
 
 text \<open>Property f (functionality, BKK Definition 3.46) via the rule \<open>NK(f)\<close>: two functions
-  that agree on every class are Leibniz-equal in \<open>H\<close>.  Saturation enters through
-  @{thm Hset_pi_iff} to establish the \<open>\<Pi>\<close>-premise of \<open>NK(f)\<close>.\<close>
+  that agree on every class are Leibniz-equal in \<open>H\<close>.\<close>
 
 lemma cls_ext:
   assumes wg: "cwff (\<sigma>\<^bold>\<Rightarrow>\<tau>) g" and wh: "cwff (\<sigma>\<^bold>\<Rightarrow>\<tau>) h"
@@ -836,19 +1024,13 @@ proof -
     by (smt (verit, ccfv_threshold) Ap_cls Hset_beta_iff ag
         cls_eq_iff cwff_App opnb that wB wg wh)
   \<comment> \<open>hence the \<open>\<Pi>\<close>-sentence is in \<open>H\<close>, and \<open>NK(f)\<close> yields the equation\<close>
-  have PiH: "(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body) \<in> Hset \<Phi>"
-      using Hset_pi_iff[OF wB] inst by blast
   have "(g \<^bold>\<doteq>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> h) \<in> Hset \<Phi>"
-  proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>, of "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub>
-      ?body)}"])
-    show "finite {(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)}" by simp
-    show "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)} \<subseteq> Hset \<Phi>" using PiH by simp
-    have "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)} \<turnstile> \<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body"
-      by (auto intro: bprov.Hyp simp: Forall_def)
-    thus "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)} \<turnstile> g \<^bold>\<doteq>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> h"
+  proof (rule Hset_forall_intro[OF wB inst])
+    have "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body} \<turnstile> \<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body" by (auto intro: bprov.Hyp)
+    thus "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body} \<turnstile> g \<^bold>\<doteq>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> h"
       using FuncE cwff_wff wg wh by blast
-    show "cwff \<o> (g \<^bold>\<doteq>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> h)" by (metis cwff_App wg wh cwff_Leib)
- qed
+    show "cwff \<o> (g \<^bold>\<doteq>\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub> h)" by (rule cwff_LeibE[OF wg wh])
+  qed
   thus ?thesis using cls_eq_iff[OF wg wh] by simp
 qed
 
@@ -881,17 +1063,13 @@ proof -
   have inst: "(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body) \<^bold>\<cdot> b \<in> Hset \<Phi>" if b: "cwff \<sigma> b" for b
     by (metis (no_types, opaque_lifting) Ap_cls Hset_beta_iff Hset_iff_eq cls_TrueB_iff
               cls_eq_iff cwff_App cwff_Leib local.wf opnb sing that wB wa)
-  have PiH: "(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body) \<in> Hset \<Phi>"
-    using Hset_pi_iff[OF wB] inst by blast
   \<comment> \<open>\<open>NK(f)\<close> reduces to the literal singleton, \<open>NK(\<iota>)\<close> describes it\<close>
   have "(((Iota \<sigma>) \<^bold>\<cdot> f) \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> a) \<in> Hset \<Phi>"
-  proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>, of "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)}"])
-    show "finite {(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)}" by simp
-    show "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)} \<subseteq> Hset \<Phi>" using PiH by simp
-    let ?F = "{(Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?body)}"
+  proof (rule Hset_forall_intro[OF wB inst])
+    let ?F = "{\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body}"
     have fpF: "freep ?F" by (rule freep_finite) simp
     have PiD: "?F \<turnstile> \<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> ?body"
-      by (auto intro: bprov.Hyp simp: Forall_def)
+      by (auto intro: bprov.Hyp)
     show "?F \<turnstile> (Iota \<sigma>) \<^bold>\<cdot> f \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> a"
       by (rule leib_trans[OF
         leib_cong2[OF bprov.FuncE[OF PiD cwff_wff[OF wf] 
@@ -923,32 +1101,18 @@ proof
     show "{a \<^bold>=\<^bsub>\<sigma>\<^esub> b} \<subseteq> Hset \<Phi>" using p by simp
     show "{a \<^bold>=\<^bsub>\<sigma>\<^esub> b} \<turnstile> a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b"
       by (auto intro: bprov.EqL bprov.Hyp)
-    show "cwff \<o> (a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b)"
-      using cwff_App cwff_Leib wa wb by blast
+    show "cwff \<o> (a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b)" by (rule cwff_LeibE[OF wa wb])
   qed
 next
   assume l: "(a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b) \<in> Hset \<Phi>" show "(a \<^bold>=\<^bsub>\<sigma>\<^esub> b) \<in> Hset \<Phi>"
   proof (rule Hset_deduct[OF con\<Phi> fp\<Phi>, of "{a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b}"])
     show "finite {a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b}" by simp
     show "{a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b} \<subseteq> Hset \<Phi>" using l by simp
-    let ?F = "{a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b}"  let ?P = "\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> (a \<^bold>=\<^bsub>\<sigma>\<^esub> Bnd 0)"
-    have lca: "lc a" using wa by (rule cwff_lc)
-    have wP: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)"
-      by (rule wff_AbsI)
-         (auto simp: opn_lc[OF lca] intro: cwff_wff[OF wa] wff_Fre)
-    have fpF: "freep ?F" by (rule freep_finite) simp
-    have hyp: "?F \<turnstile> a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b" by (auto intro: bprov.Hyp)
-    have PA: "?P \<^bold>\<cdot> a \<approx>\<^bsub>\<o>\<^esub> (a \<^bold>=\<^bsub>\<sigma>\<^esub> a)"
-      using beq.beta[OF wP cwff_wff[OF wa]] by (simp add: opn_lc[OF lca])
-    have PB: "?P \<^bold>\<cdot> b \<approx>\<^bsub>\<o>\<^esub> (a \<^bold>=\<^bsub>\<sigma>\<^esub> b)"
-      using beq.beta[OF wP cwff_wff[OF wb]] by (simp add: opn_lc[OF lca])
-    have "?F \<turnstile> a \<^bold>=\<^bsub>\<sigma>\<^esub> a" by (rule bprov.EqR[OF cwff_wff[OF wa]])
-    hence "?F \<turnstile> ?P \<^bold>\<cdot> a" by (rule bprov.Beta[OF beq.sym[OF PA]])
-    hence "?F \<turnstile> ?P \<^bold>\<cdot> b"
-      by (rule leib_subst[OF hyp fpF cwff_wff[OF wa] cwff_wff[OF wb] wP])
-    thus "?F \<turnstile> a \<^bold>=\<^bsub>\<sigma>\<^esub> b" by (rule bprov.Beta[OF PB])
+    show "{a \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> b} \<turnstile> a \<^bold>=\<^bsub>\<sigma>\<^esub> b"
+      by (rule leib_to_peq[OF _ _ cwff_wff[OF wa] cwff_wff[OF wb]])
+         (auto intro: bprov.Hyp freep_finite)
     show "cwff \<o> (a \<^bold>=\<^bsub>\<sigma>\<^esub> b)"
-      using cwff_wff[OF wa] cwff_wff[OF wb] cwff_closed[OF wa] cwff_closed[OF wb] 
+      using cwff_wff[OF wa] cwff_wff[OF wb] cwff_closed[OF wa] cwff_closed[OF wb]
       by (auto simp: cwff_def)
   qed
 qed
@@ -988,49 +1152,35 @@ subsubsection \<open>The truth lemma\<close>
 context hintikka_model
 begin
 
-text \<open>THE TRUTH LEMMA (the satisfaction claim of BKK Theorem 6.33; the underlying Hintikka
-  properties are BKK Lemma 6.21): under any domain-respecting assignment a
-  sentence denotes its own class, and it denotes the truth value \<open>cls \<^bold>\<top>\<close> of the term model
-  exactly when it belongs to \<open>H\<close>.\<close>
+text \<open>THE TRUTH LEMMA: the satisfaction claim of BKK Theorem 6.33 (the underlying Hintikka
+  properties are BKK Lemma 6.21).  A sentence denotes its own class --- under @{emph \<open>any\<close>}
+  assignment, since a closed formula ignores it.  It denotes the truth value \<open>cls \<^bold>\<top>\<close> of the
+  term model exactly when it belongs to \<open>H\<close>.\<close>
 
 theorem truth_lemma:
-  "cwff \<o> \<phi> \<Longrightarrow> V.vresp \<xi> \<Longrightarrow> V.Ev \<xi> \<phi> = cls \<^bold>\<top> \<longleftrightarrow> \<phi> \<in> Hset \<Phi>"
+  "cwff \<o> \<phi> \<Longrightarrow> V.Ev \<xi> \<phi> = cls \<^bold>\<top> \<longleftrightarrow> \<phi> \<in> Hset \<Phi>"
   using cls_TrueB_iff msub_closed cwff_closed V.Ev_def by metis
 
 end
 
-subsubsection \<open>Completeness (BKK Corollary 7.7)\<close>
+subsubsection \<open>Model existence, packaged: the term model\<close>
 
-text \<open>\<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> with \<open>NK(\<iota>)\<close> is complete for the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> of \<open>\<Sigma>\<close>-models with
-  description (the description-enriched \<open>\<M>\<^sub>\<beta>\<^sub>f\<^sub>b\<close>, cf.\ Andrews 1972): a sentence that is
-  valid in every such model of a sufficiently \<open>\<Sigma>\<close>-pure (\<open>freep\<close>, BKK Definition 6.3) set of
-  sentences \<open>\<Phi>\<close> (it suffices to assume validity over the models carried by \<open>'p tm set\<close> --- in
-  particular the term model) is derivable from \<open>\<Phi>\<close>.  Unlike BKK, who allow signatures of any
-  infinite cardinality \<open>\<aleph>\<^sub>s\<close> (BKK Remark 3.16), we fix a countable type of parameter names
-  (\<open>'p :: {countable, infinite}\<close>); the enumeration of sentences in the extension lemma rests
-  on it.  The proof
-  is by contraposition, BKK's argument: if \<open>\<Phi> \<turnstile> A\<close> fails then \<open>\<Phi> \<union> {\<^bold>\<not>A}\<close> is \<open>NK\<close>-consistent
-  (\<open>NK(Contr)\<close>), extends to a maximal saturated set (BKK's abstract extension lemma 6.32),
-      and its term model --- a general model by
-  model existence --- satisfies \<open>\<Phi>\<close> but refutes \<open>A\<close>, contradicting validity.\<close>
+text \<open>The construction, packaged once: every consistent parameter-rich set \<open>\<Phi>\<close> of sentences
+  has a \<open>\<Sigma>\<close>-Henkin model --- the Hintikka term model, whose domains are \<open>\<sim>\<close>-classes of
+  closed wffs --- satisfying every member of \<open>\<Phi>\<close> (the model-existence theorem, BKK
+  Theorem 7.6).  The total domain injects into the term type, so over a countable signature
+  it is countable.  The refuting countermodel, the completeness theorem and the
+  single-sentence model-existence form are all instances.\<close>
 
-lemma fp0: "freep ({} :: 'p::{countable,infinite} tm set)"
-  by (rule freep_finite[OF finite.emptyI])
-
-theorem completeness:
-  fixes \<Phi> :: "'p::{countable,infinite} tm set" and A :: "'p tm" 
-  assumes c: "cwff \<o> A" and fp: "freep \<Phi>"
-      and valid: "\<Turnstile>('p tm set) A"
-      and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B" 
-  shows "\<Phi> \<turnstile> A"
-proof (rule ccontr)
-  assume nd: "\<not> \<Phi> \<turnstile> A"
-  note wA = cwff_wff[OF c] and cA = cwff_closed[OF c]
-  let ?\<Psi> = "insert (\<^bold>\<not> A) \<Phi>"
-  have con\<Psi>: "con ?\<Psi>" using bprov.simps con_def nd wA by fastforce
-  have fp\<Psi>: "freep ?\<Psi>" by (rule freep_add[OF fp])
-  interpret H: hintikka_model ?\<Psi> by unfold_locales (rule con\<Psi> fp\<Psi>)+
-  \<comment> \<open>a domain-respecting assignment for the term model\<close>
+theorem term_model_sat:
+  fixes \<Phi> :: "'p::infinite tm set"
+  assumes con: "con \<Phi>" and fp: "richp \<Phi>" and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
+  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+  where "bkk_model Dm Ap Ee vl" "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "\<forall>B\<in>\<Phi>. vl (Ee \<xi> B)"
+proof -
+  interpret H: hintikka_model \<Phi> by unfold_locales (rule con fp)+
   define \<xi> :: "nat \<Rightarrow> ty \<Rightarrow> 'p tm set" where
     "\<xi> \<equiv> \<lambda>n \<tau>. H.cls (undefined\<^sup>p\<^bsub>\<tau>\<^esub>)"
   have r: "H.V.vresp \<xi>"
@@ -1039,178 +1189,144 @@ proof (rule ccontr)
     by (simp add: H.V.bkkA.asg_def H.V.vresp_def)
   have bm: "bkk_model H.Dm H.Ap H.V.Ev (\<lambda>a. a = H.cls \<^bold>\<top>)"
     by intro_locales
-  \<comment> \<open>the term model satisfies \<open>\<Phi>\<close> by the truth lemma\<close>
+  \<comment> \<open>the term model satisfies every member of \<open>\<Phi>\<close> by the truth lemma\<close>
   have sat: "\<forall>B\<in>\<Phi>. H.V.Ev \<xi> B = H.cls \<^bold>\<top>"
-    using H.truth_lemma[OF _ r] sen Phi_sub_Hset[of ?\<Psi>]
+    using H.truth_lemma sen Phi_sub_Hset[of \<Phi>]
     by (auto simp: cwff_def)
-  \<comment> \<open>validity at the term model forces \<open>A \<in> H\<close>\<close>
-  have "H.V.Ev \<xi> A = H.cls \<^bold>\<top>"
-    using valid unfolding bkk_valid_def rel_truth_def using bm ra sat by blast
-  hence AH: "A \<in> Hset ?\<Psi>" using H.truth_lemma[OF _ r] wA cA
-    by (simp add: cwff_def)
-  \<comment> \<open>but \<open>\<^bold>\<not>A \<in> \<Psi> \<subseteq> H\<close> --- contradiction with consistency of \<open>H\<close>\<close>
-  have "\<^bold>\<not> A \<in> Hset ?\<Psi>" using Phi_sub_Hset[of ?\<Psi>] by auto
-  thus False using H.Hset_notboth[OF wA AH] by simp
+  \<comment> \<open>the total domain injects into the term type: choose a representative of each class\<close>
+  have "{x. \<exists>\<tau>. H.Dm \<tau> x} \<subseteq> H.cls ` UNIV" by (auto simp: H.Dm_def)
+  hence inj: "inj_on (inv_into UNIV H.cls) {x. \<exists>\<tau>. H.Dm \<tau> x}"
+    by (rule inj_on_inv_into)
+  show ?thesis by (rule that[OF bm inj ra]) (use sat in auto)
 qed
 
-text \<open>Soundness (BKK Theorem 7.3) and completeness (BKK Corollary 7.7) are statements about the
-  @{emph \<open>same\<close>} class of models, so together they characterise derivability semantically: a
-  sentence is derivable from \<open>\<Phi>\<close> exactly when it holds in every model of \<open>\<Phi>\<close> in the class
-  \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> over the term carrier.\<close>
+text \<open>The refuting instance: if \<open>A\<close> is not derivable @{emph \<open>from\<close>} a parameter-rich set \<open>\<Phi>\<close>
+  of closed sentences, the term model of \<open>{\<^bold>\<not>A} \<union> \<Phi>\<close> satisfies every hypothesis yet refutes \<open>A\<close> ---
+  the abstract negation law @{thm [source] sigma_model.sat_Neg} turns satisfaction of
+  \<open>\<^bold>\<not>A\<close> into refutation of \<open>A\<close>.\<close>
 
-text \<open>The semantic characterisation of derivability from the empty hypothesis set
-  (BKK Corollary 7.7 at \<open>\<Phi> = {}\<close>, combined with Theorem 7.3): a sentence is derivable
-  iff it is valid in every \<open>\<Sigma>\<close>-model of the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> (over the carrier of the
-  term model; the general hypothesis-set form is @{thm [source] completeness}).  The
-  soundness direction is @{thm [source] soundness_bkk}; the completeness direction only
-  shrinks the quantification to the canonical models via the sublocale bridge.\<close>
+lemma refuting_term_model_hyps:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm"
+  assumes c: "cwff \<o> A" and fp: "richp \<Phi>" and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
+      and nd: "\<not> \<Phi> \<turnstile> A"
+  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+  where "bkk_model Dm Ap Ee vl" "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "\<forall>B\<in>\<Phi>. vl (Ee \<xi> B)" "\<not> vl (Ee \<xi> A)"
+proof -
+  note wA = cwff_wff[OF c]
+  let ?\<Psi> = "insert (\<^bold>\<not> A) \<Phi>"
+  have con\<Psi>: "con ?\<Psi>" using bprov.simps con_def nd wA by fastforce
+  have fp\<Psi>: "richp ?\<Psi>" by (rule richp_add[OF fp])
+  have cN: "cwff \<o> (\<^bold>\<not> A)" using c by (auto simp: cwff_def intro!: wff_Not)
+  have sen\<Psi>: "\<And>B. B \<in> ?\<Psi> \<Longrightarrow> cwff \<o> B" using sen cN by auto
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where bm: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>" and sat: "\<forall>B\<in>?\<Psi>. vl (Ee \<xi> B)"
+    using term_model_sat[OF con\<Psi> fp\<Psi> sen\<Psi>] .
+  interpret M: bkk_model Dm Ap Ee vl by (rule bm)
+  have ref: "\<not> vl (Ee \<xi> A)" using sat M.sat_Neg[OF wA xi] by auto
+  show ?thesis by (rule that[OF bm inj xi]) (use sat ref in auto)
+qed
 
-theorem derivable_iff_valid:
+text \<open>The positive counterpart: the model-existence half of Henkin completeness.  From the
+  @{emph \<open>consistency\<close>} of a single sentence \<open>A\<close> one obtains a @{emph \<open>countable\<close>} \<open>\<Sigma>\<close>-Henkin
+  model (the term model) that @{emph \<open>satisfies\<close>} \<open>A\<close>.  This holds for @{emph \<open>any\<close>} consistent
+  sentence --- an axiom of infinity included --- and stays entirely within plain HOL: the
+  carrier is the type \<^typ>\<open>'p tm set\<close> of term classes, with the total domain --- the
+  \<open>\<sim>\<close>-classes of closed wffs --- countable, and with no set-theoretic
+  universe.  A stronger meta-theory can thus be needed only to establish the consistency
+  premise (for an axiom without finite models), never for the model construction.\<close>
+
+theorem countable_henkin_sat:
   fixes A :: "'p::{countable,infinite} tm"
-  assumes "cwff \<o> A"
-  shows "\<turnstile> A \<longleftrightarrow> \<Turnstile>('p tm set) A"
-  by (metis (mono_tags, lifting) assms bkk_valid_def completeness empty_iff fp0
-            rel_truth_def soundness_bkk)
-
-subsubsection \<open>Further derived Leibniz rules\<close>
-
-text \<open>Leibniz modus ponens: transport a theorem along a proven Leibniz equation
-  (via \<open>NK(\<beta>)\<close> and Leibniz substitution into the identity predicate).\<close>
-
-lemma leib_mp:
-  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B" and A: "\<Phi> \<turnstile> A" and fp: "freep \<Phi>"
-      and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wB: "wff\<^bsub>\<o>\<^esub>(B)"
-    shows "\<Phi> \<turnstile> B"
+  assumes cA: "cwff \<o> A" and con: "con {A}"
+  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
+  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "vl (Ee \<xi> A)"
 proof -
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<o>\<^esub> (Bnd 0) :: 'p tm"
-  have wP: "wff\<^bsub>\<o>\<^bold>\<Rightarrow>\<o>\<^esub>(?P)" by (rule wff_AbsI) (simp add: wff_Fre)
-  have bA: "?P \<^bold>\<cdot> A \<approx>\<^bsub>\<o>\<^esub> A" using beq.beta[OF wP wA] by simp
-  have bB: "?P \<^bold>\<cdot> B \<approx>\<^bsub>\<o>\<^esub> B" using beq.beta[OF wP wB] by simp
-  have "\<Phi> \<turnstile> ?P \<^bold>\<cdot> A" by (rule bprov.Beta[OF beq.sym[OF bA] A])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> B" by (rule leib_subst[OF AB fp wA wB wP])
-  thus ?thesis by (rule bprov.Beta[OF bB])
-qed
-
-text \<open>From Leibniz to primitive equality (BKK Remark 7.9; by Leibniz substitution
-  into \<open>\<^bold>\<Lambda>x. A \<^bold>=\<^bsub>\<alpha>\<^esub> x\<close> from \<open>NK(=\<^sub>r)\<close>-reflexivity; the converse is the rule \<open>NK(=\<^sub>l)\<close>).\<close>
-
-lemma leib_to_peq:
-  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<alpha>\<^esub> B" and fp: "freep \<Phi>"
-      and wA: "wff\<^bsub>\<alpha>\<^esub>(A)" and wB: "wff\<^bsub>\<alpha>\<^esub>(B)"
-    shows "\<Phi> \<turnstile> A \<^bold>=\<^bsub>\<alpha>\<^esub> B"
-proof -
-  let ?P = "\<^bold>\<Lambda>\<^bsub>\<alpha>\<^esub> (A \<^bold>=\<^bsub>\<alpha>\<^esub> Bnd 0)"
-  have wP: "wff\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub>(?P)"
-    by (rule wff_AbsI) (auto simp: opn_lc[OF wff_lc[OF wA]] intro!:  wA wff_Fre)
-  have bA: "?P \<^bold>\<cdot> A \<approx>\<^bsub>\<o>\<^esub> (A \<^bold>=\<^bsub>\<alpha>\<^esub> A)"
-    using beq.beta[OF wP wA] by (simp add: opn_lc[OF wff_lc[OF wA]])
-  have bB: "?P \<^bold>\<cdot> B \<approx>\<^bsub>\<o>\<^esub> (A \<^bold>=\<^bsub>\<alpha>\<^esub> B)"
-    using beq.beta[OF wP wB] by (simp add: opn_lc[OF wff_lc[OF wA]])
-  have "\<Phi> \<turnstile> A \<^bold>=\<^bsub>\<alpha>\<^esub> A" by (rule bprov.EqR[OF wA])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> A" by (rule bprov.Beta[OF beq.sym[OF bA]])
-  hence "\<Phi> \<turnstile> ?P \<^bold>\<cdot> B" by (rule leib_subst[OF AB fp wA wB wP])
-  thus ?thesis by (rule bprov.Beta[OF bB])
-qed
-
-text \<open>The diagonal contradiction: a proposition Leibniz-equal to its own negation
-  refutes the context (by excluded middle and Leibniz modus ponens).\<close>
-
-lemma leib_neg_contra:
-  assumes E: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> (\<^bold>\<not> A)" and fp: "freep \<Phi>" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
-  shows "\<Phi> \<turnstile> \<^bold>\<bottom>"
-proof -
-  have br1: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<bottom>"
-  proof -
-    have fp1: "freep (\<Phi> \<union> {\<^bold>\<not> A})" using freep_add[OF fp] by simp
-    have hy: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<not> A" by (auto intro: bprov.Hyp)
-    have e: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> (\<^bold>\<not> A)"
-      by (rule bprov_weaken[OF E _ fp1]) auto
-    have "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> (\<^bold>\<not> A) \<^bold>\<doteq>\<^bsub>\<o>\<^esub> A"
-      by (rule leib_sym[OF e fp1 wA wff_Not[OF wA]])
-    hence "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> A"
-      by (rule leib_mp[OF _ hy fp1 wff_Not[OF wA] wA])
-    thus ?thesis by (rule bprov.NegE[OF hy _ wff_FalseB])
+  have fp: "richp {A}"
+    unfolding richp_iff_freep by (intro freep_finite) simp
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where M: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>" and sat: "\<forall>B\<in>{A}. vl (Ee \<xi> B)"
+    by (rule term_model_sat[OF con fp]) (use cA in auto)
+  have "inj_on (to_nat \<circ> rep) {x. \<exists>\<tau>. Dm \<tau> x}"
+  proof (rule comp_inj_on[OF inj])
+    show "inj_on to_nat (rep ` {x. \<exists>\<tau>. Dm \<tau> x})"
+      by (rule inj_on_subset[OF inj_to_nat]) simp
   qed
-  have br2: "\<Phi> \<union> {A} \<turnstile> \<^bold>\<bottom>"
-  proof -
-    have fp2: "freep (\<Phi> \<union> {A})" using freep_add[OF fp] by simp
-    have hy: "\<Phi> \<union> {A} \<turnstile> A" by (auto intro: bprov.Hyp)
-    have e: "\<Phi> \<union> {A} \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> (\<^bold>\<not> A)"
-      by (rule bprov_weaken[OF E _ fp2]) auto
-    have "\<Phi> \<union> {A} \<turnstile> \<^bold>\<not> A"
-      by (rule leib_mp[OF e hy fp2 wA wff_Not[OF wA]])
-    thus ?thesis by (rule bprov.NegE[OF _ hy wff_FalseB])
-  qed
-  show ?thesis
-    by (rule bprov.DisE[OF bprov_em[OF wA] br1 br2 wff_Not[OF wA] wA])
+  hence cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+    unfolding countable_def by blast
+  show ?thesis by (rule that[OF M cnt xi]) (use sat in auto)
 qed
 
-text \<open>Application of a primitive equation, and \<open>\<beta>\<close>-reduction on the right of \<open>\<^bold>\<doteq>\<close>.\<close>
+subsubsection \<open>Completeness (BKK Corollary 7.7)\<close>
 
-lemma peq_app: "\<Phi> \<turnstile> C \<^bold>=\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<beta>\<^esub> D \<Longrightarrow> freep \<Phi> \<Longrightarrow> wff\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<beta>\<^esub>(C) \<Longrightarrow> wff\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<beta>\<^esub>(D)
-    \<Longrightarrow> wff\<^bsub>\<alpha>\<^esub>(A) \<Longrightarrow> \<Phi> \<turnstile> (C \<^bold>\<cdot> A) \<^bold>\<doteq>\<^bsub>\<beta>\<^esub> (D \<^bold>\<cdot> A)"
-  by (rule leib_cong1[OF bprov.EqL])
-lemma leib_reduce_right: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B \<Longrightarrow> B \<approx>\<^bsub>\<o>\<^esub> B' \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(A) \<Longrightarrow> \<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^esub> B'" 
-  by (metis beq.appR bprov.Beta wff_App wff_Leib)
+text \<open>\<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> with \<open>NK(\<iota>)\<close> is complete for the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> of \<open>\<Sigma>\<close>-models with
+  description (the description-enriched \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close>, cf.\ Andrews 1972): a sentence that is
+  valid in every such model of a sufficiently \<open>\<Sigma>\<close>-pure set of
+  sentences \<open>\<Phi>\<close> (it suffices to assume validity over the models carried by \<open>'p tm set\<close> --- in
+  particular the term model) is derivable from \<open>\<Phi>\<close>.  Like BKK, who allow signatures of any
+  infinite cardinality \<open>\<aleph>\<^sub>s\<close> (BKK Remark 3.16), we admit an arbitrary infinite type of
+  parameter names; purity is then the parameter-rich \<open>richp\<close>, which over a countable
+  signature is the familiar \<open>freep\<close> (BKK Definition 6.3).  The proof
+  is by contraposition, BKK's argument: if \<open>\<Phi> \<turnstile> A\<close> fails, the refuting term model
+  satisfies \<open>\<Phi>\<close> but refutes \<open>A\<close>, contradicting validity.\<close>
 
-text \<open>The same three steps for @{emph \<open>primitive\<close>} equality (via \<open>NK(=\<^sub>l)\<close> in and
-  \<open>leib_to_peq\<close> out): application to an argument, \<open>\<beta>\<close>-reduction on the right, and
-  the diagonal contradiction \<open>A \<^bold>= \<^bold>\<not> A \<Longrightarrow> \<^bold>\<bottom>\<close>.\<close>
+lemma fp0: "freep ({} :: 'p::{countable,infinite} tm set)"
+  by (rule freep_finite[OF finite.emptyI])
+
+theorem completeness:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm"
+  assumes c: "cwff \<o> A" and fp: "richp \<Phi>"
+      and valid: "\<Phi> \<Turnstile>('p tm set) A"
+      and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
+  shows "\<Phi> \<turnstile> A"
+proof (rule ccontr)
+  assume nd: "\<not> \<Phi> \<turnstile> A"
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where M: "bkk_model Dm Ap Ee vl" and "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>"
+      and sat: "\<forall>B\<in>\<Phi>. vl (Ee \<xi> B)" and nA: "\<not> vl (Ee \<xi> A)"
+    by (rule refuting_term_model_hyps[OF c fp sen nd])
+  have satw: "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee \<xi> B)" using sat sen cwff_wff by blast
+  have "vl (Ee \<xi> A)"
+    using valid M xi satw unfolding bkk_consequence_def rel_truth_def by blast
+  thus False using nA by simp
+qed
+
+text \<open>Soundness (BKK Theorem 7.3) and completeness (BKK Corollary 7.7) speak about the
+  @{emph \<open>same\<close>} class of models, so together they characterise derivability @{emph \<open>from
+  hypotheses\<close>} semantically: for a parameter-rich (\<open>richp\<close>; over a countable signature
+  equivalently \<open>freep\<close>) set \<open>\<Phi>\<close> of closed sentences,
+  \<open>\<Phi> \<turnstile> A\<close> holds exactly when \<open>\<Phi> \<Turnstile> A\<close> in the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> over the term carrier ---
+  @{thm [source] completeness} gives \<open>\<Longleftarrow>\<close> (the model-existence direction) and
+  @{thm [source] soundness_sat} gives \<open>\<Longrightarrow>\<close>; the packaged equivalences are stated in
+  \<open>Main_Results\<close>.\<close>
+
 subsection \<open>Completeness at every signature and carrier\<close>
 
 text \<open>This part strengthens the completeness theorem from the term-model carrier to
   @{emph \<open>arbitrary\<close>} infinite value carriers, by an explicit model-embedding
   construction: every \<open>\<Sigma>\<close>-model of the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> whose total domain embeds
-  injectively into a carrier \<open>'u\<close> has an isomorphic copy on \<open>'u\<close>, and satisfaction is
-  invariant under the embedding.  Since the term model has a countable total domain
-  (the language is countable), it embeds into every infinite carrier, so validity
-  over any infinite carrier suffices for derivability.  Completeness is then
-  extended further, to open formulas and to signatures with infinitely
-  many parameters, and the development closes with the main theorems stated in
+  injectively into a carrier \<open>'u\<close> has a satisfaction-equivalent copy on \<open>'u\<close>.  The
+  term model's total domain injects into the term
+  type, and \<open>|'p tm| \<le> |'p|\<close> over an infinite signature, so the term model embeds into
+  every carrier at least as large as the signature --- over a countable signature, into
+  every infinite carrier --- and validity there suffices for derivability.  Completeness is then
+  extended further, to open formulas, to signatures with infinitely many parameters, and to
+  derivation from hypotheses, and the development closes with the main theorems stated in
   self-contained notation.\<close>
-
-subsubsection \<open>A countermodel for every underivable sentence\<close>
-
-text \<open>The completeness construction, packaged as an explicit countermodel: if a
-  sentence is not derivable, the Hintikka term model refutes it.  The total domain
-  of the term model is countable --- the domains are \<open>\<sim>\<close>-classes of closed wffs.\<close>
-
-lemma refuting_term_model:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes c: "cwff \<o> A" and nd: "\<not>\<turnstile> A"
-  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
-  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
-        "app_struct.asg Dm \<xi>" "\<not> vl (Ee \<xi> A)"
-proof -
-  note wA = cwff_wff[OF c] and cA = cwff_closed[OF c]
-  have con\<Psi>: "con {\<^bold>\<not> A}" using bprov.simps con_def nd wA by fastforce
-  have fp\<Psi>: "freep {\<^bold>\<not> A}" by (intro freep_finite) simp
-  interpret H: hintikka_model "{\<^bold>\<not> A}"
-    by unfold_locales (rule con\<Psi> fp\<Psi>)+
-  define \<xi> :: "nat \<Rightarrow> ty \<Rightarrow> 'p tm set" where
-    "\<xi> \<equiv> \<lambda>n \<tau>. H.cls (undefined\<^sup>p\<^bsub>\<tau>\<^esub>)"
-  have r: "H.V.vresp \<xi>"
-    by (auto simp: \<xi>_def H.V.vresp_def intro: H.Dm_cls cwff_Par)
-  have ra: "app_struct.asg H.Dm \<xi>"
-    using r by (simp add: H.V.bkkA.asg_def H.V.vresp_def)
-  have bm: "bkk_model H.Dm H.Ap H.V.Ev (\<lambda>a. a = H.cls \<^bold>\<top>)"
-    by intro_locales
-  \<comment> \<open>the model refutes \<open>A\<close>: \<open>\<^bold>\<not>A \<in> H\<close>, so \<open>A \<notin> H\<close>, so the truth lemma denies \<open>A\<close>\<close>
-  have "\<^bold>\<not>A \<in> Hset {\<^bold>\<not> A}" using Phi_sub_Hset[of "{\<^bold>\<not> A}"] by auto
-  hence "A \<notin> Hset {\<^bold>\<not> A}" using H.Hset_notboth[OF wA] by blast
-  hence ref: "H.V.Ev \<xi> A \<noteq> H.cls \<^bold>\<top>" using H.truth_lemma[OF c r] by simp
-  \<comment> \<open>the total domain is contained in the countable range of \<open>cls\<close>\<close>
-  have "{x. \<exists>\<tau>. H.Dm \<tau> x} \<subseteq> range H.cls" by (auto simp: H.Dm_def)
-  hence cnt: "countable {x. \<exists>\<tau>. H.Dm \<tau> x}"
-    by (rule countable_subset) simp
-  show ?thesis by (rule that[OF bm cnt ra]) (use ref in simp)
-qed
 
 subsubsection \<open>Model embedding: satisfaction is carrier-independent\<close>
 
 text \<open>A \<open>\<Sigma>\<close>-model over a carrier \<open>'v\<close> whose total domain maps injectively into a
-  carrier \<open>'u\<close> has an isomorphic copy over \<open>'u\<close>; every refutation transfers.  All
-  model conditions are pointwise, so the transfer needs no induction on terms.\<close>
+  carrier \<open>'u\<close> has a satisfaction-equivalent copy over \<open>'u\<close>; every refutation transfers.
+  All model conditions are pointwise, so the transfer needs no induction on terms.\<close>
 
 lemma bkk_model_embed:
   fixes Dm :: "ty \<Rightarrow> 'v \<Rightarrow> bool" and i :: "'v \<Rightarrow> 'u"
@@ -1221,6 +1337,7 @@ lemma bkk_model_embed:
      and xi: "app_struct.asg Dm \<xi>" and nA: "\<not> vl (Ee \<xi> A)"
   obtains Dm' Ap' and Ee' :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl' \<xi>'
   where "bkk_model Dm' Ap' Ee' vl'" "app_struct.asg Dm' \<xi>'" "\<not> vl' (Ee' \<xi>' A)"
+        "\<And>B. wff\<^bsub>\<o>\<^esub>(B) \<Longrightarrow> vl' (Ee' \<xi>' B) = vl (Ee \<xi> B)"
 proof -
   interpret M: bkk_model Dm Ap Ee vl by (rule M)
   define D where "D = {x. \<exists>\<tau>. Dm \<tau> x}"
@@ -1395,276 +1512,72 @@ proof -
       using 12(3) M.prop_b[OF ab(1) ab(3)] vl'I[OF DmD[OF ab(1)]]
         vl'I[OF DmD[OF ab(3)]] by simp
   qed
-  \<comment> \<open>the pushed assignment refutes \<open>A\<close> in the image model\<close>
+  \<comment> \<open>the pushed assignment agrees with the original on every formula, so satisfaction
+     (and the refutation of \<open>A\<close>) transfers\<close>
   define \<xi>' where "\<xi>' \<equiv> \<lambda>n \<tau>. i (\<xi> n \<tau>)"
   have asg': "app_struct.asg Dm' \<xi>'"
     using xi unfolding M.asg_def \<xi>'_def A'.asg_def
     by (auto intro: Dm'I)
-  have "Ee' \<xi>' A = i (Ee \<xi> A)" by (simp add: Ee'_def \<xi>'_def pull_push)
-  hence "\<not> vl' (Ee' \<xi>' A)"
-    using nA vl'I[OF DmD[OF M.ev_type[OF wA xi]]] by simp
-  thus ?thesis using BM asg' that by simp
+  have push: "Ee' \<xi>' B = i (Ee \<xi> B)" for B by (simp add: Ee'_def \<xi>'_def pull_push)
+  have agree: "vl' (Ee' \<xi>' B) = vl (Ee \<xi> B)" if "wff\<^bsub>\<o>\<^esub>(B)" for B
+    by (simp add: push vl'I[OF DmD[OF M.ev_type[OF that xi]]])
+  have nA': "\<not> vl' (Ee' \<xi>' A)" using nA agree[OF wA] by simp
+  show ?thesis by (rule that[OF BM asg' nA' agree])
 qed
 
 subsubsection \<open>Completeness at every infinite carrier\<close>
 
-text \<open>The strengthened form of BKK Corollary 7.7: validity over the models of
-  \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> at @{emph \<open>any\<close>} infinite value carrier implies derivability.  The term
-  carrier plays no special role: it only needs to embed into the given carrier,
-  which its countability guarantees.\<close>
+text \<open>The strengthened form of BKK Corollary 7.7: consequence over the models of
+  \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> at a value carrier @{emph \<open>at least as large as the signature\<close>} implies
+  derivability.  The term carrier plays no special role: it only needs to embed into the
+  given carrier --- its total domain injects into \<open>'p tm\<close>, and \<open>|'p tm| \<le> |'p| \<le> |'u|\<close> ---
+  and the embedding preserves the satisfaction of \<open>\<Phi>\<close> and the refutation of \<open>A\<close>.  The
+  cardinality link is stated as an injection \<open>emb :: 'p \<Rightarrow> 'u\<close>; over a countable signature
+  every infinite carrier qualifies, which recovers the every-carrier form below.\<close>
 
-theorem completeness_at_any_carrier:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes c: "cwff \<o> A"
-    and valid: "\<Turnstile>('u::infinite) A"
-  shows "\<turnstile> A"
+theorem completeness_hyps_rich:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm" and emb :: "'p \<Rightarrow> 'u"
+  assumes emb: "inj emb" and c: "cwff \<o> A" and fp: "richp \<Phi>"
+      and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
+      and valid: "\<Phi> \<Turnstile>('u) A"
+  shows "\<Phi> \<turnstile> A"
 proof (rule ccontr)
-  assume nd: "\<not>\<turnstile> A"
-  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
-    where M: "bkk_model Dm Ap Ee vl" and cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}"
-      and xi: "app_struct.asg Dm \<xi>" and nA: "\<not> vl (Ee \<xi> A)"
-    by (rule refuting_term_model[OF c nd])
-  \<comment> \<open>embed the countable total domain into the infinite carrier \<open>'u\<close>\<close>
-  obtain f :: "'p tm set \<Rightarrow> nat" where f: "inj_on f {x. \<exists>\<tau>. Dm \<tau> x}"
-    using cnt by (auto simp: countable_def)
-  obtain g :: "nat \<Rightarrow> 'u" where g: "inj g"
-    using infinite_UNIV infinite_countable_subset by blast
-  have inj: "inj_on (g \<circ> f) {x. \<exists>\<tau>. Dm \<tau> x}"
-    using f g by (rule comp_inj_on[OF _ inj_on_subset]) auto
+  assume nd: "\<not> \<Phi> \<turnstile> A"
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where M: "bkk_model Dm Ap Ee vl" and injr: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>" and sat: "\<forall>B\<in>\<Phi>. vl (Ee \<xi> B)"
+      and nA: "\<not> vl (Ee \<xi> A)"
+    by (rule refuting_term_model_hyps[OF c fp sen nd])
+  \<comment> \<open>embed the total domain into the carrier \<open>'u\<close>, via \<open>|'p tm| \<le> |'p| \<le> |'u|\<close>\<close>
+  have "|UNIV :: 'p set| \<le>o |UNIV :: 'u set|"
+    using card_of_ordLeq emb by auto
+  hence "|UNIV :: 'p tm set| \<le>o |UNIV :: 'u set|"
+    using card_of_tm ordLeq_transitive by blast
+  then obtain g :: "'p tm \<Rightarrow> 'u" where g: "inj g"
+    by (meson card_of_ordLeq)
+  have inj: "inj_on (g \<circ> rep) {x. \<exists>\<tau>. Dm \<tau> x}"
+    using injr g by (rule comp_inj_on[OF _ inj_on_subset]) auto
   obtain Dm' Ap' and Ee' :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl' \<xi>'
-    where "bkk_model Dm' Ap' Ee' vl'" "app_struct.asg Dm' \<xi>'" "\<not> vl' (Ee' \<xi>' A)"
-    using bkk_model_embed M inj cwff_wff[OF c] xi nA by blast
-  thus False using valid unfolding bkk_valid_def rel_truth_def by blast
-qed
-
-subsubsection \<open>Completeness for open formulas\<close>
-
-text \<open>Completeness does not require closed sentences: assignments interpret the free
-  variables.  The bridge is a substitution-value law for @{emph \<open>abstract\<close>}
-  \<open>\<Sigma>\<close>-evaluations (the abstract form of BKK Lemma 3.20, one variable at a time),
-  proved without any term induction: substitution is expressed through closing,
-  \<open>\<beta>\<close>-conversion and the evaluation conditions.  On the syntactic side a free
-  variable is generalised through a fresh parameter by the rule chain
-  \<open>NK(\<beta>)\<close>--\<open>NK(\<Pi>I)\<close>--\<open>NK(\<Pi>E)\<close>--\<open>NK(\<beta>)\<close>.\<close>
-
-lemma opn_clos_sub: "opn k v t = t \<Longrightarrow> opn k v (clos k x \<sigma> t) = fsub x \<sigma> v t"
-  by (induction t arbitrary: k) auto
-
-lemma fsub_id: "fsub x \<sigma> (x\<^sup>f\<^bsub>\<sigma>\<^esub>) t = t"
-  by (induction t) auto
-
-lemma occ_clos: "(x, \<sigma>) \<notin> occ (clos k x \<sigma> t)"
-  by (induction t arbitrary: k) auto
-
-lemma pars_clos [simp]: "pars (clos k x \<sigma> t) = pars t"
-  by (induction t arbitrary: k) auto
-
-lemma finite_occ: "finite (occ t)"
-  by (induction t) auto
-
-lemma occ_fsub_closed: "occ u = {} \<Longrightarrow> occ (fsub x \<sigma> u t) = occ t - {(x, \<sigma>)}"
-  by (induction t) auto
-
-text \<open>The sharpened \<open>\<beta>\<close>-application law: the fresh-name condition only concerns the
-  typed occurrence \<open>(x, \<sigma>)\<close>, not the bare name (a name may occur at several types).\<close>
-
-lemma (in sigma_eval) ev_abs_app_occ:
-  assumes wb: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)" and xi: "asg \<xi>"
-    and x: "(x, \<sigma>) \<notin> occ b" and d: "Dm \<sigma> d"
-  shows "Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
-proof -
-  have xi': "asg (\<xi>(x\<^bsub>\<sigma>\<^esub> := d))" by (rule asg_upd[OF xi d])
-  have "Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>) = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) ((\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b) \<^bold>\<cdot> (x\<^sup>f\<^bsub>\<sigma>\<^esub>))"
-    by (rule ev_beta[OF beq.sym[OF beq.beta[OF wb wff_Fre]] xi'])
-  also have "\<dots> = Ap (Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) (Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (x\<^sup>f\<^bsub>\<sigma>\<^esub>))"
-    by (rule ev_app[OF wb wff_Fre xi'])
-  also have "\<dots> = Ap (Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := d)) (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d"
-    using ev_var[OF xi', of x \<sigma>] by (simp add: upd_def)
-  also have "\<dots> = Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)) d"
-    using x by (intro arg_cong2[of _ _ d d Ap] refl
-        ev_coin[OF wb xi' xi]) (auto simp: upd_def)
-  finally show ?thesis ..
-qed
-
-text \<open>The substitution-value law for abstract \<open>\<Sigma>\<close>-evaluations (BKK Lemma 3.20 for a
-  single free variable): substituting @{emph \<open>any\<close>} well-formed term equals updating
-  the assignment with its value.\<close>
-
-lemma (in sigma_eval) ev_fsub_one:
-  assumes wA: "wff\<^bsub>\<tau>\<^esub>(A)" and wu: "wff\<^bsub>\<sigma>\<^esub>(u)" and xi: "asg \<xi>"
-  shows "Ee \<xi> (fsub x \<sigma> u A) = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> u)) A"
-proof -
-  have opnA: "opn 0 v A = A" for v by (simp add: wff_lc[OF wA])
-  let ?B = "clos 0 x \<sigma> A"
-  have wAbs: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)"
-    by (rule wff_AbsI) (simp add: opn_clos_sub[OF opnA] wff_fsub[OF wA
-        wff_Fre])
-  have du: "Dm \<sigma> (Ee \<xi> u)" by (rule ev_type[OF wu xi])
-  have "Ee \<xi> (fsub x \<sigma> u A) = Ee \<xi> ((\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> u)"
-    unfolding opn_clos_sub[OF opnA, symmetric]
-    by (rule ev_beta[OF beq.sym[OF beq.beta[OF wAbs wu]] xi])
-  also have "\<dots> = Ap (Ee \<xi> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)) (Ee \<xi> u)"
-    by (rule ev_app[OF wAbs wu xi])
-  also have "\<dots> = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> u)) (?B\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)"
-    by (rule ev_abs_app_occ[OF wAbs xi occ_clos du])
-  also have "?B\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle> = A"
-    by (simp add: opn_clos_sub[OF opnA] fsub_id)
-  finally show ?thesis .
-qed
-
-text \<open>Syntactic generalisation: a fresh parameter substituted for a free variable can
-  be quantified away and re-instantiated, recovering the open formula.\<close>
-
-lemma bprov_generalize_par:
-  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and p: "p \<notin> pars A"
-    and d: "\<turnstile> fsub x \<sigma> (p\<^sup>p\<^bsub>\<sigma>\<^esub>) A"
-  shows "\<turnstile> A"
-proof -
-  have opnA: "opn 0 v A = A" for v :: "'a tm"
-    by (simp add: wff_lc[OF wA])
-  let ?B = "clos 0 x \<sigma> A"
-  have wAbs: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)"
-    by (rule wff_AbsI)
-       (simp add: opn_clos_sub[OF opnA] wff_fsub[OF wA wff_Fre])
-  have bq1: "(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> (p\<^sup>p\<^bsub>\<sigma>\<^esub>) \<approx>\<^bsub>\<o>\<^esub> fsub x \<sigma> (p\<^sup>p\<^bsub>\<sigma>\<^esub>) A"
-    using beq.beta[OF wAbs wff_Par] by (simp add: opn_clos_sub[OF opnA])
-  have h2: "{} \<turnstile> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> (p\<^sup>p\<^bsub>\<sigma>\<^esub>)"
-    by (rule bprov.Beta[OF beq.sym[OF bq1] d])
-  have h3: "{} \<turnstile> (Pi \<sigma>) \<^bold>\<cdot> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B)"
-    by (rule bprov.PiI[OF h2 wAbs]) (use p in auto)
-  have h4: "{} \<turnstile> (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> (x\<^sup>f\<^bsub>\<sigma>\<^esub>)"
-    by (rule bprov.PiE[OF h3 wff_Fre])
-  have bq2: "(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> (x\<^sup>f\<^bsub>\<sigma>\<^esub>) \<approx>\<^bsub>\<o>\<^esub> A"
-  proof -
-    have "(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> ?B) \<^bold>\<cdot> (x\<^sup>f\<^bsub>\<sigma>\<^esub>) \<approx>\<^bsub>\<o>\<^esub> ?B\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>"
-      by (rule beq.beta[OF wAbs wff_Fre])
-    thus ?thesis by (simp add: opn_clos_sub[OF opnA] fsub_id)
+    where M': "bkk_model Dm' Ap' Ee' vl'" and asg': "app_struct.asg Dm' \<xi>'"
+      and nA': "\<not> vl' (Ee' \<xi>' A)"
+      and agree: "\<And>B. wff\<^bsub>\<o>\<^esub>(B) \<Longrightarrow> vl' (Ee' \<xi>' B) = vl (Ee \<xi> B)"
+    by (rule bkk_model_embed[OF M inj cwff_wff[OF c] xi nA]) (rule that)
+  \<comment> \<open>the image model still satisfies every hypothesis\<close>
+  have satw': "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl' (Ee' \<xi>' B)"
+  proof
+    fix B assume B: "B \<in> \<Phi>"
+    have wB: "wff \<o> B" using cwff_wff[OF sen[OF B]] .
+    have "vl' (Ee' \<xi>' B) = vl (Ee \<xi> B)" by (rule agree[OF wB])
+    moreover have "vl (Ee \<xi> B)" using sat B by blast
+    ultimately show "wff \<o> B \<and> vl' (Ee' \<xi>' B)" using wB by simp
   qed
-  show ?thesis by (rule bprov.Beta[OF bq2 h4])
+  \<comment> \<open>so validity of \<open>A\<close> forces it to hold, contradicting the refutation\<close>
+  have "vl' (Ee' \<xi>' A)"
+    using valid M' asg' satw'
+    unfolding bkk_consequence_def rel_truth_def by blast
+  thus False using nA' by simp
 qed
-
-text \<open>Completeness for arbitrary (locally closed) well-formed formulas, by induction
-  on the number of typed free occurrences: each occurrence is generalised through a
-  fresh parameter, semantically justified by the substitution-value law.\<close>
-
-lemma completeness_open_aux:
-  fixes A :: "'p::{countable,infinite} tm"
-  shows "card (occ A) \<le> n \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(A) \<Longrightarrow> (\<Turnstile>('p tm set) A) \<Longrightarrow> \<turnstile> A"
-proof (induction n arbitrary: A)
-  case (0 A)
-  hence "occ A = {}" by (simp add: finite_occ card_eq_0_iff)
-  hence "cwff \<o> A" using 0(2) by (simp add: cwff_def fvs_eq_fst_occ)
-  thus ?case using derivable_iff_valid 0(3) by blast
-next
-  case (Suc n A)
-  show ?case
-  proof (cases "occ A = {}")
-    case True
-    hence "cwff \<o> A"
-      using Suc.prems(2) by (simp add: cwff_def fvs_eq_fst_occ)
-    thus ?thesis using derivable_iff_valid Suc.prems(3) by blast
-  next
-    case False
-    then obtain x \<sigma> where xs: "(x, \<sigma>) \<in> occ A" by auto
-    obtain p :: 'p where p: "p \<notin> pars A"
-      by (meson ex_new_if_finite finite_pars infinite_UNIV)
-    define A1 where "A1 = fsub x \<sigma> (p\<^sup>p\<^bsub>\<sigma>\<^esub>) A"
-    have wA1: "wff\<^bsub>\<o>\<^esub>(A1)"
-      unfolding A1_def by (rule wff_fsub[OF Suc.prems(2) wff_Par])
-    have occ1: "occ A1 = occ A - {(x, \<sigma>)}"
-      unfolding A1_def by (rule occ_fsub_closed) simp
-    have card1: "card (occ A1) \<le> n"
-      using Suc.prems(1) xs finite_occ
-      by (simp add: occ1 card_Diff_singleton)
-    have valid1: "\<Turnstile>('p tm set) A1"
-      unfolding bkk_valid_def rel_truth_def
-    proof (intro allI impI)
-      fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
-        and vl :: "'p tm set \<Rightarrow> bool" and \<xi>
-      assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
-      interpret M: bkk_model Dm Ap Ee vl by (rule bm)
-      have eq: "Ee \<xi> A1 = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> (p\<^sup>p\<^bsub>\<sigma>\<^esub>))) A"
-        unfolding A1_def
-        by (rule M.ev_fsub_one[OF Suc.prems(2) wff_Par xi])
-      have asg': "app_struct.asg Dm (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> (p\<^sup>p\<^bsub>\<sigma>\<^esub>)))"
-        by (rule M.asg_upd[OF xi M.ev_type[OF wff_Par xi]])
-      have v: "\<forall>\<xi>. app_struct.asg Dm \<xi> \<longrightarrow> vl (Ee \<xi> A)"
-        using Suc.prems(3) bm unfolding bkk_valid_def rel_truth_def by blast
-      show "vl (Ee \<xi> A1)" using v[rule_format, OF asg']
-          by (simp add: eq)
-    qed
-    have "\<turnstile> A1" by (rule Suc.IH[OF card1 wA1 valid1])
-    thus ?thesis
-      unfolding A1_def
-      by (rule bprov_generalize_par[OF Suc.prems(2) p, of x \<sigma>])
-  qed
-qed
-
-theorem completeness_open:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes "wff\<^bsub>\<o>\<^esub>(A)"
-      and "\<Turnstile>('p tm set) A"
-    shows "\<turnstile> A"
-  using assms(1,2) completeness_open_aux by blast
-
-lemma completeness_open_any_aux:
-  fixes A :: "'p::{countable,infinite} tm"
-  shows "card (occ A) \<le> n \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(A) \<Longrightarrow> \<Turnstile>('u::infinite) A \<Longrightarrow> \<turnstile> A"
-proof (induction n arbitrary: A)
-  case (0 A)
-  hence "occ A = {}" by (simp add: finite_occ card_eq_0_iff)
-  hence "cwff \<o> A" using 0(2) by (simp add: cwff_def fvs_eq_fst_occ)
-  thus ?case using completeness_at_any_carrier 0(3) by blast
-next
-  case (Suc n A)
-  show ?case
-  proof (cases "occ A = {}")
-    case True
-    hence "cwff \<o> A"
-      using Suc.prems(2) by (simp add: cwff_def fvs_eq_fst_occ)
-    thus ?thesis using completeness_at_any_carrier Suc.prems(3) by blast
-  next
-    case False
-    then obtain x \<sigma> where xs: "(x, \<sigma>) \<in> occ A" by auto
-    obtain p :: 'p where p: "p \<notin> pars A"
-      by (meson ex_new_if_finite finite_pars infinite_UNIV)
-    define A1 where "A1 = fsub x \<sigma> (p\<^sup>p\<^bsub>\<sigma>\<^esub>) A"
-    have wA1: "wff\<^bsub>\<o>\<^esub>(A1)"
-      unfolding A1_def by (rule wff_fsub[OF Suc.prems(2) wff_Par])
-    have occ1: "occ A1 = occ A - {(x, \<sigma>)}"
-      unfolding A1_def by (rule occ_fsub_closed) simp
-    have card1: "card (occ A1) \<le> n"
-      using Suc.prems(1) xs finite_occ
-      by (simp add: occ1 card_Diff_singleton)
-    have valid1: "\<Turnstile>('u) A1"
-      unfolding bkk_valid_def rel_truth_def
-    proof (intro allI impI)
-      fix Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap
-        and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl \<xi>
-      assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
-      interpret M: bkk_model Dm Ap Ee vl by (rule bm)
-      have eq: "Ee \<xi> A1 = Ee (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> (p\<^sup>p\<^bsub>\<sigma>\<^esub>))) A"
-        unfolding A1_def
-        by (rule M.ev_fsub_one[OF Suc.prems(2) wff_Par xi])
-      have asg': "app_struct.asg Dm (\<xi>(x\<^bsub>\<sigma>\<^esub> := Ee \<xi> (p\<^sup>p\<^bsub>\<sigma>\<^esub>)))"
-        by (rule M.asg_upd[OF xi M.ev_type[OF wff_Par xi]])
-      have v: "\<forall>\<xi>. app_struct.asg Dm \<xi> \<longrightarrow> vl (Ee \<xi> A)"
-        using Suc.prems(3) bm unfolding bkk_valid_def rel_truth_def by blast
-      show "vl (Ee \<xi> A1)" using v[rule_format, OF asg']
-        by (simp add: eq)
-    qed
-    have "\<turnstile> A1" by (rule Suc.IH[OF card1 wA1 valid1])
-    thus ?thesis unfolding A1_def
-      by (rule bprov_generalize_par[OF Suc.prems(2) p, of x \<sigma>])
-  qed
-qed
-
-theorem completeness_open_at_any_carrier:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes "wff\<^bsub>\<o>\<^esub>(A)"
-      and "\<Turnstile>('u::infinite) A"
-    shows "\<turnstile> A"
-  using completeness_open_any_aux assms by auto
 
 subsubsection \<open>Signature transport\<close>
 
@@ -1673,8 +1586,100 @@ text \<open>On the semantic side, maps of parameter names need @{emph \<open>no\
   evaluating through \<open>prn h\<close> --- the value conditions \<open>vl\<^sub>\<not>, \<dots>, vl\<^sub>\<iota>\<close> only
   inspect \<open>Ee\<close> at the logical constants, which \<open>prn\<close> fixes.\<close>
 
-lemma prn_occ [simp]: "occ (prn f t) = occ t"
-  by (induction t) auto
+text \<open>On the syntactic side, transport is by @{emph \<open>retraction\<close>}: any finite parameter
+  support relocates injectively into \<open>\<nat>\<close> and back, \<open>g \<circ> h\<close> being the identity on the
+  support, so \<open>prn g \<circ> prn h\<close> fixes the terms and contexts concerned.  This single
+  construction drives every signature-transport argument below.\<close>
+
+lemma nat_retract:
+  fixes P :: "'p::infinite set"
+  assumes fin: "finite P"
+  shows "\<exists>(g :: nat \<Rightarrow> 'p) h. inj g \<and> (\<forall>p \<in> P. g (h p) = p)"
+proof -
+  obtain g0 :: "nat \<Rightarrow> 'p" where g0: "inj g0"
+    using infinite_UNIV infinite_countable_subset by blast
+  define S where "S = P \<union> range g0"
+  have "inj_on (inv g0) (range g0)" by (rule inj_on_inv_into) simp
+  hence rc: "countable (range g0)" by (rule countableI)
+  have ri: "infinite (range g0)"
+    using finite_imageD[of g0 UNIV] g0 infinite_UNIV_nat by auto
+  have cS: "countable S" and iS: "infinite S"
+    unfolding S_def using rc ri fin by (auto intro: countable_finite)
+  define g where "g = from_nat_into S"
+  have g: "inj g" and cover: "P \<subseteq> range g"
+    using bij_betw_from_nat_into[OF cS iS]
+    unfolding g_def bij_betw_def S_def by auto
+  define h :: "'p \<Rightarrow> nat" where "h = (\<lambda>p. SOME n. g n = p)"
+  have gh: "g (h p) = p" if "p \<in> P" for p
+  proof -
+    from cover that obtain n where n: "g n = p" by auto
+    from someI[of "\<lambda>n. g n = p", OF n] show ?thesis by (simp add: h_def)
+  qed
+  show ?thesis using g gh by blast
+qed
+
+lemma prn_retract:
+  assumes "\<And>p. p \<in> pars A \<Longrightarrow> g (h p) = p"
+  shows "prn g (prn h A) = A"
+  by (simp add: assms prn_cong prn_prn)
+
+lemma prn_retract_set:
+  assumes "\<And>p. p \<in> usedp \<Phi> \<Longrightarrow> g (h p) = p"
+  shows "prn g ` prn h ` \<Phi> = \<Phi>"
+proof -
+  have "prn g (prn h B) = B" if "B \<in> \<Phi>" for B
+    by (rule prn_retract) (use assms that in \<open>auto simp: usedp_def\<close>)
+  thus ?thesis by (force simp: image_image)
+qed
+
+text \<open>Retraction along an @{emph \<open>arbitrary\<close>} injection into the same signature: an
+  injective renaming \<open>g\<close> that undoes a given injection \<open>h\<close> on any finite support.  On the
+  support, \<open>g\<close> inverts \<open>h\<close>; away from it, the two cofinite remainders have full
+  cardinality, so they inject into each other without touching the support's values.\<close>
+
+lemma inj_finite_retract:
+  fixes h :: "'p::infinite \<Rightarrow> 'p"
+  assumes injh: "inj h" and fin: "finite P"
+  shows "\<exists>g :: 'p \<Rightarrow> 'p. inj g \<and> (\<forall>p \<in> P. g (h p) = p)"
+proof -
+  define Q where "Q = h ` P"
+  have finQ: "finite Q" using fin by (simp add: Q_def)
+  have "|UNIV :: 'p set| \<le>o |UNIV :: 'p set|"
+    by (rule ordLeq_reflexive[OF card_of_Well_order])
+  hence "|UNIV :: 'p set| \<le>o |UNIV - P :: 'p set|"
+    using card_of_diff_finite[OF _ fin] by fastforce
+  hence "|UNIV - Q :: 'p set| \<le>o |UNIV - P :: 'p set|"
+    using card_of_mono1[of "UNIV - Q" UNIV] ordLeq_transitive by blast
+  then obtain k :: "'p \<Rightarrow> 'p"
+    where k: "inj_on k (UNIV - Q)" and rk: "k ` (UNIV - Q) \<subseteq> UNIV - P"
+    using card_of_ordLeq[THEN iffD2] by blast
+  define g where "g = (\<lambda>x. if x \<in> Q then inv_into P h x else k x)"
+  have gh: "g (h p) = p" if "p \<in> P" for p
+    using that inv_into_f_f[OF inj_on_subset[OF injh subset_UNIV]]
+    by (auto simp: g_def Q_def)
+  have "inj g"
+  proof (rule injI)
+    fix x y assume e: "g x = g y"
+    have inP: "g z \<in> P" if "z \<in> Q" for z
+      using that inv_into_into[of z h P] by (auto simp: g_def Q_def)
+    have notP: "g z \<notin> P" if "z \<notin> Q" for z
+      using that rk by (auto simp: g_def)
+    consider "x \<in> Q" "y \<in> Q" | "x \<notin> Q" "y \<notin> Q" | "x \<in> Q" "y \<notin> Q" | "x \<notin> Q" "y \<in> Q"
+      by blast
+    thus "x = y"
+    proof cases
+      case 1 thus ?thesis
+        using e inj_on_inv_into[of Q h P] by (auto simp: g_def Q_def inj_on_def)
+    next
+      case 2 thus ?thesis using e k by (auto simp: g_def inj_on_def)
+    next
+      case 3 thus ?thesis using e inP notP by metis
+    next
+      case 4 thus ?thesis using e inP notP by metis
+    qed
+  qed
+  thus ?thesis using gh by blast
+qed
 
 lemma bkk_model_reduct:
   fixes Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and h :: "'p \<Rightarrow> 'q"
@@ -1690,6 +1695,9 @@ proof -
   qed(auto simp: vl_eq vl_pi vl_dis vl_neg vl_iota ev_var ev_type wff_prn prop_f prop_b)
 qed
 
+text \<open>Statement preserved verbatim from the published version of this entry (compatibility
+  export); validity is the empty-context face of \<open>bkk_consequence_map\<close> below.\<close>
+
 lemma bkk_valid_map:
   fixes h :: "'p \<Rightarrow> 'q"
   assumes v: "\<Turnstile>('u) (A :: 'p tm)"
@@ -1697,44 +1705,463 @@ lemma bkk_valid_map:
   unfolding bkk_valid_def rel_truth_def
   by (metis bkk_model_reduct bkk_valid_def rel_truth_def v)
 
-text \<open>Completeness for every signature with infinitely many parameters: the
-  finitely many parameters of \<open>A\<close> are relocated into a copy of \<open>\<nat>\<close> inside \<open>'p\<close>,
-  completeness over \<open>\<nat>\<close> applies, and \<open>bprov_rename\<close> transports the derivation back.
-  (With only finitely many parameters this route is barred: \<open>NK(\<Pi>I)\<close> consumes fresh
-  eigen-parameters, and an injection \<open>\<nat> \<Rightarrow> 'p\<close> is exactly what supplies them.)\<close>
+text \<open>Semantic consequence transports along an @{emph \<open>arbitrary\<close>} map of parameter names:
+  the reduct of a \<open>'q\<close>-model is a \<open>'p\<close>-model, and it satisfies a hypothesis iff the original
+  satisfies its renaming.  Validity is the empty-context face of the same fact.\<close>
+
+lemma bkk_consequence_map:
+  fixes h :: "'p \<Rightarrow> 'q"
+  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+    shows "prn h ` \<Phi> \<Turnstile>('u) (prn h A :: 'q tm)"
+  unfolding bkk_consequence_def rel_truth_def
+proof (intro allI impI)
+  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
+  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
+     and sat: "\<forall>B'\<in>prn h ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
+  have bm': "bkk_model Dm Ap (\<lambda>\<xi> t. Ee \<xi> (prn h t)) vl" by (rule bkk_model_reduct[OF bm])
+  have "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee \<xi> (prn h B))" using sat w\<Phi> by blast
+  thus "vl (Ee \<xi> (prn h A))"
+    using v bm' xi unfolding bkk_consequence_def rel_truth_def by blast
+qed
+
+
+subsubsection \<open>Arbitrary parameter-rich contexts: discharging the free-variable stock\<close>
+
+text \<open>Finally the restriction to a @{emph \<open>finite\<close>} context is lifted altogether: an arbitrary
+  parameter-rich context of open formulas is admissible.  With infinitely many typed free
+  variables a per-variable induction cannot terminate, so the trade is made
+  @{emph \<open>simultaneously\<close>}, by
+  the closure \<open>vpar S \<pi>\<close> (Section 1, the parameter-valued instance of the simultaneous
+  substitution @{const msub}) and its substitution-value law
+  @{thm [source] sigma_eval.ev_vpar} (Section 2).  An injective \<open>\<pi>\<close> with pairwise distinct
+  fresh parameters exists because the variables form a countable stock while \<open>richp \<Phi>\<close>
+  supplies a reservoir as large as the signature: an injection of \<open>'p + \<nat>\<close> into it splits
+  it, the \<open>\<nat>\<close>-half feeding \<open>\<pi>\<close> and the untouched \<open>'p\<close>-half keeping the closed image
+  parameter-rich.  The law transports the
+  consequence to the closed image, where
+  @{thm [source] completeness_hyps_rich} applies.  Since every \<open>NK\<close>-derivation is
+  finite (@{thm [source] bprov_finite}), the resulting derivation mentions only finitely many
+  of the substituted parameters, and @{thm [source] bprov_pvar} inverts them one at a time
+  (@{thm [source] pvar_vpar}); weakening restores the full context.\<close>
+
+text \<open>Semantic consequence transports along the simultaneous closure, exactly as it does
+  along parameter renamings (@{thm [source] bkk_consequence_map}): every assignment for the
+  closed image induces, via the parameter values, an assignment for the originals.\<close>
+
+lemma bkk_consequence_vpar:
+  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+    shows "vpar UNIV \<pi> ` \<Phi> \<Turnstile>('u) vpar UNIV \<pi> A"
+  unfolding bkk_consequence_def rel_truth_def
+proof (intro allI impI)
+  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
+  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
+     and sat: "\<forall>B'\<in>vpar UNIV \<pi> ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
+  interpret M: bkk_model Dm Ap Ee vl by (rule bm)
+  have asg': "app_struct.asg Dm (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>))"
+    using M.ev_type[OF wff_Par xi] by (simp add: M.asg_def)
+  have evA: "Ee \<xi> (vpar UNIV \<pi> A) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A"
+    using M.ev_vpar[where S = UNIV, OF wA xi] by simp
+  have sat': "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
+  proof
+    fix B assume B: "B \<in> \<Phi>"
+    have wB: "wff\<^bsub>\<o>\<^esub>(B)" using w\<Phi> B by blast
+    have "Ee \<xi> (vpar UNIV \<pi> B) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B"
+      using M.ev_vpar[where S = UNIV, OF wB xi] by simp
+    moreover have "vpar UNIV \<pi> B \<in> vpar UNIV \<pi> ` \<Phi>" using B by blast
+    ultimately show "wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
+      using sat wB by auto
+  qed
+  have "vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A)"
+    by (rule v[unfolded bkk_consequence_def rel_truth_def, rule_format,
+               OF bm asg' sat'[rule_format]])
+  thus "vl (Ee \<xi> (vpar UNIV \<pi> A))" by (simp add: evA)
+qed
+
+text \<open>Syntactic inversion: a derivation of the closed image over a @{emph \<open>finite\<close>} stock of
+  substituted variables is undone by @{thm [source] bprov_pvar}, one parameter at a time.\<close>
+
+lemma bprov_vpar_invert:
+  assumes inj: "\<And>n \<tau> x \<sigma>. \<pi> n \<tau> = \<pi> x \<sigma> \<Longrightarrow> n = x \<and> \<tau> = \<sigma>"
+      and fr: "\<And>B n \<sigma>. B \<in> insert A \<Psi> \<Longrightarrow> \<pi> n \<sigma> \<notin> pars B"
+  shows "finite W \<Longrightarrow> vpar W \<pi> ` \<Psi> \<turnstile> vpar W \<pi> A \<Longrightarrow> \<Psi> \<turnstile> A"
+proof (induction rule: finite_induct)
+  case empty
+  have e: "vpar {} \<pi> t = t" for t by (simp add: vpar_id)
+  show ?case using empty.prems unfolding e by (simp add: image_ident)
+next
+  case (insert p W)
+  obtain x \<sigma> where p: "p = (x, \<sigma>)" by (cases p) auto
+  have injx: "\<And>n \<tau>. \<pi> n \<tau> = \<pi> x \<sigma> \<Longrightarrow> n = x \<and> \<tau> = \<sigma>" using inj by blast
+  have inv: "pvar (\<pi> x \<sigma>) \<sigma> x (vpar (insert p W) \<pi> B) = vpar W \<pi> B"
+    if B: "B \<in> insert A \<Psi>" for B
+  proof -
+    have W: "insert p W - {(x, \<sigma>)} = W" using insert.hyps(2) p by auto
+    have "pvar (\<pi> x \<sigma>) \<sigma> x (vpar (insert p W) \<pi> B) = vpar (insert p W - {(x, \<sigma>)}) \<pi> B"
+      by (rule pvar_vpar[OF injx fr[OF B]])
+    thus ?thesis unfolding W .
+  qed
+  have "pvar (\<pi> x \<sigma>) \<sigma> x ` (vpar (insert p W) \<pi> ` \<Psi>)
+      \<turnstile> pvar (\<pi> x \<sigma>) \<sigma> x (vpar (insert p W) \<pi> A)"
+    by (rule bprov_pvar[OF insert.prems])
+  moreover have "pvar (\<pi> x \<sigma>) \<sigma> x ` (vpar (insert p W) \<pi> ` \<Psi>) = vpar W \<pi> ` \<Psi>"
+    unfolding image_image by (rule image_cong[OF HOL.refl]) (rule inv, blast)
+  moreover have "pvar (\<pi> x \<sigma>) \<sigma> x (vpar (insert p W) \<pi> A) = vpar W \<pi> A"
+    by (rule inv) blast
+  ultimately have "vpar W \<pi> ` \<Psi> \<turnstile> vpar W \<pi> A" by simp
+  thus ?case by (rule insert.IH)
+qed
+
+text \<open>Hypothesis-relative completeness in full generality: an arbitrary parameter-rich
+  context of open formulas, with no finiteness condition of any kind, at @{emph \<open>any\<close>}
+  signature --- the carrier need only be at least as large as the signature.  The reserve
+  is split in two by an injection \<open>j\<close> of \<open>'p + \<nat>\<close> into it: the \<open>\<nat>\<close>-half supplies the
+  pairwise distinct fresh parameters that close the free variables, the \<open>'p\<close>-half is
+  untouched by the closure and keeps the closed image parameter-rich.\<close>
+
+theorem completeness_hyps_open_rich:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm" and emb :: "'p \<Rightarrow> 'u"
+  assumes emb: "inj emb" and wA: "wff\<^bsub>\<o>\<^esub>(A)" and fp: "richp \<Phi>"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+      and valid: "\<Phi> \<Turnstile>('u) A"
+    shows "\<Phi> \<turnstile> A"
+proof -
+  \<comment> \<open>the reserve stays full-size after removing the parameters of \<open>A\<close>\<close>
+  have rA: "|UNIV :: 'p set| \<le>o |- usedp \<Phi> - pars A|"
+    by (rule card_of_diff_finite[OF fp[unfolded richp_def] finite_pars])
+  \<comment> \<open>split it: an injection of \<open>'p + \<nat>\<close> into the reserve\<close>
+  have "|(UNIV :: 'p set) <+> (UNIV :: nat set)| =o |UNIV :: 'p set|"
+    using card_of_Plus_infinite[OF infinite_UNIV]
+          infinite_iff_card_of_nat[of "UNIV :: 'p set"] infinite_UNIV by blast
+  hence "|UNIV :: ('p + nat) set| \<le>o |- usedp \<Phi> - pars A|"
+    using rA unfolding UNIV_Plus_UNIV
+    by (meson ordIso_imp_ordLeq ordLeq_transitive)
+  from card_of_ordLeq[THEN iffD2, OF this]
+  obtain j :: "'p + nat \<Rightarrow> 'p" where injj: "inj j"
+      and rj: "range j \<subseteq> - usedp \<Phi> - pars A"
+    by blast
+  define f :: "nat \<Rightarrow> 'p" where "f = (\<lambda>n. j (Inr n))"
+  have injf: "inj f" using injj by (auto simp: f_def inj_on_def)
+  have rf: "range f \<subseteq> - usedp \<Phi> - pars A" using rj by (auto simp: f_def)
+  define \<pi> :: "nat \<Rightarrow> ty \<Rightarrow> 'p" where "\<pi> = (\<lambda>n \<sigma>. f (to_nat (n, \<sigma>)))"
+  have inj\<pi>: "n = x \<and> \<tau> = \<sigma>" if "\<pi> n \<tau> = \<pi> x \<sigma>" for n \<tau> x \<sigma>
+    using injD[OF injf that[unfolded \<pi>_def]] by simp
+  have fresh\<Phi>: "\<pi> n \<sigma> \<notin> usedp \<Phi>" and freshA: "\<pi> n \<sigma> \<notin> pars A" for n \<sigma>
+    using rf unfolding \<pi>_def by auto
+  \<comment> \<open>the closed image is a parameter-rich context of sentences\<close>
+  define \<Phi>c where "\<Phi>c = vpar UNIV \<pi> ` \<Phi>"
+  have cA: "cwff \<o> (vpar UNIV \<pi> A)" by (rule cwff_vpar[OF wA])
+  have cB: "cwff \<o> B'" if B': "B' \<in> \<Phi>c" for B'
+  proof -
+    obtain B where B: "B \<in> \<Phi>" and eq: "B' = vpar UNIV \<pi> B"
+      using B' unfolding \<Phi>c_def by auto
+    show ?thesis unfolding eq by (rule cwff_vpar[OF w\<Phi>[OF B]])
+  qed
+  have fpc: "richp \<Phi>c"
+  proof -
+    have sub: "range (\<lambda>p. j (Inl p)) \<subseteq> - usedp \<Phi>c"
+    proof
+      fix q assume "q \<in> range (\<lambda>p. j (Inl p))"
+      then obtain p where q: "q = j (Inl p)" by auto
+      have "q \<notin> pars B'" if B': "B' \<in> \<Phi>c" for B'
+      proof
+        assume qp: "q \<in> pars B'"
+        obtain B where B: "B \<in> \<Phi>" and B'B: "B' = vpar UNIV \<pi> B"
+          using B' unfolding \<Phi>c_def by auto
+        have dis: "q \<in> pars B \<or> (\<exists>n \<sigma>'. q = \<pi> n \<sigma>')"
+          using qp unfolding B'B by (rule pars_vpar)
+        have nB: "q \<notin> pars B" using rj q B by (auto simp: usedp_def)
+        have n\<pi>: "q \<noteq> \<pi> n \<sigma>'" for n \<sigma>'
+          using injD[OF injj] q by (auto simp: \<pi>_def f_def)
+        show False using dis nB n\<pi> by blast
+      qed
+      thus "q \<in> - usedp \<Phi>c" by (auto simp: usedp_def)
+    qed
+    have inj1: "inj (\<lambda>p. j (Inl p))" using injj by (auto simp: inj_on_def)
+    have "|UNIV :: 'p set| \<le>o |- usedp \<Phi>c|"
+      by (rule card_of_ordLeq[THEN iffD1]) (use sub inj1 in blast)
+    thus ?thesis by (simp add: richp_def)
+  qed
+  \<comment> \<open>transport the consequence and apply the closed parameter-rich completeness\<close>
+  have vc: "\<Phi>c \<Turnstile>('u) vpar UNIV \<pi> A"
+    unfolding \<Phi>c_def by (rule bkk_consequence_vpar[OF valid w\<Phi> wA])
+  have dc: "\<Phi>c \<turnstile> vpar UNIV \<pi> A"
+    by (rule completeness_hyps_rich[OF emb cA fpc cB vc])
+  \<comment> \<open>the derivation is finite, so it lives over a finite subcontext\<close>
+  obtain \<Phi>\<^sub>0 where fin0: "finite \<Phi>\<^sub>0" and sub0: "\<Phi>\<^sub>0 \<subseteq> \<Phi>c" and d0: "\<Phi>\<^sub>0 \<turnstile> vpar UNIV \<pi> A"
+    using bprov_finite[OF dc] by blast
+  obtain \<Psi> where sub\<Psi>: "\<Psi> \<subseteq> \<Phi>" and fin\<Psi>: "finite \<Psi>" and im: "\<Phi>\<^sub>0 = vpar UNIV \<pi> ` \<Psi>"
+    using finite_subset_image[OF fin0 sub0[unfolded \<Phi>c_def]] by blast
+  \<comment> \<open>restrict the closure to the finitely many occurring variables and invert them\<close>
+  define W where "W = occ A \<union> (\<Union>B\<in>\<Psi>. occ B)"
+  have finW: "finite W" unfolding W_def using fin\<Psi> finite_occ by auto
+  have "occ A \<subseteq> W" unfolding W_def by blast
+  hence eqA: "vpar UNIV \<pi> A = vpar W \<pi> A" by (rule vpar_cong[symmetric])
+  have eqB: "vpar UNIV \<pi> B = vpar W \<pi> B" if B: "B \<in> \<Psi>" for B
+  proof -
+    have "occ B \<subseteq> W" unfolding W_def using B by blast
+    thus ?thesis by (rule vpar_cong[symmetric])
+  qed
+  have im\<Psi>: "vpar UNIV \<pi> ` \<Psi> = vpar W \<pi> ` \<Psi>" by (rule image_cong[OF HOL.refl eqB])
+  have dW: "vpar W \<pi> ` \<Psi> \<turnstile> vpar W \<pi> A" using d0 unfolding im im\<Psi> eqA .
+  have fr: "\<pi> n \<sigma> \<notin> pars B" if "B \<in> insert A \<Psi>" for B n \<sigma>
+    using fresh\<Phi> freshA sub\<Psi> that by (auto simp: usedp_def)
+  have "\<Psi> \<turnstile> A" by (rule bprov_vpar_invert[OF inj\<pi> fr finW dW])
+  thus ?thesis by (rule bprov_weaken[OF _ sub\<Psi> richp_freep[OF fp]])
+qed
+
+text \<open>Over a countable signature every infinite carrier is admissible and \<open>richp\<close> is
+  \<open>freep\<close>, so the classical statement follows; its closed, empty-context and
+  finite-context faces are exported as one-line instances in the corollary ladder
+  below.\<close>
+
+theorem completeness_hyps_open_full:
+  fixes \<Phi> :: "'p::{countable,infinite} tm set" and A :: "'p tm"
+  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and fp: "freep \<Phi>"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+      and valid: "\<Phi> \<Turnstile>('u::infinite) A"
+    shows "\<Phi> \<turnstile> A"
+proof -
+  obtain g :: "nat \<Rightarrow> 'u" where g: "inj g"
+    using infinite_UNIV infinite_countable_subset by blast
+  have emb: "inj (\<lambda>p :: 'p. g (to_nat p))"
+    by (auto simp: inj_on_def dest!: injD[OF g])
+  show ?thesis
+    by (rule completeness_hyps_open_rich[OF emb wA iffD2[OF richp_iff_freep fp] w\<Phi> valid])
+qed
+
+subsubsection \<open>Hypothesis-relative completeness without purity\<close>
+
+text \<open>For the hypothesis relation \<open>\<tturnstile>\<close> even the parameter reserve disappears: an
+  @{emph \<open>arbitrary\<close>} context of open formulas is admitted, over any carrier at least as
+  large as the signature.  The reserve is created rather than assumed --- the signature
+  folds injectively into one half of itself (\<open>|'p + 'p| = |'p|\<close>), the untouched half makes
+  the image context parameter-rich, and @{thm [source] completeness_hyps_open_rich}
+  applies.  The resulting derivation is finite, so it retracts along the fold
+  (@{thm [source] inj_finite_retract}) to a derivation from a finite part of the original
+  context --- which is exactly \<open>\<Phi> \<tturnstile> A\<close>.  Semantic compactness of the Henkin consequence
+  thus needs no ultraproducts: it falls out of this theorem together with soundness
+  (\<open>Main_Results\<close>).\<close>
+
+theorem completeness_fprov:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm" and emb :: "'p \<Rightarrow> 'u"
+  assumes emb: "inj emb" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+      and valid: "\<Phi> \<Turnstile>('u) A"
+    shows "\<Phi> \<tturnstile> A"
+proof -
+  \<comment> \<open>fold the signature into one half of itself; the other half is an untouched reserve\<close>
+  have "|(UNIV :: 'p set) <+> (UNIV :: 'p set)| =o |UNIV :: 'p set|"
+    using card_of_Plus_infinite[OF infinite_UNIV
+          ordLeq_reflexive[OF card_of_Well_order]] by blast
+  hence "|UNIV :: ('p + 'p) set| \<le>o |UNIV :: 'p set|"
+    by (metis UNIV_Plus_UNIV ordIso_imp_ordLeq)
+  then obtain j :: "'p + 'p \<Rightarrow> 'p" where injj: "inj j"
+    by (meson card_of_ordLeq)
+  define h where "h = (\<lambda>p. j (Inl p))"
+  have injh: "inj h" using injj by (auto simp: h_def inj_on_def)
+  \<comment> \<open>the image context is parameter-rich: the \<open>Inr\<close>-half avoids every \<open>h\<close>-image\<close>
+  define \<Phi>' where "\<Phi>' = prn h ` \<Phi>"
+  have rich': "richp \<Phi>'"
+  proof -
+    have sub: "range (\<lambda>q. j (Inr q)) \<subseteq> - usedp \<Phi>'"
+    proof
+      fix x assume "x \<in> range (\<lambda>q. j (Inr q))"
+      then obtain q where x: "x = j (Inr q)" by blast
+      have "x \<notin> pars B'" if "B' \<in> \<Phi>'" for B'
+      proof -
+        have "B' \<in> prn h ` \<Phi>" using that by (simp add: \<Phi>'_def)
+        then obtain B where "B' = prn h B" by blast
+        hence "pars B' = h ` pars B" by (simp add: tm.set_map)
+        thus ?thesis using x injD[OF injj] by (auto simp: h_def)
+      qed
+      thus "x \<in> - usedp \<Phi>'" by (auto simp: usedp_def)
+    qed
+    have inj1: "inj (\<lambda>q. j (Inr q))" using injj by (auto simp: inj_on_def)
+    have "|UNIV :: 'p set| \<le>o |- usedp \<Phi>'|"
+      by (rule card_of_ordLeq[THEN iffD1]) (use sub inj1 in blast)
+    thus ?thesis by (simp add: richp_def)
+  qed
+  \<comment> \<open>transport validity and well-formedness along the fold\<close>
+  have valid': "\<Phi>' \<Turnstile>('u) prn h A"
+    unfolding \<Phi>'_def by (rule bkk_consequence_map[OF valid w\<Phi>])
+  have wA': "wff\<^bsub>\<o>\<^esub>(prn h A)" by (rule wff_prn[OF wA])
+  have w\<Phi>': "\<And>B'. B' \<in> \<Phi>' \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B')"
+    by (auto simp: \<Phi>'_def intro: wff_prn w\<Phi>)
+  \<comment> \<open>complete over the image and extract the finite kernel of the derivation\<close>
+  have "\<Phi>' \<turnstile> prn h A"
+    by (rule completeness_hyps_open_rich[OF emb wA' rich' w\<Phi>' valid'])
+  then obtain \<Psi>0 where fin\<Psi>: "finite \<Psi>0" and sub\<Psi>: "\<Psi>0 \<subseteq> \<Phi>'"
+      and d\<Psi>: "\<Psi>0 \<turnstile> prn h A"
+    using bprov_finite by blast
+  obtain \<Phi>\<^sub>0 where sub\<Phi>: "\<Phi>\<^sub>0 \<subseteq> \<Phi>" and fin\<Phi>: "finite \<Phi>\<^sub>0" and im: "\<Psi>0 = prn h ` \<Phi>\<^sub>0"
+    using finite_subset_image[OF fin\<Psi> sub\<Psi>[unfolded \<Phi>'_def]] by blast
+  \<comment> \<open>retract the finite derivation back along the fold\<close>
+  define P where "P = pars A \<union> usedp \<Phi>\<^sub>0"
+  have finP: "finite P"
+    unfolding P_def usedp_def using fin\<Phi> finite_pars by auto
+  obtain g :: "'p \<Rightarrow> 'p" where injg: "inj g" and gh: "\<forall>p \<in> P. g (h p) = p"
+    using inj_finite_retract[OF injh finP] by blast
+  have "prn g ` \<Psi>0 \<turnstile> prn g (prn h A)" by (rule bprov_rename[OF injg d\<Psi>])
+  moreover have "prn g (prn h A) = A"
+    by (rule prn_retract) (use gh in \<open>auto simp: P_def\<close>)
+  moreover have "prn g ` \<Psi>0 = \<Phi>\<^sub>0"
+    unfolding im by (rule prn_retract_set) (use gh in \<open>auto simp: P_def\<close>)
+  ultimately have "\<Phi>\<^sub>0 \<turnstile> A" by simp
+  thus ?thesis using fin\<Phi> sub\<Phi> by (rule fprovI[rotated 2])
+qed
+
+subsubsection \<open>The exported corollary ladder\<close>
+
+text \<open>The completeness forms of the published version of this entry, each a one-line
+  instance of the theorems above: over a countable signature every infinite carrier is
+  admissible, open formulas need no closure --- the simultaneous variable-for-parameter
+  trade subsumes the published version's per-occurrence induction --- and a finite context is
+  automatically pure.\<close>
+
+theorem completeness_open_at_any_carrier:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('u::infinite) A"
+  shows "\<turnstile> A"
+proof -
+  have v0: "{} \<Turnstile>('u) A" using valid by (simp add: bkk_valid_def bkk_consequence_def)
+  show ?thesis
+    by (rule completeness_hyps_open_full[OF wA fp0 _ v0]) simp
+qed
+
+theorem completeness_open:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('p tm set) A"
+  shows "\<turnstile> A"
+proof -
+  have emb: "inj (\<lambda>p :: 'p. {p\<^sup>p\<^bsub>\<iota>\<^esub>} :: 'p tm set)" by (simp add: inj_on_def)
+  have v0: "{} \<Turnstile>('p tm set) A"
+    using valid by (simp add: bkk_valid_def bkk_consequence_def)
+  have "({} :: 'p tm set) \<tturnstile> A"
+    by (rule completeness_fprov[OF emb wA _ v0]) simp
+  thus ?thesis using fprov_finite_eq_bprov[of "{}" A] by simp
+qed
+
+text \<open>The published closed-formula equivalence, its statement verbatim; the open-formula
+  strengthening is \<open>completeness_open\<close> above together with \<open>soundness_valid\<close>.\<close>
+
+theorem derivable_iff_valid:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes "cwff \<o> A"
+  shows "\<turnstile> A \<longleftrightarrow> \<Turnstile>('p tm set) A"
+  using completeness_open[OF cwff_wff[OF assms]] soundness_valid by blast
+
+lemma refuting_term_model:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes c: "cwff \<o> A" and nd: "\<not>\<turnstile> A"
+  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
+  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "\<not> vl (Ee \<xi> A)"
+proof -
+  have fp: "richp ({} :: 'p tm set)"
+    by (simp add: richp_iff_freep freep_finite)
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+      and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where M: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>" and "\<forall>B\<in>({} :: 'p tm set). vl (Ee \<xi> B)"
+      and nA: "\<not> vl (Ee \<xi> A)"
+    by (rule refuting_term_model_hyps[OF c fp _ nd]) simp_all
+  have "inj_on (to_nat \<circ> rep) {x. \<exists>\<tau>. Dm \<tau> x}"
+  proof (rule comp_inj_on[OF inj])
+    show "inj_on to_nat (rep ` {x. \<exists>\<tau>. Dm \<tau> x})"
+      by (rule inj_on_subset[OF inj_to_nat]) simp
+  qed
+  hence cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+    unfolding countable_def by blast
+  show ?thesis by (rule that[OF M cnt xi nA])
+qed
+
+theorem completeness_at_any_carrier:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes c: "cwff \<o> A" and valid: "\<Turnstile>('u::infinite) A"
+  shows "\<turnstile> A"
+  by (rule completeness_open_at_any_carrier[OF cwff_wff[OF c] valid])
+
+theorem completeness_hyps_open_finite_countable:
+  fixes \<Phi> :: "'p::{countable,infinite} tm set" and A :: "'p tm"
+  assumes fin: "finite \<Phi>"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+      and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+      and valid: "\<Phi> \<Turnstile>('u::infinite) A"
+    shows "\<Phi> \<turnstile> A"
+  by (rule completeness_hyps_open_full[OF wA freep_finite[OF fin] w\<Phi> valid])
+
+text \<open>The same at @{emph \<open>every\<close>} signature.  A finite context and its conclusion mention
+  only finitely many parameters, so the problem relocates into a copy of \<open>\<nat>\<close> inside \<open>'p\<close>
+  and \<open>bprov_rename\<close> transports the derivation back.  Countability of \<open>'p\<close> thus drops out,
+  and only \<open>'p\<close> infinite remains.\<close>
+
+theorem completeness_hyps_open_finite:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm"
+  assumes fin: "finite \<Phi>"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+      and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+      and v: "\<Phi> \<Turnstile>('u::infinite) A"
+    shows "\<Phi> \<turnstile> A"
+proof -
+  have finP: "finite (pars A \<union> usedp \<Phi>)" using fin by (simp add: usedp_def)
+  obtain g :: "nat \<Rightarrow> 'p" and h where g: "inj g"
+      and gh: "\<forall>p \<in> pars A \<union> usedp \<Phi>. g (h p) = p"
+    using nat_retract[OF finP] by blast
+  \<comment> \<open>into the countable subsignature\<close>
+  have finN: "finite (prn h ` \<Phi>)" using fin by simp
+  have wN\<Phi>: "wff\<^bsub>\<o>\<^esub>(B')" if "B' \<in> prn h ` \<Phi>" for B' :: "nat tm"
+    using that w\<Phi> by (auto intro: wff_prn)
+  have wN: "wff\<^bsub>\<o>\<^esub>(prn h A)" by (rule wff_prn[OF wA])
+  have vN: "prn h ` \<Phi> \<Turnstile>('u) (prn h A :: nat tm)"
+    by (rule bkk_consequence_map[OF v w\<Phi>])
+  have dN: "prn h ` \<Phi> \<turnstile> (prn h A :: nat tm)"
+    by (rule completeness_hyps_open_finite_countable[OF finN wN\<Phi> wN vN])
+  \<comment> \<open>and back along \<open>g\<close>\<close>
+  have "prn g ` (prn h ` \<Phi>) \<turnstile> prn g (prn h A)"
+    by (rule bprov_rename[OF g dN])
+  moreover have "prn g (prn h A) = A"
+    by (rule prn_retract) (use gh in auto)
+  moreover have "prn g ` prn h ` \<Phi> = \<Phi>"
+    by (rule prn_retract_set) (use gh in auto)
+  ultimately show ?thesis by simp
+qed
+
+text \<open>The empty-context instance: completeness for every signature with infinitely many
+  parameters.  (With only finitely many parameters this route is barred: \<open>NK(\<Pi>I)\<close> consumes
+  fresh eigen-parameters, and an injection \<open>\<nat> \<Rightarrow> 'p\<close> is exactly what supplies them.)\<close>
 
 theorem completeness_at_any_signature:
   fixes A :: "'p::infinite tm"
   assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and v: "\<Turnstile>('u::infinite) A"
   shows "\<turnstile> A"
 proof -
-  obtain g0 :: "nat \<Rightarrow> 'p" where g0: "inj g0"
-    using infinite_UNIV infinite_countable_subset by blast
-  define B where "B = pars A \<union> range g0"
-  have "inj_on (inv g0) (range g0)" by (rule inj_on_inv_into) simp
-  hence rc: "countable (range g0)" by (rule countableI)
-  have ri: "infinite (range g0)"
-    using finite_imageD[of g0 UNIV] g0 infinite_UNIV_nat by auto
-  have cB: "countable B" and iB: "infinite B"
-    unfolding B_def using rc ri by (auto intro: countable_finite)
-  define g where "g = from_nat_into B"
-  have g: "inj g" and cover: "pars A \<subseteq> range g"
-    using bij_betw_from_nat_into[OF cB iB]
-    unfolding g_def bij_betw_def B_def by auto
-  define h :: "'p \<Rightarrow> nat" where "h = (\<lambda>p. SOME n. g n = p)"
-  have gh: "g (h p) = p" if "p \<in> pars A" for p
-  proof -
-    from cover that obtain n where n: "g n = p" by auto
-    from someI[of "\<lambda>n. g n = p", OF n] show ?thesis by (simp add: h_def)
-  qed
-  have wN: "wff\<^bsub>\<o>\<^esub>(prn h A)" by (rule wff_prn[OF wA])
-  have dN: "\<turnstile> (prn h A :: nat tm)"
-    using bkk_valid_map completeness_open_at_any_carrier v wN by blast
-  have "\<turnstile> (prn g (prn h A) :: 'p tm)"
-    using bprov_rename dN g by fastforce
-  moreover have "prn g (prn h A) = A"
-    by (simp add: gh prn_cong prn_prn)
-  ultimately show ?thesis by simp
+  have v0: "{} \<Turnstile>('u) A" using v by (simp add: bkk_valid_def bkk_consequence_def)
+  show ?thesis
+    by (rule completeness_hyps_open_finite[OF _ _ wA v0]) auto
 qed
+
+text \<open>The cardinality link between signature and carrier reflects a real boundary, not an
+  artefact of the proof.  Over an uncountable signature, take as \<open>\<Phi>\<close> the diagram
+  \<open>{c\<^sub>a \<noteq> c\<^sub>b}\<close> of uncountably many parameter constants, indexed so that a reserve of full
+  size \<open>|'p|\<close> stays unused --- then \<open>\<Phi>\<close> is even parameter-rich.  \<open>\<Phi>\<close> is consistent: every
+  finite part has a finite model, and derivability is finitary (this argument is informal
+  here; its countable analogue is mechanised as \<open>con_Diag\<close> in \<open>NK_Infinity\<close>).  Yet over a
+  @{emph \<open>countable\<close>} carrier \<open>'u\<close> no model satisfies \<open>\<Phi>\<close> --- the domains are subsets of
+  \<open>'u\<close> and cannot keep uncountably many constants apart --- so \<open>\<Phi> \<Turnstile>('u) \<^bold>\<bottom>\<close> holds
+  vacuously while \<open>\<Phi> \<turnstile> \<^bold>\<bottom>\<close> fails --- and since every finite part of \<open>\<Phi>\<close> is consistent,
+  \<open>\<Phi> \<tturnstile> \<^bold>\<bottom>\<close> fails as well, so the counterexample applies to both hypothesis relations.
+  For contexts of unbounded size the every-carrier
+  form thus does not survive beyond countable signatures (for @{emph \<open>finite\<close>} contexts it
+  does, @{thm [source] completeness_hyps_open_finite}): the carrier has to grow with the
+  signature, as in the premise of @{thm [source] completeness_fprov} and
+  @{thm [source] completeness_hyps_open_rich}; over a
+  countable signature every infinite carrier qualifies, and the every-carrier statement
+  (@{thm [source] completeness_hyps_open_full}) is recovered.  Whether the
+  @{emph \<open>parameter-rich\<close>} reserve of the \<open>\<turnstile>\<close>-level forms could be weakened to the merely
+  infinite reserve \<open>freep\<close> is not settled here; the two coincide over countable
+  signatures, and for the hypothesis relation \<open>\<tturnstile>\<close> the question dissolves ---
+  @{thm [source] completeness_fprov} assumes no purity at all.\<close>
 
 end

@@ -12,32 +12,46 @@ Semantics and Extensionality</em></a> by Benzmüller, Brown and Kohlhase
 (Journal of Symbolic Logic 69(4), 2004; henceforth BKK). Throughout,
 HOL means Church's simple theory of types: it is the embedded
 <em>object</em> logic, while Isabelle/HOL serves as the ambient
-meta-logic. The language is formalised in a <em>locally nameless</em>
-representation, which makes BKK's convention of identifying
-α-equivalent terms literally true and eliminates capture-avoiding
-substitution and renaming machinery altogether. The semantics is
-rendered abstractly, following BKK: applicative structures,
-Σ-evaluations (D, @, E) subject to BKK's four conditions on the
-evaluation function, Σ-models (D, @, E, υ), and the class
-M<sub>βfb</sub> of Σ-Henkin models (BKK's property q is automatic here,
-since primitive equality is part of the signature). Standard models
-arise as the full special case, and the familiar recursive denotation
-over frames enters only as the canonical way of constructing concrete
-models.</p>
+meta-logic. The language of BKK §2 is formalised in a <em>locally
+nameless</em> representation, which makes BKK's identification of
+α-equivalent terms literally true; no α-conversion or bound-variable
+renaming is ever needed. The semantics of BKK §3 is rendered
+abstractly, up to the class M<sub>βfb</sub> of Σ-Henkin models;
+standard models arise as the full special case.</p>
 
-<p>On this basis we prove the natural-deduction calculus NK of BKK
-sound (including BKK's evaluation-variant argument) and complete in the
-sense of Henkin, via BKK's abstract-consistency and model-existence
-method, with the term model realised as a term evaluation. Completeness
-is established in a form stronger than BKK's: it holds at every
-infinite value carrier, for every signature with infinitely many
-parameters, and for open formulas. Consistency follows by exhibiting a
-concrete Σ-standard model over finite domains. The signature includes
-BKK's optional primitive equality and — going beyond BKK, following
+<p>On this basis the natural-deduction calculus NK of BKK §7 is proved
+sound (Theorem 7.3) and Henkin-complete, via the model-existence method
+of BKK §6, with the term model realised as a term evaluation.
+Completeness holds in a form stronger than BKK's Corollary 7.7: at
+every infinite value carrier, for every signature with infinitely many
+parameters, and for open formulas. It also holds relative to
+hypotheses. For derivability from hypotheses in Andrews' sense — some
+finite part of the hypothesis set (the <em>context</em>) derives the
+conclusion — any context of open formulas is admitted, at any signature
+cardinality (any parameter type of the meta-logic), once the carrier is
+at least as large as the signature; semantic compactness of the Henkin
+consequence follows. For the calculus itself, a finite context needs
+nothing beyond well-formedness, and a pure context of open formulas is
+admitted over a countable signature at every infinite carrier.
+Consistency — that ⊥ is not derivable — follows from a concrete
+Σ-standard model with finite domains: a single individual and finitely
+many non-logical constants suffice, so no axiom of infinity is assumed
+for the embedded logic. Model existence is likewise concrete: from the
+consistency of a sentence over a countable signature, a countable
+Henkin (general) model of it is defined outright in plain HOL —
+non-effectively, via a maximal-consistent extension, but with
+consistency as the only premise. The signature includes BKK's optional
+primitive equality (Remark 7.9) and — going beyond BKK, following
 Andrews' <em>General Models, Descriptions, and Choice in Type
 Theory</em> (1972) — typed description operators. As an illustration,
 Cantor's theorem is derived <em>inside</em> NK, in surjective and
-injective form and at every type. To the best of our knowledge, this is
+injective form and at every type. Finally, by compactness over
+arbitrarily large finite models, NK is shown consistent with a
+schematic diagram forcing infinitely many individuals — no infinite
+model is constructed (Andrews' route) — and the single Dedekind-style
+axiom of infinity is shown not to follow from that scheme: no finite
+part of the scheme derives it, and a countable Henkin model of the
+whole scheme refutes it. To the best of our knowledge, this is
 the first machine-checked completeness proof for a deep embedding of
 HOL in HOL. This contribution is part of the
 <a href=\"https://logikey.org\">LogiKEy</a> project.</p>"""
@@ -69,6 +83,7 @@ benzmueller = "benzmueller_email"
 kirchner = "kirchner_email"
 
 [history]
+2026-09-08 = "Major extension. Completeness is strengthened to derivation from hypotheses: up to arbitrary pure contexts of open formulas over countable signatures at every infinite carrier, and, by a transfinite extension lemma, to arbitrary signature cardinalities, with the carrier at least as large as the signature and purity scaled to it. A finitary hypothesis relation in the style of Andrews (some finite sub-context derives the conclusion) is introduced, for which completeness needs no purity condition at all; semantic compactness of the Henkin consequence follows as a corollary. Further additions: a choice-free consistency proof; consistency of NK with an infinity scheme by compactness over finite models (theory NK_Infinity, also in the strong finitary form), and a proof that the scheme does not yield the single Dedekind-style axiom of infinity; model existence as a concrete countable Henkin model; a footprint audit (theory Footprint_Checks). The published exports (including cantor_surjective and cantor_injective) are preserved; the document gained an introduction section."
 
 [extra]
 
