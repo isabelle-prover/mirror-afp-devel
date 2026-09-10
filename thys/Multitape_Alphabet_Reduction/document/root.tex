@@ -1,0 +1,386 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{literal}
+
+% Provide any Isabelle symbols not defined by isabellesym.sty.
+\providecommand{\isasymto}{\ensuremath{\to}}
+\providecommand{\isasymrightarrow}{\ensuremath{\rightarrow}}
+\providecommand{\isasymsubseteq}{\ensuremath{\subseteq}}
+\providecommand{\isasymmp}{\ensuremath{\mp}}
+\providecommand{\isasympm}{\ensuremath{\pm}}
+\providecommand{\isasymne}{\ensuremath{\neq}}
+
+% Session / entry names — single source of truth in sessionnames.tex (canonical
+% at t/document/, symlinked here and dereferenced into a real copy at release).
+\input{sessionnames}
+
+\begin{document}
+
+% \sloppy: raise the line-breaking tolerance so LaTeX rearranges breaks
+% around the long unbreakable \isa{} identifier tokens (in text blocks and
+% proof displays) rather than letting them overrun the right page edge.
+% Verified to clear every Overfull \hbox >= 20pt in this document.
+\sloppy
+
+\title{Multitape Alphabet Reduction\\[6pt]
+       \large Formal Proof in Isabelle/HOL}
+\author{Andr\'as Z.~Salamon \and Michael Wehar}
+\maketitle
+
+\begin{abstract}
+Machine-checked formal proof in Isabelle/HOL that an arbitrary
+finite tape alphabet can be reduced to a fixed four-element
+alphabet on a nondeterministic multitape Turing machine while
+preserving the accepted language and tape count --- and
+determinism, in the deterministic special case --- at the cost of a
+single constant-factor slowdown that grows only logarithmically
+with the alphabet size.
+
+Given a well-formed multitape machine $M$ whose tape alphabet
+$\Gamma_M$ has at least four symbols, the operation
+$M'' = \mathrm{alphabet\_reduce}\, M$ produces a machine over the
+fixed four-element alphabet
+$\mathrm{sym4} = \{\mathrm{BLANK4}, \mathrm{LE4}, \mathrm{BIT0},
+\mathrm{BIT1}\}$ (a blank $\Box$, a left-end marker $\rhd$, and the
+two bits $0, 1$).  It simulates $M$ under a fixed per-symbol binary
+encoding, spelling each $\Gamma_M$-symbol as a block of
+$\lceil \log_2 |\Gamma_M| \rceil$ bits, and it preserves
+determinism.  This session (\sessAR) establishes:
+
+\begin{itemize}
+\item \emph{Language preservation}: for every input word $w$,
+  $\mathrm{encode\_input\_ar}\,\Gamma_M\,bl_M\,w \in L(M'') \iff
+  w \in L(M)$ (theorem
+  \texttt{alphabet\_reduce\_language}; the forward inclusion is
+  also available separately as
+  \texttt{alphabet\_reduce\_language\_forward}).
+\item \emph{Time bound}: if $M$ accepts $w$ within $T(|w|)$ steps,
+  then $M''$ accepts $\mathrm{encode\_input\_ar}\,\Gamma_M\,bl_M\,w$
+  within $(6k + 1)\,b\,T(|w|)$ steps, where $k$ is the number of
+  tapes of $M$ and $b = \lceil \log_2 |\Gamma_M| \rceil$ is the
+  per-symbol block width (theorem
+  \texttt{alphabet\_reduce\_time\_explicit}).  The slowdown is thus a
+  single constant factor $(6k + 1)\,b$ multiplying the running time,
+  with no additive or lower-order term; it is fixed by the machine ---
+  the tape count (linearly) and the alphabet size (logarithmically,
+  through the block width $b$ above) --- and does not depend on the input.
+  The classical existential form
+  $d\,b\,T(|w|) + e\,b\,|w| + f$ is the corollary
+  \texttt{alphabet\_reduce\_time}.
+\item \emph{Well-formedness, determinism, and tape count}: $M''$ is a
+  well-formed substrate machine (\texttt{alphabet\_reduce\_wf})
+  that preserves determinism (\texttt{alphabet\_reduce\_det}) and
+  the tape count (\texttt{alphabet\_reduce\_preserves\_tape\_count}); its tape alphabet
+  is the full four-element type $\mathrm{sym4}$, of cardinality
+  exactly four (\texttt{alphabet\_reduce\_produces\_alphabet\_size\_4}).
+\end{itemize}
+
+This is an elementary per-symbol multi-cell encoding leading to a
+reduction in the number of tape symbols: the folklore alphabet
+homomorphism onto a fixed small alphabet, stated (but not costed) by
+Balc\'azar, D\'iaz, and Gabarr\'o~\cite[p.~23]{Balcazar1988:structural} and
+set within the wider machine-model-simulation
+landscape~\cite{vanEmdeBoas1990:machine,Papadimitriou1994:computational}.
+
+The nondeterministic multitape substrate lives in the sibling
+\sessMTTM{} session; this session depends on
+\sessMTTM{} and \texttt{HOL-Library}.
+\end{abstract}
+
+\input{acknowledgement}
+
+\tableofcontents
+
+\newpage
+
+\section{Overview}
+
+\subsection{High-level overview}
+
+In one sentence: this session proves that \emph{any} multitape
+Turing machine can be rebuilt as an equivalent machine whose tape
+alphabet has only four symbols, at the cost of a constant-factor
+slowdown.  The rebuilt machine keeps every property a later
+construction relies on: the accepted language, the number of tapes,
+structural well-formedness, and determinism.
+
+The entire development concerns a single function,
+$\mathrm{alphabet\_reduce}$, which maps a machine $M$ over an
+arbitrary finite tape alphabet to a machine
+$M'' = \mathrm{alphabet\_reduce}\, M$ over the fixed four-element
+alphabet $\mathrm{sym4}$.  Each headline theorem is a guarantee about
+this one function:
+
+\begin{itemize}
+\item the output really uses four symbols
+  (\texttt{alphabet\_reduce\_produces\_alphabet\_size\_4});
+\item it accepts the same language, as an ``if and only if'' modulo a
+  fixed input re-encoding (\texttt{alphabet\_reduce\_language});
+\item it runs within a linear-time slowdown
+  (\texttt{alphabet\_reduce\_time});
+\item it is still a legal machine (\texttt{alphabet\_reduce\_wf}),
+  with the same number of tapes
+  (\texttt{alphabet\_reduce\_preserves\_tape\_count}) and the same
+  determinism status (\texttt{alphabet\_reduce\_det}).
+\end{itemize}
+
+Two points help a first-time reader.  First, a machine here may be
+nondeterministic by default: its transition is a \emph{relation}, so
+acceptance means ``some run reaches the accept state'', and these
+theorems are statements about nondeterministic machines.  The
+deterministic case is singled out by a separate condition,
+\texttt{det\_mttm}.  Second, because the alphabet shrinks, the reduced
+machine cannot literally accept the same strings; instead each source
+symbol is re-spelled as a fixed block of $\mathrm{sym4}$ symbols by the
+encoding $\mathrm{encode\_input\_ar}$, and ``same language'' is meant
+up to that translation.
+
+Every theorem fixes an arbitrary $M$ with no constraint on its
+behaviour, so each is a genuine ``for all $M$'' result: read
+$\mathrm{alphabet\_reduce}\, M$ as ``apply this to \emph{any}
+machine''.
+
+The sibling entry \sessAE{} goes the other way: it \emph{enlarges}
+the alphabet to buy speed (the classical linear-speedup theorem).
+
+\paragraph{Terminology and prior work.}
+\emph{Alphabet reduction} is our name for this construction, chosen to
+pair with the sibling \emph{alphabet enlargement}; the classical
+literature does not usually present the two together.  The reduction
+itself is a folklore normalisation: a multitape machine over an
+arbitrary finite tape alphabet $\Gamma$ is simulated over a fixed small
+alphabet at a per-machine constant-factor cost of
+$\lceil \log_2 |\Gamma| \rceil$ cells per symbol.  Classic texts assume
+it rather than cost it.  Balc\'azar, D\'iaz, and
+Gabarr\'o~\cite[p.~23]{Balcazar1988:structural} state it directly --- a
+machine, being a word over its alphabet, ``can be translated into any other
+alphabet having at least two symbols via a homomorphism'' (their example
+encodes into $\{0, 1\}$, en route to g\"odelizing Turing machines) --- but
+do not analyse its time cost.  Hopcroft and
+Ullman~\cite[\S7.2]{Hopcroft1969:formal} likewise \emph{assume} each
+machine's tape symbols are already binary-encoded (enough to justify a
+universal machine over a fixed alphabet) and leave the construction as a
+reader exercise with no time analysis.  The restricted-machine survey of the
+era~\cite{Fischer1965:multitape} catalogues the surrounding landscape
+without isolating it.  This factor is a
+\emph{fixed constant} once $\Gamma$ is fixed, \emph{not} a
+$\log T$-style slowdown; that slowdown arises instead from the separate
+tape-count reduction, and only appears once the two are composed.  Neither
+van Emde Boas's simulation survey~\cite{vanEmdeBoas1990:machine} --- which
+frames such alphabet re-encodings under the \emph{Invariance Thesis} --- nor
+Papadimitriou's textbook~\cite{Papadimitriou1994:computational} isolates the
+reduction as a costed construction; both treat it as part of the general
+machine-model-simulation landscape.
+
+\paragraph{Related AFP developments.}
+The closest formalisation prior is inside Balbach's
+\texttt{Cook\_Levin}~\cite{Balbach2023:Cook}: its \texttt{Two\_Four\_Symbols}
+theory re-encodes between a four-symbol content alphabet and two binary
+symbols by fixed two-cell pairs, an encoding utility whose time cost stays
+implicit in the surrounding framework.  This entry generalises that picture
+--- an arbitrary $l$-symbol alphabet reduced to a fixed four, with the
+constant-factor slowdown stated as an explicit top-level theorem --- and,
+unlike Balbach's deterministic development, proves the reduction for
+nondeterministic machines while separately preserving determinism.  Xu,
+Zhang, Urban, and Joosten's
+\texttt{Universal\_Turing\_Machine}~\cite{Xu2019:universal} assumes a fixed
+binary alphabet outright.  The substrate descends from Dalvit and Thiemann's
+\texttt{Multitape\_To\_Singletape\_TM}~\cite{Dalvit2022:verified} but makes the
+tape count a value rather than a type parameter, so this reduction and its
+time bound hold, in a single theorem, for machines of any number of tapes.
+
+\input{glossary}
+
+\paragraph{Alphabet-reduction vocabulary.}
+\begin{description}
+\item[$b = \max(1, \lceil \log_2 |\Gamma| \rceil)$] the \emph{block
+  width}: the number of $\mathrm{sym4}$ cells that spell one source
+  symbol, and the alphabet-dependent factor in the slowdown
+  $(6k + 1)\,b$ (with $k = \texttt{k\_tm}\,M$ the tape count).  For
+  $|\Gamma| \geq 4$ the $\max$ is inactive, so
+  $b = \lceil \log_2 |\Gamma| \rceil$; it is the Isabelle constant
+  $\texttt{block\_width}\,\Gamma$.
+\item[$\mathrm{encode\_input\_ar}\,\Gamma\,bl\,w$] the input encoding
+  $\mathrm{concat}\,(\mathrm{map}\,(\mathrm{encode\_symbol}\,\Gamma\,bl)\,w)$:
+  the flat concatenation of the per-symbol encodings.  Each source
+  symbol is spelled as a fixed-width block of $b$ cells over
+  $\{\mathrm{BIT0}, \mathrm{BIT1}\}$, the binary numeral of the
+  symbol's index under a \emph{blank-anchored} enumeration of $\Gamma$
+  (a bijection $\Gamma \to \{0, \dots, |\Gamma| - 1\}$ that sends the
+  blank $bl$ to $0$).  The markers $\mathrm{BLANK4}$ and
+  $\mathrm{LE4}$ never occur inside an encoded symbol; blank-anchoring
+  is what lets an all-$\mathrm{BLANK4}$ block decode back to $bl$.
+\item[$\mathrm{sym4}$] the four-element output alphabet
+  $\{\mathrm{BLANK4}, \mathrm{LE4}, \mathrm{BIT0}, \mathrm{BIT1}\}$:
+  the blank $\Box$, the left endmarker $\rhd$, and the two bits
+  $0, 1$.
+\item[$\mathrm{ar\_stage}$] the per-state bookkeeping carried by $M''$
+  (substep tag, current tape, bit counter, symbol buffer, direction
+  vector, position kind); this is why $M''$ has state type
+  $\,{'q} \times {'a}\ \mathrm{ar\_stage}$.
+\end{description}
+
+\subsection{Scope and limitations}
+
+A reader deciding whether this construction fits their needs should
+note four caveats.
+\begin{itemize}
+\item \emph{Minimal alphabet.}  The source must carry at least four
+  tape symbols ($|\Gamma_M| \geq 4$).  The block-encoding is injective for
+  \emph{any} alphabet (the width always fits $|\Gamma_M|$); the real
+  requirement is $\mathrm{block\_width} \geq 2$ (the walker's block
+  logic assumes at least two cells per symbol), for which $|\Gamma_M|
+  \geq 4$ is the (loose) sufficient condition the theorems carry.
+\item \emph{Same language, up to a fixed re-encoding.}  Because the
+  alphabet shrinks, $M''$ cannot literally accept $M$'s strings;
+  ``same language'' means $M''$ accepts
+  $\mathrm{encode\_input\_ar}\,\Gamma_M\,bl_M\,w$ exactly when $M$
+  accepts $w$, stated modulo that translation.
+\item \emph{Constant-factor slowdown, not $\log T$.}  The overhead is
+  \emph{fixed} once $\Gamma_M$ is fixed: the exact factor is
+  $(6k + 1)\,b$ for a $k$-tape machine, with
+  $b = \lceil \log_2 |\Gamma_M| \rceil$ cells per symbol (so it grows
+  only logarithmically with the alphabet size).  This is \emph{not} the
+  $\log T$-style slowdown of a tape-count reduction, which arises
+  separately and only once the two are composed.
+\item \emph{The slowdown jumps at powers of two.}  As a function of the
+  alphabet size the factor $\lceil \log_2 |\Gamma_M| \rceil$ is a
+  \emph{step function}, not a smooth one: it is constant on each band
+  $2^{b-1} < |\Gamma_M| \leq 2^{b}$ and rises by one exactly as
+  $|\Gamma_M|$ crosses a power of two.  A machine over five symbols pays
+  the same width ($b = 3$) as one over eight, but strictly more than one
+  over four ($b = 2$); a symbol added within a band is free, one that
+  crosses a power of two costs a whole extra bit.  Both edges of the band
+  are proved ($2^{b-1} < |\Gamma_M| \leq 2^{b}$), so $b$ is exactly the
+  width to index the whole alphabet, though one cell above the coding
+  minimum $\lceil \log_2 (|\Gamma_M| - 1) \rceil$ for the non-blank symbols
+  (index $0$ is reserved for the blank, buying a branch-free decoder), the
+  two agreeing except just past a power of two.
+\end{itemize}
+Each theorem's exact hypotheses appear in the next subsection.
+
+\subsection{Details of theorem statements}
+
+For each headline theorem we give a cleaned statement and the role of
+every predicate it mentions.  The hypotheses form a \emph{ladder}:
+purely structural facts need none, validity needs the
+minimal-alphabet bound $|\Gamma_M| \geq 4$, behavioural equivalence
+needs the stronger \texttt{well\_formed\_mttm}, and determinism
+preservation needs \texttt{valid\_mttm} together with
+\texttt{det\_mttm}.
+
+\paragraph{\texttt{alphabet\_reduce\_produces\_alphabet\_size\_4}.}
+\[
+  |\mathrm{sym4}| = 4.
+\]
+No machine and no hypotheses.  This is the operational meaning of
+``reduction to four'': the reduction hard-codes the output tape
+alphabet as the whole type $\mathrm{sym4}$, and this theorem certifies
+that type has exactly four inhabitants.  It is a fact about the target
+\emph{type}, deliberately independent of any particular $M$.
+
+\paragraph{\texttt{alphabet\_reduce\_preserves\_tape\_count}.}
+\[
+  k_{M''} = k_M.
+\]
+Mentions only the tape-count projection \texttt{k\_tm} and the
+reduction, with no hypotheses.  The reduction acts on the alphabet dimension alone;
+the tape count is copied verbatim, so the equation holds for every
+term of machine type, valid or not.
+
+\paragraph{\texttt{alphabet\_reduce\_wf}.}
+\[
+  \mathrm{valid\_mttm}\, M \ \wedge\ |\Gamma_M| \geq 4
+  \ \Longrightarrow\ \mathrm{valid\_mttm}\, M''.
+\]
+Closure of the structural invariant; \texttt{valid\_mttm} appears as
+both hypothesis and conclusion.  The side condition $|\Gamma_M| \geq
+4$ is the \emph{minimal-alphabet} requirement: the source must carry
+at least four tape symbols for the binary block-encoding to be
+well-defined and injective.  Discharging it amounts to re-checking the
+endmarker discipline and frozen-tape clauses in the encoded world.
+
+\paragraph{\texttt{alphabet\_reduce\_language}.}
+\[
+  \begin{aligned}
+    &\mathrm{well\_formed\_mttm}\, M \ \wedge\ |\Gamma_M| \geq 4
+      \ \Longrightarrow\ {} \\
+    &\quad \forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
+    &\qquad \bigl(\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w \in L(M'')\bigr) \\
+    &\qquad\quad = \bigl(w \in L(M)\bigr).
+  \end{aligned}
+\]
+The correctness core, stated as an equivalence between two membership
+facts.  Note the upgrade from \texttt{valid\_mttm} to
+\texttt{well\_formed\_mttm}: the simulation needs the start state to be
+a genuine pre-halt state and the endmarker to be distinguishable from
+the blank.  The guard $\mathrm{set}\, w \subseteq \Sigma_M$ restricts
+attention to genuine input words, and $\mathrm{encode\_input\_ar}$ is
+the translation under which the two languages coincide.  The forward
+inclusion ($\Rightarrow$) is available separately as
+\texttt{alphabet\_reduce\_language\_forward}; this theorem strengthens
+it to the equivalence.
+
+\paragraph{\texttt{alphabet\_reduce\_time\_explicit} and
+  \texttt{alphabet\_reduce\_time}.}
+Write $k$ for the number of tapes of $M$ and
+$b = \mathrm{block\_width}(\Gamma_M) = \lceil \log_2 |\Gamma_M| \rceil$
+for the per-symbol block width.  Under
+$\mathrm{well\_formed\_mttm}\, M \wedge |\Gamma_M| \geq 4$,
+\[
+  \begin{aligned}
+    &\forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
+    &\quad \mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \mathrm{accepts\_in\_time\_mttm}\, M''\, \\
+    &\qquad (\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w)\,
+      \bigl((6k + 1)\,b\,T(|w|)\bigr).
+  \end{aligned}
+\]
+Linear-time slowdown with an \emph{explicit} constant.  The factor is
+the single number $(6k + 1)\,b$ multiplying the running time, with no
+additive and no linear-in-$|w|$ term.  It comes from an exact per-step
+super-step count of $k(5b + 2) + 2$, folded up to $(6k + 1)\,b$ using
+$b \geq 2$ (which holds because $|\Gamma_M| \geq 4$) and tight at
+$b = 2$, i.e.\ $|\Gamma_M| = 4$.  The crux is that this constant is
+bound \emph{once, outside the $\forall w$}: it depends only on $M$ (its
+tape count, and logarithmically its alphabet size), so the slowdown is
+uniform across all inputs rather than tuned per input.  The classical
+existential form
+$\exists d, e, f, b \geq 1.\ d\,b\,T(|w|) + e\,b\,|w| + f$ is the
+\texttt{obtains}-corollary \texttt{alphabet\_reduce\_time}, hiding the
+explicit constants behind existentials instantiated at $d = 6k + 1$ and
+$e = f = 0$.
+
+\paragraph{\texttt{alphabet\_reduce\_det}.}
+\[
+  \mathrm{valid\_mttm}\, M \ \wedge\ \mathrm{det\_mttm}\, M
+  \ \Longrightarrow\ \mathrm{det\_mttm}\, M''.
+\]
+Determinism preservation.  It needs \emph{both} \texttt{valid\_mttm}
+and \texttt{det\_mttm}: functionality of the reduced transition
+relation follows from functionality of the source only because
+validity pins the transition typing on which the per-substep
+transitions of $M''$ are built.  The proof factors through one
+functionality lemma per substep (read, compute, write, advance, next).
+
+\newpage
+
+% Isabelle's auto-generated session.tex contains the correct
+% \input{} sequence from this session's ROOT `theories` block.
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

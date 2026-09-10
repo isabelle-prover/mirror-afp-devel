@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL - Archive of Formal Proofs</title>
+    <meta name="description" content="First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:description" content="First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the Archive of Formal Proofs">
+    <meta property="og:title" content="First-Order Methods for Smooth Convex Optimization in Isabelle/HOL">
+    <meta property="og:url" content="https://isa-afp.org/entries/Projected_Gradient_Descent.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>irst-<span class='first'>O</span>rder <span class='first'>M</span>ethods for <span class='first'>S</span>mooth <span class='first'>C</span>onvex <span class='first'>O</span>ptimization in <span class='first'>I</span>sabelle/<span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>
+  </h1>
+  <div>
+      <p><a href="../authors/lyu/">Feier Lyu</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZlaWVyNTMwIl0sImhvc3QiOlsiaWNsb3VkIiwiY29tIl19">📧</a>
+      </p>
+      <p class="date">July 2, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry develops reusable Isabelle/HOL infrastructure for first-order methods in smooth convex optimization. The central application is projected-gradient descent, but the development is organized around general-purpose interfaces for gradients, first-order convexity certificates, smooth quadratic upper bounds, descent and telescoping arguments, projection geometry, projected-gradient mappings, residual certificates, strong convexity, and linear convergence rates. The main purpose of the entry is not only to formalize a single convergence proof, but to separate the analytic, geometric, and algorithmic components of first-order convergence arguments into reusable Isabelle/HOL layers. The resulting library can be used as a basis for future formalizations of constrained first-order optimization methods.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Generative AI tools, including ChatGPT and Codex, were used during the development process for brainstorming, proof-engineering assistance, code-organization suggestions, documentation drafting, and final sanity checks. All definitions, theorem statements, proofs, and documentation were reviewed, edited, and mechanically checked by the author, who takes full responsibility for the content of the submission.
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/algorithms/optimization/">Computer science/Algorithms/Optimization</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>A. Beck. First-Order Methods in Optimization. SIAM, 2017.</li>
+        <li>D. P. Bertsekas. Nonlinear Programming. Athena Scientific, 1999.</li>
+        <li>D. Bryant. Unconstrained Optimization. Archive of Formal Proofs, 2025.</li>
+        <li>Y. Nesterov. Introductory Lectures on Convex Optimization: A Basic Course. Kluwer Academic Publishers, 2004.</li>
+      </ul>
+      <h3>Session Projected_Gradient_Descent</h3>
+      <ul>
+          <li><a href="../thys/Projected_Gradient_Descent/Gradient_Preliminaries.html">Gradient_Preliminaries</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Convex_Differentiable.html">Convex_Differentiable</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Smooth_Convex.html">Smooth_Convex</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Abstract_Descent.html">Abstract_Descent</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Gradient_Descent.html">Gradient_Descent</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Gradient_Descent_Rates.html">Gradient_Descent_Rates</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Gradient_Descent_Convergence.html">Gradient_Descent_Convergence</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projection_Geometry.html">Projection_Geometry</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projection_Optimization.html">Projection_Optimization</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Convergence.html">Projected_Gradient_Descent_Convergence</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Mapping.html">Projected_Gradient_Mapping</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Mapping_Rates.html">Projected_Gradient_Mapping_Rates</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Residual_Convergence.html">Projected_Gradient_Descent_Residual_Convergence</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Strong_Convex.html">Strong_Convex</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Linear_Rate.html">Projected_Gradient_Descent_Linear_Rate</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Lipschitz_Smoothness.html">Lipschitz_Smoothness</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Examples_Quadratic.html">Examples_Quadratic</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Examples_Projected_Quadratic.html">Examples_Projected_Quadratic</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Main_Results.html">Main_Results</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Examples_Using_Main_Results.html">Examples_Using_Main_Results</a></li>
+          <li><a href="../thys/Projected_Gradient_Descent/Projected_Gradient_Descent.html">Projected_Gradient_Descent</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Projected_Gradient_Descent/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Projected_Gradient_Descent/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Projected_Gradient_Descent/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Projected_Gradient_Descent-AFP</p>
+        <pre id="copy-text">@article{Projected_Gradient_Descent-AFP,
+  author  = {Feier Lyu},
+  title   = {First-Order Methods for Smooth Convex Optimization in Isabelle/HOL},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Projected_Gradient_Descent.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Projected_Gradient_Descent-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

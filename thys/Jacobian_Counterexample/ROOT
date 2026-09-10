@@ -1,0 +1,9 @@
+chapter AFP
+
+session Jacobian_Counterexample = "HOL-Analysis" +
+  options [document = pdf, timeout = 600]
+  theories
+    Jacobian_Counterexample
+  document_files
+    "root.tex"
+    "root.bib"

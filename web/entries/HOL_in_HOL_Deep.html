@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>A deep embedding of HOL in HOL: soundness, completeness, consistency - Archive of Formal Proofs</title>
+    <meta name="description" content="A deep embedding of HOL in HOL: soundness, completeness, consistency in the Archive of Formal Proofs">
+    <meta property="og:description" content="A deep embedding of HOL in HOL: soundness, completeness, consistency in the Archive of Formal Proofs">
+    <meta property="og:title" content="A deep embedding of HOL in HOL: soundness, completeness, consistency">
+    <meta property="og:url" content="https://isa-afp.org/entries/HOL_in_HOL_Deep.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>A</span> deep embedding of <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span> in <span class='first'>H</span><span class='first'>O</span><span class='first'>L</span>: soundness, completeness, consistency
+  </h1>
+  <div>
+      <p><a href="../authors/benzmueller/">Christoph Benzmüller</a> <a class="obfuscated" data="eyJ1c2VyIjpbImMiLCJiZW56bXVlbGxlciJdLCJob3N0IjpbImdtYWlsIiwiY29tIl19">📧</a> and <a href="../authors/kirchner/">Daniel Kirchner</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRhbmllbCJdLCJob3N0IjpbImVrcHlyb24iLCJvcmciXX0=">📧</a>
+      </p>
+      <p class="date">August 5, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process"><p>This entry presents a minimal, machine-checked deep embedding of
+classical higher-order logic (HOL) in Isabelle/HOL, following the
+article <a href="https://doi.org/10.2178/jsl/1102022211"><em>Higher-Order
+Semantics and Extensionality</em></a> by Benzmüller, Brown and Kohlhase
+(Journal of Symbolic Logic 69(4), 2004; henceforth BKK). Throughout,
+HOL means Church's simple theory of types: it is the embedded
+<em>object</em> logic, while Isabelle/HOL serves as the ambient
+meta-logic. The language is formalised in a <em>locally nameless</em>
+representation, which makes BKK's convention of identifying
+α-equivalent terms literally true and eliminates capture-avoiding
+substitution and renaming machinery altogether. The semantics is
+rendered abstractly, following BKK: applicative structures,
+Σ-evaluations (D, @, E) subject to BKK's four conditions on the
+evaluation function, Σ-models (D, @, E, υ), and the class
+M<sub>βfb</sub> of Σ-Henkin models (BKK's property q is automatic here,
+since primitive equality is part of the signature). Standard models
+arise as the full special case, and the familiar recursive denotation
+over frames enters only as the canonical way of constructing concrete
+models.</p>
+
+<p>On this basis we prove the natural-deduction calculus NK of BKK
+sound (including BKK's evaluation-variant argument) and complete in the
+sense of Henkin, via BKK's abstract-consistency and model-existence
+method, with the term model realised as a term evaluation. Completeness
+is established in a form stronger than BKK's: it holds at every
+infinite value carrier, for every signature with infinitely many
+parameters, and for open formulas. Consistency follows by exhibiting a
+concrete Σ-standard model over finite domains. The signature includes
+BKK's optional primitive equality and — going beyond BKK, following
+Andrews' <em>General Models, Descriptions, and Choice in Type
+Theory</em> (1972) — typed description operators. As an illustration,
+Cantor's theorem is derived <em>inside</em> NK, in surjective and
+injective form and at every type. To the best of our knowledge, this is
+the first machine-checked completeness proof for a deep embedding of
+HOL in HOL. This contribution is part of the
+<a href="https://logikey.org">LogiKEy</a> project.</p></div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Parts of this formalisation and its documentation were drafted interactively with a generative AI assistant (Anthropic's Claude), used under continuous human direction. All proofs are machine-checked by Isabelle; the entire development, including all comments and references, was subsequently reviewed, revised and simplified by the authors, who take full responsibility for its content.
+
+
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs/">Logic/General logic/Mechanization of proofs</a></li>
+          <li><a href="../topics/logic/general-logic/">Logic/General logic</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Benzmüller, C., Brown, C. E., & Kohlhase, M. (2004). Higher-order semantics and extensionality. Journal of Symbolic Logic, 69(4), 1027–1088. <a href="https://doi.org/10.2178/jsl/1102022211">https://doi.org/10.2178/jsl/1102022211</a>
+</li>
+      </ul>
+      <h3>Session HOL_in_HOL_Deep</h3>
+      <ul>
+          <li><a href="../thys/HOL_in_HOL_Deep/Syntax.html">Syntax</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Semantics.html">Semantics</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Calculus.html">Calculus</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Soundness.html">Soundness</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Completeness.html">Completeness</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Consistency.html">Consistency</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Cantor.html">Cantor</a></li>
+          <li><a href="../thys/HOL_in_HOL_Deep/Main_Results.html">Main_Results</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/HOL_in_HOL_Deep/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/HOL_in_HOL_Deep/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/HOL_in_HOL_Deep/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">HOL_in_HOL_Deep-AFP</p>
+        <pre id="copy-text">@article{HOL_in_HOL_Deep-AFP,
+  author  = {Christoph Benzmüller and Daniel Kirchner},
+  title   = {A deep embedding of HOL in HOL: soundness, completeness, consistency},
+  journal = {Archive of Formal Proofs},
+  month   = {August},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/HOL_in_HOL_Deep.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-HOL_in_HOL_Deep-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

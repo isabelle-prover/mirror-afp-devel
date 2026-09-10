@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture - Archive of Formal Proofs</title>
+    <meta name="description" content="Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the Archive of Formal Proofs">
+    <meta property="og:description" content="Formal Verification of an Explicit Counterexample to the Jacobian Conjecture in the Archive of Formal Proofs">
+    <meta property="og:title" content="Formal Verification of an Explicit Counterexample to the Jacobian Conjecture">
+    <meta property="og:url" content="https://isa-afp.org/entries/Jacobian_Counterexample.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>F</span>ormal <span class='first'>V</span>erification of an <span class='first'>E</span>xplicit <span class='first'>C</span>ounterexample to the <span class='first'>J</span>acobian <span class='first'>C</span>onjecture
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">July 20, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">The Jacobian conjecture asks whether a polynomial self-map of affine space over a field of characteristic zero has a polynomial inverse whenever its Jacobian determinant is a nonzero constant. This entry gives an independent Isabelle/HOL verification of the explicit three-dimensional map announced by Levent Alpöge on July 20, 2026. The announcement credits Akhil Mathew with prompting the question and the AI system Claude Fable with work leading to the map; stable Lean and independent verification repositories appeared the same day.
+
+Isabelle proves that the formal Jacobian entries are the corresponding complex analytic partial derivatives and that the determinant is identically \(-2\). It verifies that three distinct rational points have the same image. Scaling the first output coordinate yields determinant exactly \(1\) while preserving noninjectivity. The theory defines polynomial invertibility and proves that the map has no polynomial inverse. It also constructs identity-padded polynomial maps, proves their block-Jacobian determinant is unchanged, and thereby obtains counterexamples in every finite dimension at least three. The development makes no claim about the two-dimensional conjecture.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/algebra/">Mathematics/Algebra</a></li>
+          <li><a href="../topics/mathematics/analysis/">Mathematics/Analysis</a></li>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs/">Logic/General logic/Mechanization of proofs</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Keller, O.-H. (1939). Ganze Cremona-Transformationen. Monatshefte Für Mathematik Und Physik, 47(1), 299–306. https://doi.org/10.1007/bf01695502
+</li>
+        <li>van den Essen, A. (2000). Polynomial Automorphisms (, Ed.). Birkhäuser Basel. <a href="https://doi.org/10.1007/978-3-0348-8440-2">https://doi.org/10.1007/978-3-0348-8440-2</a>
+</li>
+      </ul>
+      <h3>Session Jacobian_Counterexample</h3>
+      <ul>
+          <li><a href="../thys/Jacobian_Counterexample/Jacobian_Counterexample.html">Jacobian_Counterexample</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Jacobian_Counterexample/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Jacobian_Counterexample/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Jacobian_Counterexample/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Jacobian_Counterexample-AFP</p>
+        <pre id="copy-text">@article{Jacobian_Counterexample-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Formal Verification of an Explicit Counterexample to the Jacobian Conjecture},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Jacobian_Counterexample.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Jacobian_Counterexample-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

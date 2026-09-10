@@ -1147,7 +1147,10 @@ object AFP_Submit {
           render_archive(submission.archive) :::
           download_link(paths.api_route(API.SUBMISSION_DOWNLOAD, List(ID.print -> submission.id)),
             text("metadata patch")) ::
-          text(" (apply with: 'patch -p0 < FILE')")) :::
+          text(" (apply with: 'patch -p0 < FILE') ") :::
+          render_if(submission.build == Model.Build.Success,
+            link((Path.root + Path.make(List("browser_info", submission.id, "AFP"))).implode,
+              text("HTML/PDF")))) :::
         render_if(mode == Mode.SUBMISSION, par(
           hidden(MESSAGE, submission.message) ::
           text("Comment: " + submission.message))) :::

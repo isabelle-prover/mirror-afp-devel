@@ -1,0 +1,38 @@
+title = "First-Order Methods for Smooth Convex Optimization in Isabelle/HOL"
+date = 2026-07-02
+topics = [
+  "Computer science/Algorithms/Optimization",
+  "Mathematics/Analysis",
+]
+abstract = "This entry develops reusable Isabelle/HOL infrastructure for first-order methods in smooth convex optimization. The central application is projected-gradient descent, but the development is organized around general-purpose interfaces for gradients, first-order convexity certificates, smooth quadratic upper bounds, descent and telescoping arguments, projection geometry, projected-gradient mappings, residual certificates, strong convexity, and linear convergence rates. The main purpose of the entry is not only to formalize a single convergence proof, but to separate the analytic, geometric, and algorithmic components of first-order convergence arguments into reusable Isabelle/HOL layers. The resulting library can be used as a basis for future formalizations of constrained first-order optimization methods."
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI tools, including ChatGPT and Codex, were used during the development process for brainstorming, proof-engineering assistance, code-organization suggestions, documentation drafting, and final sanity checks. All definitions, theorem statements, proofs, and documentation were reviewed, edited, and mechanically checked by the author, who takes full responsibility for the content of the submission.
+
+
+
+"""
+
+[authors]
+
+[authors.lyu]
+email = "lyu_email"
+
+[contributors]
+
+[notify]
+lyu = "lyu_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = [
+  "A. Beck. First-Order Methods in Optimization. SIAM, 2017.",
+  "D. P. Bertsekas. Nonlinear Programming. Athena Scientific, 1999.",
+  "D. Bryant. Unconstrained Optimization. Archive of Formal Proofs, 2025.",
+  "Y. Nesterov. Introductory Lectures on Convex Optimization: A Basic Course. Kluwer Academic Publishers, 2004.",
+]

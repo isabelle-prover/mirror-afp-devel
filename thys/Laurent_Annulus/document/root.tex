@@ -1,0 +1,47 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[utf8x]{inputenc}
+\usepackage[LGR,T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+\usepackage{wasysym}
+\usepackage[english]{babel}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Laurent Series Expansions on an Annulus}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+This entry shows an important basic fact in complex analysis, namely that a complex-valued function $f$ holomorphic on an open annulus 
+$\{z \mid 0\leq r < \Vert z - z_0\Vert \leq R\}$ has a (generalised) Laurent series expansion of the form
+  \[f(z) = \sum_{n=-\infty}^\infty a_n (z - z_0)^n\]
+that is valid on the entire annulus.
+
+An important special case that is also developed is $r = 0$, i.e.\ the local behaviour of a function around an isolated singularity.
+For non-essential singularities, this reduces to the well-known simpler Laurent series expansions from \texttt{HOL-Complex\_Analysis} of
+  the form $$\sum_{n=n_0}^\infty a_n (z-z_0)^n. $$
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+%\raggedright
+%\bibliographystyle{abbrv}
+%\bibliography{root}
+
+\end{document}
+

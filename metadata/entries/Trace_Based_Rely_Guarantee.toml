@@ -1,0 +1,35 @@
+title = "Trace Based Semantics for Rely Guarantee"
+date = 2026-08-11
+topics = [
+  "Computer science/Concurrency",
+  "Computer science/Semantics and reasoning",
+]
+abstract = "We formalize a trace-based Rely-Guarantee semantics based on the work of Xu et al. The foundation includes an abstract Sequential/While/Parallel programming language equipped with operational semantics designed for concurrent reasoning. Upon this, we build a reasoning infrastructure that includes Rely-Guarantee inversion rules, alongside abstract definitions and standard soundness proofs for both unary and binary settings."
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.hadjikosti]
+
+[authors.popescu]
+email = "popescu_email"
+
+[authors.wright]
+email = "wright_email"
+
+[contributors]
+
+[notify]
+wright = "wright_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-3-032-22720-1_9",
+]
+pubs = []

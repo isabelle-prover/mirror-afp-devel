@@ -1,0 +1,167 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Miquel's Theorem in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+We formalize Miquel's theorem, also known as the pivot theorem, in
+Isabelle/HOL.  Let \(ABC\) be a
+triangle in the Euclidean plane and let \(P\), \(Q\), \(R\) be points on the
+side lines \(BC\), \(CA\), \(AB\) respectively.  Then the circumcircles of the
+three triangles \(AQR\), \(BRP\), \(CPQ\) pass through a common point \(M\),
+the \emph{Miquel point} of the configuration.
+
+The development uses complex coordinates.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Miquel's theorem is a classical incidence result about a triangle and three
+points chosen on its side lines~\cite{miquel1838,johnson1929,coxeter1967}.
+Given a triangle \(ABC\) and points \(P\), \(Q\), \(R\) on the lines \(BC\),
+\(CA\), \(AB\), the three circumcircles of \(AQR\), \(BRP\) and \(CPQ\) are
+concurrent.  Their common point \(M\) is the Miquel point, and the theorem is
+sometimes called the pivot theorem because \(M\) is the centre of the spiral
+similarity that pivots the configuration.
+
+Our formalization works in the complex plane.  It reuses the shared circle,
+line, collinearity, and cross-ratio interface from the published Wallace--Simson
+entry~\cite{Simson-AFP}, which in turn builds on the published \emph{Complex
+Geometry} development~\cite{Complex_Geometry-AFP}.  Reducing the incidence
+statement to complex algebra then turns the theorem into a short computation.
+
+\section{The cross-ratio criterion}
+
+Four complex numbers \(a\), \(b\), \(c\), \(d\) have cross ratio
+\[
+  (a,b;c,d) = \frac{(a-c)\,(b-d)}{(a-d)\,(b-c)}.
+\]
+The criterion we use is that, for four suitably distinct points, being
+concyclic or collinear is equivalent to the cross ratio being real.  We only
+need the concyclic case, in both directions.
+
+For the forward direction, if \(a\), \(b\), \(c\), \(d\) lie on a circle of
+centre \(o\) and radius \(R>0\), then each point satisfies
+\(\overline{z-o} = R^{2}/(z-o)\).  Substituting this into the conjugate of the
+cross ratio and simplifying, every factor \(R^{2}\) and every factor
+\((z-o)\) cancels, leaving the cross ratio itself.  Hence the cross ratio
+equals its own conjugate and is real.
+
+For the converse, suppose \(c\), \(p\), \(q\) lie on the circle of centre
+\(o\) and radius \(R\), and that the cross ratio of a fourth point \(m\) with
+them is real.  Writing \(M = m-o\) and using the same conjugate substitution
+for \(c\), \(p\), \(q\), the reality of the cross ratio simplifies to
+\[
+  (K - P)\,\bigl(M\,\overline{M} - R^{2}\bigr) = 0,
+\]
+where \(P = p-o\) and \(K = q-o\).  Since \(p \neq q\) we have \(K \neq P\),
+so \(M\,\overline{M} = R^{2}\), that is \(\lvert m-o\rvert = R\) and \(m\) lies
+on the same circle.
+
+\section{The pivot theorem}
+
+Let \(M\) be a common point of the circumcircles of \(AQR\) and \(BRP\).  By
+the forward criterion the cross ratios \((m,a;q,r)\) and \((m,b;r,p)\) are
+real.  A direct computation shows
+\[
+  (m,a;q,r)\,(m,b;r,p)\,(m,c;p,q)
+    = \frac{(a-r)\,(b-p)\,(c-q)}{(a-q)\,(b-r)\,(c-p)},
+\]
+the point \(m\) cancelling completely.  The right-hand side factors as
+\[
+  \frac{a-r}{b-r}\cdot\frac{b-p}{c-p}\cdot\frac{c-q}{a-q},
+\]
+and each of the three ratios is real because \(R\) lies on line \(AB\), \(P\)
+on line \(BC\), and \(Q\) on line \(CA\).  Therefore \((m,c;p,q)\) is real,
+and by the converse criterion \(M\) lies on the circumcircle of \(CPQ\).  The
+three circumcircles are thus concurrent at \(M\).
+
+\section{Existence of the circumscribed circle}
+
+The converse criterion needs the circle through \(C\), \(P\), \(Q\) to exist.
+Rather than assuming it, we construct it whenever the three points are not
+collinear.  Working relative to \(a\), set \(u = b-a\) and \(v = c-a\) and
+\[
+  D = \overline{u}\,v - u\,\overline{v}.
+\]
+A short conjugation calculation shows \(D = 2\,\mathrm{Im}(\overline{u}\,v)\,i\),
+so \(D\) is purely imaginary and \(D \neq 0\) is exactly the non-collinearity
+of \(a\), \(b\), \(c\).  The point
+\[
+  o = a + w, \qquad w = \frac{u\,v\,\overline{(u-v)}}{D},
+\]
+then satisfies \(\lvert a-o\rvert = \lvert b-o\rvert = \lvert c-o\rvert
+= \lvert w\rvert > 0\); indeed \(\overline{w} = \overline{u}\,\overline{v}
+\,(v-u)/D\), and the equalities follow from the two identities
+\(w\,\overline{u} + \overline{w}\,u = u\,\overline{u}\) and
+\(w\,\overline{v} + \overline{w}\,v = v\,\overline{v}\).  Thus any three
+non-collinear points are concyclic.
+
+To apply this to \(C\), \(P\), \(Q\) we note that, with \(P\) on line \(BC\)
+and \(Q\) on line \(CA\), the cross product \(\mathrm{Im}(\overline{(P-C)}
+\,(Q-C))\) is a nonzero real multiple of \(\mathrm{Im}(\overline{(B-C)}
+\,(A-C))\); the latter is nonzero because \(ABC\) is nondegenerate.  Hence
+\(C\), \(P\), \(Q\) are non-collinear and their circumcircle exists.  The same
+computation shows \(P \neq Q\), which the converse criterion also requires.
+
+\section{Concurrency: constructing the Miquel point}
+
+The pivot theorem assumes a point \(M\) already on two of the circumcircles.
+The classical statement instead asserts that such a point \emph{exists}: the
+three circumcircles are concurrent.  We prove this by constructing \(M\).
+
+The circumcircles of \(AQR\) and \(BRP\), with centres \(o_1\) and \(o_2\),
+both pass through \(R\).  Two distinct circles meet in at most two points, and
+those points are symmetric about the line \(o_1 o_2\).  We therefore take
+\(M\) to be the reflection of \(R\) in that line,
+\[
+  M = o_1 + \frac{(o_2-o_1)\,\overline{(R-o_1)}}{\overline{(o_2-o_1)}}.
+\]
+Reflection in the line through \(o_1\) and \(o_2\) is an isometry that fixes
+both centres, so \(\lvert M-o_1\rvert = \lvert R-o_1\rvert\) and
+\(\lvert M-o_2\rvert = \lvert R-o_2\rvert\); as \(R\) lies on both circles, so
+does \(M\).  When \(R\) is not on the line \(o_1 o_2\) --- that is, the two
+circles are not tangent at \(R\) --- the reflection is genuinely distinct from
+\(R\), and the pivot theorem places \(M\) on the third circumcircle as well.
+Should \(M\) happen to coincide with \(P\) or \(Q\), concurrency is immediate
+because \(C\), \(P\), \(Q\) are non-collinear and hence concyclic.  Thus the
+three circumcircles share the common point \(M\).
+
+\section{Formalization notes}
+
+The development provides both forms.  The pivot theorem
+\isa{miquel{\isacharunderscore}pivot} takes a point on two circumcircles and
+places it on the third.  The concurrency theorem
+\isa{miquel{\isacharunderscore}concurrent} assumes no common point: it exhibits
+the Miquel point as the reflection above and shows it lies on all three
+circles, and the corollary \isa{miquel{\isacharunderscore}point{\isacharunderscore}exists}
+states the pure existence form.  The only structural hypothesis is that
+\(A\), \(B\), \(C\) are not collinear; from this the circumcircle of \(CPQ\) is
+constructed rather than assumed, and \(P \neq Q\) is derived.  The concurrency
+form additionally assumes the two circumcircles are not tangent at \(R\)
+(equivalently, \(R\) is not on the line through their centres), which is
+exactly the condition for a genuine second intersection.  The remaining
+hypotheses are the three side-line conditions and general-position
+distinctness of the points involved, which guarantees that the cross ratios
+are defined and nonzero.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

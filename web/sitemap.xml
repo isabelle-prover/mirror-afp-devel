@@ -3,18 +3,54 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
+    <lastmod>2026-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/</loc>
+    <lastmod>2026-08-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Laurent_Annulus.html</loc>
+    <lastmod>2026-08-22T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Actuarial_Mathematics.html</loc>
     <lastmod>2026-08-20T00:00:00+00:00</lastmod>
   </url><url>
-    <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-08-20T00:00:00+00:00</lastmod>
+    <loc>https://isa-afp.org/entries/Miquel.html</loc>
+    <lastmod>2026-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</loc>
+    <lastmod>2026-08-11T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</loc>
+    <lastmod>2026-08-05T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Q0_Completeness.html</loc>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Simson.html</loc>
+    <lastmod>2026-08-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</loc>
+    <lastmod>2026-07-22T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Jacobian_Counterexample.html</loc>
+    <lastmod>2026-07-20T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Right_Forward_Closures.html</loc>
     <lastmod>2026-07-17T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Equality_Saturation_Checker.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html</loc>
+    <lastmod>2026-07-14T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Multitape_TM_Substrate.html</loc>
     <lastmod>2026-07-14T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/MSOinHOL.html</loc>
@@ -52,6 +88,12 @@
   </url><url>
     <loc>https://isa-afp.org/entries/Incomplete_Gamma.html</loc>
     <lastmod>2026-07-03T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Projected_Gradient_Descent.html</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/Fundamental_Group_Circle.html</loc>
+    <lastmod>2026-07-02T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Conway_Circle.html</loc>
     <lastmod>2026-06-27T00:00:00+00:00</lastmod>
@@ -3527,6 +3569,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/schlichtkrull/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/salamon/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/platzer/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/lattuada/</loc>
@@ -4804,8 +4848,6 @@
     <loc>https://isa-afp.org/thys/Automated_Stateful_Protocol_Verification/KeyserverEx.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Automated_Stateful_Protocol_Verification/manual.html</loc>
-  </url><url>
-    <loc>https://isa-afp.org/thys/Automated_Stateful_Protocol_Verification/ml_yacc_lib.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Automated_Stateful_Protocol_Verification/PKCS_Model03.html</loc>
   </url><url>
@@ -6812,8 +6854,6 @@
     <loc>https://isa-afp.org/thys/Combinatorial_Nullstellensatz/Combinatorial_Nullstellensatz.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Combinatorial_Q_Analogues/Euler_Function.html</loc>
-  </url><url>
-    <loc>https://isa-afp.org/thys/Combinatorial_Q_Analogues/More_Infinite_Products.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Combinatorial_Q_Analogues/Primitive_Roots.html</loc>
   </url><url>
@@ -9087,6 +9127,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/vytiniotis/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Dinitz_Garg_Goemans_Counterexample/Dinitz_Garg_Goemans_Counterexample.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Diophantine_Eqns_Lin_Hom/Algorithm.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Diophantine_Eqns_Lin_Hom/Linear_Diophantine_Equations.html</loc>
@@ -9598,6 +9640,8 @@
     <loc>https://isa-afp.org/thys/Elliptic_Functions/Weierstrass_Addition.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Elliptic_Functions/Weierstrass_Elliptic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Elliptic_Functions/Weierstrass_Sigma_Zeta.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Elliptic_Functions/Z_Plane_Q_Disc.html</loc>
   </url><url>
@@ -10373,6 +10417,8 @@
   </url><url>
     <loc>https://isa-afp.org/thys/First_Order_Terms/Fun_More2.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/First_Order_Terms/List_More2.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/First_Order_Terms/Lists_are_Infinite.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/First_Order_Terms/Matching.html</loc>
@@ -11090,6 +11136,8 @@
     <loc>https://isa-afp.org/thys/Functional-Automata/RegExp2NAe.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Functional-Automata/RegSet_of_nat_DA.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Fundamental_Group_Circle/Fundamental_Group_Circle.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/FunWithFunctions/FunWithFunctions.html</loc>
   </url><url>
@@ -12059,6 +12107,22 @@
   </url><url>
     <loc>https://isa-afp.org/thys/HoareForDivergence/WhileLangLemmas.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Calculus.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Cantor.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Completeness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Consistency.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Soundness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL_in_HOL_Deep/Syntax.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/HOL-Algebra/AbelCoset.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Algebra/Algebra.html</loc>
@@ -12132,6 +12196,8 @@
     <loc>https://isa-afp.org/thys/HOL-Algebra/QuotRing.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Algebra/README.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL-Algebra/Residues_Algebra.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-Algebra/Ring.html</loc>
   </url><url>
@@ -13911,6 +13977,26 @@
   </url><url>
     <loc>https://isa-afp.org/thys/HOL-ZF/Zet.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Arith_Real_Rewrites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Arith_Rewrites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Arith_Rewrites_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Boolean_Rewrites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Boolean_Rewrites_Lemmas.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Builtin_Rewrites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_cvc5_Rewrites.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Rare_Interface.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_Rare_Nary_Ops.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/Alethe_UF_Rewrites.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/HOL/Archimedean_Field.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/Argo.html</loc>
@@ -14108,6 +14194,10 @@
     <loc>https://isa-afp.org/thys/HOL/Sledgehammer.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/SMT.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/SMT_CVC.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/HOL/SMT_CVC_Real.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/HOL/String.html</loc>
   </url><url>
@@ -15631,6 +15721,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/fosterj/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Jacobian_Counterexample/Jacobian_Counterexample.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Jacobson_Basic_Algebra/Group_Theory.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Jacobson_Basic_Algebra/Ring_Theory.html</loc>
@@ -17029,6 +17121,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/guzman/</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Laurent_Annulus/Laurent_Annulus.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/leustean/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/paulson/</loc>
@@ -17777,6 +17871,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/spichkova/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/hadjikosti/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/fernandezm/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/cousin/</loc>
@@ -18223,6 +18319,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/rawson/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/wehar/</loc>
+  </url><url>
     <loc>https://isa-afp.org/authors/hirata/</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/pagano/</loc>
@@ -18298,6 +18396,8 @@
     <loc>https://isa-afp.org/thys/Minsky_Machines/Minsky.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Minsky_Machines/Recursive_Inseparability.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Miquel/Miquel.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/spasic/</loc>
   </url><url>
@@ -18850,6 +18950,106 @@
     <loc>https://isa-afp.org/thys/Multiset_Ordering_NPC/Propositional_Formula.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Multiset_Ordering_NPC/RPO_NP_Hard.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Acceptance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_BufferArith.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Codec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ComputeCorrect.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Defs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Delta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardCells.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardStage.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ForwardStep.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_OutputWF.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Pack.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Reverse.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Simulation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_SS4.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Substeps.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Uniqueness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ValidationBound.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_ValidationStep.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/AlphabetEnlargement_Window.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Base.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Canonical.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Convention.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Defs.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Encoder.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Forcing.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Language.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Reset.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Run.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Speedup.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Enlargement/Wrap_Time.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Codec.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Delta.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Determinism.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Forward.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardAdvance.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardRead.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardSubsteps.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_ForwardWrite.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Reverse.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Simulation.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Stage.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Reduction/AlphabetReduction_Theorems.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_Alphabet_Roundtrip/AlphabetRoundtrip.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Finite_Control.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Finite_Patch.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Origin_Float.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Substrate.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Substrate_Core.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Multitape_TM_Substrate/Multitape_Time_Convention.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Multitape_To_Singletape_TM/Multi_Single_TM_Translation.html</loc>
   </url><url>
@@ -21015,6 +21215,48 @@
   </url><url>
     <loc>https://isa-afp.org/thys/Progress_Tracking/Propagate.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Abstract_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Convex_Differentiable.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Projected_Quadratic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Quadratic.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Examples_Using_Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Descent_Rates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Gradient_Preliminaries.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Lipschitz_Smoothness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Main_Results.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Linear_Rate.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Descent_Residual_Convergence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Mapping.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projected_Gradient_Mapping_Rates.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projection_Geometry.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Projection_Optimization.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Smooth_Convex.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Projected_Gradient_Descent/Strong_Convex.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Projective_Geometry/Desargues_2D.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Projective_Geometry/Desargues_3D.html</loc>
@@ -21386,6 +21628,16 @@
     <loc>https://isa-afp.org/thys/Pushdown_Systems/PDS.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Pushdown_Systems/PDS_Code.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Consistency_Property.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Constant_Substitution.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Derivational_Consistency.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Model_Existence.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Q0_Completeness/Q0_Completeness.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Q0_Metatheory/Boolean_Algebra.html</loc>
   </url><url>
@@ -23436,6 +23688,10 @@
   </url><url>
     <loc>https://isa-afp.org/thys/SimplifiedOntologicalArgument/UFilterVariant.html</loc>
   </url><url>
+    <loc>https://isa-afp.org/thys/Simson/Simson.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Simson/Simson_Complex_Geometry.html</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/Skew_Heap/Skew_Heap.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Skip_Lists/Geometric_PMF.html</loc>
@@ -24717,6 +24973,22 @@
     <loc>https://isa-afp.org/thys/TortoiseHare/TortoiseHare.html</loc>
   </url><url>
     <loc>https://isa-afp.org/authors/nishihara/</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/Prelim.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Abstract.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Abstract_Binary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Inversion_Rules.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Semantics.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Soundness.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/RG_Soundness_Binary.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/Trace_Based_Rely_Guarantee/Sequential_Par_While_Language.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Transcendence_Series_Hancl_Rucki/Transcendence_Series.html</loc>
   </url><url>
