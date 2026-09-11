@@ -1,0 +1,12 @@
+chapter AFP
+
+session Dilworth_Countable = Prop_Compactness +
+  options [timeout = 300]
+
+  theories
+    "Koenig_Egervary_finite"
+    "Dilworth_Finite"
+    "DilworthCountable"
+
+  document_files
+    "root.tex"

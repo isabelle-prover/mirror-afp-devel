@@ -1,0 +1,235 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+\newtheorem{definition}{Definition}
+\newtheorem{lemma}{Lemma}
+\newtheorem{teorema}{Theorem}
+
+
+\begin{document}
+
+\title{Countable Infinite Version of Dilworth's Theorem}
+\author{Fabián Fernando Serrano Suárez$^\dag$,  Thaynara Arielly de Lima$^\star$, \\
+Mauricio Ayala-Rincón$^{\star,\ddag}$\\[2mm]
+\mbox{}$^\dag$ Universidad Nacional de Colombia - 
+Sede Manizales, Colombia \\[1mm]
+\mbox{}$^\ddag$Universidade de Brasília, Brasília D.F., Brazil\\[1mm]
+\mbox{}$^\star$Universidade Federal de Goiás, Goiânia, Brazil 
+ }
+
+\maketitle
+
+
+\begin{abstract}
+Dilworth's Theorem states that in any finite partially ordered set, the size of a
+largest antichain equals the minimum number of chains needed to cover the set. We report a complete, machine-checked formalization of Dilworth's Theorem and of
+its extension to countable partial orders of finite width in the Isabelle/HOL proof assistant.
+The finite case is obtained from a formalization of the K\"onig--Egerv\'ary Theorem on the construction of a bipartite digraph associated with the partial order. For finite width, the countable case reduces to the finite one through a compactness argument: the incomparability graph of the partial order is shown to be $k$-colorable whenever every finite induced subgraph is, by appealing to a formalization of the De Bruijn--Erd\H{o}s coloring theorem, itself a consequence of the compactness of propositional logic. We
+describe the formal statements, the central definitions, and the two top-level theorems together with their Isar proofs. This development continues the previous
+%the authors' 
+work on the mechanization of combinatorial theorems over countable infinite structures derived from propositional compactness.
+
+\medskip
+\noindent\textbf{Keywords:} Dilworth's Theorem $\cdot$ Isabelle/HOL $\cdot$ Partial Order
+Theory $\cdot$ Chains and Antichains $\cdot$ De Bruijn--Erd\H{o}s Theorem $\cdot$
+König-Egerváry Theorem $\cdot$
+Propositional Compactness.
+\end{abstract}
+
+\section{Introduction} \label{sec:Introduction}
+
+In 
+%his 
+the PhD thesis, 
+%the first author 
+an Isabelle/HOL formalization of the theory of propositional logic that includes landmark theorems such as the compactness theorem was developed \cite{Serrano2011}, further adapted and included in the Isabelle theory on compactness and combinatorial applications \cite{DBLP:journals/afp/SuarezLA24}. This theory includes formalizations of combinatorial theorems extended to the countable (infinite) case though the constructive application of the compactness theorem, which include the first formalization of the countable version of Hall's Theorem (cf. \cite{Hall}) for countable families of sets, the countable graph-version of Hall's Theorem, as well as the de Bruijn--Erd\H{o}s $k$-coloring theorem (cf. \cite{deBruijnErdos1951}) for infinite graphs  \cite{Serrano2022,Serrano2024}. The formalizations use standard compactness arguments, building models for finite substructures from which the combinatorial theorem for infinite structures follows. For instance, the formalization of the infinite version of Hall's Theorem uses the completeness theorem and the finite formalization of Hall's Theorem developed by Jiang and Nipkow \cite{Marriage-AFP,DBLP:conf/cpp/JiangN11}.
+
+Following this line of research, this paper addresses the countable version of Dilworth's Theorem for partial orders of \emph{finite width}, a case that --- in contrast to the situation for infinite width discussed below --- does follow from the finite theorem by a standard compactness argument; our contribution is a complete machine-checked formalization of it.  A \emph{chain} in a partially ordered set $P=(A,\le)$ is a subset that is totally ordered by $\le$, and an \emph{antichain} is a subset of pairwise incomparable elements. Dilworth's Theorem~\cite{Dilworth1950} asserts that, for a finite $P$, the maximum cardinality of an antichain (the \emph{width} of $P$) equals the least number of chains into which $A$ can be partitioned. The result is a cornerstone of order theory and combinatorics and admits several classical proofs, including one through the K\"onig-Egerv\'ary Theorem on bipartite graphs.  Indeed, also in his seminal paper \cite{Dilworth1950}, Dilworth proved the general theorem that if an infinite poset has a finite maximum antichain size $w$, it can be partitioned into exactly $w$ chains. Dilworth did not use a standard compactness approach. Instead, he found an ad hoc proof that constructed the infinite decomposition directly by applying Zorn's Lemma.
+
+
+In \cite{Milner1990}, Milner observes that, 
+
+\begin{quote} \textit{
+ Nowadays, we should probably say that the infinite case of Dilworth's decomposition theorem \cite{Dilworth1950} follows from the finite case by ``a standard compactness argument.'' Depending upon one's upbringing, what we would have in mind is an application of Gödel's compactness theorem in logic (cf Church \cite{church1956}), Tychonoff's theorem on compact topological spaces, or (if one is a combinatorialist) Rado's selection lemma \cite{rado1949axiomatic}. For example, we might argue as follows. Let $\mathcal{P} = (P,\leq)$ be a (partially) ordered set with no antichain of size $k + 1$. Then, by the finite case of Dilworth's Theorem, any finite subcollection of the set of sentences}
+ \end{quote}
+ \[S=\{\,p_{x,1}\vee\cdots\vee p_{x,k} : x\in P\,\}\ \cup\
+   \{\,\lnot(p_{x,i}\wedge p_{y,i}) : x\perp y,\ 1\le i\le k\,\},
+\]
+\begin{quote}\textit{has a model (where $x \perp  y$ means $x$ and $y$ incomparable in $\mathcal{P}$, and $p_{x,i}$ is a propositional variable with the intended interpretation ``$x$ belongs to the $i^{th}$ chain''). Hence $S$ has a model and $P$ is the union of the $k$ chains $C_i = \{x \in P : p_{x,i} \mbox{ is true} \}$ ($1 \leq
+i \leq k$).}
+\end{quote}
+ 
+
+Micha A. Perles' famous counterexample, published in \cite{perles1963dilworth},   shows that Dilworth's Theorem fails for posets with infinite width. The construction utilizes the Cartesian product of the first uncountable ordinal with itself, denoted as $P = \omega_1 \times \omega_1$, equipped with the standard component-wise product order where $(\alpha, \beta) \le (\gamma, \delta)$ if and only if $\alpha \le \gamma$ and $\beta \le \delta$. An antichain in this poset requires that elements be strictly increasing in one coordinate and strictly decreasing in the other. Because $\omega_1$ is a well-ordered set, it cannot contain an infinite strictly decreasing sequence, which implies that every antichain in $P$ must be finite. %Consequently, the supreme antichain size (or width) of the poset is structurally bounded at every local horizon, mimicking the finite constraints under which Dilworth's Theorem normally guarantees a matching chain cover.
+
+On the other side, Perles's poset cannot be decomposed into a countable collection of chains, thereby shattering the classical finite intuition. By definition, any two elements in a chain $C \subseteq P$ must be comparable, meaning both coordinates must move in the same direction simultaneously. This geometric constraint implies that a chain can intersect any vertical slice $\{\alpha\} \times \omega_1$ at most once, effectively behaving as a partial function from $\omega_1$ to $\omega_1$. Suppose $P$ could be partitioned into countably many chains $\{C_n\}_{n \in \omega}$, the set of all vertical coordinates covered at a fixed horizontal position $\alpha$ would be a countable union of single points, which is at most countable. However, since the vertical axis $\omega_1$ is inherently uncountable, a vast majority of the grid's surface area remains entirely untouched, proving that a countable chain cover is mathematically impossible.
+
+
+Concerning previous formal developments on this topic, the only other
+Mechanization of Dilworth's Theorem in Isabelle/HOL that we are aware of is the
+recent Archive of Formal Proofs entry \emph{Formal Proof of Dilworth's Theorem}
+by Maadoori, Meesum, Pillai, Prathamesh and Swami~\cite{DilworthAFP2025}, which
+formalises the \emph{finite} case following Perles's proof and Singh's earlier
+Coq development \cite{singh2017}. Our work instead addresses the countable-infinite case via propositional compactness.
+
+
+As previously mentioned, for infinite posets, Dilworth's Theorem requires care:  the largest antichain and the smallest (finite) chain decomposition have equal cardinality, whenever there is a finite bound on the size of antichains. In this case, the finite version of Dilworth's Theorem can be combined with a compactness argument based on a graph-coloring reformulation.
+
+\paragraph{\bf Main Contributions.} 
+The main contributions of this paper are the following.
+\begin{itemize}
+\item A formal proof of the \textbf{countable infinite version of Dilworth's Theorem} obtained from the finite case through a formalization of the $k$-coloring De Bruijn-Erd\H{o}s
+  theorem~\cite{deBruijnErdos1951} and the propositional compactness theorem.  
+
+\item As lemmas necessary to obtain the formalization of the infinite version of Dilworth's Theorem, we have two relevant and nontrivial results:
+\begin{itemize} 
+\item the \textbf{formalization of K\"onig-Egerv\'ary's Theorem}, also known as the bipartite matching duality theorem, which states that the size of a maximal matching equals the size of a minimum vertex cover in finite bipartite digraphs.  This theorem was formalized using the countable version of Hall's Theorem for graphs, described in \cite{Serrano2024}, developed 
+%by the authors
+as an application of the compactness theorem and Hall's Theorem for sets \cite{Serrano2022}, and part of the theory on propositional compactness in the Archive of Formal Proofs \cite{DBLP:journals/afp/SuarezLA24}; and
+\item the formalization of the \textbf{finite version of Dilworth's Theorem}, obtained from K\"onig-Egerv\'ary's theorem by associating a bipartite digraph with the partial order and constructing, from a maximum matching and a minimum vertex cover, a smallest chain decomposition and a largest antichain of the same cardinality.
+\end{itemize}
+\end{itemize}
+
+
+
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\addcontentsline{toc}{section}{References}
+\bibliographystyle{plain}
+%\bibliography{root}
+
+\begin{thebibliography}{10}
+
+\bibitem{church1956}
+Alonzo Church.
+\newblock {\em Introduction to Mathematical Logic}, volume~1.
+\newblock Princeton University Press, Princeton, New Jersey, 1956.
+
+\bibitem{deBruijnErdos1951}
+Nicolaas~Govert De~Bruijn and Pál Erdös.
+\newblock {A Colour Problem for Infinite Graphs and a Problem in the Theory of Relations}.
+\newblock {\em Indagationes Mathematicae (Proceedings)}, 54:371--373, 1951.
+
+\bibitem{Dilworth1950}
+Robert~P. Dilworth.
+\newblock {A Decomposition Theorem for Partially Ordered Sets}.
+\newblock {\em Annals of Mathematics}, 51(1):161--166, 1950.
+\newblock \url{https://doi.org/10.2307/1969503}.
+
+\bibitem{Hall}
+Philip Hall.
+\newblock On representatives of subsets.
+\newblock {\em London Mathematical Society}, 10:26--30, 1935.
+\newblock \url{ https://doi.org/10.1112/jlms/s1-10.37.26}.
+
+\bibitem{Marriage-AFP}
+Dongchen Jiang and Tobias Nipkow.
+\newblock {Hall's Marriage Theorem}.
+\newblock {\em Archive of Formal Proofs}, December 2010.
+\newblock \url{https://www.isa-afp.org/browser_info/current/AFP/Marriage/document.pdf}.
+
+\bibitem{DBLP:conf/cpp/JiangN11}
+Dongchen Jiang and Tobias Nipkow.
+\newblock {Proof Pearl: The Marriage Theorem}.
+\newblock In {\em Proceedings First International Conference on Certified Programs and Proofs - {CPP}}, volume 7086 of {\em LNCS}, pages 394--399, 2011.
+\newblock \url{https://doi.org/10.1007/978-3-642-25379-9\_28}.
+
+\bibitem{DilworthAFP2025}
+Vivek~Soorya Maadoori, Syed~Mohammad Meesum, Shiv Pillai, T.~V.~H. Prathamesh, and Aditya Swami.
+\newblock {Formal Proof of Dilworth's Theorem}.
+\newblock {\em Archive of Formal Proofs}, March 2025.
+\newblock \url{https://isa-afp.org/entries/Dilworth.html}, Formal proof development.
+
+\bibitem{Milner1990}
+Eric~Charles Milner.
+\newblock {Dilworth's Decomposition Theorem in the Infinite Case}.
+\newblock In Kenneth~P. Bogart, Ralph Freese, and Joseph P.~S. Kung, editors, {\em The Dilworth Theorems: Selected Papers of Robert P. Dilworth}, Contemporary Mathematicians. Birkh\"auser, 1990.
+
+\bibitem{perles1963dilworth}
+Micha~A. Perles.
+\newblock On dilworth's theorem in the infinite case.
+\newblock {\em Israel Journal of Mathematics}, 1(2):108--109, 1963.
+
+\bibitem{rado1949axiomatic}
+Richard Rado.
+\newblock Axiomatic treatment of rank in infinite sets.
+\newblock {\em Canadian Journal of Mathematics}, 1(4):337--343, 1949.
+
+\bibitem{Serrano2011}
+Fabi{\'a}n~Fernando Serrano~Su{\'a}rez.
+\newblock {\em {Formalizaci\'on en Isar de la Meta-L\'ogica de Primer Orden}}.
+\newblock PhD thesis, Departamento de Ciencias de la Computación e Inteligencia Artificial, Universidad de Sevilla, Spain, 2012.
+\newblock \url{https://idus.us.es/handle/11441/57780}. In Spanish.
+
+\bibitem{Serrano2022}
+Fabi{\'a}n~Fernando Serrano~Su{\'a}rez, Mauricio Ayala-Rinc{\'o}n, and Thaynara~Arielly de~Lima.
+\newblock {Hall's Theorem for Enumerable Families of Finite Sets}.
+\newblock In {\em Proc. Int. Conf. on Intelligent Computer Mathematics {CICM}}, volume 13467 of {\em LNCS}, pages 107--121. Springer, 2022.
+\newblock \url{https://doi.org/10.1007/978-3-031-16681-5_7}.
+
+\bibitem{Serrano2024}
+Fabi{\'a}n~Fernando Serrano~Su{\'a}rez, Mauricio Ayala-Rinc{\'o}n, and Thaynara~Arielly de~Lima.
+\newblock {Formalisation of Hall's Theorem for Countable Infinite Graphs}.
+\newblock In {\em Proc. Colombian Congress on Computation {18-CCC}}, volume 2208 of {\em Communications in Computer and Information Science - Advances in Computing}, Cham, 2024. Springer.
+\newblock \url{https://doi.org/10.1007/978-3-031-75233-9_15}.
+
+\bibitem{singh2017}
+Abhishek~Kr Singh.
+\newblock {Fully Mechanized Proofs of Dilworths Theorem and Mirskys Theorem}, 2017.
+\newblock \url{https://arxiv.org/abs/1703.06133}.
+
+\bibitem{DBLP:journals/afp/SuarezLA24}
+Fabi{\'{a}}n Fernando~Serrano Su{\'{a}}rez, Thaynara~Arielly de~Lima, and Mauricio Ayala{-}Rinc{\'{o}}n.
+\newblock {Compactness Theorem for Propositional Logic and Combinatorial Applications}.
+\newblock {\em Arch. Formal Proofs}, 2024.
+\newblock \url{https://www.isa-afp.org/entries/Prop\_Compactness.html}.
+
+\end{thebibliography}
+
+
+%
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
