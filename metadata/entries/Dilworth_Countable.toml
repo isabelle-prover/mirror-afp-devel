@@ -1,0 +1,39 @@
+title = "Countable Infinite Version of Dilworth's Theorem"
+date = 2026-07-20
+topics = [
+  "Mathematics/Combinatorics",
+  "Mathematics/Graph theory",
+  "Logic/General logic/Classical propositional logic",
+  "Logic/Set theory",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = """
+Dilworth's Theorem states that in any finite partially ordered set, the size of a largest antichain equals the minimum number of chains needed to cover the set. We report a complete, machine-checked formalization of Dilworth's Theorem and of its extension to countable partial orders of finite width in the Isabelle/HOL proof assistant.
+The finite case is obtained from a formalization of the Koenig-Egervary Theorem on the construction of a bipartite digraph associated with the partial order. For finite width, the countable case reduces to the finite one through a compactness argument: the incomparability graph of the partial order is shown to be k-colorable whenever every finite induced subgraph is, by appealing to a formalization of the De Bruijn-Erdos coloring theorem, itself a consequence of the compactness of propositional logic. We describe the formal statements, the central definitions, and the two top-level theorems together with their Isar proofs. This development continues the previous work on the mechanization of combinatorial theorems over countable infinite structures derived from propositional compactness."""
+license = "bsd"
+note = ""
+creation_note = "None\n\n\n\n\n\n\n\n\n\n\n\n\n\n"
+
+[authors]
+
+[authors.suarez]
+email = "suarez_email"
+
+[authors.limat]
+email = "limat_email"
+
+[authors.rincon]
+email = "rincon_email"
+
+[contributors]
+
+[notify]
+rincon = "rincon_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

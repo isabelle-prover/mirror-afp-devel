@@ -4,6 +4,17 @@
     <title>Logic/General logic/Classical propositional logic</title>
     <link>https://isa-afp.org/topics/logic/general-logic/classical-propositional-logic/</link>
     <description>AFP entries in Classical propositional logic</description><item>
+  <title>Countable Infinite Version of Dilworth&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dilworth_Countable.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Countable Infinite Version of Dilworth&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Mathematics/Graph theory</category>
+    <category>Logic/General logic/Classical propositional logic</category>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>A Formalization of the Exponential Blowup in the Transformations between CNF and DNF</title>
   <link>https://isa-afp.org/entries/CNF_DNF_Exp_Blowup.html</link>
   <pubDate>Mon, 15 Jun 2026 00:00:00 +0000</pubDate>

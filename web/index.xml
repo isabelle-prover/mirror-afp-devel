@@ -73,6 +73,17 @@
     <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
+  <title>Countable Infinite Version of Dilworth&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Dilworth_Countable.html</link>
+  <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Countable Infinite Version of Dilworth&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Combinatorics</category>
+    <category>Mathematics/Graph theory</category>
+    <category>Logic/General logic/Classical propositional logic</category>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Termination Restricted to Right-Forward Closures</title>
   <link>https://isa-afp.org/entries/Right_Forward_Closures.html</link>
   <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>

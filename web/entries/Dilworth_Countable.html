@@ -1,0 +1,193 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Countable Infinite Version of Dilworth&#39;s Theorem - Archive of Formal Proofs</title>
+    <meta name="description" content="Countable Infinite Version of Dilworth&#39;s Theorem in the Archive of Formal Proofs">
+    <meta property="og:description" content="Countable Infinite Version of Dilworth&#39;s Theorem in the Archive of Formal Proofs">
+    <meta property="og:title" content="Countable Infinite Version of Dilworth&#39;s Theorem">
+    <meta property="og:url" content="https://isa-afp.org/entries/Dilworth_Countable.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>C</span>ountable <span class='first'>I</span>nfinite <span class='first'>V</span>ersion of <span class='first'>D</span>ilworth's <span class='first'>T</span>heorem
+  </h1>
+  <div>
+      <p><a href="../authors/suarez/">Fabián Fernando Serran Suárez</a> <a class="obfuscated" data="eyJ1c2VyIjpbImZmc2VycmFub3MiXSwiaG9zdCI6WyJ1bmFsIiwiZWR1IiwiY28iXX0=">📧</a>, <a href="../authors/limat/">Thaynara Arielly de Lima</a> <a class="obfuscated" data="eyJ1c2VyIjpbInRoYXluYXJhZGVsaW1hIl0sImhvc3QiOlsidWZnIiwiYnIiXX0=">📧</a> and <a href="../authors/rincon/">Mauricio Ayala-Rincón</a> <a class="obfuscated" data="eyJ1c2VyIjpbImF5YWxhIl0sImhvc3QiOlsidW5iIiwiYnIiXX0=">📧</a>
+      </p>
+      <p class="date">July 20, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">Dilworth's Theorem states that in any finite partially ordered set, the size of a largest antichain equals the minimum number of chains needed to cover the set. We report a complete, machine-checked formalization of Dilworth's Theorem and of its extension to countable partial orders of finite width in the Isabelle/HOL proof assistant.
+The finite case is obtained from a formalization of the Koenig-Egervary Theorem on the construction of a bipartite digraph associated with the partial order. For finite width, the countable case reduces to the finite one through a compactness argument: the incomparability graph of the partial order is shown to be k-colorable whenever every finite induced subgraph is, by appealing to a formalization of the De Bruijn-Erdos coloring theorem, itself a consequence of the compactness of propositional logic. We describe the formal statements, the central definitions, and the two top-level theorems together with their Isar proofs. This development continues the previous work on the mechanization of combinatorial theorems over countable infinite structures derived from propositional compactness.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>None
+
+
+
+
+
+
+
+
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/mathematics/combinatorics/">Mathematics/Combinatorics</a></li>
+          <li><a href="../topics/mathematics/graph-theory/">Mathematics/Graph theory</a></li>
+          <li><a href="../topics/logic/general-logic/classical-propositional-logic/">Logic/General logic/Classical propositional logic</a></li>
+          <li><a href="../topics/logic/set-theory/">Logic/Set theory</a></li>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs/">Logic/General logic/Mechanization of proofs</a></li>
+      </ul>
+      <h3>Session Dilworth_Countable</h3>
+      <ul>
+          <li><a href="../thys/Dilworth_Countable/Koenig_Egervary_finite.html">Koenig_Egervary_finite</a></li>
+          <li><a href="../thys/Dilworth_Countable/Dilworth_Finite.html">Dilworth_Finite</a></li>
+          <li><a href="../thys/Dilworth_Countable/DilworthCountable.html">DilworthCountable</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+        <div>
+          <h3>Depends on</h3>
+          <ul class="horizontal-list">
+              <li><a href="../entries/Prop_Compactness.html">Compactness Theorem for Propositional Logic and Combinatorial Applications</a></li>
+          </ul>
+        </div>
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Dilworth_Countable/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Dilworth_Countable/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Dilworth_Countable/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Dilworth_Countable-AFP</p>
+        <pre id="copy-text">@article{Dilworth_Countable-AFP,
+  author  = {Fabián Fernando Serran Suárez and Thaynara Arielly de Lima and Mauricio Ayala-Rincón},
+  title   = {Countable Infinite Version of Dilworth's Theorem},
+  journal = {Archive of Formal Proofs},
+  month   = {July},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Dilworth_Countable.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Dilworth_Countable-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>
