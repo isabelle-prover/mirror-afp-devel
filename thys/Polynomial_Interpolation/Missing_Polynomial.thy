@@ -60,7 +60,8 @@ lemmas [simp] = pcompose_pCons
 
 declare degree_pcompose[simp]
 
-subsection \<open>Monic Polynomials\<close>
+subsection \<open>
+by (simp add: coeff_mult_degree_sum monic mult_1)\<close>
 
 abbreviation monic where "monic p \<equiv> coeff p (degree p) = 1"
 
@@ -80,33 +81,7 @@ lemma normalize_monic: "monic p \<Longrightarrow> normalize p = p"
 lemma lcoeff_monic_mult: 
   assumes monic: "monic (p :: 'a :: comm_semiring_1 poly)"
   shows "coeff (p * q) (degree p + degree q) = coeff q (degree q)"
-proof -
-  let ?pqi = "\<lambda> i. coeff p i * coeff q (degree p + degree q - i)" 
-  have "coeff (p * q) (degree p + degree q) = 
-    (\<Sum>i\<le>degree p + degree q. ?pqi i)"
-    unfolding coeff_mult by simp
-  also have "\<dots> = ?pqi (degree p) + (sum ?pqi ({.. degree p + degree q} - {degree p}))"
-    by (subst sum.remove[of _ "degree p"], auto)
-  also have "?pqi (degree p) = coeff q (degree q)" unfolding monic by simp
-  also have "(sum ?pqi ({.. degree p + degree q} - {degree p})) = 0"
-  proof (rule sum.neutral, intro ballI)
-    fix d
-    assume d: "d \<in> {.. degree p + degree q} - {degree p}"
-    show "?pqi d = 0"
-    proof (cases "d < degree p")
-      case True
-      hence "degree p + degree q - d > degree q" by auto
-      hence "coeff q (degree p + degree q - d) = 0" by (rule coeff_eq_0)
-      thus ?thesis by simp
-    next
-      case False
-      with d have "d > degree p" by auto
-      hence "coeff p d = 0" by (rule coeff_eq_0)
-      thus ?thesis by simp
-    qed
-  qed
-  finally show ?thesis by simp
-qed
+  by (simp add: coeff_mult_degree_sum monic)
 
 lemma degree_monic_mult: 
   fixes p :: "'a :: comm_semiring_1 poly"
