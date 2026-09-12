@@ -8,6 +8,7 @@ imports
   "HOL-Library.AList_Mapping"
   "HOL-Library.Finite_Lattice"
   "Go.Go_Setup"
+options [condition = "$ISABELLE_GOEXE"]
 begin
 
 text \<open>
