@@ -1,6 +1,8 @@
-theory RBT_Test imports
+theory RBT_Test
+imports
  "HOL-Data_Structures.RBT_Set"
  "Go.Go_Setup"
+options [condition = "$ISABELLE_GOEXE"]
 begin
 
 

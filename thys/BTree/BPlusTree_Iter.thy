@@ -6,6 +6,7 @@ theory BPlusTree_Iter
     Flatten_Iter_Spec
     Partially_Filled_Array_Iter
     Subst_Mod_Mult_AC
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 

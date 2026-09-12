@@ -3,6 +3,7 @@ theory BPlusTree_ImpSplit
     BPlusTree_Imp
     BPlusTree_Split
     Imperative_Loops
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 definition "split_relation xs \<equiv>

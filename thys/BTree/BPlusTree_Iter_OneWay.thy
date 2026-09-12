@@ -5,6 +5,7 @@ theory BPlusTree_Iter_OneWay
     "Separation_Logic_Imperative_HOL.Imp_List_Spec"
     Flatten_Iter
     Partially_Filled_Array_Iter
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 

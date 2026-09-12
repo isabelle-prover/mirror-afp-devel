@@ -16,6 +16,7 @@ imports
   "HOL-Number_Theory.Eratosthenes"
   "HOL-Examples.Records"
   "HOL-Examples.Gauss_Numbers"
+options [condition = "$ISABELLE_GOEXE"]
 begin
 
 text \<open>Drop technical stuff from \<^theory>\<open>HOL.Quickcheck_Narrowing\<close> which is tailored towards Haskell\<close>

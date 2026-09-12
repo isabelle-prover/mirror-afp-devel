@@ -5,6 +5,7 @@
 theory Native_Word_Test_GHC
 imports
   Native_Word_Test
+options [condition = "$ISABELLE_GHC"]
 begin
 
 section \<open>Test with GHC\<close>

@@ -3,8 +3,8 @@
 *)
 
 theory Native_Word_Test_SMLNJ2
-imports
-  Native_Word_Test_Emu
+  imports Native_Word_Test_Emu
+  options [condition = "$ISABELLE_SMLNJ"]
 begin
 
 test_code

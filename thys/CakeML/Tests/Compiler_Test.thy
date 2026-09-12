@@ -1,5 +1,6 @@
 theory Compiler_Test
 imports "../CakeML_Compiler"
+options [condition = "$ISABELLE_CAKEML_HOME,$ISABELLE_CC"]
 begin
 
 definition default_loc :: locs where

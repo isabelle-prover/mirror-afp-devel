@@ -1,5 +1,5 @@
 theory Subst_Mod_Mult_AC
-imports Main
+  imports Main
 begin
 
 (* By Manuel Eberl *)

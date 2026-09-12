@@ -1,7 +1,8 @@
 theory Partially_Filled_Array_Iter
-imports
-  Partially_Filled_Array
-  "Separation_Logic_Imperative_HOL.Imp_List_Spec"
+  imports
+    Partially_Filled_Array
+    "Separation_Logic_Imperative_HOL.Imp_List_Spec"
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 

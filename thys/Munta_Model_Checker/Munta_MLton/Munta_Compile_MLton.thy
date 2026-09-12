@@ -3,6 +3,7 @@ text_raw \<open>\label{build-mlton}\<close>
 
 theory Munta_Compile_MLton
   imports Munta_Model_Checker.Simple_Network_Language_Export_Code
+  options [condition = "$ISABELLE_MLTON"]
 begin
 
 \<comment> \<open>Produces a command for checking a single benchmark, e.g.:

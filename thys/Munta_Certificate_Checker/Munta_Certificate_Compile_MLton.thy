@@ -3,6 +3,7 @@ text_raw \<open>\label{build-mlton}\<close>
 
 theory Munta_Certificate_Compile_MLton
   imports Simple_Network_Language_Certificate_Code Munta_Certificate_Testing
+  options [condition = "$ISABELLE_MLTON"]
 begin
 
 text \<open>Here is how to compile Munta Certifier with MLton and then run some benchmarks:\<close>

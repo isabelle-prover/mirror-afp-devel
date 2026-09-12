@@ -3,8 +3,8 @@
 *)
 
 theory Native_Word_Test_OCaml2
-  imports
-  Native_Word_Test_Emu
+  imports Native_Word_Test_Emu
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 test_code
