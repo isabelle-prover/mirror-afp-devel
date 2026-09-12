@@ -3,7 +3,6 @@ theory Flatten_Iter_Spec
     Basic_Assn
     "Separation_Logic_Imperative_HOL.Imp_List_Spec"
     "HOL-Real_Asymp.Inst_Existentials"
-  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 
