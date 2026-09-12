@@ -2,6 +2,7 @@ theory Basic_Assn
   imports
     "Refine_Imperative_HOL.Sepref_HOL_Bindings"
     "Refine_Imperative_HOL.Sepref_Basic"
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Auxilary imperative assumptions"

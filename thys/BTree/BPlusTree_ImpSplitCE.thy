@@ -3,6 +3,7 @@ theory BPlusTree_ImpSplitCE
     BPlusTree_ImpRange
     BPlusTree_ImpSet
     BPlusTree_SplitCE
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 

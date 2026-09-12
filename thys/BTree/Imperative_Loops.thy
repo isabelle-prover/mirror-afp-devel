@@ -3,8 +3,7 @@ theory Imperative_Loops
     "Refine_Imperative_HOL.Sepref_HOL_Bindings"
     "Refine_Imperative_HOL.Pf_Mono_Prover"
     "Refine_Imperative_HOL.Pf_Add"
-
-
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section \<open>Imperative Loops\<close>

@@ -2,6 +2,7 @@ theory Partially_Filled_Array
   imports
     "Refine_Imperative_HOL.IICF_Array_List"
     Array_SBlit
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Partially Filled Arrays"

@@ -1,8 +1,9 @@
 theory Flatten_Iter_Spec
   imports
-  Basic_Assn
-  "Separation_Logic_Imperative_HOL.Imp_List_Spec"
-  "HOL-Real_Asymp.Inst_Existentials"
+    Basic_Assn
+    "Separation_Logic_Imperative_HOL.Imp_List_Spec"
+    "HOL-Real_Asymp.Inst_Existentials"
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 

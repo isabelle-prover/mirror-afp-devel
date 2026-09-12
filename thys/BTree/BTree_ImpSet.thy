@@ -2,6 +2,7 @@ theory BTree_ImpSet
   imports
     BTree_Imp
     BTree_Set
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Imperative Set operations"

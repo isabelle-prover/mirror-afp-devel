@@ -3,6 +3,7 @@ theory BTree_ImpSplit
     BTree_ImpSet
     BTree_Split
     Imperative_Loops
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Imperative split operations"

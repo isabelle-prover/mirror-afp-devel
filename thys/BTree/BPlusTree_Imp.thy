@@ -4,6 +4,7 @@ theory BPlusTree_Imp
     Partially_Filled_Array
     Basic_Assn
     Inst_Ex_Assn
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 lemma butlast_double_Cons: "butlast (x#y#xs) = x#(butlast (y#xs))"

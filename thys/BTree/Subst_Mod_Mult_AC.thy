@@ -1,5 +1,6 @@
 theory Subst_Mod_Mult_AC
-imports Main
+  imports Main
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 (* By Manuel Eberl *)

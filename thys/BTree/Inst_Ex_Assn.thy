@@ -1,6 +1,7 @@
 section \<open>Tactic for instantiating existentials\<close>
 theory Inst_Ex_Assn
   imports Separation_Logic_Imperative_HOL.Assertions
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 thm ent_ex_postI

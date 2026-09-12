@@ -3,6 +3,7 @@ theory BPlusTree_ImpSet
     BPlusTree_Set
     BPlusTree_ImpSplit
     "HOL-Real_Asymp.Inst_Existentials"
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Imperative Set operations"

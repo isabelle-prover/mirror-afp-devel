@@ -1,5 +1,6 @@
 theory Array_SBlit
   imports "Separation_Logic_Imperative_HOL.Array_Blit"
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 (* Resolves TODO by Peter Lammich *)

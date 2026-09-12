@@ -3,6 +3,7 @@ theory BTree_Imp
     BTree
     Partially_Filled_Array
     Basic_Assn
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section "Imperative B-tree Definition"

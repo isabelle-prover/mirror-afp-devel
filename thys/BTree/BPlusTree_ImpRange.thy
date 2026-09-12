@@ -1,8 +1,9 @@
 theory BPlusTree_ImpRange
-imports
-  BPlusTree_Iter
-  BPlusTree_Range
-  BPlusTree_ImpSplit
+  imports
+    BPlusTree_Iter
+    BPlusTree_Range
+    BPlusTree_ImpSplit
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 abbreviation "blist_leafs_assn k \<equiv> list_assn ((\<lambda> t (ti,r',z',lptrs). bplustree_assn_leafs k t (the ti) r' z' lptrs) \<times>\<^sub>a id_assn)"
