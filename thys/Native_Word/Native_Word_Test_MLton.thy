@@ -5,6 +5,7 @@
 theory Native_Word_Test_MLton
 imports
   Native_Word_Test
+options [condition = "$ISABELLE_MLTON"]
 begin
 
 section \<open>Test with MLton\<close>

@@ -6,6 +6,7 @@ imports
   "../Backend/CakeML_Setup"
   "../Compiler/Compiler"
   CakeML.CakeML_Compiler
+options [condition = "$ISABELLE_CAKEML_HOME,$ISABELLE_CC"]
 begin
 
 fun app where

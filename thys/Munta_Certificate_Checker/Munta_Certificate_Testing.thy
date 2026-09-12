@@ -2,6 +2,7 @@ section \<open>Testing Infrastructure\<close>
 
 theory Munta_Certificate_Testing
   imports Main
+  options [condition = "$ISABELLE_MLTON"]
 begin
 
 \<comment> \<open>Produces commands for generating a certificate for a single benchmark with \mlunta, e.g.

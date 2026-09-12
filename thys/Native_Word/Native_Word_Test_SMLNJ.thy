@@ -3,8 +3,8 @@
 *)
 
 theory Native_Word_Test_SMLNJ
-imports
-  Native_Word_Test
+  imports Native_Word_Test
+  options [condition = "$ISABELLE_SMLNJ"]
 begin
 
 section \<open>Test with SML/NJ\<close>

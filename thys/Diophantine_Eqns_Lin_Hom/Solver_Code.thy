@@ -7,6 +7,7 @@ section \<open>Generating Code for the Solver\<close>
 
 theory Solver_Code
   imports Algorithm
+  options [condition = "$ISABELLE_GHC"]
 begin
 
 external_file \<open>src/Main.hs\<close>

@@ -2,8 +2,9 @@
     Author:     Andreas Lochbihler, ETH Zurich
 *)
 
-theory Native_Word_Test_OCaml imports
-  Native_Word_Test
+theory Native_Word_Test_OCaml
+  imports Native_Word_Test
+  options [condition = "$ISABELLE_OCAMLFIND"]
 begin
 
 section \<open>Test with OCaml\<close>

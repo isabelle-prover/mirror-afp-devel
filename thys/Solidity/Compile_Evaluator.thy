@@ -4,6 +4,7 @@ theory
   Compile_Evaluator 
   imports 
     Solidity_Evaluator 
+  options [condition = "$ISABELLE_GHC"]
 begin
 
 

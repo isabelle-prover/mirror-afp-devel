@@ -3,6 +3,7 @@ text_raw \<open>\label{build-poly}\<close>
 
 theory Munta_Certificate_Compile_Poly
   imports Simple_Network_Language_Certificate_Code Munta_Certificate_Testing
+  options [condition = "$ISABELLE_MLTON"]
 begin
 
 paragraph \<open>Mock Compilation\<close>

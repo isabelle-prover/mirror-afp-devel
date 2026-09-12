@@ -5,6 +5,7 @@
 theory Native_Word_Test_MLton2
 imports
   Native_Word_Test_Emu
+options [condition = "$ISABELLE_MLTON"]
 begin
 
 export_code test_casts' in SML module_name Generated_Code

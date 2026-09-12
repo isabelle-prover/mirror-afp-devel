@@ -5,6 +5,7 @@
 *)
 theory PAC_Checker_MLton
   imports PAC_Checker_Synthesis
+  options [condition = "$ISABELLE_MLTON"]
 begin
 
 export_code PAC_checker_l_impl PAC_update_impl PAC_empty_impl the_error is_cfailed is_cfound

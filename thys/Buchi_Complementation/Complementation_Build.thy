@@ -2,6 +2,7 @@ section \<open>Build and test exported program with MLton\<close>
 
 theory Complementation_Build
 imports Complementation_Final
+options [condition = "$ISABELLE_MLTON"]
 begin
 
 external_file \<open>code/Autool.mlb\<close>
