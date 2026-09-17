@@ -641,16 +641,7 @@ proof -
     by (simp add: mult_ac)
   also have "contour_integral L (\<lambda>z. 2*\<i>*pi * (to_q 1 z * f (to_q 1 z))) =
                2*\<i>*pi * contour_integral L (\<lambda>z. to_q 1 z * f (to_q 1 z))"
-  proof (rule contour_integral_lmul, rule contour_integrable_holomorphic_simple)
-    show "(\<lambda>x. to_q 1 x * f (to_q 1 x)) holomorphic_on {z. Im z > 0}"
-      unfolding f_def by (auto intro!: holomorphic_intros)
-  next
-    have "path_image L = closed_segment z (z + 1)"
-      by (simp add: L_def)
-    also have "\<dots> \<subseteq> {z. Im z > 0}"
-      by (intro closed_segment_subset convex_halfspace_Im_gt) (use z in auto)
-    finally show "path_image L \<subseteq> {z. Im z > 0}" .
-  qed (auto simp: L_def open_halfspace_Im_gt)
+    by (rule contour_integral_lmul)
   also have "(\<lambda>z. to_q 1 z * f (to_q 1 z)) = (\<lambda>z. to_nome (-2 * of_nat n * z) / euler_phi (to_nome (2*z)))"
     by (simp add: f_def to_q_conv_to_nome to_nome_power to_nome_minus field_simps to_nome_diff)
   finally show ?thesis
@@ -1336,14 +1327,7 @@ proof -
   qed auto
 
   also have "\<dots> = c2 * contour_integral L (\<lambda>w. \<psi> w * exp (2*n*pi*w/k\<^sup>2) * F w)"
-  proof (rule contour_integral_lmul, rule contour_integrable_holomorphic_simple)
-    show "(\<lambda>w. \<psi> w * exp (2*n*pi*w/k\<^sup>2) * F w) holomorphic_on {z. Re z > 0}"
-      by (intro holomorphic_intros euler_phi_nonzero)
-         (auto simp: complex_nonpos_Reals_iff Re_divide' zero_less_mult_iff Re_pos_imp_nz)
-    show "path_image L \<subseteq> {z. Re z > 0}"
-      using Re_L by (auto simp: L_def)
-  qed (auto simp: L_def open_halfspace_Re_gt)
-
+    by (rule contour_integral_lmul)
   also have "contour_integral L (\<lambda>w. \<psi> w * exp (2*n*pi*w/k\<^sup>2) * F w) = I1 + I2"
   proof -
     have "I1 + I2 = contour_integral L (\<lambda>w. \<psi> w * exp ((2*n*pi) * w / k\<^sup>2) +
