@@ -17,4 +17,5 @@ session Encodability_Process_Calculi = HOL +
     FullAbstraction
     CombinedCriteria
   document_files
+    "root.bib"
     "root.tex"
