@@ -75,7 +75,7 @@ where
    transfer_monad (storeLookup (STR ''Beneficiary'') []) (storeLookup  (STR ''highestBid'') [])
           }"
 
-section \<open>Verifying an invariant\<close>
+subsection \<open>Verifying an invariant\<close>
 
 
 invariant pr_less_Balance s
@@ -150,8 +150,6 @@ lemma storage_data_value_is_value [wpsimps]:
 lemma kdplussafe_sint [wpsimps]:
   assumes "\<forall>a. \<exists>y. x a = storage_data.Value (Uint y)"
   obtains y where "x a = storage_data.Value (Uint y)" using assms by auto
-
-section \<open>Verifying an Invariant\<close>
 
 lemma notwp[wperules]: "\<not> wp m P E s \<Longrightarrow> wp m P E s \<Longrightarrow> R" using notE by simp
 

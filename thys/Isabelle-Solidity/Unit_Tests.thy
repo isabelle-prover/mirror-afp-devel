@@ -29,13 +29,6 @@ definition "mem_Array_2_3_true_false = [md_true,md_true,md_true,mdata.Array [0,1
 definition "mem_Array_2_3_false_false = [md_false,md_false,md_false,mdata.Array [0,1,2],md_false,md_false,md_false,mdata.Array [4,5,6],mdata.Array [3,7]]"
 definition "mem_sint_m10_uint_10= [md_sint_m10,md_uint_10]"
 
-lemma "mupdate [Uint 1, Uint 2] (8, md_true, mem_Array_2_3_true_false)
-        = Some (mem_Array_2_3_true_false[6:=md_true])" by normalization
-
-lemma "mlookup mem_Array_2_3_true_false [Uint 1, Uint 2] 8 = Some 6" by normalization
-
-lemma "mlookup mem_Array_2_3_true_false [Uint 0] 8 = Some 3" by normalization
-
 definition "cd_true = call_data.Value vt_true"
 definition "cd_false = call_data.Value vt_false"
 definition "cd_sint8_m10 = call_data.Value vt_sint_m10"
@@ -54,6 +47,7 @@ global_interpretation method: Method A1 250 100
   defines method_sender_monad = method.sender_monad
       and method_value_monad  = method.value_monad
       and method_timestamp_monad  = method.block_timestamp_monad
+      and method_null_monad  = method.null_monad
   by standard (auto simp add: null_def)
 
 global_interpretation contract: Contract A1 

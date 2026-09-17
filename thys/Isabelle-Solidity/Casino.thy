@@ -153,7 +153,7 @@ invariant pot_balance sb where
       \<longrightarrow> snd sb \<ge> unat (valtype.uint (storage_data.vt (fst sb pot))))"
   for "casino"
 
-section \<open>Verifying an Invariant\<close>
+subsection \<open>Verifying an Invariant\<close>
 
 text \<open>
   We start by verifying an invariant regarding the relationship between pot and balance.

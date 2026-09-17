@@ -159,6 +159,9 @@ definition value_monad ("\<langle>value\<rangle>") where
 definition block_timestamp_monad ("\<langle>stamp\<rangle>") where
   "block_timestamp_monad = sint_monad timestamp"
 
+definition null_monad  ("\<langle>nul\<rangle>") where
+  "null_monad = address_monad null"
+
 end
 
 locale Keccak256 =

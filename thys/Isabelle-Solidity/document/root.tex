@@ -129,12 +129,19 @@ verification condition generator.
 
 \input{WP.tex}
 
+\chapter{Memory Calculus}
+In this chapter, we present a memory calculus which can be used to reason about memory arrays.
+
+\input{Mcalc.tex}
+
 \chapter{Unit Tests}
 
 In this chapter, we validate the compliance of the semantics with the official Solidity specification.
 To this end we implemented a set of unit tests which were also executed on the Remix IDE.
 
 \input{Unit_Tests.tex}
+
+\input{MTests.tex}
 
 \chapter{Applications}
 
@@ -151,8 +158,11 @@ invariants for Solidity smart contracts.
 
 \input{SimpleAuction.tex}
 
-\bibliography{root}
+\input{Aliasing.tex}
 
+\input{ArrayBuilder.tex}
+
+\bibliography{root}
 \end{document}
 
 %%% Local Variables:

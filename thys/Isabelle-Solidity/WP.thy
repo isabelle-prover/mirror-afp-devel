@@ -437,7 +437,12 @@ lemma (in Method) wp_stamp_monad[wprules]:
   assumes "P (kdSint timestamp) s"
   shows "wp block_timestamp_monad P E s"
   unfolding block_timestamp_monad_def using assms by (rule wp_sint_monad)
-             
+
+lemma (in Method) wp_nul[wprules]:
+  assumes "P (kdAddress null) s"
+  shows "wp \<langle>nul\<rangle> P E s"
+  unfolding null_monad_def wp_def address_monad_def  using assms by (simp add: execute_simps)
+
 lemma wp_cond_monad[wprules]:
   assumes "wp bm (\<lambda>a. wp (true_monad \<bind> (\<lambda>rv. option Err (K (kdequals a rv)) \<bind> return)) (\<lambda>a. wp (if a = kdbool True then mt else if a = kdbool False then fm else throw Err) P E) E) E s"
   shows "wp (cond_monad bm mt fm) P E s"
