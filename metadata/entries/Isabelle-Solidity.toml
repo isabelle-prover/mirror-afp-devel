@@ -33,6 +33,10 @@ In addition to the verification of invariants, it now also supports the verifica
 Type consistency is added as pre-condition for functions.
 (revision a4778d4a4355)<br>
 """
+2026-09-17 = """
+Adding SMAC to support the verification of Solidity memory arrays.
+(revision c4e80509a426)<br>
+"""
 
 [extra]
 
