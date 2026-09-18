@@ -307,7 +307,7 @@ lemma size_add_elem_step_eq:
   shows "size (add_mset x A \<times># B) = size (add_mset x A) * size B"
 proof -
   have "(add_mset x A \<times># B) = A \<times># B + {#x#} \<times># B"
-    by (metis Sigma_mset_plus_distrib1 add_mset_add_single) 
+    by (metis Sigma_mset_plus_distrib1 add_single_right_eq_add_mset) 
   then have "size (add_mset x A \<times># B) = size (A \<times># B) + size B" by auto
   also have "... = size A * size B + size B"
     by (simp add: assms)
@@ -355,17 +355,17 @@ lemma size_Union_distinct_cart_prod_filter2: "distinct_mset V \<Longrightarrow>
   by (induction B) auto
 
 lemma cart_product_add_1: "(add_mset a A) \<times># B = ({#a#} \<times># B) + (A \<times># B)"
-  by (metis Sigma_mset_plus_distrib1 add_mset_add_single union_commute)
+  by (metis Sigma_mset_plus_distrib1 add_single_right_eq_add_mset union_commute)
 
 lemma cart_product_add_1_filter: "{#m \<in># ((add_mset a M) \<times># N) . P m #} = 
     {#m \<in># (M \<times># N) . P m #} + {#m \<in># ({#a#} \<times>#  N) . P m #}"
-  unfolding add_mset_add_single [of a M] Sigma_mset_plus_distrib1
+  unfolding add_single_right_eq_add_mset[symmetric, of a M] Sigma_mset_plus_distrib1
   by (simp add: Times_mset_single_left)
 
 lemma cart_product_add_1_filter2: "{#m \<in># (M \<times># (add_mset b N)) . P m #} = 
     {#m \<in># (M \<times># N) . P m #} + {#m \<in># (M \<times>#  {#b#}) . P m #}"
-  unfolding add_mset_add_single [of b N] Sigma_mset_plus_distrib1
-  by (metis Times_insert_left Times_mset_single_right add_mset_add_single filter_union_mset)
+  unfolding add_single_right_eq_add_mset[symmetric, of b N] Sigma_mset_plus_distrib1
+  by (metis Times_insert_left Times_mset_single_right add_single_right_eq_add_mset filter_union_mset)
 
 lemma cart_prod_singleton_right_gen: 
   assumes "\<And> x . x \<in># (A \<times># {#b#}) \<Longrightarrow> P x \<longleftrightarrow> Q (fst x)"
@@ -382,7 +382,7 @@ next
     filter_mset P {#(x, b)#}" by simp
   have rhs: "filter_mset Q (add_mset x A) \<times># {#b#} = filter_mset Q A \<times># {#b#} + 
     filter_mset Q {#x#} \<times># {#b#}"
-    by (metis Sigma_mset_plus_distrib1 add_mset_add_single filter_union_mset)
+    by (metis Sigma_mset_plus_distrib1 add_single_right_eq_add_mset filter_union_mset)
   have "filter_mset P {#(x, b)#} = filter_mset Q {#x#} \<times># {#b#}"
     using add.prems by fastforce
   then show ?case using lhs rhs add.IH add.prems by force 
@@ -402,7 +402,7 @@ next
     by (simp add: cart_product_add_1_filter2) 
   have rhs: "{#a#} \<times># filter_mset Q (add_mset x B) = {#a#} \<times># filter_mset Q B + 
     {#a#} \<times># filter_mset Q {#x#}"
-    using add_mset_add_single filter_union_mset by (metis Times_mset_single_left image_mset_union) 
+    using add_single_right_eq_add_mset filter_union_mset by (metis Times_mset_single_left image_mset_union) 
   have "filter_mset P {#(a, x)#} = {#a#} \<times># filter_mset Q {#x#}"
     using add.prems by fastforce
   then show ?case using lhs rhs add.IH add.prems by force 
@@ -426,13 +426,13 @@ qed
 
 lemma cart_product_add_1_filter_eq: "{#m \<in># ((add_mset a M) \<times># N) . (fst m \<in> snd m) #} = 
     {#m \<in># (M \<times># N) . (fst m \<in> snd m) #} + ({#a#} \<times># {# n \<in># N . a \<in> n #})"
-  unfolding add_mset_add_single [of a M] Sigma_mset_plus_distrib1
+  unfolding add_single_right_eq_add_mset[symmetric, of a M] Sigma_mset_plus_distrib1
   using cart_product_singleton_left cart_product_add_1_filter by fastforce 
 
 lemma cart_product_add_1_filter_eq_mirror: "{#m \<in># M \<times># (add_mset b N) . (fst m \<in> snd m) #} = 
     {#m \<in># (M \<times># N) . (fst m \<in> snd m) #} + ({# n \<in># M . n \<in> b #} \<times># {#b#})"
-  unfolding add_mset_add_single [of b N] Sigma_mset_plus_distrib1 (* longish *)
-  by (metis (no_types) add_mset_add_single cart_product_add_1_filter2 cart_product_singleton_right) 
+  unfolding add_single_right_eq_add_mset[symmetric, of b N] Sigma_mset_plus_distrib1 (* longish *)
+  by (metis (no_types) add_single_right_eq_add_mset cart_product_add_1_filter2 cart_product_singleton_right) 
 
 lemma set_break_down_left:
   shows "{# m \<in># (M \<times># N) . (fst m) \<in> (snd m)  #} = (\<Sum>m\<in>#M. ({#m#} \<times># {#n \<in># N. m \<in> n#}))"
@@ -793,7 +793,7 @@ lemma partition_on_mset_add:
   assumes "X \<in># P"
   assumes "add_mset a X = X'"
   shows "partition_on_mset (add_mset a A) (add_mset X' (P - {#X#}))"
-  using add_mset_add_single assms empty_not_add_mset mset_subset_eq_single partition_on_mset_all
+  using add_single_right_eq_add_mset assms empty_not_add_mset mset_subset_eq_single partition_on_mset_all
   by (smt (verit) partition_on_mset_def subset_mset.add_diff_inverse sum_mset.add_mset sum_mset.remove union_iff union_mset_add_mset_left)
 
 lemma partition_on_mset_elem_exists_part:

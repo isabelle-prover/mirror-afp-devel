@@ -342,7 +342,7 @@ proof -
   have "M < N"
     using assms le_multiset_right_total mset_le_trans by blast
   then show ?thesis
-    by (metis add_less_cancel_right add_mset_add_single diff_single_trivial insert_DiffM2 xM_lt_N)
+    by (metis add_less_cancel_right add_single_right_eq_add_mset diff_single_trivial insert_DiffM2 xM_lt_N)
 qed
 
 lemma remove_diff_multiset[simp]: \<open>x13 \<notin># A \<Longrightarrow> A - add_mset x13 B = A - B\<close>
@@ -664,11 +664,11 @@ lemma Times_mset_empty[simp]: "A \<times># B = {#} \<longleftrightarrow> A = {#}
   by (auto simp: Sigma_mset_empty_iff)
 
 lemma Times_insert_left: "A \<times># add_mset x B = A \<times># B + image_mset (\<lambda>a. Pair a x) A"
-  unfolding add_mset_add_single[of x B] Sigma_mset_plus_distrib2
+  unfolding add_single_right_eq_add_mset[symmetric, of x B] Sigma_mset_plus_distrib2
   by (simp add: Times_mset_single_right)
 
 lemma Times_insert_right: "add_mset a A \<times># B = A \<times># B + image_mset (Pair a) B"
-  unfolding add_mset_add_single[of a A] Sigma_mset_plus_distrib1
+  unfolding add_single_right_eq_add_mset[symmetric, of a A] Sigma_mset_plus_distrib1
   by (simp add: Times_mset_single_left)
 
 lemma fst_image_mset_times_mset [simp]:

@@ -417,7 +417,7 @@ proof (cases P C rule: eq_resolution.cases)
   case (eq_resolutionI L t)
   then show ?thesis
     unfolding less\<^sub>c_def
-    by (metis add.left_neutral add_mset_add_single empty_not_add_mset multi_member_split
+    by (metis add.left_neutral add_single_right_eq_add_mset empty_not_add_mset multi_member_split
         one_step_implies_multp union_commute)
 qed
 

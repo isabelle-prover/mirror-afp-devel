@@ -112,7 +112,7 @@ lemma union_multisets_iff [iff]:
 
 lemma add_mset_multisets_iff [iff]:
   "add_mset a M \<in> multisets A \<longleftrightarrow> a \<in> A \<and> M \<in> multisets A"
-  unfolding add_mset_add_single[of a M] union_multisets_iff by auto
+  unfolding add_single_right_eq_add_mset[symmetric, of a M] union_multisets_iff by auto
 
 lemma mulex_on_trans:
   "mulex_on P A L M \<Longrightarrow> mulex_on P A M N \<Longrightarrow> mulex_on P A L N"
@@ -346,7 +346,7 @@ lemma mulex_on_union':
 lemma mulex_on_add_mset:
   assumes "mulex_on P A M N" and "m \<in> A"
   shows "mulex_on P A (add_mset m M) (add_mset m N)"
-  unfolding add_mset_add_single[of m M] add_mset_add_single[of m N]
+  unfolding add_single_right_eq_add_mset[symmetric, of m M] add_single_right_eq_add_mset[symmetric, of m N]
   apply (rule mulex_on_union')
   using assms by auto
 
@@ -357,14 +357,14 @@ lemma union_mulex_on_mono:
 lemma mulex_on_add_mset':
   assumes "P m n" and "m \<in> A" and "n \<in> A" and "M \<in> multisets A"
   shows "mulex_on P A (add_mset m M) (add_mset n M)"
-  unfolding add_mset_add_single[of m M] add_mset_add_single[of n M]
+  unfolding add_single_right_eq_add_mset[symmetric, of m M] add_single_right_eq_add_mset[symmetric, of n M]
   apply (rule mulex_on_union)
   using assms by (auto simp: mulex_on_def)
 
 lemma mulex_on_add_mset_mono:
   assumes "P m n" and "m \<in> A" and "n \<in> A" and "mulex_on P A M N"
   shows "mulex_on P A (add_mset m M) (add_mset n N)"
-  unfolding add_mset_add_single[of m M] add_mset_add_single[of n N]
+  unfolding add_single_right_eq_add_mset[symmetric, of m M] add_single_right_eq_add_mset[symmetric, of n N]
   apply (rule union_mulex_on_mono)
   using assms by (auto simp: mulex_on_def)
 

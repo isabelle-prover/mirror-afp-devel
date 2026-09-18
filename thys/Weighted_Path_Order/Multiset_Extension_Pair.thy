@@ -29,7 +29,7 @@ proof
     proof (cases)
       case 1 thus ?thesis using * one_step_implies_mult[of Y' X' s Z2] 
         by (auto simp: add.commute[of _ "{#_#}"] add.assoc intro: add(1))
-          (metis add.hyps add.prems(2) add.prems(3) add_mset_add_single li_trans_l union_mset_add_mset_right) 
+          (metis add.hyps add.prems(2) add.prems(3) add_single_right_eq_add_mset li_trans_l union_mset_add_mset_right) 
     next
       case 2 then obtain y where "y \<in> set_mset Y2" "(z, y) \<in> s" using *(4) add(3, 4)
         by (auto simp: locally_irrefl_def)
@@ -406,7 +406,7 @@ proof -
     case 1 then obtain Y1' z' where **: "(X1', Y1') \<in> multpw ns" "Y1 = add_mset z' Y1'" "(z, z') \<in> ns"
       using * by (auto elim: multpw_split1R)
     then have "(X, Y1' + Y2) \<in> mult2_s ns s" using * 1
-      by auto (metis add_mset_add_single assms(2 - 7) li_trans_l mult2_s_locally_one_step') 
+      by auto (metis add_single_right_eq_add_mset assms(2 - 7) li_trans_l mult2_s_locally_one_step') 
     moreover
     have "(Y1' + Y2, Y) \<in> multpw ns"
       using refl_multpw[OF \<open>refl ns\<close>] * ** multpw_cancel1[OF \<open>trans ns\<close> **(3), of "Y1' + Y2" Y]
@@ -416,7 +416,7 @@ proof -
     case 2 then obtain X1' z' where **: "(X1', Y1') \<in> multpw ns" "X1 = add_mset z' X1'" "(z', z) \<in> ns"
       using * by (auto elim: multpw_split1L)
     then have "(X1' + X2, Y) \<in> mult2_s ns s" using * 2
-      by auto (metis add_mset_add_single assms(2 - 7) li_trans_l mult2_s_locally_one_step')
+      by auto (metis add_single_right_eq_add_mset assms(2 - 7) li_trans_l mult2_s_locally_one_step')
     moreover
     have "(X, X1' + X2) \<in> multpw ns"
       using refl_multpw[OF \<open>refl ns\<close>] * ** multpw_cancel1[OF \<open>trans ns\<close> **(3), of X "X1' + X2"]
@@ -425,7 +425,7 @@ proof -
   next
     case 3 then show ?thesis using assms *
       by (auto simp: mult2_s_locally_one_step' union_commute[of "{#_#}"] union_assoc[symmetric] mult_cancel mult_cancel_add_mset)
-        (metis "*"(1) "*"(2) add_mset_add_single li_trans_l li_trans_r mult2_s_locally_one_step' mult_locally_cancel)
+        (metis "*"(1) "*"(2) add_single_right_eq_add_mset li_trans_l li_trans_r mult2_s_locally_one_step' mult_locally_cancel)
   qed
 qed
 
@@ -441,7 +441,7 @@ lemma mult2_s_locally_cancel:
 proof (induct Z)
   case (add z Z) then show ?case
     using mult2_s_locally_cancel1[OF assms(1-4), of z "X + Z" "Y + Z"] 
-    by auto (metis add_mset_add_single assms(7) li_trans_l) 
+    by auto (metis add_single_right_eq_add_mset assms(7) li_trans_l) 
 qed auto
 
 lemma mult2_s_cancel:

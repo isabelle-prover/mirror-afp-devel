@@ -281,7 +281,7 @@ proof -
 
     have "C' \<prec>\<^sub>c C"
       by (metis (mono_tags, lifting) C_def add.comm_neutral
-          add_mset_add_single add_mset_not_empty
+          add_single_right_eq_add_mset add_mset_not_empty
           clause.order.multiset_extension_def empty_iff
           one_step_implies_multp set_mset_empty)
 
@@ -651,7 +651,7 @@ proof (induction C arbitrary: D rule: wfp_induct_rule)
           by fastforce
 
         moreover have "D' \<prec>\<^sub>c D"
-          by (metis (lifting) D_def add.comm_neutral add_mset_add_single
+          by (metis (lifting) D_def add.comm_neutral add_single_right_eq_add_mset
               add_mset_not_empty clause.order.multiset_extension_def
               empty_iff one_step_implies_multp set_mset_empty)
 

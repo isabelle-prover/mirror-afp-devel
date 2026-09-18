@@ -1931,7 +1931,7 @@ proof -
         qed
         with factorizeI(2) show ?thesis
           using \<open>suffix (state_trail Sm') (state_trail S1)\<close>
-          by (metis add_mset_add_single state_conflict_simp)
+          by (metis add_single_right_eq_add_mset state_conflict_simp)
       qed
     next
       assume "resolve N \<beta> Sm Sm'"
@@ -1991,7 +1991,7 @@ proof -
 
         ultimately have "trail_false_cls (state_trail S1) ((C \<cdot> \<rho>\<^sub>C + D \<cdot> \<rho>\<^sub>D) \<cdot> \<mu> \<cdot> \<gamma>)"
           using tr_false_S1_conf
-          by (metis add_mset_add_single subst_cls_union trail_false_cls_plus)
+          by (metis add_single_right_eq_add_mset subst_cls_union trail_false_cls_plus)
         then show ?thesis
           using \<open>suffix (state_trail Sm') (state_trail S1)\<close>
           using resolveI(1,2) by simp

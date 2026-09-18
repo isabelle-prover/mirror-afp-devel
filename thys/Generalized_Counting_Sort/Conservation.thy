@@ -1070,7 +1070,7 @@ lemma fill_count_item [rule_format]:
       count (mset xs) x + (if the None = x then ub - length xs else 0)"
 proof (induction xs arbitrary: ns, simp add: replicate_count, (rule impI)+,
  simp add: Let_def map_update del: count_add_mset mset_map split del: if_split,
- (erule conjE)+, subst add_mset_add_single, simp only: count_single count_union)
+ (erule conjE)+, subst add_single_right_eq_add_mset[symmetric], simp only: count_single count_union)
   fix y xs and ns :: "nat list"
   let ?i = "index key y (length ns) mi ma"
   let ?ns' = "ns[?i := Suc (ns ! ?i)]"
@@ -1099,7 +1099,7 @@ proof (induction xs arbitrary: ns, simp add: replicate_count, (rule impI)+,
   ultimately show "count (mset ((map the (fill xs ?ns' index key ub mi ma))
     [ns ! ?i := y])) x = count (mset xs) x + (if y = x then 1 else 0) +
     (if the None = x then ub - length (y # xs) else 0)"
-  proof (subst mset_update, simp add: fill_length, subst add_mset_add_single, simp
+  proof (subst mset_update, simp add: fill_length, subst add_single_right_eq_add_mset[symmetric], simp
    only: count_diff count_single count_union, subst nth_map, simp add: fill_length,
    subst add.assoc, subst (3) add.commute, subst add.assoc [symmetric],
    subst add_right_cancel)
@@ -1698,7 +1698,7 @@ next
       by (metis append_take_drop_id count_union mset_append)
     with B [symmetric] show "count (mset ws') x + count (mset xs') x = f x"
     proof (simp add: round_suc_suc_def Let_def del: count_add_mset mset_map
-        split: if_split_asm, subst (1 2) add_mset_add_single, simp
+        split: if_split_asm, subst (1 2) add_single_right_eq_add_mset[symmetric], simp
         only: count_single count_union)
       let ?nmi = "mini ?ws key"
       let ?nma = "maxi ?ws key"

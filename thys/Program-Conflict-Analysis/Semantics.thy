@@ -159,7 +159,7 @@ lemma valid_union_conc:
 
 lemma valid_add_mset_conc: 
   "valid fg (add_mset x c') \<longleftrightarrow> (valid fg c' \<and> mon_s fg x \<inter> mon_c fg c' = {})"
-  unfolding add_mset_add_single[of x c'] valid_union_conc by (auto simp: mon_s_def)
+  unfolding add_single_right_eq_add_mset[symmetric, of x c'] valid_union_conc by (auto simp: mon_s_def)
 
 lemmas valid_unconc = valid_union_conc valid_add_mset_conc
 
@@ -213,7 +213,7 @@ lemma atU_single_top[simp]: "atU U {#u#r#} = (u\<in>U)"
   by (auto) (* This is also done by atU_single, atU_s.simps *)
 
 lemma atU_add_mset[simp]: "atU U (add_mset c c2) = (atU_s U c \<or> atU U c2)"
-  unfolding add_mset_add_single[of c c2] atU_union by auto
+  unfolding add_single_right_eq_add_mset[symmetric, of c c2] atU_union by auto
 
 lemma atU_xchange_stack: "atU U (add_mset (u#r) c) \<Longrightarrow> atU U (add_mset (u#r') c)"
   by (simp)
@@ -248,7 +248,7 @@ lemma atUV_add_mset[simp]: "
     (atU U {#c#} \<and> atU V c2) \<or>
     (atU V {#c#} \<and> atU U c2)
   )"
-  unfolding add_mset_add_single[of c c2]
+  unfolding add_single_right_eq_add_mset[symmetric, of c c2]
   unfolding atUV_union
   by auto
 

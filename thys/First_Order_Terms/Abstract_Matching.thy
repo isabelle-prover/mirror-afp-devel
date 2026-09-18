@@ -180,7 +180,7 @@ lemma MATCH1_mono:
   using Var apply force
   using Var apply force
   using Fun
-  by (metis (no_types, lifting) add.assoc add_mset_add_single)
+  by (metis (no_types, lifting) add.assoc add_single_right_eq_add_mset)
 
 lemma matchrel_mono:
   assumes "(x, y) \<in> matchrel"

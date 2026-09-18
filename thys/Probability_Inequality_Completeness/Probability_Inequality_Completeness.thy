@@ -1163,7 +1163,7 @@ proof -
           by (simp,
               metis (no_types, lifting)
                     ab_semigroup_add_class.add_ac(1)
-                    add_mset_add_single
+                    add_single_right_eq_add_mset
                     image_mset_single
                     image_mset_union
                     second_component_msub
@@ -1403,7 +1403,7 @@ proof -
                     mset_map mset_remove1
                     prod.collapse)
         with \<diamondsuit>(1) A have "mset (map snd (\<JJ> ?\<Psi>' \<Delta>)) + {# ?\<gamma> #} \<subseteq># mset \<Gamma>"
-          by (metis add_mset_add_single
+          by (metis add_single_right_eq_add_mset
                     image_eqI
                     insert_subset_eq_iff
                     mset_remove1
@@ -2152,7 +2152,7 @@ proof -
       by (cases "find (\<lambda> \<psi>. (uncurry (\<rightarrow>)) \<psi> = snd \<delta>) \<Psi> = None",
           simp,
           metis (no_types, lifting)
-                add_mset_add_single
+                add_single_right_eq_add_mset
                 image_mset_single
                 image_mset_union
                 mset_subset_eq_multiset_union_diff_commute
@@ -2219,7 +2219,7 @@ proof -
       have "mset (map snd (\<YY>\<^sub>\<bullet> \<Psi> (\<delta> # \<Delta>))) \<subseteq># mset (map (uncurry (\<rightarrow>)) (\<XX> \<Psi> (\<delta> # \<Delta>)))"
         using Cons
         by (cases "find (\<lambda> \<psi>. (uncurry (\<rightarrow>)) \<psi> = snd \<delta>) \<Psi> = None",
-            simp, metis add_mset_add_single
+            simp, metis add_single_right_eq_add_mset
                         mset_subset_eq_add_left
                         subset_mset.order_trans,
             fastforce)
@@ -2390,7 +2390,7 @@ proof -
             mset (\<XX>\<^sub>\<bullet> \<Psi> (\<delta> # \<Delta>) @ (\<delta> # \<Delta>) \<ominus> \<BB> \<Psi> (\<delta> # \<Delta>))"
         using Cons
         by (cases "find (\<lambda> \<psi>. (uncurry (\<rightarrow>)) \<psi> = snd \<delta>) \<Psi> = None",
-            simp, metis add_mset_add_single second_component_msub subset_mset.diff_add_assoc2,
+            simp, metis add_single_right_eq_add_mset second_component_msub subset_mset.diff_add_assoc2,
             fastforce)
     }
     then show ?case by blast
@@ -2446,7 +2446,7 @@ proof -
             = mset (map (uncurry (\<rightarrow>)) (\<YY> \<Psi> \<Delta> \<ominus> ?\<ff> \<Psi> \<Delta> @ ((\<delta> # \<Delta>) \<ominus> \<BB> \<Psi> \<Delta>)))"
           by (simp,
               metis (no_types, lifting)
-                    add_mset_add_single
+                    add_single_right_eq_add_mset
                     image_mset_single
                     image_mset_union
                     second_component_msub
@@ -2535,7 +2535,7 @@ proof -
                      @ (remove1 \<delta> ((\<delta> # \<Delta>) \<ominus> ?C))))
                = mset ((?\<alpha> \<rightarrow> (?\<alpha> \<rightarrow> ?\<beta>) \<rightarrow> ?\<gamma>) # map (uncurry (\<rightarrow>)) (?D @ (\<Delta> \<ominus> ?C)))"
           using
-            add_mset_add_single
+            add_single_right_eq_add_mset
             image_mset_add_mset
             prod.simps(2)
             subset_mset.diff_add_assoc2
@@ -2932,7 +2932,7 @@ proof -
         hence "mset (map fst \<Sigma>) \<subseteq># mset \<Phi>"
           using \<Sigma>(2)
           by (simp,
-             metis add_mset_add_single
+             metis add_single_right_eq_add_mset
                    diff_single_trivial
                    mset_map set_mset_mset
                    subset_eq_diff_conv)
@@ -3168,7 +3168,7 @@ proof -
         then have B: "{#case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa#}
                    \<subseteq># add_mset (case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa)
                                {#x \<squnion> y. (x, y) \<in># mset (\<JJ> \<Sigma> \<Delta>)#} - image_mset snd (mset (\<EE> \<Sigma> \<Delta>))"
-          by (metis add_mset_add_single subset_mset.le_add_diff)
+          by (metis add_single_right_eq_add_mset subset_mset.le_add_diff)
         have "add_mset (case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa) {#x \<squnion> y. (x, y) \<in># mset (\<JJ> \<Sigma> \<Delta>)#}
               - image_mset snd (mset (\<EE> \<Sigma> \<Delta>)) - {#case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa#}
             = {#x \<squnion> y. (x, y) \<in># mset (\<JJ> \<Sigma> \<Delta>)#} - image_mset snd (mset (\<EE> \<Sigma> \<Delta>))"
@@ -3177,7 +3177,7 @@ proof -
                   - (add_mset (case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa) {#x \<squnion> y. (x, y) \<in># mset (\<JJ> \<Sigma> \<Delta>)#}
                   - image_mset snd (mset (\<EE> \<Sigma> \<Delta>)))
                \<subseteq># {#x \<rightarrow> y. (x, y) \<in># mset (\<EE> \<Sigma> \<Delta>)#}"
-          using A B by (metis (no_types) add_mset_add_single
+          using A B by (metis (no_types) add_single_right_eq_add_mset
                                          subset_eq_diff_conv
                                          subset_mset.diff_diff_right)
         hence "add_mset (case \<delta> of (x, xa) \<Rightarrow> x \<squnion> xa) (image_mset fst (mset \<Phi>))
@@ -3451,7 +3451,7 @@ proof -
               "mset (map snd \<Sigma>) \<subseteq># mset (map (uncurry (\<squnion>)) \<Delta>)"
           using \<star>
           by (simp, simp,
-              metis add_mset_add_single
+              metis add_single_right_eq_add_mset
                     diff_single_trivial
                     image_set
                     mset_map
@@ -4200,7 +4200,7 @@ proof -
           then show ?case by (cases "snd \<sigma> = \<delta>", simp+)
         qed
         with \<Sigma>(1) have "mset (map snd \<Sigma>) \<subseteq># mset (\<Delta> @ \<Gamma>)"
-          by (simp, metis add_mset_add_single
+          by (simp, metis add_single_right_eq_add_mset
                           diff_single_trivial
                           mset_map
                           set_mset_mset
@@ -4982,7 +4982,7 @@ proof (rule ccontr)
     unfolding relative_maximals_def
     by (blast, meson in_multiset_in_set)
   hence "mset (\<psi> # \<Phi>) \<subseteq># mset \<Gamma>"
-    by (simp, metis add_mset_add_single
+    by (simp, metis add_single_right_eq_add_mset
                     mset_subset_eq_mono_add_left_cancel
                     mset_subset_eq_single
                     subset_mset.add_diff_inverse)
@@ -6741,7 +6741,7 @@ proof -
         case None
         then show ?thesis
           by (simp, metis Cons.hyps
-                          add_mset_add_single
+                          add_single_right_eq_add_mset
                           mset_map mset_subset_eq_add_left subset_mset.order_trans)
       next
         case (Some \<sigma>)
@@ -7867,7 +7867,7 @@ next
       moreover have "mset \<Sigma> \<subseteq># mset ((\<sim> \<top>) # \<Phi>)"
         using \<open>\<Sigma> \<in> \<M> (\<sim> \<top> # \<Phi>) \<phi>\<close> relative_maximals_def by blast
       ultimately have "mset \<Sigma> \<subseteq># mset \<Phi>"
-        by (metis add_mset_add_single mset.simps(2) mset_remove1 subset_eq_diff_conv)
+        by (metis add_single_right_eq_add_mset mset.simps(2) mset_remove1 subset_eq_diff_conv)
       moreover have "\<not> (\<Sigma> :\<turnstile> \<phi>)"
         using \<open>\<Sigma> \<in> \<M> (\<sim> \<top> # \<Phi>) \<phi>\<close> relative_maximals_def by blast
       ultimately have "(\<bar> \<Phi> \<bar>\<^bsub>\<phi>\<^esub>) \<ge> length \<Sigma>"

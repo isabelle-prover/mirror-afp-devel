@@ -591,7 +591,7 @@ procedure_spec insert (heap, l, r, el) returns (heap, l, r)
   \<close>
   apply vcg_cs 
   subgoal by (simp add: heap_appended_el)
-  subgoal by (metis arr_mset_append_alt add_mset_add_single)
+  subgoal by (metis arr_mset_append_alt add_single_right_eq_add_mset)
   done
 
 subsubsection \<open>\<open>sift_down\<close>, \<open>del_min\<close> and \<open>make_heap\<close>\<close>

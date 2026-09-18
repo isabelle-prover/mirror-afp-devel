@@ -264,7 +264,7 @@ proof -
       hence "x \<notin> vars_term r'" unfolding r'_def by (auto simp: term.set_map)
       with disj have "x \<in># vars_ctxt_ms (ctxt_of_pos_term p s')" by auto
       with x(2) have "{#x,x#} \<subseteq># vars_term_ms s'" unfolding vss
-        by (metis add_mset_add_single single_subset_iff subset_mset.add_mono)
+        by (metis add_single_right_eq_add_mset single_subset_iff subset_mset.add_mono)
       from mset_subset_eq_count[OF this, of x] 
       have "count (vars_term_ms s') x \<ge> 2" 
         by auto

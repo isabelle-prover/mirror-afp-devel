@@ -108,7 +108,7 @@ proof (cases D C rule: factoring.cases)
     by argo
 
   then show ?thesis
-    by (metis (lifting) add.comm_neutral add_mset_add_single add_mset_not_empty 
+    by (metis (lifting) add.comm_neutral add_single_right_eq_add_mset add_mset_not_empty 
         clause.order.multiset_extension_def empty_iff local.factoringI(3)
         one_step_implies_multp set_mset_empty)
 qed

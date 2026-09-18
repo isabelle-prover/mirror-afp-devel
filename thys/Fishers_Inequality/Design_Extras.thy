@@ -407,7 +407,7 @@ next
     by (metis insert_DiffM size_eq_Suc_imp_elem) 
   then have db: "pbd.del_block \<V> = \<B> - A" by(simp add: pbd.del_block_def)
   then have "\<B> - ?A' = \<B> - A + {#\<V>#}" using Suc.prems(2) Suc.prems(4)
-    by (metis (no_types, lifting) Suc.prems(3) ar add_diff_cancel_left' add_mset_add_single add_right_cancel 
+    by (metis (no_types, lifting) Suc.prems(3) ar add_diff_cancel_left' add_single_right_eq_add_mset add_right_cancel 
         pbd.del_block_def remove_1_mset_id_iff_notin ss subset_mset.lessE trivial_add_mset_remove_iff) 
   then have "\<V> \<in># (\<B> - ?A')" by simp 
   then have "pairwise_balance \<V> (\<B> - A) (\<Lambda> - (Suc x))" using db bgt diff_Suc_eq_diff_pred 
@@ -486,7 +486,7 @@ lemma inter_num_le_block_size:
 proof (rule ccontr)
   assume a: "\<not> (\<m> \<le> card bl)"
   obtain bl' where blin: "bl' \<in># \<B> - {#bl#}"
-    using assms by (metis add_mset_add_single diff_add_inverse2 diff_is_0_eq' multiset_nonemptyE 
+    using assms by (metis add_single_right_eq_add_mset diff_add_inverse2 diff_is_0_eq' multiset_nonemptyE 
         nat_1_add_1 remove1_mset_eqE size_single zero_neq_one)
   then have const: "bl |\<inter>| bl' = \<m>" using const_intersect assms by auto
   thus False using inter_num_max_bound(1) finite_blocks 

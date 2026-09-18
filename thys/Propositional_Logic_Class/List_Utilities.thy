@@ -45,7 +45,7 @@ next
         fastforce,
         metis
           add.commute
-          add_mset_add_single
+          add_single_right_eq_add_mset
           diff_single_trivial
           in_multiset_in_set
           mset.simps(2)
@@ -364,7 +364,7 @@ proof -
           by (metis (no_types)
                 Diff_eq_empty_iff_mset
                 \<open>mset \<Phi> \<subseteq># mset (map f (\<gamma> # \<Gamma>))\<close>
-                add_mset_add_single
+                add_single_right_eq_add_mset
                 cancel_ab_semigroup_add_class.diff_right_commute
                 diff_diff_add mset_map)
         with Cons show ?thesis
@@ -880,7 +880,7 @@ lemma list_subtract_not_member:
       simp,
       simp,
       metis
-        add_mset_add_single
+        add_single_right_eq_add_mset
         diff_subset_eq_self
         insert_DiffM2
         insert_subset_eq_iff

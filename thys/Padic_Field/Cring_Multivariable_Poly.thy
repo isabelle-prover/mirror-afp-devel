@@ -2205,7 +2205,7 @@ next
             by fastforce
           have 311: " (mset_to_IP R m \<Otimes> x) = mset_to_IP R m \<Otimes>\<^sub>p mset_to_IP R {#x#}"
             using  "0" "2"
-            by (metis add_mset_add_single monom_add_mset monom_mult)
+            by (metis add_single_right_eq_add_mset monom_add_mset monom_mult)
           have 312: "carrier_coeff a "
             using assms indexed_pset_in_carrier by blast
           have 313: "carrier_coeff (mset_to_IP R m)"
@@ -5225,7 +5225,7 @@ next
     then have "(P \<Otimes>\<^sub>p mset_to_IP R (add_mset x m)) = P \<Otimes>\<^sub>p((mset_to_IP R m) \<Otimes> x)"
       by simp
     then have "(P \<Otimes>\<^sub>p mset_to_IP R (add_mset x m)) = P \<Otimes>\<^sub>p((mset_to_IP R m) \<Otimes>\<^sub>p (mset_to_IP R {#x#}))"
-      by (metis add_mset_add_single monom_mult)
+      by (metis add_single_right_eq_add_mset monom_mult)
     then have I3: "(P \<Otimes>\<^sub>p mset_to_IP R (add_mset x m)) = (P \<Otimes>\<^sub>p(mset_to_IP R m)) \<Otimes>\<^sub>p (mset_to_IP R {#x#})"
       by (metis I0 P_ring_mult_assoc indexed_pset_in_carrier mset_to_IP_closed set_eq_subset)
     have "poly_eval R  S g (P \<Otimes>\<^sub>p mset_to_IP R m \<Otimes>\<^sub>p mset_to_IP R {#x#}) =
@@ -5248,7 +5248,7 @@ next
          poly_eval R S g P \<Otimes>\<^sub>p (poly_eval R  S g ((mset_to_IP R m) \<Otimes>\<^sub>p (mset_to_IP R {#x#})))"
       by (metis I1 I2 assms(2)  mset_to_IP_closed poly_eval_indexed_pmult')
     then show ?thesis
-      by (metis add_mset_add_single monom_mult)
+      by (metis add_single_right_eq_add_mset monom_mult)
   qed
 qed
 

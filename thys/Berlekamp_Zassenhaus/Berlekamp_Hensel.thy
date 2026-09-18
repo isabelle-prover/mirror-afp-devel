@@ -528,7 +528,7 @@ proof (induct Fs arbitrary: C rule: wf_induct[OF wf_measure[of size]])
           by (simp add: msed_map_invR)
       then obtain g hs where gs: "gs = {# g #} + hs" and gD: "Mp g = Mp D" 
         and hsH: "image_mset Mp hs = image_mset Mp H"
-        using gs_fs by (metis add_mset_add_single union_commute)
+        using gs_fs by (metis add_single_right_eq_add_mset union_commute)
       from dgs[unfolded q.factorization_m_def split] 
       have eq: "q.Mp C = q.Mp (smult d (prod_mset gs))" 
         and irr_mon: "\<And> g. g\<in>#gs \<Longrightarrow> q.irreducible\<^sub>d_m g \<and> monic (q.Mp g)"

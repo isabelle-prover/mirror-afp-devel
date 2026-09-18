@@ -3119,7 +3119,7 @@ proof (cases N \<beta> S S' rule: propagate.cases)
   qed
 
   moreover from propagateI have "atm_of L \<cdot>a \<gamma> \<preceq>\<^sub>B \<beta>"
-    by (metis add_mset_add_single atm_of_subst_lit subst_cls_single subst_cls_union
+    by (metis add_single_right_eq_add_mset atm_of_subst_lit subst_cls_single subst_cls_union
         union_single_eq_member)
 
   ultimately have "atm_of L \<cdot>a \<mu> \<cdot>a \<gamma> \<preceq>\<^sub>B \<beta>"
@@ -4099,7 +4099,7 @@ proof (cases N \<beta> S S' rule: propagate.cases)
         by (auto elim: true_clss_if_set_mset_eq[rotated])
     qed
     thus "fset N \<TTurnstile>\<G>e {C\<^sub>0 \<cdot> \<mu> + {#L \<cdot>l \<mu>#}}"
-      by (metis (no_types, opaque_lifting) add_mset_add_single[of "L \<cdot>l \<mu>" "C\<^sub>0 \<cdot> \<mu>"]
+      by (metis (no_types, opaque_lifting) add_single_right_eq_add_mset[symmetric, of "L \<cdot>l \<mu>" "C\<^sub>0 \<cdot> \<mu>"]
           grounding_of_clss_singleton[of "add_mset L C\<^sub>0 \<cdot> \<mu>"] subst_cls_add_mset[of L C\<^sub>0 \<mu>])
   qed
   thus ?thesis

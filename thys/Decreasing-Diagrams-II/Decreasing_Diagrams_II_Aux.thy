@@ -132,13 +132,13 @@ lemma mult_on_union': "(M,N) \<in> mult r \<Longrightarrow> (M + K, N + K) \<in>
 using mulex_on_union'[of "\<lambda>x y. (x,y) \<in> r" UNIV] by (auto simp: mulex_iff_mult)
 
 lemma mult_on_add_mset: "(M,N) \<in> mult r \<Longrightarrow> (add_mset k M, add_mset k N) \<in> mult r"
-unfolding add_mset_add_single[of k M] add_mset_add_single[of k N] by (rule mult_on_union')
+unfolding add_single_right_eq_add_mset[symmetric, of k M] add_single_right_eq_add_mset[symmetric, of k N] by (rule mult_on_union')
 
 lemma mult_empty[simp]: "(M,{#}) \<notin> mult R"
 by (metis mult_def not_less_empty trancl.cases)
 
 lemma mult_singleton[simp]: "(x, y) \<in> r \<Longrightarrow> (add_mset x M, add_mset y M) \<in> mult r"
-unfolding add_mset_add_single[of x M] add_mset_add_single[of y M]
+unfolding add_single_right_eq_add_mset[symmetric, of x M] add_single_right_eq_add_mset[symmetric, of y M]
 apply (rule mult_on_union)
 using mult1_singleton[of x y r] by (auto simp add: mult_def mult_on_union)
 

@@ -685,7 +685,7 @@ lemma fun_diff_Var[simp]: "fun_diff (Var x) t = 0"
   by (cases t, auto)
 
 lemma add_many_mult: "(\<And> y. y \<in># N \<Longrightarrow> (y,x) \<in> R) \<Longrightarrow> (N + M, add_mset x M) \<in> mult R"
-  by (metis add.commute add_mset_add_single multi_member_last multi_self_add_other_not_self one_step_implies_mult)
+  by (metis add.commute add_single_right_eq_add_mset multi_member_last multi_self_add_other_not_self one_step_implies_mult)
 
 lemma fun_diff_num_funs: "fun_diff l t \<le> num_funs l" 
 proof (induct l t rule: fun_diff.induct)

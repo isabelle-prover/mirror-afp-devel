@@ -116,7 +116,7 @@ lemmas LSC_invs = LSC_AndL_inv LSC_OrL_inv
 lemma LSC_weaken_set: "\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> \<Gamma> + \<Theta> \<Rightarrow>\<^sub>n"
   by(induction rule: LSC.induct) (auto simp: add.assoc)
 lemma LSC_weaken: "\<Gamma> \<Rightarrow>\<^sub>n \<Longrightarrow> F,\<Gamma> \<Rightarrow>\<^sub>n"
-  using LSC_weaken_set by (metis add_mset_add_single)
+  using LSC_weaken_set by (metis add_single_right_eq_add_mset)
 
 lemma LSC_Contract:
   assumes sfp: "F, F, \<Gamma> \<Rightarrow>\<^sub>n"
@@ -254,7 +254,7 @@ proof(induction G arbitrary: \<Gamma>)
   from Cons.IH[OF 1 2] have IH: "disj_of_clause g, mset (map (\<lambda>d. F \<^bold>\<or> disj_of_clause d) G) + \<Gamma> \<Rightarrow>\<^sub>n" 
     by(simp add: add_mset_commute)
   from \<open>F, \<Gamma> \<Rightarrow>\<^sub>n\<close> have 3: "F, mset (map (\<lambda>d. F \<^bold>\<or> disj_of_clause d) G) + \<Gamma> \<Rightarrow>\<^sub>n"
-    using LSC_weaken_set by (metis add.assoc add.commute add_mset_add_single)
+    using LSC_weaken_set by (metis add.assoc add.commute add_single_right_eq_add_mset)
   from IH 3 show ?case by auto
 qed simp
 

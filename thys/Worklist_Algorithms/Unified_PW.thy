@@ -419,7 +419,7 @@ context Search_Space_finite begin
     "size wait' < size wait" if "wait' \<subseteq># wait - {#a#}" "a \<in># wait"
     using that
     by (metis
-        Diff_eq_empty_iff_mset add_diff_cancel_left' add_mset_add_single add_mset_not_empty
+        Diff_eq_empty_iff_mset add_diff_cancel_left' add_single_right_eq_add_mset add_mset_not_empty
         insert_subset_eq_iff mset_le_add_mset_decr_left1 mset_subset_size subset_mset_def)
 
   lemma aux13:

@@ -198,7 +198,7 @@ proof -
 
   show "\<forall>k \<in># A - B. \<exists>j \<in># B - A. (k, j) \<in> r"
     by (metis A_def B_def \<open>\<forall>a. a \<in># A' \<longrightarrow> (a, b) \<in> r\<close> \<open>b \<in># B - A\<close> \<open>b \<notin># A'\<close> add_diff_cancel_left'
-        add_mset_add_single diff_diff_add_mset diff_single_trivial)
+        add_single_right_eq_add_mset diff_diff_add_mset diff_single_trivial)
 qed
 
 lemma asymp_multp:
@@ -327,7 +327,7 @@ lemma multp_add_mset':
   assumes "R x y"
   shows "multp R (add_mset x X) (add_mset y X)"
   using assms
-  by (metis add_mset_add_single empty_iff insert_iff one_step_implies_multp set_mset_add_mset_insert
+  by (metis add_single_right_eq_add_mset empty_iff insert_iff one_step_implies_multp set_mset_add_mset_insert
         set_mset_empty)
 
 lemma multp_add_mset_reflclp:

@@ -1016,12 +1016,12 @@ proof (cases N s rule: ord_res_11_invars.cases)
           by (metis atms_of_clss_fimage_iefac atms_of_clss_finsert finsert_absorb funion_upper1)
 
         moreover have "atms_of_cls C |\<subseteq>| atms_of_clss (N |\<union>| U\<^sub>e\<^sub>r)"
-          by (smt (verit) add_mset_add_single atms_of_cls_def dual_order.trans fimage_fsubsetI
+          by (smt (verit) add_single_right_eq_add_mset atms_of_cls_def dual_order.trans fimage_fsubsetI
               fimage_iff fset_fset_mset more_invars(4) step_hyps(1) union_iff)
 
         ultimately show "\<And>E. Some (remove1_mset (- L) C + remove1_mset L D) = Some E \<Longrightarrow>
           atms_of_cls E |\<subseteq>| atms_of_clss (N |\<union>| U\<^sub>e\<^sub>r)"
-          by (smt (verit, ccfv_threshold) add_mset_add_single atms_of_cls_def diff_single_trivial
+          by (smt (verit, ccfv_threshold) add_single_right_eq_add_mset atms_of_cls_def diff_single_trivial
               fimage_iff fset_fset_mset fsubsetI fsubset_funion_eq funionI1 insert_DiffM
               option.inject union_iff)
       next

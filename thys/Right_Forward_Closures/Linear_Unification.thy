@@ -208,7 +208,7 @@ proof -
             assume y: "y \<in># vars_mset_right F" "y \<in> vars_term t" 
             hence "y \<in># vars_term_ms t" by auto
             with y(1) have "{#y,y#} \<subseteq># vars_mset_right E" unfolding E vars_mset_right_add snd_conv              
-              by (metis add_mset_add_single single_subset_iff subset_mset.add_mono)
+              by (metis add_single_right_eq_add_mset single_subset_iff subset_mset.add_mono)
             from mset_subset_eq_count[OF this, of y] 
               lin[unfolded lin_def linear_mset_def, rule_format, of y]
             have False by simp

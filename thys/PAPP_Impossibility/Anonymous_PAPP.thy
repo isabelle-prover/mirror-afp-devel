@@ -275,7 +275,7 @@ next
   interpret A': anon_papp_profile n_voters parties committee_size A'
     by fact
   from assms(3) False have *: "Y \<in># A'" "X \<in># A"
-    by (metis add_mset_add_single insert_noteq_member)+
+    by (metis add_single_right_eq_add_mset insert_noteq_member)+
 
   have "\<not>card_manipulable A X Y"
     by (intro not_manipulable)
@@ -283,7 +283,7 @@ next
     using assms * A.A_subset A'.A_subset A.A_nonempty A'.A_nonempty
     by (auto simp: card_manipulable_def)
   also have "A - {#X#} + {#Y#} = A'"
-    using assms(3) False by (metis add_eq_conv_diff add_mset_add_single)
+    using assms(3) False by (metis add_eq_conv_diff add_single_right_eq_add_mset)
   finally show ?thesis .
 qed
 

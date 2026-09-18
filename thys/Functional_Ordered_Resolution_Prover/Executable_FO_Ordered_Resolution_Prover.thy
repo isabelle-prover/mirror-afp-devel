@@ -80,7 +80,7 @@ declare
   substitution_ops.subst_cls_def [code]
 
 lemma remove1_mset_subset_eq: "remove1_mset a A \<subseteq># B \<longleftrightarrow> A \<subseteq># add_mset a B"
-  by (metis add_mset_add_single subset_eq_diff_conv)
+  by (metis add_single_right_eq_add_mset subset_eq_diff_conv)
 
 lemma Bex_cong: "(\<And>b. b \<in> B \<Longrightarrow> P b = Q b) \<Longrightarrow> Bex B P = Bex B Q"
   by auto

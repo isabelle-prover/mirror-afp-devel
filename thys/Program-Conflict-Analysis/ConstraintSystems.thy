@@ -674,7 +674,7 @@ next
     from REVSPLIT(2) show ?thesis proof (cases rule: mset_unplusm_dist_cases[case_names left' right'])
       case left' \<comment> \<open>Both nodes are reached from the same thread\<close>
       have ATUV: "atUV U V ({#sq'#}+csp_q)" using right C2'FMT R_STACKS(2,3) left'(1)
-        by (metis R_CONV(1) add_mset_add_single atUV_union atU_add_mset union_commute)
+        by (metis R_CONV(1) add_single_right_eq_add_mset atUV_union atU_add_mset union_commute)
       from Cons.hyps[OF _ R_CONV(3) ATUV] cil_length[OF REVSPLIT(3)] cil_length[OF LESPLIT(1)] R_CONV(2) obtain Ml Me where IHAPP: "(entry fg q, Ml, Me) \<in> RUV_cs fg U V" "Ml \<subseteq> mon_loc fg ww21" "Me \<subseteq> mon_env fg ww21" by auto
       from REVSPLIT(1) S_ENTRY_PAT[of "{#q#}", simplified] have S_ENTRY: "(v, mon_w fg w, {#q#}) \<in> S_cs fg 1" by simp
       have MON_COND: "(mon_n fg u \<union> mon fg p) \<inter> (Ml \<union> Me) = {}" proof -

@@ -398,7 +398,7 @@ lemma ground_factoring_smaller_conclusion:
 proof (cases P C rule: ground_factoring.cases)
   case (ground_factoringI t P')
   then show ?thesis
-    by (metis add_mset_add_single mset_subset_eq_exists_conv multi_self_add_other_not_self
+    by (metis add_single_right_eq_add_mset mset_subset_eq_exists_conv multi_self_add_other_not_self
         multp_subset_supersetI totalpD totalp_less_cls transp_less_lit)
 qed
 
@@ -817,7 +817,7 @@ proof -
     from that(2) have "A \<preceq>\<^sub>t atm_of L"
       using totalp_less_trm[THEN totalpD] by auto
     hence "multp (\<prec>\<^sub>t) {#A#} {#atm_of L, atm_of L#}"
-      by (smt (z3) add_mset_add_single add_mset_remove_trivial add_mset_remove_trivial_iff
+      by (smt (z3) add_single_right_eq_add_mset add_mset_remove_trivial add_mset_remove_trivial_iff
           empty_not_add_mset insert_DiffM insert_noteq_member one_step_implies_multp reflclp_iff
           transp_def transp_less_trm union_mset_add_mset_left union_mset_add_mset_right)
     with that(1) show "Pos A \<prec>\<^sub>l L"

@@ -183,12 +183,12 @@ proof (simp only: atomize_imp,
       proof (rule ih)
         show "{#HMSet Ka, HMSet La#} < {#k, l#}"
           unfolding k l
-          by (metis add_mset_add_single hmsetmset_less hmultiset.sel k k_eq_xKa l l_eq_yLa
+          by (metis add_single_right_eq_add_mset hmsetmset_less hmultiset.sel k k_eq_xKa l l_eq_yLa
             le_multiset_right_total mset_lt_single_iff union_less_mono)
       next
         have "\<omega>^x + HMSet Ka < \<omega>^y + HMSet La"
           using k_lt_l[unfolded k_eq_xKa l_eq_yLa]
-          by (metis HMSet_plus add.commute add_mset_add_single)
+          by (metis HMSet_plus add.commute add_single_right_eq_add_mset)
         thus "HMSet Ka < HMSet La"
           using x_eq_y by simp
       qed
@@ -209,7 +209,7 @@ proof (simp only: atomize_imp,
       proof (rule ih)
         show "{#a, y#} < {#k, l#}"
           unfolding k_eq_xKa l_eq_yLa using a_in_K k k_eq_xKa
-          by (metis add_mset_add_single mem_imp_less_HMSet mset_lt_single_iff union_less_mono
+          by (metis add_single_right_eq_add_mset mem_imp_less_HMSet mset_lt_single_iff union_less_mono
             union_single_eq_member)
       next
         show "a < y"

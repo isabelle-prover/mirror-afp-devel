@@ -1023,7 +1023,7 @@ proof -
   proof (intro exI conjI)
     show "Y \<subseteq># mset (x # ys)"
       using y_sub_ys
-      by (metis add_mset_add_single mset.simps(2) mset_subset_eq_add_left
+      by (metis add_single_right_eq_add_mset mset.simps(2) mset_subset_eq_add_left
         subset_mset.add_increasing2)
   next
     show "mset (x # xs) = mset (x # ys) - Y + X"
@@ -1031,7 +1031,7 @@ proof -
       have "X + (mset ys - Y) = mset xs"
         by (simp add: union_commute xs_eq)
       hence "mset (x # xs) = X + (mset (x # ys) - Y)"
-        by (metis add_mset_add_single mset.simps(2) mset_subset_eq_multiset_union_diff_commute
+        by (metis add_single_right_eq_add_mset mset.simps(2) mset_subset_eq_multiset_union_diff_commute
           union_mset_add_mset_right y_sub_ys)
       thus ?thesis
         by (simp add: union_commute)

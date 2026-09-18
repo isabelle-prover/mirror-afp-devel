@@ -88,7 +88,7 @@ sepref_decl_op fmap_update: "fmupd" :: "K \<rightarrow> V \<rightarrow> \<langle
 
 lemma remove1_mset_eq_add_mset_iff:
    \<open>remove1_mset a A = add_mset a A' \<longleftrightarrow> A = add_mset a (add_mset a A')\<close>
-  by (metis add_mset_add_single add_mset_diff_bothsides diff_zero remove1_mset_eqE)
+  by (metis add_single_right_eq_add_mset add_mset_diff_bothsides diff_zero remove1_mset_eqE)
 
 lemma fmap_rel_fmdrop_fmap_rel:
   \<open>(fmdrop p A, fmdrop p' B) \<in> \<langle>K, R\<rangle>fmap_rel\<close>

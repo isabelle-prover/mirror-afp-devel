@@ -348,7 +348,7 @@ proof (induct A)
   case (add x A)
   show ?case 
     by (simp add: add) 
-     (smt (verit, del_insts) add.commute add_mset_add_single image_mset_cong sum_mset.distrib
+     (smt (verit, del_insts) add.commute add_single_right_eq_add_mset image_mset_cong sum_mset.distrib
         sum_mset_singleton_mset)
 qed auto
 

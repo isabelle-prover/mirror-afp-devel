@@ -7726,7 +7726,7 @@ proof -
       remove1_mset (lit_of_glit L\<^sub>G) (cls_of_gcls C\<^sub>G), Var)"
       unfolding \<C>'_def \<open>\<C>\<^sub>G' = Some _\<close> option.map
       apply (simp add: cls_of_gcls_def)
-      by (smt (verit, ccfv_threshold) add_diff_cancel_right' add_mset_add_single atm_of_eq_atm_of
+      by (smt (verit, ccfv_threshold) add_diff_cancel_right' add_single_right_eq_add_mset atm_of_eq_atm_of
           atm_of_lit_of_glit_conv diff_single_trivial glit_of_lit_lit_of_glit
           image_mset_remove1_mset_if insert_DiffM is_pos_neg_not_is_pos msed_map_invR)
     hence \<C>'_eq: "\<C>' = Some (
