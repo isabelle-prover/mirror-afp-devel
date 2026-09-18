@@ -92,9 +92,8 @@ overloading edges_face \<equiv> "edges :: face \<Rightarrow> (vertex \<times> ve
 begin
   definition "\<E> f \<equiv> {(a, f \<bullet> a)|a. a \<in> \<V> f}"
 end
-(*>*)
 
-(*<*)consts op :: "'a \<Rightarrow> 'a" (\<open>_\<^bsup>op\<^esup>\<close> [1000] 999)  (*>*) (* *)
+consts op :: "'a \<Rightarrow> 'a" (\<open>_\<^bsup>op\<^esup>\<close> [1000] 999)
 overloading op_vertices \<equiv> "Graph.op :: vertex list \<Rightarrow> vertex list"
 begin
   definition "(vs::vertex list)\<^bsup>op\<^esup> \<equiv> rev vs"
@@ -105,7 +104,6 @@ begin
   primrec op_graph where "(Face vs f)\<^bsup>op\<^esup> = Face (rev vs) f"
 end
 
-(*<*)
 lemma [simp]: "vertices ((f::face)\<^bsup>op\<^esup>) = (vertices f)\<^bsup>op\<^esup>"
   by (induct f) (simp add: op_vertices_def)
 lemma [simp]: "xs \<noteq> [] \<Longrightarrow> hd (rev xs)= last xs"
@@ -236,11 +234,12 @@ definition noExceptionals :: "graph \<Rightarrow> vertex set \<Rightarrow> bool"
 
 text \<open>An edge $(a,b)$ is contained in face f,
   $b$ is the successor of $a$ in $f$.\<close>
-(*>*)
+(*<*)
 overloading edges_graph \<equiv> "edges :: graph \<Rightarrow> (vertex \<times> vertex) set"
 begin
   definition "\<E> (g::graph) \<equiv> \<Union>\<^bsub>f \<in> \<F> g\<^esub> edges f"
 end
+(*>*)
 
 definition neighbors :: "graph \<Rightarrow> vertex \<Rightarrow> vertex list" where
  "neighbors g v \<equiv> [f\<bullet>v. f \<leftarrow> facesAt g v]"

@@ -915,7 +915,7 @@ qed (*>*)
 
 lemma HaddP_Mem_contra: 
   assumes "H \<turnstile> HaddP x y z" "H \<turnstile> z IN x" "H \<turnstile> OrdP x"
-    shows "H \<turnstile> A"
+    shows "H \<turnstile> A" (*<*)
 proof -
   obtain i::name and j::name and k::name
    where atoms: "atom i \<sharp> (x,y,z)" "atom j \<sharp> (i,x,y,z)" "atom k \<sharp> (i,j,x,y,z)" 

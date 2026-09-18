@@ -174,6 +174,7 @@ shows "\<lbrakk> ss0 \<in> nlists n A \<rbrakk> \<Longrightarrow>
   unfolding kildall_def
   by (smt (verit, ccfv_SIG) in_nlistsE iter_properties_bv mem_Collect_eq prod.collapse
       unstables_def)
+(*>*)
 
 end
 

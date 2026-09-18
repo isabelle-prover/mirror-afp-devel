@@ -315,8 +315,6 @@ proof
   qed
 qed
 
-(*>*)
-
 lemma vertex_set_inclusion:
   shows "vertices_set_formulas (\<T> G k) \<subseteq> V[G]" 
 proof
@@ -403,8 +401,6 @@ proof-
   thus ?thesis 
     by (unfold finite_graph_def, unfold induced_subgraph_from_vert_def, auto)
 qed 
-
-(*>*)
 
 fun graph_interpretation :: "'v digraph \<Rightarrow> ('v \<Rightarrow> nat) \<Rightarrow> (('v \<times> nat) \<Rightarrow> bool)"  where
 "graph_interpretation G f = (\<lambda>(v,i).(if v \<in> V[G] \<and> f(v) = i  then True else False))"
@@ -570,8 +566,6 @@ proof-
   qed  
   thus "satisfiable S" by(unfold satisfiable_def, auto)
 qed
-
-(*>*)
 
 
 fun graph_coloring ::  "(('v \<times> nat) \<Rightarrow> bool) \<Rightarrow> nat  \<Rightarrow> ('v \<Rightarrow> nat)"

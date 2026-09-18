@@ -642,5 +642,6 @@ next
   case (SCallThrowParams es vs e es' C M h l sh b)
   then show ?case by(auto dest: not_inits_def')
 qed(auto)
+(*>*)
 
 end

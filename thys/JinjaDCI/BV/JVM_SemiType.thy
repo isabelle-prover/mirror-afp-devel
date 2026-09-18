@@ -116,14 +116,14 @@ lemma order_sup_state_opt' [intro, simp]:
 (*<*) 
   unfolding sup_state_opt_def sup_state_def sup_ty_opt_def   
   by (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>
-(*<*) 
+(*>*) 
 lemma order_sup_state_opt'' [intro, simp]:
   "wf_prog wf_mb P \<Longrightarrow> 
       order (sup_state_opt P) (opt ((\<Union> {nlists n (types P) |n. n \<le> mxs} ) \<times> nlists ((length Ts + mxl\<^sub>0)) (err (types P))))"   
 (*<*) 
   unfolding sup_state_opt_def sup_state_def sup_ty_opt_def   
   by (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>
-(*<*)
+(*>*)
 (*
 lemma order_sup_state_opt [intro, simp]: 
   "wf_prog wf_mb P \<Longrightarrow> order (sup_state_opt P)"   
@@ -300,6 +300,7 @@ lemma acc_le_listI1 [intro!]:
    apply blast
   apply clarify
   using Cons_less_Conss1 by blast
+(*>*) 
 
 lemma acc_le_listI2 [intro!]:
   " acc (Err.le (subtype P)) \<Longrightarrow> acc (Listn.le (Err.le (subtype P)))"
@@ -335,6 +336,7 @@ lemma acc_le_listI2 [intro!]:
    apply blast
   apply clarify
   using Cons_less_Conss2 by blast
+(*>*)
 
 lemma acc_JVM [intro]:
   "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"

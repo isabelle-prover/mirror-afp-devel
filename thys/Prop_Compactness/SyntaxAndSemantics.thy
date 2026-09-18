@@ -38,8 +38,6 @@ lemma eval_false_implication:
   shows "t_v_evaluation I F \<and> \<not> t_v_evaluation I G "
   by (meson assms t_v_evaluation.simps(7))
 
-(*>*)
-
 definition model :: "('b \<Rightarrow> bool) \<Rightarrow> 'b formula set \<Rightarrow> bool" (\<open>_ model _\<close> [80,80] 80) where
  "I model S \<equiv> (\<forall>F \<in> S. t_v_evaluation I F)"
 
@@ -126,6 +124,7 @@ lemma "tautology (F  \<rightarrow>. (G \<rightarrow>. F))"
   by (simp add: tautology_def)
 
 lemma empty_model: "\<forall>(I::'b \<Rightarrow> bool). I model {}"
+(*<*)
 proof - 
   fix I
   have "\<forall>F\<in> {}. t_v_evaluation (I::'b \<Rightarrow> bool) F" by simp
@@ -189,7 +188,8 @@ moreover
   ultimately
   show ?thesis by auto
 qed
- 
+(*>*)
+
 definition equivalent:: "'b formula  \<Rightarrow> 'b formula \<Rightarrow> bool" where
   "equivalent F G \<equiv> (\<forall> I. (t_v_evaluation I F) = (t_v_evaluation I G))"
 

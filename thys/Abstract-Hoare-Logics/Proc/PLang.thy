@@ -82,7 +82,6 @@ by(fast intro:exec.intros)
 
 lemma WhileI: "\<lbrakk>b s; s -c\<rightarrow> t; t -WHILE b DO c\<rightarrow> u\<rbrakk> \<Longrightarrow> s -WHILE b DO c\<rightarrow> u"
 by(fastforce elim:exec.WhileTrue)
-(*>*)
 
 text\<open>This semantics turns out not to be fine-grained
 enough. The soundness proof for the Hoare logic below proceeds by

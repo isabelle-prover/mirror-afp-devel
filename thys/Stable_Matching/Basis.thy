@@ -8,7 +8,7 @@ begin
 (*>*)
 section\<open> Preliminaries \<close>
 
-(*>*)(*<*)
+(*<*)
 
 subsection\<open> HOL Detritus \<close>
 

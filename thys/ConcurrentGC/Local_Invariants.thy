@@ -403,7 +403,6 @@ locset_definition "mo_ptest_locs =
 locset_definition "mo_valid_ref_locs =
   (prefixed ''store_del'' \<union> prefixed ''store_ins'' \<union> {deref_del, lop_store_ins})"
 
-(*>*)
 text\<open>
 
 This local invariant for the mutators illustrates the handshake

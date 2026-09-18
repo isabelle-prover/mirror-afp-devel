@@ -812,7 +812,7 @@ proof (cases)
     by (simp add: sum_rv)
   ultimately show ?thesis 
     by simp
-qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)
+qed(*nonnegative function integral set*)
 
 subsection \<open>Nonnegative Functions\<close>
 

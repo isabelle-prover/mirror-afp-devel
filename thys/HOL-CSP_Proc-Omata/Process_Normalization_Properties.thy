@@ -38,7 +38,7 @@ chapter \<open>Advanced Properties of ProcOmata\<close>
 theory Process_Normalization_Properties
   imports Process_Normalization Deterministic_Processes
 begin
-  (*<*)
+(*>*)
 
 
 section \<open>Determinism of deterministic ProcOmata\<close>
@@ -584,4 +584,4 @@ lemma is_ticks_length_P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_d_iff :
 
 (*<*)
 end
-  (*>*)
+(*>*)

@@ -3268,6 +3268,7 @@ shows extend_1_eval: "P \<turnstile> \<langle>e,s,b\<rangle> \<rightarrow> \<lan
    \<Longrightarrow> (\<And>s' e'.  P \<turnstile> \<langle>e'',s''\<rangle> \<Rightarrow> \<langle>e',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>)"
 and extend_1_evals: "P \<turnstile> \<langle>es,s,b\<rangle> [\<rightarrow>] \<langle>es'',s'',b''\<rangle> \<Longrightarrow> P,shp s \<turnstile>\<^sub>b (es,b) \<surd>
    \<Longrightarrow> (\<And>s' es'. P \<turnstile> \<langle>es'',s''\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle>)"
+(*<*)
 proof (induct rule: red_reds.inducts)
   case (RedNew h a C FDTs h' l sh)
   then have e':"e' = addr a" and s':"s' = (h(a \<mapsto> blank P C), l, sh)"

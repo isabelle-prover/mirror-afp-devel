@@ -29,7 +29,6 @@ fun formulaP_from_tree_b :: "(nat \<Rightarrow> 'b) \<Rightarrow> tree_b \<Right
    ((formulaP_from_tree_b g T1) \<rightarrow>. (formulaP_from_tree_b g T2))"
 | "formulaP_from_tree_b g (Tree (Leaf (Suc (Suc (Suc (Suc 0))))) T) =
    (\<not>. (formulaP_from_tree_b g T))"
-(*<*)
 
 lemma "formulaP_from_tree_b  (\<lambda>n. n) (Leaf  0) = \<bottom>."
 by simp

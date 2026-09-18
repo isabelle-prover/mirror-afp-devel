@@ -19,7 +19,7 @@ keywords
       "locset_definition" :: thy_defn
   and "intern_com" :: thy_decl
 begin
-
+(*>*)
 text\<open>
 
 Infrastructure for reasoning about CIMP programs. See AFP entry \<open>ConcurrentGC\<close> for examples

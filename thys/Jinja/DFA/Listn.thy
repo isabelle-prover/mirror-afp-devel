@@ -127,6 +127,7 @@ proof (unfold le_def lesssub_def lesub_def)
   with xs_ys_zs inA have "\<forall>i<length xs. r (xs!i) (zs!i)" by blast
   with len_xs_zs show "list_all2 r xs zs" by (simp add:list_all2_conv_all_nth)
 qed
+(*>*)
 
 lemma le_list_antisym: 
   assumes ord: "order r A"
@@ -192,7 +193,7 @@ proof(auto simp only:nlists_def le_def lesssub_def lesub_def)
   have "\<forall>i<length xs. r (xs!i)  (zs!i)" using trans  xs_ys ys_zs by blast
   thus "list_all2 r xs zs" using xs_ys ys_zs by (simp add:list_all2_conv_all_nth)
 qed
-
+(*>*)
 
 lemma le_list_antisym2: 
   assumes "order r A"
@@ -214,7 +215,7 @@ proof(auto simp only:nlists_def le_def lesssub_def lesub_def)
   have "\<forall>i<length xs. xs!i = ys!i" using antisymm len_eq_xs_ys by auto
   then show "xs = ys" using len_eq_xs_ys by (simp add:list_eq_iff_nth_eq)
 qed
-(*<*)
+(*>*)
 
 
 lemma order_listI2[intro!] : "order r A \<Longrightarrow> order(Listn.le r) (\<Union>{nlists n A |n. n \<le> mxs})"
@@ -228,7 +229,7 @@ proof-
   moreover have "\<forall>x\<in>?A.  \<forall>y\<in>?A. \<forall>z\<in>?A. x \<sqsubseteq>\<^bsub>?r\<^esub>y \<and> y \<sqsubseteq>\<^bsub>?r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>?r\<^esub> z" using ord le_list_trans2 by blast
   ultimately show ?thesis by (auto simp only: order_def)
 qed
-
+(*>*)
 
 lemma lesub_list_impl_same_size [simp]: "xs [\<sqsubseteq>\<^bsub>r\<^esub>] ys \<Longrightarrow> size ys = size xs"
 (*<*)

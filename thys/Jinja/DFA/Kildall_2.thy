@@ -42,6 +42,7 @@ where
 (** propa **)
 lemma (in Semilat) merges_incr_lemma:
   "\<forall>xs. xs \<in> nlists n A \<longrightarrow> (\<forall>(p,x)\<in>set ps. p<size xs \<and> x \<in> A) \<longrightarrow> xs [\<sqsubseteq>\<^bsub>r\<^esub>] merges f ps xs"
+(*<*)
   apply (induct ps)
   apply auto[1]
   apply simp
@@ -50,7 +51,6 @@ lemma (in Semilat) merges_incr_lemma:
          apply force
         apply simp+     
   done       
-
 (*>*)
 
 lemma (in Semilat) merges_incr:

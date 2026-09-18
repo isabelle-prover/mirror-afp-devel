@@ -39,6 +39,7 @@ apply(clarsimp simp add: wwf_J_mdecl_def)
 apply(frule WT_fv)
 apply(auto)
 done
+(*>*)
 
 lemma wf_prog_wwf_prog: "wf_J_prog P \<Longrightarrow> wwf_J_prog P"
 by(erule wf_prog_lift)(erule wf_mdecl_wwf_mdecl)

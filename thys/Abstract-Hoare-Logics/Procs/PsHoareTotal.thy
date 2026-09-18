@@ -34,7 +34,7 @@ where
 | Semi: "\<lbrakk> C \<turnstile>\<^sub>t {P}c1{Q}; C \<turnstile>\<^sub>t {Q}c2{R} \<rbrakk> \<Longrightarrow> C \<turnstile>\<^sub>t {P} c1;c2 {R}"
 | If: "\<lbrakk> C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> b s}c{Q}; C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> ~b s}d{Q}  \<rbrakk> \<Longrightarrow>
       C \<turnstile>\<^sub>t {P} IF b THEN c ELSE d {Q}"
-| While:(*>*)
+| While:
   "\<lbrakk>wf r;  \<forall>s'. C \<turnstile>\<^sub>t {\<lambda>z s. P z s \<and> b s \<and> s' = s} c {\<lambda>z s. P z s \<and> (s,s') \<in> r}\<rbrakk>
    \<Longrightarrow> C \<turnstile>\<^sub>t {P} WHILE b DO c {\<lambda>z s. P z s \<and> \<not>b s}"
 

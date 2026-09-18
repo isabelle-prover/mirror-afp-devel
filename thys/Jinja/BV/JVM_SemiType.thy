@@ -122,7 +122,7 @@ lemma order_sup_state_opt' [intro, simp]:
   apply (unfold sup_state_opt_def sup_state_def sup_ty_opt_def  ) 
   apply (blast intro:order_le_prodI) \<comment>\<open> use Listn.thy.order_listI2  \<close>
   done 
-(*<*) 
+(*>*) 
 
 
 lemma semilat_JVM [intro?]:
@@ -319,6 +319,7 @@ apply clarify
 apply simp
 apply blast
   done
+(*>*) 
 
 lemma acc_le_listI2 [intro!]:
   " acc (Err.le (subtype P)) \<Longrightarrow> acc (Listn.le (Err.le (subtype P)))"
@@ -367,6 +368,7 @@ apply clarify
 apply simp
 apply blast
   done
+(*>*)
 
 lemma acc_JVM [intro]:
   "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"

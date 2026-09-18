@@ -36,7 +36,7 @@ chapter \<open>Non Destructiveness Rules\<close>
 theory Sequential_Composition_Generalized_Non_Destructive
   imports "HOL-CSP_RS" CSP_PTick_Monotonicities
 begin
-  (*<*)
+(*>*)
 
 
 section \<open>Sequential Composition\<close>

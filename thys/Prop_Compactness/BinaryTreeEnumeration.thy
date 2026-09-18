@@ -108,7 +108,6 @@ qed
 
 termination diag_tree_b
 by (relation "measure (\<lambda>x. x)") (auto intro: diag_le3 diag_le4)
-(*>*)
 
 
 primrec undiag_tree_b :: "tree_b \<Rightarrow> nat" where

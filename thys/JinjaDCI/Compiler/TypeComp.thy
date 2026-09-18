@@ -664,7 +664,7 @@ corollary (in TC2) wt_instrs_Cons[simp]:
 using wt_instrs_app2[where ?is\<^sub>1.0 = "[i]" and ?\<tau>s\<^sub>1.0 = "[]" and ?is\<^sub>2.0 = "is"
                       and ?xt\<^sub>1.0 = "[]"]
 by simp
-
+(*>*)
 
 corollary (in TC2) wt_instrs_Cons2[trans]:
   assumes \<tau>s: "\<turnstile> is,xt [::] \<tau>s"
@@ -843,6 +843,7 @@ corollary (in TC2) wt_instrs_Cons3[simp]:
 (*<*)
 using wt_instrs_Cons[where ?xt = "[]"]
 by (simp add:shift_def)
+(*>*)
 
 (*<*)
 declare nth_append[simp del]
@@ -1682,5 +1683,6 @@ theorem wt_J2JVM:
 (*<*)
 by(simp only:o_def J2JVM_def)
   (blast intro:wt_compP\<^sub>2 compP\<^sub>1_pres_wf)
+(*>*)
 
 end

@@ -398,7 +398,7 @@ lemmas eval\<^sub>1_evals\<^sub>1_induct = eval\<^sub>1_evals\<^sub>1.induct [sp
   and eval\<^sub>1_evals\<^sub>1_inducts = eval\<^sub>1_evals\<^sub>1.inducts [split_format (complete)]
 (*>*)
 
-
+(*<*)
 inductive_cases eval\<^sub>1_cases [cases set]:
  "P \<turnstile>\<^sub>1 \<langle>new C,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"
  "P \<turnstile>\<^sub>1 \<langle>Cast C e,s\<rangle> \<Rightarrow> \<langle>e',s'\<rangle>"

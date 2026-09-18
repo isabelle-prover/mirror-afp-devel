@@ -99,7 +99,6 @@ apply(case_tac "b x")
  apply (blast intro: termi.WhileTrue)
 apply (erule termi.WhileFalse)
 done
-(*>*)
 
 text\<open>\noindent In the @{term While}-case we perform a
 local proof by wellfounded induction over the given relation @{term r}.

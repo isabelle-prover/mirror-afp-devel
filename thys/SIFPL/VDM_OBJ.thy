@@ -508,8 +508,6 @@ apply (erule SSpec_strong)
 done
 (*>*)
 
-(*<*)
-
 lemma Ctxt_valid_verified: "\<Turnstile> G \<Longrightarrow> verified G"
 (*<*)
 apply (simp add: Ctxt_valid_def verified_def, clarsimp)

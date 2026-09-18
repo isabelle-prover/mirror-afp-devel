@@ -96,14 +96,12 @@ proof (induct rule: finite_induct)
     thus ?thesis by (rule exI)
   qed
 qed
-(*>*)
 
 theorem chain_union_closed:
   assumes hip1: "finite_character_property \<C>" 
   and hip2:"chain S" 
   and hip3: "\<forall>n. S n \<in> \<C>"
   shows "(\<Union>n. S n) \<in> \<C>"
-(*<*)
 proof -
   have "\<forall>S. (S \<in> \<C>) = (\<forall>T. finite T \<longrightarrow> T \<subseteq> S \<longrightarrow> T \<in> \<C>)" 
   using hip1 by (unfold finite_character_property_def)
