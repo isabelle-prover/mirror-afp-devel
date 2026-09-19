@@ -396,6 +396,7 @@ qed
 lemma wf_sees_clinit:
 assumes wf:"wf_prog wf_md P" and ex: "class P C = Some a"
 shows "\<exists>m. P \<turnstile> C sees clinit,Static:[] \<rightarrow> Void = m in C"
+(*<*)
 proof -
   from ex obtain D fs ms where "a = (D,fs,ms)" by(cases a)
   then have sP: "(C, D, fs, ms) \<in> set P" using ex map_of_SomeD[of P C a] by(simp add: class_def)

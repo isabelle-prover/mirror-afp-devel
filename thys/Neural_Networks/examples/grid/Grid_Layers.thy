@@ -121,7 +121,7 @@ can be life-threatening.
 
 \<close>
 
-(*>*)
+(*<*)
 theory
   Grid_Layers
   imports

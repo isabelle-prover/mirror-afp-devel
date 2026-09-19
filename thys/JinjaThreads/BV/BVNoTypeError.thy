@@ -271,6 +271,7 @@ proof -
   qed
   thus "exec_d P t \<sigma> \<noteq> TypeError" ..
 qed
+(*>*)
 
 lemma welltyped_commute:
   "\<lbrakk>wf_jvm_prog\<^bsub>\<Phi>\<^esub> P; \<Phi> \<turnstile> t:\<sigma> \<surd>\<rbrakk> \<Longrightarrow> P,t \<turnstile> Normal \<sigma> -ta-jvmd\<rightarrow> Normal \<sigma>' = P,t \<turnstile> \<sigma> -ta-jvm\<rightarrow> \<sigma>'"

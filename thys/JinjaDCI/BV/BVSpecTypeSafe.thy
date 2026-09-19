@@ -1397,7 +1397,7 @@ proof -
   then show ?thesis using assms(1,3-6) sees_method_fun[OF mC]
     by clarsimp (blast dest: typeof_lit_conf conf_clinit_diff)
 qed
-
+(*>*)
 
 lemma Cast_conf2:
   "\<lbrakk> wf_prog ok P; P,h \<turnstile> v :\<le> T; is_refT T; cast_ok P C h v; 

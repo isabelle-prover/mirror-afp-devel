@@ -847,5 +847,6 @@ proof-
         order_antisym)
 qed
 
+(*<*)
 end
 (*>*)

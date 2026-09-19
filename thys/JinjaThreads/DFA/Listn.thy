@@ -440,6 +440,7 @@ apply (erule disjE)
  prefer 2
  apply blast
 by fastforce
+(*>*)
 
 lemma acc_le_listI [intro!]:
   "\<lbrakk> order r; acc A r \<rbrakk> \<Longrightarrow> acc (list n A) (Listn.le r)"

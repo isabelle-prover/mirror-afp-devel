@@ -387,6 +387,7 @@ lemma sees_method_mono [rule_format (no_asm)]:
   "\<lbrakk> P \<turnstile> C' \<preceq>\<^sup>* C; wf_prog wf_md P \<rbrakk> \<Longrightarrow>
   \<forall>D Ts T m. P \<turnstile> C sees M:Ts\<rightarrow>T = m in D \<longrightarrow>
      (\<exists>D' Ts' T' m'. P \<turnstile> C' sees M:Ts'\<rightarrow>T' = m' in D' \<and> P \<turnstile> Ts [\<le>] Ts' \<and> P \<turnstile> T' \<le> T)"
+(*<*)
 apply( drule rtranclpD)
 apply( erule disjE)
 apply(  fastforce intro: widen_refl widens_refl)

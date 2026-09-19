@@ -94,6 +94,7 @@ lemma le_err_refl': "(\<forall>x\<in>A. x \<sqsubseteq>\<^sub>r x) \<Longrightar
 apply (unfold lesub_def le_def err_def)
 apply (auto  split: err.split)
 done 
+(*>*)
 
 lemma le_err_trans [rule_format]:
   "order r A \<Longrightarrow> e1 \<in> err A \<Longrightarrow> e2 \<in> err A \<Longrightarrow> e3 \<in> err  A \<Longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e2 \<longrightarrow> e2 \<sqsubseteq>\<^bsub>le r\<^esub> e3 \<longrightarrow> e1 \<sqsubseteq>\<^bsub>le r\<^esub> e3"

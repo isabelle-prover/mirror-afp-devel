@@ -40,13 +40,13 @@ section \<open>Main entry Point\<close>
 theory "Restriction_Spaces-Ultrametric"
   imports Fun_Ultrametric_Restriction_Spaces Prod_Ultrametric_Restriction_Spaces
 begin
-  (*<*)
+(*>*)
 
 
 text \<open>This is the entry point \<^session>\<open>Restriction_Spaces-Ultrametric\<close> should be imported from.\<close>
 
 (*<*)
 end
-  (*>*)
+(*>*)
 
 

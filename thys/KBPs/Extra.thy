@@ -10,6 +10,7 @@ imports
   "HOL-Library.Option_ord"
   "HOL-Library.Product_Lexorder"
 begin
+(*>*)
 
 (* Extra lemmas that are not noteworthy. *)
 

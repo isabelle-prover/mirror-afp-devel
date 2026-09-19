@@ -186,6 +186,7 @@ shows "\<lbrakk> ss0 \<in> nlists n A \<rbrakk> \<Longrightarrow>
     apply(case_tac "iter f step ss0 (unstables r step ss0)")
     by (smt (verit, best) eq_fst_iff iter_properties_bv mem_Collect_eq nlists_def
         unstables_def)
+(*>*)
 
 end
 

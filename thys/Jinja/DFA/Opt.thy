@@ -41,7 +41,7 @@ done
 (*>*)
 
 lemma le_opt_refl: "order r A \<Longrightarrow>  x \<in> opt A \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> x"
-(*<*) by (auto simp add: unfold_le_opt opt_def split: option.split) (*<*)
+(*<*) by (auto simp add: unfold_le_opt opt_def split: option.split) (*>*)
 
 lemma le_opt_trans [rule_format]:
   "order r A \<Longrightarrow> x \<in> opt A \<Longrightarrow> y \<in> opt A \<Longrightarrow> z \<in> opt A \<Longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> y \<longrightarrow> y \<sqsubseteq>\<^bsub>le r\<^esub> z \<longrightarrow> x \<sqsubseteq>\<^bsub>le r\<^esub> z"

@@ -484,6 +484,7 @@ qed
 lemma evals_finals_same:
 assumes finals: "finals es"
 shows "P \<turnstile> \<langle>es,s\<rangle> [\<Rightarrow>] \<langle>es',s'\<rangle> \<Longrightarrow> es = es' \<and> s = s'"
+(*<*)
   using finals
 proof (induct es arbitrary: es' type: list)
   case Nil then show ?case using evals_cases(1) by blast
@@ -613,6 +614,7 @@ next
   case (RInitInitFail e h l sh a h' l' sh' C1 sfs i sh'' D Cs e\<^sub>1 h1 l1 sh1)
   then show ?case using eval_final by fastforce
 qed(auto)
+(*>*)
 
 (************************************************)
 

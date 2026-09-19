@@ -34,11 +34,11 @@
 
 section \<open>Destructiveness of Hiding\<close>
 
-(*>*)
+(*<*)
 theory Hiding_Destructive
   imports "HOL-CSPM" Prefixes_Constructive
 begin
-  (*>*)
+(*>*)
 
 
 subsection \<open>Refinement\<close>

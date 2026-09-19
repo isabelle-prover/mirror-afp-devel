@@ -442,6 +442,7 @@ lemma  (in Semilat)list_update_le_listI [rule_format]:
   apply (simp only: Listn.le_def lesub_def semilat_def)
   apply (simp add: list_all2_conv_all_nth nth_list_update)
   done
+(*>*)
 
 lemma (in Semilat) merges_pres_le_ub:
   assumes "set ts \<subseteq> A"  

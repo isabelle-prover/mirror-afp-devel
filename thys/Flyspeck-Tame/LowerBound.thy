@@ -60,7 +60,7 @@ proof -
     where eq: "ExcessNotAt g None = (\<Sum>\<^bsub>v \<in> V\<^esub> ExcessAt g v)"
     and pS:  "separated g (set V)"
     and V_subset: "set V \<subseteq> set(vertices g)"
-    and V_distinct: "distinct V" (*<*)
+    and V_distinct: "distinct V"
     by (blast) note eq
 
   txt \<open>We partition V in two disjoint subsets $V1, V2$,
@@ -273,7 +273,7 @@ proof -
     also have "ListSum T w + ListSum E w = ListSum F3 w"
       by(simp add: T_def E_def ListSum_compl2)
     finally show ?thesis by simp
-  qed
+  qed (*>*)
 
   text_raw \<open>\newpage\<close>
   txt \<open>($A_3$) We use property \<open>admissible\<^sub>1\<close>.\<close>

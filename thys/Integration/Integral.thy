@@ -812,7 +812,7 @@ proof (cases)
     by (simp add: sum_rv)
   ultimately show ?thesis 
     by simp
-qed(*>*)(*>*)(*nonnegative function integral set*)(*>*)
+qed(*nonnegative function integral set*)
 
 subsection \<open>Nonnegative Functions\<close>
 
@@ -1470,7 +1470,7 @@ proof cases
     also from base have "(\<lambda>n. u n t)\<longlonglongrightarrow>f t" by (simp add: realfun_mon_conv_iff mon_conv_real_def)
     ultimately have "0 \<le> f t" by (simp add: LIMSEQ_le_const)
   } thus ?thesis by (simp add: nonnegative_def)
-qed(*>*)(*>*)
+qed(*>*)
 
 subsection \<open>Integrable Functions\<close>
 

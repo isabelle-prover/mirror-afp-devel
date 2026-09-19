@@ -1428,7 +1428,7 @@ lemma [simp]: "widen (compP f P) = widen P"
   apply (simp)
   done
   
-lemma [simp]: "compP f P \<turnstile> \<tau> \<le>' \<tau>' = P \<turnstile> \<tau> \<le>' \<tau>'"
+lemma [simp]: "compP f P \<turnstile> \<tau> \<le>' \<tau>' = P \<turnstile> \<tau> \<le>' \<tau>'" (*<*)
 by (simp add: sup_state_opt_def sup_state_def sup_ty_opt_def)(*>*)
 
 lemma [simp]: "compP f P,T,mpc,mxl,xt \<turnstile> i,pc :: \<tau>s = P,T,mpc,mxl,xt \<turnstile> i,pc :: \<tau>s"
@@ -1448,6 +1448,7 @@ lemma compT_method:
   shows "\<lbrakk> P,E \<turnstile>1 e :: T; \<D> e A; \<B> e (size E); set E \<subseteq> types P; P \<turnstile> T \<le> T' \<rbrakk> \<Longrightarrow>
    wt_method (compP2 P) C Ts T' mxs mxl\<^sub>0 (compE2 e @ [Return]) (compxE2 e 0 0)
       (TC0.ty\<^sub>i' mxl [] E A # TC0.compTa P mxl E A [] e)"
+(*<*)
 using wf_prog
 apply(simp add:wt_method_def TC0.compTa_def TC0.after_def compP2_def compMb2_def)
 apply(rule conjI)

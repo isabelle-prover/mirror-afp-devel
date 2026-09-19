@@ -108,7 +108,7 @@ qed
 
 lemma SeqWRP_Succ:
   assumes "atom s \<sharp> (s1,k1,y)"
-  shows "{SeqWRP s1 k1 y} \<turnstile> SyntaxN.Ex s (SeqWRP (Var s) (SUCC k1) (Q_Succ y))"
+  shows "{SeqWRP s1 k1 y} \<turnstile> SyntaxN.Ex s (SeqWRP (Var s) (SUCC k1) (Q_Succ y))" (*<*)
 proof -
   let ?vs = "(s,s1,k1,y)"
   obtain l::name and sl::name and l1::name and sl1::name

@@ -911,7 +911,7 @@ qed (*>*)
 
 lemma HaddP_Mem_contra:
   assumes "H \<turnstile> HaddP x y z" "H \<turnstile> z IN x" "H \<turnstile> OrdP x"
-    shows "H \<turnstile> A"
+    shows "H \<turnstile> A" (*<*)
 proof -
   obtain i::name and j::name and k::name
    where atoms: "atom i \<sharp> (x,y,z)" "atom j \<sharp> (i,x,y,z)" "atom k \<sharp> (i,j,x,y,z)"
@@ -4225,7 +4225,7 @@ proof -
        apply (rule Mem_Eats_I1 [OF RestrictedP_Mem [THEN cut3]] AssumeH OrdP_Trans [OF OrdP_SUCC_I])+
       done
   qed
-qed (*>*)
+qed
 
 theorem FormP_Ex: "{FormP t, AbstFormP \<guillemotleft>Var i\<guillemotright> Zero t x} \<turnstile> FormP (Q_Ex x)"
 proof -

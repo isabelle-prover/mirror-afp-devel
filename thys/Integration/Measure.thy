@@ -249,7 +249,7 @@ theorem measure_mon_conv:
   assumes ms: "measure_space M" and 
   Ams: "\<And>n. A n \<in> measurable_sets M" and AB: "A\<up>B" 
   shows "(\<lambda>n. measure M (A n)) \<longlonglongrightarrow> measure M B"
-proof -
+(*<*)proof -
   
   from AB have up: "\<And>n. A n \<subseteq> A (Suc n)" 
     by (simp only: mon_conv_set_def)
@@ -369,7 +369,6 @@ proof -
 qed(*>*)
 
 
-(*<*)
 primrec trivial_series2:: "'a set \<Rightarrow> 'a set \<Rightarrow> (nat \<Rightarrow> 'a set)"
 where
   "trivial_series2 a b 0 = a"
