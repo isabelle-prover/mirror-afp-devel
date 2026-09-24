@@ -1,7 +1,7 @@
 chapter AFP
 
 session Dinitz_Garg_Goemans_Counterexample = HOL +
-  options [document = pdf, timeout = 300]
+  options [timeout = 300]
   theories
     Dinitz_Garg_Goemans_Counterexample
   document_files
