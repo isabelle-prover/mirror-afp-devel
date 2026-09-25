@@ -186,7 +186,7 @@ lemma eval_smult_l[simp]: "eval_l \<alpha> (smult_l c p) = c * eval_l \<alpha> p
 lift_definition const_l :: "'a :: zero \<Rightarrow> ('a,'v) lpoly" is "\<lambda> c. (\<lambda> z. 0)(None := c)" 
   by auto
 
-lemma eval_l_const_l_constant: "eval_l \<alpha> (const_l (constant_l p)) = constant_l p" 
+lemma eval_l_const_l[simp]: "eval_l \<alpha> (const_l x) = x" 
   unfolding eval_l_def
   by transfer auto
 
@@ -200,7 +200,7 @@ proof -
   show ?thesis
     unfolding substitute_all_l_def
     unfolding eval_l_mono[OF finite_vars_l subset_refl, of _ p]
-    unfolding eval_l_plus eval_l_const_l_constant
+    unfolding eval_l_plus eval_l_const_l
     unfolding xs_def[symmetric] using fin
   proof (intro arg_cong[of _ _ "\<lambda> x. _ + x"], induct xs rule: finite_induct)
     case *: (insert x xs)
