@@ -401,7 +401,7 @@ proof-
     with u have "subst_of (left_substs s t) x \<noteq> Var x"
       by (simp add: subst_compose) 
     then obtain i u' where i:"i < length (left_substs s t)" "(left_substs s t)!i = (x, u')" "\<forall>subst \<in> set (drop (i+1) (left_substs s t)). fst subst \<noteq> x"
-      using subst_of_exists_binding by (metis (mono_tags, opaque_lifting) eq_fst_iff) 
+      using subst_of_exists_binding[of "left_substs s t" x] by (metis prod.collapse)
     then obtain l1 l2 where l1:"l1 = take i (left_substs s t)" and l2:"l2 = drop (i+1) (left_substs s t)" 
       and l1l2:"left_substs s t = l1 @ [(x,u')] @ l2" using id_take_nth_drop by fastforce 
     from i(3) have l2_subst:"subst_of l2 x = Var x" unfolding l2 by (meson nth_mem subst_of_exists_binding)
@@ -426,7 +426,7 @@ proof-
     with u have "subst_of (right_substs s t) x \<noteq> Var x"
       by (metis subst_compose subst_monoid_mult.mult.left_neutral subst_of_append)
     then obtain i u' where i:"i < length (right_substs s t)" "(right_substs s t)!i = (x, u')" "\<forall>subst \<in> set (drop (i+1) (right_substs s t)). fst subst \<noteq> x"
-      using subst_of_exists_binding by (metis (mono_tags, opaque_lifting) eq_fst_iff) 
+      using subst_of_exists_binding[of "right_substs s t" x] by (metis prod.collapse)
     then obtain l1 l2 where l1:"l1 = take i (right_substs s t)" and l2:"l2 = drop (i+1) (right_substs s t)" 
       and l1l2:"right_substs s t = l1 @ [(x,u')] @ l2" using id_take_nth_drop by fastforce 
     from i(3) have l2_subst:"subst_of l2 x = Var x" unfolding l2 by (meson nth_mem subst_of_exists_binding)
@@ -696,7 +696,7 @@ proof-
     unfolding map_append set_append by (simp add: boolean_algebra.conj_disj_distrib boolean_algebra.conj_disj_distrib2)
   have part2:"is_partition (map vars_subst (map subst_of (map (\<lambda>(s, t). left_substs s t @ right_substs s t) ds)))" 
     using decompose_is_partition_vars_subst[OF assms(1,2,3,4)]
-    by (metis (mono_tags, lifting) case_prod_beta length_map map_nth_eq_conv)  
+    by (simp add: o_def prod.case_distrib)
   show ?thesis using compose_subst_of[OF sets part dist disj part2] 
     by (smt (verit, del_insts) case_prod_unfold length_map map_nth_eq_conv) 
 qed

@@ -148,7 +148,7 @@ proof (induction f \<gamma> t1 t2 rule: rbt_comp_union_swap_rec.induct)
   show ?case
     using 1[OF refl _ refl refl _ refl _ refl]
     unfolding rbt_comp_union_swap_rec.simps[of _ _ t1] rbt_comp_union_rec.simps[of _ t1]
-    by (auto simp: Let_def split: rbt.splits prod.splits option.splits) (* slow *)
+    by (cases \<gamma>; cases "flip_rbt t2 t1"; simp add: Let_def split: rbt.splits prod.splits option.splits)
 qed
 
 lemma rbt_comp_union_swap_rec_code[code]: "rbt_comp_union_swap_rec f \<gamma> t1 t2 = (

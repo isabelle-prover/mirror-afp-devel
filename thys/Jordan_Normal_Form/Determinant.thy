@@ -1496,7 +1496,7 @@ next
   qed
   hence "poly (det (four_block_mat ?A ?B ?C ?Dx)) 0 = poly (det (?A * ?Dx - ?B * ?C)) 0" by simp
   also have "\<dots> = det (?p0 (?A * (?D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) - ?B * ?C))" 
-    by (rule poly_det, use lA lB lC lD in force)
+    by (rule poly_det[OF minus_carrier_mat[OF mult_carrier_mat[OF lB lC]]])
   also have "?A * (?D + monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) = ?A * ?D + l A * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n)" 
     by (rule mult_add_distrib_mat[OF lA lD], auto) 
   also have "?A * (monom 1 1 \<cdot>\<^sub>m 1\<^sub>m n) = monom 1 1 \<cdot>\<^sub>m ?A" using lA by auto

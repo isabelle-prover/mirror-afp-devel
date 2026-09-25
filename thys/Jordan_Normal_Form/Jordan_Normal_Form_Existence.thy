@@ -1895,7 +1895,7 @@ proof -
             fix j assume j: "j < n"
             have B: "B $$ (i,j) = ?m iter (Suc diff) i j" using i j unfolding B_def by simp
             from choice have id: "((i, j) = (i_end - iter, Suc l - iter) \<and> iter \<notin> {0, Suc ?idiff}) = False" 
-              using ib index eqs by auto
+              using ii eqs(1) by auto
             have "B $$ (i,j) = A $$ (i,j)" unfolding B id using choice ib index by auto
           }
           note Aii this

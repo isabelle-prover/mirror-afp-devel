@@ -105,11 +105,9 @@ proof -
   have dist: "distinct (map fst C)" and distD: "distinct (map fst D)"
     and dec: "decide_nonempty_sorts S C = None"
     and condD: "\<forall>x\<in>set D. \<forall>a b. (\<forall>x2. x \<noteq> ((a, b), x2)) \<or> (\<forall>x\<in>set b. x \<in> set S)"
-    using assms
-      apply (unfold check_signatures_def)
-      apply (unfold Let_def S_def[symmetric])
-      apply (auto split: prod.splits option.splits)
-    done
+    using assms unfolding check_signatures_def Let_def S_def[symmetric] isOK_bind isOK_check 
+      isOK_check_allm isOK_case_prod isOK_case_option
+    by (auto split: option.split_asm)
   show ?G1 ?G2 ?G3 ?G4 unfolding S_def[symmetric] by fact+
 qed  
 

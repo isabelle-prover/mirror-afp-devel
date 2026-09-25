@@ -2972,8 +2972,8 @@ proof -
       have "us = us1 @ (if length divs = n2 then divs
           else let (lin, nonlin) = List.partition (\<lambda>q. degree q = d) facts
                in lin @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin))"
-        unfolding Cons(4) facts_def udivs_def' berlekamp_factorization_main.simps Let_def not1 if_False
-        by (rule arg_cong[where f = "\<lambda> x. us1 @ x"], rule if_cong, simp_all) (* takes time *)
+        unfolding Cons(4) facts' udivs_def' berlekamp_factorization_main.simps Let_def not1 if_False
+        by (rule refl)
       hence res: "us = us1 @ (if length divs = n2 then divs else
                lin @ berlekamp_factorization_main d nonlin vs2 (n2 - length lin))"
         unfolding part by auto

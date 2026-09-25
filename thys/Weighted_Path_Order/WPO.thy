@@ -66,9 +66,13 @@ abbreviation "WPO_S \<equiv> {(s,t). s \<succ> t}"
 abbreviation "WPO_NS \<equiv> {(s,t). s \<succeq> t}"
 
 lemma wpo_s_imp_ns: "s \<succ> t \<Longrightarrow> s \<succeq> t"
-  using lex_ext_stri_imp_nstri
-  unfolding wpo.simps[of s t]
-  by (auto simp: Let_def mul_ext_stri_imp_nstri split: term.splits if_splits prod.splits)
+proof -
+  let ?P = "case_prod (\<longrightarrow>)" 
+  have "?P (wpo s t)" unfolding wpo.simps[of s t]
+    by (simp only: if_distrib[of ?P] term.case_distrib[of ?P] prod.case_distrib[of ?P] Let_def)
+      (auto simp: case_prod_beta lex_ext_stri_imp_nstri mul_ext_stri_imp_nstri split: term.splits prod.splits)
+  thus "s \<succ> t \<Longrightarrow> s \<succeq> t" by (simp add: case_prod_beta)
+qed
 
 lemma S_imp_wpo_s: "(s,t) \<in> S \<Longrightarrow> s \<succ> t" by (simp add: wpo.simps)
 

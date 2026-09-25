@@ -172,11 +172,13 @@ lemma mat_mult_left_mono: assumes C0: "C \<ge>\<^sub>m 0\<^sub>m n n"
   and carr: "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "C \<in> carrier_mat n n"
   shows "A * C \<ge>\<^sub>m B * C"
 proof -
+  have C0: "0 \<le> C $$ (k,l)" if "k < n" "l < n" for k l 
+    using mat_geD[OF C0, of k l] that carr by simp
   {
     fix i j
     assume i: "i < n" "j < n"
     have "row A i \<bullet> col C j \<ge> row B i \<bullet> col C j"
-      by (rule scalar_left_mono[of _ n], insert C0 AB carr i, auto)
+      by (rule scalar_left_mono[of _ n], insert carr i, auto intro!: mat_geD[OF AB] C0)
   }
   thus ?thesis 
     by (intro mat_geI[of _ n n], insert carr, auto)
@@ -187,11 +189,13 @@ lemma mat_mult_right_mono: assumes A0: "A \<ge>\<^sub>m 0\<^sub>m n n"
   and carr: "A \<in> carrier_mat n n" "B \<in> carrier_mat n n" "C \<in> carrier_mat n n"
   shows "A * B \<ge>\<^sub>m A * C"
 proof -
+  have A0: "0 \<le> A $$ (k,l)" if "k < n" "l < n" for k l 
+    using mat_geD[OF A0, of k l] that carr by simp
   {
     fix i j
     assume i: "i < n" "j < n"
     have "row A i \<bullet> col B j \<ge> row A i \<bullet> col C j"
-      by (rule scalar_right_mono[of _ n], insert A0 BC carr i, auto)
+      by (rule scalar_right_mono[of _ n], insert carr i, auto intro!: mat_geD[OF BC] A0)
   }
   thus ?thesis 
     by (intro mat_geI[of _ n n], insert carr, auto)
@@ -270,10 +274,11 @@ proof -
   let ?m1x = "[ A $$ (i,j) . A <- map fst ABs, i <- ?n, j <- ?n]"
   let ?m2y = "[ B $$ (i,j) . B <- map snd ABs, i <- ?n, j <- ?n]"
   let ?pairs = "concat (map (\<lambda> x. map (\<lambda> y. (x,y)) ?m2y) ?m1x)"
-  let ?strict = "filter (\<lambda> (x,y). weak_gt x y) ?pairs"
-  have "\<forall> x y. (x,y) \<in> set ?strict \<longrightarrow> weak_gt x y" by auto
+  define strict where "strict = filter (\<lambda> (x,y). weak_gt x y) ?pairs"
+  have "\<forall> x y. (x,y) \<in> set strict \<longrightarrow> weak_gt x y" 
+    unfolding strict_def set_filter by (intro allI impI) (simp only: mem_Collect_eq case_prod_conv)
   from weak_gt_mono[OF this] obtain gt where order: "SN_strict_mono_ordered_semiring_1 default gt mono" 
-    and orient2: "\<And> x y. (x, y) \<in> set ?strict \<Longrightarrow> gt x y" by auto
+    and orient2: "\<And> x y. (x, y) \<in> set strict \<Longrightarrow> gt x y" by blast
   show ?thesis
   proof (intro exI allI conjI impI, rule order)
     fix A B
@@ -284,8 +289,11 @@ proof -
       ge: "A \<ge>\<^sub>m B" and ij: "i < sd" "j < sd" and wgt: "weak_gt (A $$ (i,j)) (B $$ (i,j))"
       by auto
     from ij \<open>sd \<le> n\<close> have ij': "i < n" "j < n" by auto
-    have gt: "gt (A $$ (i,j)) (B $$ (i,j))"
-      by (rule orient2, insert ij' AB wgt, force)
+    have "A $$ (i,j) \<in> set ?m1x" "B $$ (i,j) \<in> set ?m2y" 
+      using AB ij' by (auto intro!: bexI[of _ "(A,B)"] bexI[of _ i] rev_image_eqI[of j])
+    hence gt: "gt (A $$ (i,j)) (B $$ (i,j))"
+      by (intro orient2, unfold strict_def set_filter product_concat_map[symmetric] set_product 
+        mem_Collect_eq case_prod_conv, insert wgt, blast)
     show "mat_gt gt sd A B" using ij gt ge by auto
   qed
 qed

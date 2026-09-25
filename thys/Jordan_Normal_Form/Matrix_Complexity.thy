@@ -51,9 +51,10 @@ proof -
   let ?m2y = "[ B $$ (i,j) . B <- map snd ABs, i <- ?n, j <- ?n]"
   let ?pairs = "concat (map (\<lambda> x. map (\<lambda> y. (x,y)) ?m2y) ?m1x)"
   define strict where "strict = filter (\<lambda> (x,y). weak_gt x y) ?pairs"
-  have "\<forall> x y. (x,y) \<in> set strict \<longrightarrow> weak_gt x y" by (auto simp: strict_def)
+  have "\<forall> x y. (x,y) \<in> set strict \<longrightarrow> weak_gt x y" 
+    unfolding strict_def set_filter by (intro allI impI) (simp only: mem_Collect_eq case_prod_conv)
   from weak_gt_mono[OF this] obtain gt bound where order: "mono_matrix_carrier gt default bound mono" 
-    and orient2: "\<And> x y. (x, y) \<in> set strict \<Longrightarrow> gt x y" by auto
+    and orient2: "\<And> x y. (x, y) \<in> set strict \<Longrightarrow> gt x y" by blast
   show ?thesis
   proof (intro exI allI conjI impI, rule order)
     fix A B
@@ -64,8 +65,11 @@ proof -
       ge: "A \<ge>\<^sub>m B" and ij: "i < sd" "j < sd" and wgt: "weak_gt (A $$ (i,j)) (B $$ (i,j))"
       by auto
     from ij \<open>sd \<le> n\<close> have ij': "i < n" "j < n" by auto
-    have gt: "gt (A $$ (i,j)) (B $$ (i,j))"
-      by (rule orient2, insert ij' AB wgt, force simp: strict_def)
+    have "A $$ (i,j) \<in> set ?m1x" "B $$ (i,j) \<in> set ?m2y" 
+      using AB ij' by (auto intro!: bexI[of _ "(A,B)"] bexI[of _ i] rev_image_eqI[of j])
+    hence gt: "gt (A $$ (i,j)) (B $$ (i,j))"
+      by (intro orient2, unfold strict_def set_filter product_concat_map[symmetric] set_product 
+        mem_Collect_eq case_prod_conv, insert wgt, blast)
     show "mat_gt gt sd A B" using ij gt ge by auto
   qed
 qed

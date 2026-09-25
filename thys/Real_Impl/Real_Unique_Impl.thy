@@ -218,8 +218,8 @@ proof -
   from prime_product_factor[OF ppf] have "prime_product fact" by auto
   hence sqrt: "?inv sqrt" unfolding sqrt_def
     by (transfer, unfold split quotient_of_nat Let_def id, case_tac "sqrt_int \<bar>int facta\<bar>", auto)
-  show "?inv ?num" unfolding num using ma' sqrt
-    by (transfer, auto simp: ma_normalize_def split: if_splits)  (* slow *)
+  show "?inv ?num" unfolding num using ma' sqrt mau_times.rsp
+    unfolding rel_fun_def eq_onp_def by blast
 qed
 
 lemma sqrt_sgn[simp]: "sqrt (of_int (sgn a)) = of_int (sgn a)"

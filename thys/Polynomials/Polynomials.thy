@@ -248,6 +248,9 @@ lemma monom_list_mult_list_vars: "monom_list_vars (monom_mult_list m1 m2) = mono
   by (induct m1 m2 rule: monom_mult_list.induct, auto split: list.splits)
 
 
+lemma monom_inv_Cons_iff: "monom_inv ((x,p) # m) \<longleftrightarrow> 1 \<le> p \<and> monom_inv m \<and> (\<forall> z \<in> fst ` set m. x < z)"
+  by (auto simp: monom_inv_def less_le)
+
 lemma monom_mult_list_inv: "monom_inv m1 \<Longrightarrow> monom_inv m2 \<Longrightarrow> monom_inv (monom_mult_list m1 m2)"
 proof (induct m1 m2 rule: monom_mult_list.induct)
   case (2 x p m n')
@@ -267,14 +270,16 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
     from n'[unfolded id] have n: "monom_inv n" and q: "q > 0" and y: "y \<notin> fst ` set n" 
       and yn: "\<And> z. z \<in> fst ` set n \<Longrightarrow> y \<le> z" 
       unfolding monom_inv_def by (auto)
+    from xpm n'[unfolded id] have xm': "\<forall> z \<in> fst ` set m. x < z" and yn': "\<forall> z \<in> fst ` set n. y < z" 
+      unfolding monom_inv_Cons_iff by auto
     show ?thesis
     proof (cases "x = y")
       case True
       hence res: "monom_mult_list ((x, p) # m) n' = (x, p + q) # monom_mult_list m n" 
         by (simp add: id)
       from IH(1)[OF id refl True m n] have inv: "monom_inv (monom_mult_list m n)" by simp
-      show ?thesis unfolding res using inv p x y True xm yn
-        by (fastforce simp add: monom_inv_def monom_list_mult_list_vars)
+      show ?thesis unfolding res monom_inv_Cons_iff monom_list_mult_list_vars 
+        using inv p True xm' yn' by auto
     next
       case False
       show ?thesis
@@ -283,8 +288,8 @@ proof (induct m1 m2 rule: monom_mult_list.induct)
         hence res: "monom_mult_list ((x, p) # m) n' = (x,p) # monom_mult_list m n'" 
           by (auto simp add: id)
         from IH(2)[OF id refl False True m n'] have inv: "monom_inv (monom_mult_list m n')" .
-        show ?thesis unfolding res using inv p x y True xm yn unfolding id
-          by (fastforce simp add: monom_inv_def monom_list_mult_list_vars)
+        show ?thesis unfolding res monom_inv_Cons_iff monom_list_mult_list_vars 
+          using inv p True xm' yn' by (auto simp: id intro: order.strict_trans)
       next
         case gt: False
         with False have lt: "y < x" by auto        

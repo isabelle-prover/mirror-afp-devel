@@ -158,8 +158,8 @@ proof -
   note n = n[unfolded candidate_invariant_def]
   show "m = 0 \<or> m mod 30 = 11" using res n by (auto split: if_splits)
   show "sorted ps" using res n by (auto split: if_splits simp: primes_1000_def sorted2_simps simp del: sorted_wrt.simps(2))
-  show "set ps \<subseteq> {2..} \<inter> {n..<m}" using res n by (auto split: if_splits simp: primes_1000_def)
-  show "distinct ps" using res n by (auto split: if_splits simp: primes_1000_def)
+  show "set ps \<subseteq> {2..} \<inter> {n..<m}" using res n by (auto split: if_splits simp: primes_1000 prime_ge_2_nat)
+  show "distinct ps" using res n by (auto split: if_splits simp: primes_1000)
   show "ps \<noteq> []" using res n by (auto split: if_splits simp: primes_1000_def)
   show "n < m" using res by (auto split: if_splits)
   show "{i. prime i \<and> n \<le> i \<and> i < m} \<subseteq> set ps"
