@@ -222,7 +222,7 @@ next
       (auto simp: zero_fun_def frechet_derivative_const Suc.IH)
   then have "frechet_derivative (\<lambda>x. nth_derivative k f x 1) (at t) 1 = 0" if "t < 0" for t
     using that Suc.IH
-    by (subst frechet_derivative_transform_within_open[where X="{..<0}" and g =0])
+    by (subst frechet_derivative_transform_within_open[where s="{..<0}" and g =0])
       (auto simp: frechet_derivative_zero_fun)
   with Suc show ?case
     by (auto simp: higher_differentiable_on.simps f_differentiable_at_neg

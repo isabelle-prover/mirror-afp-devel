@@ -729,8 +729,7 @@ proof -
     apply simp
     apply (rule disjI2)
     apply (rule trans)
-     apply (rule frechet_derivative_transform_within_open_ext [OF _ S frechet_derivative_componentwise])
-    apply (simp add: diff)
+     apply (rule frechet_derivative_transform_within_open_ext [OF S frechet_derivative_componentwise])
        apply (rule d1, assumption)
     apply (simp add: eq)
     done

@@ -234,7 +234,8 @@ proof goal_cases
     subgoal
       by (auto intro!: smooth_on_divide smooth_on_inverse smooth_on_scaleR smooth_on_mult smooth_on_add
           smooth_on_minus smooth_on_norm simp: o_def power2_eq_square add_nonneg_eq_0_iff divide_simps)
-    apply (auto simp: norm_prod_def power2_eq_square) apply sos
+    apply (auto simp: norm_prod_def power2_eq_square) 
+    apply algebra
     done
   show ?case
     by transfer (rule *)
@@ -246,7 +247,8 @@ next
     subgoal
       by (auto intro!: smooth_on_divide smooth_on_inverse smooth_on_scaleR smooth_on_mult smooth_on_add
           smooth_on_minus smooth_on_norm simp: o_def power2_eq_square add_nonneg_eq_0_iff divide_simps)
-    apply (auto simp: norm_prod_def add_eq_0_iff) apply sos
+    apply (auto simp: norm_prod_def add_eq_0_iff) 
+    apply algebra
     done
   show ?case
     by transfer (rule *)

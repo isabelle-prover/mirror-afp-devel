@@ -12,7 +12,12 @@ theory Linear_Algebra_Complements imports
 
 
 begin
+
 hide_const(open) S
+hide_const (open) Higher_Differentiability_Multi.outer_prod
+
+lemmas outer_prod_def = Complex_Matrix.outer_prod_def
+
 section \<open>Preliminaries\<close>
 
 
