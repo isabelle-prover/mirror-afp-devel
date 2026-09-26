@@ -220,8 +220,7 @@ lemma maps_id: "f z1 = z2"
   by (metis (full_types) G1.add_zeroR G1.zero_mem G2.add_assoc G2.add_zeroR G2.right_minus G2.uminus_mem)
 
 lemma maps_inv: "f (um1 x) = um2 (f x)" if "x\<in>G1" for x
-  using G2.inv_is_unique G1.uminus_mem closure group_hom that maps_id
-  by (smt (z3) G1.left_minus G2.add_assoc G2.add_zeroL G2.add_zeroR G2.right_minus G2.uminus_mem)
+  using G1.add_uminus G1.add_zero G1.uminus_mem G1.zero_mem G2.add_assoc G2.add_zero G2.right_minus G2.uminus_mem closure group_hom that by (metis (full_types))
 
 end
 

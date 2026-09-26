@@ -142,9 +142,8 @@ lemma transfer_sm_vv_forall [transfer_rule]:
 
 lemma transfer_sm_vv_mult[transfer_rule]:
   shows "(EQ ===> EQ ===> EQ) (*) (**)"
-  unfolding times_sq_matrix_def matrix_matrix_mult_def rel_sm_vv_def rel_fun_def to_fun_from_vec
-  by (clarify, smt (z3) Finite_Cartesian_Product.sum_cong_aux comp_apply from_vec_mult
-    times_sq_matrix.rep_eq times_sq_matrix_def matrix_matrix_mult_def)
+  unfolding times_sq_matrix_def rel_sm_vv_def rel_fun_def to_fun_from_vec
+  by (simp add: times_sq_matrix_def)
 
 lemma transfer_sm_vv_diag[transfer_rule]:
   shows "((=) ===> EQ) diag mat"

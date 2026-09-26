@@ -331,7 +331,7 @@ proof -
         (\<forall>v\<in>T\<^sub>\<psi>\<^sub>p\<psi>U. v f = v (extend f)) \<and> (\<forall>v\<in>T\<^sub>\<psi>\<^sub>p\<psi>U. v (extend f) = d\<kappa> v (extend f)) \<and> (\<forall>v\<in>T\<^sub>\<psi>\<^sub>pE. d\<kappa>\<inverse> v f = v (extend f))"
         using extend(1)[OF f] by presburger
       show ?thesis
-        apply (rule frechet_derivative_transform_within_open_ext[where f=f and g="extend f" and X=N for f])
+        apply (rule frechet_derivative_transform_within_open_ext[where f=f and g="extend f" and s=N for f])
         using sub_eucl.submanifold_atlasI sub_eucl.sub_diff_fun_differentiable_at
             [OF diffeo_\<psi>.dest.diff_fun_spaceD[OF f], of "restrict_chart (codomain \<psi>) chart_eucl"]
           apply (simp add: id_def[symmetric] assms)
@@ -587,11 +587,6 @@ proof -
                 using X_eq_codomain_r1 that by simp
               show "open ?X" by blast
               show "?r1 p \<in> ?X" using p1.\<psi>p_in by blast
-              let ?f\<^sub>L' = "(restrict0 ?dom_Int (\<lambda>x. (?r2 x - ?r2 p) \<bullet> i)) \<circ> ?r1i"
-              show "?f\<^sub>L differentiable at (?r1 p)"
-                apply (rule differentiable_transform_within_open[of ?f\<^sub>L' _ _ ?X])
-                apply (rule p1.sub_\<psi>.sub_diff_fun_differentiable_at)
-                using p1.\<psi>p_in p1.diffeo_\<psi>.dest.open_carrier in_diff_fun_space p1.sub_\<psi> p1.p p1.sub_\<psi>.sub.diff_fun_spaceD by auto
             qed
             also have 2: "\<dots> = frechet_derivative ((\<lambda>x. (?r2 x) \<bullet> i) \<circ> ?r1i) (at (?r1 p))"
             proof -
@@ -999,7 +994,7 @@ proof -
     have Dp_simp: "frechet_derivative ((x\<^sub>\<psi> p' i) \<circ> inv_chart \<psi>) (at (\<psi> x')) = frechet_derivative ((\<lambda>y. y \<bullet> i)) (at (\<psi> x'))" for p'
     proof -
       have "frechet_derivative ((x\<^sub>\<psi> p' i) \<circ> inv_chart \<psi>) (at (\<psi> x')) = frechet_derivative ((\<lambda>y. (y - \<psi> p') \<bullet> i)) (at (\<psi> x'))"
-        apply (rule frechet_derivative_transform_within_open[OF _ open_codomain[of \<psi>], symmetric])
+        apply (rule frechet_derivative_transform_within_open[OF open_codomain[of \<psi>], symmetric])
         by (simp_all add: \<open>x' \<in> domain \<psi>\<close>)
       then show ?thesis
         by (auto simp: algebra_simps zero_fun_def

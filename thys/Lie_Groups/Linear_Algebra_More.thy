@@ -563,7 +563,7 @@ proof (rule conjI)
         vector_smult_lid vector_smult_lzero)
     then have "(A *v (\<chi> j'. if j' = j then 1 else 0))$i = A$i$j"
       using matrix_vector_column[where x="?v"] transpose_def vec_lambda_beta
-      by (smt (z3))
+      using transpose_component by force
   }
   then show "matrix ?f = A"
     unfolding matrix_def axis_def by auto
@@ -573,8 +573,7 @@ qed
 lemma smooth_on_matrix_inv:
   assumes "\<forall>A. A\<in>S \<longrightarrow> invertible A" "open S"
   shows "k-smooth_on S (matrix_inv::'a::{euclidean_space,real_normed_field}^'n^'n \<Rightarrow> 'a^'n^'n)"
-  apply (intro smooth_on_mat[of k S] smooth_on_matrix_inv_component[of S])
-  by (auto simp add: assms)+
+  by (simp add: assms smooth_on_mat smooth_on_matrix_inv_component)
 
 
 end

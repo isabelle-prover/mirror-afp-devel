@@ -77,8 +77,7 @@ lemma directional_derivative_cong:
   assumes "open U" "p\<in>U" "\<forall>x\<in>U. f x = g x" "k\<noteq>0" "f \<in> manifold_eucl.diff_fun_space k" "g \<in> manifold_eucl.diff_fun_space k"
   shows "directional_derivative k p v f = directional_derivative k p v g"
   using assms(5,6) apply (simp add: directional_derivative_def)
-  apply (intro frechet_derivative_transform_within_open_ext[OF _ assms(1,2)])
-  using differentiable_onD assms(3-6) Smooth.smooth_on_imp_differentiable_on by blast+
+  using assms frechet_derivative_transform_within_open_ext by blast
 
 
 lemma inverse_bij_betw:
@@ -1786,7 +1785,7 @@ proof (unfold coordinate_vector_apply)
   also have "D g = frechet_derivative g (at (\<psi> p)) b"
     unfolding D directional_derivative_def using restrict0_apply_in[OF g(1)] by auto
   also have "\<dots> = frechet_derivative (f \<circ> inv_chart \<psi>) (at (\<psi> p)) b"
-    apply (rule frechet_derivative_transform_within_open_ext[where X=Ng])
+    apply (rule frechet_derivative_transform_within_open_ext)
     using g(3) Ng(1,2,4) g(1) k by (auto simp: differentiable_onD)
   finally show "d\<iota> (d\<psi>\<inverse> (d\<kappa>\<inverse> (directional_derivative k (apply_chart \<psi> p) b))) f =
                 frechet_derivative (f \<circ> inv_chart \<psi>) (at (\<psi> p)) b"
