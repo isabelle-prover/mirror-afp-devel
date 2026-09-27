@@ -60,8 +60,7 @@ lemmas [simp] = pcompose_pCons
 
 declare degree_pcompose[simp]
 
-subsection \<open>
-by (simp add: coeff_mult_degree_sum monic mult_1)\<close>
+subsection \<open>Monic Polynomials\<close>
 
 abbreviation monic where "monic p \<equiv> coeff p (degree p) = 1"
 
