@@ -430,6 +430,7 @@ IMP2
 IMP2_Binary_Heap
 IMP_Compiler
 IMP_Compiler_Reuse
+IMP_concur
 IMP_Noninterference
 IMP_Noninterference_Extension
 IMP_With_Speculation

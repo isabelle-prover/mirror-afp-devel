@@ -1,0 +1,8 @@
+session IMP_concur = "HOL-CSPM" +
+  options [document = pdf, document_output = "output"] 
+  theories
+    "IMP_concur"
+    "CIL"
+  document_files
+    "root.tex"
+    "root.bib"
