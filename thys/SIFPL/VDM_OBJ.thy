@@ -536,5 +536,5 @@ apply (rule Mutrec, assumption)
 done
 (*>*)
 
-text\<open>End of theory VDM_Obj\<close>
+text\<open>End of theory \<open>VDM_Obj\<close>\<close>
 end
