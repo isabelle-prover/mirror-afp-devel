@@ -1,0 +1,51 @@
+title = "IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP"
+date = 2026-08-31
+topics = [
+  "Computer science",
+  "Computer science/Concurrency",
+  "Computer science/Concurrency/Process calculi",
+  "Computer science/Programming languages",
+]
+abstract = """
+The theory IMPconcur provides a programming-language aspect to HOL-CSP. It extends the well-known imperative language IMP originated by Glenn Winskell by concurrent primitives like lock and unlock for semaphores, thread-local and system global program variables and the notion of threads that run in interleaving semantics. Threads can be parametric and used to construct concurrent process architectures.
+
+Representing IMPconcur semantics can be done by a straight-forward translation into HOL-CSP; thus, IMPconcur can be seen as a thin layer on top of the theory of Concurrent Sequential Processes of Hoare, Brookes and Roscoe in its formalization HOL-CSP in Isabelle/HOL.
+
+Notwithstanding its simplicity, IMPconcur covers many aspects of concurrency, non-termination, divergence, synchronization, states and race-conditions. We believe that IMPconcur may be relevant for readers interested in the link between programming languages and process algebras. Resulting new ways to concurrent program verification are an interesting target for future study. We also present a language extension for dynamic reconfigurations of thread- architectures.
+
+This session is complemented by a syntactic frontend for IMPconcur, called CIL, which has been authored by Mathilde Needham and Zineddine Kermadj on their internship project in summer 2025."""
+license = "bsd"
+note = ""
+creation_note = """
+No generative AI has been used for this transition.
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.wolff]
+email = "wolff_email"
+
+[contributors]
+
+[notify]
+wolff = "wolff_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.4230/LIPICS.ITP.2024.7",
+]
+pubs = []

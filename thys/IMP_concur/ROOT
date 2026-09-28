@@ -1,5 +1,7 @@
+chapter AFP
+
 session IMP_concur = "HOL-CSPM" +
-  options [document = pdf, document_output = "output"] 
+  options [timeout=300]
   theories
     "IMP_concur"
     "CIL"

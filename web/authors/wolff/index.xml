@@ -4,6 +4,16 @@
     <title>Burkhart Wolff</title>
     <link>https://isa-afp.org/authors/wolff/</link>
     <description>AFP entries of Burkhart Wolff</description><item>
+  <title>IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP</title>
+  <link>https://isa-afp.org/entries/IMP_concur.html</link>
+  <pubDate>Mon, 31 Aug 2026 00:00:00 +0000</pubDate>
+  <description>IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP in the AFP</description>
+    <category>Computer science</category>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Concurrency/Process calculi</category>
+    <category>Computer science/Programming languages</category>
+</item>
+<item>
   <title>ML-Lex and ML-Yacc for Isabelle</title>
   <link>https://isa-afp.org/entries/Isabelle_Lex-Yacc.html</link>
   <pubDate>Mon, 08 Jun 2026 00:00:00 +0000</pubDate>
