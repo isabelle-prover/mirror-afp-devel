@@ -4,8 +4,8 @@ begin
 
 section \<open>Consistency\<close>
 
-text \<open>Is \<open>NK\<close> consistent, and at what cost? It is, and cheaply: the proof stays within
-  Isabelle/HOL and needs only \<open>Soundness\<close>. A concrete \<open>\<Sigma>\<close>-standard model over finite domains
+text \<open>\<open>NK\<close> is consistent, and the proof stays within Isabelle/HOL and needs only
+  \<open>Soundness\<close>.  A concrete \<open>\<Sigma>\<close>-standard model over finite domains
   is exhibited --- so the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> is non-empty --- whence by soundness \<open>NK\<close> does
   not derive \<open>\<^bold>\<bottom>\<close>, and no sentence is derivable together with its negation. Since \<open>NK\<close>
   carries no axiom of infinity it admits finite models, so neither an infinite carrier nor a
@@ -15,9 +15,9 @@ text \<open>Is \<open>NK\<close> consistent, and at what cost? It is, and cheapl
   because soundness is proved there.
 
   The model is built once, for every finite size \<open>k > 0\<close> of the individual domain and with a
-  parameter interpretation that can distinguish any prescribed finite family of parameters.
+  parameter interpretation that separates any prescribed family of at most \<open>k\<close> parameters.
   Consistency needs only the one-element instance \<open>k = 1\<close>; the arbitrarily large instances
-  feed the compactness route to the infinity scheme in \<open>NK_Infinity\<close>.\<close>
+  feed the compactness route to the inequation scheme in \<open>NK_Infinity\<close>.\<close>
 
 subsection \<open>A parametric family of finite standard models\<close>
 
@@ -120,10 +120,10 @@ proof -
   thus ?thesis using fv gw by simp
 qed
 
-subsection \<open>Parameters (with a prescribed diagram), assignment, and the model\<close>
+subsection \<open>Parameters (with prescribed distinctions), assignment, and the model\<close>
 
 text \<open>The logical constants need not be built by hand: the frame just constructed is a
-  @{locale lambda_universe} (Section 2), so negation, disjunction, quantification, equality
+  @{locale lambda_universe} (theory \<open>Semantics\<close>), so negation, disjunction, quantification, equality
   and description come from that interface --- description by definite description
   (\<open>THE\<close>), so no Hilbert choice enters the model construction.  The parameter
   interpretation is prescribed by an index map \<open>ix\<close>: parameter \<open>p\<close> denotes the individual
@@ -184,15 +184,14 @@ proof
   thus False using d by (simp add: con_def)
 qed
 
-text \<open>No sentence is derivable together with its negation.\<close>
+text \<open>No formula is derivable together with its negation.\<close>
 
 theorem nk_not_both: assumes "\<turnstile> (A :: 'p tm)" shows "\<not>\<turnstile> \<^bold>\<not> A"
   using bprov.NegE[OF _ assms wff_FalseB] nk_consistent by blast
 
 text \<open>The same, in the \<open>con\<close>sistency terminology of BKK Definition 7.4 (\<open>con\<close> lives in
-  \<open>Calculus\<close>): the empty set is consistent.  That this theory imports only \<open>Soundness\<close>
-  makes the dependency graph itself witness that consistency is independent of the
-  completeness development.\<close>
+  \<open>Calculus\<close>): the empty set is consistent.  This theory imports only \<open>Soundness\<close>, so the
+  dependency graph shows that consistency is independent of the completeness development.\<close>
 
 corollary con_empty: "con ({} :: 'p tm set)"
   unfolding con_def by (rule nk_consistent)

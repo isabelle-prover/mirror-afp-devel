@@ -15,54 +15,59 @@
 \author{Christoph Benzm\"uller \and Daniel Kirchner}
 \maketitle
 \begin{abstract}
-This entry presents a minimal, machine-checked deep embedding of
-classical higher-order logic (HOL) in Isabelle/HOL, following
-Benzm\"uller, Brown and Kohlhase (BKK)~\cite{BBK04}.  Throughout, HOL
-means Church's simple theory of types~\cite{Church40}: it is the
-embedded \emph{object} logic, while Isabelle/HOL serves as the ambient
-meta-logic.  The language of BKK~\S2 is formalised in a \emph{locally
-nameless} representation, which makes BKK's identification of
-$\alpha$-equivalent terms literally true; no $\alpha$-conversion or
-bound-variable renaming is ever needed.  The semantics of BKK~\S3 is
-rendered abstractly, up to the class
-$\mathcal{M}_{\beta\mathfrak{f}\mathfrak{b}}$ of $\Sigma$-Henkin
-models; standard models arise as the full special case.
+This entry presents a machine-checked deep embedding of classical
+higher-order logic (HOL) in Isabelle/HOL, following Benzm\"uller, Brown
+and Kohlhase (BKK)~\cite{BBK04}.  Throughout, HOL means Church's simple
+theory of types~\cite{Church40}: it is the embedded \emph{object} logic,
+while Isabelle/HOL serves as the ambient meta-logic.  The language of
+BKK~\S2 is formalised in a \emph{locally nameless} representation, which
+makes BKK's identification of $\alpha$-equivalent terms a literal
+equality, so that no $\alpha$-conversion or bound-variable renaming is
+needed.  The semantics of BKK~\S3 is rendered abstractly, up to the
+class $\mathcal{M}_{\beta\mathfrak{f}\mathfrak{b}}$ of $\Sigma$-Henkin
+models; standard models arise as the full special case.  The signature
+includes BKK's optional primitive equality (Remark~7.9) and---following
+Andrews~\cite{Andrews72}, beyond BKK---typed description operators.
 
 On this basis the natural-deduction calculus $\mathrm{NK}$ of BKK~\S7 is
 proved sound (Theorem~7.3) and Henkin-complete, via the model-existence
 method of BKK~\S6, with the term model realised as a term evaluation.
-Completeness holds in a form stronger than BKK's Corollary~7.7: at
-every infinite value carrier, for every signature with infinitely many
+Completeness holds in a form stronger than BKK's Corollary~7.7: at every
+infinite value carrier, for every signature with infinitely many
 parameters, and for open formulas.  It also holds relative to
 hypotheses.  For derivability from hypotheses in Andrews' sense---some
 finite part of the hypothesis set (the \emph{context}) derives the
-conclusion---any context of
-open formulas is admitted, at any signature cardinality (any parameter
-type of the meta-logic), once the
-carrier is at least as large as the signature; semantic compactness of
-the Henkin consequence follows.  For the calculus itself, a finite
-context needs nothing beyond well-formedness, and a pure context of
-open formulas is admitted over a countable signature at every infinite
-carrier.  Consistency---that
-$\bot$ is not derivable---follows from a concrete $\Sigma$-standard
-model with finite domains: a single individual and finitely many
-non-logical constants suffice, so no axiom of infinity is assumed for
-the embedded logic.  Model existence is likewise concrete: from the
-consistency of a sentence over a countable signature, a countable
-Henkin (general) model of it is defined outright in plain
-HOL---non-effectively, via a maximal-consistent extension, but with
-consistency as the only premise.  The signature includes BKK's optional
-primitive equality (Remark~7.9) and---following
-Andrews~\cite{Andrews72}, beyond BKK---typed description operators.  As
-an illustration, Cantor's theorem is derived \emph{inside} $\mathrm{NK}$,
-in surjective and injective form and at every
-type~\cite{SEPChurchTT}.  Finally, by compactness over arbitrarily
-large finite models, $\mathrm{NK}$ is shown consistent with a schematic
-diagram forcing infinitely many individuals---no infinite model is
-constructed (Andrews' route, \cite{Andrews02}~\S55)---and the single
-Dedekind-style axiom of infinity is shown not to follow from that
-scheme: no finite part of the scheme derives it, and a countable Henkin
-model of the whole scheme refutes it.
+conclusion---any context of open formulas is admitted, over any infinite
+signature, once the carrier is at least as large as the signature;
+semantic compactness of the Henkin consequence follows.  For the
+calculus itself, a finite context needs nothing beyond well-formedness,
+and over a countable signature a context of open formulas that leaves
+infinitely many parameters unused is admitted at every infinite
+carrier.  Consistency---that $\bot$ is not derivable---follows from a
+concrete $\Sigma$-standard model with finite domains: a single
+individual and finitely many non-logical constants suffice, so no axiom
+of infinity is assumed for the embedded logic.  Model existence is
+likewise concrete: from the consistency of a sentence over a countable
+signature, a Henkin (general) model of it with countable total domain
+is defined in plain HOL---non-effectively, via a maximal-consistent
+extension, but with consistency as the only premise.
+
+As an illustration, Cantor's theorem is derived \emph{inside}
+$\mathrm{NK}$, in surjective and injective form and at every
+type~\cite{SEPChurchTT}.  Finally, three renderings of infinity are
+compared.  By compactness over arbitrarily large finite models---the
+classical argument by expansion with new constants, applied in type
+theory in Andrews' \S55~\cite{Andrews02} to obtain nonstandard
+models---$\mathrm{NK}$ is consistent
+with the scheme of inequations $c_i \neq c_j$ between new individual
+constants, which forces infinitely many individuals; the consistency
+proof constructs no infinite model.  The single Dedekind-style axiom of
+infinity does not follow from that scheme: no finite part of the scheme
+derives it, and a Henkin model of the whole scheme, countable over a
+countable signature, refutes it.  Conversely the axiom derives, for
+every $n$, the constant-free sentence that there are at least $n$
+individuals---the classical first-order axiomatisation of
+infinity---which in turn does not derive the axiom.
 \end{abstract}
 
 \medskip\noindent
@@ -89,97 +94,124 @@ Andrews' $\mathcal{Q}_0$ for general models; their development builds on
 D\'iaz's \emph{Metatheory of $\mathcal{Q}_0$}~\cite{Q0MetatheoryAFP} and
 thereby on set theory axiomatised in HOL (\texttt{ZFC\_in\_HOL}).  The
 present entry instead embeds the object logic and constructs its models
-in plain Isabelle/HOL, with no set-theoretic universe --- which is what
+in plain Isabelle/HOL, with no set-theoretic universe---which is what
 we mean by HOL \emph{in} HOL.  To the best of our knowledge it is the
 first machine-checked completeness proof for a deep embedding of HOL over
 plain HOL; Harrison's self-verification of HOL Light~\cite{Harrison06}
 concerns soundness and consistency, not completeness, and the nearest
 completeness results treat weaker logics (second-order logic in
 Coq~\cite{KochKirst22}; a synthetic framework for propositional,
-first-order, modal and hybrid logic~\cite{From25}).  The entry formalises
-BKK's model-existence method (BKK~\S6) --- the saturated
-maximal-consistent extension and its closure ($\nabla$) properties ---
-for the Henkin class $\mathcal{M}_{\beta\mathfrak{f}\mathfrak{b}}$, and
-\emph{extends} BKK by typed description operators after
-Andrews~\cite{Andrews72} (the rule $NK(\iota)$ and its model condition,
-carried through soundness, model existence and completeness).
-Completeness is obtained in a form stronger than BKK's Corollary~7.7:
-for open formulas, at every infinite carrier, and for every signature
-with infinitely many parameters, with no cardinality link between the
-two.  It also holds in the hypothesis-relative form
-$\Phi \models A \Rightarrow \Phi \vdash A$, carried all the way to
-arbitrary pure contexts of open formulas.  A transfinite extension
-lemma takes this beyond countable signatures, to BKK's arbitrary
-signature cardinalities $\aleph_s$ (Remark~3.16, ``arbitrary'' meaning
-arbitrary within the type universes of the meta-logic, instantiation by
-instantiation); here the carrier must be at least as large as the
-signature, and purity scales to the signature.  Throughout, the trade
-of free variables for fresh parameters is made simultaneously, by a
-substitution-value law for the whole context at once.  For derivability from hypotheses in
-Andrews' sense (some finite sub-context derives the conclusion) every
-purity proviso disappears, and semantic compactness of the Henkin
-consequence is obtained as a corollary, with no ultraproducts.
+first-order, modal and hybrid logic~\cite{From25}).
+
+The entry formalises BKK's model-existence method (BKK~\S6)---the
+saturated maximal-consistent extension and its closure ($\nabla$)
+properties---for the Henkin class
+$\mathcal{M}_{\beta\mathfrak{f}\mathfrak{b}}$, and \emph{extends} BKK by
+typed description operators after Andrews~\cite{Andrews72} (the rule
+$NK(\iota)$ and its model condition, carried through soundness, model
+existence and completeness).  Completeness holds in three forms.  For
+\emph{valid} formulas it is stronger than BKK's Corollary~7.7: for open
+formulas, at every infinite carrier and for every signature with
+infinitely many parameters, with no cardinality link between the two.
+Relative to hypotheses, $\Phi \models A \Rightarrow \Phi \vdash A$ holds
+for finite contexts of open formulas without further conditions, and for
+infinite contexts of open formulas that leave a parameter reserve as
+large as the signature; a transfinite extension lemma takes this to
+BKK's arbitrary signature cardinalities $\aleph_s$ (Remark~3.16,
+arbitrary within the type universes of the meta-logic), where the
+carrier must be at least as large as the signature.  For derivability
+from hypotheses in Andrews' sense (some finite sub-context derives the
+conclusion) the reserve condition disappears, and semantic compactness
+of the Henkin consequence is obtained as a corollary, with no
+ultraproducts.  Throughout, free variables are replaced by fresh
+parameters simultaneously, by a substitution-value law for the whole
+context at once.
 
 \paragraph{Consistency: two tiers.}
 Two further points concern \emph{consistency} rather than completeness.
-As a by-product, the finite-model consistency argument is pushed to the
-infinity scheme: by compactness, applied to arbitrarily large \emph{finite}
-models, $\mathrm{NK}$ is shown consistent with a scheme forcing
-infinitely many individuals --- entirely within plain HOL, with no
-infinite model constructed and no strengthening of the meta-theory by a
-set-theoretic universe.  The complementary direction concerns
-$\mathrm{NK}$ with a \emph{single} Dedekind-style axiom of infinity.
-Such an axiom admits no finite models and so falls outside the plain-HOL
-setting of this entry; it is handled by constructing a standard model
-over an axiomatic set-theoretic universe such as Paulson's
-\texttt{ZFC\_in\_HOL}~\cite{ZFCinHOL}---the price being a stronger,
-non-conservative meta-theory, and hence only \emph{relative} (to
+The first stays in plain HOL.  By compactness over arbitrarily large
+\emph{finite} models, $\mathrm{NK}$ is consistent with the scheme of
+inequations $c_i \neq c_j$ between new individual constants, following
+the classical first-order compactness argument by expansion with new
+constants (Skolem~\cite{Skolem34}, Mal'cev~\cite{Malcev36},
+Henkin~\cite{Henkin49,Henkin50}, Robinson~\cite{Robinson63}), which
+Andrews' \S55~\cite{Andrews02} (Theorem 5506) applies in type theory to
+obtain nonstandard models; the consistency proof uses no infinite model
+and no strengthening of the meta-theory.  The scheme is compared with the
+single Dedekind-style axiom of infinity: the axiom derives, for every
+$n$, the constant-free sentence that there are at least $n$
+individuals---the classical first-order axiomatisation of infinity---but
+neither the scheme nor these sentences derive the axiom, and a Henkin
+model of the whole scheme refutes it.
+
+The second tier concerns $\mathrm{NK}$ with the single axiom.  Such an
+axiom has no finite models and so falls outside the plain-HOL setting of
+this entry; it is handled in the companion entry
+\texttt{HOL\_in\_HOL\_Deep\_Infinity\_ZFC}~\cite{InfinityZFC} by a
+standard model over Paulson's axiomatic set-theoretic universe
+\texttt{ZFC\_in\_HOL}~\cite{ZFCinHOL}, at the cost of a stronger,
+non-conservative meta-theory and hence with only \emph{relative} (to
 $\mathrm{ZF}$) consistency.  That model has full function spaces, so it
-also validates the relational axiom of choice.  The same route therefore
-yields the relative consistency of full classical higher-order logic
-($\mathrm{NK}$ with the infinity axiom and choice, extensionality and typed
-description being already present).  Writing \emph{M-HOL} for the
-meta-logic Isabelle/HOL and \emph{O-HOL} for the embedded object logic,
-this entry establishes $\text{M-HOL}\vdash\mathrm{con}(\text{O-HOL})$
-\emph{outright}---that is, relative only to plain HOL itself: no set
-universe and no strengthening of the meta-theory certify the object
-logic consistent---no conflict with G\"odel's second theorem, since
-O-HOL, having finite models, lacks the arithmetic strength the theorem
-presupposes.  The single-axiom direction above is the other
-tier: with the infinity axiom and choice O-HOL is itself Church's simple type theory
-with infinity and choice, which interprets the M-HOL core and so shares its
-proof-theoretic strength---a \emph{metatheoretic} observation, not a
-machine-checked one (for the strength of the Zermelo-style set theories in
-play see~\cite{Mathias01}; the definitional apparatus of the M-HOL core is
-separately known consistent~\cite{KuncarPopescu19}).  Plain M-HOL therefore
-cannot certify it without proving its own consistency, which G\"odel's second
-theorem bars, so a set universe $V$ becomes necessary, giving
-$\text{M-HOL}+V\vdash\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$;
-metatheoretically this is consistency relative to $\mathrm{ZF}$, in the
-sense the companion's introduction makes precise.  That tier---with an abstract universe
-interface, abstracted further to a Harrison-style axiom, and infinity as
-the only surplus (choice comes for free)---is carried out in a
-companion development~\cite{InfinityZFC}, submitted to the Archive as
-\texttt{HOL\_in\_HOL\_Deep\_Infinity\_ZFC}.  Neither tier is
-the object logic proving its own consistency (cf.\ Harrison's
-self-verification of HOL Light~\cite{Harrison06}); always M-HOL, one level up.
+also validates the relational axiom of choice, and the same route yields
+the relative consistency of full classical higher-order logic (the
+calculus $\mathrm{NK}$, which already has extensionality and typed
+description, extended by the infinity axiom and choice).  The companion
+isolates the universe behind an abstract interface, abstracted further
+to a Harrison-style axiom, with infinity as the only surplus: choice
+holds in the same full model, using only the meta-level choice of
+Isabelle/HOL.
+
+Writing \emph{M-HOL} for the meta-logic Isabelle/HOL and \emph{O-HOL}
+for the embedded object logic, the two tiers are
+$\text{M-HOL}\vdash\mathrm{con}(\text{O-HOL})$, established here
+\emph{outright}, that is, relative only to plain HOL, and
+$\text{M-HOL}+V\vdash\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$,
+established in the companion.  The first does not conflict with
+G\"odel's second theorem: O-HOL has finite models and interprets no
+arithmetic.  For the second, some strengthening of the meta-theory is
+necessary, since O-HOL with infinity and choice interprets the M-HOL
+core and shares its proof-theoretic strength; the companion's
+introduction gives this metatheoretic argument, with the references to
+Mathias~\cite{Mathias01} and Kun\v{c}ar and Popescu~\cite{KuncarPopescu19}.
+Neither tier is the object logic proving its own consistency (cf.\
+Harrison's self-verification of HOL Light~\cite{Harrison06}); it is
+always M-HOL, one level up.  For many applications the first tier
+suffices: where HOL serves as a representation language, as in the
+LogiKEy methodology for normative reasoning~\cite{LogiKEy}, no
+object-level axiom of infinity is assumed, arithmetic at the object
+level is optional, and the monomorphic core of the logic in use (TH0
+without the choice operator) is the one certified outright.
 
 \paragraph{Compatibility with the published version.}
 This update is additive.  The headline interface of the August 2026
-version is preserved: theory names, the exported theorems of
+version is preserved: the theory names, the exported theorems of
 \texttt{Main\_Results} with their statements, and the Cantor results
 under their published names, \texttt{cantor\_surjective} and
-\texttt{cantor\_injective}, kept as compatibility aliases; further
-published lemmas that the generalised proofs no longer need retain their
-published statements and are marked as compatibility exports in place.  All new
-material---the strengthened completeness ladder, the finitary
-consequence relation, theory \texttt{NK\_Infinity} with the
-scheme/axiom separation---is added on top.  Two deliberate exceptions,
-flagged for maintainers: the theorem \texttt{completeness} now takes the
-weaker hypothesis-relative premise (BKK's Corollary~7.7 proper; a caller
-holding a validity proof adapts by one step), and a handful of internal
-auxiliaries superseded by the generalised proofs were retired---both
-documented in the change log of this update.
+\texttt{cantor\_injective}, now aliases of the theorems in theory
+\texttt{Cantor}; further published lemmas that the generalised proofs
+no longer need retain their published statements and are marked as
+compatibility exports in place.  All new material is added on top: the
+strengthened completeness ladder, the finitary consequence relation,
+the derived rules, the theories \texttt{NK\_Infinity} and
+\texttt{Footprint\_Checks}.  Two deliberate exceptions, flagged for
+maintainers.  First, the theorem \texttt{completeness} is now BKK's
+Corollary~7.7 proper: its premise is consequence from the context
+rather than validity (a caller holding a validity proof adapts by one
+step), its purity condition is \texttt{richp}, which over countable
+signatures is equivalent to the published \texttt{freep}
+(\texttt{richp\_iff\_freep}), and the countability constraint on the
+signature is dropped.  Second, internal auxiliaries superseded by the
+generalised proofs were retired, and two internal names
+changed.\footnote{Retired: the per-variable induction auxiliaries
+\texttt{completeness\_open\_aux} and \texttt{completeness\_open\_any\_aux};
+\texttt{freep\_ext}, \texttt{ext\_mono'}, \texttt{fp0},
+\texttt{leib\_sym'}, \texttt{leib\_trans'}; the hand-built logical
+constants \texttt{cNg}, \texttt{cDs}, \texttt{cPi}, \texttt{cEv},
+\texttt{cIv}, \texttt{cIv\_desc} of the concrete model, superseded by the
+locale \texttt{lambda\_universe}; \texttt{LamN}; \texttt{Ap\_dom} of
+the Hintikka model.  Renamed: the evaluation \texttt{Ev} of the locale
+\texttt{valuation} to \texttt{Eval}, and the datatype \texttt{mval} of
+the concrete model to \texttt{ival}.}
 
 \input{session}
 \bibliographystyle{abbrv}

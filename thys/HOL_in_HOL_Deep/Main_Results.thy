@@ -22,8 +22,8 @@ text \<open>Completeness comes without hypotheses (\<open>NK_completeness\<close
   and coincides with \<open>\<Phi> \<turnstile> A\<close> whenever the context leaves enough parameters unused.  For
   \<open>\<tturnstile>\<close>, completeness holds with @{emph \<open>no\<close>} condition on the context beyond
   well-formedness: any set of @{emph \<open>open\<close>} formulas --- context and conclusion may
-  together carry infinitely many free variables --- at any signature, over any carrier at
-  least as large as the signature (\<open>NK_completeness_hyps\<close>); the instance for a closed
+  together carry infinitely many free variables --- at any infinite signature, over any
+  carrier at least as large as the signature (\<open>NK_completeness_hyps\<close>); the instance for a closed
   context and conclusion over a countable signature is BKK Corollary 7.7 proper.  At the
   level of the calculus \<open>\<turnstile>\<close> itself --- deriving from the @{emph \<open>whole\<close>} context rather
   than from a finite part --- a proviso on the context is needed, since an impure infinite
@@ -42,11 +42,12 @@ theorem NK_completeness:
   by (rule completeness_at_any_signature[OF assms])
 
 text \<open>Derivability from hypotheses, in final form.  The premise \<open>inj emb\<close> --- the carrier
-  is at least as large as the signature --- is necessary (closing remark of theory
-  \<open>Completeness\<close>); nothing else is assumed about the context.  Semantic compactness of
-  the Henkin consequence falls out as a corollary: consequence at one sufficiently large
-  carrier reduces to a finite sub-context, which by soundness is good at @{emph \<open>every\<close>}
-  carrier \<open>'v\<close> --- no ultraproducts are involved.\<close>
+  is at least as large as the signature --- cannot be dropped for contexts of unbounded
+  size; the argument, which is informal, is the closing remark of theory
+  \<open>Completeness\<close>.  Nothing else is assumed about the context.  Semantic compactness of
+  the Henkin consequence follows as a corollary: consequence at one sufficiently large
+  carrier reduces to a finite sub-context, which by soundness has \<open>A\<close> as a consequence at
+  @{emph \<open>every\<close>} carrier \<open>'v\<close> --- no ultraproducts are involved.\<close>
 
 theorem NK_soundness_hyps: "\<Phi> \<tturnstile> C \<Longrightarrow> \<Phi> \<Turnstile>('u) C"
   by (rule soundness_fprov)
@@ -98,8 +99,8 @@ theorem sound_and_complete:
   shows "\<turnstile> A \<longleftrightarrow> \<Turnstile>('u::infinite) A"
   using assms completeness_at_any_signature soundness_valid by blast
 
-text \<open>The constraint \<open>'u::infinite\<close> is essential, not an artefact of the proof.  Soundness
-  needs no constraint on \<open>'u\<close>.  Completeness does: over a @{emph \<open>finite\<close>} carrier no model
+text \<open>The constraint \<open>'u::infinite\<close> is not an artefact of the proof; the following argument
+  is not formalised.  Soundness needs no constraint on \<open>'u\<close>.  Completeness does: over a @{emph \<open>finite\<close>} carrier no model
   of the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> exists at all --- with negation and disjunction in the signature
   every boolean function is \<open>\<lambda>\<close>-definable, so the domains at the types \<open>\<o>\<^sup>n \<^bold>\<Rightarrow> \<o>\<close> grow
   beyond any bound --- and validity at a finite carrier would hold vacuously for every
@@ -119,33 +120,61 @@ text \<open>Cantor's theorem is derived @{emph \<open>inside\<close>} \<open>NK\
 lemmas cantor_surjective = nk_surjective_cantor
 lemmas cantor_injective = nk_injective_cantor
 
-text \<open>Consistency with an infinity scheme, for every injective family of
+text \<open>Consistency with the inequation scheme over new constants, for every injective family of
   individual constants, obtained by compactness from arbitrarily large finite
   models:\<close>
 
-corollary consistency_with_infinity_scheme:
-  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> con (Diag f)"
-  by (rule con_Diag)
+corollary consistency_with_inequation_scheme:
+  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> con (Ineq f)"
+  by (rule con_Ineq)
+
+text \<open>The same in the finitary form free of eigen-parameter effects, and jointly with the
+  negated axiom (see theory \<open>NK_Infinity\<close>):\<close>
+
+corollary consistency_with_inequation_scheme_fprov:
+  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> \<not> (Ineq f \<tturnstile> (\<^bold>\<bottom> :: 'p tm))"
+  by (rule con_Ineq_fprov)
+
+corollary consistency_with_inequation_scheme_and_negated_axiom:
+  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> con (insert (\<^bold>\<not> DInf) (Ineq f))"
+  by (rule con_Ineq_not_DInf)
 
 text \<open>The scheme does not yield the single Dedekind-style axiom of infinity \<open>DInf\<close>: no
-  finite part of the scheme derives it, and a countable Henkin model of the whole scheme
-  refutes it (@{thm [source] henkin_scheme_refutes_DInf} in theory \<open>NK_Infinity\<close>; the
-  scheme's consistency also holds in the strong finitary form
-  @{thm [source] con_Diag_fprov}, and \<open>con_Diag_not_DInf\<close> adds \<open>\<^bold>\<not> DInf\<close> to the whole
-  scheme).  The converse non-derivability --- the pure axiom yields no diagram
-  inequation --- is established in the companion development via its set-theoretic model;
-  as sentences, axiom and scheme are incomparable.\<close>
+  finite part of the scheme derives it, and a Henkin model of the whole scheme refutes it
+  (@{thm [source] henkin_scheme_refutes_DInf} in theory \<open>NK_Infinity\<close>; its total domain
+  injects into the term type, so it is countable over a countable signature).  The converse
+  non-derivability --- the pure axiom yields no inequation of the scheme --- is established
+  in the companion development via its set-theoretic model.  Both results rest on the
+  auxiliary constants of the scheme.  What the axiom does derive is every constant-free
+  sentence ``there are at least \<open>n\<close> individuals'' (\<open>ExDistinct n\<close> in theory
+  \<open>NK_Infinity\<close>), the classical first-order axiomatisation of infinity.\<close>
 
 corollary scheme_does_not_derive_axiom:
-  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> \<not> (Diag f \<tturnstile> (DInf :: 'p tm))"
-  by (rule Diag_not_derives_DInf)
+  "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> \<not> (Ineq f \<tturnstile> (DInf :: 'p tm))"
+  by (rule Ineq_not_derives_DInf)
+
+corollary axiom_derives_every_finite_cardinality:
+  "{DInf :: 'p::infinite tm} \<turnstile> ExDistinct n"
+  by (rule DInf_derives_distinct_n)
+
+text \<open>The converse fails: the constant-free sentences together do not derive the axiom
+  (\<open>distinct_scheme_not_derives_DInf\<close>; the Henkin model of
+  \<open>henkin_scheme_refutes_DInf\<close> satisfies all of them and refutes \<open>DInf\<close>).  So in \<open>NK\<close>
+  the first-order axiomatisation of infinity is strictly weaker than the Dedekind axiom;
+  over standard models the two are equivalent (the step from an infinite individual
+  domain to a Dedekind self-map in the full function space is not formalised).\<close>
+
+corollary finite_cardinalities_do_not_derive_axiom:
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
+  by (rule distinct_scheme_not_derives_DInf)
 
 text \<open>Model existence (the positive half of Henkin completeness), restated: every consistent
-  sentence has a @{emph \<open>countable\<close>} \<open>\<Sigma>\<close>-Henkin model, within plain HOL.  Consistency is the
-  only premise --- so where an axiom (e.g.\ of infinity) has no finite models and its
-  consistency must be borrowed from a stronger meta-theory, that meta-theory is used for the
-  consistency premise alone, and the witnessing model still has a countable total domain,
-  carved out of the carrier \<^typ>\<open>'p tm set\<close> as the \<open>\<sim>\<close>-classes of closed wffs.\<close>
+  sentence over a countable signature has a \<open>\<Sigma>\<close>-Henkin model with @{emph \<open>countable\<close>} total domain, within plain HOL.
+  Consistency is the only premise --- so where an axiom (e.g.\ of infinity) has no finite
+  models and its consistency has to be established in a stronger meta-theory, that
+  meta-theory is used for the consistency premise alone, and the witnessing model still has
+  a countable total domain: the \<open>\<sim>\<close>-classes of closed wffs, a subset of the carrier
+  \<^typ>\<open>'p tm set\<close>.\<close>
 
 corollary countable_henkin_model:
   fixes A :: "'p::{countable,infinite} tm"

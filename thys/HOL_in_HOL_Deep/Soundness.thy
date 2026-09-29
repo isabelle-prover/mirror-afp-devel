@@ -9,7 +9,7 @@ text \<open>This section proves \<open>NK\<close> sound for the model class \<op
 
 subsection \<open>Abstract soundness (BKK Theorem 7.3)\<close>
 
-text \<open>Soundness over the abstract \<open>\<Sigma>\<close>-models of Section 2, following BKK's
+text \<open>Soundness over the abstract \<open>\<Sigma>\<close>-models of theory \<open>Semantics\<close>, following BKK's
   proof of Theorem 7.3 case by case.  The \<open>NK(\<Pi>I)\<close> case uses BKK's device verbatim:
   ``from the evaluation function \<open>E\<close>, one can define another evaluation function \<open>E'\<close>
   such that \<open>E'(w) \<equiv> a\<close> and \<open>E'\<^bsub>\<phi>\<^esub>(A) \<equiv> E\<^bsub>\<phi>\<^esub>(A)\<close> if \<open>w\<close> does not occur in \<open>A\<close>'' ---
@@ -295,10 +295,11 @@ next case (EqL \<Phi> C \<alpha> D)
 qed
 
 
-subsubsection \<open>The canonical construction is a BKK model\<close>
+subsubsection \<open>Every general model is a BKK model\<close>
 
-text \<open>The \<open>\<Sigma>\<close>-model predicate of the canonical construction, exported from the
-  sublocale chain \<open>general_model \<subseteq> bkk_model\<close> of Section 2.\<close>
+text \<open>The \<open>\<Sigma>\<close>-model predicate of a general model --- the frame-based construction with the
+  recursive denotation as evaluation --- exported from the sublocale
+  \<open>general_model \<subseteq> bkk_model\<close> of theory \<open>Semantics\<close>.\<close>
 
 lemma (in general_model) bkk_model_pred:
   "bkk_model Dm Ap (\<lambda>\<xi> A. \<lparr>A\<rparr>\<^bsub>\<xi>\<^esub>) (\<lambda>a. a = Tv)" by intro_locales

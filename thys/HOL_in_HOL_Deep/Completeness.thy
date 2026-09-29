@@ -8,7 +8,7 @@ text \<open>Henkin completeness for \<open>NK\<close>, with the term model reali
   (BKK Definition 3.35).  The result is then strengthened to arbitrary infinite value
   carriers, signatures with infinitely many parameters, and open formulas, and extended to
   derivation from hypotheses --- up to arbitrary parameter-rich contexts of open formulas
-  at @{emph \<open>any\<close>} signature cardinality; the carrier need only be at least as large as
+  at any infinite signature cardinality; the carrier need only be at least as large as
   the signature.  For the hypothesis relation \<open>\<tturnstile>\<close> of \<open>Calculus\<close> even the
   parameter-rich proviso disappears (\<open>completeness_fprov\<close>).\<close>
 
@@ -55,8 +55,9 @@ subsubsection \<open>Signatures of arbitrary cardinality: the parameter reserve\
 text \<open>BKK run their extension lemma at any infinite signature cardinality \<open>\<aleph>\<^sub>s\<close> (BKK
   Remark 3.16).  To follow them beyond countable signatures, the enumeration of sentences
   below walks a well-order of the @{emph \<open>term type\<close>} instead of \<open>\<nat>\<close>, and the freshness
-  argument becomes quantitative: the reserve of unused parameters must be as large as the
-  @{emph \<open>signature\<close>}, not merely infinite.  The predicate \<open>richp\<close> ("parameter-rich")
+  argument becomes quantitative: the argument below needs a reserve of unused parameters as
+  large as the @{emph \<open>signature\<close>}, not merely infinite (whether an infinite reserve would
+  suffice is not settled here, see the closing remark).  The predicate \<open>richp\<close> ("parameter-rich")
   captures this, in the cardinal order \<open>\<le>o\<close> of the Isabelle/HOL library; over a countable
   signature it collapses to \<open>freep\<close> (@{emph \<open>infinite\<close>} reserve, BKK Definition 6.3).\<close>
 
@@ -139,8 +140,9 @@ lemma richp_reserve:
   by (rule ordLeq_transitive[OF card_of_tm assms[unfolded richp_def]])
 
 text \<open>Two small counting facts: a finite set is strictly smaller than any infinite type, and
-  a union of fewer-than-\<open>|'k|\<close> finite sets stays strictly smaller than \<open>|'k|\<close> --- no
-  regularity of the cardinal is needed, because the members are finite.\<close>
+  over an infinite type \<open>'k\<close> a union of fewer-than-\<open>|'k|\<close> finite sets stays strictly
+  smaller than \<open>|'k|\<close> --- no regularity of the cardinal is needed, because the members are
+  finite.\<close>
 
 lemma card_of_finite_infinite:
   assumes "finite (A :: 'a set)" and "infinite (B :: 'b set)"
@@ -201,6 +203,30 @@ proof -
     unfolding richp_def
     using card_of_diff_finite[OF assms[unfolded richp_def] finite_pars]
           ordLeq_transitive by blast
+qed
+
+text \<open>Folding the signature into one half of itself: an injective renaming \<open>h :: 'p \<Rightarrow> 'p\<close>
+  whose co-range is as large as the signature (\<open>|'p + 'p| = |'p|\<close>).  The untouched half
+  serves as a parameter reserve in \<open>completeness_fprov\<close> and in \<open>NK_Infinity\<close>.\<close>
+
+lemma signature_fold:
+  "\<exists>h :: 'p::infinite \<Rightarrow> 'p. inj h \<and> |UNIV :: 'p set| \<le>o |- range h|"
+proof -
+  have "|(UNIV :: 'p set) <+> (UNIV :: 'p set)| =o |UNIV :: 'p set|"
+    using card_of_Plus_infinite[OF infinite_UNIV
+          ordLeq_reflexive[OF card_of_Well_order]] by blast
+  hence "|UNIV :: ('p + 'p) set| \<le>o |UNIV :: 'p set|"
+    by (metis UNIV_Plus_UNIV ordIso_imp_ordLeq)
+  then obtain j :: "'p + 'p \<Rightarrow> 'p" where injj: "inj j"
+    by (meson card_of_ordLeq)
+  define h where "h = (\<lambda>p. j (Inl p))"
+  have injh: "inj h" using injj by (auto simp: h_def inj_on_def)
+  have sub: "(\<lambda>q. j (Inr q)) ` UNIV \<subseteq> - range h"
+    using injD[OF injj] by (auto simp: h_def)
+  have inj1: "inj_on (\<lambda>q :: 'p. j (Inr q)) UNIV" using injj by (auto simp: inj_on_def)
+  have "|UNIV :: 'p set| \<le>o |- range h|"
+    by (rule card_of_ordLeq[THEN iffD1]) (use sub inj1 in blast)
+  thus ?thesis using injh by blast
 qed
 
 subsubsection \<open>Maximal consistent, saturated extension (BKK's abstract extension lemma 6.32)\<close>
@@ -319,8 +345,9 @@ text \<open>The chain is directed, each stage extends \<open>\<Phi>\<close>, and
 lemma step_expand: "S \<subseteq> step S A"
   by (auto simp: step_def)
 
-text \<open>Statement preserved verbatim from the published version of this entry (compatibility
-  export); the transfinite chain below tracks parameter usage by counting instead.\<close>
+text \<open>The next lemma, \<open>freep_step\<close>, keeps its statement from the published version of this
+  entry (compatibility export); the transfinite chain below tracks parameter usage by
+  counting instead.\<close>
 
 lemma freep_step: "freep S \<Longrightarrow> freep (step S A)"
   by (simp add: finite_wit freep_add freep_un_finite step_def)
@@ -550,9 +577,10 @@ lemma con_Hset: fixes \<Phi> :: "'p::infinite tm set"
   shows "con (Hset \<Phi>)"
   by (meson assms con_compact con_ext con_mono ext_reserve(2) finite_sub_ext)
 
-text \<open>Crucially, \<open>freep (Hset \<Phi>)\<close> fails (a maximal set uses every parameter), so we never weaken
-  @{emph \<open>to\<close>} \<open>Hset\<close>.  Instead we use that every @{emph \<open>finite\<close>} subset of \<open>Hset\<close> is
-  consistent --- finite contexts are always \<open>freep\<close>, which is all the proof rules need.\<close>
+text \<open>\<open>freep (Hset \<Phi>)\<close> fails: a maximal set uses every parameter, since for each parameter
+  \<open>c\<close> it contains \<open>c \<^bold>= c\<close> or its negation.  So we never weaken @{emph \<open>to\<close>} \<open>Hset\<close>.
+  Instead we use that every @{emph \<open>finite\<close>} subset of \<open>Hset\<close> is consistent --- finite
+  contexts are always \<open>freep\<close>, which is all the proof rules need.\<close>
 
 lemma Hset_finite_con: fixes \<Phi> :: "'p::infinite tm set"
   assumes "con \<Phi>" and "richp \<Phi>" and "finite F" and "F \<subseteq> Hset \<Phi>"
@@ -571,6 +599,29 @@ proof -
     using c by (subst (1 2) ext_unfold) (simp add: step_def)
   thus ?thesis unfolding Hset_def by blast
 qed
+
+text \<open>The maximal set uses every parameter, so it is not \<open>freep\<close> (cf.\ the remark before
+  \<open>Hset_finite_con\<close>).\<close>
+
+lemma Hset_not_freep: fixes \<Phi> :: "'p tm set" shows "\<not> freep (Hset \<Phi>)"
+proof -
+  have "p \<in> usedp (Hset \<Phi>)" for p
+  proof -
+    let ?e = "(p\<^sup>p\<^bsub>\<iota>\<^esub>) \<^bold>=\<^bsub>\<iota>\<^esub> (p\<^sup>p\<^bsub>\<iota>\<^esub>) :: 'p tm"
+    have "cwff \<o> ?e" by (simp add: cwff_def wff_PEq wff_Par)
+    hence "?e \<in> Hset \<Phi> \<or> \<^bold>\<not> ?e \<in> Hset \<Phi>" by (rule Hset_maximal)
+    thus ?thesis
+    proof (elim disjE)
+      assume "?e \<in> Hset \<Phi>" thus ?thesis unfolding usedp_def by (intro UN_I[of ?e]) simp_all
+    next
+      assume "\<^bold>\<not> ?e \<in> Hset \<Phi>" thus ?thesis unfolding usedp_def
+        by (intro UN_I[of "\<^bold>\<not> ?e"]) simp_all
+    qed
+  qed
+  hence "usedp (Hset \<Phi>) = UNIV" by blast
+  thus ?thesis by (simp add: freep_def)
+qed
+
 lemma Hset_saturated: fixes \<Phi> :: "'p::infinite tm set"
   assumes con\<Phi>: "con \<Phi>" and fp: "richp \<Phi>"
   and cA: "cwff \<o> (\<^bold>\<not> ((Pi \<alpha>) \<^bold>\<cdot> G))" and inH: "\<^bold>\<not> ((Pi \<alpha>) \<^bold>\<cdot> G) \<in> Hset \<Phi>"
@@ -713,7 +764,7 @@ proof (rule Hset_deduct[OF con\<Phi> fp\<Phi> _ _ _ cb])
 qed
 
 text \<open>The \<open>\<sim>\<close>-equivalence classes of closed well-formed terms (@{const cwff} from
-  Section 1): \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> H\<close> --- the Leibniz quotient of BKK's model-existence proof
+  theory \<open>Syntax\<close>): \<open>A \<sim> B \<equiv> (A \<^bold>\<doteq>\<^bsub>\<sigma>\<^esub> B) \<in> H\<close> --- the Leibniz quotient of BKK's model-existence proof
   (BKK Theorem 6.33); the \<open>\<^sub>~\<nabla>\<close>-properties of Leibniz equality in \<open>H\<close> are BKK Lemma 6.23.\<close>
 
 definition cls :: "'p tm \<Rightarrow> 'p tm set" where
@@ -869,7 +920,7 @@ lemma cls_neg: "cwff \<o> \<phi> \<Longrightarrow> cls (\<^bold>\<not> \<phi>) =
   by (meson Hset_maximal Hset_notboth cwff_App cwff_Neg cwff_def
             cls_FalseB_iff cls_TrueB_iff)
 
-text \<open>The \<open>L\<^bsub>\<or>\<^esub>\<close> condition: \<open>H\<close> treats disjunction disjunctively (BKK \<open>\<nabla>\<^sub>\<or>\<close>, Definition 6.19).\<close>
+text \<open>The \<open>L\<^bsub>\<or>\<^esub>\<close> condition: \<open>H\<close> treats disjunction disjunctively (BKK \<open>\<^sub>~\<nabla>\<^sub>\<or>\<close>, Definition 6.19).\<close>
 
 lemma Hset_dis_iff:
   assumes wp: "cwff \<o> \<phi>" and wq: "cwff \<o> \<psi>"
@@ -1119,11 +1170,12 @@ qed
 
 end
 
-subsubsection \<open>Model existence (BKK Lemma 7.5 / Theorem 7.6)\<close>
+subsubsection \<open>Model existence (BKK Theorem 7.6)\<close>
 
-text \<open>The Hintikka set induces a term evaluation: the class map \<open>cls\<close> together with the term-model
+text \<open>The maximal saturated extension \<open>Hset \<Phi>\<close> --- BKK's Hintikka set; we use the two names
+  interchangeably from here on --- induces a term evaluation: the class map \<open>cls\<close> together with the term-model
   domains and application satisfies every @{locale valuation} condition.  Via the bridge
-  \<open>valuation \<subseteq> bkk_model\<close> of Section 2, every \<open>NK\<close>-consistent set of sentences therefore
+  \<open>valuation \<subseteq> bkk_model\<close> of theory \<open>Semantics\<close>, every \<open>NK\<close>-consistent set of sentences therefore
   has a model in the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> --- BKK's model-existence theorem.\<close>
 
 sublocale hintikka_model \<subseteq> V: valuation Dm Ap cls
@@ -1158,19 +1210,30 @@ text \<open>THE TRUTH LEMMA: the satisfaction claim of BKK Theorem 6.33 (the und
   term model exactly when it belongs to \<open>H\<close>.\<close>
 
 theorem truth_lemma:
-  "cwff \<o> \<phi> \<Longrightarrow> V.Ev \<xi> \<phi> = cls \<^bold>\<top> \<longleftrightarrow> \<phi> \<in> Hset \<Phi>"
-  using cls_TrueB_iff msub_closed cwff_closed V.Ev_def by metis
+  "cwff \<o> \<phi> \<Longrightarrow> V.Eval \<xi> \<phi> = cls \<^bold>\<top> \<longleftrightarrow> \<phi> \<in> Hset \<Phi>"
+  using cls_TrueB_iff msub_closed cwff_closed V.Eval_def by metis
 
 end
 
 subsubsection \<open>Model existence, packaged: the term model\<close>
 
+text \<open>A set that injects into the term type of a countable signature is countable.\<close>
+
+lemma countable_of_inj_on_tm:
+  fixes rep :: "'a \<Rightarrow> 'p::countable tm"
+  assumes "inj_on rep D" shows "countable D"
+proof -
+  have "inj_on (to_nat \<circ> rep) D"
+    by (rule comp_inj_on[OF assms]) (rule inj_on_subset[OF inj_to_nat subset_UNIV])
+  thus ?thesis unfolding countable_def by blast
+qed
+
 text \<open>The construction, packaged once: every consistent parameter-rich set \<open>\<Phi>\<close> of sentences
   has a \<open>\<Sigma>\<close>-Henkin model --- the Hintikka term model, whose domains are \<open>\<sim>\<close>-classes of
   closed wffs --- satisfying every member of \<open>\<Phi>\<close> (the model-existence theorem, BKK
   Theorem 7.6).  The total domain injects into the term type, so over a countable signature
-  it is countable.  The refuting countermodel, the completeness theorem and the
-  single-sentence model-existence form are all instances.\<close>
+  it is countable (@{thm [source] countable_of_inj_on_tm}).  The refuting countermodel, the
+  completeness theorem and the single-sentence model-existence form are all instances.\<close>
 
 theorem term_model_sat:
   fixes \<Phi> :: "'p::infinite tm set"
@@ -1187,10 +1250,10 @@ proof -
     by (auto simp: \<xi>_def H.V.vresp_def intro: H.Dm_cls cwff_Par)
   have ra: "app_struct.asg H.Dm \<xi>" using r
     by (simp add: H.V.bkkA.asg_def H.V.vresp_def)
-  have bm: "bkk_model H.Dm H.Ap H.V.Ev (\<lambda>a. a = H.cls \<^bold>\<top>)"
+  have bm: "bkk_model H.Dm H.Ap H.V.Eval (\<lambda>a. a = H.cls \<^bold>\<top>)"
     by intro_locales
   \<comment> \<open>the term model satisfies every member of \<open>\<Phi>\<close> by the truth lemma\<close>
-  have sat: "\<forall>B\<in>\<Phi>. H.V.Ev \<xi> B = H.cls \<^bold>\<top>"
+  have sat: "\<forall>B\<in>\<Phi>. H.V.Eval \<xi> B = H.cls \<^bold>\<top>"
     using H.truth_lemma sen Phi_sub_Hset[of \<Phi>]
     by (auto simp: cwff_def)
   \<comment> \<open>the total domain injects into the term type: choose a representative of each class\<close>
@@ -1231,12 +1294,12 @@ proof -
 qed
 
 text \<open>The positive counterpart: the model-existence half of Henkin completeness.  From the
-  @{emph \<open>consistency\<close>} of a single sentence \<open>A\<close> one obtains a @{emph \<open>countable\<close>} \<open>\<Sigma>\<close>-Henkin
-  model (the term model) that @{emph \<open>satisfies\<close>} \<open>A\<close>.  This holds for @{emph \<open>any\<close>} consistent
-  sentence --- an axiom of infinity included --- and stays entirely within plain HOL: the
-  carrier is the type \<^typ>\<open>'p tm set\<close> of term classes, with the total domain --- the
-  \<open>\<sim>\<close>-classes of closed wffs --- countable, and with no set-theoretic
-  universe.  A stronger meta-theory can thus be needed only to establish the consistency
+  @{emph \<open>consistency\<close>} of a single sentence \<open>A\<close> one obtains a \<open>\<Sigma>\<close>-Henkin model with
+  @{emph \<open>countable\<close>} total domain (the term model) that @{emph \<open>satisfies\<close>} \<open>A\<close>.  This
+  holds for @{emph \<open>any\<close>} consistent sentence --- an axiom of infinity included --- and
+  stays entirely within plain HOL: the carrier is the type \<^typ>\<open>'p tm set\<close>, the domains
+  are the \<open>\<sim>\<close>-classes of closed wffs, so the total domain is countable, and no
+  set-theoretic universe is involved.  A stronger meta-theory can thus be needed only to establish the consistency
   premise (for an axiom without finite models), never for the model construction.\<close>
 
 theorem countable_henkin_sat:
@@ -1253,13 +1316,7 @@ proof -
     where M: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
       and xi: "app_struct.asg Dm \<xi>" and sat: "\<forall>B\<in>{A}. vl (Ee \<xi> B)"
     by (rule term_model_sat[OF con fp]) (use cA in auto)
-  have "inj_on (to_nat \<circ> rep) {x. \<exists>\<tau>. Dm \<tau> x}"
-  proof (rule comp_inj_on[OF inj])
-    show "inj_on to_nat (rep ` {x. \<exists>\<tau>. Dm \<tau> x})"
-      by (rule inj_on_subset[OF inj_to_nat]) simp
-  qed
-  hence cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}"
-    unfolding countable_def by blast
+  have cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}" by (rule countable_of_inj_on_tm[OF inj])
   show ?thesis by (rule that[OF M cnt xi]) (use sat in auto)
 qed
 
@@ -1276,37 +1333,9 @@ text \<open>\<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> with \<open>NK(\<iot
   is by contraposition, BKK's argument: if \<open>\<Phi> \<turnstile> A\<close> fails, the refuting term model
   satisfies \<open>\<Phi>\<close> but refutes \<open>A\<close>, contradicting validity.\<close>
 
-lemma fp0: "freep ({} :: 'p::{countable,infinite} tm set)"
-  by (rule freep_finite[OF finite.emptyI])
-
-theorem completeness:
-  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm"
-  assumes c: "cwff \<o> A" and fp: "richp \<Phi>"
-      and valid: "\<Phi> \<Turnstile>('p tm set) A"
-      and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
-  shows "\<Phi> \<turnstile> A"
-proof (rule ccontr)
-  assume nd: "\<not> \<Phi> \<turnstile> A"
-  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
-    and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
-    where M: "bkk_model Dm Ap Ee vl" and "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
-      and xi: "app_struct.asg Dm \<xi>"
-      and sat: "\<forall>B\<in>\<Phi>. vl (Ee \<xi> B)" and nA: "\<not> vl (Ee \<xi> A)"
-    by (rule refuting_term_model_hyps[OF c fp sen nd])
-  have satw: "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee \<xi> B)" using sat sen cwff_wff by blast
-  have "vl (Ee \<xi> A)"
-    using valid M xi satw unfolding bkk_consequence_def rel_truth_def by blast
-  thus False using nA by simp
-qed
-
-text \<open>Soundness (BKK Theorem 7.3) and completeness (BKK Corollary 7.7) speak about the
-  @{emph \<open>same\<close>} class of models, so together they characterise derivability @{emph \<open>from
-  hypotheses\<close>} semantically: for a parameter-rich (\<open>richp\<close>; over a countable signature
-  equivalently \<open>freep\<close>) set \<open>\<Phi>\<close> of closed sentences,
-  \<open>\<Phi> \<turnstile> A\<close> holds exactly when \<open>\<Phi> \<Turnstile> A\<close> in the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> over the term carrier ---
-  @{thm [source] completeness} gives \<open>\<Longleftarrow>\<close> (the model-existence direction) and
-  @{thm [source] soundness_sat} gives \<open>\<Longrightarrow>\<close>; the packaged equivalences are stated in
-  \<open>Main_Results\<close>.\<close>
+text \<open>The theorem is stated after its generalisation to arbitrary carriers below, of which it
+  is the instance at the term carrier; its statement is that of the published version of
+  this entry, with the hypothesis-relative premise.\<close>
 
 subsection \<open>Completeness at every signature and carrier\<close>
 
@@ -1325,7 +1354,8 @@ text \<open>This part strengthens the completeness theorem from the term-model c
 subsubsection \<open>Model embedding: satisfaction is carrier-independent\<close>
 
 text \<open>A \<open>\<Sigma>\<close>-model over a carrier \<open>'v\<close> whose total domain maps injectively into a
-  carrier \<open>'u\<close> has a satisfaction-equivalent copy over \<open>'u\<close>; every refutation transfers.
+  carrier \<open>'u\<close> has a satisfaction-equivalent copy over \<open>'u\<close>.  The lemma is stated in the
+  form used below, for a refuted formula \<open>A\<close>; the copy itself does not depend on \<open>A\<close>.
   All model conditions are pointwise, so the transfer needs no induction on terms.\<close>
 
 lemma bkk_model_embed:
@@ -1581,15 +1611,12 @@ qed
 
 subsubsection \<open>Signature transport\<close>
 
-text \<open>On the semantic side, maps of parameter names need @{emph \<open>no\<close>} injectivity:
-  any \<open>h :: 'p \<Rightarrow> 'q\<close> turns a model for \<open>'q\<close> into a model for \<open>'p\<close> by
-  evaluating through \<open>prn h\<close> --- the value conditions \<open>vl\<^sub>\<not>, \<dots>, vl\<^sub>\<iota>\<close> only
-  inspect \<open>Ee\<close> at the logical constants, which \<open>prn\<close> fixes.\<close>
-
 text \<open>On the syntactic side, transport is by @{emph \<open>retraction\<close>}: any finite parameter
   support relocates injectively into \<open>\<nat>\<close> and back, \<open>g \<circ> h\<close> being the identity on the
-  support, so \<open>prn g \<circ> prn h\<close> fixes the terms and contexts concerned.  This single
-  construction drives every signature-transport argument below.\<close>
+  support, so \<open>prn g \<circ> prn h\<close> fixes the terms and contexts concerned.  Two retractions are
+  used: into a copy of \<open>\<nat>\<close> (\<open>nat_retract\<close>, for finite contexts) and, along an arbitrary
+  injection of the signature into itself, within the signature (\<open>inj_finite_retract\<close>, for
+  \<open>completeness_fprov\<close>).\<close>
 
 lemma nat_retract:
   fixes P :: "'p::infinite set"
@@ -1681,103 +1708,24 @@ proof -
   thus ?thesis using gh by blast
 qed
 
-lemma bkk_model_reduct:
-  fixes Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and h :: "'p \<Rightarrow> 'q"
-  assumes "bkk_model Dm Ap Ee vl"
-  shows "bkk_model Dm Ap (\<lambda>\<xi> t. Ee \<xi> (prn h t)) vl"
-proof -
-  interpret bkk_model Dm Ap Ee vl by (rule assms)
-  show ?thesis
-  proof (unfold_locales, goal_cases)
-    case 3 thus ?case using ev_app by fastforce
-    next case 4 thus ?case by (metis ev_coin prn_occ wff_prn)
-    next case 5 thus ?case using ev_beta by blast
-  qed(auto simp: vl_eq vl_pi vl_dis vl_neg vl_iota ev_var ev_type wff_prn prop_f prop_b)
-qed
-
-text \<open>Statement preserved verbatim from the published version of this entry (compatibility
-  export); validity is the empty-context face of \<open>bkk_consequence_map\<close> below.\<close>
-
-lemma bkk_valid_map:
-  fixes h :: "'p \<Rightarrow> 'q"
-  assumes v: "\<Turnstile>('u) (A :: 'p tm)"
-    shows "\<Turnstile>('u) (prn h A :: 'q tm)"
-  unfolding bkk_valid_def rel_truth_def
-  by (metis bkk_model_reduct bkk_valid_def rel_truth_def v)
-
-text \<open>Semantic consequence transports along an @{emph \<open>arbitrary\<close>} map of parameter names:
-  the reduct of a \<open>'q\<close>-model is a \<open>'p\<close>-model, and it satisfies a hypothesis iff the original
-  satisfies its renaming.  Validity is the empty-context face of the same fact.\<close>
-
-lemma bkk_consequence_map:
-  fixes h :: "'p \<Rightarrow> 'q"
-  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
-      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
-    shows "prn h ` \<Phi> \<Turnstile>('u) (prn h A :: 'q tm)"
-  unfolding bkk_consequence_def rel_truth_def
-proof (intro allI impI)
-  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
-  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
-     and sat: "\<forall>B'\<in>prn h ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
-  have bm': "bkk_model Dm Ap (\<lambda>\<xi> t. Ee \<xi> (prn h t)) vl" by (rule bkk_model_reduct[OF bm])
-  have "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee \<xi> (prn h B))" using sat w\<Phi> by blast
-  thus "vl (Ee \<xi> (prn h A))"
-    using v bm' xi unfolding bkk_consequence_def rel_truth_def by blast
-qed
-
-
 subsubsection \<open>Arbitrary parameter-rich contexts: discharging the free-variable stock\<close>
 
-text \<open>Finally the restriction to a @{emph \<open>finite\<close>} context is lifted altogether: an arbitrary
+text \<open>Finally the restriction to a @{emph \<open>finite\<close>} context is lifted: an arbitrary
   parameter-rich context of open formulas is admissible.  With infinitely many typed free
-  variables a per-variable induction cannot terminate, so the trade is made
-  @{emph \<open>simultaneously\<close>}, by
-  the closure \<open>vpar S \<pi>\<close> (Section 1, the parameter-valued instance of the simultaneous
-  substitution @{const msub}) and its substitution-value law
-  @{thm [source] sigma_eval.ev_vpar} (Section 2).  An injective \<open>\<pi>\<close> with pairwise distinct
-  fresh parameters exists because the variables form a countable stock while \<open>richp \<Phi>\<close>
-  supplies a reservoir as large as the signature: an injection of \<open>'p + \<nat>\<close> into it splits
-  it, the \<open>\<nat>\<close>-half feeding \<open>\<pi>\<close> and the untouched \<open>'p\<close>-half keeping the closed image
-  parameter-rich.  The law transports the
-  consequence to the closed image, where
-  @{thm [source] completeness_hyps_rich} applies.  Since every \<open>NK\<close>-derivation is
-  finite (@{thm [source] bprov_finite}), the resulting derivation mentions only finitely many
-  of the substituted parameters, and @{thm [source] bprov_pvar} inverts them one at a time
-  (@{thm [source] pvar_vpar}); weakening restores the full context.\<close>
-
-text \<open>Semantic consequence transports along the simultaneous closure, exactly as it does
-  along parameter renamings (@{thm [source] bkk_consequence_map}): every assignment for the
-  closed image induces, via the parameter values, an assignment for the originals.\<close>
-
-lemma bkk_consequence_vpar:
-  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
-      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
-    shows "vpar UNIV \<pi> ` \<Phi> \<Turnstile>('u) vpar UNIV \<pi> A"
-  unfolding bkk_consequence_def rel_truth_def
-proof (intro allI impI)
-  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
-  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
-     and sat: "\<forall>B'\<in>vpar UNIV \<pi> ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
-  interpret M: bkk_model Dm Ap Ee vl by (rule bm)
-  have asg': "app_struct.asg Dm (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>))"
-    using M.ev_type[OF wff_Par xi] by (simp add: M.asg_def)
-  have evA: "Ee \<xi> (vpar UNIV \<pi> A) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A"
-    using M.ev_vpar[where S = UNIV, OF wA xi] by simp
-  have sat': "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
-  proof
-    fix B assume B: "B \<in> \<Phi>"
-    have wB: "wff\<^bsub>\<o>\<^esub>(B)" using w\<Phi> B by blast
-    have "Ee \<xi> (vpar UNIV \<pi> B) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B"
-      using M.ev_vpar[where S = UNIV, OF wB xi] by simp
-    moreover have "vpar UNIV \<pi> B \<in> vpar UNIV \<pi> ` \<Phi>" using B by blast
-    ultimately show "wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
-      using sat wB by auto
-  qed
-  have "vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A)"
-    by (rule v[unfolded bkk_consequence_def rel_truth_def, rule_format,
-               OF bm asg' sat'[rule_format]])
-  thus "vl (Ee \<xi> (vpar UNIV \<pi> A))" by (simp add: evA)
-qed
+  variables there is no finite measure for an induction over single variables, so all free
+  variables are replaced by parameters at once, by the closure \<open>vpar S \<pi>\<close> of theory
+  \<open>Syntax\<close> (the parameter-valued instance of the simultaneous substitution
+  @{const msub}).  The proof has four steps.  (1) An injective \<open>\<pi>\<close> assigning pairwise
+  distinct fresh parameters to the countably many typed variables exists because
+  \<open>richp \<Phi>\<close> provides unused parameters as numerous as the signature: an injection of
+  \<open>'p + \<nat>\<close> into them is split, its \<open>\<nat>\<close>-part defines \<open>\<pi>\<close>, and its \<open>'p\<close>-part remains
+  unused and keeps the closed image parameter-rich.  (2) The substitution-value law
+  @{thm [source] sigma_eval.ev_vpar} of theory \<open>Semantics\<close> transports the semantic
+  consequence to the closed image, where @{thm [source] completeness_hyps_rich} yields a
+  derivation.  (3) That derivation is finite (@{thm [source] bprov_finite}), so it uses
+  only finitely many of the new parameters, and @{thm [source] bprov_pvar} turns them back
+  into variables one at a time (@{thm [source] pvar_vpar}).  (4) Weakening restores the
+  full context.\<close>
 
 text \<open>Syntactic inversion: a derivation of the closed image over a @{emph \<open>finite\<close>} stock of
   substituted variables is undone by @{thm [source] bprov_pvar}, one parameter at a time.\<close>
@@ -1815,7 +1763,7 @@ qed
 
 text \<open>Hypothesis-relative completeness in full generality: an arbitrary parameter-rich
   context of open formulas, with no finiteness condition of any kind, at @{emph \<open>any\<close>}
-  signature --- the carrier need only be at least as large as the signature.  The reserve
+  infinite signature --- the carrier need only be at least as large as the signature.  The reserve
   is split in two by an injection \<open>j\<close> of \<open>'p + \<nat>\<close> into it: the \<open>\<nat>\<close>-half supplies the
   pairwise distinct fresh parameters that close the free variables, the \<open>'p\<close>-half is
   untouched by the closure and keeps the closed image parameter-rich.\<close>
@@ -1913,8 +1861,7 @@ qed
 
 text \<open>Over a countable signature every infinite carrier is admissible and \<open>richp\<close> is
   \<open>freep\<close>, so the classical statement follows; its closed, empty-context and
-  finite-context faces are exported as one-line instances in the corollary ladder
-  below.\<close>
+  finite-context forms are the corollary ladder below.\<close>
 
 theorem completeness_hyps_open_full:
   fixes \<Phi> :: "'p::{countable,infinite} tm set" and A :: "'p tm"
@@ -1952,36 +1899,14 @@ theorem completeness_fprov:
     shows "\<Phi> \<tturnstile> A"
 proof -
   \<comment> \<open>fold the signature into one half of itself; the other half is an untouched reserve\<close>
-  have "|(UNIV :: 'p set) <+> (UNIV :: 'p set)| =o |UNIV :: 'p set|"
-    using card_of_Plus_infinite[OF infinite_UNIV
-          ordLeq_reflexive[OF card_of_Well_order]] by blast
-  hence "|UNIV :: ('p + 'p) set| \<le>o |UNIV :: 'p set|"
-    by (metis UNIV_Plus_UNIV ordIso_imp_ordLeq)
-  then obtain j :: "'p + 'p \<Rightarrow> 'p" where injj: "inj j"
-    by (meson card_of_ordLeq)
-  define h where "h = (\<lambda>p. j (Inl p))"
-  have injh: "inj h" using injj by (auto simp: h_def inj_on_def)
-  \<comment> \<open>the image context is parameter-rich: the \<open>Inr\<close>-half avoids every \<open>h\<close>-image\<close>
+  obtain h :: "'p \<Rightarrow> 'p" where injh: "inj h" and res: "|UNIV :: 'p set| \<le>o |- range h|"
+    using signature_fold by blast
   define \<Phi>' where "\<Phi>' = prn h ` \<Phi>"
   have rich': "richp \<Phi>'"
   proof -
-    have sub: "range (\<lambda>q. j (Inr q)) \<subseteq> - usedp \<Phi>'"
-    proof
-      fix x assume "x \<in> range (\<lambda>q. j (Inr q))"
-      then obtain q where x: "x = j (Inr q)" by blast
-      have "x \<notin> pars B'" if "B' \<in> \<Phi>'" for B'
-      proof -
-        have "B' \<in> prn h ` \<Phi>" using that by (simp add: \<Phi>'_def)
-        then obtain B where "B' = prn h B" by blast
-        hence "pars B' = h ` pars B" by (simp add: tm.set_map)
-        thus ?thesis using x injD[OF injj] by (auto simp: h_def)
-      qed
-      thus "x \<in> - usedp \<Phi>'" by (auto simp: usedp_def)
-    qed
-    have inj1: "inj (\<lambda>q. j (Inr q))" using injj by (auto simp: inj_on_def)
-    have "|UNIV :: 'p set| \<le>o |- usedp \<Phi>'|"
-      by (rule card_of_ordLeq[THEN iffD1]) (use sub inj1 in blast)
-    thus ?thesis by (simp add: richp_def)
+    have "usedp \<Phi>' \<subseteq> range h" by (auto simp: \<Phi>'_def usedp_def tm.set_map)
+    hence "|- range h| \<le>o |- usedp \<Phi>'|" by (intro card_of_mono1) auto
+    thus ?thesis unfolding richp_def using res ordLeq_transitive by blast
   qed
   \<comment> \<open>transport validity and well-formedness along the fold\<close>
   have valid': "\<Phi>' \<Turnstile>('u) prn h A"
@@ -2014,74 +1939,10 @@ qed
 
 subsubsection \<open>The exported corollary ladder\<close>
 
-text \<open>The completeness forms of the published version of this entry, each a one-line
-  instance of the theorems above: over a countable signature every infinite carrier is
-  admissible, open formulas need no closure --- the simultaneous variable-for-parameter
-  trade subsumes the published version's per-occurrence induction --- and a finite context is
-  automatically pure.\<close>
-
-theorem completeness_open_at_any_carrier:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('u::infinite) A"
-  shows "\<turnstile> A"
-proof -
-  have v0: "{} \<Turnstile>('u) A" using valid by (simp add: bkk_valid_def bkk_consequence_def)
-  show ?thesis
-    by (rule completeness_hyps_open_full[OF wA fp0 _ v0]) simp
-qed
-
-theorem completeness_open:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('p tm set) A"
-  shows "\<turnstile> A"
-proof -
-  have emb: "inj (\<lambda>p :: 'p. {p\<^sup>p\<^bsub>\<iota>\<^esub>} :: 'p tm set)" by (simp add: inj_on_def)
-  have v0: "{} \<Turnstile>('p tm set) A"
-    using valid by (simp add: bkk_valid_def bkk_consequence_def)
-  have "({} :: 'p tm set) \<tturnstile> A"
-    by (rule completeness_fprov[OF emb wA _ v0]) simp
-  thus ?thesis using fprov_finite_eq_bprov[of "{}" A] by simp
-qed
-
-text \<open>The published closed-formula equivalence, its statement verbatim; the open-formula
-  strengthening is \<open>completeness_open\<close> above together with \<open>soundness_valid\<close>.\<close>
-
-theorem derivable_iff_valid:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes "cwff \<o> A"
-  shows "\<turnstile> A \<longleftrightarrow> \<Turnstile>('p tm set) A"
-  using completeness_open[OF cwff_wff[OF assms]] soundness_valid by blast
-
-lemma refuting_term_model:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes c: "cwff \<o> A" and nd: "\<not>\<turnstile> A"
-  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
-  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
-        "app_struct.asg Dm \<xi>" "\<not> vl (Ee \<xi> A)"
-proof -
-  have fp: "richp ({} :: 'p tm set)"
-    by (simp add: richp_iff_freep freep_finite)
-  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
-      and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
-    where M: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
-      and xi: "app_struct.asg Dm \<xi>" and "\<forall>B\<in>({} :: 'p tm set). vl (Ee \<xi> B)"
-      and nA: "\<not> vl (Ee \<xi> A)"
-    by (rule refuting_term_model_hyps[OF c fp _ nd]) simp_all
-  have "inj_on (to_nat \<circ> rep) {x. \<exists>\<tau>. Dm \<tau> x}"
-  proof (rule comp_inj_on[OF inj])
-    show "inj_on to_nat (rep ` {x. \<exists>\<tau>. Dm \<tau> x})"
-      by (rule inj_on_subset[OF inj_to_nat]) simp
-  qed
-  hence cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}"
-    unfolding countable_def by blast
-  show ?thesis by (rule that[OF M cnt xi nA])
-qed
-
-theorem completeness_at_any_carrier:
-  fixes A :: "'p::{countable,infinite} tm"
-  assumes c: "cwff \<o> A" and valid: "\<Turnstile>('u::infinite) A"
-  shows "\<turnstile> A"
-  by (rule completeness_open_at_any_carrier[OF cwff_wff[OF c] valid])
+text \<open>First the finite-context forms at every infinite signature, then the completeness forms
+  of the published version of this entry as their instances: over a countable signature
+  every infinite carrier is admissible, open formulas need no closure, and a finite context
+  is automatically pure.\<close>
 
 theorem completeness_hyps_open_finite_countable:
   fixes \<Phi> :: "'p::{countable,infinite} tm set" and A :: "'p tm"
@@ -2092,7 +1953,7 @@ theorem completeness_hyps_open_finite_countable:
     shows "\<Phi> \<turnstile> A"
   by (rule completeness_hyps_open_full[OF wA freep_finite[OF fin] w\<Phi> valid])
 
-text \<open>The same at @{emph \<open>every\<close>} signature.  A finite context and its conclusion mention
+text \<open>The same at every infinite signature.  A finite context and its conclusion mention
   only finitely many parameters, so the problem relocates into a copy of \<open>\<nat>\<close> inside \<open>'p\<close>
   and \<open>bprov_rename\<close> transports the derivation back.  Countability of \<open>'p\<close> thus drops out,
   and only \<open>'p\<close> infinite remains.\<close>
@@ -2142,26 +2003,95 @@ proof -
     by (rule completeness_hyps_open_finite[OF _ _ wA v0]) auto
 qed
 
-text \<open>The cardinality link between signature and carrier reflects a real boundary, not an
-  artefact of the proof.  Over an uncountable signature, take as \<open>\<Phi>\<close> the diagram
-  \<open>{c\<^sub>a \<noteq> c\<^sub>b}\<close> of uncountably many parameter constants, indexed so that a reserve of full
-  size \<open>|'p|\<close> stays unused --- then \<open>\<Phi>\<close> is even parameter-rich.  \<open>\<Phi>\<close> is consistent: every
-  finite part has a finite model, and derivability is finitary (this argument is informal
-  here; its countable analogue is mechanised as \<open>con_Diag\<close> in \<open>NK_Infinity\<close>).  Yet over a
-  @{emph \<open>countable\<close>} carrier \<open>'u\<close> no model satisfies \<open>\<Phi>\<close> --- the domains are subsets of
-  \<open>'u\<close> and cannot keep uncountably many constants apart --- so \<open>\<Phi> \<Turnstile>('u) \<^bold>\<bottom>\<close> holds
-  vacuously while \<open>\<Phi> \<turnstile> \<^bold>\<bottom>\<close> fails --- and since every finite part of \<open>\<Phi>\<close> is consistent,
-  \<open>\<Phi> \<tturnstile> \<^bold>\<bottom>\<close> fails as well, so the counterexample applies to both hypothesis relations.
-  For contexts of unbounded size the every-carrier
-  form thus does not survive beyond countable signatures (for @{emph \<open>finite\<close>} contexts it
-  does, @{thm [source] completeness_hyps_open_finite}): the carrier has to grow with the
-  signature, as in the premise of @{thm [source] completeness_fprov} and
-  @{thm [source] completeness_hyps_open_rich}; over a
-  countable signature every infinite carrier qualifies, and the every-carrier statement
-  (@{thm [source] completeness_hyps_open_full}) is recovered.  Whether the
-  @{emph \<open>parameter-rich\<close>} reserve of the \<open>\<turnstile>\<close>-level forms could be weakened to the merely
-  infinite reserve \<open>freep\<close> is not settled here; the two coincide over countable
-  signatures, and for the hypothesis relation \<open>\<tturnstile>\<close> the question dissolves ---
+text \<open>The published forms.  \<open>completeness\<close> is BKK's Corollary 7.7 proper --- consequence over
+  the term carrier, for a parameter-rich context of sentences --- and the instance of
+  \<open>completeness_hyps_rich\<close> at the injection \<open>p \<mapsto> {p\<^sup>p\<^bsub>\<iota>\<^esub>}\<close> of the signature into the term
+  carrier.\<close>
+
+lemma inj_par_singleton: "inj (\<lambda>p :: 'p. {p\<^sup>p\<^bsub>\<iota>\<^esub>} :: 'p tm set)"
+  by (simp add: inj_on_def)
+
+theorem completeness:
+  fixes \<Phi> :: "'p::infinite tm set" and A :: "'p tm"
+  assumes c: "cwff \<o> A" and fp: "richp \<Phi>"
+      and valid: "\<Phi> \<Turnstile>('p tm set) A"
+      and sen: "\<And>B. B \<in> \<Phi> \<Longrightarrow> cwff \<o> B"
+  shows "\<Phi> \<turnstile> A"
+  by (rule completeness_hyps_rich[OF inj_par_singleton c fp sen valid])
+
+theorem completeness_open_at_any_carrier:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('u::infinite) A"
+  shows "\<turnstile> A"
+  by (rule completeness_at_any_signature[OF wA valid])
+
+theorem completeness_open:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes wA: "wff\<^bsub>\<o>\<^esub>(A)" and valid: "\<Turnstile>('p tm set) A"
+  shows "\<turnstile> A"
+proof -
+  have v0: "{} \<Turnstile>('p tm set) A"
+    using valid by (simp add: bkk_valid_def bkk_consequence_def)
+  have rp: "richp ({} :: 'p tm set)" by (simp add: richp_iff_freep freep_finite)
+  show ?thesis by (rule completeness_hyps_open_rich[OF inj_par_singleton wA rp _ v0]) simp
+qed
+
+text \<open>The published closed-formula equivalence, its statement verbatim; the open-formula
+  strengthening is \<open>completeness_open\<close> above together with \<open>soundness_valid\<close>.\<close>
+
+theorem derivable_iff_valid:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes "cwff \<o> A"
+  shows "\<turnstile> A \<longleftrightarrow> \<Turnstile>('p tm set) A"
+  using completeness_open[OF cwff_wff[OF assms]] soundness_valid by blast
+
+lemma refuting_term_model:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes c: "cwff \<o> A" and nd: "\<not>\<turnstile> A"
+  obtains Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set" and vl \<xi>
+  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "\<not> vl (Ee \<xi> A)"
+proof -
+  have fp: "richp ({} :: 'p tm set)"
+    by (simp add: richp_iff_freep freep_finite)
+  obtain Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+      and vl \<xi> and rep :: "'p tm set \<Rightarrow> 'p tm"
+    where M: "bkk_model Dm Ap Ee vl" and inj: "inj_on rep {x. \<exists>\<tau>. Dm \<tau> x}"
+      and xi: "app_struct.asg Dm \<xi>" and "\<forall>B\<in>({} :: 'p tm set). vl (Ee \<xi> B)"
+      and nA: "\<not> vl (Ee \<xi> A)"
+    by (rule refuting_term_model_hyps[OF c fp _ nd]) simp_all
+  have cnt: "countable {x. \<exists>\<tau>. Dm \<tau> x}" by (rule countable_of_inj_on_tm[OF inj])
+  show ?thesis by (rule that[OF M cnt xi nA])
+qed
+
+theorem completeness_at_any_carrier:
+  fixes A :: "'p::{countable,infinite} tm"
+  assumes c: "cwff \<o> A" and valid: "\<Turnstile>('u::infinite) A"
+  shows "\<turnstile> A"
+  by (rule completeness_at_any_signature[OF cwff_wff[OF c] valid])
+
+text \<open>The cardinality link between signature and carrier in the hypothesis forms is needed;
+  the argument is informal and not formalised here.  Let the signature \<open>'p\<close> be strictly
+  larger than the carrier \<open>'u\<close>, and let \<open>\<Phi>\<close> consist of the inequations \<open>{c\<^sub>a \<noteq> c\<^sub>b}\<close>
+  between \<open>|'p|\<close>-many parameter constants, indexed so that a reserve of \<open>|'p|\<close>-many
+  parameters stays unused; then \<open>\<Phi>\<close> is parameter-rich.  \<open>\<Phi>\<close> is consistent, since every
+  finite part has a finite model and derivability is finitary (the countable analogue is
+  \<open>con_Ineq\<close> in \<open>NK_Infinity\<close>); in particular \<open>\<Phi> \<turnstile> \<^bold>\<bottom>\<close> and \<open>\<Phi> \<tturnstile> \<^bold>\<bottom>\<close> both fail.  But
+  no model over \<open>'u\<close> satisfies \<open>\<Phi>\<close>, because its domains are subsets of \<open>'u\<close> and cannot
+  keep \<open>|'p|\<close>-many constants apart; so \<open>\<Phi> \<Turnstile>('u) \<^bold>\<bottom>\<close> holds vacuously.  Completeness at
+  the carrier \<open>'u\<close> therefore fails for both hypothesis relations.
+
+  Consequently the every-carrier form of completeness holds for finite contexts
+  (@{thm [source] completeness_hyps_open_finite}) but not for contexts of unbounded size:
+  there the carrier has to be at least as large as the signature, which is the premise
+  \<open>inj emb\<close> of @{thm [source] completeness_fprov} and
+  @{thm [source] completeness_hyps_open_rich}.  Over a countable signature every infinite
+  carrier qualifies, and the every-carrier statement
+  @{thm [source] completeness_hyps_open_full} is recovered.
+
+  Whether the parameter-rich reserve of the \<open>\<turnstile>\<close>-level forms could be weakened to the
+  merely infinite reserve \<open>freep\<close> is not settled here; the two coincide over countable
+  signatures, and for the hypothesis relation \<open>\<tturnstile>\<close> the question does not arise, since
   @{thm [source] completeness_fprov} assumes no purity at all.\<close>
 
 end
