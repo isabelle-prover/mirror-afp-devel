@@ -372,6 +372,6 @@ apply blast
 
 lemma acc_JVM [intro]:
   "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"
-(*<*) by (unfold JVM_le_unfold) blast (*>*)  \<comment>\<open> use acc_listI1, acc_listI2 \<close>
+(*<*) by (unfold JVM_le_unfold) blast (*>*)  \<comment>\<open> use \<open>acc_listI1\<close>, \<open>acc_listI2\<close> \<close>
 
 end
