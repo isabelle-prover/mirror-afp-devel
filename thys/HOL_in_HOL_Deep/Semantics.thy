@@ -894,8 +894,8 @@ proof -
   qed(auto simp: vl_eq vl_pi vl_dis vl_neg vl_iota ev_var ev_type wff_prn prop_f prop_b)
 qed
 
-text \<open>The next lemma, \<open>bkk_valid_map\<close>, keeps its statement from the published version of this
-  entry (compatibility export); it is the empty-context instance of \<open>bkk_consequence_map\<close>
+text \<open>The next lemma, \<open>bkk_valid_map\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export); it is the empty-context instance of \<open>bkk_consequence_map\<close>
   below.\<close>
 
 lemma bkk_valid_map:

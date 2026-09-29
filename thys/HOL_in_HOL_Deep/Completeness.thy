@@ -345,8 +345,8 @@ text \<open>The chain is directed, each stage extends \<open>\<Phi>\<close>, and
 lemma step_expand: "S \<subseteq> step S A"
   by (auto simp: step_def)
 
-text \<open>The next lemma, \<open>freep_step\<close>, keeps its statement from the published version of this
-  entry (compatibility export); the transfinite chain below tracks parameter usage by
+text \<open>The next lemma, \<open>freep_step\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export); the transfinite chain below tracks parameter usage by
   counting instead.\<close>
 
 lemma freep_step: "freep S \<Longrightarrow> freep (step S A)"
@@ -1334,8 +1334,10 @@ text \<open>\<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> with \<open>NK(\<iot
   satisfies \<open>\<Phi>\<close> but refutes \<open>A\<close>, contradicting validity.\<close>
 
 text \<open>The theorem is stated after its generalisation to arbitrary carriers below, of which it
-  is the instance at the term carrier; its statement is that of the published version of
-  this entry, with the hypothesis-relative premise.\<close>
+  is the instance at the term carrier.  Its statement follows the initial release of this
+  entry (August 2026), except for the three changes listed in the document's compatibility
+  paragraph: the hypothesis-relative premise, \<open>richp\<close> in place of \<open>freep\<close>, and no
+  countability constraint on the signature.\<close>
 
 subsection \<open>Completeness at every signature and carrier\<close>
 
@@ -1940,7 +1942,7 @@ qed
 subsubsection \<open>The exported corollary ladder\<close>
 
 text \<open>First the finite-context forms at every infinite signature, then the completeness forms
-  of the published version of this entry as their instances: over a countable signature
+  of the initial release of this entry (August 2026) as their instances: over a countable signature
   every infinite carrier is admissible, open formulas need no closure, and a finite context
   is automatically pure.\<close>
 
@@ -2003,7 +2005,7 @@ proof -
     by (rule completeness_hyps_open_finite[OF _ _ wA v0]) auto
 qed
 
-text \<open>The published forms.  \<open>completeness\<close> is BKK's Corollary 7.7 proper --- consequence over
+text \<open>The forms of the initial release.  \<open>completeness\<close> is BKK's Corollary 7.7 proper --- consequence over
   the term carrier, for a parameter-rich context of sentences --- and the instance of
   \<open>completeness_hyps_rich\<close> at the injection \<open>p \<mapsto> {p\<^sup>p\<^bsub>\<iota>\<^esub>}\<close> of the signature into the term
   carrier.\<close>
@@ -2036,7 +2038,7 @@ proof -
   show ?thesis by (rule completeness_hyps_open_rich[OF inj_par_singleton wA rp _ v0]) simp
 qed
 
-text \<open>The published closed-formula equivalence, its statement verbatim; the open-formula
+text \<open>The closed-formula equivalence of the initial release, its statement verbatim; the open-formula
   strengthening is \<open>completeness_open\<close> above together with \<open>soundness_valid\<close>.\<close>
 
 theorem derivable_iff_valid:

@@ -573,11 +573,9 @@ text \<open>The scheme does not yield the axiom.  Every general model with @{emp
   model of the whole scheme, countable over a countable signature, refutes the axiom,
   making the separation model-theoretic.  All of this stays
   in plain HOL: the refuting models are the finite ones from \<open>Consistency\<close>, and the Henkin
-  model is the term model of \<open>Completeness\<close>.  The converse direction fails as well: \<open>DInf\<close>
-  is a pure sentence and does not constrain the parameter interpretation, so it derives no
-  inequation of the scheme --- proved via the set-theoretic model in the companion
-  development, whose parameters all denote alike.  Neither of the two thus derives the
-  other.  This separation rests on the auxiliary constants of the scheme: \<open>DInf\<close> derives,
+  model is the term model of \<open>Completeness\<close>.  Conversely, \<open>DInf\<close> mentions no constants, so
+  once a model of it exists, one in which all constants coincide refutes every inequation;
+  the companion notes this in passing.  This separation rests on the auxiliary constants of the scheme: \<open>DInf\<close> derives,
   for every \<open>n\<close>, the existence of \<open>n\<close> pairwise distinct individuals
   (@{thm [source] DInf_derives_distinct_n}), so every constant-free consequence of a finite
   part of the scheme is a consequence of \<open>DInf\<close> (the remaining step, replacing the

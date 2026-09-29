@@ -47,13 +47,13 @@ extension, but with consistency as the only premise.</p>
 
 <p>As an illustration, Cantor's theorem is derived <em>inside</em> NK,
 in surjective and injective form and at every type. Finally, three
-renderings of infinity are compared. By compactness over arbitrarily
-large finite models — the classical argument by expansion with new
-constants, applied in type theory in Andrews' §55 to obtain nonstandard
-models — NK is consistent with the scheme of inequations
-c<sub>i</sub> ≠ c<sub>j</sub> between new individual constants, which
-forces infinitely many individuals; the consistency proof constructs no
-infinite model. The single Dedekind-style axiom of infinity does not
+renderings of infinity are compared. NK is consistent with the scheme of
+inequations c<sub>i</sub> ≠ c<sub>j</sub> between new individual
+constants, which forces infinitely many individuals. The proof is by
+compactness over arbitrarily large finite models and constructs no
+infinite model. It is the classical argument by expansion with new
+constants, which Andrews' §55 applies in type theory to obtain
+nonstandard models. The single Dedekind-style axiom of infinity does not
 follow from that scheme: no finite part of the scheme derives it, and a
 Henkin model of the whole scheme, countable over a countable signature,
 refutes it. Conversely the axiom derives, for every n, the

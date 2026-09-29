@@ -55,13 +55,13 @@ extension, but with consistency as the only premise.
 As an illustration, Cantor's theorem is derived \emph{inside}
 $\mathrm{NK}$, in surjective and injective form and at every
 type~\cite{SEPChurchTT}.  Finally, three renderings of infinity are
-compared.  By compactness over arbitrarily large finite models---the
-classical argument by expansion with new constants, applied in type
-theory in Andrews' \S55~\cite{Andrews02} to obtain nonstandard
-models---$\mathrm{NK}$ is consistent
-with the scheme of inequations $c_i \neq c_j$ between new individual
-constants, which forces infinitely many individuals; the consistency
-proof constructs no infinite model.  The single Dedekind-style axiom of
+compared.  $\mathrm{NK}$ is consistent with the scheme of inequations
+$c_i \neq c_j$ between new individual constants, which forces infinitely
+many individuals.  The proof is by compactness over arbitrarily large
+finite models and constructs no infinite model.  It is the classical
+argument by expansion with new constants, which Andrews'
+\S55~\cite{Andrews02} applies in type theory to obtain nonstandard
+models.  The single Dedekind-style axiom of
 infinity does not follow from that scheme: no finite part of the scheme
 derives it, and a Henkin model of the whole scheme, countable over a
 countable signature, refutes it.  Conversely the axiom derives, for
@@ -144,8 +144,8 @@ individuals---the classical first-order axiomatisation of infinity---but
 neither the scheme nor these sentences derive the axiom, and a Henkin
 model of the whole scheme refutes it.
 
-The second tier concerns $\mathrm{NK}$ with the single axiom.  Such an
-axiom has no finite models and so falls outside the plain-HOL setting of
+The second tier concerns $\mathrm{NK}$ with the Dedekind-style axiom of
+infinity itself.  Such an axiom has no finite models and so falls outside the plain-HOL setting of
 this entry; it is handled in the companion entry
 \texttt{HOL\_in\_HOL\_Deep\_Infinity\_ZFC}~\cite{InfinityZFC} by a
 standard model over Paulson's axiomatic set-theoretic universe
@@ -166,7 +166,8 @@ for the embedded object logic, the two tiers are
 $\text{M-HOL}\vdash\mathrm{con}(\text{O-HOL})$, established here
 \emph{outright}, that is, relative only to plain HOL, and
 $\text{M-HOL}+V\vdash\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$,
-established in the companion.  The first does not conflict with
+established in the companion, where $V$ is the axiomatised set-theoretic
+universe of \texttt{ZFC\_in\_HOL}.  The first does not conflict with
 G\"odel's second theorem: O-HOL has finite models and interprets no
 arithmetic.  For the second, some strengthening of the meta-theory is
 necessary, since O-HOL with infinity and choice interprets the M-HOL
@@ -182,14 +183,14 @@ object-level axiom of infinity is assumed, arithmetic at the object
 level is optional, and the monomorphic core of the logic in use (TH0
 without the choice operator) is the one certified outright.
 
-\paragraph{Compatibility with the published version.}
-This update is additive.  The headline interface of the August 2026
-version is preserved: the theory names, the exported theorems of
+\paragraph{Compatibility with the initial release.}
+This update is additive.  The headline interface of the initial release
+(August 2026) is preserved: the theory names, the exported theorems of
 \texttt{Main\_Results} with their statements, and the Cantor results
-under their published names, \texttt{cantor\_surjective} and
+under their names of the initial release, \texttt{cantor\_surjective} and
 \texttt{cantor\_injective}, now aliases of the theorems in theory
-\texttt{Cantor}; further published lemmas that the generalised proofs
-no longer need retain their published statements and are marked as
+\texttt{Cantor}; further lemmas of the initial release that the generalised proofs
+no longer need retain their statements and are marked as
 compatibility exports in place.  All new material is added on top: the
 strengthened completeness ladder, the finitary consequence relation,
 the derived rules, the theories \texttt{NK\_Infinity} and
@@ -198,7 +199,7 @@ maintainers.  First, the theorem \texttt{completeness} is now BKK's
 Corollary~7.7 proper: its premise is consequence from the context
 rather than validity (a caller holding a validity proof adapts by one
 step), its purity condition is \texttt{richp}, which over countable
-signatures is equivalent to the published \texttt{freep}
+signatures is equivalent to the earlier \texttt{freep}
 (\texttt{richp\_iff\_freep}), and the countability constraint on the
 signature is dropped.  Second, internal auxiliaries superseded by the
 generalised proofs were retired, and two internal names

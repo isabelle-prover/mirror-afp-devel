@@ -95,8 +95,8 @@ definition swp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p" where
   "swp a b = (\<lambda>x. if x = a then b else if x = b then a else x)"
 lemma swp_inj: "inj (swp a b)" by (auto simp: swp_def inj_def)
 lemma swp_swp [simp]: "swp a b (swp a b x) = x" by (auto simp: swp_def)
-text \<open>The next lemma, \<open>swp_apply\<close>, keeps its statement from the published version of this
-  entry (compatibility export).\<close>
+text \<open>The next lemma, \<open>swp_apply\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export).\<close>
 
 lemma swp_apply: "swp a b a = b" by (simp add: swp_def)
 lemma prn_swp_swp [simp]: "prn (swp a b) (prn (swp a b) t) = t" by (simp add: prn_prn)
@@ -536,7 +536,7 @@ qed
 text \<open>Syntactic generalisation: a fresh parameter substituted for a free variable can
   be quantified away and re-instantiated, recovering the open formula (the rule chain
   \<open>NK(\<beta>)\<close>--\<open>NK(\<Pi>I)\<close>--\<open>NK(\<Pi>E)\<close>--\<open>NK(\<beta>)\<close>).  Statement preserved verbatim from the
-  published version of this entry (compatibility export, relocated from \<open>Completeness\<close>);
+  initial release of this entry, August 2026 (compatibility export, relocated from \<open>Completeness\<close>);
   the completeness proof now uses the simultaneous variable-for-parameter substitution of
   \<open>Completeness\<close> instead.\<close>
 

@@ -115,7 +115,7 @@ corollary no_contradiction: "\<turnstile> A \<Longrightarrow> \<not> \<turnstile
 text \<open>Cantor's theorem is derived @{emph \<open>inside\<close>} \<open>NK\<close>, in surjective and injective form
   and at every type: @{thm [source] nk_surjective_cantor} and
   @{thm [source] nk_injective_cantor} in theory \<open>Cantor\<close>.  The two facts keep the names
-  under which the published version of this entry exported them:\<close>
+  under which the initial release of this entry (August 2026) exported them:\<close>
 
 lemmas cantor_surjective = nk_surjective_cantor
 lemmas cantor_injective = nk_injective_cantor
@@ -142,9 +142,9 @@ corollary consistency_with_inequation_scheme_and_negated_axiom:
 text \<open>The scheme does not yield the single Dedekind-style axiom of infinity \<open>DInf\<close>: no
   finite part of the scheme derives it, and a Henkin model of the whole scheme refutes it
   (@{thm [source] henkin_scheme_refutes_DInf} in theory \<open>NK_Infinity\<close>; its total domain
-  injects into the term type, so it is countable over a countable signature).  The converse
-  non-derivability --- the pure axiom yields no inequation of the scheme --- is established
-  in the companion development via its set-theoretic model.  Both results rest on the
+  injects into the term type, so it is countable over a countable signature).  That the
+  pure axiom yields no inequation of the scheme is a side remark of the companion
+  development.  Both results rest on the
   auxiliary constants of the scheme.  What the axiom does derive is every constant-free
   sentence ``there are at least \<open>n\<close> individuals'' (\<open>ExDistinct n\<close> in theory
   \<open>NK_Infinity\<close>), the classical first-order axiomatisation of infinity.\<close>

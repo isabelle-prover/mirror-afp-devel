@@ -137,8 +137,8 @@ text \<open>Renaming parameters.  Eigen-parameters (BKK's \<open>w\<^bsub>\<alph
 
 lemma prn_opn: "prn \<rho> (opn k u t) = opn k (prn \<rho> u) (prn \<rho> t)"
   by (induction t arbitrary: k) auto
-text \<open>The next lemma, \<open>pars_prn\<close>, keeps its statement from the published version of this
-  entry (compatibility export).\<close>
+text \<open>The next lemma, \<open>pars_prn\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export).\<close>
 
 lemma pars_prn: "pars (prn \<rho> t) = \<rho> ` pars t" by (simp add: tm.set_map)
 lemma prn_prn: "prn f (prn g t) = prn (\<lambda>p. f (g p)) t" by (induction t) auto
@@ -550,8 +550,10 @@ abbreviation ExistsB :: "ty \<Rightarrow> 'p tm \<Rightarrow> 'p tm"  (\<open>\<
 subsection \<open>Named binders for the defined quantifiers\<close>
 
 text \<open>Named-binder input syntax for the defined quantifiers: \<open>clos k x \<sigma> t\<close> abstracts the
-  free variable \<open>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<close> to the de Bruijn index \<open>k\<close> (the converse of \<open>opn\<close>), so that
-  \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> and \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> bind an ordinary named variable.\<close>
+  free variable \<open>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<close> to the de Bruijn index \<open>k\<close>, so that
+  \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> and \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> bind an ordinary named variable.  We call this operation
+  @{emph \<open>closing\<close>} the variable \<open>x\<close>; it is the converse of opening (\<open>opn\<close>) and is not to be
+  confused with a @{emph \<open>closed\<close>} term, one without free variables.\<close>
 
 primrec clos :: "nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 'p tm \<Rightarrow> 'p tm" where
   "clos k x \<sigma> (Bnd i) = Bnd i"
@@ -597,9 +599,9 @@ lemma finite_occ: "finite (occ t)"
 lemma occ_fsub_closed: "occ u = {} \<Longrightarrow> occ (fsub x \<sigma> u t) = occ t - {(x, \<sigma>)}"
   by (induction t) auto
 
-text \<open>Closing a variable that does not occur is the identity, and closing commutes with the
-  substitution, for a different variable, of a term in which the closed variable does not
-  occur; hence substitution passes through the named binders.\<close>
+text \<open>Closing (\<open>clos\<close>) a variable that does not occur in the term is the identity.  Closing a
+  variable \<open>y\<close> commutes with the substitution \<open>fsub\<close> of a term \<open>u\<close> for a different variable
+  \<open>x\<close>, provided \<open>y\<close> does not occur in \<open>u\<close>; hence \<open>fsub\<close> passes through the named binders.\<close>
 
 lemma clos_notin: "x \<notin> fvs t \<Longrightarrow> clos k x \<sigma> t = t"
   by (induction t arbitrary: k) auto
