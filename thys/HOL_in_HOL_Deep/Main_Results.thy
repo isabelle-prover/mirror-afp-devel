@@ -168,6 +168,14 @@ corollary finite_cardinalities_do_not_derive_axiom:
   "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
   by (rule distinct_scheme_not_derives_DInf)
 
+text \<open>The constant-free sentences are consistent with \<open>NK\<close>: no finite part of them derives
+  falsity.  Every finite part holds in a large enough finite model of \<open>Consistency\<close>, so, as
+  for the scheme, the consistency proof constructs no infinite model.\<close>
+
+corollary finite_cardinalities_consistent:
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> \<^bold>\<bottom>)"
+  by (rule con_distinct_scheme)
+
 text \<open>Model existence (the positive half of Henkin completeness), restated: every consistent
   sentence over a countable signature has a \<open>\<Sigma>\<close>-Henkin model with @{emph \<open>countable\<close>} total domain, within plain HOL.
   Consistency is the only premise --- so where an axiom (e.g.\ of infinity) has no finite

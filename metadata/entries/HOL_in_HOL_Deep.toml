@@ -46,20 +46,17 @@ is defined in plain HOL — non-effectively, via a maximal-consistent
 extension, but with consistency as the only premise.</p>
 
 <p>As an illustration, Cantor's theorem is derived <em>inside</em> NK,
-in surjective and injective form and at every type. Finally, three
-renderings of infinity are compared. NK is consistent with the scheme of
-inequations c<sub>i</sub> ≠ c<sub>j</sub> between new individual
-constants, which forces infinitely many individuals. The proof is by
-compactness over arbitrarily large finite models and constructs no
-infinite model. It is the classical argument by expansion with new
-constants, which Andrews' §55 applies in type theory to obtain
-nonstandard models. The single Dedekind-style axiom of infinity does not
-follow from that scheme: no finite part of the scheme derives it, and a
-Henkin model of the whole scheme, countable over a countable signature,
-refutes it. Conversely the axiom derives, for every n, the
-constant-free sentence that there are at least n individuals — the
-classical first-order axiomatisation of infinity — which in turn does
-not derive the axiom. To the best of our knowledge, this is the first
+in surjective and injective form and at every type. Finally, two
+syntactic renderings of infinity are compared with each other and with
+semantic infinitude. The constant-free first-order sentences "there are
+at least n individuals" — the axiomatisation of "the domain is
+infinite" in the language of equality — are consistent with NK, by
+compactness over arbitrarily large finite models: the consistency proof
+constructs no infinite model. The single Dedekind-style axiom of
+infinity derives each of these sentences, but they do not derive the
+axiom: no finite part of them does, and a Henkin model of them all,
+countable over a countable signature, refutes it.
+To the best of our knowledge, this is the first
 machine-checked completeness proof for a deep embedding of HOL over
 plain HOL. This contribution is part of the
 <a href=\"https://logikey.org\">LogiKEy</a> project.</p>"""
@@ -91,7 +88,7 @@ benzmueller = "benzmueller_email"
 kirchner = "kirchner_email"
 
 [history]
-2026-09-29 = "Major extension. Completeness is strengthened to derivation from hypotheses: up to arbitrary pure contexts of open formulas over countable signatures at every infinite carrier, and, by a transfinite extension lemma, to arbitrary signature cardinalities, with the carrier at least as large as the signature and purity scaled to it. A finitary hypothesis relation in the style of Andrews (some finite sub-context derives the conclusion) is introduced, for which completeness needs no purity condition at all; semantic compactness of the Henkin consequence follows as a corollary. Further additions (theory NK_Infinity): consistency of NK with a scheme of inequations between new individual constants, by compactness over finite models, also in the finitary form; the Dedekind axiom of infinity DInf with its satisfaction conditions in any general model; the axiom derives every constant-free sentence 'there are at least n individuals' inside NK, while neither the constant scheme nor these sentences derive the axiom, and a countable Henkin model of the whole scheme refutes it; model existence as a concrete countable Henkin model; a footprint audit (theory Footprint_Checks). Derived rules for conjunction, the named binders and cut are added to Calculus. The published exports (including cantor_surjective and cantor_injective) are preserved; the document gained an introduction section."
+2026-09-29 = "Major extension. Completeness is strengthened to derivation from hypotheses: up to arbitrary pure contexts of open formulas over countable signatures at every infinite carrier, and, by a transfinite extension lemma, to arbitrary signature cardinalities, with the carrier at least as large as the signature and purity scaled to it. A finitary hypothesis relation in the style of Andrews (some finite sub-context derives the conclusion) is introduced, for which completeness needs no purity condition at all; semantic compactness of the Henkin consequence follows as a corollary. Further additions (theory NK_Infinity): consistency of NK with a scheme of inequations between new individual constants, by compactness over finite models, also in the finitary form; the Dedekind axiom of infinity DInf with its satisfaction conditions in any general model; the axiom derives every constant-free sentence 'there are at least n individuals' inside NK, these sentences are consistent with NK, and neither the constant scheme nor these sentences derive the axiom: a Henkin model of them all, countable over a countable signature, refutes it; model existence as a concrete countable Henkin model; a footprint audit (theory Footprint_Checks). Derived rules for conjunction, the named binders and cut are added to Calculus. The published exports (including cantor_surjective and cantor_injective) are preserved; the document gained an introduction section."
 
 [extra]
 

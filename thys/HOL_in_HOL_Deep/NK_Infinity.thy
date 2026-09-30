@@ -825,15 +825,14 @@ text \<open>Hence the constant-free sentences do not derive the axiom either: a 
   injective, non-surjective self-map; this last step is not formalised.  The Henkin
   countermodel of the next subsection satisfies all \<open>ExDistinct n\<close> and refutes \<open>DInf\<close>.\<close>
 
-theorem distinct_scheme_not_derives_DInf:
-  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
-proof
-  assume "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf"
-  then obtain \<Lambda> where fin\<Lambda>: "finite \<Lambda>" and \<Lambda>I: "\<Lambda> \<subseteq> range ExDistinct"
-      and \<Lambda>D: "\<Lambda> \<turnstile> (DInf :: 'p tm)"
+lemma distinct_scheme_fprov_Ineq:
+  fixes f :: "nat \<Rightarrow> 'p::infinite"
+  assumes A: "range ExDistinct \<tturnstile> (A :: 'p tm)" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+  shows "Ineq f \<tturnstile> A"
+proof -
+  from A obtain \<Lambda> where fin\<Lambda>: "finite \<Lambda>" and \<Lambda>I: "\<Lambda> \<subseteq> range ExDistinct"
+      and \<Lambda>A: "\<Lambda> \<turnstile> A"
     by (auto simp: fprov_def)
-  obtain f :: "nat \<Rightarrow> 'p" where injf: "inj f"
-    using infinite_UNIV infinite_countable_subset by blast
   have "\<forall>B \<in> \<Lambda>. \<exists>G. finite G \<and> G \<subseteq> Ineq f \<and> G \<turnstile> B"
     using \<Lambda>I Ineq_derives_distinct_n[where f = f] by (auto simp: fprov_def)
   then obtain G where G: "\<And>B. B \<in> \<Lambda> \<Longrightarrow> finite (G B) \<and> G B \<subseteq> Ineq f \<and> G B \<turnstile> B"
@@ -843,16 +842,42 @@ proof
   have FI: "F \<subseteq> Ineq f" unfolding F_def using G by auto
   have fpF: "freep F" by (rule freep_finite[OF finF])
   have w\<Lambda>: "\<And>B. B \<in> \<Lambda> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)" using \<Lambda>I wff_ExDistinct by auto
-  have FD: "F \<union> \<Lambda> \<turnstile> (DInf :: 'p tm)"
-    by (rule bprov_weaken[OF \<Lambda>D]) (auto simp: freep_finite finF fin\<Lambda>)
+  have FA: "F \<union> \<Lambda> \<turnstile> A"
+    by (rule bprov_weaken[OF \<Lambda>A]) (auto simp: freep_finite finF fin\<Lambda>)
   have FB: "F \<turnstile> B" if B: "B \<in> \<Lambda>" for B
   proof -
     have "G B \<turnstile> B" and "G B \<subseteq> F" using G[OF B] B by (auto simp: F_def)
     thus ?thesis by (rule bprov_weaken[OF _ _ fpF])
   qed
-  have "F \<turnstile> (DInf :: 'p tm)" by (rule bprov_cut_set[OF fin\<Lambda> FD FB w\<Lambda> wff_DInf fpF])
-  hence "Ineq f \<tturnstile> (DInf :: 'p tm)" by (rule fprovI[OF finF FI])
+  have "F \<turnstile> A" by (rule bprov_cut_set[OF fin\<Lambda> FA FB w\<Lambda> wA fpF])
+  thus ?thesis by (rule fprovI[OF finF FI])
+qed
+
+theorem distinct_scheme_not_derives_DInf:
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
+proof
+  assume h: "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf"
+  obtain f :: "nat \<Rightarrow> 'p" where injf: "inj f"
+    using infinite_UNIV infinite_countable_subset by blast
+  have "Ineq f \<tturnstile> (DInf :: 'p tm)"
+    by (rule distinct_scheme_fprov_Ineq[OF h wff_DInf])
   thus False using Ineq_not_derives_DInf[OF injf] by simp
+qed
+
+text \<open>Consistency of the constant-free sentences themselves, by the same reduction: no finite
+  part of \<open>{ExDistinct n | n}\<close> derives falsity.  The finite models of \<open>Consistency\<close> of size
+  \<open>k\<close> satisfy \<open>ExDistinct n\<close> for every \<open>n \<le> k\<close>, so the sentences need no auxiliary
+  constants at all; the route through the scheme is a convenience of the formalisation.\<close>
+
+theorem con_distinct_scheme:
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> \<^bold>\<bottom>)"
+proof
+  assume h: "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> \<^bold>\<bottom>"
+  obtain f :: "nat \<Rightarrow> 'p" where injf: "inj f"
+    using infinite_UNIV infinite_countable_subset by blast
+  have "Ineq f \<tturnstile> (\<^bold>\<bottom> :: 'p tm)"
+    by (rule distinct_scheme_fprov_Ineq[OF h wff_FalseB])
+  thus False using con_Ineq_fprov[OF injf] by simp
 qed
 
 subsection \<open>The Henkin countermodel\<close>

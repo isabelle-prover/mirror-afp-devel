@@ -54,20 +54,16 @@ extension, but with consistency as the only premise.
 
 As an illustration, Cantor's theorem is derived \emph{inside}
 $\mathrm{NK}$, in surjective and injective form and at every
-type~\cite{SEPChurchTT}.  Finally, three renderings of infinity are
-compared.  $\mathrm{NK}$ is consistent with the scheme of inequations
-$c_i \neq c_j$ between new individual constants, which forces infinitely
-many individuals.  The proof is by compactness over arbitrarily large
-finite models and constructs no infinite model.  It is the classical
-argument by expansion with new constants, which Andrews'
-\S55~\cite{Andrews02} applies in type theory to obtain nonstandard
-models.  The single Dedekind-style axiom of
-infinity does not follow from that scheme: no finite part of the scheme
-derives it, and a Henkin model of the whole scheme, countable over a
-countable signature, refutes it.  Conversely the axiom derives, for
-every $n$, the constant-free sentence that there are at least $n$
-individuals---the classical first-order axiomatisation of
-infinity---which in turn does not derive the axiom.
+type~\cite{SEPChurchTT}.  Finally, two syntactic renderings of infinity
+are compared with each other and with semantic infinitude.  The
+constant-free first-order sentences ``there are at least $n$
+individuals''---the axiomatisation of ``the domain is infinite'' in the
+language of equality---are consistent with $\mathrm{NK}$, by
+compactness over arbitrarily large finite models: the consistency proof
+constructs no infinite model.  The single Dedekind-style axiom of
+infinity derives each of these sentences, but they do not derive the
+axiom: no finite part of them does, and a Henkin model of them all,
+countable over a countable signature, refutes it.
 \end{abstract}
 
 \medskip\noindent
@@ -130,19 +126,20 @@ context at once.
 \paragraph{Consistency: two tiers.}
 Two further points concern \emph{consistency} rather than completeness.
 The first stays in plain HOL.  By compactness over arbitrarily large
-\emph{finite} models, $\mathrm{NK}$ is consistent with the scheme of
-inequations $c_i \neq c_j$ between new individual constants, following
-the classical first-order compactness argument by expansion with new
-constants (Skolem~\cite{Skolem34}, Mal'cev~\cite{Malcev36},
+\emph{finite} models, $\mathrm{NK}$ is consistent with the constant-free
+first-order sentences ``there are at least $n$ individuals'', and with
+the scheme of inequations $c_i \neq c_j$ between new individual
+constants through which the formalisation obtains this---the classical
+device of the compactness argument by expansion with new constants
+(Skolem~\cite{Skolem34}, Mal'cev~\cite{Malcev36},
 Henkin~\cite{Henkin49,Henkin50}, Robinson~\cite{Robinson63}), which
 Andrews' \S55~\cite{Andrews02} (Theorem 5506) applies in type theory to
 obtain nonstandard models; the consistency proof uses no infinite model
-and no strengthening of the meta-theory.  The scheme is compared with the
-single Dedekind-style axiom of infinity: the axiom derives, for every
-$n$, the constant-free sentence that there are at least $n$
-individuals---the classical first-order axiomatisation of infinity---but
-neither the scheme nor these sentences derive the axiom, and a Henkin
-model of the whole scheme refutes it.
+and no strengthening of the meta-theory.  The sentences are compared
+with the single Dedekind-style axiom of infinity: the axiom derives, for
+every $n$, the sentence that there are at least $n$ individuals, but
+neither these sentences nor the scheme derive the axiom, and a Henkin
+model of them all refutes it.
 
 The second tier concerns $\mathrm{NK}$ with the Dedekind-style axiom of
 infinity itself.  Such an axiom has no finite models and so falls outside the plain-HOL setting of
