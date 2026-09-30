@@ -140,6 +140,14 @@ qed
 lemma parse_tree_if_derives: "P \<turnstile> [Nt A] \<Rightarrow>* w \<Longrightarrow> \<exists>t. parse_tree P t \<and> fringe t = w \<and> root t = Nt A"
 by (meson parse_tree_if_deriven rtranclp_power)
 
+lemma parse_tree_if_Lang:
+  assumes "w \<in> Lang P S"
+  shows "\<exists>t. parse_tree P t \<and> root t = Nt S \<and> fringe t = map Tm w"
+proof -
+  have "P \<turnstile> [Nt S] \<Rightarrow>* map Tm w" using assms by (simp add: Lang_def)
+  thus ?thesis using parse_tree_if_derives by metis
+qed
+
 
 subsection \<open>Parse Trees up to some height\<close>
 
