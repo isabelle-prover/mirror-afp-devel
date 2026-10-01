@@ -124,6 +124,15 @@
     <category>Mathematics/Combinatorics</category>
 </item>
 <item>
+  <title>General Weierstrass Equations</title>
+  <link>https://isa-afp.org/entries/General_Weierstrass.html</link>
+  <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+  <description>General Weierstrass Equations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
   <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
   <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>

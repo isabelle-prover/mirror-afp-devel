@@ -385,6 +385,35 @@
   "year": "2026"
  },
  {
+  "abstract": "This entry develops the general Weierstrass equation \\[y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6.\\] over commutative rings and fields. It defines the standard invariants, proves \\(c_4^3 - c_6^2 = 1728\\Delta\\), formalizes the affine and projective equations and their singular points, and proves over every field that the projective cubic is geometrically nonsingular exactly when \\(\\Delta \\ne 0\\). Geometric singularities are taken over the algebraic closure, so the statement includes imperfect fields and characteristics \\(2\\) and \\(3\\). A final bridge specializes the development to the short equation and reuses the AFP Elliptic Curves Group Law entry. The definitions and invariant formulas follow the standard treatment in Silverman.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-21",
+  "link": "../entries/General_Weierstrass.html",
+  "permalink": "https://isa-afp.org/entries/General_Weierstrass.html",
+  "related": [
+   {
+    "doi": "10.1007/978-0-387-09494-6"
+   }
+  ],
+  "shortname": "General_Weierstrass",
+  "title": "General Weierstrass Equations",
+  "topic_links": [
+   "../topics/mathematics/algebra/",
+   "../topics/mathematics/geometry/",
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Algebra",
+   "Mathematics/Geometry",
+   "Mathematics/Number theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "The Jacobian conjecture asks whether a polynomial self-map of affine space over a field of characteristic zero has a polynomial inverse whenever its Jacobian determinant is a nonzero constant. This entry gives an independent Isabelle/HOL verification of the explicit three-dimensional map announced by Levent Alpöge on July 20, 2026. The announcement credits Akhil Mathew with prompting the question and the AI system Claude Fable with work leading to the map; stable Lean and independent verification repositories appeared the same day.  Isabelle proves that the formal Jacobian entries are the corresponding complex analytic partial derivatives and that the determinant is identically \\(-2\\). It verifies that three distinct rational points have the same image. Scaling the first output coordinate yields determinant exactly \\(1\\) while preserving noninjectivity. The theory defines polynomial invertibility and proves that the map has no polynomial inverse. It also constructs identity-padded polynomial maps, proves their block-Jacobian determinant is unchanged, and thereby obtains counterexamples in every finite dimension at least three. The development makes no claim about the two-dimensional conjecture.",
   "authors": [
    "Arthur Freitas Ramos",

@@ -34,6 +34,15 @@
     <category>Mathematics/Geometry</category>
 </item>
 <item>
+  <title>General Weierstrass Equations</title>
+  <link>https://isa-afp.org/entries/General_Weierstrass.html</link>
+  <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+  <description>General Weierstrass Equations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
+</item>
+<item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Conway_Circle.html</link>
   <pubDate>Sat, 27 Jun 2026 00:00:00 +0000</pubDate>

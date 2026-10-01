@@ -56,6 +56,9 @@
     <loc>https://isa-afp.org/entries/Dinitz_Garg_Goemans_Counterexample.html</loc>
     <lastmod>2026-07-22T00:00:00+00:00</lastmod>
   </url><url>
+    <loc>https://isa-afp.org/entries/General_Weierstrass.html</loc>
+    <lastmod>2026-07-21T00:00:00+00:00</lastmod>
+  </url><url>
     <loc>https://isa-afp.org/entries/Jacobian_Counterexample.html</loc>
     <lastmod>2026-07-20T00:00:00+00:00</lastmod>
   </url><url>
@@ -11318,6 +11321,22 @@
     <loc>https://isa-afp.org/thys/Gelfand_Naimark_Segal/Inner_Completion.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/GenClock/GenClock.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Short_Weierstrass_Bridge.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Affine_Curve.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Coefficients.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Discriminant_Criterion.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Invariants.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_j_Invariant.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Projective_Curve.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/General_Weierstrass/Weierstrass_Singularities.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/General-Triangle/GeneralTriangle.html</loc>
   </url><url>

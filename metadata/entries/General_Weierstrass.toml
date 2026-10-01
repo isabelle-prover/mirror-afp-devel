@@ -1,0 +1,39 @@
+title = "General Weierstrass Equations"
+date = 2026-07-21
+topics = [
+  "Mathematics/Algebra",
+  "Mathematics/Geometry",
+  "Mathematics/Number theory",
+]
+abstract = "This entry develops the general Weierstrass equation \\[y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6.\\] over commutative rings and fields. It defines the standard invariants, proves \\(c_4^3 - c_6^2 = 1728\\Delta\\), formalizes the affine and projective equations and their singular points, and proves over every field that the projective cubic is geometrically nonsingular exactly when \\(\\Delta \\ne 0\\). Geometric singularities are taken over the algebraic closure, so the statement includes imperfect fields and characteristics \\(2\\) and \\(3\\). A final bridge specializes the development to the short equation and reuses the AFP <em>Elliptic Curves Group Law</em> entry. The definitions and invariant formulas follow the standard treatment in Silverman."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/978-0-387-09494-6",
+]
+pubs = []
