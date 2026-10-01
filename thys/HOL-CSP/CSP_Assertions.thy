@@ -107,7 +107,7 @@ definition lifelock_free :: \<open>('a,'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub
 definition lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S :: \<open>('a,'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close>
   where \<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<equiv> CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
 
-
+                                 
 definition non_terminating :: \<open>('a,'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close>
   where \<open>non_terminating P \<equiv> RUN UNIV \<sqsubseteq>\<^sub>T P\<close>
 
@@ -215,7 +215,7 @@ qed
 
 
 lemma div_free_DF: \<open>\<D> (DF A) = {}\<close>
-  by (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD_DF div_free_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S empty_subsetI subset_antisym le_ref1)
+  by (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD_DF div_free_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S empty_subsetI subset_antisym le_FD_D(1))
 
 
 lemma deadlock_free_implies_div_free: \<open>deadlock_free P \<Longrightarrow> \<D> P = {}\<close>
@@ -225,14 +225,17 @@ lemma deadlock_free_implies_div_free: \<open>deadlock_free P \<Longrightarrow> \
 
 section \<open>Events and Ticks of Reference Processes\<close>
 
-lemma events_of_SKIPS : \<open>\<alpha>(SKIPS R) = {}\<close>
-  and  ticks_of_SKIPS : \<open>\<checkmark>s(SKIPS R) = R\<close>
-  by (auto simp add: events_of_def ticks_of_def T_SKIPS)
+lemma events_of_SKIPS         : \<open>\<alpha>(SKIPS R)  = {}\<close>
+  and strict_events_of_SKIPS  : \<open>\<^bold>\<alpha>(SKIPS R)  = {}\<close>
+  and minimal_events_of_SKIPS : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(SKIPS R) = {}\<close>
+  and  ticks_of_SKIPS         : \<open>\<checkmark>s(SKIPS R) = R\<close>
+  by (auto simp add: events_of_def strict_events_of_def
+      minimal_events_of_def ticks_of_def T_SKIPS D\<^sub>m\<^sub>i\<^sub>n_SKIPS)
 
 
-lemma no_ticks_imp_tickFree_T : \<open>\<checkmark>s(P) = {} \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> tF s\<close>
+lemma no_ticks_imp_tF_T : \<open>\<checkmark>s(P) = {} \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> tF s\<close>
   by (simp add: ticks_of_def tickFree_def disjoint_iff image_iff)
-    (metis T_nonTickFree_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) split_list tickFree_Cons_iff tickFree_append_iff)
+    (metis T_not_tF_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) split_list tF_Cons_iff tF_append_iff)
 
 
 lemma events_of_DF : \<open>\<alpha>(DF A) = A\<close>
@@ -414,7 +417,7 @@ qed
 
 section \<open>Relations between refinements on reference processes\<close>
 
-lemma CHAOS_has_all_tickFree_failures : 
+lemma CHAOS_has_all_tF_failures : 
   \<open>tF s \<Longrightarrow> {a. ev a \<in> set s} \<subseteq> A \<Longrightarrow> (s, X) \<in> \<F> (CHAOS A)\<close>
 proof (induct s)
   show \<open>([], X) \<in> \<F> (CHAOS A)\<close>
@@ -448,7 +451,7 @@ proof (unfold failure_refine_def)
       with prems(2) have \<open>a \<in> \<alpha>(P)\<close> by (auto simp add: events_of_def)
       with \<open>\<alpha>(P) \<subseteq> A\<close> have \<open>a \<in> A\<close> by fast
       from prems have \<open>ftF s\<close> \<open>set s \<subseteq> \<Union> (set ` \<T> P)\<close>
-        by auto (metis front_tickFree_Cons_iff front_tickFree_Nil)
+        by auto (metis ftF_Cons_iff ftF_Nil)
       hence \<open>(s, X) \<in> \<F> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R)\<close> by (fact hyp)
       thus \<open>(e # s, X) \<in> \<F> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R)\<close>
         by (subst CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold) (simp add: F_Ndet F_Mprefix \<open>e = ev a\<close> \<open>a \<in> A\<close>)
@@ -456,15 +459,15 @@ proof (unfold failure_refine_def)
       fix r assume \<open>e = \<checkmark>(r)\<close>
       with prems(2) have \<open>r \<in> \<checkmark>s(P)\<close>
         by (simp add: ticks_of_def)
-          (metis T_imp_front_tickFree front_tickFree_Cons_iff front_tickFree_append_iff
-            in_set_conv_decomp non_tickFree_tick tickFree_Cons_iff tickFree_Nil)
+          (metis (no_types) append.assoc append.left_neutral
+            append_Cons is_processT3_TR_append split_list)
       with \<open>\<checkmark>s(P) \<subseteq> R\<close> have \<open>r \<in> R\<close> by fast
-      moreover from \<open>e = \<checkmark>(r)\<close> prems(1) have \<open>s = []\<close> by (simp add: front_tickFree_Cons_iff)
+      moreover from \<open>e = \<checkmark>(r)\<close> prems(1) have \<open>s = []\<close> by (simp add: ftF_Cons_iff)
       ultimately show \<open>(e # s, X) \<in> \<F> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R)\<close>
         by (subst CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold) (auto simp add: F_Ndet F_SKIPS \<open>e = \<checkmark>(r)\<close>)
     qed
   qed
-  thus \<open>\<F> P \<subseteq> \<F> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R)\<close> by (meson F_T F_imp_front_tickFree SUP_upper subrelI)
+  thus \<open>\<F> P \<subseteq> \<F> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R)\<close> by (meson F_T F_imp_ftF SUP_upper subrelI)
 qed
 
 
@@ -488,9 +491,9 @@ next
 qed
 
 lemma CHAOS_F_DF : \<open>CHAOS A \<sqsubseteq>\<^sub>F DF A\<close>
-proof (unfold failure_refine_def, safe, rule CHAOS_has_all_tickFree_failures)
+proof (unfold failure_refine_def, safe, rule CHAOS_has_all_tF_failures)
   show \<open>(s, X) \<in> \<F> (DF A) \<Longrightarrow> tF s\<close> for s :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and X
-    by (metis F_T no_ticks_imp_tickFree_T ticks_DF)
+    by (metis F_T no_ticks_imp_tF_T ticks_DF)
 next
   show \<open>(s, X) \<in> \<F> (DF A) \<Longrightarrow> {a. ev a \<in> set s} \<subseteq> A\<close> for s :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and X
     by (drule F_T) (use events_of_DF[of A] in \<open>auto simp add: events_of_def\<close>)
@@ -569,7 +572,7 @@ lemma traces_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_subset :
 proof (rule subsetI)
   show \<open>s \<in> \<T> (CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R) \<Longrightarrow> s \<in> {s. ftF s \<and> set s \<subseteq> ev ` A \<union> tick ` R}\<close> for s
     by (induct s; subst (asm) CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold)
-      (auto simp add: T_Ndet T_STOP T_SKIPS T_Mprefix front_tickFree_Cons_iff)
+      (auto simp add: T_Ndet T_STOP T_SKIPS T_Mprefix ftF_Cons_iff)
 qed
 
 
@@ -578,7 +581,7 @@ lemma traces_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_superset :
 proof (rule subsetI)
   show \<open>s \<in> {s. ftF s \<and> set s \<subseteq> ev ` A \<union> tick ` R} \<Longrightarrow> s \<in> \<T> (DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R) \<close> for s
     by (induct s; subst DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold)
-      (auto simp add: T_Ndet T_SKIPS T_Mndetprefix write0_def T_Mprefix front_tickFree_Cons_iff)
+      (auto simp add: T_Ndet T_SKIPS T_Mndetprefix write0_def T_Mprefix ftF_Cons_iff)
 qed
 
 
@@ -612,9 +615,9 @@ lemma deadlock_free_implies_non_terminating:
   \<open>tF s\<close> if \<open>deadlock_free P\<close> \<open>s \<in> \<T> P\<close>
 proof -
   from \<open>deadlock_free P\<close> have \<open>\<T> P \<subseteq> \<T> (DF UNIV)\<close>
-    by (simp add: deadlock_free_def le_ref2T)
+    by (simp add: deadlock_free_def le_FD_D(3))
   with \<open>s \<in> \<T> P\<close> show \<open>tF s\<close>
-    by (meson no_ticks_imp_tickFree_T subsetD ticks_DF)
+    by (meson no_ticks_imp_tF_T subsetD ticks_DF)
 qed
 
 
@@ -648,17 +651,17 @@ next
         using F_LUB[OF cc] limproc_is_thelub[OF cc] by simp
       from Y_def have e:"\<F>(Mndetprefix UNIV (\<lambda>x. Y i) \<sqinter> SKIPS UNIV) \<subseteq> \<F> (Y (Suc i))" for i by(simp)
       from a have f:"tls \<noteq> [] \<Longrightarrow> hds \<notin> range tick" "ftF tls"
-        by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff imageE)
-          (metis a front_tickFree_Cons_iff front_tickFree_Nil)
+        by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff imageE)
+          (metis a ftF_Cons_iff ftF_Nil)
       have g:"(hds#tls, X) \<in> \<F> (Y (Suc i))" for i
         using f c e[of i] d[of i] 
         by (auto simp: F_Mndetprefix write0_def F_Mprefix Y_def F_Ndet F_SKIPS image_iff)
           (meson event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)+
       have h:"(hds#tls, X) \<in> \<F> (Y 0)"
-        using D_F cc g po_class.chainE proc_ord2a by blast
+        using D_F cc g po_class.chainE le_approxD(2) by blast
       from a b c show "(hds#tls, X) \<in> \<F> (\<Squnion>i. Y i)"
         using F_LUB[OF cc] is_ub_thelub[OF cc] 
-        by (metis D_LUB_2 cc g limproc_is_thelub po_class.chainE proc_ord2a process_charn) 
+        by (metis D_LUB_2 cc g limproc_is_thelub po_class.chainE le_approxD(2) process_charn) 
     qed   
   qed
   show "deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P"
@@ -674,23 +677,23 @@ next
         using a1 as1 by blast
       then show ?thesis 
         by (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_all_front_tickfree_traces2 FT_True UNIV_I UNIV_eq_I a1(2) as2 as3
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust is_processT6_TR_notin tickFree_imp_front_tickFree_snoc)
+            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust is_processT6_TR_notin tF_imp_ftF_snoc)
     next
       case FT_False: False                                                                 
       then show ?thesis 
-        by (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_all_front_tickfree_traces2 a1(2) front_tickFree_append_iff
+        by (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_all_front_tickfree_traces2 a1(2) ftF_append_iff
             is_processT2_TR is_processT5_S7 list.distinct(1))
     qed 
   qed
 qed 
 
 lemma deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free: \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> \<D> P = {}\<close>
-  by (metis D_T D_imp_front_tickFree T_nonTickFree_imp_decomp all_not_in_conv butlast_snoc
-      deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right front_tickFree_iff_tickFree_butlast is_processT8 is_processT9)
+  by (metis D_T D_imp_ftF T_not_tF_imp_decomp all_not_in_conv butlast_snoc
+      deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right ftF_iff_tF_butlast is_processT8 is_processT9)
 
 corollary deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD: \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
   by (metis deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free
-      less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def order_refl refine_defs(3))
+      empty_subsetI failure_divergence_refine_def refine_defs(4))
 
 lemma all_events_ticks_refusal: 
   \<open>(s, tick ` \<checkmark>s(P) \<union> ev ` \<alpha>(P)) \<in> \<F> P \<Longrightarrow> (s, UNIV) \<in> \<F> P\<close>
@@ -765,23 +768,23 @@ corollary non_terminating_refine_DF : \<open>non_terminating P \<longleftrightar
       non_terminating_def trace_refine_def)
 
 lemma non_terminating_is_right : \<open>non_terminating P \<longleftrightarrow> (\<forall>s\<in>\<T> P. tF s)\<close>
-  by (meson RUN_all_tickfree_traces2 no_ticks_imp_tickFree_T
+  by (meson RUN_all_tickfree_traces2 no_ticks_imp_tF_T
       non_terminating_def subset_iff ticks_RUN trace_refine_def)
 
-lemma nonterminating_implies_div_free : \<open>non_terminating P \<Longrightarrow> \<D> P = {}\<close>
-  by (metis D_T ex_in_conv front_tickFree_single is_processT7
-      non_terminating_is_right non_tickFree_tick tickFree_append_iff)
+lemma non_terminating_implies_div_free : \<open>non_terminating P \<Longrightarrow> \<D> P = {}\<close>
+  by (metis non_terminating_is_right empty_not_UNIV
+      tF_traces_iff_empty_ticks_of ticks_of_is_strict_ticks_of_or_UNIV)
 
 lemma non_terminating_implies_F : \<open>non_terminating P \<Longrightarrow> CHAOS UNIV \<sqsubseteq>\<^sub>F P\<close>
-  by (meson CHAOS_has_all_tickFree_failures F_T failure_refine_def in_mono no_ticks_imp_tickFree_T
+  by (meson CHAOS_has_all_tF_failures F_T failure_refine_def in_mono no_ticks_imp_tF_T
       non_terminating_refine_CHAOS subrelI ticks_CHAOS top_greatest trace_refine_def)
 
 corollary non_terminating_F : \<open>non_terminating P \<longleftrightarrow> CHAOS UNIV \<sqsubseteq>\<^sub>F P\<close>
   by (auto simp add:non_terminating_implies_F non_terminating_refine_CHAOS leF_imp_leT)
 
 corollary non_terminating_FD : \<open>non_terminating P \<longleftrightarrow> CHAOS UNIV \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-  by (metis failure_refine_def less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def non_terminating_F
-      nonterminating_implies_div_free order_refl)
+  by (metis empty_subsetI failure_divergence_refine_def non_terminating_F
+      non_terminating_implies_div_free refine_defs(4))
 
 
 
@@ -805,7 +808,7 @@ lemma lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free : \<ope
 
 lemma lifelock_free_imp_lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S : \<open>lifelock_free P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
   by (simp add: lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free lifelock_free_is_non_terminating
-      nonterminating_implies_div_free)
+      non_terminating_implies_div_free)
 
 corollary deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_imp_lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S: \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
   by (simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free)
@@ -824,12 +827,13 @@ proof -
   next
     show \<open>(s, X) \<in> \<F> (P \<^bold>; Q) \<Longrightarrow> (s, X) \<in> \<F> P\<close> for s X
       by (simp add: F_Seq)
-        (meson "*" is_processT4 is_processT8 non_tickFree_tick sup_ge1 tickFree_append_iff)
+        (meson "*" Un_upper1 event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) is_processT4
+          is_processT8 tF_Cons_iff tF_append_iff)
   next
     show \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> (P \<^bold>; Q)\<close> for s X
       by (simp add: F_Seq)
-        (metis (mono_tags, lifting) "*" F_T f_inv_into_f is_processT5_S7'
-          non_tickFree_tick tickFree_append_iff)
+        (metis (mono_tags, lifting) "*" F_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) f_inv_into_f
+          is_processT5_S7' tF_Cons_iff tF_append_iff)
   qed
 qed
 
@@ -837,9 +841,10 @@ qed
 lemma non_terminating_Sync :
   \<open>non_terminating P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S Q \<Longrightarrow> non_terminating (P \<lbrakk>A\<rbrakk> Q)\<close>
   by (simp add: lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free T_Sync
-      non_terminating_is_right nonterminating_implies_div_free)
-    (metis SyncWithTick_imp_NTF T_imp_front_tickFree ftf_Sync
-      nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append_iff)
+      non_terminating_is_right non_terminating_implies_div_free)
+    (metis DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_all_front_tickfree_traces2 SyncWithTick_imp_NTF
+      T_not_tF_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftf_Sync is_processT2_TR
+      tF_Cons_iff tF_append_iff)
 
 
 lemmas non_terminating_Par = non_terminating_Sync[where A = \<open>UNIV\<close>]

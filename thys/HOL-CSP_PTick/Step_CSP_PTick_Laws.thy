@@ -50,8 +50,8 @@ proof (rule Process_eq_optimizedI)
 next
   show \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
     by (cases t, auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs Mprefix_projs image_iff Cons_eq_map_conv Cons_eq_append_conv)
-      (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff,
-        metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.discI(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff)
+      (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff,
+        metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.discI(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff)
 next
   fix t X assume \<open>(t, X) \<in> \<F> ?lhs\<close> \<open>t \<notin> \<D> ?lhs\<close>
   then consider (F_P) t' where \<open>t = map (ev \<circ> of_ev) t'\<close>
@@ -86,12 +86,12 @@ next
     proof cases
       case F_P thus \<open>(t, X) \<in> \<F> ?lhs\<close>
         by (simp add: Mprefix_projs Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs \<open>t = ev a # t'\<close> Cons_eq_map_conv)
-          (metis \<open>a \<in> A\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff)
+          (metis \<open>a \<in> A\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff)
     next
       case F_Q thus \<open>(t, X) \<in> \<F> ?lhs\<close>
         by (simp add: Mprefix_projs Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs \<open>t = ev a # t'\<close> Cons_eq_map_conv append_eq_Cons_conv)
           (metis (no_types, lifting) \<open>a \<in> A\<close> append_Cons comp_apply event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1)
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) list.simps(9) tickFree_Cons_iff)
+            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) list.simps(9) tF_Cons_iff)
     qed
   qed
 qed
@@ -101,7 +101,7 @@ qed
 
 subsection \<open>Synchronization Product\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_bis :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_bis :
   \<open>\<box>a\<in>(A \<union> A') \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>(B \<union> B') \<rightarrow> Q b =
    (\<box>a\<in>A \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>(B \<union> B') \<rightarrow> Q b)) \<box>
    (\<box>b\<in>B \<rightarrow> (\<box>a\<in>(A \<union> A') \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<box>
@@ -112,7 +112,7 @@ proof (rule Process_eq_optimizedI)
   fix t assume \<open>t \<in> \<D> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
   then obtain u v t_P t_Q
     where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-      \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+      \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
       \<open>t_P \<in> \<D> ?lhs1 \<and> t_Q \<in> \<T> ?lhs2 \<or>
                t_P \<in> \<T> ?lhs1 \<and> t_Q \<in> \<D> ?lhs2\<close>
     unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
@@ -129,7 +129,7 @@ proof (rule Process_eq_optimizedI)
     proof cases
       assume \<open>t_Q = []\<close>
       with "*"(4) obtain u' where \<open>a \<notin> S\<close> \<open>u = ev a # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
         by (auto simp add: "**"(2) split: if_split_asm)
       moreover from \<open>u = ev a # u'\<close> "*"(2) have \<open>tF u'\<close> by simp
       ultimately have \<open>t \<in> \<D> ?rhs1\<close>
@@ -141,11 +141,11 @@ proof (rule Process_eq_optimizedI)
       from "*"(2) have $ : \<open>u = ev x # u' \<Longrightarrow> tF u'\<close> for x u' by simp
       from "*"(4) sets_assms "**"(1) "***"(1)
       consider (mv_both)  u' where \<open>a \<in> S\<close> \<open>b = a\<close> \<open>a \<in> A'\<close> \<open>a \<in> B'\<close> \<open>u = ev a # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), S)\<close>
       |        (mv_left)  u' where \<open>a \<notin> S\<close> \<open>a \<in> A\<close> \<open>u = ev a # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       |        (mv_right) u' where \<open>b \<notin> S\<close> \<open>b \<in> B\<close> \<open>u = ev b # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
         by (auto simp add: "**"(2) "***"(2) disjoint_iff
             split: if_split_asm)
       thus \<open>t \<in> \<D> (?rhs1 \<box> ?rhs2 \<box> ?rhs3)\<close>
@@ -185,7 +185,7 @@ proof (rule Process_eq_optimizedI)
     proof cases
       assume \<open>t_P = []\<close>
       with "*"(4) obtain u' where \<open>b \<notin> S\<close> \<open>u = ev b # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
         by (auto simp add: "**"(2) split: if_split_asm)
       moreover from \<open>u = ev b # u'\<close> \<open>tF u\<close> have \<open>tF u'\<close> by simp
       ultimately have \<open>t \<in> \<D> ?rhs2\<close>
@@ -197,11 +197,11 @@ proof (rule Process_eq_optimizedI)
       from \<open>tF u\<close> have $ : \<open>u = ev x # u' \<Longrightarrow> tF u'\<close> for x u' by simp
       from "*"(4) sets_assms "**"(1) "***"(1)
       consider (mv_both)  u' where \<open>a \<in> S\<close> \<open>b = a\<close> \<open>a \<in> A'\<close> \<open>a \<in> B'\<close>
-        \<open>u = ev a # u'\<close> \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), S)\<close>
+        \<open>u = ev a # u'\<close> \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), S)\<close>
       |        (mv_left)  u' where \<open>a \<notin> S\<close> \<open>a \<in> A\<close> \<open>u = ev a # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       |        (mv_right) u' where \<open>b \<notin> S\<close> \<open>b \<in> B\<close> \<open>u = ev b # u'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
         by (auto simp add: "**"(2) "***"(2) disjoint_iff split: if_split_asm)
       thus \<open>t \<in> \<D> (?rhs1 \<box> ?rhs2 \<box> ?rhs3)\<close>
       proof cases
@@ -258,13 +258,13 @@ next
       from \<open>x \<in> A\<close> \<open>A \<inter> S = {}\<close> have \<open>x \<notin> S\<close> by blast
       from mv_left(2) obtain u v t_P t_Q
         where * : \<open>t' = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
           \<open>t_P \<in> \<D> (P x) \<and> t_Q \<in> \<T> ?lhs2 \<or>
                    t_P \<in> \<T> (P x) \<and> t_Q \<in> \<D> ?lhs2\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       have \<open>t = (ev x # u) @ v\<close> by (simp add: "*"(1) \<open>t = ev x # t'\<close>)
       moreover have \<open>tF (ev x # u)\<close> by (simp add: "*"(2))
-      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev x # t_P, t_Q), S)\<close>
+      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev x # t_P, t_Q), S)\<close>
         by (cases t_Q) (auto simp add: \<open>x \<notin> S\<close> setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
       moreover from "*"(5) mv_left(1)
       have \<open>ev x # t_P \<in> \<D> ?lhs1 \<and> t_Q \<in> \<T> ?lhs2 \<or>
@@ -276,13 +276,13 @@ next
       from \<open>x \<in> B\<close> \<open>B \<inter> S = {}\<close> have \<open>x \<notin> S\<close> by blast
       from mv_right(2) obtain u v t_P t_Q
         where * : \<open>t' = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
           \<open>t_P \<in> \<D> ?lhs1 \<and> t_Q \<in> \<T> (Q x) \<or>
                    t_P \<in> \<T> ?lhs1 \<and> t_Q \<in> \<D> (Q x)\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       have \<open>t = (ev x # u) @ v\<close> by (simp add: "*"(1) \<open>t = ev x # t'\<close>)
       moreover have \<open>tF (ev x # u)\<close> by (simp add: "*"(2))
-      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, ev x # t_Q), S)\<close>
+      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, ev x # t_Q), S)\<close>
         by (cases t_P) (auto simp add: \<open>x \<notin> S\<close> setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
       moreover from "*"(5) mv_right(1)
       have \<open>t_P \<in> \<D> ?lhs1 \<and> ev x # t_Q \<in> \<T> ?lhs2 \<or>
@@ -294,13 +294,13 @@ next
       from \<open>x \<in> A'\<close> \<open>A' \<subseteq> S\<close> have \<open>x \<in> S\<close> by blast
       from mv_both(3) obtain u v t_P t_Q
         where * : \<open>t' = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
           \<open>t_P \<in> \<D> (P x) \<and> t_Q \<in> \<T> (Q x) \<or>
                    t_P \<in> \<T> (P x) \<and> t_Q \<in> \<D> (Q x)\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       have \<open>t = (ev x # u) @ v\<close> by (simp add: "*"(1) \<open>t = ev x # t'\<close>)
       moreover have \<open>tF (ev x # u)\<close> by (simp add: "*"(2))
-      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev x # t_P, ev x # t_Q), S)\<close>
+      moreover from "*"(4) have \<open>ev x # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev x # t_P, ev x # t_Q), S)\<close>
         by (auto simp add: \<open>x \<in> S\<close>)
       moreover from "*"(5) mv_both(1, 2)
       have \<open>ev x # t_P \<in> \<D> ?lhs1 \<and> ev x # t_Q \<in> \<T> ?lhs2 \<or>
@@ -314,8 +314,8 @@ next
   fix t X assume \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close> \<open>t \<notin> \<D> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
   then obtain t_P t_Q X_P X_Q
     where fail : \<open>(t_P, X_P) \<in> \<F> ?lhs1\<close> \<open>(t_Q, X_Q) \<in> \<F> ?lhs2\<close>
-      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-      \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+      \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
     unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
   consider \<open>t = []\<close> | r_s t' where \<open>t = \<checkmark>(r_s) # t'\<close> | a t' where \<open>t = ev a # t'\<close>
     by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust neq_Nil_conv)
@@ -331,13 +331,13 @@ next
   next
     fix r_s t' assume \<open>t = \<checkmark>(r_s) # t'\<close>
     hence \<open>t = [\<checkmark>(r_s)]\<close>
-      by (metis F_imp_front_tickFree \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
-          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff)
-    with fail(3) obtain r s where \<open>tick_join r s = Some r_s\<close>
+      by (metis F_imp_ftF \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
+          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff)
+    with fail(3) obtain r s where \<open>tj r s = Some r_s\<close>
       by (auto elim: Cons_tick_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
-    from \<open>t = [\<checkmark>(r_s)]\<close> fail(3) \<open>tick_join r s = Some r_s\<close>
+    from \<open>t = [\<checkmark>(r_s)]\<close> fail(3) \<open>tj r s = Some r_s\<close>
     have \<open>t_P = [\<checkmark>(r)]\<close>
-      by (auto dest: inj_tick_join Nil_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+      by (auto dest: inj_tj Nil_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
           elim: Cons_tick_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
     with fail(1) \<open>t = [\<checkmark>(r_s)]\<close> have False by (simp add: F_Mprefix)
     thus \<open>(t, X) \<in> \<F> (?rhs1 \<box> ?rhs2 \<box> ?rhs3)\<close> ..
@@ -346,13 +346,13 @@ next
     from fail(1-3) sets_assms consider
       (mv_left)  t_P' where
       \<open>a \<notin> S\<close> \<open>a \<in> A\<close> \<open>t_P = ev a # t_P'\<close> \<open>(t_P', X_P) \<in> \<F> (P a)\<close>
-      \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+      \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
     | (mv_right) t_Q' where
       \<open>a \<notin> S\<close> \<open>a \<in> B\<close> \<open>t_Q = ev a # t_Q'\<close> \<open>(t_Q', X_Q) \<in> \<F> (Q a)\<close>
-      \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+      \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
     | (mv_both) t_P' t_Q' where
       \<open>a \<in> S\<close> \<open>a \<in> A'\<close> \<open>a \<in> B'\<close> \<open>t_P = ev a # t_P'\<close> \<open>t_Q = ev a # t_Q'\<close>
-      \<open>(t_P', X_P) \<in> \<F> (P a)\<close> \<open>(t_Q', X_Q) \<in> \<F> (Q a)\<close> \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), S)\<close>
+      \<open>(t_P', X_P) \<in> \<F> (P a)\<close> \<open>(t_Q', X_Q) \<in> \<F> (Q a)\<close> \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), S)\<close>
       by (unfold \<open>t = ev a # t'\<close>, elim Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
         (simp_all add: F_Mprefix subset_iff disjoint_iff, blast+)
     thus \<open>(t, X) \<in> \<F> (?rhs1 \<box> ?rhs2 \<box> ?rhs3)\<close>
@@ -385,14 +385,14 @@ next
   thus \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
   proof cases
     define X_P where \<open>X_P \<equiv> {ev a |a. ev a \<in> X \<and> a \<in> - (A \<union> A')} \<union>
-                             {\<checkmark>(r) |r_s r s. tick_join r s = Some r_s \<and> \<checkmark>(r_s) \<in> X}\<close>
+                             {\<checkmark>(r) |r_s r s. tj r s = Some r_s \<and> \<checkmark>(r_s) \<in> X}\<close>
     define X_Q where \<open>X_Q \<equiv> {ev b |b. ev b \<in> X \<and> b \<in> - (B \<union> B')} \<union>
-                             {\<checkmark>(s) |r_s r s. tick_join r s = Some r_s \<and> \<checkmark>(r_s) \<in> X}\<close>
+                             {\<checkmark>(s) |r_s r s. tj r s = Some r_s \<and> \<checkmark>(r_s) \<in> X}\<close>
     assume \<open>t = []\<close>
     with \<open>(t, X) \<in> \<F> (?rhs1 \<box> ?rhs2 \<box> ?rhs3)\<close>
     have \<open>X \<inter> ev ` A = {} \<and> X \<inter> ev ` B = {} \<and> X \<inter> ev ` (A' \<inter> B') = {}\<close>
       unfolding Det_projs F_Mprefix by auto
-    with sets_assms(2, 4) have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+    with sets_assms(2, 4) have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       by (simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def X_P_def X_Q_def
           subset_iff disjoint_iff image_iff)
         (metis IntI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
@@ -418,8 +418,8 @@ next
       from mv_left(2) consider \<open>t' \<in> \<D> (P x \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
         | (fail) t_P t_Q X_P X_Q where
           \<open>(t_P, X_P) \<in> \<F> (P x)\<close> \<open>(t_Q, X_Q) \<in> \<F> ?lhs2\<close>
-          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       thus \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
       proof cases
@@ -433,7 +433,7 @@ next
         have \<open>(ev x # t_P, X_P) \<in> \<F> ?lhs1\<close>  
           by (simp add: F_Mprefix fail(1) mv_left(1))
         moreover from \<open>t = ev x # t'\<close> fail(3) mv_left(1) \<open>A \<inter> S = {}\<close>
-        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev x # t_P, t_Q), S)\<close>
+        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev x # t_P, t_Q), S)\<close>
           by (cases t_Q) (auto simp add: setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
         ultimately show \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
           using fail(2, 4) by (auto simp add: F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
@@ -443,8 +443,8 @@ next
       from mv_right(2) consider \<open>t' \<in> \<D> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q x)\<close>
         | (fail) t_P t_Q X_P X_Q where
           \<open>(t_P, X_P) \<in> \<F> ?lhs1\<close> \<open>(t_Q, X_Q) \<in> \<F> (Q x)\<close>
-          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       thus \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
       proof cases
@@ -458,7 +458,7 @@ next
         have \<open>(ev x # t_Q, X_Q) \<in> \<F> ?lhs2\<close>  
           by (simp add: F_Mprefix fail(2) mv_right(1))
         moreover from \<open>t = ev x # t'\<close> fail(3) mv_right(1) \<open>B \<inter> S = {}\<close>
-        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, ev x # t_Q), S)\<close>
+        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, ev x # t_Q), S)\<close>
           by (cases t_P) (auto simp add: setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
         ultimately show \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
           using fail(1, 4) by (auto simp add: F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
@@ -468,7 +468,7 @@ next
       from mv_both(3) consider \<open>t' \<in> \<D> (P x \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q x)\<close>
         | (fail) t_P t_Q X_P X_Q where
           \<open>(t_P, X_P) \<in> \<F> (P x)\<close> \<open>(t_Q, X_Q) \<in> \<F> (Q x)\<close>
-          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close> \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+          \<open>t' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close> \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       thus \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
       proof cases
@@ -484,7 +484,7 @@ next
         moreover have \<open>(ev x # t_Q, X_Q) \<in> \<F> ?lhs2\<close>  
           by (simp add: F_Mprefix fail(2) mv_both(2))
         moreover from \<open>t = ev x # t'\<close> fail(3) mv_both(1) \<open>A' \<subseteq> S\<close>
-        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev x # t_P, ev x # t_Q), S)\<close> by auto
+        have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev x # t_P, ev x # t_Q), S)\<close> by auto
         ultimately show \<open>(t, X) \<in> \<F> (?lhs1 \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> ?lhs2)\<close>
           using fail(4) by (simp (no_asm) add: F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
       qed
@@ -493,7 +493,7 @@ next
 qed
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix:
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix:
   \<comment>\<open>This version is easier to use.\<close>
   \<open>\<box>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>B \<rightarrow> Q b =
    (\<box>a\<in>(A - S) \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>B \<rightarrow> Q b)) \<box>
@@ -504,7 +504,7 @@ corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mprefix_Sync\
     (simp_all add: Int_commute inf_left_commute)
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_for_procomata:
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_for_procomata:
   \<comment> \<open>Specialized version for Proc-Omata.\<close>
   \<open>\<box>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>B \<rightarrow> Q b =
    (\<box>a\<in>(A - S - B) \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<box>b\<in>B \<rightarrow> Q b))                          \<box>

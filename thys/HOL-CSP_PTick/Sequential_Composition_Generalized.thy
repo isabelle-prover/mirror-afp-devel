@@ -58,7 +58,7 @@ lift_definition Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ::
   oops
 
 
-text \<open>
+  text \<open>
 Except that this is not a fully satisfactory definition yet. Indeed, here, the right-hand
 side argument must produce processes whose terminations keep the same type.
 In other words, \<^term>\<open>Q\<close> is of type \<^typ>\<open>'r \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> while
@@ -67,23 +67,23 @@ The final definition given below is not immediate, and involves a precise
 understanding of the behaviour of the sequential composition.
 \<close>
 
-subsection \<open>Preliminaries\<close>
+  subsection \<open>Preliminaries\<close>
 
-text \<open>
+  text \<open>
 The first key for generalizing the definition is to see that \<^term>\<open>map (ev \<circ> of_ev)\<close>
 allows for changing the type of termination in tick-free traces.
 \<close>
 
-lemma tickFree_map_ev_of_ev_same_type_is : \<open>tF t \<Longrightarrow> map (ev \<circ> of_ev) t = t\<close>
+lemma tF_map_ev_of_ev_same_type_is : \<open>tF t \<Longrightarrow> map (ev \<circ> of_ev) t = t\<close>
   \<comment> \<open>In this case the type of termination remains unchanged.\<close>
   by (induct t) simp_all
 
 
-lemma tickFree_map_ev_of_ev_eq_iff :
+lemma tF_map_ev_of_ev_eq_iff :
   \<open>tF t \<Longrightarrow> map (ev \<circ> of_ev) t = t' \<Longrightarrow> t = map (ev \<circ> of_ev) t'\<close>
   by (induct t arbitrary: t') auto
 
-lemma tickFree_map_ev_of_ev_inj :
+lemma tF_map_ev_of_ev_inj :
   \<open>tF t \<Longrightarrow> tF t' \<Longrightarrow> map (ev \<circ> of_ev) t = map (ev \<circ> of_ev) t' \<longleftrightarrow> t = t'\<close>
   by (induct t arbitrary: t') (use event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.expand in auto)+
 
@@ -93,7 +93,7 @@ lemma map_ev_of_ev_map_ev_of_ev [simp] :
 lemma map_ev_of_ev_map_ev_of_ev_simplified [simp] :
   \<open>map (ev \<circ> of_ev \<circ> (ev \<circ> of_ev)) t = map (ev \<circ> of_ev) t\<close> by simp
 
-lemma tickFree_map_ev_of_ev_eq_imp_ev_mem_iff :
+lemma tF_map_ev_of_ev_eq_imp_ev_mem_iff :
   \<open>tF t' \<Longrightarrow> t = map (ev \<circ> of_ev) t' \<Longrightarrow> ev a \<in> set t \<longleftrightarrow> ev a \<in> set t'\<close>
   by (induct t' arbitrary: t) auto
 
@@ -192,8 +192,8 @@ proof -
   next
     show \<open>(t, X) \<in> ?f \<Longrightarrow> ftF t\<close> for t X
       by (auto simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def
-          F_imp_front_tickFree D_imp_front_tickFree
-          intro: front_tickFree_append)
+          F_imp_ftF D_imp_ftF
+          intro: ftF_append)
   next
     show \<open>(t @ u, {}) \<in> ?f \<Longrightarrow> (t, {}) \<in> ?f\<close> for t u
     proof (induct u arbitrary: t)
@@ -219,13 +219,13 @@ proof -
           thus \<open>(t, {}) \<in> ?f\<close>
             by (elim trace_tick_continuation_or_all_tick_failuresE, simp_all add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
               (metis (no_types, opaque_lifting) D_P(1) \<open>u = []\<close> append.right_neutral
-                append_T_imp_tickFree butlast_snoc is_processT1 map_butlast not_Cons_self2,
+                append_T_imp_tF butlast_snoc is_processT1 map_butlast not_Cons_self2,
                 metis D_P(1,3) \<open>u = []\<close> append.right_neutral butlast_snoc
-                front_tickFree_iff_tickFree_butlast map_butlast tickFree_imp_front_tickFree)
+                ftF_iff_tF_butlast map_butlast tF_imp_ftF)
         next
           fix e' u' assume \<open>u = u' @ [e']\<close>
           with D_P have \<open>t = map (ev \<circ> of_ev) t' @ u'\<close> \<open>t' \<in> \<D> P\<close> \<open>tF t'\<close> \<open>ftF u'\<close>  
-            by (simp_all add: front_tickFree_append_iff)
+            by (simp_all add: ftF_append_iff)
           thus \<open>(t, {}) \<in> ?f\<close> by (auto simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
         qed
       next
@@ -234,9 +234,9 @@ proof -
           by (metis F_P(1, 2) is_processT3 is_processT4_empty list.map_disc_iff snoc_eq_iff_butlast)
         with F_P(2) show \<open>(t, {}) \<in> ?f\<close>
           by (elim trace_tick_continuation_or_all_tick_failuresE, simp_all add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
-            (metis (no_types, lifting) F_P(1) T_imp_front_tickFree append.right_neutral butlast_snoc
-              front_tickFree_iff_tickFree_butlast is_processT1 map_butlast,
-              metis F_P(1) F_imp_front_tickFree butlast_snoc front_tickFree_iff_tickFree_butlast map_butlast)
+            (metis (no_types, lifting) F_P(1) T_imp_ftF append.right_neutral butlast_snoc
+              ftF_iff_tF_butlast is_processT1 map_butlast,
+              metis F_P(1) F_imp_ftF butlast_snoc ftF_iff_tF_butlast map_butlast)
       next
         case F_Q
         show \<open>(t, {}) \<in> ?f\<close>
@@ -246,14 +246,14 @@ proof -
             by (metis F_Q(2) T_F_spec append_butlast_last_id butlast.simps(1) is_processT3_TR_append)
           thus \<open>(t, {}) \<in> ?f\<close>
             by (elim trace_tick_continuation_or_all_tick_failuresE, simp_all add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
-              (metis (no_types, lifting) F_Q(1) \<open>u = []\<close> append_T_imp_tickFree butlast_snoc
+              (metis (no_types, lifting) F_Q(1) \<open>u = []\<close> append_T_imp_tF butlast_snoc
                 is_processT1 map_butlast not_Cons_self2 self_append_conv,
-                metis F_Q(1, 2) T_imp_front_tickFree \<open>u = []\<close> append_self_conv butlast_snoc
-                front_tickFree_iff_tickFree_butlast is_processT3_TR_append map_butlast)
+                metis F_Q(1, 2) T_imp_ftF \<open>u = []\<close> append_self_conv butlast_snoc
+                ftF_iff_tF_butlast is_processT3_TR_append map_butlast)
         next
           from F_Q show \<open>u = u' @ [e'] \<Longrightarrow> (t, {}) \<in> ?f\<close> for u' e'
             by (simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def) 
-              (metis append_T_imp_tickFree is_processT3 list.distinct(1))
+              (metis append_T_imp_tF is_processT3 list.distinct(1))
         qed
       qed
     qed
@@ -300,8 +300,8 @@ proof -
         show \<open>(t' @ [e], {}) \<notin> \<F> P\<close>
           apply (simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = ev a\<close> append_eq_map_conv ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
           by (smt (verit, del_insts) append_Nil2 comp_apply event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) is_processT1
-                  list.simps(8, 9) map_append tickFree_append_iff
-                  tickFree_map_ev_comp trace_tick_continuation_or_all_tick_failuresE)
+              list.simps(8, 9) map_append tF_append_iff
+              tF_map_ev_comp trace_tick_continuation_or_all_tick_failuresE)
       qed
       also have \<open>(ev \<circ> of_ev) ` (X \<inter> range ev) \<union> range tick \<union> (ev \<circ> of_ev) ` (Y \<inter> range ev) =
                  ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (X \<union> Y)\<close> unfolding ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def by blast
@@ -311,35 +311,33 @@ proof -
       case F_Q
       from "*" have \<open>\<forall>e. e \<in> Y \<longrightarrow> (u @ [e], {}) \<notin> \<F> (Q r)\<close>
         by (simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def F_Q(1, 2))
-          (metis F_Q(2) append_T_imp_tickFree not_Cons_self2)
+          (metis F_Q(2) append_T_imp_tF not_Cons_self2)
       with F_Q(3, 4) have \<open>(u, X \<union> Y) \<in> \<F> (Q r)\<close> by (simp add: is_processT5)
       with F_Q(1-3) show \<open>(t, X \<union> Y) \<in> ?f\<close> by (auto simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
     qed
   next
     show \<open>t \<in> ?d \<and> tF t \<and> ftF u \<Longrightarrow> t @ u \<in> ?d\<close> for t u
       by (simp add: div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def, elim conjE disjE exE)
-        (solves \<open>use front_tickFree_append in auto\<close>,
-          meson append.assoc is_processT7 tickFree_append_iff)
+        (solves \<open>use ftF_append in auto\<close>,
+          meson append.assoc is_processT7 tF_append_iff)
   next  
     show \<open>t \<in> ?d \<Longrightarrow> (t, X) \<in> ?f\<close> for t X
       by (simp add: div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def) (metis is_processT8)
   next
     show * : \<open>t @ [\<checkmark>(r')] \<in> ?d \<Longrightarrow> t \<in> ?d\<close> for t r'
       by (simp add: div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def, elim disjE exE conjE)
-        (metis butlast_append butlast_snoc front_tickFree_iff_tickFree_butlast non_tickFree_tick
-          tickFree_append_iff tickFree_imp_front_tickFree tickFree_map_ev_comp,
-          metis D_imp_front_tickFree butlast_append butlast_snoc
-          div_butlast_when_non_tickFree_iff non_tickFree_tick
-          tickFree_append_iff tickFree_map_ev_comp)
-
+        (metis butlast_append butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+          ftF_iff_tF_butlast tF_Cons_iff tF_append_iff tF_imp_ftF tF_map_ev_comp,
+          metis D_imp_ftF append_Nil2 butlast.simps(2) butlast_append div_butlast_when_non_tF_iff
+          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_append_iff tF_map_ev_comp)
     fix t r' X assume \<open>(t @ [\<checkmark>(r')], {}) \<in> ?f\<close>
     then consider \<open>t @ [\<checkmark>(r')] \<in> ?d\<close>
       | (F_Q) t' r u where \<open>t @ [\<checkmark>(r')] = map (ev \<circ> of_ev) t' @ u\<close>
         \<open>t' @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>tF t'\<close> \<open>(u, X) \<in> \<F> (Q r)\<close>
       by (auto simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
-        (metis non_tickFree_tick tickFree_append_iff tickFree_map_ev_comp,
-          metis F_T F_imp_front_tickFree nonTickFree_n_frontTickFree
-                non_tickFree_tick tickFree_append_iff tickFree_map_ev_comp tick_T_F)
+        (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_append_iff tF_map_ev_comp,
+          metis T_F_spec T_not_tF_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+          tF_Cons_iff tF_append_iff tF_map_ev_comp tick_T_F)
     thus \<open>(t, X - {\<checkmark>(r')}) \<in> ?f\<close>
     proof cases
       assume \<open>t @ [\<checkmark>(r')] \<in> ?d\<close>
@@ -350,7 +348,7 @@ proof -
       case F_Q
       from F_Q(1, 2) obtain u' where \<open>u = u' @ [\<checkmark>(r')]\<close>
         by (cases u rule: rev_cases, simp_all)
-          (metis non_tickFree_tick tickFree_append_iff tickFree_map_ev_comp)
+          (metis tF_Cons_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_append_iff tF_map_ev_comp)
       with F_Q(4) have \<open>(u', X - {\<checkmark>(r')}) \<in> \<F> (Q r)\<close> by (simp add: F_T is_processT6_TR)
       with F_Q(1-3) \<open>u = u' @ [\<checkmark>(r')]\<close> show \<open>(t, X - {\<checkmark>(r')}) \<in> ?f\<close>
         by (auto simp add: fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
@@ -391,6 +389,29 @@ lemma T_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
 
 lemmas Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs = F_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k D_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k T_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k fail_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def div_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<^bold>;\<^sub>\<checkmark> Q) \<subseteq> {map (ev \<circ> of_ev) t |t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<and> tF t} \<union>
+                   {map (ev \<circ> of_ev) t @ u |t u. \<exists>r. t @ [\<checkmark>(r)] \<in> \<T> P - \<D> P \<and> tF t \<and> u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Q r)}\<close>
+  (is \<open>_ \<subseteq> ?rhs1 \<union> ?rhs2\<close>)
+proof -
+  let ?map = \<open>map (ev \<circ> of_ev)\<close>
+  have \<open>\<D> (P \<^bold>;\<^sub>\<checkmark> Q) = {map (ev \<circ> of_ev) t @ u |t u. t \<in> \<D> P \<and> tF t \<and> ftF u} \<union>
+                      {map (ev \<circ> of_ev) t @ u |t u. \<exists>r. t @ [\<checkmark>(r)] \<in> \<T> P - \<D> P \<and> tF t \<and> u \<in> \<D> (Q r)}\<close>
+    (is \<open>_ = ?lhs1 \<union> ?lhs2\<close>)
+    by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs) (metis D_imp_ftF is_processT9)
+  hence \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<^bold>;\<^sub>\<checkmark> Q) \<subseteq> min_elems ?lhs1 \<union> min_elems ?lhs2\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_Un_subset_Un_min_elems)
+  moreover have \<open>min_elems ?lhs1 \<subseteq> {map (ev \<circ> of_ev) t |t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<and> tF t}\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def subset_iff)
+      (metis Prefix_Order.prefixI[of \<open>?map _ @ _\<close> \<open>?map _\<close>] Prefix_Order.strict_prefixE'
+        append.right_neutral[of \<open>?map _\<close>] dual_order.strict_iff_order ftF_Nil
+        map_append[of \<open>ev \<circ> of_ev\<close> _ \<open>_ # _\<close>] tF_append_iff tF_map_ev_of_ev_inj)
+  moreover have \<open>min_elems ?lhs2 \<subseteq> ?rhs2\<close>
+    by (auto simp add: min_elems_def Divergences\<^sub>m\<^sub>i\<^sub>n_def) (use less_append in blast)
+  ultimately show ?thesis by blast
+qed
+
+
 
 lemma mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_eq : \<open>P \<^bold>;\<^sub>\<checkmark> Q = P' \<^bold>;\<^sub>\<checkmark> Q'\<close> if * : \<open>P = P'\<close> \<open>\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> Q r = Q' r\<close>
   for P P' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and Q Q' :: \<open>'r \<Rightarrow> ('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -406,7 +427,7 @@ proof (fold "*"(1), subst Process_eq_spec_optimized, safe)
     next
       case D_Q thus \<open>t \<in> \<D> (P \<^bold>;\<^sub>\<checkmark> Q')\<close>
         by (simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-          (metis "*" D_imp_front_tickFree is_processT9 strict_ticks_of_memI)
+          (metis "*" D_imp_ftF is_processT9 strict_ticks_of_memI)
     qed
   } note $ = this
   show \<open>t \<in> \<D> (P \<^bold>;\<^sub>\<checkmark> Q) \<Longrightarrow> t \<in> \<D> (P \<^bold>;\<^sub>\<checkmark> Q')\<close>
@@ -427,7 +448,7 @@ next
     next
       case F_Q thus \<open>(t, X) \<in> \<F> (P \<^bold>;\<^sub>\<checkmark> Q')\<close>
         by (simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-          (metis "*" F_imp_front_tickFree is_processT9 strict_ticks_of_memI)
+          (metis "*" F_imp_ftF is_processT9 strict_ticks_of_memI)
     next
       case D_P thus \<open>(t, X) \<in> \<F> (P \<^bold>;\<^sub>\<checkmark> Q')\<close> by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
     qed
@@ -454,21 +475,21 @@ lemma F_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_type :
   \<open>\<F> (P \<^bold>;\<^sub>\<checkmark> Q) = {(t, X) |t X. (t, X \<union> range tick) \<in> \<F> P \<and> tF t} \<union>
                 {(t @ u, X) |t u r X. t @ [\<checkmark>(r)] \<in> \<T> P \<and> (u, X) \<in> \<F> (Q r)} \<union>
                 {(t, X). t \<in> \<D> P}\<close>
-  by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs tickFree_map_ev_of_ev_same_type_is ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_type_is is_processT7)
-    (metis tickFree_map_ev_of_ev_same_type_is,
-      metis append_T_imp_tickFree not_Cons_self2,
-      metis D_T T_imp_front_tickFree T_nonTickFree_imp_decomp append.right_neutral
-            front_tickFree_nonempty_append_imp is_processT9 not_Cons_self2
-            tickFree_Nil tickFree_imp_front_tickFree)
+  by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs tF_map_ev_of_ev_same_type_is ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_type_is is_processT7)
+    (metis tF_map_ev_of_ev_same_type_is,
+      metis append_T_imp_tF not_Cons_self2,
+      metis D_T T_imp_ftF T_not_tF_imp_decomp append.right_neutral
+      ftF_nonempty_append_imp is_processT9 not_Cons_self2
+      tF_Nil tF_imp_ftF)
 
 
 lemma D_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_type : \<open>\<D> (P \<^bold>;\<^sub>\<checkmark> Q) = \<D> P \<union> {t @ u |t u r. t @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<in> \<D> (Q r)}\<close>
-  by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs tickFree_map_ev_of_ev_same_type_is is_processT7)
+  by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs tF_map_ev_of_ev_same_type_is is_processT7)
     (blast,
-      metis D_imp_front_tickFree butlast_snoc div_butlast_when_non_tickFree_iff
-            front_tickFree_charn front_tickFree_nonempty_append_imp
-            self_append_conv tickFree_Nil tickFree_map_ev_of_ev_same_type_is,
-      metis append_T_imp_tickFree not_Cons_self2)
+      metis D_imp_ftF butlast_snoc div_butlast_when_non_tF_iff
+      ftF_charn ftF_nonempty_append_imp
+      self_append_conv tF_Nil tF_map_ev_of_ev_same_type_is,
+      metis append_T_imp_tF not_Cons_self2)
 
 
 lemma T_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_type_bis :

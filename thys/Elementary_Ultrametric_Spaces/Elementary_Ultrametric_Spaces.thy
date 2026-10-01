@@ -135,6 +135,9 @@ next
   qed
 qed
 
+lemma \<open>open (ball y r)\<close> by (fact open_ball)
+
+
 lemma ultrametric_open_sphere [intro, simp] : \<open>0 < r \<Longrightarrow> open (sphere x r)\<close>
   by (fold cball_diff_eq_sphere) (simp add: open_Diff order_le_less)
 

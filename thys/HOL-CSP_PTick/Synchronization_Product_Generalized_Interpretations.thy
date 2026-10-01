@@ -47,24 +47,32 @@ unbundle option_type_syntax
 section \<open>Interpretations\<close>
 
 text \<open>
-For practical reasons, we directly interpret \<^locale>\<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale\<close>.
+For practical reasons, we directly interpret \<^locale>\<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm\<close>.
 Then, the laws of associativity will be derived
-manually (instead of globally interpreting the locale \<^locale>\<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale\<close>).
+manually (instead of globally interpreting the locale \<^locale>\<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc\<close>).
 \<close>
+
+text \<open>Starting with Isabelle-26, the arguments on which the interpretation
+is based are sometimes ``hidden'' behind a definition a definition to prevent a call to
+the simplifier from breaking everything.\<close>
+
+
 
 subsection \<open>Classical Version\<close>
 
-text (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 The following interpretation is initially the reason we wanted the parameter
-\<^term>\<open>tick_join\<close> to be of type \<^typ>\<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> instead of
+\<^term>\<open>tj\<close> to be of type \<^typ>\<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> instead of
 just \<^typ>\<open>'r \<Rightarrow> 's \<Rightarrow> 't\<close> (we wanted the operator \<^const>\<open>Sync\<close> already defined in
 \<^session>\<open>HOL-CSP\<close> to indeed be a particular case of the new one).
 \<close>
 
-interpretation Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale
-  \<open>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
-  \<open>\<lambda>s r. if s = r then \<lfloor>s\<rfloor> else \<diamond>\<close> id id
-  by unfold_locales (auto split: if_split_asm)
+definition Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj :: \<open>'r \<Rightarrow> 'r \<Rightarrow> 'r option\<close>
+  where \<open>Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj r s \<equiv> if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
+
+interpretation Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm
+  Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj id id
+  by unfold_locales (auto simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def split: if_split_asm)
 
 notation Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c _)\<close> [70, 0, 71] 70)
 notation Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c _)\<close> [72, 73] 72)
@@ -72,11 +80,39 @@ notation Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Par\<^sub>
 
 
 
+
+
+subsection \<open>Right Unit\<close>
+
+definition Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj :: \<open>'r \<Rightarrow> unit \<Rightarrow> 'r option\<close>
+  where \<open>Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj r s \<equiv> \<lfloor>r\<rfloor>\<close>
+
+definition Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual :: \<open>unit \<Rightarrow> 's \<Rightarrow> 's option\<close>
+  where \<open>Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual r s \<equiv> \<lfloor>s\<rfloor>\<close>
+
+interpretation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm
+  Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual id id
+  by unfold_locales
+    (auto simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual_def split: if_split_asm)
+
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close> [70, 0, 71] 70)
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close> [72, 73] 72)
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k   (\<open>(_ ||\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close>  [74, 75] 74)
+
+
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close> [70, 0, 71] 70)
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close> [72, 73] 72)
+notation Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k   (\<open>(_ ||\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t _)\<close>  [74, 75] 74)
+
+
 subsection \<open>Product Type\<close>
 
-interpretation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale
-  \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close> \<open>\<lambda>s r. \<lfloor>(s, r)\<rfloor>\<close> prod.swap prod.swap
-  by unfold_locales (auto split: if_split_asm)
+definition Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj :: \<open>'r \<Rightarrow> 's \<Rightarrow> ('r \<times> 's) option\<close>
+  where \<open>Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj r s \<equiv> \<lfloor>(r, s)\<rfloor>\<close>
+
+interpretation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm
+  Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj prod.swap prod.swap
+  by unfold_locales (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def split: if_split_asm)
 
 notation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r _)\<close> [70, 0, 71] 70)
 notation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r _)\<close> [72, 73] 72)
@@ -88,10 +124,15 @@ subsection \<open>List Type\<close>
 
 subsubsection \<open>Pair\<close>
 
-interpretation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale
-  \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close> \<open>\<lambda>s r. \<lfloor>[s, r]\<rfloor>\<close>
-  \<open>\<lambda>rs. [rs ! Suc 0, rs ! 0]\<close> \<open>\<lambda>rs. [rs ! Suc 0, rs ! 0]\<close>
-  by unfold_locales (auto intro: inj_onI) 
+definition Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj :: \<open>'r \<Rightarrow> 'r \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj r s \<equiv> \<lfloor>[r, s]\<rfloor>\<close>
+
+definition Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv :: \<open>'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv rs \<equiv> [rs ! Suc 0, rs ! 0]\<close>
+
+interpretation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm
+  Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv
+  by unfold_locales (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv_def split: if_split_asm)
 
 notation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [70, 0, 71] 70)
 notation Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [72, 73] 72)
@@ -106,11 +147,24 @@ Here, we want to have one process of type \<^typ>\<open>('a, 'r) process\<^sub>p
 and one of type \<^typ>\<open>('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> on the right hand side.
 \<close>
 
-interpretation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale
-  \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close> \<open>\<lambda>s r. \<lfloor>s @ [r]\<rfloor>\<close>
-  \<open>rotate1\<close> \<open>\<lambda>rs. if rs = [] then [] else last rs # butlast rs\<close>
-  \<comment> \<open>\<^term>\<open>\<lambda>rs. last rs # butlast rs\<close> is not injective.\<close>
-  by unfold_locales (auto intro: inj_onI) 
+definition Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj :: \<open>'r \<Rightarrow> 'r list \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj r s \<equiv> \<lfloor>r # s\<rfloor>\<close>
+
+definition Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual :: \<open>'r list \<Rightarrow> 'r \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual s r \<equiv> \<lfloor>s @ [r]\<rfloor>\<close>
+(* 
+definition Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv :: \<open>'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_conv \<equiv> rotate1\<close>
+ *)
+definition Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_conv :: \<open>'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_conv rs \<equiv> if rs = [] then [] else last rs # butlast rs\<close>
+  \<comment> \<open>because \<^term>\<open>\<lambda>rs. last rs # butlast rs\<close> is not injective.\<close>
+
+
+interpretation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm
+  Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual rotate1 Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_conv
+  by unfold_locales
+    (auto simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_conv_def intro: inj_onI) 
 
 notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [70, 0, 71] 70)
 notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [72, 73] 72)
@@ -127,9 +181,9 @@ There is no need to do a new interpretation, the operator we are looking for is 
 the symmetric of the one we defined just above.
 \<close>
 
-notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [70, 0, 71] 70)
-notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [72, 73] 72)
-notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k   (\<open>(_ ||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close>  [74, 75] 74)
+notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k  (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [70, 0, 71] 70)
+notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ |||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close> [72, 73] 72)
+notation Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k   (\<open>(_ ||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t _)\<close>  [74, 75] 74)
 
 
 
@@ -139,7 +193,7 @@ text \<open>
 We believed for a long time that it was not possible to handle the case
 where both processes have their ticks of type \<^typ>\<open>'r list\<close>.
 Indeed the concatenation on the lists is not injective, resulting in
-the impossibility of interpreting \<^locale>\<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale\<close>.
+the impossibility of interpreting \<^locale>\<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>.
 But it turns out that by adding some control on the length of the lists,
 we actually can!
 \<close>
@@ -148,12 +202,23 @@ paragraph \<open>Control on one side\<close>
 
 context fixes lenL :: nat begin
 
-global_interpretation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale 
-  \<open>\<lambda>r s. if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  \<open>\<lambda>s r. if length r = lenL then \<lfloor>s @ r\<rfloor> else \<diamond>\<close>
-  \<open>\<lambda>rs. drop lenL rs @ take lenL rs\<close>
-  \<open>\<lambda>rs. rev (take lenL (rev rs)) @ rev (drop lenL (rev rs))\<close>
-  by unfold_locales (auto split: if_split_asm)
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj :: \<open>'r list \<Rightarrow> 'r list \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj r s \<equiv> if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual :: \<open>'r list \<Rightarrow> 'r list \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual s r \<equiv> if length r = lenL then \<lfloor>s @ r\<rfloor> else \<diamond>\<close>
+
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv :: \<open>'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv rs \<equiv> drop lenL rs @ take lenL rs\<close>
+
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_conv :: \<open>'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_conv rs \<equiv> rev (take lenL (rev rs)) @ rev (drop lenL (rev rs))\<close>
+
+global_interpretation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm 
+  Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_conv
+  by unfold_locales
+    (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def
+      Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_conv_def split: if_split_asm)
 
 end
 
@@ -181,32 +246,33 @@ of this operator we control the ticks length of the right one.
 abbreviation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_syntax ::
   \<open>[('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, nat, 'a set, ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k]
    \<Rightarrow> ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>(_ \<^bsub>_\<^esub>(\<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R) _)\<close> [70, 0, 0, 71] 70)
-  where \<open>P \<^bsub>lenL\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P A Q\<close>
+  where \<open>P \<^bsub>lenL\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P A Q\<close>
 
 abbreviation Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_syntax ::
   \<open>[('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, nat, ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k]
    \<Rightarrow> ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>(_ \<^bsub>_\<^esub>(|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R) _)\<close> [72, 0, 73] 72)
-  where \<open>P \<^bsub>lenL\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P Q\<close>
+  where \<open>P \<^bsub>lenL\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P Q\<close>
 
 abbreviation Par\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_syntax ::
   \<open>[('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, nat, ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k]
    \<Rightarrow> ('a, 'r list) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>(_ \<^bsub>_\<^esub>(||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R) _)\<close> [74, 0, 75] 75)
-  where \<open>P \<^bsub>lenL\<^esub>||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P Q\<close>
+  where \<open>P \<^bsub>lenL\<^esub>||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q \<equiv> Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL P Q\<close>
 
 
 
 paragraph \<open>Control on both sides\<close>
 
-context fixes lenL :: nat and lenR :: nat begin
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj :: \<open>[nat, nat, 'r list, 'r list] \<Rightarrow> 'r list option\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenL lenR r s \<equiv> if length r = lenL \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
 
-global_interpretation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale 
-  \<open>\<lambda>r s. if length r = lenL \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  \<open>\<lambda>s r. if length s = lenR \<and> length r = lenL then \<lfloor>s @ r\<rfloor> else \<diamond>\<close>
-  \<open>\<lambda>rs. drop lenL rs @ take lenL rs\<close>
-  \<open>\<lambda>rs. drop lenR rs @ take lenR rs\<close>
-  by unfold_locales (auto split: if_split_asm)
+definition Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv :: \<open>nat \<Rightarrow> 'r list \<Rightarrow> 'r list\<close>
+  where \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv lenL rs \<equiv> drop lenL rs @ take lenL rs\<close>
 
-end
+interpretation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm 
+  \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenL lenR\<close> \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenR lenL\<close>
+  \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv lenL\<close> \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv lenR\<close> for lenL lenR
+  by unfold_locales
+    (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv_def split: if_split_asm)
 
 
 abbreviation Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_syntax ::
@@ -233,10 +299,29 @@ subsection \<open>Classical Version\<close>
 lemma Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c R) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c R\<close>
 proof -
-  let ?f = \<open>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale ?f ?f ?f ?f id id
-    by (unfold_locales) (auto split: if_split_asm)
-  show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[simplified Renaming_id])
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj id id
+    by (unfold_locales) (auto simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def split: if_split_asm)
+  show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[simplified])
+qed
+
+
+
+subsection \<open>Unit\<close>
+
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_assoc :
+  \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t R) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t R\<close>
+proof -
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc \<open>(\<otimes>\<checkmark>)\<close> Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj \<open>(\<otimes>\<checkmark>)\<close> Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj id id
+    by unfold_locales (auto simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def)
+  show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
+qed
+
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc :
+  \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> R) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> R\<close>
+proof -
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual \<open>(\<otimes>\<checkmark>)\<close> Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual \<open>(\<otimes>\<checkmark>)\<close> id id
+    by unfold_locales (auto simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual_def)
+  show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
 
@@ -246,9 +331,9 @@ subsection \<open>Product Type\<close>
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r R) = RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r R) (\<lambda>((r, s), t). (r, s, t))\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close>
-    \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close> \<open>\<lambda>((r, s), t). (r, s, t)\<close> \<open>\<lambda>(r, s, t). ((r, s), t)\<close>
-    by unfold_locales auto
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj
+    Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj \<open>\<lambda>((r, s), t). (r, s, t)\<close> \<open>\<lambda>(r, s, t). ((r, s), t)\<close>
+    by unfold_locales (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc")
 qed
 
@@ -259,9 +344,8 @@ subsection \<open>List Type\<close>
 lemma Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t R) = (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close> id id
-    by unfold_locales auto
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj id id
+    by unfold_locales (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
@@ -269,9 +353,8 @@ qed
 lemma Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R) = (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close> \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close> id id
-    by unfold_locales auto
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual id id
+    by unfold_locales (auto simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
@@ -279,24 +362,19 @@ qed
 lemma Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t (Q \<^bsub>lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L R) = (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) \<^bsub>Suc lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
-    \<open>\<lambda>r s. if length r = Suc lenQ then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
-    \<open>\<lambda>r s. if length r = lenQ then \<lfloor>r @ s\<rfloor> else \<diamond>\<close> id id
-    by unfold_locales (auto split: if_split_asm)
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
+    Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj (Suc lenQ)\<close> Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj lenQ\<close> id id
+    by unfold_locales (auto simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def split: if_split_asm)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
 lemma Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_assoc :
   \<open>P \<^bsub>Suc lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R) = (P \<^bsub>lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
-    \<open>\<lambda>r s. if length s = lenQ then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
-    \<open>\<lambda>r s. if length s = Suc lenQ then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close> id id
-    by unfold_locales (auto split: if_split_asm)
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
+    \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual lenQ\<close> Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual
+    \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual (Suc lenQ)\<close> Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual id id
+    by unfold_locales (auto simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def split: if_split_asm)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
@@ -305,12 +383,10 @@ lemma Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_assoc :
   \<open>P \<^bsub>lenP\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenQ + lenR\<^esub> (Q \<^bsub>lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> R) =
    P \<^bsub>lenP\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenQ\<^esub> Q \<^bsub>lenP + lenQ\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
-    \<open>\<lambda>r s. if length r = lenP \<and> length s = lenQ then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. if length r = lenP + lenQ \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. if length r = lenP \<and> length s = lenQ + lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. if length r = lenQ \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close> id id
-    by unfold_locales (auto split: if_split_asm)
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
+    \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenP lenQ\<close> \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj (lenP + lenQ) lenR\<close>
+    \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenP (lenQ + lenR)\<close> \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenQ lenR\<close> id id
+    by unfold_locales (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def split: if_split_asm)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
@@ -318,24 +394,20 @@ qed
 lemma Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t R) = (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) \<^bsub>Suc (Suc 0)\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
-    \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close>
-    \<open>\<lambda>r s. if length r = Suc (Suc 0) then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
-    \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close> id id
-    by unfold_locales (auto split: if_split_asm)
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
+    Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj (Suc (Suc 0))\<close> Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj id id
+    by unfold_locales
+      (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def split: if_split_asm)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
 lemma Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_assoc :
   \<open>P \<^bsub>Suc (Suc 0)\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t R) = (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t R\<close>
 proof -
-  interpret * : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
-    \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
-    \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
-    \<open>\<lambda>r s. if length s = Suc (Suc 0) then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-    \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close> id id
-    by unfold_locales (auto split: if_split_asm)
+  interpret * : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
+    Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual (Suc (Suc 0))\<close> Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj id id
+    by unfold_locales
+      (auto simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def split: if_split_asm)
   show ?thesis by (fact "*.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc"[unfolded Renaming_id])
 qed
 
@@ -350,17 +422,39 @@ We can actually recover the classical synchronization product defined in
 session \<^session>\<open>HOL-CSP\<close> as a particular case of our generalization.
 \<close>
 
+lemma setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c :
+  \<open>t setinterleaves ((u, v), range tick \<union> ev ` A) \<longleftrightarrow>
+   t setinterleaves\<^sub>\<checkmark>\<^bsub>Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj\<^esub> ((u, v), A)\<close>
+  for t :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  by (induct \<open>(Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj :: 'r \<Rightarrow> 'r \<Rightarrow> 'r option, u, A, v)\<close>
+      arbitrary: t u v) (simp_all add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def image_iff)
+
+corollary setinterleaves_is_setinterleaves\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t :
+  \<open>t setinterleaves ((u, v), insert \<checkmark> (ev ` A)) \<longleftrightarrow>
+   t setinterleaves\<^sub>\<checkmark>\<^bsub>Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj\<^esub> ((u, v), A)\<close> (is \<open>?lhs \<longleftrightarrow> ?rhs\<close>)
+proof -
+  have \<open>?lhs \<longleftrightarrow> t setinterleaves ((u, v), range tick \<union> ev ` A)\<close>
+    by (simp add: UNIV_unit)
+  also have \<open>\<dots> \<longleftrightarrow> t setinterleaves\<^sub>\<checkmark>\<^bsub>Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj\<^esub> ((u, v), A)\<close>
+    by (fact setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c)
+  also have \<open>\<dots> \<longleftrightarrow> ?rhs\<close>
+    by (intro arg_cong[where f = \<open>\<lambda>tj. t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((u, v), A)\<close>] ext)
+      (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def)
+  finally show \<open>?lhs \<longleftrightarrow> ?rhs\<close> .
+qed
+
+
 theorem Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_is_Sync : \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q = P \<lbrakk>A\<rbrakk> Q\<close>
 proof (rule Process_eq_optimizedI)
   show \<open>t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q) \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q)\<close> for t
     by (simp add: D_Sync Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'
-        flip: setinterleaves_is_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      (metis setinterleaving_sym)
+        flip: setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c)
+      (metis setinterleaving_dual)
 next
   show \<open>t \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q) \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close> for t
     by (simp add: D_Sync Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        flip: setinterleaves_is_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      (metis setinterleaving_sym)
+        flip: setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c)
+      (metis setinterleaving_dual)
 next
   fix t X assume \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q)\<close> \<open>t \<notin> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
   then obtain t_P t_Q X_P X_Q
@@ -368,22 +462,22 @@ next
       \<open>t setinterleaves ((t_P, t_Q), range tick \<union> ev ` A)\<close>
       \<open>X = (X_P \<union> X_Q) \<inter> (range tick \<union> ev ` A) \<union> X_P \<inter> X_Q\<close>
     unfolding Sync_projs by blast
-  from "*"(4) have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>) X_P A X_Q\<close>
-    by (auto simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def subset_iff)
+  from "*"(4) have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj X_P A X_Q\<close>
+    by (auto simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def subset_iff Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def)
       (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
   with "*"(1-3) show \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q)\<close>
-    by (auto simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k setinterleaves_is_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+    by (auto simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c)
 next
   fix t X assume \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q)\<close> \<open>t \<notin> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q)\<close>
   then obtain t_P t_Q X_P X_Q
     where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<^esub> ((t_P, t_Q), A)\<close>
-      \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>) X_P A X_Q\<close>
+      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj\<^esub> ((t_P, t_Q), A)\<close>
+      \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj X_P A X_Q\<close>
     unfolding Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
   from "*"(1-3) have \<open>(t, (X_P \<union> X_Q) \<inter> (range tick \<union> ev ` A) \<union> X_P \<inter> X_Q) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q)\<close>
-    by (simp add: F_Sync setinterleaves_is_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
+    by (simp add: F_Sync setinterleaves_is_setinterleaves\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c) blast
   moreover from "*"(4) have \<open>X \<subseteq> (X_P \<union> X_Q) \<inter> (range tick \<union> ev ` A) \<union> X_P \<inter> X_Q\<close>
-    by (auto simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def subset_iff split: if_split_asm)
+    by (auto simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def subset_iff Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def split: if_split_asm)
   ultimately show \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q)\<close> by (meson is_processT4)
 qed
 
@@ -391,8 +485,8 @@ qed
 
 subsection \<open>Other Properties\<close>
 
-lemma \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL lenR Q A P = P \<^bsub>lenL\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> Q\<close>
-  by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+lemma \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k lenL lenR Q A P = P \<^bsub>lenL\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> Q\<close>
+  by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
 
 
 corollary TickSwap_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r [simp] : \<open>TickSwap (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) = Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r P\<close>
@@ -405,11 +499,8 @@ lemma TickSwap_is_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_iff [simp] :
 corollary Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_commute : \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q = Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c P\<close>
   by (fact Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_commute[simplified])
 
-
-lemma \<open>RenamingTick (P \<^bsub>lenL\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> Q) (\<lambda>r_s. drop lenL r_s @ take lenL r_s) =
-       Q \<^bsub>lenR\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenL\<^esub> P\<close>
+lemma \<open>RenamingTick (P \<^bsub>lenL\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenR\<^esub> Q) (Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_conv lenL) = Q \<^bsub>lenR\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>lenL\<^esub> P\<close>
   by (fact Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_commute)
-
 
 
 section \<open>Ticks Length and Conversions\<close>
@@ -506,8 +597,8 @@ lemma is_ticks_length_Seq [is_ticks_length_intro] :
   \<open>non_terminating P \<or> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<^bold>; Q)\<close>
 proof (elim disjE)
   show \<open>non_terminating P \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<^bold>; Q)\<close>
-    by (metis is_ticks_length_def non_terminating_Seq non_terminating_is_right
-        non_tickFree_tick strict_ticks_of_memE tickFree_append_iff)
+    by (metis Inter_STOP inf_bot_right is_ticks_length_unique non_terminating_Seq
+        strict_ticks_of_STOP strict_ticks_of_Sync_subset subset_empty)
 next
   from strict_ticks_of_Seq_subset[of P Q]
   show \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<^bold>; Q)\<close>
@@ -523,10 +614,10 @@ proof (rule is_ticks_lengthI)
     by (metis is_processT9 strict_ticks_of_memE)
   from this(2, 3) obtain u where \<open>t = trace_hide u (ev ` S)\<close> \<open>u \<in> \<T> P\<close>
     unfolding T_Hiding D_Hiding using F_T by fast
-  from this(1) this(2)[THEN T_imp_front_tickFree] obtain u' where \<open>u = u' @ [\<checkmark>(rs)]\<close>
-    by (cases u rule: rev_cases, simp_all add: \<open>t = t' @ [\<checkmark>(rs)]\<close> split: if_split_asm)
-      (metis Hiding_tickFree front_tickFree_nonempty_append_imp list.distinct(1)
-        non_tickFree_tick tickFree_append_iff)
+  from this(1) this(2)[THEN T_imp_ftF] obtain u' where \<open>u = u' @ [\<checkmark>(rs)]\<close>
+    by (cases u rule: rev_cases, auto simp add: \<open>t = t' @ [\<checkmark>(rs)]\<close> split: if_split_asm)
+      (metis Hiding_tF append1_eq_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+        event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) not_tF_and_ftF tF_Cons_iff tF_append_iff)
   from \<open>t \<notin> \<D> (P \ S)\<close> mem_D_imp_mem_D_Hiding[of u P S]
   have \<open>u \<notin> \<D> P\<close> unfolding \<open>t = trace_hide u (ev ` S)\<close> by blast
   with \<open>u \<in> \<T> P\<close> \<open>u = u' @ [\<checkmark>(rs)]\<close> have \<open>rs \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>
@@ -552,8 +643,8 @@ proof (rule subsetI)
     | t1 a t2 where \<open>t @ [\<checkmark>(r)] = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
       \<open>a \<in> A\<close> \<open>t2 \<in> \<T> (Q a)\<close> \<open>t2 \<notin> \<D> (Q a)\<close>
     by (simp add: Throw_projs)
-      (metis (no_types, lifting) append_T_imp_tickFree
-        front_tickFree_single is_processT9 not_Cons_self2)
+      (metis (no_types, lifting) append_T_imp_tF
+        ftF_single is_processT9 not_Cons_self2)
   thus \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<union> (\<Union>a\<in>A \<inter> \<alpha>(P). \<^bold>\<checkmark>\<^bold>s(Q a))\<close>
   proof cases
     show \<open>t @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> t @ [\<checkmark>(r)] \<notin> \<D> P \<Longrightarrow> r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<union> (\<Union>a\<in>A \<inter> \<alpha>(P). \<^bold>\<checkmark>\<^bold>s(Q a))\<close>
@@ -585,10 +676,10 @@ proof (rule is_ticks_lengthI)
     by (meson is_processT9 strict_ticks_of_memE)
   then obtain u where * : \<open>t @ [\<checkmark>(rs)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> and \<open>u \<in> \<T> P\<close>
     by (auto simp add: Renaming_projs)
-  from this(1) \<open>u \<in> \<T> P\<close> append_T_imp_tickFree obtain u' r
+  from this(1) \<open>u \<in> \<T> P\<close> append_T_imp_tF obtain u' r
     where \<open>rs = g r\<close> \<open>u = u' @ [\<checkmark>(r)]\<close> \<open>tF u'\<close>
     by (cases u rule: rev_cases) (auto simp add: tick_eq_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
-  from "*" \<open>t @ [\<checkmark>(rs)] \<notin> \<D> (Renaming P f g)\<close> this(2, 3) front_tickFree_Cons_iff
+  from "*" \<open>t @ [\<checkmark>(rs)] \<notin> \<D> (Renaming P f g)\<close> this(2, 3) ftF_Cons_iff
   have \<open>u' \<notin> \<D> P\<close> by (auto simp add: D_Renaming)
   moreover from \<open>u \<in> \<T> P\<close> have \<open>u' @ [\<checkmark>(r)] \<in> \<T> P\<close>
     by (simp add: \<open>u = u' @ [\<checkmark>(r)]\<close>)
@@ -660,21 +751,21 @@ paragraph \<open>Generalizations\<close>
 
 lemma strict_ticks_of_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset : \<open>\<^bold>\<checkmark>\<^bold>s(P \<^bold>;\<^sub>\<checkmark> Q) \<subseteq> \<Union> {\<^bold>\<checkmark>\<^bold>s(Q r) |r. r \<in> \<^bold>\<checkmark>\<^bold>s(P)}\<close>
   by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs append_eq_map_conv elim!: strict_ticks_of_memE)
-    (metis tickFree_Nil non_tickFree_tick tickFree_map_ev_comp
-           front_tickFree_charn tickFree_append_iff tickFree_append_iff
-           last_snoc[of \<open>map (ev \<circ> of_ev) _ @ _\<close>] last_snoc[of _ \<open>\<checkmark>(_)\<close>]
-           butlast_snoc[of \<open>map (ev \<circ> of_ev) _ @ _\<close>] butlast_snoc[of _ \<open>\<checkmark>(_)\<close>]
-           append.assoc[of \<open>map (ev \<circ> of_ev) _\<close> _ \<open>[_]\<close>] tickFree_imp_front_tickFree
-           T_imp_front_tickFree is_processT9 strict_ticks_of_memI,
-      metis butlast_append butlast_snoc front_tickFree_iff_tickFree_butlast non_tickFree_tick
-            tickFree_append_iff tickFree_imp_front_tickFree tickFree_map_ev_comp)
+    (metis (no_types) tF_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_map_ev_comp[of of_ev]
+      tF_append_iff tF_Cons_iff last_append
+      butlast_append[of "map (ev \<circ> of_ev) _"] last_snoc
+      butlast_snoc[of _ "\<checkmark>(_)"] not_tF_and_ftF ftF_dw_closed
+      is_processT2_TR is_processT9
+      strict_ticks_of_memI[of _ _ P] strict_ticks_of_memI[of _ _ \<open>Q _\<close>],
+      metis butlast_append butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_charn
+      tF_Cons_iff tF_append_iff tF_imp_ftF tF_map_ev_comp)
 
 
 lemma non_terminating_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>P \<^bold>;\<^sub>\<checkmark> Q = RenamingTick P g\<close> if \<open>non_terminating P\<close>
 proof -
   from \<open>non_terminating P\<close> have \<pounds> : \<open>\<D> P = {}\<close> \<open>t @ [\<checkmark>(r)] \<notin> \<T> P\<close> for t r
-    by (force simp add: non_terminating_is_right nonterminating_implies_div_free)+
+    by (force simp add: non_terminating_is_right non_terminating_implies_div_free)+
   show \<open>P \<^bold>;\<^sub>\<checkmark> Q = RenamingTick P g\<close>
   proof (rule Process_eq_optimizedI)
     show \<open>t \<in> \<D> (P \<^bold>;\<^sub>\<checkmark> Q) \<Longrightarrow> t \<in> \<D> (RenamingTick P g)\<close>
@@ -686,7 +777,7 @@ proof -
       \<open>(t', ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k X) \<in> \<F> P\<close> \<open>tF t'\<close>
       by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs Renaming_projs "\<pounds>")
     have $ : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g) t'\<close>
-      by (simp add: "*"(1, 3) tickFree_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
+      by (simp add: "*"(1, 3) tF_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
     have $$ : \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X \<subseteq> ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k X\<close>
       by (simp add: subset_iff ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def image_iff)
         (metis Int_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(9) id_apply rangeI)
@@ -705,7 +796,7 @@ proof -
     ultimately have \<open>(t', ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k X) \<in> \<F> P\<close>
       by (metis is_processT4)
     moreover have \<open>t = map (ev \<circ> of_ev) t'\<close>
-      by (simp add: "*"(1) \<open>tF t'\<close> tickFree_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
+      by (simp add: "*"(1) \<open>tF t'\<close> tF_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
     ultimately show \<open>(t, X) \<in> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
       by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs \<open>tF t'\<close>)
   qed
@@ -719,7 +810,7 @@ proof (elim disjE)
   assume \<open>non_terminating P\<close>
   hence \<open>\<^bold>\<checkmark>\<^bold>s(P) = {}\<close>
     by (metis (full_types) non_terminating_Seq strict_ticks_of_BOT
-                           strict_ticks_of_Seq_subset subset_empty)
+        strict_ticks_of_Seq_subset subset_empty)
   show \<open>non_terminating P \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<^bold>;\<^sub>\<checkmark> Q)\<close>
     by (subst non_terminating_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, assumption)
       (rule is_ticks_length_Renaming, simp add: is_ticks_length_Renaming \<open>\<^bold>\<checkmark>\<^bold>s(P) = {}\<close>)
@@ -732,31 +823,31 @@ qed
 
 
 lemma is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
-  \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join P A Q)\<close>
+  \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj P A Q)\<close>
   \<comment> \<open>We cannot work directly inside the locale since in this context
       the types of ticks \<^typ>\<open>'t\<close> cannot be set to \<^typ>\<open>'r list\<close>.\<close>
-  if \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join\<close>
+  if \<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj\<close>
     and \<open>\<And>r s. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> s \<in> \<^bold>\<checkmark>\<^bold>s(Q) \<Longrightarrow>
-       case tick_join r s of \<diamond> \<Rightarrow> True | \<lfloor>r_s\<rfloor> \<Rightarrow> length r_s = n\<close>
+       case tj r s of \<diamond> \<Rightarrow> True | \<lfloor>r_s\<rfloor> \<Rightarrow> length r_s = n\<close>
 proof -
-  interpret Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join
-    by (fact \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join\<close>)
+  interpret Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj
+    by (fact \<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj\<close>)
   show \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
   proof (rule is_ticks_lengthI)
     fix rs assume \<open>rs \<in> \<^bold>\<checkmark>\<^bold>s(P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
     then obtain t where \<open>t @ [\<checkmark>(rs)] \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close> \<open>t @ [\<checkmark>(rs)] \<notin> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
       by (meson is_processT9 strict_ticks_of_memE)
     then obtain t_P t_Q where \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
-      and "*" : \<open>t @ [\<checkmark>(rs)] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
+      and "*" : \<open>t @ [\<checkmark>(rs)] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     with \<open>t @ [\<checkmark>(rs)] \<notin> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close> have \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close>
-      by (simp add: D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k', use front_tickFree_Nil in blast)+
+      by (simp add: D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k', use ftF_Nil in blast)+
     from "*" obtain r s t_P' t_Q'
-      where \<open>tick_join r s = \<lfloor>rs\<rfloor>\<close> \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q' @ [\<checkmark>(s)]\<close>
+      where \<open>tj r s = \<lfloor>rs\<rfloor>\<close> \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q' @ [\<checkmark>(s)]\<close>
       by (blast elim: snoc_tick_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
     from this(2, 3) \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close> \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
     have \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close> \<open>s \<in> \<^bold>\<checkmark>\<^bold>s(Q)\<close> by (metis strict_ticks_of_memI)+
-    from that(2)[OF this, unfolded \<open>tick_join r s = \<lfloor>rs\<rfloor>\<close>] show \<open>length rs = n\<close> by simp 
+    from that(2)[OF this, unfolded \<open>tj r s = \<lfloor>rs\<rfloor>\<close>] show \<open>length rs = n\<close> by simp 
   qed
 qed
 
@@ -768,13 +859,13 @@ lemma is_ticks_length_One_RenamingTick_singl [is_ticks_length_simp] :
 
 lemma is_ticks_length_Two_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t [is_ticks_length_simp] :
   \<open>length\<^sub>\<checkmark>\<^bsub>Suc (Suc 0)\<^esub>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q)\<close>
-  by (simp add: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms])
-
+  by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
 lemma is_ticks_length_Suc_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>Suc n\<^esub>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q)\<close>
-  by (rule is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms])
-    (simp add: is_ticks_lengthD)
+   by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def dest: is_ticks_lengthD)
 
 text \<open>The equivalence is false.\<close>
 
@@ -785,24 +876,32 @@ lemma False if \<open>\<And>P Q n. length\<^sub>\<checkmark>\<^bsub>Suc n\<^esub
 
 lemma is_ticks_length_Suc_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>Suc n\<^esub>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q)\<close>
-  by (rule is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [OF Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms])
-    (simp add: is_ticks_lengthD)
+  by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def dest: is_ticks_lengthD)
 
 lemma is_ticks_length_sum_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>m\<^esub>(Q) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n + m\<^esub>(P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q)\<close>
-  by (rule is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms])
-    (simp add: is_ticks_lengthD)
+  by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def dest: is_ticks_lengthD)
 
 lemma is_ticks_length_sum_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n + m\<^esub>(P \<^bsub>m\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q)\<close>
-  by (rule is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [OF Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms])
-    (simp add: is_ticks_lengthD)
+  by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def dest: is_ticks_lengthD)
 
 lemma is_ticks_length_sum_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>n + m\<^esub>(P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>m\<^esub> Q)\<close>
-  by (rule is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms]) simp
+  by (auto intro: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def)
+
+lemma is_ticks_length_Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t [is_ticks_length_intro] :
+  \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t Q)\<close>
+  by (auto intro!: is_ticks_length_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def dest: is_ticks_lengthD)
+
+corollary is_ticks_length_Sync\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t [is_ticks_length_intro] :
+  \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t Q)\<close>
+  by (simp flip: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_commute add: is_ticks_length_Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t)
 
 
 
@@ -810,41 +909,55 @@ subsection \<open>Conversions\<close>
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t RenamingTick Q (\<lambda>s. [s])\<close>
-  by (rule Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
-      [of id \<open>\<lambda>s. [s]\<close>, simplified, symmetric])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj (id r) [s]) = Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  show ?thesis
+    by (auto intro:  Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
+        [of id \<open>\<lambda>s. [s]\<close>, unfolded "*", simplified, symmetric] inj_onI)
+qed
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = RenamingTick P (\<lambda>r. [r]) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q\<close>
-  by (rule Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
-      [of \<open>\<lambda>r. [r]\<close> id, simplified, symmetric])
-    (auto intro: inj_onI)
-
+proof -
+  have * : \<open>(\<lambda>r s. Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual [r] (id s)) = Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  show ?thesis
+    by (auto intro:  Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
+        [of \<open>\<lambda>r. [r]\<close> id, unfolded "*", simplified, symmetric] inj_onI)
+qed
 
 lemma Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = RenamingTick P (\<lambda>r. [r]) \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q\<close>
-  by (rule Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
-      [of \<open>\<lambda>r. [r]\<close> id \<open>Suc 0\<close>, simplified, symmetric])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj (Suc 0) [r] (id s)) = Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  show ?thesis
+    by (auto intro:  Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
+        [of \<open>\<lambda>r. [r]\<close> id \<open>Suc 0\<close>, unfolded "*", simplified, symmetric] inj_onI)
+qed
 
 lemma Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = P \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R RenamingTick Q (\<lambda>s. [s])\<close>
-  by (rule Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
-      [of id \<open>\<lambda>s. [s]\<close> \<open>Suc 0\<close>, simplified, symmetric])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual (Suc 0) (id r) [s]) = Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual\<close>
+    by (intro ext) (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
+  show ?thesis
+    by (auto intro: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick
+        [of id \<open>\<lambda>s. [s]\<close> \<open>Suc 0\<close>, unfolded "*", simplified, symmetric] inj_onI)
+qed
 
 
 lemma Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s :
   \<open>length\<^sub>\<checkmark>\<^bsub>m\<^esub>(Q) \<Longrightarrow> P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q = P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>m\<^esub> Q\<close>
-  by (auto intro!: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tick_join_on_strict_ticks_of
-      Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms
-      dest: is_ticks_lengthD)
+  by (auto intro!: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tj_on_strict_ticks_of Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def dest: is_ticks_lengthD)
 
 lemma Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> P \<^bsub>m\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q = P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>m\<^esub> Q\<close>
-  by (auto intro!: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tick_join_on_strict_ticks_of
-      Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_axioms
-      dest: is_ticks_lengthD)
+  by (auto intro!: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tj_on_strict_ticks_of
+      Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_axioms
+      simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def dest: is_ticks_lengthD)
 
 corollary Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_is_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> length\<^sub>\<checkmark>\<^bsub>m\<^esub>(Q) \<Longrightarrow> P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q = P \<^bsub>m\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q\<close>
@@ -877,28 +990,50 @@ corollary Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_t
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_to_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) (\<lambda>(r, s). [r, s]) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q\<close>
-  by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [of \<open>\<lambda>(r, s). [r, s]\<close>, simplified])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. case Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj r s of \<diamond> \<Rightarrow> \<diamond> |
+                   \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>case r_s of (r, s) \<Rightarrow> [r, s]\<rfloor>) = Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  show ?thesis  
+    by (auto intro: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>(r, s). [r, s]\<close>, unfolded "*"] inj_onI)
+qed
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q) (\<lambda>rs. (rs ! 0, rs ! Suc 0)) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q\<close>
-  by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [of \<open>\<lambda>rs. (rs ! 0, rs ! Suc 0)\<close>, simplified])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. case Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj r s of \<diamond> \<Rightarrow> \<diamond> |
+                   \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>(r_s ! 0, r_s ! Suc 0)\<rfloor>) = Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  thm Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>rs. (rs ! 0, rs ! Suc 0)\<close>, unfolded "*"]
+  show ?thesis
+    by (auto intro!: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>rs. (rs ! 0, rs ! Suc 0)\<close>, unfolded "*"] inj_onI
+        simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+qed
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_to_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) (\<lambda>(r, s). r # s) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q\<close>
-  by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [of \<open>\<lambda>(r, s). r # s\<close>, simplified])
-    (auto intro: inj_onI)
+proof -
+  have * : \<open>(\<lambda>r s. case Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj r s of \<diamond> \<Rightarrow> \<diamond> |
+                   \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>case r_s of (r, s) \<Rightarrow> r # s\<rfloor>) = Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+  show ?thesis
+    by (auto intro!: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>(r, s). r # s\<close>, unfolded "*"] inj_onI)
+qed
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_to_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) (\<lambda>(r, s). r @ [s]) = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q\<close>
-  by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      [of \<open>\<lambda>(r, s). r @ [s]\<close>, simplified])
-    (auto intro: inj_onI)
-
+proof -
+  have * : \<open>(\<lambda>r s. case Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj r s of \<diamond> \<Rightarrow> \<diamond> |
+                   \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>case r_s of (r, s) \<Rightarrow> r @ [s]\<rfloor>) = Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual\<close>
+    by (intro ext) (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
+  show ?thesis
+    by (auto intro!: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>(r, s). r @ [s]\<close>, unfolded "*"] inj_onI)
+qed
 
 lemma Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) (\<lambda>(r, s). r @ s) = P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q\<close>
@@ -909,33 +1044,39 @@ proof -
   let ?RT = RenamingTick
   have \<open>?RT ?lhs ?g = ?RT ?rhs ?g\<close>
   proof (subst Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-    show \<open>inj_on ?g (Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.range_tick_join n)\<close>
-      by (rule inj_onI) (auto split: if_split_asm)
+    show \<open>inj_on ?g (Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.range_tj n)\<close>
+      by (rule inj_onI) (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def split: if_split_asm)
   next
     have \<open>?RT (?RT (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) ?g') ?g = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q\<close>
     proof (fold RenamingTick_comp, subst (2) RenamingTick_id[of \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q\<close>, symmetric])
       show \<open>?RT (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) (?g \<circ> ?g') = ?RT (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) id\<close>
       proof (rule RenamingTick_is_restrictable_on_strict_ticks_of)
         from that show \<open>rs \<in> \<^bold>\<checkmark>\<^bold>s(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q) \<Longrightarrow> (?g \<circ> (\<lambda>(x, y). x @ y)) rs = id rs\<close> for rs
-          by (auto dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD)
+          by (auto dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD
+              simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
       qed
     qed
     also have \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q =
-               Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+               Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
                (\<lambda>r s. case if length r = n then \<lfloor>r @ s\<rfloor> else \<diamond>
-                      of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>rs\<rfloor> \<Rightarrow> \<lfloor>?g rs\<rfloor>) P S Q\<close> (is \<open>_ = ?rhs'\<close>)
-      by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tick_join_on_strict_ticks_of[symmetric], unfold_locales)
-        (use \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P)\<close> in \<open>auto split: if_split_asm dest: is_ticks_lengthD\<close>)
-    finally show \<open>?RT ?lhs ?g = ?rhs'\<close> .
+                      of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>rs\<rfloor> \<Rightarrow> \<lfloor>?g rs\<rfloor>) P S Q\<close>
+      by (rule Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_same_tj_on_strict_ticks_of[symmetric], unfold_locales)
+        (use \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P)\<close> in \<open>auto split: if_split_asm dest: is_ticks_lengthD simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def\<close>)
+    also have \<open>(\<lambda>r s. case if length r = n then \<lfloor>r @ s\<rfloor> else \<diamond> of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>rs\<rfloor> \<Rightarrow> \<lfloor>?g rs\<rfloor>) =
+      (\<lambda>r s. case Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj n r s of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>?g r_s\<rfloor>)\<close> (is \<open>_ = ?rhs'\<close>)
+      by (intro ext) (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def)
+    finally show \<open>?RT ?lhs ?g = Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+      (\<lambda>r s. case Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj n r s of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>?g r_s\<rfloor>) P S Q\<close> .
   qed
   hence \<open>?RT (?RT ?lhs ?g) ?g' = ?RT (?RT ?rhs ?g) ?g'\<close> by simp
   also from \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P)\<close> have \<open>?RT (?RT ?lhs ?g) ?g' = ?lhs\<close>
     by (auto simp flip: RenamingTick_comp intro!: RenamingTick_is_restrictable_on_strict_ticks_of
-                 dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD)
+        dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD
+        simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
   also from \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P)\<close> have \<open>?RT (?RT ?rhs ?g) ?g' = ?rhs\<close>
     by (fold RenamingTick_comp, subst (2) RenamingTick_id[of ?rhs, symmetric])
       (auto simp del: RenamingTick_id intro!: RenamingTick_is_restrictable_on_strict_ticks_of
-               dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD)
+        dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD)
   finally show \<open>?lhs = ?rhs\<close> .
 qed
 
@@ -951,9 +1092,11 @@ proof -
   also from \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q)\<close>
   have \<open>\<dots> = ?RT (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r P) ((\<lambda>rs. drop n rs @ take n rs) \<circ> (\<lambda>(x, y). x @ y))\<close>
     by (auto intro!: RenamingTick_is_restrictable_on_strict_ticks_of
-              dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD)
-  also have \<open>\<dots> = ?RT (Q \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L P) (\<lambda>rs. drop n rs @ take n rs)\<close>
+        dest!: set_mp[OF Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset] is_ticks_lengthD
+        simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
+  also have \<open>\<dots> = ?RT (Q \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L P) (Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv n)\<close>
     by (simp add: RenamingTick_comp Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L[OF \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(Q)\<close>])
+      (metis Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_conv_def)
   also have \<open>\<dots> = P \<^bsub>n\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q\<close>
     by (fact Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_commute)
   finally show \<open>?lhs = ?rhs\<close> .
@@ -971,111 +1114,129 @@ section \<open>First Laws\<close>
 
 corollary Inter\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_STOP [simp] :
   \<open>P |||\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c STOP = P \<^bold>; STOP\<close>
-  by (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P id])
+  by (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P id] Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def)
 
 corollary Inter\<^sub>P\<^sub>a\<^sub>i\<^sub>r_STOP :
   \<open>P |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r STOP = RenamingTick (P \<^bold>; STOP) (\<lambda>r. (r, g r))\<close>
-  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g])
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g] Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
 
 corollary Inter\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_STOP :
   \<open>P |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t STOP = RenamingTick (P \<^bold>; STOP) (\<lambda>r. [r, g r])\<close>
-  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g])
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g] Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
 corollary Inter\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_STOP :
   \<open>P |||\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t STOP = RenamingTick (P \<^bold>; STOP) (\<lambda>r. r # g r)\<close>
-  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g])
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g] Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
 corollary Inter\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_STOP :
   \<open>P |||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t STOP = RenamingTick (P \<^bold>; STOP) (\<lambda>r. r @ [g r])\<close>
-  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g])
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of P g] Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
 
 corollary Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_STOP :
   \<open>P \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L STOP =
    RenamingTick (P \<^bold>; STOP) (\<lambda>r. if length r = n then r @ g r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n P g] option.the_def
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n P g]
+      option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def
       intro!: arg_cong[where f = \<open>RenamingTick (P \<^bold>; STOP)\<close>])
 
 corollary Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_STOP :
   \<open>P \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R STOP =
    RenamingTick (P \<^bold>; STOP) (\<lambda>r. if length (g r) = n then r @ g r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n P g] option.the_def
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n P g]
+      option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def
       intro!: arg_cong[where f = \<open>RenamingTick (P \<^bold>; STOP)\<close>])
 
 corollary Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_STOP :
   \<open>P \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^bsub>m\<^esub> STOP =
    RenamingTick (P \<^bold>; STOP) (\<lambda>r. if length r = n \<and> length (g r) = m then r @ g r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n m P g] option.the_def
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP[of n m P g] option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def
       intro!: arg_cong[where f = \<open>RenamingTick (P \<^bold>; STOP)\<close>])
 
 
 
 corollary STOP_Inter\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c [simp] :
   \<open>STOP |||\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c Q = Q \<^bold>; STOP\<close>
-  by (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q id])
+  by (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q id] Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def)
 
 corollary STOP_Inter\<^sub>P\<^sub>a\<^sub>i\<^sub>r :
   \<open>STOP |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q = RenamingTick (Q \<^bold>; STOP) (\<lambda>s. (g s, s))\<close>
-  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g])
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g] Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
 
 corollary STOP_Inter\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>STOP |||\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = RenamingTick (Q \<^bold>; STOP) (\<lambda>s. [g s, s])\<close>
-  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g])
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g] Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
 corollary STOP_Inter\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>STOP |||\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = RenamingTick (Q \<^bold>; STOP) (\<lambda>s. g s # s)\<close>
-  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g])
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g] Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
 corollary STOP_Inter\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t :
   \<open>STOP |||\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q = RenamingTick (Q \<^bold>; STOP) (\<lambda>s. g s @ [s])\<close>
-  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g])
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of Q g] Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
 
 corollary STOP_Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L :
   \<open>STOP \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L Q =
    RenamingTick (Q \<^bold>; STOP) (\<lambda>r. if length (g r) = n then g r @ r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n Q g] option.the_def
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n Q g]
+      option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def
       intro!: arg_cong[where f = \<open>RenamingTick (Q \<^bold>; STOP)\<close>])
 
 corollary STOP_Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R :
   \<open>STOP \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R Q =
    RenamingTick (Q \<^bold>; STOP) (\<lambda>r. if length r = n then g r @ r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_locale_sym.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n Q g] option.the_def
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n Q g]
+      option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def
       intro!: arg_cong[where f = \<open>RenamingTick (Q \<^bold>; STOP)\<close>])
 
 corollary STOP_Inter\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s :
   \<open>STOP \<^bsub>n\<^esub>|||\<^sub>\<checkmark>\<^bsub>m\<^esub> Q =
    RenamingTick (Q \<^bold>; STOP) (\<lambda>r. if length (g r) = n \<and> length r = m then g r @ r else undefined)\<close>
-  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n m Q g] option.the_def
-      intro!: arg_cong[where f = \<open>RenamingTick (Q \<^bold>; STOP)\<close>])
+  by (auto simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.STOP_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of n m Q g]
+      option.the_def Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def intro!: arg_cong[where f = \<open>RenamingTick (Q \<^bold>; STOP)\<close>])
 
 
+corollary SKIP_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c SKIP s = (if r = s then SKIP r else STOP)\<close>
+  by (simp add: Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj_def)
 
-corollary SKIP_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_SKIP :
-  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c SKIP s =
-   (if r = s then SKIP r else STOP)\<close> by simp
+corollary SKIP_Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t SKIP s = SKIP r\<close>
+  by (simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def)
 
-corollary SKIP_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_SKIP :
-  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r SKIP s = SKIP (r, s)\<close> by simp
+corollary SKIP_Sync\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t SKIP s = SKIP s\<close>
+  by (simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual_def)
 
-corollary SKIP_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP :
-  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP [r, s]\<close> by simp
+corollary SKIP_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r SKIP s = SKIP (r, s)\<close>
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def)
 
-corollary SKIP_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP :
-  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP (r # s)\<close> by simp
+corollary SKIP_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP [r, s]\<close>
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
-corollary SKIP_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP :
-  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP (r @ [s])\<close> by simp
+corollary SKIP_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP (r # s)\<close>
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
 
-corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_SKIP :
+corollary SKIP_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIP [simp] :
+  \<open>SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIP s = SKIP (r @ [s])\<close>
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
+
+corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_SKIP [simp] :
   \<open>SKIP r \<^bsub>n\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L SKIP s =
-   (if length r = n then SKIP (r @ s) else STOP)\<close> by simp
+   (if length r = n then SKIP (r @ s) else STOP)\<close>
+  by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_def)
 
-corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_SKIP :
+corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_SKIP [simp] :
   \<open>SKIP r \<^bsub>n\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R SKIP s =
-   (if length s = n then SKIP (r @ s) else STOP)\<close> by simp
+   (if length s = n then SKIP (r @ s) else STOP)\<close>
+  by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual_def)
 
-corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_SKIP :
+corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_SKIP [simp] :
   \<open>SKIP r \<^bsub>n\<^esub>\<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^bsub>m\<^esub> SKIP s =
-   (if length r = n \<and> length s = m then SKIP (r @ s) else STOP)\<close> by simp
+   (if length r = n \<and> length s = m then SKIP (r @ s) else STOP)\<close>
+  by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def)
 
 
 
@@ -1083,9 +1244,11 @@ corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_SKIP :
 
 section \<open>Operational Laws\<close>
 
+(* Do we need this ? *)
+
 subsection \<open>Classical Version\<close>
 
-locale After_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale = After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
+locale After_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c = After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1093,22 +1256,22 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<lbrakk>S\<
 
 end
 
-locale AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
+locale AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj
 
-sublocale AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale \<subseteq> After_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale
+sublocale AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c \<subseteq> After_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if r = s then \<lfloor>r\<rfloor> else \<diamond>\<close>
+locale OpSemTransitions_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_tj
 
-sublocale OpSemTransitions_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale \<subseteq> AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_locale
+sublocale OpSemTransitions_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c \<subseteq> AfterExt_Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c
   by unfold_locales
 
 
 subsection \<open>Product Type\<close>
 
-locale After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale = After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close>
+locale After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r = After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1116,16 +1279,16 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<lbrakk>S\<
 
 end
 
-locale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close>
+locale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj
 
-sublocale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale \<subseteq> After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale
+sublocale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r \<subseteq> After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>(r, s)\<rfloor>\<close>
+locale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj
 
-sublocale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale \<subseteq> AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_locale
+sublocale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r \<subseteq> AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r
   by unfold_locales
 
 
@@ -1134,7 +1297,7 @@ subsection \<open>List Type\<close>
 
 subsubsection \<open>Pair\<close>
 
-locale After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale = After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close>
+locale After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t = After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1142,23 +1305,23 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<lbrakk>S\<
 
 end
 
-locale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close>
+locale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 
-sublocale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> After_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>[r, s]\<rfloor>\<close>
+locale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 
-sublocale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale OpSemTransitions_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> AfterExt_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
 
 
 subsubsection \<open>Right List\<close>
 
-locale After_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale = After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
+locale After_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t = After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1166,23 +1329,23 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<lbrakk>S\<
 
 end
 
-locale AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
+locale AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 
-sublocale AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> After_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> After_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r # s\<rfloor>\<close>
+locale OpSemTransitions_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj
 
-sublocale OpSemTransitions_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale OpSemTransitions_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> AfterExt_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
 
 
 subsubsection \<open>Left List\<close>
 
-locale After_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale = After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
+locale After_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t = After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1190,16 +1353,16 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<lbrakk>S\<
 
 end
 
-locale AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
+locale AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual
 
-sublocale AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> After_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> After_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. \<lfloor>r @ [s]\<rfloor>\<close>
+locale OpSemTransitions_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual
 
-sublocale OpSemTransitions_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale \<subseteq> AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_locale
+sublocale OpSemTransitions_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<subseteq> AfterExt_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t
   by unfold_locales
 
 
@@ -1208,8 +1371,8 @@ subsubsection \<open>Arbitrary Lists\<close>
 
 paragraph \<open>Control on left side\<close>
 
-locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale =
-  After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L =
+  After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj lenL\<close>
   for lenL :: nat
 begin
 
@@ -1218,26 +1381,26 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<^bsub>lenL
 
 end
 
-locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj lenL\<close>
   for lenL :: nat
 
-sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale
+sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj lenL\<close>
   for lenL :: nat
 
-sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_locale
+sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L
   by unfold_locales
 
 
 
 paragraph \<open>Control on right side\<close>
 
-locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale =
-  After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R =
+  After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual lenR\<close>
   for lenR :: nat
 begin
 
@@ -1246,28 +1409,26 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<^bsub>lenR
 
 end
 
-locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
+locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual lenR\<close>
   for lenR :: nat
 
-sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale
+sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. if length r = lenL then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  for lenL :: nat
+locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>L_tj_dual lenR\<close>
+  for lenR :: nat
 
-sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R_locale
+sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s\<^sub>l\<^sub>e\<^sub>n\<^sub>R
   by unfold_locales
 
 
 
 paragraph \<open>Control on both sides\<close>
 
-locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale =
-  After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale
-  \<open>\<lambda>r s. if length r = lenL \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  for lenL lenR :: nat
+locale After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s =
+  After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenL lenR\<close> for lenL lenR :: nat
 begin
 
 \<comment> \<open>Just checking...\<close>
@@ -1275,20 +1436,16 @@ lemma \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k P S Q = P \<^bsub>lenL
 
 end
 
-locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale =
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale
-  \<open>\<lambda>r s. if length r = lenL \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  for lenL lenR :: nat
+locale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s =
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenL lenR\<close> for lenL lenR :: nat
 
-sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale
+sublocale AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s \<subseteq> After_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s
   by unfold_locales
 
-locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale =
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale
-  \<open>\<lambda>r s. if length r = lenL \<and> length s = lenR then \<lfloor>r @ s\<rfloor> else \<diamond>\<close>
-  for lenL lenR :: nat
+locale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s =
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj lenL lenR\<close> for lenL lenR :: nat
 
-sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_locale
+sublocale OpSemTransitions_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s \<subseteq> AfterExt_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s
   by unfold_locales
 
 

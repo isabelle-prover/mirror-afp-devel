@@ -53,6 +53,7 @@ session "HOL-CSP" (AFP) = HOLCF +
   options [timeout = 1200] 
   sessions
     "HOL-Eisbach"
+    "HOLCF-Library"
   theories
     Introduction
     Process
@@ -78,10 +79,16 @@ session "HOL-CSP" (AFP) = HOLCF +
     Events_Ticks_CSP_Laws
     CSP_Assertions
     Induct_CSP_Rules
+    GenFixrec
+    "GenFixrec-HOLCF"
     "HOL-CSP" (global)
     Conclusion
+  (* Examples *)
     CopyBuffer
+    "CopyBuffer-fixrec"  \<comment> \<open>comparison with the classic fixrec of HOLCF\<close>
     MergeAnomaly
+    "FunSeriesInHOL-CSP"
+    Fixrec_HOLCF  \<comment> \<open>conceptual tests of the HOLCF instance of Fixrec\<close>
   document_files
     "root.tex"
     "adb-long.bib"

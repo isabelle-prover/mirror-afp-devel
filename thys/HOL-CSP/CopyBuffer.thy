@@ -9,7 +9,7 @@
  * This file       : Example of Copy Buffer
  *
  * Copyright (c) 2009 Université Paris-Sud, France
- * Copyright (c) 2025 Université Paris-Saclay, France
+ * Copyright (c) 2025,26 Université Paris-Saclay, France
  *
  * All rights reserved.
  *
@@ -46,8 +46,8 @@
 chapter\<open> Annex: Running Example with Buffer over infinite Alphabet\<close>
 
 (*<*)
-theory      CopyBuffer 
-  imports   "HOL-CSP"
+theory      CopyBuffer
+  imports   "HOL-CSP" "GenFixrec-HOLCF"
 begin 
 (*>*)
 
@@ -56,23 +56,22 @@ section\<open> Defining the Copy-Buffer Example \<close>
 
 datatype 'a channel = left 'a | right 'a | mid 'a | ack
 
-definition SYN  :: "'a channel set"
-  where     "SYN  \<equiv> range mid \<union> {ack}"
+definition SYN  :: \<open>'a channel set\<close>
+  where   \<open>SYN  \<equiv> range mid \<union> {ack}\<close>
 
-definition COPY :: "'a channel process"
-  where     "COPY \<equiv> \<mu> COPY. left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY"
+definition COPY :: \<open>'a channel process\<close>
+  where   \<open>COPY \<equiv> \<mu> COPY. left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY\<close>
 
-definition SEND :: "'a channel process"
-  where     "SEND \<equiv> \<mu> SEND. left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND"
+definition SEND :: \<open>'a channel process\<close>
+  where   \<open>SEND \<equiv> \<mu> SEND. left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND\<close>
 
-definition REC  :: "'a channel process"
-  where     "REC  \<equiv> \<mu> REC. mid\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC"
+definition REC  :: \<open>'a channel process\<close>
+  where   \<open>REC  \<equiv> \<mu> REC. mid\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC\<close>
 
 
-definition SYSTEM :: "'a channel process"
-  where     \<open>SYSTEM \<equiv> SEND \<lbrakk> SYN \<rbrakk> REC \ SYN\<close>
+definition SYSTEM :: \<open>'a channel process\<close>
+  where   \<open>SYSTEM \<equiv> SEND \<lbrakk> SYN \<rbrakk> REC \ SYN\<close>
 
-thm SYSTEM_def
 
 section\<open> The Standard Proof \<close>
 
@@ -83,62 +82,46 @@ text\<open> First part: abstract properties for these events to SYN.
        extra-syntax for channels and SYN-sets. \<close>
 
 lemma simplification_lemmas [simp] :
-  \<open>range left \<inter> SYN = {}\<close>
-  \<open>range right \<inter> SYN = {}\<close>
-  \<open>ack \<in> SYN\<close>
-  \<open>range mid \<subseteq> SYN\<close>
-  \<open>mid x \<in> SYN\<close>
-  \<open>right x \<notin> SYN\<close>
-  \<open>left x \<notin> SYN\<close>
-  \<open>inj mid\<close>
+  \<open>range left \<inter> SYN = {}\<close>  \<open>range right \<inter> SYN = {}\<close>  \<open>ack \<in> SYN\<close>    \<open>range mid \<subseteq> SYN\<close>
+  \<open>mid x \<in> SYN\<close>            \<open>right x \<notin> SYN\<close>           \<open>left x \<notin> SYN\<close> \<open>inj mid\<close>
   by (auto simp: SYN_def inj_on_def)
 
-lemma "finite (SYN:: 'a channel set) \<Longrightarrow> finite {(t::'a). True}"
+lemma \<open>finite (SYN::'a channel set) \<Longrightarrow> finite {(t::'a). True}\<close>
   by (metis (no_types) SYN_def UNIV_def channel.inject(3) finite_Un finite_imageD inj_on_def)
 
-subsection\<open> Definitions by Recursors \<close>
+subsection\<open> Setup for Rewriting \<close>
 
 text\<open> Second part: Derive recursive process equations, which
-       are easier to handle in proofs. This part IS actually
-       automated if we could reuse the fixrec-syntax below. \<close>
+      are easier to handle in proofs. This part IS actually
+      automated if we could reuse the fixrec-syntax below. \<close>
 
 lemma COPY_rec:
-  "COPY = left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY"
+  \<open>COPY = left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY\<close>
   by(simp add: COPY_def,rule trans, rule fix_eq, simp)
 
 lemma SEND_rec: 
-  "SEND = left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND"
+  \<open>SEND = left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND\<close>
   by(simp add: SEND_def,rule trans, rule fix_eq, simp)
 
 lemma REC_rec:
-  "REC = mid\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC"
+  \<open>REC = mid\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC\<close>
   by(simp add: REC_def,rule trans, rule fix_eq, simp)
 
 
-subsection\<open> Various Samples of Refinement Proofs \<close>
-
-
-(* ************************************************************************* *)
-(* 	                                                    								     *)
-(* Setup for rewriting							                                         *)
-(* 									                                                        *)
-(* ************************************************************************* *)
-
-lemmas Sync_rules = read_Sync_read_subset_forced_read_same_chan
-  read_Sync_read_left read_Sync_read_right
-  write_Sync_read_left write_Sync_read_right
-  read_Sync_write_left read_Sync_write_right
-  write_Sync_write_subset
-  write_Sync_read_subset read_Sync_write_subset
-
-write0_Sync_write_right write0_Sync_write0
+lemmas Sync_rules   = read_Sync_read_subset_forced_read_same_chan
+                      read_Sync_read_left read_Sync_read_right
+                      write_Sync_read_left write_Sync_read_right
+                      read_Sync_write_left read_Sync_write_right
+                      write_Sync_write_subset
+                      write_Sync_read_subset read_Sync_write_subset
+                      write0_Sync_write_right write0_Sync_write0
 
 lemmas Hiding_rules = Hiding_read_disjoint Hiding_write_subset Hiding_write_disjoint
-  Hiding_write0_non_disjoint Hiding_write0_disjoint
+                      Hiding_write0_non_disjoint Hiding_write0_disjoint
 
-lemmas mono_rules = mono_read_FD mono_write_FD mono_write0_FD
+lemmas mono_rules   = mono_read_FD mono_write_FD mono_write0_FD
 
-
+subsection\<open> Various Samples of Refinement Proofs \<close>
 
 text\<open>An example for a very explicit structured proof. 
      Slow-motion for presentations. Note that the proof makes
@@ -180,7 +163,7 @@ qed
 
 
 
-text\<open>An example for a highly automated proof.\<close>
+subsection\<open>An Example for a Highly Automated Proof.\<close>
 text\<open>Not too bad in automation considering what is inferred, but wouldn't scale for large examples. \<close>
 
 
@@ -274,38 +257,49 @@ next
     by simp (metis (mono_tags, lifting) "6" "7" COPY_rec trans_FD)
 qed
 
-section\<open> An Alternative Approach: Using the fixrec-Package \<close>
+section\<open> An Alternative Approach: Using the Fixrec-Package \<close>
+
+text\<open>Note that we do not use the HOLCF - fixrec package here; rather, since we avoid
+the general continuous function space in HOL-CSP, our own recursion package
+\<^verbatim>\<open>Fixrec\<close> which is parametric with the underlying domain space (be is Scott-like
+cpo's or restriction spaces). The configuration of \<^verbatim>\<open>Fixrec\<close> used here  uses  Scott - cpo's.\<close>
 
 subsection\<open> Channels and Synchronisation Sets \<close>
 
 text\<open> As before. \<close>
 
-subsection\<open> Process Definitions via fixrec-Package  \<close>
+subsection\<open> Process Definitions. \<close>
 
-fixrec
-  COPY' :: "'a channel process"
-  and
-  SEND' :: "'a channel process"
-  and
-  REC' :: "'a channel process"
+Fixrec COPY'::"'a channel process" and SEND'::"'a channel process" and REC':: "'a channel process"
   where
-    COPY'_rec[simp del]:  "COPY' = left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY'"
-  |  SEND'_rec[simp del]:  "SEND' = left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND'"
-  |  REC'_rec[simp del] :  "REC'  = mid\<^bold>?x  \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC'"
+    COPY'_rec :  "COPY' = left\<^bold>?x \<rightarrow> right\<^bold>!x \<rightarrow> COPY'"
+  | SEND'_rec :  "SEND' = left\<^bold>?x \<rightarrow> mid\<^bold>!x \<rightarrow> ack \<rightarrow> SEND'"
+  | REC'_rec  :  "REC'  = mid\<^bold>?x  \<rightarrow> right\<^bold>!x \<rightarrow> ack \<rightarrow> REC'"
 
-thm COPY'_rec
+text\<open>Implicitely generated theorems:
+\<^item> @{thm [display] COPY'_rec} : @{thm COPY'_rec}
+\<^item> @{thm [display] SEND'_rec} : @{thm SEND'_rec}
+\<^item> @{thm [display] REC'_rec} : @{thm REC'_rec}
+\<^item> @{thm [display] COPY'_SEND'_REC'_induct} : @{thm COPY'_SEND'_REC'_induct}
+
+\<close>
+thm COPY'_rec SEND'_rec REC'_rec COPY'_SEND'_REC'_induct
+
+
 definition SYSTEM' :: "'a channel process"
-  where     \<open>SYSTEM' \<equiv> ((SEND' \<lbrakk> SYN \<rbrakk> REC') \ SYN)\<close>
+  where   \<open>SYSTEM' \<equiv> ((SEND' \<lbrakk> SYN \<rbrakk> REC') \ SYN)\<close>
 
 subsection\<open> Another Refinement Proof on fixrec-infrastructure \<close>
 
 text\<open> Third part: No comes the proof by fixpoint induction. 
        Not too bad in automation considering what is inferred,
        but wouldn't scale for large examples. \<close>
-thm COPY'_SEND'_REC'.induct
+
+thm COPY'_SEND'_REC'_induct
+
 lemma impl_refines_spec'' : "(COPY'::'a channel process) \<sqsubseteq>\<^sub>F\<^sub>D SYSTEM'"
   apply (unfold SYSTEM'_def)
-  apply (rule_tac P=\<open>\<lambda> a b c. a \<sqsubseteq>\<^sub>F\<^sub>D ((SEND' \<lbrakk>SYN\<rbrakk> REC') \ SYN)\<close> in COPY'_SEND'_REC'.induct)
+  apply (rule_tac P'=\<open>\<lambda> a b c. a \<sqsubseteq>\<^sub>F\<^sub>D ((SEND' \<lbrakk>SYN\<rbrakk> REC') \ SYN)\<close> in COPY'_SEND'_REC'_induct)
     apply (subst case_prod_beta')+
     apply (intro le_FD_adm, simp_all add: monofunI)
   apply (subst SEND'_rec, subst REC'_rec)
@@ -314,8 +308,8 @@ lemma impl_refines_spec'' : "(COPY'::'a channel process) \<sqsubseteq>\<^sub>F\<
 lemma spec_refines_impl' : 
   assumes fin:  "finite (SYN::'a channel set)"
   shows         "SYSTEM' \<sqsubseteq>\<^sub>F\<^sub>D (COPY'::'a channel process)"
-proof(unfold SYSTEM'_def, rule_tac P=\<open>\<lambda> a b c. ((b \<lbrakk>SYN\<rbrakk> REC') \ SYN) \<sqsubseteq>\<^sub>F\<^sub>D COPY'\<close> 
-    in  COPY'_SEND'_REC'.induct, goal_cases)
+proof(unfold SYSTEM'_def, rule_tac P'=\<open>\<lambda> a b c. ((b \<lbrakk>SYN\<rbrakk> REC') \ SYN) \<sqsubseteq>\<^sub>F\<^sub>D COPY'\<close> 
+    in  COPY'_SEND'_REC'_induct, goal_cases)
   case 1
   have aa:\<open>adm (\<lambda>(a::'a channel process). ((a \<lbrakk>SYN\<rbrakk> REC') \ SYN) \<sqsubseteq>\<^sub>F\<^sub>D COPY')\<close>
     apply (intro le_FD_adm)
@@ -325,7 +319,7 @@ next
   case 2
   then show ?case by (simp add: Sync_commute)
 next
-  case (3 a aa b)
+  case (3 a )
   then show ?case 
     by (subst COPY'_rec, subst REC'_rec)
       (simp add: Sync_rules Hiding_rules mono_read_FD mono_write_FD)

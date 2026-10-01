@@ -74,6 +74,9 @@ lemma T_Sliding: \<open>\<T> (P \<rhd> Q) = \<T> P \<union> \<T> Q\<close>
 
 lemmas Sliding_projs = F_Sliding D_Sliding T_Sliding
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_Sliding_subset : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<rhd> Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> \<D>\<^sub>m\<^sub>i\<^sub>n Q\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_Ndet D_Det D_Sliding min_elems_def)
+
 
 
 subsection \<open>Properties\<close>

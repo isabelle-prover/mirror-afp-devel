@@ -60,7 +60,7 @@ proof (unfold refine_defs, safe)
       proof (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
         from \<open>t = u @ v\<close> \<open>u \<in> \<T> (P \<down> n)\<close> \<open>tF u\<close> show \<open>v \<in> \<D> Q \<Longrightarrow> t \<in> \<D> ?lhs\<close>
           by (auto simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs Interrupt_projs
-              D_imp_front_tickFree front_tickFree_append)
+              D_imp_ftF ftF_append)
       next
         fix w x assume \<open>v = w @ x\<close> \<open>w \<in> \<T> Q\<close> \<open>length w = n\<close> \<open>tF w\<close> \<open>ftF x\<close>
         from \<open>u \<in> \<T> (P \<down> n)\<close> consider \<open>u \<in> \<D> (P \<down> n)\<close> | \<open>u \<in> \<T> P\<close> \<open>length u \<le> n\<close>
@@ -68,7 +68,7 @@ proof (unfold refine_defs, safe)
         thus \<open>t \<in> \<D> ?lhs\<close>
         proof cases
           assume \<open>u \<in> \<D> (P \<down> n)\<close>
-          with D_imp_front_tickFree \<open>t = u @ v\<close> \<open>tF u\<close> \<open>v \<in> \<D> (Q \<down> n)\<close> is_processT7
+          with D_imp_ftF \<open>t = u @ v\<close> \<open>tF u\<close> \<open>v \<in> \<D> (Q \<down> n)\<close> is_processT7
           have \<open>t \<in> \<D> (P \<down> n)\<close> by blast
           thus \<open>t \<in> \<D> ?lhs\<close> by (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
               (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Interrupt_projs)
@@ -79,7 +79,7 @@ proof (unfold refine_defs, safe)
                  tF (take n (u @ w)) \<and> ftF (drop (n - length u) w @ x)\<close>
             by (simp add: \<open>t = u @ v\<close> \<open>v = w @ x\<close> \<open>length w = n\<close> \<open>tF u\<close> T_Interrupt)
               (metis \<open>ftF x\<close> \<open>tF u\<close> \<open>tF w\<close> \<open>w \<in> \<T> Q\<close> append_take_drop_id
-                front_tickFree_append is_processT3_TR_append tickFree_append_iff)
+                ftF_append is_processT3_TR_append tF_append_iff)
           with D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k show \<open>t \<in> \<D> ?lhs\<close> by blast
         qed
       qed
@@ -87,7 +87,7 @@ proof (unfold refine_defs, safe)
   qed
 
   show \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for t X
-    by (meson "*" is_processT8 mono_Interrupt proc_ord2a restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
+    by (meson "*" is_processT8 mono_Interrupt le_approxD(2) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
 qed
 
 
@@ -105,7 +105,7 @@ proof (rule order_non_destructiveI, clarify)
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
     show \<open>t \<in> \<D> (P' \<triangle> Q') \<Longrightarrow> t \<in> \<D> (P \<triangle> Q \<down> n)\<close> for t
       by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-                in_mono le_ref1 mono_Interrupt_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                in_mono le_FD_D(1) mono_Interrupt_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
                 restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Interrupt_FD)
   next
     show \<open>(s, X) \<in> \<F> (P' \<triangle> Q') \<Longrightarrow> (s, X) \<in> \<F> (P \<triangle> Q \<down> n)\<close> for s X

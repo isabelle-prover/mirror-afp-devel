@@ -49,7 +49,7 @@ proof (rule trans_FD[of _ \<open>P' \<^bold>;\<^sub>\<checkmark> Q\<close>])
     by (auto simp add: subset_iff T_F_spec[symmetric])
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> (\<And>r. Q r \<sqsubseteq>\<^sub>F\<^sub>D Q' r) \<Longrightarrow> P' \<^bold>;\<^sub>\<checkmark> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<^bold>;\<^sub>\<checkmark> Q'\<close>
-    unfolding less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs
+    unfolding refine_defs Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs
     by (simp add: subset_iff T_F_spec[symmetric]) metis
 qed
 
@@ -107,7 +107,7 @@ lemmas monos_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k =
 
 subsection \<open>Synchronization Product\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
 lemma mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DT :
   \<open>P \<sqsubseteq>\<^sub>D\<^sub>T P' \<Longrightarrow> Q \<sqsubseteq>\<^sub>D\<^sub>T Q' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<sqsubseteq>\<^sub>D\<^sub>T P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q'\<close>
@@ -117,7 +117,7 @@ lemma mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD : \<open>P \<lbrakk>A
   if \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close> and \<open>Q \<sqsubseteq>\<^sub>F\<^sub>D Q'\<close>
 proof -
   from \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close> \<open>Q \<sqsubseteq>\<^sub>F\<^sub>D Q'\<close> have \<open>P \<sqsubseteq>\<^sub>D\<^sub>T P'\<close> \<open>Q \<sqsubseteq>\<^sub>D\<^sub>T Q'\<close>
-    by (simp_all add: le_ref2T refine_defs)
+    by (simp_all add: le_FD_D(3) refine_defs)
   with mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DT have \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<sqsubseteq>\<^sub>D\<^sub>T P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q'\<close> by blast
   hence * : \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<sqsubseteq>\<^sub>D P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q'\<close> by (simp add: leDT_imp_leD)
   show \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q'\<close>
@@ -127,8 +127,8 @@ proof -
     then consider \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q')\<close>
       | (fail) t_P t_Q X_P X_Q
       where \<open>(t_P, X_P) \<in> \<F> P'\<close> \<open>(t_Q, X_Q) \<in> \<F> Q'\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P A X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P A X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     thus \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
     proof cases

@@ -41,12 +41,12 @@
 (*>*)
 
 section \<open>Results for Throw\<close>
-(*<*)
+  (*<*)
 theory CSPM_Laws
   imports Global_Deterministic_Choice Multi_Synchronization_Product
     Multi_Sequential_Composition Interrupt Throw
 begin
-(*>*)
+  (*>*)
 
 
 subsection \<open>Laws for Throw\<close>
@@ -291,7 +291,7 @@ next
     fix a r assume * : \<open>a \<in> A\<close> \<open>s = []\<close> \<open>\<checkmark>(r) \<notin> X\<close> \<open>[\<checkmark>(r)] \<in> \<T> (Renaming (P a) f g)\<close>
     from "*"(4) consider s1 where \<open>[\<checkmark>(r)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1\<close> \<open>s1 \<in> \<T> (P a)\<close>
       | s1 s2 where \<open>[\<checkmark>(r)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close>
-        \<open>tickFree s1\<close> \<open>front_tickFree s2\<close> \<open>s1 \<in> \<D> (P a)\<close>
+        \<open>tF s1\<close> \<open>ftF s2\<close> \<open>s1 \<in> \<D> (P a)\<close>
       by (simp add: T_Renaming) meson
     thus \<open>(s, X) \<in> \<F> ?lhs\<close>
     proof cases
@@ -302,8 +302,8 @@ next
       show \<open>(s, X) \<in> \<F> ?lhs\<close> by (auto simp add: F_Renaming F_GlobalDet)
     next
       fix s1 s2 assume \<open>[\<checkmark>(r)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close>
-        \<open>tickFree s1\<close> \<open>front_tickFree s2\<close> \<open>s1 \<in> \<D> (P a)\<close>
-      from \<open>[\<checkmark>(r)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>tickFree s1\<close>
+        \<open>tF s1\<close> \<open>ftF s2\<close> \<open>s1 \<in> \<D> (P a)\<close>
+      from \<open>[\<checkmark>(r)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>tF s1\<close>
       have \<open>s1 = [] \<and> s2 = [\<checkmark>(r)]\<close>
         by (cases s1; simp) (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_disc_iff(1))
       with "*"(1, 2) \<open>s1 \<in> \<D> (P a)\<close> show \<open>(s, X) \<in> \<F> ?lhs\<close>
@@ -353,7 +353,7 @@ proof (subst Process_eq_spec_optimized, safe)
   next
     show \<open>t1 = u1 @ u2 \<Longrightarrow> u1 \<in> \<T> P \<Longrightarrow> tF u1 \<Longrightarrow> u2 \<in> \<D> Q \<Longrightarrow> t \<in> \<D> ?rhs\<close> for u1 u2
       by (simp add: D_Interrupt Renaming_projs "*"(1))
-        (metis "*"(2, 3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+        (metis "*"(2, 3) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
   qed
 next
   fix t assume \<open>t \<in> \<D> ?rhs\<close>
@@ -366,9 +366,9 @@ next
       by (auto simp add: D_Renaming D_Interrupt)
   next
     show \<open>t = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> (Renaming P f g) \<Longrightarrow> tF t1 \<Longrightarrow> t2 \<in> \<D> (Renaming Q f g) \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t1 t2
-      by (auto simp add: Renaming_projs D_Interrupt append.assoc map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
-        (metis (no_types, opaque_lifting) append.assoc map_append tickFree_append_iff,
-          metis front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+      by (auto simp add: Renaming_projs D_Interrupt append.assoc tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
+        (metis (no_types, opaque_lifting) append.assoc map_append tF_append_iff,
+          metis ftF_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   qed
 next
   fix t X assume same_div : \<open>\<D> ?lhs = \<D> ?rhs\<close>
@@ -393,9 +393,9 @@ next
       assume \<open>u \<in> \<D> (P \<triangle> Q)\<close>
       hence \<open>t \<in> \<D> ?lhs\<close>
         by (simp add: "*"(1) D_Renaming)
-          (metis (no_types, opaque_lifting) D_imp_front_tickFree append_Nil2 snoc_eq_iff_butlast
-            butlast.simps(1) div_butlast_when_non_tickFree_iff front_tickFree_Nil
-            front_tickFree_iff_tickFree_butlast front_tickFree_single map_butlast)
+          (metis (no_types, opaque_lifting) D_imp_ftF append_Nil2 snoc_eq_iff_butlast
+            butlast.simps(1) div_butlast_when_non_tF_iff ftF_Nil
+            ftF_iff_tF_butlast ftF_single map_butlast)
       with same_div D_F show \<open>(t, X) \<in> \<F> ?rhs\<close> by blast
     next
       show \<open>u = u' @ [\<checkmark>(r)] \<Longrightarrow> u' @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (t, X) \<in> \<F> ?rhs\<close> for u' r
@@ -410,7 +410,7 @@ next
     next
       show \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> P \<Longrightarrow> tF u \<Longrightarrow>
             ([], map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> Q \<Longrightarrow> (t, X) \<in> \<F> ?rhs\<close>
-        using map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree by (auto simp add: "*"(1) F_Interrupt F_Renaming)
+        using tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff by (auto simp add: "*"(1) F_Interrupt F_Renaming)
     next
       fix u1 u2 assume \<open>u = u1 @ u2\<close> \<open>u1 \<in> \<T> P\<close> \<open>tF u1\<close>
         \<open>(u2, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> Q\<close> \<open>u2 \<noteq> []\<close>
@@ -419,7 +419,7 @@ next
         \<open>tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1)\<close>
         \<open>(map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2, X) \<in> \<F> (Renaming Q f g)\<close>
         \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 \<noteq> []\<close>
-        by (auto simp add: "*"(1) Renaming_projs map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (auto simp add: "*"(1) Renaming_projs tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       thus \<open>(t, X) \<in> \<F> ?rhs\<close> by (simp add: F_Interrupt) blast
     next
       fix X' r assume ** : \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X = X' - {\<checkmark>(r)}\<close> \<open>u \<in> \<T> P\<close> \<open>tF u\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close>
@@ -427,7 +427,7 @@ next
         by (metis DiffD2 Diff_insert_absorb event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(10) insertI1 vimage_eq)
       moreover from "**"(2-4) have \<open>t \<in> \<T> (Renaming P f g)\<close> \<open>tF t\<close>
         \<open>[\<checkmark>(g r)] \<in> \<T> (Renaming Q f g)\<close>
-        by (auto simp add: "*"(1) T_Renaming map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (auto simp add: "*"(1) T_Renaming tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       ultimately show \<open>(t, X) \<in> \<F> ?rhs\<close> by (simp add: F_Interrupt) blast
     qed
   qed
@@ -448,23 +448,20 @@ next
   next
     show \<open>\<lbrakk>t = t' @ [\<checkmark>(s)]; t' @ [\<checkmark>(s)] \<in> \<T> (Renaming P f g)\<rbrakk> \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for t' s
       by (simp add: Renaming_projs Interrupt_projs)
-        (metis T_nonTickFree_imp_decomp map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree non_tickFree_tick tickFree_append_iff)
+        (metis T_not_tF_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_append_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   next
     fix X' s assume * : \<open>X = X' - {\<checkmark>(s)}\<close> \<open>t @ [\<checkmark>(s)] \<in> \<T> (Renaming P f g)\<close>
     from "*"(2) consider u1 u2 where
       \<open>t @ [\<checkmark>(s)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ u2\<close> \<open>tF u1\<close> \<open>ftF u2\<close> \<open>u1 \<in> \<D> P\<close>
     | u r where \<open>s = g r\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close>
-      by (simp add: T_Renaming)
-        (metis (no_types, opaque_lifting) T_nonTickFree_imp_decomp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(4)
-          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_sel(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(2) last_map map_butlast map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree
-          non_tickFree_tick snoc_eq_iff_butlast tickFree_append_iff)
+      by (auto simp add: T_Renaming append_eq_map_conv tick_eq_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
     thus \<open>(t, X) \<in> \<F> ?lhs\<close>
     proof cases
       fix u1 u2 assume \<open>t @ [\<checkmark>(s)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ u2\<close> \<open>tF u1\<close> \<open>ftF u2\<close> \<open>u1 \<in> \<D> P\<close>
       hence \<open>t \<in> \<D> ?lhs\<close>
-        by (cases u2 rule: rev_cases)
-          (auto simp add: D_Interrupt D_Renaming intro: front_tickFree_dw_closed,
-            metis map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree non_tickFree_tick tickFree_append_iff)
+        by (cases u2 rule: rev_cases,
+            auto simp add: D_Interrupt D_Renaming intro: ftF_dw_closed)
+          (metis tF_append_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_Cons_iff)
       with D_F show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
     next
       fix u r assume \<open>s = g r\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close>
@@ -475,7 +472,7 @@ next
   next
     show \<open>\<lbrakk>(t, X) \<in> \<F> (Renaming P f g); tF t; ([], X) \<in> \<F> (Renaming Q f g)\<rbrakk> \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close>
       by (simp add: Renaming_projs Interrupt_projs)
-        (metis is_processT8 map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        (metis is_processT8 tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   next
     fix t1 t2 assume * : \<open>t = t1 @ t2\<close> \<open>t1 \<in> \<T> (Renaming P f g)\<close> \<open>tF t1\<close>
       \<open>(t2, X) \<in> \<F> (Renaming Q f g)\<close> \<open>t2 \<noteq> []\<close>
@@ -487,7 +484,7 @@ next
     proof cases
       fix u1 u2 assume \<open>t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ u2\<close> \<open>tF u1\<close> \<open>ftF u2\<close> \<open>u1 \<in> \<D> P\<close>
       hence \<open>t1 \<in> \<D> ?lhs\<close> by (auto simp add: D_Interrupt D_Renaming)
-      with "*"(1, 3, 4) F_imp_front_tickFree is_processT7 have \<open>t \<in> \<D> ?lhs\<close> by blast
+      with "*"(1, 3, 4) F_imp_ftF is_processT7 have \<open>t \<in> \<D> ?lhs\<close> by blast
       with D_F show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
     next
       fix u1 assume ** : \<open>t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close> \<open>u1 \<in> \<T> P\<close>
@@ -500,13 +497,13 @@ next
         fix u2 u3 assume \<open>t2 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 @ u3\<close> \<open>tF u2\<close> \<open>ftF u3\<close> \<open>u2 \<in> \<D> Q\<close>
         hence \<open>t \<in> \<D> ?lhs\<close>
           by (simp add: "*"(1) "**"(1) D_Renaming D_Interrupt flip: map_append append.assoc)
-            (metis "*"(3) "**"(1, 2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+            (metis "*"(3) "**"(1, 2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
         with D_F show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
       next
         show \<open>t2 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 \<Longrightarrow> (u2, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> Q
               \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for u2
           by (simp add: F_Renaming F_Interrupt "*"(1) "**"(1) flip: map_append)
-            (metis "*"(3, 5) "**"(1, 2) list.map_disc_iff map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+            (metis "*"(3, 5) "**"(1, 2) list.map_disc_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       qed
     qed
   next
@@ -539,7 +536,7 @@ next
           by (metis DiffD2 Diff_empty Diff_insert0 event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(10) insertI1 vimage_eq)
         ultimately show \<open>(t, X) \<in> \<F> ?lhs\<close>
           by (simp add: "**"(1) F_Renaming F_Interrupt)
-            (metis "*"(3) "**"(1, 2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+            (metis "*"(3) "**"(1, 2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       qed
     qed
   qed
@@ -581,12 +578,12 @@ proof -
       have \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 @ t2)\<close>
         by (simp add: "*"(1) "**"(1))
       moreover from "*"(2, 3) "**"(1) have \<open>ftF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 @ t2)\<close>
-        by (simp add: front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (simp add: ftF_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1)\<close>
-        by (simp add: "**"(3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (simp add: "**"(3) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       ultimately show \<open>t \<in> \<D> ?rhs\<close>
         by (simp add: D_Throw D_Renaming)
-          (use "**"(2) "**"(3) "***" front_tickFree_Nil in blast)
+          (use "**"(2) "**"(3) "***" ftF_Nil in blast)
     next
       fix u1 a u2 assume ** : \<open>t1 = u1 @ ev a # u2\<close> \<open>u1 @ [ev a] \<in> \<T> P\<close>
         \<open>set u1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>u2 \<in> \<D> (Q a)\<close>
@@ -621,11 +618,11 @@ proof -
       from "*"(4) "**"(1) have \<open>set u1 \<inter> ev ` A = {}\<close> by auto
       moreover have \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ (u2 @ t2)\<close>
         by (simp add: "*"(1) "**"(1))
-      moreover from "*"(3, 5) "**"(1) front_tickFree_append tickFree_append_iff
+      moreover from "*"(3, 5) "**"(1) ftF_append tF_append_iff
       have \<open>ftF (u2 @ t2)\<close> by blast
       ultimately show \<open>t \<in> \<D> ?lhs\<close>
         by (simp add: D_Renaming D_Throw)
-          (use "**"(2, 4) front_tickFree_Nil in blast)
+          (use "**"(2, 4) ftF_Nil in blast)
     next
       fix t1 b t2 assume * : \<open>t = t1 @ ev b # t2\<close> \<open>t1 @ [ev b] \<in> \<T> (Renaming P f g)\<close>
         \<open>set t1 \<inter> ev ` f ` A = {}\<close> \<open>b \<in> f ` A\<close>
@@ -645,12 +642,12 @@ proof -
           by (metis butlast_append butlast_snoc)
         from "*"(3) "***" have **** : \<open>set u1 \<inter> ev ` A = {}\<close> by auto
         have ***** : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ (u2' @ ev b # t2)\<close> \<open>ftF (u2' @ ev b # t2)\<close>
-          by (simp_all add: "*"(1) "***" "****" front_tickFree_append_iff)
-            (metis "*"(2, 5) "***" D_imp_front_tickFree append_T_imp_tickFree
-              event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) front_tickFree_Cons_iff not_Cons_self tickFree_append_iff)
+          by (simp_all add: "*"(1) "***" "****" ftF_append_iff)
+            (metis "*"(2, 5) "***" D_imp_ftF append_T_imp_tF
+              event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) ftF_Cons_iff not_Cons_self tF_append_iff)
         show \<open>t \<in> \<D> ?lhs\<close>
           by (simp add: D_Renaming D_Throw)
-            (metis "**"(3) "**"(5) "****" "*****" append_Nil2 front_tickFree_Nil)
+            (metis "**"(3) "**"(5) "****" "*****" append_Nil2 ftF_Nil)
       next
         fix u1 assume \<open>t1 @ [ev b] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close> \<open>u1 \<in> \<T> P\<close>
         then obtain u1' where ** : \<open>t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1'\<close> \<open>u1' @ [ev a] \<in> \<T> P\<close>
@@ -663,8 +660,8 @@ proof -
           unfolding Renaming_projs by blast
         have ***** : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (u1' @ ev a # u2) @ u3\<close> \<open>tF (u1' @ ev a # u2)\<close>
           by (simp_all add: "*"(1) "**"(1) \<open>b = f a\<close> "****"(1))
-            (metis "**"(2) "****"(2) T_imp_front_tickFree butlast_snoc
-              front_tickFree_iff_tickFree_butlast)
+            (metis "**"(2) "****"(2) T_imp_ftF butlast_snoc
+              ftF_iff_tF_butlast)
         show \<open>t \<in> \<D> ?lhs\<close>
           by (simp add: D_Renaming D_Throw)
             (metis "**"(2) "***" "****"(3, 4) "*****"(1, 2) \<open>a \<in> A\<close>)
@@ -695,7 +692,7 @@ proof -
         fix u1 u2 assume \<open>u = u1 @ u2\<close> \<open>u1 \<in> \<D> P\<close> \<open>tF u1\<close> \<open>set u1 \<inter> ev ` A = {}\<close> \<open>ftF u2\<close>
         hence \<open>t \<in> \<D> ?lhs\<close>
           by (simp add: "*"(1) D_Renaming D_Throw)
-            (metis append_Nil2 front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree)
+            (metis append_Nil2 ftF_Nil ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
         with same_div D_F show \<open>(t, X) \<in> \<F> ?rhs\<close> by blast
       next
         fix u1 a u2
@@ -738,7 +735,7 @@ proof -
         hence \<open>t \<in> \<D> ?lhs\<close>
           by (simp add: D_Renaming D_Throw)
             (metis (no_types, lifting) "$" "*"(2) D_T Un_Int_eq(3) append_Nil2
-              front_tickFree_Nil inf_bot_right inf_sup_aci(2) set_append)
+              ftF_Nil inf_bot_right inf_sup_aci(2) set_append)
         with D_F show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
       next
         show \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u \<Longrightarrow> (u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> P
@@ -766,8 +763,8 @@ proof -
         from "*"(3) "***" have \<open>set u1 \<inter> ev ` A = {}\<close> by auto
         with "**"(3-5) "***" have \<open>t \<in> \<D> ?rhs\<close>
           by (simp add: D_Renaming D_Throw)
-            (metis "*"(1, 3) F_imp_front_tickFree \<open>(t, X) \<in> \<F> ?rhs\<close> front_tickFree_Nil
-              front_tickFree_append_iff front_tickFree_dw_closed list.discI)
+            (metis "*"(1, 3) F_imp_ftF \<open>(t, X) \<in> \<F> ?rhs\<close> ftF_Nil
+              ftF_append_iff ftF_dw_closed list.discI)
         with same_div D_F show \<open>(t, X) \<in> \<F> ?lhs\<close> by blast
       next
         fix u1 assume \<open>t1 @ [ev b] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close> \<open>u1 \<in> \<T> P\<close>
@@ -834,8 +831,8 @@ proof (rule inj_onI)
   show \<open>e \<in> set s \<Longrightarrow> e' \<in> set s \<Longrightarrow> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g e = map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g e' \<Longrightarrow> e = e'\<close> for e e'
     by (cases e; cases e'; simp)
       (meson events_of_memI inj_onD that(1, 2),
-        metis T_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(2) front_tickFree_Cons_iff that(2)
-        front_tickFree_nonempty_append_imp list.distinct(1) snoc_eq_iff_butlast split_list_last)
+        metis T_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(2) ftF_Cons_iff that(2)
+        ftF_nonempty_append_imp list.distinct(1) snoc_eq_iff_butlast split_list_last)
 qed
 
 
@@ -859,35 +856,35 @@ proof -
   proof (subst Process_eq_spec_optimized, safe)
     fix s
     assume \<open>s \<in> \<D> ?lhs\<close>
-    then obtain s1 s2 where * : \<open>tickFree s1\<close> \<open>front_tickFree s2\<close>
+    then obtain s1 s2 where * : \<open>tF s1\<close> \<open>ftF s2\<close>
       \<open>s = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>s1 \<in> \<D> (P \ S)\<close>
       by (simp add: D_Renaming) blast
     from "*"(4) obtain t u
-      where ** : \<open>front_tickFree u\<close> \<open>tickFree t\<close> \<open>s1 = trace_hide t (ev ` S) @ u\<close>
+      where ** : \<open>ftF u\<close> \<open>tF t\<close> \<open>s1 = trace_hide t (ev ` S) @ u\<close>
         \<open>t \<in> \<D> P \<or> (\<exists>h. isInfHiddenRun h P S \<and> t \<in> range h)\<close>
       by (simp add: D_Hiding) blast
     from "**"(4) show \<open>s \<in> \<D> ?rhs\<close>
     proof (elim disjE)
       assume \<open>t \<in> \<D> P\<close>
-      hence \<open>front_tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2) \<and> tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
+      hence \<open>ftF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2) \<and> tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
              s = trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) (ev ` f ` S) @ map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2 \<and>
              map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> \<D> (Renaming P f g)\<close>
-        apply (simp add: "*"(3) "**"(2, 3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree, intro conjI)
-          apply (metis "*"(1, 2) "**"(1) "**"(3) front_tickFree_append_iff
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+        apply (simp add: "*"(3) "**"(2, 3) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff, intro conjI)
+          apply (metis "*"(1, 2) "**"(1) "**"(3) ftF_append_iff
+            ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
          apply (simp add: trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        by (metis (mono_tags, lifting) "**"(2) CollectI D_Renaming append.right_neutral front_tickFree_Nil)
+        by (metis (mono_tags, lifting) "**"(2) CollectI D_Renaming append.right_neutral ftF_Nil)
       thus \<open>s \<in> \<D> ?rhs\<close> by (simp add: D_Hiding) blast
     next
       assume \<open>\<exists>h. isInfHiddenRun h P S \<and> t \<in> range h\<close>
       then obtain h where \<open>isInfHiddenRun h P S\<close> \<open>t \<in> range h\<close> by blast
-      hence \<open>front_tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2) \<and>
-             tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
+      hence \<open>ftF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2) \<and>
+             tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
              s = trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) (ev ` f ` S) @ map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ s2 \<and>
              isInfHiddenRun (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (h i)) (Renaming P f g) (f ` S) \<and> 
              map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> range (\<lambda>i. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (h i))\<close>
-        apply (simp add: "*"(3) "**"(2, 3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree, intro conjI)
-             apply (metis "*"(1, 2) "**"(3) front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+        apply (simp add: "*"(3) "**"(2, 3) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff, intro conjI)
+             apply (metis "*"(1, 2) "**"(3) ftF_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
             apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
            apply (solves \<open>rule strict_mono_map, simp\<close>)
           apply (solves \<open>auto simp add: T_Renaming\<close>)
@@ -899,24 +896,24 @@ proof -
     fix s
     assume \<open>s \<in> \<D> ?rhs\<close>
     then obtain t u
-      where * : \<open>front_tickFree u\<close> \<open>tickFree t\<close> \<open>s = trace_hide t (ev ` f ` S) @ u\<close>
+      where * : \<open>ftF u\<close> \<open>tF t\<close> \<open>s = trace_hide t (ev ` f ` S) @ u\<close>
         \<open>t \<in> \<D> (Renaming P f g) \<or> 
                  (\<exists>h. isInfHiddenRun h (Renaming P f g) (f ` S) \<and> t \<in> range h)\<close>
       by (simp add: D_Hiding) blast
     from "*"(4) show \<open>s \<in> \<D> ?lhs\<close>
     proof (elim disjE)
       assume \<open>t \<in> \<D> (Renaming P f g)\<close>
-      then obtain t1 t2 where ** : \<open>tickFree t1\<close> \<open>front_tickFree t2\<close> 
+      then obtain t1 t2 where ** : \<open>tF t1\<close> \<open>ftF t2\<close> 
         \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1 @ t2\<close> \<open>t1 \<in> \<D> P\<close>
         by (simp add: D_Renaming) blast
-      have \<open>tickFree (trace_hide t1 (ev ` S)) \<and> 
-            front_tickFree (trace_hide t2 (ev ` f ` S) @ u) \<and>
+      have \<open>tF (trace_hide t1 (ev ` S)) \<and> 
+            ftF (trace_hide t2 (ev ` f ` S) @ u) \<and>
             trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1) (ev ` f ` S) @ trace_hide t2 (ev ` f ` S) @ u =
             map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (trace_hide t1 (ev ` S)) @ trace_hide t2 (ev ` f ` S) @ u \<and>
             trace_hide t1 (ev ` S) \<in> \<D> (P \ S)\<close>
         apply (simp, intro conjI)
-        using "**"(1) Hiding_tickFree apply blast
-        using "*"(1, 2) "**"(3) Hiding_tickFree front_tickFree_append tickFree_append_iff apply blast
+        using "**"(1) Hiding_tF apply blast
+        using "*"(1, 2) "**"(3) Hiding_tF ftF_append tF_append_iff apply blast
          apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
         using "**"(4) mem_D_imp_mem_D_Hiding by blast
       thus \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "**"(3)) blast
@@ -931,7 +928,7 @@ proof -
       then obtain h
         where *** : \<open>isInfHiddenRun h (Renaming P f g) (f ` S)\<close> \<open>t \<in> range h\<close> by blast
       then consider t1 where \<open>t1 \<in> \<T> P\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1\<close>
-        | t1 t2 where \<open>tickFree t1\<close> \<open>front_tickFree t2\<close> 
+        | t1 t2 where \<open>tF t1\<close> \<open>ftF t2\<close> 
           \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1 @ t2\<close> \<open>t1 \<in> \<D> P\<close>
         by (simp add: T_Renaming) blast
       thus \<open>s \<in> \<D> ?lhs\<close>
@@ -950,28 +947,28 @@ proof -
            apply (subst (1 2) inv_S, subst (1 2) trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inv])
            apply (metis "***"(1))
           using "***"(2) "*****" by blast
-        have \<open>tickFree (trace_hide t1 (ev ` S)) \<and> front_tickFree t1 \<and>
+        have \<open>tF (trace_hide t1 (ev ` S)) \<and> ftF t1 \<and>
               trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1) (ev ` f ` S) @ u = 
               map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (trace_hide t1 (ev ` S)) @ u \<and> 
               trace_hide t1 (ev ` S) \<in> \<D> (P \ S)\<close>
           apply (simp, intro conjI)
-          using "*"(2) "****"(2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree Hiding_tickFree apply blast
+          using "*"(2) "****"(2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff Hiding_tF apply blast
           using "****"(1) is_processT2_TR apply blast
            apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           apply (simp add: D_Renaming D_Hiding)
-          using "*"(2) "*****" "******" map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree front_tickFree_Nil by blast
+          using "*"(2) "*****" "******" tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff ftF_Nil by blast
         with "*"(1) show \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "****"(2)) blast
       next
-        fix t1 t2 assume **** : \<open>tickFree t1\<close> \<open>front_tickFree t2\<close>
+        fix t1 t2 assume **** : \<open>tF t1\<close> \<open>ftF t2\<close>
           \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1 @ t2\<close> \<open>t1 \<in> \<D> P\<close>
-        have \<open>tickFree (trace_hide t1 (ev ` S)) \<and>
-              front_tickFree (trace_hide t2 (ev ` f ` S) @ u) \<and>
+        have \<open>tF (trace_hide t1 (ev ` S)) \<and>
+              ftF (trace_hide t2 (ev ` f ` S) @ u) \<and>
               trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1) (ev ` f ` S) @ trace_hide t2 (ev ` f ` S) @ u =
               map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (trace_hide t1 (ev ` S)) @ trace_hide t2 (ev ` f ` S) @ u \<and>
               trace_hide t1 (ev ` S) \<in> \<D> (P \ S)\<close>
           apply (simp, intro conjI)
-          using "****"(1) Hiding_tickFree apply blast
-          using "*"(1, 2) "****"(3) Hiding_tickFree front_tickFree_append tickFree_append_iff apply blast
+          using "****"(1) Hiding_tF apply blast
+          using "*"(1, 2) "****"(3) Hiding_tF ftF_append tF_append_iff apply blast
            apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           using "****"(4) mem_D_imp_mem_D_Hiding by blast
         thus \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Renaming "*"(3) "****"(3)) blast
@@ -997,20 +994,20 @@ proof -
       proof cases
         assume \<open>s1 \<in> \<D> (P \ S)\<close>
         then obtain t u
-          where ** : \<open>front_tickFree u\<close> \<open>tickFree t\<close> \<open>s1 = trace_hide t (ev ` S) @ u\<close>
+          where ** : \<open>ftF u\<close> \<open>tF t\<close> \<open>s1 = trace_hide t (ev ` S) @ u\<close>
             \<open>t \<in> \<D> P \<or> (\<exists>g. isInfHiddenRun g P S \<and> t \<in> range g)\<close>
           by (simp add: D_Hiding) blast
-        have *** : \<open>front_tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u) \<and> tickFree (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
+        have *** : \<open>ftF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u) \<and> tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) \<and>
                     map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (trace_hide t (ev ` S)) @ map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = 
                     trace_hide (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t) (ev ` f ` S) @ (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u)\<close>
-          by (simp add: map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree "**"(1, 2))
+          by (simp add: ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff "**"(1, 2))
             (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, symmetric])
         from "**"(4) show \<open>(s, X) \<in> \<F> ?rhs\<close>
         proof (elim disjE exE)
           assume \<open>t \<in> \<D> P\<close>
           hence $ : \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> \<D> (Renaming P f g)\<close>
             apply (simp add: D_Renaming)
-            using "**"(2) front_tickFree_Nil by blast
+            using "**"(2) ftF_Nil by blast
           show \<open>(s, X) \<in> \<F> ?rhs\<close>
             by (simp add: F_Hiding) (metis "$" "*"(2) "**"(3) "***" map_append)
         next
@@ -1059,7 +1056,7 @@ proof -
       have ** : \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` ev ` f ` S = map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> ev ` S\<close>
         by (auto simp add: image_iff map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_eq_ev_iff) (metis bij_f bij_pointE)
       have \<open>(\<exists>s1. (s1, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` ev ` f ` S) \<in> \<F> P \<and> t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1) \<or> 
-            (\<exists>s1 s2. tickFree s1 \<and> front_tickFree s2 \<and> t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2 \<and> s1 \<in> \<D> P)\<close>
+            (\<exists>s1 s2. tF s1 \<and> ftF s2 \<and> t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2 \<and> s1 \<in> \<D> P)\<close>
         using "*"(2) by (auto simp add: F_Renaming)
       thus \<open>(s, X) \<in> \<F> ?lhs\<close>
       proof (elim disjE exE conjE)
@@ -1074,14 +1071,14 @@ proof -
           using \<open>?this\<close> by blast
       next
         fix s1 s2
-        assume \<open>tickFree s1\<close> \<open>front_tickFree s2\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>s1 \<in> \<D> P\<close>
-        hence \<open>tickFree (trace_hide s1 (ev ` S)) \<and> 
-               front_tickFree (trace_hide s2 (ev ` f ` S)) \<and> 
+        assume \<open>tF s1\<close> \<open>ftF s2\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>s1 \<in> \<D> P\<close>
+        hence \<open>tF (trace_hide s1 (ev ` S)) \<and> 
+               ftF (trace_hide s2 (ev ` f ` S)) \<and> 
                s = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (trace_hide s1 (ev ` S)) @ trace_hide s2 (ev ` f ` S) \<and> 
                trace_hide s1 (ev ` S) \<in> \<D> (P \ S)\<close>
           apply (simp add: F_Renaming "*"(1), intro conjI)
-          using Hiding_tickFree apply blast
-          using Hiding_front_tickFree apply blast
+          using Hiding_tF apply blast
+          using Hiding_ftF apply blast
            apply (rule trace_hide_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k])
           using mem_D_imp_mem_D_Hiding by blast
         show \<open>(s, X) \<in> \<F> ?lhs\<close>
@@ -1191,11 +1188,11 @@ proof -
   proof (subst Process_eq_spec_optimized, safe)
     fix s
     assume \<open>s \<in> \<D> (?lhs P Q)\<close>
-    then obtain s1 s2 where * : \<open>tickFree s1\<close> \<open>front_tickFree s2\<close>
+    then obtain s1 s2 where * : \<open>tF s1\<close> \<open>ftF s2\<close>
       \<open>s = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>s1 \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
       by (simp add: D_Renaming) blast
     from "*"(4) obtain t u r v 
-      where ** : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> 
+      where ** : \<open>ftF v\<close> \<open>tF r \<or> v = []\<close> 
         \<open>s1 = r @ v\<close> \<open>r setinterleaves ((t, u), range tick \<union> ev ` S)\<close>
         \<open>t \<in> \<D> P \<and> u \<in> \<T> Q \<or> t \<in> \<D> Q \<and> u \<in> \<T> P\<close> 
       by (simp add: D_Sync) blast
@@ -1206,15 +1203,15 @@ proof -
             ((map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t, map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u), range tick \<union> ev ` f ` S)\<close>
         by (metis assms(1) bij_map_setinterleaving_iff_setinterleaving bij_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k sets_S_eq)
       moreover have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t \<in> \<D> (Renaming P f g)\<close>
-        apply (cases \<open>tickFree t\<close>; simp add: D_Renaming)
-        using assms(2) front_tickFree_Nil apply blast
-        by (metis D_T D_imp_front_tickFree append_T_imp_tickFree assms(2) front_tickFree_Cons_iff
-            is_processT9 list.simps(3) map_append nonTickFree_n_frontTickFree map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree)
+        apply (cases \<open>tF t\<close>; simp add: D_Renaming)
+        using assms(2) ftF_Nil apply blast
+        by (metis D_T D_imp_ftF append_T_imp_tF assms(2) ftF_Cons_iff
+            is_processT9 list.simps(3) map_append not_tF_and_ftF ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u \<in> \<T> (Renaming Q f g)\<close>
         using assms(3) by (simp add: T_Renaming) blast
       ultimately have \<open>s \<in> \<D> (?rhs P Q)\<close>
         by (simp add: D_Sync "*"(3) "**"(3))
-          (metis "*"(1, 2) "**"(3) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree front_tickFree_append tickFree_append_iff)
+          (metis "*"(1, 2) "**"(3) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff ftF_append tF_append_iff)
     } note *** = this
 
     from "**"(4, 5) "***" show \<open>s \<in> \<D> (?rhs P Q)\<close>
@@ -1225,7 +1222,7 @@ proof -
     fix s
     assume \<open>s \<in> \<D> (?rhs P Q)\<close>
     then obtain t u r v
-      where * : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>s = r @ v\<close> 
+      where * : \<open>ftF v\<close> \<open>tF r \<or> v = []\<close> \<open>s = r @ v\<close> 
         \<open>r setinterleaves ((t, u), range tick \<union> ev ` f ` S)\<close>
         \<open>t \<in> \<D> (Renaming P f g) \<and> u \<in> \<T> (Renaming Q f g) \<or>
                  t \<in> \<D> (Renaming Q f g) \<and> u \<in> \<T> (Renaming P f g)\<close>
@@ -1244,13 +1241,13 @@ proof -
                  ((map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) t, map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) u), range tick \<union> ev ` S)\<close>
         using bij_betw_inv_into bij_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       from assms(2) obtain s1 s2
-        where \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>tickFree s1\<close> \<open>front_tickFree s2\<close> \<open>s1 \<in> \<D> P\<close>
+        where \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1 @ s2\<close> \<open>tF s1\<close> \<open>ftF s2\<close> \<open>s1 \<in> \<D> P\<close>
         by (auto simp add: D_Renaming)
       hence \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (inv f) (inv g)) t \<in> \<D> (Renaming (Renaming P f g) (inv f) (inv g))\<close>
         apply (simp add: D_Renaming)
         apply (rule_tac x = \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s1\<close> in exI)
         apply (rule_tac x = \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (inv f) (inv g)) s2\<close> in exI)
-        by simp (metis append_Nil2 front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by simp (metis append_Nil2 ftF_Nil ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       hence *** : \<open>map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) t \<in> \<D> P\<close>
         by (metis Renaming_inv bij_def bij_f bij_g inv_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inv)
       have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (inv f) (inv g)) u \<in> \<T> (Renaming (Renaming Q f g) (inv f) (inv g))\<close>
@@ -1260,23 +1257,23 @@ proof -
       have ***** : \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g \<circ> inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) r = r\<close>
         by (metis (no_types, lifting) bij_betw_imp_inj_on bij_betw_inv_into bij_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k inj_iff list.map_comp list.map_id)
       have \<open>s \<in> \<D> (?lhs P Q)\<close>
-      proof (cases \<open>tickFree r\<close>)
-        assume \<open>tickFree r\<close>
+      proof (cases \<open>tF r\<close>)
+        assume \<open>tF r\<close>
         have $ : \<open>r @ v = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) (map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) r) @ v\<close>
           by (simp add: "*****")
         show \<open>s \<in> \<D> (?lhs P Q)\<close>
           apply (simp add: D_Renaming D_Sync "*"(3))
-          by (metis "$" "*"(1) "**" "***" "****" map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree \<open>tickFree r\<close> 
-              append.right_neutral append_same_eq front_tickFree_Nil)
+          by (metis "$" "*"(1) "**" "***" "****" tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff \<open>tF r\<close> 
+              append.right_neutral append_same_eq ftF_Nil)
       next
-        assume \<open>\<not> tickFree r\<close>
-        then obtain r' res where $ : \<open>r = r' @ [\<checkmark>(res)]\<close> \<open>tickFree r'\<close>
-          by (metis D_imp_front_tickFree assms butlast_snoc front_tickFree_charn
-              front_tickFree_single ftf_Sync is_processT2_TR list.distinct(1)
-              nonTickFree_n_frontTickFree self_append_conv2)
+        assume \<open>\<not> tF r\<close>
+        then obtain r' res where $ : \<open>r = r' @ [\<checkmark>(res)]\<close> \<open>tF r'\<close>
+          by (metis D_imp_ftF assms butlast_snoc ftF_charn
+              ftF_single ftf_Sync is_processT2_TR list.distinct(1)
+              not_tF_and_ftF self_append_conv2)
         then obtain t' u'
           where $$ : \<open>t = t' @ [\<checkmark>(res)]\<close> \<open>u = u' @ [\<checkmark>(res)]\<close>
-          by (metis D_imp_front_tickFree SyncWithTick_imp_NTF T_imp_front_tickFree assms)
+          by (metis D_imp_ftF SyncWithTick_imp_NTF T_imp_ftF assms)
         hence $$$ : \<open>(map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) r') setinterleaves
                      ((map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) t', map (inv (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) u'),
                       range tick \<union> ev ` S)\<close>
@@ -1291,8 +1288,8 @@ proof -
           using "$" "*****" by auto
         show \<open>s \<in> \<D> (?lhs P Q)\<close>
           by (simp add: D_Renaming D_Sync "*"(3) "$$$")
-            (metis "$"(1) "$"(2) "$$$" "$$$$" "*"(2) "***" "****" map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree \<open>\<not> tickFree r\<close>
-              append.right_neutral append_same_eq front_tickFree_Nil front_tickFree_single)
+            (metis "$"(1) "$"(2) "$$$" "$$$$" "*"(2) "***" "****" tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff \<open>\<not> tF r\<close>
+              append.right_neutral append_same_eq ftF_Nil ftF_single)
       qed
     } note ** = this
     show \<open>s \<in> \<D> (?lhs P Q)\<close> by (metis "*"(4, 5) "**" Sync_commute)
@@ -1319,10 +1316,10 @@ proof -
       proof cases
         assume \<open>s1 \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
         hence \<open>s \<in> \<D> (?lhs P Q)\<close>
-          apply (cases \<open>tickFree s1\<close>; simp add: D_Renaming "*"(2)) 
-          using front_tickFree_Nil apply blast
-          by (metis (no_types, lifting) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree butlast_snoc front_tickFree_iff_tickFree_butlast
-              front_tickFree_single map_butlast nonTickFree_n_frontTickFree process_charn)
+          apply (cases \<open>tF s1\<close>; simp add: D_Renaming "*"(2)) 
+          using ftF_Nil apply blast
+          by (metis (no_types, lifting) ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff butlast_snoc ftF_iff_tF_butlast
+              ftF_single map_butlast not_tF_and_ftF process_charn)
         with same_div D_F show \<open>(s, X) \<in> \<F> (?rhs P Q)\<close> by blast
       next
         fix t_P t_Q X_P X_Q
@@ -1379,7 +1376,7 @@ proof -
         assume \<open>t_P \<in> \<D> (Renaming P f g) \<or> t_Q \<in> \<D> (Renaming Q f g)\<close>
         hence \<open>s \<in> \<D> (?rhs P Q)\<close>
           apply (simp add: D_Sync)
-          using "*"(1, 2, 3) F_T setinterleaving_sym front_tickFree_Nil by blast
+          using "*"(1, 2, 3) F_T setinterleaving_dual ftF_Nil by blast
         with same_div D_F show \<open>(s, X) \<in> \<F> (?lhs P Q)\<close> by blast
       next
         fix t_P1 t_Q1
@@ -1406,4 +1403,4 @@ qed
 
 (*<*)
 end 
-(*>*)
+  (*>*)

@@ -65,8 +65,12 @@ session "HOL-CSPM" (AFP) = "HOL-CSP" +
     Events_Ticks_CSPM_Laws
     CSPM_Deadlock_Results
     "HOL-CSPM" (global)
+    (* examples *)
+    CopyBufferRevisited
     DiningPhilosophers
     POTS
+    Dali
+    Fixrec_HOLCF_CSPM  \<comment> \<open>tests of the HOLCF instance of Fixrec with HOL-CSPM operators\<close>
     Conclusion
   document_files
     "root.tex"

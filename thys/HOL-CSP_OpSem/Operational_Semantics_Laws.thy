@@ -61,11 +61,11 @@ lemma non_BOT_mono_Det_F :
 
 lemma non_BOT_mono_Det_left_F  : \<open>P = \<bottom> \<or> P' \<noteq> \<bottom> \<or> Q = \<bottom> \<Longrightarrow> P \<sqsubseteq>\<^sub>F P' \<Longrightarrow> P \<box> Q \<sqsubseteq>\<^sub>F P' \<box> Q \<close>
   and non_BOT_mono_Det_right_F : \<open>Q = \<bottom> \<or> Q' \<noteq> \<bottom> \<or> P = \<bottom> \<Longrightarrow> Q \<sqsubseteq>\<^sub>F Q' \<Longrightarrow> P \<box> Q \<sqsubseteq>\<^sub>F P  \<box> Q'\<close>
-  by (metis Det_is_BOT_iff idem_F non_BOT_mono_Det_F)+
+  by (metis Det_is_BOT_iff F_refl non_BOT_mono_Det_F)+
 
 lemma non_BOT_mono_Sliding_F :
   \<open>P = \<bottom> \<or> P' \<noteq> \<bottom> \<or> Q = \<bottom> \<Longrightarrow> P \<sqsubseteq>\<^sub>F P' \<Longrightarrow> Q \<sqsubseteq>\<^sub>F Q' \<Longrightarrow> P \<rhd> Q \<sqsubseteq>\<^sub>F P' \<rhd> Q'\<close>
-  unfolding Sliding_def by (metis Ndet_is_BOT_iff idem_F mono_Ndet_F non_BOT_mono_Det_F)
+  unfolding Sliding_def by (metis Ndet_is_BOT_iff F_refl mono_Ndet_F non_BOT_mono_Det_F)
 
 
 
@@ -174,7 +174,8 @@ proof (unfold trace_refine_def, rule subsetI)
     show \<open>e # s \<in> \<T> P\<close>
     proof (cases e)
       fix r assume \<open>e = \<checkmark>(r)\<close>
-      hence \<open>s = []\<close> by (metis append_Cons append_Nil append_T_imp_tickFree non_tickFree_tick prems(2))
+      hence \<open>s = []\<close>
+        by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff is_processT2_TR prems(2))
       with \<open>e = \<checkmark>(r)\<close> \<open>P \<leadsto>\<^sub>\<tau> Q\<close>[THEN \<tau>_trans_anti_mono_initials] \<open>e # s \<in> \<T> Q\<close>
       show \<open>e # s \<in> \<T> P\<close> by (simp add: initials_def subset_iff)
     next
@@ -215,15 +216,15 @@ lemma \<tau>_trans_trace_trans:  \<open>P \<leadsto>\<^sub>\<tau> P' \<Longright
   using \<tau>_trans_ev_trans trace_Cons_ev_trans by blast
 
 
-lemma BOT_trace_trans_tickFree_anything : \<open>tickFree s \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*s P\<close>
+lemma BOT_trace_trans_tF_anything : \<open>tF s \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*s P\<close>
 proof (induct s arbitrary: P)
-  show \<open>\<And>P. tickFree [] \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*[] P\<close>
+  show \<open>\<And>P. tF [] \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*[] P\<close>
     by (simp add: BOT_\<tau>_trans_anything trace_\<tau>_trans)
 next
   fix e s P
-  assume prem: \<open>tickFree (e # s)\<close> and hyp: \<open>tickFree s \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*s P\<close> for P
-  have * : \<open>tickFree s\<close> using prem by auto
-  obtain a where \<open>e = ev a\<close> by (meson is_ev_def prem tickFree_Cons_iff)
+  assume prem: \<open>tF (e # s)\<close> and hyp: \<open>tF s \<Longrightarrow> \<bottom> \<leadsto>\<^sup>*s P\<close> for P
+  have * : \<open>tF s\<close> using prem by auto
+  obtain a where \<open>e = ev a\<close> by (meson is_ev_def prem tF_Cons_iff)
   thus \<open>\<bottom> \<leadsto>\<^sup>*e # s P\<close>
     by simp (rule trace_Cons_ev_trans[OF _ hyp];
         simp add: * ev_trans_def After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT BOT_\<tau>_trans_anything)
@@ -270,8 +271,8 @@ qed
 (* see if this hypothesis can be in the locale assumptions *)
 (* the previous version was with (\<forall>P Q. P \<leadsto>\<^sub>\<tau> Q \<longrightarrow> P \<sqsubseteq>\<^sub>D Q),
    which is a stronger assumption *)
-lemma tickFree_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak:
-  \<open>tickFree s \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close> 
+lemma tF_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak:
+  \<open>tF s \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close> 
   if \<open>\<forall>P. P \<leadsto>\<^sub>\<tau> \<bottom> \<longrightarrow> P = \<bottom>\<close>
 proof (induct s arbitrary: P)
   show \<open>P \<leadsto>\<^sup>*[] \<bottom> \<Longrightarrow> [] \<in> \<D> P\<close> for P
@@ -279,15 +280,15 @@ proof (induct s arbitrary: P)
     using BOT_iff_Nil_D that by blast+
 next
   fix e s P
-  assume prems : \<open>tickFree (e # s)\<close> \<open>P \<leadsto>\<^sup>*e # s \<bottom>\<close> 
-  assume hyp: \<open>tickFree s \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close> for P
-  from prems(1) have \<open>tickFree s\<close> by simp
+  assume prems : \<open>tF (e # s)\<close> \<open>P \<leadsto>\<^sup>*e # s \<bottom>\<close> 
+  assume hyp: \<open>tF s \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close> for P
+  from prems(1) have \<open>tF s\<close> by simp
   from prems(2) have \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s \<bottom>\<close>
     by (cases rule: trace_trans.cases)
       (auto simp add: ev_trans_def tick_trans_def trace_\<tau>_trans intro: \<tau>_trans_trace_trans)
   show \<open>e # s \<in> \<D> P\<close>
     apply (rule trace_trans.cases[OF prems(2)])
-    using hyp[OF \<open>tickFree s\<close> \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s \<bottom>\<close>] prems(1)
+    using hyp[OF \<open>tF s\<close> \<open>P after\<^sub>\<checkmark> e \<leadsto>\<^sup>*s \<bottom>\<close>] prems(1)
     by (simp_all add: ev_trans_def D_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 qed
 
@@ -300,8 +301,8 @@ lemma trace_trans_iff :
   \<open>P \<leadsto>\<^sup>* [\<checkmark>(r)] Q \<longleftrightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q\<close>
   \<open>P \<leadsto>\<^sup>* (ev e) # s Q' \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^bsub>e\<^esub> Q \<and> Q \<leadsto>\<^sup>* s Q')\<close>
   \<open>(P \<leadsto>\<^sup>* s @ [f] Q') \<longleftrightarrow> 
-   tickFree s \<and> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> (case f of \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' | ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q'))\<close>
-  \<open>front_tickFree (s @ t) \<Longrightarrow> (P \<leadsto>\<^sup>*s @ t Q') \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t Q')\<close>
+   tF s \<and> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> (case f of \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' | ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q'))\<close>
+  \<open>ftF (s @ t) \<Longrightarrow> (P \<leadsto>\<^sup>*s @ t Q') \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t Q')\<close>
 proof -
   show f1 : \<open>\<And>P Q. P \<leadsto>\<^sup>* [] Q \<longleftrightarrow> P \<leadsto>\<^sub>\<tau> Q\<close>
     and f2 : \<open>\<And>P Q. P \<leadsto>\<^sup>* [\<checkmark>(r)] Q \<longleftrightarrow> P \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub>  Q\<close>
@@ -309,10 +310,10 @@ proof -
     by ((subst trace_trans.simps, auto)[1])+
 
   show f4 : \<open>(P \<leadsto>\<^sup>* s @ [f] Q') \<longleftrightarrow> 
-             tickFree s \<and> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> (case f of \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' | ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q'))\<close> for s f P Q'
+             tF s \<and> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> (case f of \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q' | ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q'))\<close> for s f P Q'
   proof safe
-    from append_T_imp_tickFree trace_trans_imp_T
-    show \<open>P \<leadsto>\<^sup>*s @ [f] Q' \<Longrightarrow> tickFree s\<close> by blast
+    from append_T_imp_tF trace_trans_imp_T
+    show \<open>P \<leadsto>\<^sup>*s @ [f] Q' \<Longrightarrow> tF s\<close> by blast
   next
     show \<open>P \<leadsto>\<^sup>*s @ [f] Q' \<Longrightarrow> \<exists>Q. P \<leadsto>\<^sup>*s Q \<and> (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')\<close>
     proof (induct s arbitrary: P)
@@ -343,10 +344,10 @@ proof -
       with "**"(2) show \<open>\<exists>Q. P \<leadsto>\<^sup>* e # s Q \<and> (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')\<close> by blast
     qed
   next
-    show \<open>tickFree s \<Longrightarrow> P \<leadsto>\<^sup>*s Q \<Longrightarrow> (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')
+    show \<open>tF s \<Longrightarrow> P \<leadsto>\<^sup>*s Q \<Longrightarrow> (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q')
           \<Longrightarrow> P \<leadsto>\<^sup>*s @ [f] Q'\<close> for Q
     proof (induct s arbitrary: P Q)
-      show \<open>tickFree [] \<Longrightarrow> P \<leadsto>\<^sup>*[] Q \<Longrightarrow>
+      show \<open>tF [] \<Longrightarrow> P \<leadsto>\<^sup>*[] Q \<Longrightarrow>
             (case f of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q') \<Longrightarrow> P \<leadsto>\<^sup>*[] @ [f] Q'\<close> for P Q
         apply (cases f; simp add: f1 f2)
          apply (meson \<tau>_trans_eq \<tau>_trans_ev_trans trace_Cons_ev_trans trace_\<tau>_trans)
@@ -369,21 +370,21 @@ proof -
     qed
   qed
 
-  show \<open>front_tickFree (s @ t) \<Longrightarrow> P \<leadsto>\<^sup>*s @ t Q' \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t Q')\<close>
+  show \<open>ftF (s @ t) \<Longrightarrow> P \<leadsto>\<^sup>*s @ t Q' \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t Q')\<close>
   proof (induct t arbitrary: Q' rule: rev_induct)
     show \<open>P \<leadsto>\<^sup>*s @ [] Q' \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*[] Q')\<close> for Q'
       by (metis \<tau>_trans_eq append.right_neutral trace_trans_\<tau>_trans f1)
   next
     case (snoc e t)
-    from snoc.prems have $ : \<open>tickFree s\<close> \<open>tickFree t\<close> 
-      by (simp_all add: front_tickFree_append_iff)
+    from snoc.prems have $ : \<open>tF s\<close> \<open>tF t\<close> 
+      by (simp_all add: ftF_append_iff)
     show \<open>P \<leadsto>\<^sup>*s @ t @ [e] Q' \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t @ [e] Q')\<close>
     proof (intro iffI)
       assume assm : \<open>P \<leadsto>\<^sup>*s @ t @ [e] Q'\<close>
       from f4[of P \<open>s @ t\<close> e Q', simplified] assm "$" obtain Q
         where * : \<open>P \<leadsto>\<^sup>*s @ t Q\<close> \<open>case e of ev x \<Rightarrow> Q \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> Q \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q'\<close> by blast
       obtain R where ** : \<open>P \<leadsto>\<^sup>*s R\<close> \<open>R \<leadsto>\<^sup>*t Q\<close>
-        by (metis "*"(1) append.assoc front_tickFree_dw_closed snoc.hyps snoc.prems)
+        by (metis "*"(1) append.assoc ftF_dw_closed snoc.hyps snoc.prems)
       show \<open>\<exists>Q. P \<leadsto>\<^sup>*s Q \<and> Q \<leadsto>\<^sup>*t @ [e] Q'\<close>
       proof (intro exI conjI)
         show \<open>P \<leadsto>\<^sup>*s R\<close> by (fact "**"(1))
@@ -397,7 +398,7 @@ proof -
       obtain R where \<open>Q \<leadsto>\<^sup>*t R\<close> \<open>case e of ev x \<Rightarrow> R \<leadsto>\<^bsub>x\<^esub> Q' | \<checkmark>(r) \<Rightarrow> R \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> Q'\<close> by blast
       with "*"(1) show \<open>P \<leadsto>\<^sup>*s @ t @ [e] Q'\<close>
         by (simp add: f4[of P \<open>s @ t\<close> e Q', simplified] "$", cases e; simp)
-          (metis append.assoc front_tickFree_dw_closed snoc.hyps snoc.prems)+
+          (metis append.assoc ftF_dw_closed snoc.hyps snoc.prems)+
     qed
   qed
 qed
@@ -447,7 +448,7 @@ proof -
                   *[THEN conjunct2], simplified **]])
       next
         have \<open>e = \<checkmark>(r) \<Longrightarrow> s = []\<close> for r
-          by (metis T_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff prems(2))
+          by (metis T_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff prems(2))
         with "*" prems(1) trace_tick_trans
         show \<open>e = \<checkmark>(r) \<Longrightarrow> P \<leadsto>\<^sup>*e # s Q\<close> for r by (simp add: tick_trans_def)
       qed
@@ -462,16 +463,16 @@ text \<open>As corollaries we obtain the reciprocal results of
 
       @{thm trace_trans_imp_F_if_\<tau>_trans_imp_leF
             trace_trans_imp_T
-            tickFree_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak}\<close>
+            tF_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak}\<close>
 
-lemma tickFree_F_imp_exists_trace_trans:
-  \<open>tickFree s \<Longrightarrow> (s, X) \<in> \<F> P \<Longrightarrow> \<exists>Q. (P \<leadsto>\<^sup>*s Q) \<and> X \<in> \<R> Q\<close>
+lemma tF_F_imp_exists_trace_trans:
+  \<open>tF s \<Longrightarrow> (s, X) \<in> \<F> P \<Longrightarrow> \<exists>Q. (P \<leadsto>\<^sup>*s Q) \<and> X \<in> \<R> Q\<close>
   by (meson F_T F_imp_R_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e trace_trans_iff_T_and_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_\<tau>_trans \<tau>_trans_eq)
 
 lemma T_imp_exists_trace_trans: \<open>s \<in> \<T> P \<Longrightarrow> \<exists>Q. P \<leadsto>\<^sup>*s Q\<close>
   using trace_trans_iff_T_and_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_\<tau>_trans \<tau>_trans_eq by blast
 
-lemma tickFree_D_imp_trace_trans_BOT: \<open>tickFree s \<Longrightarrow> s \<in> \<D> P \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom>\<close>
+lemma tF_D_imp_trace_trans_BOT: \<open>tF s \<Longrightarrow> s \<in> \<D> P \<Longrightarrow> P \<leadsto>\<^sup>*s \<bottom>\<close>
   by (simp add: D_imp_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_is_BOT D_T \<tau>_trans_eq
       trace_trans_iff_T_and_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_\<tau>_trans)
 
@@ -479,17 +480,17 @@ lemma tickFree_D_imp_trace_trans_BOT: \<open>tickFree s \<Longrightarrow> s \<in
 text \<open>And therefore, we obtain equivalences.\<close>
 
 lemma F_trace_trans_reality_check_weak: 
-  \<open>\<forall>P Q. P \<leadsto>\<^sub>\<tau> Q \<longrightarrow> P \<sqsubseteq>\<^sub>F Q \<Longrightarrow> tickFree s \<Longrightarrow> 
+  \<open>\<forall>P Q. P \<leadsto>\<^sub>\<tau> Q \<longrightarrow> P \<sqsubseteq>\<^sub>F Q \<Longrightarrow> tF s \<Longrightarrow> 
    (s, X) \<in> \<F> P \<longleftrightarrow> (\<exists>Q. (P \<leadsto>\<^sup>*s Q) \<and> X \<in> \<R> Q)\<close>
-  using tickFree_F_imp_exists_trace_trans trace_trans_imp_F_if_\<tau>_trans_imp_leF by blast
+  using tF_F_imp_exists_trace_trans trace_trans_imp_F_if_\<tau>_trans_imp_leF by blast
 
 lemma T_trace_trans_reality_check: \<open>s \<in> \<T> P \<longleftrightarrow> (\<exists>Q. P \<leadsto>\<^sup>*s Q)\<close>
   using T_imp_exists_trace_trans trace_trans_imp_T by blast
 
 lemma D_trace_trans_reality_check_weak:
-  \<open>\<forall>P. P \<leadsto>\<^sub>\<tau> \<bottom> \<longrightarrow> P = \<bottom> \<Longrightarrow> tickFree s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<leadsto>\<^sup>*s \<bottom>\<close>
-  using tickFree_D_imp_trace_trans_BOT
-    tickFree_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak by blast
+  \<open>\<forall>P. P \<leadsto>\<^sub>\<tau> \<bottom> \<longrightarrow> P = \<bottom> \<Longrightarrow> tF s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<leadsto>\<^sup>*s \<bottom>\<close>
+  using tF_D_imp_trace_trans_BOT
+    tF_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak by blast
 
 
 
@@ -1152,28 +1153,28 @@ next
     by (cases e) (simp_all add: AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After.mono_After_FD mono_\<Omega>_FD)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<box> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<box> Q\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (intro mono_Det_FD idem_FD)
+    by (intro mono_Det_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<^bold>; Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<^bold>; Q\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (intro mono_Seq_FD idem_FD)
+    by (intro mono_Seq_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \ A \<sqsubseteq>\<^sub>F\<^sub>D P' \ A\<close> for P P' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and A
-    by (intro mono_Hiding_FD idem_FD)
+    by (intro mono_Hiding_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>S\<rbrakk> Q\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and S
-    by (intro mono_Sync_FD idem_FD)
+    by (intro mono_Sync_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<rhd> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<rhd> Q\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (intro mono_Sliding_FD idem_FD)
+    by (intro mono_Sliding_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<triangle> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<triangle> Q\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (intro mono_Interrupt_FD idem_FD)
+    by (intro mono_Interrupt_FD FD_refl)
 next
   show \<open>Q \<sqsubseteq>\<^sub>F\<^sub>D Q' \<Longrightarrow> P \<triangle> Q \<sqsubseteq>\<^sub>F\<^sub>D P \<triangle> Q'\<close> for P Q Q' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (intro mono_Interrupt_FD idem_FD)
+    by (intro mono_Interrupt_FD FD_refl)
 next
   show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P' \<Longrightarrow> P \<Theta> a \<in> A. Q a \<sqsubseteq>\<^sub>F\<^sub>D P' \<Theta> a \<in> A. Q a\<close> for P P' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and  A Q
-    by (intro mono_Throw_FD idem_FD)
+    by (intro mono_Throw_FD FD_refl)
 qed
 
 
@@ -1197,13 +1198,13 @@ notation trace_trans (\<open>_ \<^sub>F\<^sub>D\<leadsto>\<^sup>*_ _\<close> [50
 lemma trace_trans_imp_F: \<open>P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s Q \<Longrightarrow> X \<in> \<R> Q \<Longrightarrow> (s, X) \<in> \<F> P\<close>
   by (rule trace_trans_imp_F_if_\<tau>_trans_imp_leF) (simp add: leFD_imp_leF)
 
-lemma tickFree_trace_trans_BOT_imp_D: \<open>tickFree s \<Longrightarrow> P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close>
-  by (rule tickFree_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak) (simp add: FD_antisym)
+lemma tF_trace_trans_BOT_imp_D: \<open>tF s \<Longrightarrow> P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close>
+  by (rule tF_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak) (simp add: FD_antisym)
 
-lemma F_trace_trans_reality_check: \<open>tickFree s \<Longrightarrow> (s, X) \<in> \<F> P \<longleftrightarrow> (\<exists>Q. (P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s Q) \<and> X \<in> \<R> Q)\<close>
+lemma F_trace_trans_reality_check: \<open>tF s \<Longrightarrow> (s, X) \<in> \<F> P \<longleftrightarrow> (\<exists>Q. (P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s Q) \<and> X \<in> \<R> Q)\<close>
   by (simp add: F_trace_trans_reality_check_weak leFD_imp_leF)
 
-lemma D_trace_trans_reality_check: \<open>tickFree s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s \<bottom>\<close>
+lemma D_trace_trans_reality_check: \<open>tF s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<^sub>F\<^sub>D\<leadsto>\<^sup>*s \<bottom>\<close>
   by (simp add: D_trace_trans_reality_check_weak FD_antisym)
 
 
@@ -1284,12 +1285,12 @@ notation tick_trans (\<open>_ \<^sub>D\<^sub>T\<leadsto>\<^sub>\<checkmark>\<^bs
 notation trace_trans (\<open>_ \<^sub>D\<^sub>T\<leadsto>\<^sup>*_ _\<close> [50, 3, 51] 50)
 
 
-lemma tickFree_trace_trans_BOT_imp_D: \<open>tickFree s \<Longrightarrow> P \<^sub>D\<^sub>T\<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close>
-  by (rule tickFree_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak)
+lemma tF_trace_trans_BOT_imp_D: \<open>tF s \<Longrightarrow> P \<^sub>D\<^sub>T\<leadsto>\<^sup>*s \<bottom> \<Longrightarrow> s \<in> \<D> P\<close>
+  by (rule tF_trace_trans_BOT_imp_D_if_\<tau>_trans_BOT_imp_eq_BOT_weak)
     (meson BOT_iff_Nil_D divergence_refine_def leDT_imp_leD subsetD)
 
-lemma D_trace_trans_reality_check: \<open>tickFree s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<^sub>D\<^sub>T\<leadsto>\<^sup>*s \<bottom>\<close>
-  by (simp add: D_trace_trans_reality_check_weak BOT_iff_Nil_D tickFree_trace_trans_BOT_imp_D trace_\<tau>_trans)
+lemma D_trace_trans_reality_check: \<open>tF s \<Longrightarrow> s \<in> \<D> P \<longleftrightarrow> P \<^sub>D\<^sub>T\<leadsto>\<^sup>*s \<bottom>\<close>
+  by (simp add: D_trace_trans_reality_check_weak BOT_iff_Nil_D tF_trace_trans_BOT_imp_D trace_\<tau>_trans)
 
 
 lemmas \<tau>_trans_adm = le_DT_adm 

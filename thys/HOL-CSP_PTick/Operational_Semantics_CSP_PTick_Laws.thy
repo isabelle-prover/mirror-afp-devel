@@ -84,11 +84,11 @@ end
 
 subsubsection \<open>Synchronization Product\<close>
 
-locale AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale = Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join +
+locale AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj +
   AfterExt\<^sub>l\<^sub>h\<^sub>s : AfterExt \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Omega>\<^sub>l\<^sub>h\<^sub>s +
   AfterExt\<^sub>r\<^sub>h\<^sub>s : AfterExt \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Omega>\<^sub>r\<^sub>h\<^sub>s +
   AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k : AfterExt \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-  for tick_join :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close>
+  for tj :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close>
     and \<Psi>\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<Omega>\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<Psi>\<^sub>r\<^sub>h\<^sub>s :: \<open>[('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -97,10 +97,10 @@ locale AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale = Sync\<^sub
     and \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>[('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 't] \<Rightarrow> ('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 begin
 
-sublocale After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by unfold_locales
+sublocale After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by unfold_locales
 
-sublocale AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym :
-  AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>s r. tick_join r s\<close> \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Omega>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Omega>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+sublocale AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual :
+  AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>\<lambda>s r. tj r s\<close> \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Omega>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Omega>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
   by unfold_locales
 
 (*
@@ -112,35 +112,35 @@ notation AfterExt\<^sub>l\<^sub>h\<^sub>s.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k 
 notation AfterExt\<^sub>r\<^sub>h\<^sub>s.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k (infixl \<open>after\<^sub>\<checkmark>\<^sub>r\<^sub>h\<^sub>s\<close> 86)
 notation AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k (infixl \<open>after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> 86)
   (* 
-definition \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v :: \<open>('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 't \<Rightarrow> ('a, 's \<times> 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  where \<open>\<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v P s_r \<equiv> TickSwap (\<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (TickSwap P) (case s_r of (s, r) \<Rightarrow> (r, s)))\<close>
+definition \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l :: \<open>('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 't \<Rightarrow> ('a, 's \<times> 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  where \<open>\<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l P s_r \<equiv> TickSwap (\<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (TickSwap P) (case s_r of (s, r) \<Rightarrow> (r, s)))\<close>
 
-sublocale AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v : AfterExt \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v .
+sublocale AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l : AfterExt \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l .
 
-notation AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k (infixl \<open>after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v\<close> 86)
+notation AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k (infixl \<open>after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l\<close> 86)
 
-sublocale AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kDuplicated : AfterExtDuplicated \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v .
+sublocale AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kDuplicated : AfterExtDuplicated \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l .
 
 
 
 lemma After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_TickSwap :
-  \<open>TickSwap P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v e =
-   (case e of \<checkmark>(s_r) \<Rightarrow> \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v (TickSwap P) s_r
+  \<open>TickSwap P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l e =
+   (case e of \<checkmark>(s_r) \<Rightarrow> \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l (TickSwap P) s_r
               | ev a \<Rightarrow>  if P = \<bottom> then \<bottom>
                        else   if ev a \<in> P\<^sup>0
                             then TickSwap (P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ev a)
-                            else \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v (TickSwap P) a)\<close>
-  by (simp add: AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def
+                            else \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l (TickSwap P) a)\<close>
+  by (simp add: AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def AfterExt\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def
       After.After_BOT split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
       (simp add: After_TickSwap)
 
 
 lemma TickSwap_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k [simp] :
-  \<open>TickSwap (P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e) = TickSwap P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v tick_swap e\<close>
-  by (cases e) (auto simp add: AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v_def)
+  \<open>TickSwap (P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e) = TickSwap P after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l tick_swap e\<close>
+  by (cases e) (auto simp add: AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l_def)
 
 lemma TickSwap_is_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff [simp] :
-  \<open>TickSwap P = (Q after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e) \<longleftrightarrow> P = TickSwap Q after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>r\<^sub>e\<^sub>v tick_swap e\<close>
+  \<open>TickSwap P = (Q after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k e) \<longleftrightarrow> P = TickSwap Q after\<^sub>\<checkmark>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>d\<^sub>u\<^sub>a\<^sub>l tick_swap e\<close>
   by (simp add: TickSwap_eq_iff_eq_TickSwap)
  *)
 
@@ -183,7 +183,7 @@ notation OpSemTransitions\<^sub>\<alpha>.ev_trans   (\<open>_ \<^sub>\<alpha>\<l
 notation OpSemTransitions\<^sub>\<alpha>.tick_trans (\<open>_ \<^sub>\<alpha>\<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
 notation OpSemTransitions\<^sub>\<beta>.ev_trans   (\<open>_ \<^sub>\<beta>\<leadsto>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
 notation OpSemTransitions\<^sub>\<beta>.tick_trans (\<open>_ \<^sub>\<beta>\<leadsto>\<^sub>\<checkmark>\<^bsub>_\<^esub> _\<close> [50, 3, 51] 50)
-
+                                            
 lemma \<tau>_trans_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kR: \<open>P \<^bold>;\<^sub>\<checkmark> Q \<^sub>\<beta>\<leadsto>\<^sub>\<tau> Q'\<close> if \<open>P \<^sub>\<alpha>\<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> P'\<close> and \<open>Q r \<^sub>\<beta>\<leadsto>\<^sub>\<tau> Q'\<close>
 proof -
   from that(1) have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIP r\<close> 
@@ -230,11 +230,11 @@ end
 
 subsubsection \<open>Synchronization Product\<close>
 
-locale OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale = Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>(\<otimes>\<checkmark>)\<close> +
+locale OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<otimes>\<checkmark>)\<close> +
   OpSemTransitions\<^sub>l\<^sub>h\<^sub>s  : OpSemTransitions \<Psi>\<^sub>l\<^sub>h\<^sub>s   \<Omega>\<^sub>l\<^sub>h\<^sub>s   \<open>(\<^sub>l\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau>)\<close>  +
   OpSemTransitions\<^sub>r\<^sub>h\<^sub>s  : OpSemTransitions \<Psi>\<^sub>r\<^sub>h\<^sub>s   \<Omega>\<^sub>r\<^sub>h\<^sub>s   \<open>(\<^sub>r\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau>)\<close>  +
   OpSemTransitions\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k : OpSemTransitions \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau>)\<close>
-  for tick_join :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> (infixl \<open>\<otimes>\<checkmark>\<close> 100)
+  for tj :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> (infixl \<open>\<otimes>\<checkmark>\<close> 100)
     and \<Psi>\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<Omega>\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<tau>_trans\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> bool\<close> (infixl \<open>\<^sub>l\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau>\<close> 50)
@@ -248,18 +248,18 @@ locale OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale = Sy
     and \<tau>_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kR : \<open>Q \<^sub>r\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau> Q' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q'\<close>
 begin
 
-sublocale AfterExt_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale by unfold_locales
+sublocale AfterExt_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by unfold_locales
 
 
-sublocale OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym :
-  OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale
+sublocale OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual :
+  OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
   \<open>\<lambda>s r. r \<otimes>\<checkmark> s\<close> \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Omega>\<^sub>r\<^sub>h\<^sub>s \<open>(\<^sub>r\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau>)\<close> \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Omega>\<^sub>l\<^sub>h\<^sub>s \<open>(\<^sub>l\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau>)\<close> \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau>)\<close>
 proof unfold_locales
-  show \<open>P \<^sub>r\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau> P' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>s\<^sub>y\<^sub>m Q \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau> P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>s\<^sub>y\<^sub>m Q\<close> for P P' A Q
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym \<tau>_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kR)
+  show \<open>P \<^sub>r\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau> P' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>d\<^sub>u\<^sub>a\<^sub>l Q \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau> P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>d\<^sub>u\<^sub>a\<^sub>l Q\<close> for P P' A Q
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual \<tau>_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kR)
 next
-  show \<open>Q \<^sub>l\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau> Q' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>s\<^sub>y\<^sub>m Q \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>s\<^sub>y\<^sub>m Q'\<close> for Q Q' A P
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym \<tau>_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kL)
+  show \<open>Q \<^sub>l\<^sub>h\<^sub>s\<leadsto>\<^sub>\<tau> Q' \<Longrightarrow> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>d\<^sub>u\<^sub>a\<^sub>l Q \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<tau> P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>d\<^sub>u\<^sub>a\<^sub>l Q'\<close> for Q Q' A P
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual \<tau>_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kL)
 qed
 
 
@@ -305,7 +305,7 @@ qed
 
 lemma tick_trans_SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP:
   \<open>r \<otimes>\<checkmark> s = Some r_s \<Longrightarrow> SKIP r \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> SKIP s \<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<leadsto>\<^sub>\<checkmark>\<^bsub>r_s\<^esub> \<Omega>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (SKIP r_s) r_s\<close>
-  by (simp add: OpSemTransitions\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.SKIP_trans_tick_\<Omega>_SKIP)
+  by (simp add: OpSemTransitions\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.SKIP_trans_tick_\<Omega>_SKIP SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
 
 
 lemma ev_trans_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kL :

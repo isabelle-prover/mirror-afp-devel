@@ -64,7 +64,7 @@ text \<open>From the characterization @{thm BOT_iff_Nil_D}, we can easily derive
       of \<^term>\<open>\<bottom>\<close> wrt. \<^const>\<open>STOP\<close>, \<^const>\<open>SKIP\<close>, and the operators.\<close>
 
 lemma BOT_less1 [simp]: \<open>(\<bottom> :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<le> X\<close>
-  by (simp add: le_approx_imp_le_ref)
+  by (simp add: le_approx_imp_le_FD)
 
 lemma STOP_neq_BOT [simp] : \<open>STOP   \<noteq> \<bottom>\<close>
   and SKIP_neq_BOT [simp] : \<open>SKIP r \<noteq> \<bottom>\<close>
@@ -107,7 +107,7 @@ lemma BOT_Seq [simp] : \<open>\<bottom> \<^bold>; P = \<bottom>\<close> by (simp
 
 lemma Hiding_BOT [simp] : \<open>\<bottom> \ A = \<bottom>\<close>
   by (simp add: BOT_iff_Nil_D D_Hiding BOT_projs)
-    (meson filter.simps(1) tickFree_Nil tickFree_imp_front_tickFree)
+    (meson filter.simps(1) tF_Nil tF_imp_ftF)
 
 
 lemma Sync_is_BOT_iff : \<open>P \<lbrakk>S\<rbrakk> Q = \<bottom> \<longleftrightarrow> P = \<bottom> \<or> Q = \<bottom>\<close>
@@ -179,16 +179,16 @@ lemma Seq_is_STOP_iff :
 proof (intro iffI conjI subsetI)
   show \<open>P \<^bold>; Q = STOP \<Longrightarrow> t \<in> \<T> P \<Longrightarrow> t \<in> insert [] {[\<checkmark>(r)] |r. True}\<close> for t
     by (simp add: STOP_iff_T T_Seq set_eq_iff)
-      (metis T_nonTickFree_imp_decomp append.right_neutral append_Nil is_processT1_TR)
+      (metis T_not_tF_imp_decomp append.right_neutral append_Nil is_processT1_TR)
 next
   show \<open>P \<^bold>; Q = STOP \<Longrightarrow> P \<noteq> STOP \<longrightarrow> Q = STOP\<close>
     by (simp add: STOP_iff_T T_Seq set_eq_iff)
-      (metis T_nonTickFree_imp_decomp append_is_Nil_conv is_processT1_TR)
+      (metis T_not_tF_imp_decomp append_is_Nil_conv is_processT1_TR)
 next
   show \<open>\<T> P \<subseteq> insert [] {[\<checkmark>(r)] |r. True} \<and> (P \<noteq> STOP \<longrightarrow> Q = STOP) \<Longrightarrow> P \<^bold>; Q = STOP\<close>
     by (simp add: STOP_iff_T T_Seq subset_iff, safe, simp_all)
       (((use D_T in fastforce)+)[3],
-        metis D_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) front_tickFree_single is_processT9_tick list.sel(1) not_Cons_self)
+        metis D_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) ftF_single is_processT9_tick list.sel(1) not_Cons_self)
 qed
 
 lemma STOP_Seq [simp] : \<open>STOP \<^bold>; P = STOP\<close> by (simp add: Seq_is_STOP_iff T_STOP)
@@ -241,19 +241,19 @@ proof (rule Process_eq_optimizedI)
 next
   show \<open>t \<in> \<D> (P \<^bold>; STOP) \<Longrightarrow> t \<in> \<D> (P ||| STOP)\<close> for t
     apply (simp add: D_Sync D_Seq D_STOP T_STOP)
-    apply (frule D_imp_front_tickFree)
+    apply (frule D_imp_ftF)
     apply (rule exI[of _ \<open>if tF t then t else butlast t\<close>],
         rule exI[of _ \<open>if tF t then t else butlast t\<close>])
     apply (simp split: if_split_asm)
-    by (metis butlast_snoc disjoint_iff emptyLeftSelf front_tickFree_iff_tickFree_butlast
-        front_tickFree_single is_processT9 nonTickFree_n_frontTickFree setinterleaving_sym tickFree_def)
+    by (metis butlast_snoc disjoint_iff emptyLeftSelf ftF_iff_tF_butlast
+        ftF_single is_processT9 not_tF_and_ftF setinterleaving_dual tickFree_def)
 next
   fix t X assume \<open>(t, X) \<in> \<F> (P ||| STOP)\<close> \<open>t \<notin> \<D> (P ||| STOP)\<close>
   then obtain t_P X_P X_Q where \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>t setinterleaves ((t_P, []), range tick)\<close>
     \<open>X = (X_P \<union> X_Q) \<inter> range tick \<union> X_P \<inter> X_Q\<close>
     by (simp add: F_Sync D_Sync F_STOP) blast
   from \<open>t setinterleaves ((t_P, []), range tick)\<close> EmptyLeftSync
-  have \<open>tF t \<and> t = t_P\<close> by (metis inf_commute setinterleaving_sym tickFree_def)
+  have \<open>tF t \<and> t = t_P\<close> by (metis inf_commute setinterleaving_dual tickFree_def)
   show \<open>(t, X) \<in> \<F> (P \<^bold>; STOP)\<close>
   proof (cases \<open>\<exists>r. t_P @ [\<checkmark>(r)] \<in> \<T> P\<close>)
     show \<open>\<exists>r. t_P @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (t, X) \<in> \<F> (P \<^bold>; STOP)\<close>
@@ -275,16 +275,16 @@ next
   proof cases
     assume \<open>(t, X \<union> range tick) \<in> \<F> P\<close> and \<open>tF t\<close>
     from \<open>tF t\<close> have \<open>t setinterleaves ((t, []), range tick)\<close>
-      by (metis disjoint_iff emptyLeftSelf setinterleaving_sym tickFree_def)
+      by (metis disjoint_iff emptyLeftSelf setinterleaving_dual tickFree_def)
     with \<open>(t, X \<union> range tick) \<in> \<F> P\<close> show \<open>(t, X) \<in> \<F> (P ||| STOP)\<close>
       apply (simp add: F_Sync F_STOP)
       by (metis Int_Un_eq(1) Un_Int_eq(3) is_processT4 sup_ge1)
   next
     fix r assume \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close>
     hence * : \<open>(t, X - {\<checkmark>(r)}) \<in> \<F> P\<close> and \<open>tF t\<close>
-      by (auto simp add: T_F_spec is_processT6 intro: append_T_imp_tickFree)
+      by (auto simp add: T_F_spec is_processT6 intro: append_T_imp_tF)
     from \<open>tF t\<close> have \<open>t setinterleaves ((t, []), range tick)\<close>
-      by (metis disjoint_iff emptyLeftSelf setinterleaving_sym tickFree_def)
+      by (metis disjoint_iff emptyLeftSelf setinterleaving_dual tickFree_def)
     hence \<open>(t, (X - {\<checkmark>(r)} \<union> UNIV) \<inter> range tick \<union> (X - {\<checkmark>(r)}) \<inter> UNIV) \<in> \<F> (P ||| STOP)\<close>
       by (simp add: F_Sync F_STOP) (use "*" in blast)
     moreover have \<open>X \<subseteq> (X - {\<checkmark>(r)} \<union> UNIV) \<inter> range tick \<union> (X - {\<checkmark>(r)}) \<inter> UNIV\<close> by auto
@@ -304,7 +304,7 @@ next
   from \<open>P \<noteq> \<bottom>\<close> show \<open>P || STOP = STOP\<close>
     by (simp add: STOP_iff_T T_Sync STOP_projs set_eq_iff BOT_iff_Nil_D)
       (metis EmptyLeftSync si_empty1 inf_top.right_neutral insertI1
-        is_processT1_TR set_empty2 setinterleaving_sym)
+        is_processT1_TR set_empty2 setinterleaving_dual)
 qed
 
 lemma STOP_Par [simp] : \<open>STOP || P = (if P = \<bottom> then \<bottom> else STOP)\<close>
@@ -336,7 +336,10 @@ lemma D_SKIPS : \<open>\<D> (SKIPS R) = {}\<close>
 lemma T_SKIPS : \<open>\<T> (SKIPS R) = insert [] {[tick r]| r. r \<in> R}\<close>
   by (auto simp add: SKIPS_def T_GlobalNdet T_SKIP)
 
-lemmas SKIPS_projs = F_SKIPS D_SKIPS T_SKIPS
+lemma D\<^sub>m\<^sub>i\<^sub>n_SKIPS : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (SKIPS R) = {}\<close>
+  by (simp_all add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_SKIPS)
+
+lemmas SKIPS_projs = F_SKIPS D_SKIPS T_SKIPS D\<^sub>m\<^sub>i\<^sub>n_SKIPS
 
 
 
@@ -364,22 +367,22 @@ lemma Seq_SKIP [simp] : \<open>P \<^bold>; SKIP () = P\<close>
      (morally, we have ``only one \<^const>\<open>tick\<close>'').\<close>
   by (auto simp add: Process_eq_spec Seq_projs SKIP_projs tick_T_F intro: is_processT4 is_processT6_TR_notin is_processT8)
     (metis (full_types) append.right_neutral is_processT5_S7' old.unit.exhaust rangeE,
-      metis (full_types) F_T T_imp_front_tickFree nonTickFree_n_frontTickFree old.unit.exhaust)
+      metis (full_types) F_T T_imp_ftF not_tF_and_ftF old.unit.exhaust)
 
 
 lemma Hiding_SKIP [simp] : \<open>SKIP r \ A = SKIP r\<close>
 proof (subst Process_eq_spec, safe)
   show \<open>s \<in> \<D> (SKIP r \ A) \<Longrightarrow> s \<in> \<D> (SKIP r)\<close> for s
     by (auto simp add: D_Hiding D_SKIP T_SKIP)
-      (metis (full_types) Hiding_tickFree non_tickFree_tick not_less_eq_eq strict_mono_eq)
+      (metis (no_types, lifting) order_less_asym strict_mono_Suc_iff)
 next
   show \<open>s \<in> \<D> (SKIP r) \<Longrightarrow> s \<in> \<D> (SKIP r \ A)\<close> for s
     by (simp add: D_Hiding D_SKIP T_SKIP)
 next
   show \<open>(s, X) \<in> \<F> (SKIP r \ A) \<Longrightarrow> (s, X) \<in> \<F> (SKIP r)\<close> for s X
     by (auto simp add: F_Hiding SKIP_projs image_iff)
-      (metis (mono_tags, lifting) filter.simps(1) non_tickFree_tick,
-        (metis less_tail list.sel(3) nil_less strict_mono_Suc_iff)+)
+      (metis (no_types, lifting) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) filter.simps(1) tF_Cons_iff,
+        (metis less_tail list.sel(3) Nil_less strict_mono_Suc_iff)+)
 next
   show \<open>(s, X) \<in> \<F> (SKIP r) \<Longrightarrow> (s, X) \<in> \<F> (SKIP r \ A)\<close> for s X
     by (simp add: F_Hiding SKIP_projs)
@@ -393,8 +396,8 @@ lemma Hiding_SKIPS : \<open>SKIPS R \ S = SKIPS R\<close>
 proof (rule Process_eq_optimizedI)
   show \<open>t \<in> \<D> (SKIPS R \ S) \<Longrightarrow> t \<in> \<D> (SKIPS R)\<close> for t
     by (auto simp add: SKIPS_projs elim!: D_Hiding_seqRunE)
-      (metis append_is_Nil_conv front_tickFree_nonempty_append_imp
-        front_tickFree_single list.simps(3) non_tickFree_tick seqRun_Suc)
+      (metis (mono_tags, opaque_lifting) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1,2)
+        f_inv_into_f n_not_Suc_n seqRun_eq_iff tF_Cons_iff tF_seqRun_iff)
 next
   show \<open>t \<in> \<D> (SKIPS R) \<Longrightarrow> t \<in> \<D> (SKIPS R \ S)\<close> for t by (simp add: D_SKIPS)
 next
@@ -488,7 +491,7 @@ proof (subst Process_eq_spec_optimized, safe)
   fix s
   assume \<open>s \<in> \<D> ?lhs\<close>
   then obtain a t u r v
-    where * : \<open>a \<in> A\<close> \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>s = r @ v\<close>
+    where * : \<open>a \<in> A\<close> \<open>ftF v\<close> \<open>tF r \<or> v = []\<close> \<open>s = r @ v\<close>
       \<open>r setinterleaves ((ev a # t, u), range tick \<union> ev ` S)\<close>
       \<open>t \<in> \<D> (P a)\<close> \<open>u = [] \<or> u = [tick res]\<close>
     by (simp add: D_Sync D_SKIP T_SKIP D_Mprefix image_iff) blast
@@ -497,13 +500,13 @@ proof (subst Process_eq_spec_optimized, safe)
     by (elim disjE; simp add: image_iff split: if_split_asm, blast)
   show \<open>s \<in> \<D> ?rhs\<close>
     by (simp add: D_Mprefix "*"(1, 4) "**"(1, 2) D_Sync T_SKIP D_SKIP)
-      (use "*"(2, 3, 6, 7) "**"(2, 3) tickFree_Cons_iff in blast)
+      (use "*"(2, 3, 6, 7) "**"(2, 3) tF_Cons_iff in blast)
 next
   fix s
   assume \<open>s \<in> \<D> ?rhs\<close>
   then obtain s' a t u r v
-    where * : \<open>s = ev a # s'\<close> \<open>a \<in> A\<close> \<open>a \<notin> S\<close> \<open>front_tickFree v\<close> \<open>t \<in> \<D> (P a)\<close>
-      \<open>tickFree r \<or> v = []\<close> \<open>s' = r @ v\<close> \<open>u = [] \<or> u = [tick res]\<close>
+    where * : \<open>s = ev a # s'\<close> \<open>a \<in> A\<close> \<open>a \<notin> S\<close> \<open>ftF v\<close> \<open>t \<in> \<D> (P a)\<close>
+      \<open>tF r \<or> v = []\<close> \<open>s' = r @ v\<close> \<open>u = [] \<or> u = [tick res]\<close>
       \<open>r setinterleaves ((t, u), range tick \<union> ev ` S)\<close>
     by (simp add: D_Mprefix D_Sync T_SKIP D_SKIP image_iff) blast
   from "*"(8, 9) have \<open>(ev a # r) setinterleaves ((ev a # t, u), range tick \<union> ev ` S)\<close>
@@ -608,8 +611,8 @@ next
   assume \<open>Renaming P f g = SKIP s\<close>
   from this[THEN arg_cong[where f = \<D>]] have \<open>\<D> P = {}\<close>
     by (simp add: D_SKIP D_Renaming)
-       (metis D_imp_front_tickFree equals0I front_tickFree_Nil front_tickFree_append_iff
-              is_processT9 list.distinct(1) nonTickFree_n_frontTickFree)
+       (metis D_imp_ftF equals0I ftF_Nil ftF_append_iff
+              is_processT9 list.distinct(1) not_tF_and_ftF)
   define R where \<open>R \<equiv> {r. [\<checkmark>(r)] \<in> \<T> P \<and> g r = s}\<close>
   from \<open>Renaming P f g = SKIP s\<close>[THEN arg_cong[where f = \<T>]] have \<open>R \<noteq> {}\<close>
     by (simp add: T_Renaming \<open>\<D> P = {}\<close> T_SKIP R_def set_eq_iff)
@@ -688,7 +691,7 @@ next
   show \<open>\<exists>r. P = SKIP r \<and> g r = s\<close> if \<open>Renaming P f g = SKIP s\<close>
     apply (simp add: Process_eq_spec F_Renaming D_Renaming F_SKIP D_SKIP)
     apply safe
-    apply (meson front_tickFree_Nil)
+    apply (meson ftF_Nil)
      defer sledgehammer
 
 
@@ -740,12 +743,13 @@ next
     proof cases
       from \<open>v \<in> \<D> R\<close> show \<open>u @ [\<checkmark>(r)] \<in> \<D> P \<Longrightarrow> t \<in> \<D> (P \<^bold>; (Q \<^bold>; R))\<close>
         by (simp add: D_Seq \<open>t = u @ v\<close>)
-          (metis D_imp_front_tickFree butlast_snoc is_processT7 is_processT9
-            front_tickFree_iff_tickFree_butlast)
+          (metis D_imp_ftF butlast_snoc is_processT7 is_processT9
+            ftF_iff_tF_butlast)
     next
       from \<open>v \<in> \<D> R\<close> show \<open>\<lbrakk>u @ [\<checkmark>(r)] = w @ x; w @ [\<checkmark>(s)] \<in> \<T> P; x \<in> \<T> Q\<rbrakk> \<Longrightarrow> t \<in> \<D> (P \<^bold>; (Q \<^bold>; R))\<close> for w x s
         by (cases x rule: rev_cases, simp_all add: D_Seq \<open>t = u @ v\<close>)
-          (meson append_T_imp_tickFree non_tickFree_tick not_Cons_self2 tickFree_append_iff, blast)
+          (metis butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_iff_tF_butlast
+            is_processT2_TR tF_Cons_iff tF_append_iff, blast)
     qed
   qed
 next
@@ -766,7 +770,7 @@ next
     proof cases
       show \<open>(v, X \<union> range tick) \<in> \<F> Q \<Longrightarrow> tF v \<Longrightarrow> (t, X) \<in> \<F> (P \<^bold>; Q \<^bold>; R)\<close>
         by (simp add: \<open>t = u @ v\<close> F_Seq)
-          (metis \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> append_T_imp_tickFree list.discI)
+          (metis \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> append_T_imp_tF list.discI)
     next
       show \<open>v = w @ x \<Longrightarrow> w @ [\<checkmark>(s)] \<in> \<T> Q \<Longrightarrow> (x, X) \<in> \<F> R \<Longrightarrow> (t, X) \<in> \<F> (P \<^bold>; Q \<^bold>; R)\<close> for w x s
         by (simp add: \<open>t = u @ v\<close> F_Seq T_Seq_bis) (metis \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> append_assoc)
@@ -780,18 +784,18 @@ next
   thus \<open>(t, X) \<in> \<F> (P \<^bold>; (Q \<^bold>; R))\<close>
   proof cases
     show \<open>(t, X \<union> range tick) \<in> \<F> (P \<^bold>; Q) \<Longrightarrow> tF t \<Longrightarrow> (t, X) \<in> \<F> (P \<^bold>; (Q \<^bold>; R))\<close>
-      by (simp add: F_Seq) (metis tickFree_append_iff)
+      by (simp add: F_Seq) (metis tF_append_iff)
   next
     fix u v r assume \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> (P \<^bold>; Q)\<close> \<open>(v, X) \<in> \<F> R\<close>
     with \<open>t \<notin> \<D> (P \<^bold>; (Q \<^bold>; R))\<close> obtain w x s
       where \<open>u @ [\<checkmark>(r)] = w @ x\<close> \<open>w @ [\<checkmark>(s)] \<in> \<T> P\<close> \<open>x \<in> \<T> Q\<close>
       by (simp add: D_Seq T_Seq)
-        (meson F_imp_front_tickFree \<open>u @ [\<checkmark>(r)] \<in> \<T> (P \<^bold>; Q)\<close>
-          append_T_imp_tickFree is_processT7 is_processT9 not_Cons_self2)
+        (meson F_imp_ftF \<open>u @ [\<checkmark>(r)] \<in> \<T> (P \<^bold>; Q)\<close>
+          append_T_imp_tF is_processT7 is_processT9 not_Cons_self2)
     with \<open>(v, X) \<in> \<F> R\<close> show \<open>(t, X) \<in> \<F> (P \<^bold>; (Q \<^bold>; R))\<close>
       by (cases x rule: rev_cases, simp_all add: \<open>t = u @ v\<close> F_Seq)
-        (metis append_T_imp_tickFree non_tickFree_tick
-          not_Cons_self2 tickFree_append_iff, blast)
+        (metis butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_iff_tF_butlast
+          is_processT2_TR tF_Cons_iff tF_append_iff, blast)
   qed
 qed
 
@@ -901,20 +905,20 @@ lemma interleave_append_right :
   \<open>s setinterleaves ((t, u1 @ u2), C) \<Longrightarrow>
    \<exists>t1 t2 s1 s2. t = t1 @ t2 \<and> s = s1 @ s2 \<and>
                  s1 setinterleaves ((t1, u1), C) \<and> s2 setinterleaves ((t2, u2), C)\<close>
-  by (subst (asm) setinterleaving_sym, drule interleave_append_left)
-    (simp add: setinterleaving_sym)
+  by (subst (asm) setinterleaving_dual, drule interleave_append_left)
+    (simp add: setinterleaving_dual)
 
 lemma interleave_append_tail_left: 
   \<open>s setinterleaves ((t1, u), C) \<Longrightarrow> set t2 \<inter> C = {} \<Longrightarrow> (s @ t2) setinterleaves ((t1 @ t2, u), C)\<close>
   by (induct \<open>(t1, C, u)\<close> arbitrary: t1 t2 u s rule: setinterleaving.induct,
       auto split: if_split_asm)
-    (metis disjoint_iff emptyLeftSelf setinterleaving_sym,
-      metis SyncSingleHeadAdd setinterleaving_sym)
+    (metis disjoint_iff emptyLeftSelf setinterleaving_dual,
+      metis SyncSingleHeadAdd setinterleaving_dual)
 
 
 lemma interleave_append_tail_right: 
   \<open>s setinterleaves ((t, u1), C) \<Longrightarrow> set u2 \<inter> C = {} \<Longrightarrow> (s @ u2) setinterleaves ((t, u1 @ u2), C)\<close>
-  by (metis (no_types) setinterleaving_sym interleave_append_tail_left)
+  by (metis (no_types) setinterleaving_dual interleave_append_tail_left)
 
 
 
@@ -927,13 +931,13 @@ proof (induct \<open>(tu, A, v)\<close> arbitrary: t u tu v tuv rule: setinterle
 next
   case (2 z v)
   from "2.prems"(2) emptyLeftProperty have \<open>tuv = z # v\<close> by blast
-  with "2.prems" empty_setinterleaving setinterleaving_sym show ?case by blast
+  with "2.prems" empty_setinterleaving setinterleaving_dual show ?case by blast
 next
   case (3 y tu)
   from "3.prems"(2) emptyRightProperty have \<open>tuv = y # tu\<close> by blast
   with "3.prems" show ?case
     by (metis (no_types) EmptyLeftSync Un_iff disjoint_iff
-        emptyLeftSelf interleave_set setinterleaving_sym subsetD)
+        emptyLeftSelf interleave_set setinterleaving_dual subsetD)
 next
   case (4 y tu z v)
   consider \<open>y \<in> A\<close> \<open>z \<in> A\<close> | \<open>y \<in> A\<close> \<open>z \<notin> A\<close> | \<open>y \<notin> A\<close> \<open>z \<in> A\<close> | \<open>y \<notin> A\<close> \<open>z \<notin> A\<close> by blast
@@ -1059,7 +1063,7 @@ lemma interleave_assoc_2:
   assumes  *:\<open>uv setinterleaves ((u, v), A)\<close> and 
     **:\<open>tuv setinterleaves ((t, uv), A)\<close>
   shows \<open>\<exists>tu. tu setinterleaves ((t, u), A) \<and> tuv setinterleaves ((tu, v), A)\<close>
-  using "*" "**" setinterleaving_sym interleave_assoc_1 by blast
+  using "*" "**" setinterleaving_dual interleave_assoc_1 by blast
 
 
 
@@ -1069,10 +1073,10 @@ proof (rule FD_antisym)
   proof (rule failure_divergence_refine_optimizedI)
     fix s assume \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close>
     from this[simplified D_Sync[of \<open>P \<lbrakk>S\<rbrakk> Q\<close>]] obtain t u r v
-      where * : \<open>front_tickFree v\<close> \<open>tickFree r \<or> v = []\<close> \<open>s = r @ v\<close> 
+      where * : \<open>ftF v\<close> \<open>tF r \<or> v = []\<close> \<open>s = r @ v\<close> 
         \<open>r setinterleaves ((t, u), range tick \<union> ev ` S)\<close>
         \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q) \<and> u \<in> \<T> R \<or> t \<in> \<D> R \<and> u \<in> \<T> (P \<lbrakk>S\<rbrakk> Q) - \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
-      by simp (metis D_T setinterleaving_sym)
+      by simp (metis D_T setinterleaving_dual)
     from "*"(5) show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close>
     proof (elim disjE conjE)
       assume \<open>t \<in> \<D> R\<close> and \<open>u \<in> \<T> (P \<lbrakk>S\<rbrakk> Q) - \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
@@ -1082,15 +1086,15 @@ proof (rule FD_antisym)
       from interleave_assoc_1[OF "**"(1)] obtain uv
         where *** : \<open>uv setinterleaves ((u1, t), range tick \<union> ev ` S)\<close>
           \<open>r setinterleaves ((t1, uv), range tick \<union> ev ` S)\<close>
-        using "*"(4) setinterleaving_sym by blast
-      from "***"(1) setinterleaving_sym \<open>t \<in> \<D> R\<close> \<open>u1 \<in> \<T> Q\<close> front_tickFree_Nil
+        using "*"(4) setinterleaving_dual by blast
+      from "***"(1) setinterleaving_dual \<open>t \<in> \<D> R\<close> \<open>u1 \<in> \<T> Q\<close> ftF_Nil
       have \<open>uv \<in> \<D> (Q \<lbrakk>S\<rbrakk> R)\<close> unfolding D_Sync by blast
-      with "*"(1, 2, 3) "**"(2) "***"(2) setinterleaving_sym
+      with "*"(1, 2, 3) "**"(2) "***"(2) setinterleaving_dual
       show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close> by (subst D_Sync) blast
     next
       assume \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close> and \<open>u \<in> \<T> R\<close>
       from \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close> obtain t1 u1 r1 v1
-        where ** : \<open>front_tickFree v1\<close> \<open>tickFree r1 \<or> v1 = []\<close> \<open>t = r1 @ v1\<close>
+        where ** : \<open>ftF v1\<close> \<open>tF r1 \<or> v1 = []\<close> \<open>t = r1 @ v1\<close>
           \<open>r1 setinterleaves ((t1, u1), range tick \<union> ev ` S)\<close>
           \<open>t1 \<in> \<D> P \<and> u1 \<in> \<T> Q \<or> t1 \<in> \<D> Q \<and> u1 \<in> \<T> P\<close>
         by (simp add: D_Sync) blast
@@ -1098,12 +1102,12 @@ proof (rule FD_antisym)
         where *** : \<open>r' setinterleaves ((r1, u'), range tick \<union> ev ` S)\<close>
           \<open>r = r' @ r''\<close> \<open>u = u' @ u''\<close> by blast
       have \<open>u' \<in> \<T> R\<close> by (metis "***"(3) prefixI \<open>u \<in> \<T> R\<close> is_processT3_TR)
-      have $ : \<open>front_tickFree (r'' @ v)\<close>
-        by (metis "*"(3) "***"(2) D_imp_front_tickFree \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close>
-            front_tickFree_append_iff front_tickFree_charn tickFree_append_iff)
-      have $$ : \<open>tickFree r' \<or> r'' @ v = []\<close>
-        by (metis "*"(3) "***"(2) D_imp_front_tickFree \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close>
-            append.right_neutral front_tickFree_append_iff tickFree_append_iff)
+      have $ : \<open>ftF (r'' @ v)\<close>
+        by (metis "*"(3) "***"(2) D_imp_ftF \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close>
+            ftF_append_iff ftF_charn tF_append_iff)
+      have $$ : \<open>tF r' \<or> r'' @ v = []\<close>
+        by (metis "*"(3) "***"(2) D_imp_ftF \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close>
+            append.right_neutral ftF_append_iff tF_append_iff)
       have $$$ : \<open>s = r' @ r'' @ v\<close> by (simp add: "*"(3) "***"(2))
 
       from "**"(5) show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close>
@@ -1118,10 +1122,10 @@ proof (rule FD_antisym)
         show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close> unfolding D_Sync by blast
       next
         assume \<open>t1 \<in> \<D> Q\<close> \<open>u1 \<in> \<T> P\<close>
-        from interleave_assoc_2[OF "**"(4)] "***"(1) setinterleaving_sym obtain tu
+        from interleave_assoc_2[OF "**"(4)] "***"(1) setinterleaving_dual obtain tu
           where "****" : \<open>tu setinterleaves ((u', t1), range tick \<union> ev ` S)\<close>
             \<open>r' setinterleaves ((tu, u1), range tick \<union> ev ` S)\<close> by blast
-        from \<open>u' \<in> \<T> R\<close> "****"(1)[unfolded setinterleaving_sym] front_tickFree_Nil \<open>t1 \<in> \<D> Q\<close>
+        from \<open>u' \<in> \<T> R\<close> "****"(1)[unfolded setinterleaving_dual] ftF_Nil \<open>t1 \<in> \<D> Q\<close>
         have \<open>tu \<in> \<D> (Q \<lbrakk>S\<rbrakk> R)\<close> unfolding D_Sync by blast
         with "$" "$$" "$$$" "****"(2) \<open>u1 \<in> \<T> P\<close>
         show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close> unfolding D_Sync by blast
@@ -1147,7 +1151,7 @@ proof (rule FD_antisym)
       thus \<open>(s, Z) \<in> \<F> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close>
       proof cases
         assume \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
-        with F(2) F(4) F_T front_tickFree_Nil
+        with F(2) F(4) F_T ftF_Nil
         have \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \<lbrakk>S\<rbrakk> R)\<close> unfolding D_Sync by blast
         with subset_div D_F show \<open>(s, Z) \<in> \<F> (P \<lbrakk>S\<rbrakk> (Q \<lbrakk>S\<rbrakk> R))\<close> by blast
       next

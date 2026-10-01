@@ -79,9 +79,9 @@ proof -
     show \<open>(s, X) \<in> ?f \<Longrightarrow> ftF s\<close> for s X
       apply (simp, elim disjE exE)
         apply (metis is_processT)
-       apply (simp add: front_tickFree_append)
-      by (metis F_imp_front_tickFree T_nonTickFree_imp_decomp append1_eq_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1)
-          front_tickFree_Cons_iff front_tickFree_append tickFree_Cons_iff tickFree_append_iff)
+       apply (simp add: ftF_append)
+      by (metis F_imp_ftF T_not_tF_imp_decomp append1_eq_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1)
+          ftF_Cons_iff ftF_append tF_Cons_iff tF_append_iff)
   next
     show \<open>(s @ t, {}) \<in> ?f \<Longrightarrow> (s, {}) \<in> ?f\<close> for s t
     proof (induct t rule: rev_induct)
@@ -104,7 +104,7 @@ proof -
           by (rule snoc.hyps, cases t2 rule: rev_cases, simp_all)
             (metis (no_types, opaque_lifting) Int_Un_distrib2 append_assoc is_processT3
               is_processT8 set_append sup.idem sup_bot.right_neutral,
-              metis front_tickFree_dw_closed)
+              metis ftF_dw_closed)
       next
         show \<open>\<lbrakk>s @ t @ [b] = t1 @ ev a # t2; t1 @ [ev a] \<in> \<T> P; set t1 \<inter> ev ` A = {};
                a \<in> A; (t2, {}) \<in> \<F> (Q a)\<rbrakk> \<Longrightarrow> (s, {}) \<in> ?f\<close> for t1 a t2
@@ -158,22 +158,21 @@ proof -
     show \<open>(s @ [\<checkmark>(r)], {}) \<in> ?f \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> ?f\<close> for s r X
       apply (simp, elim disjE exE conjE)
         apply (solves \<open>simp add: is_processT6\<close>)
-       apply (metis append1_eq_conv append_assoc front_tickFree_dw_closed
-          nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append_iff)
+      apply (metis butlast_append event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_dw_closed snoc_eq_iff_butlast tF_Cons_iff tF_append_iff)
       by (frule "*", elim exE, simp, metis is_processT6)
   next
     show \<open>\<lbrakk>s \<in> ?d; tF s; ftF t\<rbrakk> \<Longrightarrow> s @ t \<in> ?d\<close> for s t
       by (simp, elim disjE) 
-        (meson append_assoc front_tickFree_append tickFree_append_iff,
-          use append_self_conv2 is_processT7 tickFree_append_iff in fastforce)
+        (meson append_assoc ftF_append tF_append_iff,
+          use append_self_conv2 is_processT7 tF_append_iff in fastforce)
   next
     show \<open>s \<in> ?d \<Longrightarrow> (s, X) \<in> ?f\<close> for s X
       by simp (metis is_processT8)     
   next
     show \<open>s @ [\<checkmark>(r)] \<in> ?d \<Longrightarrow> s \<in> ?d\<close> for s r
       by (simp, elim disjE)
-        (metis butlast_append butlast_snoc front_tickFree_iff_tickFree_butlast
-          non_tickFree_tick tickFree_Nil tickFree_append_iff tickFree_imp_front_tickFree,
+        (metis append1_eq_conv append_assoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+          ftF_charn tF_Cons_iff tF_append_iff tF_imp_ftF,
           metis (no_types, lifting) append_butlast_last_id butlast.simps(2) butlast_append
           butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) is_processT9 last.simps last_appendR list.distinct(1))
   qed
@@ -223,7 +222,43 @@ lemma T_Throw:
    {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> \<T> P \<and> set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<T> (Q a)}\<close>
   by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_Throw) blast+
 
+lemma T_ThrowI1: \<open>t \<in> \<T> Proc \<Longrightarrow> set t \<inter> ev ` A = {} \<Longrightarrow> t \<in> \<T> (Proc \<Theta> a \<in> A. Qf a)\<close>
+  by (simp add: T_Throw)
+
+lemma T_ThrowI2: \<open>t1 @ [ev a] \<in> \<T> Proc \<Longrightarrow> set t1 \<inter> ev ` A = {} \<Longrightarrow> a \<in> A \<Longrightarrow> t2 \<in> \<T> (Qf a)
+                  \<Longrightarrow> t1 @ ev a # t2 \<in> \<T> (Proc \<Theta> a \<in> A. Qf a)\<close>
+  unfolding T_Throw by blast
+
 lemmas Throw_projs = F_Throw D_Throw T_Throw
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_Throw_subset :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<Theta> a \<in> A. Q a) \<subseteq>
+   {t1 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P. tF t1 \<and> set t1 \<inter> ev ` A = {}} \<union>
+   {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> \<T> P \<and> t1 \<notin> \<D> P \<and> set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Q a)}\<close>
+  (is \<open>_ \<subseteq> ?rhs1 \<union> ?rhs2\<close>)
+proof -
+  have \<open>\<D> (P \<Theta> a \<in> A. Q a) = 
+   {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tF t1 \<and> set t1 \<inter> ev ` A = {} \<and> ftF t2} \<union>
+   {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> \<T> P \<and> t1 \<notin> \<D> P \<and> set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<D> (Q a)}\<close>
+    (is \<open>_ = ?lhs1 \<union> ?lhs2\<close>)
+    by (auto simp add: D_Throw)
+      (metis D_imp_ftF append_T_imp_tF ftF_Cons_iff is_ev_def list.distinct(1))
+  hence \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<Theta> a \<in> A. Q a) \<subseteq> min_elems ?lhs1 \<union> min_elems ?lhs2\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_Un_subset_Un_min_elems)
+  moreover have \<open>min_elems ?lhs1 \<subseteq> ?rhs1\<close>
+    (* TODO: better proof pls *)
+    apply (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def subset_iff is_processT7)
+       apply (metis (no_types, lifting) Int_assoc Prefix_Order.prefixI Prefix_Order.strict_prefixE' append.right_neutral ftF_Nil inf_bot_right inf_sup_absorb
+        order_less_le set_append tF_append_iff)
+      apply (metis ftF_charn less_append Nil_less2 tF_Nil)
+     apply blast
+    apply (metis empty_iff empty_set ftF_charn less_append less_self tF_imp_ftF)
+    done
+  moreover have \<open>min_elems ?lhs2 \<subseteq> ?rhs2\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def subset_iff)
+      (metis Prefix_Order.strict_prefix_simps(3) less_append)
+  ultimately show ?thesis by blast
+qed
 
 
 lemma Throw_T_third_clause_breaker :
@@ -259,8 +294,8 @@ lemma min_elems_Un_subset:
 lemma mono_Throw[simp] : \<open>P \<Theta> a \<in> A. Q a \<sqsubseteq> P' \<Theta> a \<in> A. Q' a\<close> 
   if \<open>P \<sqsubseteq> P'\<close> and \<open>\<And>a. a \<in> A \<Longrightarrow> a \<in> \<alpha>(P) \<Longrightarrow> Q a \<sqsubseteq> Q' a\<close>
 proof (unfold le_approx_def Refusals_after_def, safe)
-  from le_approx1[OF that(1)] le_approx_lemma_T[OF that(1)] 
-    le_approx1[OF that(2)[rule_format]] 
+  from le_approxD(1)[OF that(1)] le_approx_lemma_T[OF that(1)] 
+    le_approxD(1)[OF that(2)[rule_format]] 
   show \<open>s \<in> \<D> (P' \<Theta> a \<in> A. Q' a) \<Longrightarrow> s \<in> \<D> (P \<Theta> a \<in> A. Q a)\<close> for s 
     by (simp add: D_Throw subset_iff)
       (metis events_of_memI in_set_conv_decomp)
@@ -278,10 +313,10 @@ next
       assms(1)[simplified D_Throw, simplified, THEN conjunct1, rule_format, of \<open>butlast s\<close>]
     have ** : \<open>s \<notin> \<D> P\<close> 
       using "*"(2) apply (cases \<open>tF s\<close>, auto simp add: disjoint_iff)
-      by (metis "*"(1) D_imp_front_tickFree F_T T_nonTickFree_imp_decomp butlast_snoc
-          front_tickFree_append_iff in_set_butlastD is_processT9 list.distinct(1))
+      by (metis "*"(1) D_imp_ftF F_T T_not_tF_imp_decomp butlast_snoc
+          ftF_append_iff in_set_butlastD is_processT9 list.distinct(1))
     show \<open>(s, X) \<in> \<F> P \<Longrightarrow> set s \<inter> ev ` A = {} \<Longrightarrow> (s, X) \<in> \<F> (Throw P' A Q')\<close>
-      by (simp add: F_Throw le_approx2[OF that(1) "**"])
+      by (simp add: F_Throw le_approxD(2)[OF that(1) "**"])
   next
     from assms(1) show \<open>\<lbrakk>s = t1 @ t2; t1 \<in> \<D> P; tF t1; set t1 \<inter> ev ` A = {}; ftF t2\<rbrakk>
                         \<Longrightarrow> (s, X) \<in> \<F> (Throw P' A Q')\<close> for t1 t2
@@ -289,98 +324,32 @@ next
   next
     fix t1 a t2 assume * : \<open>s = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close> 
       \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>(t2, X) \<in> \<F> (Q a)\<close>
-    from "*"(2) have ** : \<open>tF t1\<close> by (simp add: append_T_imp_tickFree)
+    from "*"(2) have ** : \<open>tF t1\<close> by (simp add: append_T_imp_tF)
     have *** : \<open>(t2, X) \<in> \<F> (Q' a)\<close>
       using assms(1)[simplified D_Throw, simplified, THEN conjunct2, rule_format, OF "*"(4, 3, 2, 1)]
-      by (metis "*"(2, 4, 5) events_of_memI last_in_set le_approx2 snoc_eq_iff_butlast that(2))
+      by (metis "*"(2, 4, 5) events_of_memI last_in_set le_approxD(2) snoc_eq_iff_butlast that(2))
     have **** : \<open>t1 \<notin> \<D> P\<close>
       apply (rule ccontr, simp, 
           drule assms(1)[simplified D_Throw, simplified, THEN conjunct1, rule_format,
             OF "*"(3) "**", of \<open>ev a # t2\<close>, simplified "*"(1), simplified])
-      by (metis "*"(1) F_imp_front_tickFree assms(2) front_tickFree_append_iff list.discI)
+      by (metis "*"(1) F_imp_ftF assms(2) ftF_append_iff list.discI)
     show \<open>(s, X) \<in> \<F> (Throw P' A Q')\<close>
       by (simp add: F_Throw D_Throw "*"(1))
-        (metis "*"(2, 3, 4) "***" "****" T_F_spec le_approx2 min_elems6 that(1))
+        (metis "*"(2, 3, 4) "***" "****" T_F_spec le_approxD(2) min_elems6 that(1))
   qed
 next
-  from le_approx1[OF that(1)] le_approx2[OF that(1)] le_approx2T[OF that(1)]
-    le_approx2[OF that(2)[rule_format]]
+  from le_approxD(1)[OF that(1)] le_approxD(2)[OF that(1)] le_approxD2_T[OF that(1)]
+    le_approxD(2)[OF that(2)[rule_format]]
   show \<open>s \<notin> \<D> (P \<Theta> a \<in> A. Q a) \<Longrightarrow> (s, X) \<in> \<F> (P' \<Theta> a \<in> A. Q' a)
         \<Longrightarrow> (s, X) \<in> \<F> (P \<Theta> a \<in> A. Q a)\<close> for s X
     by (simp add: F_Throw D_Throw subset_eq, safe, simp_all)
       (metis is_processT8, (metis D_T events_of_memI in_set_conv_decomp)+)
 next
-  define S_left 
-    where \<open>S_left \<equiv> {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tF t1 \<and> 
-                     set t1 \<inter> ev ` A = {} \<and> ftF t2}\<close>
-  define S_right 
-    where \<open>S_right \<equiv> {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> \<T> P \<and>
-                      set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<D> (Q a)}\<close>
-
-  have * : \<open>min_elems (\<D> (P \<Theta> a \<in> A. Q a)) \<subseteq> min_elems S_left \<union> (min_elems S_right - S_left)\<close>
-    unfolding S_left_def S_right_def 
-    by (simp add: D_Throw min_elems_Un_subset)
-  have ** : \<open>min_elems S_left = {t1 \<in> min_elems (\<D> P). set t1 \<inter> ev ` A = {}}\<close>
-    unfolding S_left_def min_elems_def less_list_def less_eq_list_def prefix_def
-    apply (simp, safe)
-        apply (solves \<open>meson is_processT7\<close>)
-       apply (metis (no_types, lifting) append.right_neutral front_tickFree_Nil front_tickFree_append
-        front_tickFree_nonempty_append_imp inf_bot_right inf_sup_absorb inf_sup_aci(2) set_append)
-      apply (metis Int_iff Un_iff append.right_neutral front_tickFree_Nil image_eqI set_append)
-     apply (metis D_T prefixI same_prefix_nil T_nonTickFree_imp_decomp append.right_neutral front_tickFree_Nil is_processT9 list.distinct(1)) 
-    by (metis Nil_is_append_conv append_eq_appendI self_append_conv) 
-
-  { fix t1 a t2
-    assume assms : \<open>t1 @ [ev a] \<in> \<T> P\<close> \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close>
-      \<open>t2 \<in> (\<D> (Q a))\<close> \<open>t1 @ ev a # t2 \<in> min_elems S_right\<close> \<open>t1 @ ev a # t2 \<notin> S_left\<close>
-    have \<open>t2 \<in> min_elems (\<D> (Q a))\<close> 
-      \<open>t1 @ [ev a] \<in> \<D> P \<Longrightarrow> t1 @ [ev a] \<in> min_elems (\<D> P)\<close>
-    proof (all \<open>rule ccontr\<close>)
-      assume \<open>t2 \<notin> min_elems (\<D> (Q a))\<close>
-      with assms(4) obtain t2' where \<open>t2' < t2 \<close> \<open>t2' \<in> \<D> (Q a)\<close> 
-        unfolding min_elems_def by blast
-      hence \<open>t1 @ ev a # t2' \<in> S_right\<close> \<open>t1 @ ev a # t2' < t1 @ ev a # t2\<close> 
-        unfolding S_right_def using assms(1, 2, 3) by auto
-      with assms(5) min_elems_no nless_le show False by blast
-    next
-      assume \<open>t1 @ [ev a] \<in> \<D> P\<close> \<open>t1 @ [ev a] \<notin> min_elems (\<D> P)\<close>
-      hence \<open>t1 \<in> \<D> P\<close> using min_elems1 by blast
-      with \<open>t1 @ [ev a] \<in> \<D> P\<close> have \<open>t1 @ ev a # t2 \<in> S_left\<close>
-        apply (simp add: S_left_def)
-        by (metis D_imp_front_tickFree T_nonTickFree_imp_decomp append1_eq_conv assms(1)
-            assms(2, 4) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) front_tickFree_Cons_iff tickFree_Cons_iff tickFree_append_iff)
-      with assms(6) show False by simp
-    qed
-  } note *** = this
-  have **** : \<open>min_elems S_right - S_left \<subseteq> 
-               {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> \<T> P - \<D> P \<and>
-                set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> min_elems (\<D> (Q a))} \<union>
-               {t1 @ ev a # t2 |t1 a t2. t1 @ [ev a] \<in> min_elems (\<D> P) \<and>
-                set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> min_elems (\<D> (Q a))}\<close>
-    apply (intro subsetI, simp, elim conjE)
-    apply (frule set_mp[OF min_elems_le_self], subst (asm) (2) S_right_def)
-    using "***" by fast
-
-  fix s
-  assume assm: \<open>s \<in> min_elems (\<D> (P \<Theta> a \<in> A. Q a))\<close>
-  from set_mp[OF "*", OF this] 
-  consider \<open>s \<in> min_elems (\<D> P)\<close> \<open>set s \<inter> ev ` A = {}\<close>
-    | t1 a t2 where \<open>s = t1 @ ev a # t2\<close> \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> min_elems (\<D> (Q a))\<close>
-      \<open>t1 @ [ev a] \<in> min_elems (\<D> P) \<or> t1 @ [ev a] \<in> \<T> P \<and> t1 @ [ev a] \<notin> \<D> P\<close>
-    using "****" by (simp add: "**") blast 
-  thus \<open>s \<in> \<T> (P' \<Theta> a \<in> A. Q' a)\<close>
-  proof cases
-    show \<open>s \<in> min_elems (\<D> P) \<Longrightarrow> set s \<inter> ev ` A = {} \<Longrightarrow> s \<in> \<T> (Throw P' A Q')\<close>
-      by (drule set_mp[OF le_approx3[OF that(1)]], simp add: T_Throw)
-  next
-    fix t1 a t2
-    assume ***** : \<open>s = t1 @ ev a # t2\<close> \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> min_elems (\<D> (Q a))\<close>
-      \<open>t1 @ [ev a] \<in> min_elems (\<D> P) \<or> t1 @ [ev a] \<in> \<T> P \<and> t1 @ [ev a] \<notin> \<D> P\<close>
-    have \<open>t1 @ [ev a] \<in> \<T> P' \<and> t2 \<in> \<T> (Q' a)\<close>
-      by (meson "*****"(3-5) D_T events_of_memI in_set_conv_decomp le_approx2T le_approx_def subsetD that)
-    with "*****" show \<open>s \<in> \<T> (Throw P' A Q')\<close>
-      by (simp add: T_Throw) blast
-  qed
+  from le_approxD(3)[OF \<open>P \<sqsubseteq> P'\<close>] le_approxD2_T[OF \<open>P \<sqsubseteq> P'\<close>]
+    le_approxD(3)[OF that(2)]
+  show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<Theta> a \<in> A. Q a) \<Longrightarrow> t \<in> \<T> (P' \<Theta> a \<in> A. Q' a)\<close> for t
+    by (auto dest!: D\<^sub>m\<^sub>i\<^sub>n_Throw_subset[THEN set_mp] simp add: T_Throw Throw_T_third_clause_breaker in_set_conv_decomp)
+      (use that(1) in \<open>meson T_F_spec min_elems6\<close>, meson events_of_memI in_mono in_set_conv_decomp)+
 qed
 
 
@@ -423,8 +392,8 @@ lemma Throw_is_BOT_iff: \<open>P \<Theta> a \<in> A. Q a = \<bottom> \<longleftr
 
 lemma Throw_empty_set [simp] : \<open>P \<Theta> a \<in> {}. Q a = P\<close>
   by (auto simp add: Process_eq_spec F_Throw D_Throw intro: is_processT7 is_processT8)
-    (metis append.right_neutral front_tickFree_nonempty_append_imp
-      nonTickFree_n_frontTickFree process_charn snoc_eq_iff_butlast)
+    (metis append.right_neutral ftF_nonempty_append_imp
+      not_tF_and_ftF process_charn snoc_eq_iff_butlast)
 
 
 
@@ -519,21 +488,21 @@ proof (subst Process_eq_spec_optimized, safe)
 next
   fix s
   define S
-    where \<open>S i \<equiv> {t1. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<D> (Y i) \<and> tickFree t1 \<and>
-                           set t1 \<inter> ev ` A = {} \<and> front_tickFree t2} \<union>
-                 {t1. \<exists>a t2. s = t1 @ ev a # t2 \<and> t1 @ [ev a] \<in> \<T> (Y i) \<and> tickFree t1 \<and>
+    where \<open>S i \<equiv> {t1. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<D> (Y i) \<and> tF t1 \<and>
+                           set t1 \<inter> ev ` A = {} \<and> ftF t2} \<union>
+                 {t1. \<exists>a t2. s = t1 @ ev a # t2 \<and> t1 @ [ev a] \<in> \<T> (Y i) \<and> tF t1 \<and>
                              set t1 \<inter> ev ` A = {} \<and> a \<in> A \<and> t2 \<in> \<D> (Q a)}\<close> for i
   assume \<open>s \<in> \<D> ?rhs\<close>
-  hence ftF: \<open>front_tickFree s\<close> using D_imp_front_tickFree by blast
+  hence ftF: \<open>ftF s\<close> using D_imp_ftF by blast
   from \<open>s \<in> \<D> ?rhs\<close> have \<open>s \<in> \<D> (Y i \<Theta> a \<in> A. Q a)\<close> for i
     by (simp add: limproc_is_thelub D_LUB chain_Throw_left \<open>chain Y\<close>)
   hence \<open>S i \<noteq> {}\<close> for i by (simp add: S_def D_Throw)
-      (metis append_T_imp_tickFree not_Cons_self2)
+      (metis append_T_imp_tF not_Cons_self2)
   moreover have \<open>finite (S 0)\<close>
     unfolding S_def by (prove_finite_subset_of_prefixes s)
   moreover have \<open>S (Suc i) \<subseteq> S i\<close> for i
     unfolding S_def apply (intro allI Un_mono subsetI; simp)
-    by (metis in_mono le_approx1 po_class.chainE \<open>chain Y\<close>)
+    by (metis in_mono le_approxD(1) po_class.chainE \<open>chain Y\<close>)
       (metis le_approx_lemma_T po_class.chain_def subset_eq \<open>chain Y\<close>)
   ultimately have \<open>(\<Inter>i. S i) \<noteq> {}\<close>
     by (rule Inter_nonempty_finite_chained_sets)
@@ -545,14 +514,14 @@ next
     then obtain j a t2 where ** : \<open>s = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> (Y j)\<close>
       \<open>a \<in> A\<close> \<open>t2 \<in> \<D> (Q a)\<close> by blast
     from "*" "**"(1) have \<open>\<forall>i. t1 @ [ev a] \<in> \<T> (Y i)\<close>
-      by (simp add: S_def) (meson D_T front_tickFree_single is_processT7)
+      by (simp add: S_def) (meson D_T ftF_single is_processT7)
     with "*" "**"(1, 3, 4) show \<open>s \<in> \<D> ?lhs\<close>
       by (simp add: S_def D_Throw limproc_is_thelub \<open>chain Y\<close> T_LUB) blast
   next
     case False
-    with "*" have \<open>\<forall>i. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<D> (Y i) \<and> front_tickFree t2\<close>
+    with "*" have \<open>\<forall>i. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<D> (Y i) \<and> ftF t2\<close>
       by (simp add: S_def) blast
-    hence \<open>\<exists>t2. s = t1 @ t2 \<and> (\<forall>i. t1 \<in> \<D> (Y i)) \<and> front_tickFree t2\<close> by blast
+    hence \<open>\<exists>t2. s = t1 @ t2 \<and> (\<forall>i. t1 \<in> \<D> (Y i)) \<and> ftF t2\<close> by blast
     with "*" show \<open>s \<in> \<D> ?lhs\<close>
       by (simp add: S_def D_Throw limproc_is_thelub \<open>chain Y\<close> D_LUB) blast
   qed
@@ -573,7 +542,7 @@ next
     moreover from \<open>(s, X) \<in> \<F> ?rhs\<close> have \<open>(s, X) \<in> \<F> (Y j \<Theta> a \<in> A. Q a)\<close>
       by (simp add: limproc_is_thelub chain_Throw_left \<open>chain Y\<close> F_LUB)
     ultimately show \<open>(s, X) \<in> \<F> ?lhs\<close>
-      by (meson is_ub_thelub le_approx2 mono_Throw \<open>chain Y\<close>)
+      by (meson is_ub_thelub le_approxD(2) mono_Throw \<open>chain Y\<close>)
   qed
 qed
 
@@ -601,7 +570,7 @@ next
     unfolding S_def by (prove_finite_subset_of_prefixes s)
   moreover have \<open>S (Suc i) \<subseteq> S i\<close> for i
     unfolding S_def apply (intro allI Un_mono subsetI; simp)
-    by (metis fun_belowD le_approx1 po_class.chainE subset_iff \<open>chain Y\<close>)
+    by (metis fun_belowD le_approxD(1) po_class.chainE subset_iff \<open>chain Y\<close>)
   ultimately have \<open>(\<Inter>i. S i) \<noteq> {}\<close>
     by (rule Inter_nonempty_finite_chained_sets)
   then obtain t1 where \<open>\<forall>i. t1 \<in> S i\<close> 
@@ -613,8 +582,8 @@ next
     by (simp add: S_def) blast
   thus \<open>s \<in> \<D> ?lhs\<close>
   proof cases
-    show \<open>t1 \<in> \<D> P \<Longrightarrow> tickFree t1 \<Longrightarrow> set t1 \<inter> ev ` A = {} \<Longrightarrow>
-          \<exists>t2. s = t1 @ t2 \<and> front_tickFree t2 \<Longrightarrow> s \<in> \<D> ?lhs\<close>
+    show \<open>t1 \<in> \<D> P \<Longrightarrow> tF t1 \<Longrightarrow> set t1 \<inter> ev ` A = {} \<Longrightarrow>
+          \<exists>t2. s = t1 @ t2 \<and> ftF t2 \<Longrightarrow> s \<in> \<D> ?lhs\<close>
       by (simp add: D_Throw) blast
   next
     assume assms: \<open>set t1 \<inter> ev ` A = {}\<close>
@@ -643,7 +612,7 @@ next
     moreover from \<open>(s, X) \<in> \<F> ?rhs\<close> have \<open>(s, X) \<in> \<F> (P \<Theta> a \<in> A. Y j a)\<close>
       by (simp add: limproc_is_thelub chain_Throw_right \<open>chain Y\<close> F_LUB)
     ultimately show \<open>(s, X) \<in> \<F> ?lhs\<close>
-      by (metis (mono_tags, lifting) below_refl le_approx2 mono_Throw)
+      by (metis (mono_tags, lifting) below_refl le_approxD(2) mono_Throw)
   qed
 qed
 

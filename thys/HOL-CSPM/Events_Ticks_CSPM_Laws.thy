@@ -59,6 +59,17 @@ lemma events_of_GlobalDet :
 lemma strict_events_of_GlobalDet_subset : \<open>\<^bold>\<alpha>(\<box>a \<in> A. P a) \<subseteq> (\<Union>a\<in>A. \<^bold>\<alpha>(P a))\<close>
   by (auto simp add: strict_events_of_def GlobalDet_projs)
 
+lemma events_of_MultiSeq_subset :
+  \<open>\<alpha>(SEQ l \<in>@ L. P l) \<subseteq> (\<Union>l \<in> set L. \<Union>r. \<alpha>(P l))\<close>
+  by (induct L rule: rev_induct) (auto simp add: events_of_Seq)
+
+lemma strict_events_of_MultiSeq_subset :
+  \<open>\<^bold>\<alpha>(SEQ l \<in>@ L. P l) \<subseteq> (\<Union>l \<in> set L. \<Union>r. \<^bold>\<alpha>(P l))\<close>
+  by (induct L rule: rev_induct)
+    (auto intro!: subset_trans[OF strict_events_of_Seq_subset]
+      split: if_split_asm)
+
+
 
 lemma events_of_MultiSync_subset :
   \<open>\<alpha>(\<^bold>\<lbrakk>S\<^bold>\<rbrakk> a \<in># M. P a) \<subseteq> (\<Union>a \<in> set_mset M. \<alpha>(P a))\<close>
@@ -118,12 +129,12 @@ qed
 lemma events_of_Interrupt : \<open>\<alpha>(P \<triangle> Q) = \<alpha>(P) \<union> \<alpha>(Q)\<close>
   by (safe elim!: events_of_memE,
       auto simp add: events_of_def Interrupt_projs)
-    (metis append_Nil is_processT1_TR tickFree_Nil)
+    (metis append_Nil is_processT1_TR tF_Nil)
 
 lemma strict_events_of_Interrupt_subset : \<open>\<^bold>\<alpha>(P \<triangle> Q) \<subseteq> \<^bold>\<alpha>(P) \<union> \<^bold>\<alpha>(Q)\<close>
   by (safe elim!:strict_events_of_memE,
       auto simp add: strict_events_of_def Interrupt_projs)
-    (metis DiffI T_imp_front_tickFree is_processT7)
+    (metis DiffI T_imp_ftF is_processT7)
 
 
 
@@ -204,7 +215,7 @@ lemma ticks_of_Interrupt : \<open>\<checkmark>s(P \<triangle> Q) = \<checkmark>s
   by (safe elim!: ticks_of_memE,
       auto simp add: ticks_of_def Interrupt_projs)
     (metis append.right_neutral last_appendR snoc_eq_iff_butlast,
-      metis append_Nil is_processT1_TR tickFree_Nil)
+      metis append_Nil is_processT1_TR tF_Nil)
 
 lemma strict_ticks_of_Interrupt_subset : \<open>\<^bold>\<checkmark>\<^bold>s(P \<triangle> Q) \<subseteq> \<^bold>\<checkmark>\<^bold>s(P) \<union> \<^bold>\<checkmark>\<^bold>s(Q)\<close>
   by (safe elim!: strict_ticks_of_memE,
@@ -248,6 +259,214 @@ lemma \<open>\<not> \<alpha>(P) \<subseteq> A \<Longrightarrow> \<not> DF A \<sq
   and \<open>\<not> \<alpha>(P) \<subseteq> A \<Longrightarrow> \<not> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S A R \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
   by (metis anti_mono_events_of_FD events_of_DF)
     (metis anti_mono_events_of_FD events_of_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
+
+
+
+section \<open>Minimal Events\<close>
+
+text \<open>New in Isabelle26.\<close>
+
+lemma minimal_events_of_GlobalDet_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(\<box>a \<in> A. P a) \<subseteq> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P a))\<close>
+  by (auto simp add: minimal_events_of_def
+      dest!: strict_events_of_GlobalDet_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_GlobalDet_subset[THEN set_mp])
+
+
+lemma minimal_events_of_Interrupt_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<triangle> Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+proof (rule subsetI)
+  fix a assume \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<triangle> Q)\<close>
+  then consider \<open>a \<in> \<^bold>\<alpha>(P \<triangle> Q)\<close>
+    | t where \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n(P \<triangle> Q)\<close> \<open>ev a \<in> set t\<close>
+    by (blast dest: minimal_events_of_memD intro: strict_events_of_memI)
+  thus \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+  proof cases
+    show \<open>a \<in> \<^bold>\<alpha>(P \<triangle> Q) \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+      by (metis (no_types, lifting) Un_iff minimal_events_of_def_bis
+          strict_events_of_Interrupt_subset subset_iff)
+  next
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n(P \<triangle> Q)\<close> \<open>ev a \<in> set t\<close>
+    from this(1) consider \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+      | t1 t2 where \<open>t = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>t1 \<notin> \<D> P\<close> \<open>tF t1\<close> \<open>t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Interrupt_subset[THEN set_mp])
+    thus \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+    proof cases
+      from \<open>ev a \<in> set t\<close> show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+        by (simp add: minimal_events_of_memI(2))
+    next
+      fix t1 t2 assume \<open>t = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>t1 \<notin> \<D> P\<close> \<open>tF t1\<close> \<open>t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q\<close>
+      with \<open>ev a \<in> set t\<close> show \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+        by (auto intro: Un_iff minimal_events_of_memI)
+    qed
+  qed
+qed
+
+
+lemma minimal_events_of_Throw_subset :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<Theta> a \<in> A. Q a) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> (\<Union>a \<in> A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P). \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q a))\<close>
+  (is \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(?P) \<subseteq> ?rhs\<close>)
+proof (rule subsetI)
+  fix a assume \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(?P)\<close>
+  then consider t where \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?P\<close> \<open>ev a \<in> set t\<close>
+    | t where \<open>t \<in> \<T> ?P - \<D> ?P\<close> \<open>ev a \<in> set t\<close>
+    by (blast dest: minimal_events_of_memD)
+  thus \<open>a \<in> ?rhs\<close>
+  proof cases
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?P\<close> \<open>ev a \<in> set t\<close>
+    from this(1) consider \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+      | (D_Q) t1 b t2 where \<open>t = t1 @ ev b # t2\<close> \<open>t1 @ [ev b] \<in> \<T> P\<close> \<open>t1 \<notin> \<D> P\<close>
+        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>b \<in> A\<close> \<open>t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Q b)\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Throw_subset[THEN set_mp])
+    thus \<open>a \<in> ?rhs\<close>
+    proof cases
+      from \<open>ev a \<in> set t\<close> show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> a \<in> ?rhs\<close>
+        by (simp add: minimal_events_of_memI(2))
+    next
+      case D_Q
+      have \<open>t1 @ [ev b] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (metis D_Q(2, 3) UnCI min_elems3 DiffI)
+      from mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset[OF this] D_Q(2)[THEN T_imp_ftF]
+      have \<open>set (t1 @ [ev b]) \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+        by (auto simp add: ftF_append_iff tickFree_def disjoint_iff)
+      with \<open>ev a \<in> set t\<close> D_Q(1, 5, 6) show \<open>a \<in> ?rhs\<close>
+        by (auto intro: minimal_events_of_memI)
+    qed
+  next
+    fix t assume \<open>t \<in> \<T> ?P - \<D> ?P\<close> \<open>ev a \<in> set t\<close>
+    from this(1) consider (T_P) \<open>t \<in> \<T> P\<close> \<open>set t \<inter> ev ` A = {}\<close>
+      | (T_Q) t1 b t2 where \<open>t = t1 @ ev b # t2\<close> \<open>t1 @ [ev b] \<in> \<T> P\<close>
+        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>b \<in> A\<close> \<open>t2 \<in> \<T> (Q b)\<close>
+      by (auto simp add: Throw_projs)
+    thus \<open>a \<in> ?rhs\<close>
+    proof cases
+      case T_P
+      from T_P(1)[THEN T_imp_ftF] T_P(2) \<open>t \<in> \<T> ?P - \<D> ?P\<close> have \<open>t \<notin> \<D> P\<close>
+        by (elim ftF_E, simp_all add: D_Throw)
+          (fastforce, metis ftF_single is_processT9)
+      with T_P(1) \<open>ev a \<in> set t\<close> show \<open>a \<in> ?rhs\<close>
+        by (simp add: minimal_events_of_memI(1))
+    next
+      case T_Q
+      with \<open>t \<in> \<T> ?P - \<D> ?P\<close> have \<open>t1 @ [ev b] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (simp add: Throw_projs)
+          (metis T_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) not_Cons_self2
+            ftF_Cons_iff ftF_nonempty_append_imp min_elems3)
+      from mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset[OF this] T_Q(2)[THEN T_imp_ftF]
+      have \<open>set (t1 @ [ev b]) \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+        by (auto simp add: ftF_append_iff tickFree_def disjoint_iff)
+      from T_Q(1-4) \<open>t \<in> \<T> ?P - \<D> ?P\<close> have \<open>t2 \<notin> \<D> (Q b)\<close>
+        by (simp add: D_Throw)
+      with T_Q(5) have \<open>set t2 \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q b) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(Q b)\<close>
+        by (simp add: mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset)
+      with \<open>set (t1 @ [ev b]) \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> \<open>ev a \<in> set t\<close> T_Q(1, 4)
+      show \<open>a \<in> ?rhs\<close> by auto
+    qed
+  qed
+qed
+
+
+
+
+section \<open>Restriction of the Events\<close>
+
+subsection \<open>Throw\<close>
+
+lemma Throw_is_restrictable_on_minimal_events_of :
+  \<open>P \<Theta> a \<in> A. Q a = P \<Theta> a \<in> (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)). Q a\<close> (is \<open>?lhs = ?rhs\<close>)
+proof -
+  have $ : \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P) \<Longrightarrow> set t \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {} \<longleftrightarrow> set t \<inter> ev ` A = {}\<close> for t
+    by (drule mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset) blast
+  show \<open>?lhs = ?rhs\<close>
+  proof (rule Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version)
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?lhs\<close>
+    then consider (D_P) \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>tF t\<close> \<open>set t \<inter> ev ` A = {}\<close>
+      | (D_Q) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
+        \<open>t1 \<notin> \<D> P\<close> \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Q a)\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Throw_subset[THEN set_mp])
+    thus \<open>t \<in> \<D> ?rhs\<close>
+    proof cases
+      case D_P thus \<open>t \<in> \<D> ?rhs\<close>
+        by (auto simp add: D_Throw intro: D\<^sub>m\<^sub>i\<^sub>n_D ftF_Nil)
+    next
+      case D_Q
+      have \<open>t1 @ [ev a] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (metis D_Q(2, 3) Diff_iff Un_iff min_elems3)
+      from "$"[OF this] D_Q(4, 5) have \<open>set t1 \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close> \<open>a \<in> A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> by auto
+      with D_Q(1, 2, 6) show \<open>t \<in> \<D> ?rhs\<close> by (simp add: D_Throw) (metis D\<^sub>m\<^sub>i\<^sub>n_D)
+    qed
+  next
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?rhs\<close>
+    then consider (D_P) \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>tF t\<close> \<open>set t \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close>
+      | (D_Q) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
+        \<open>t1 \<notin> \<D> P\<close> \<open>set t1 \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close> \<open>a \<in> A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> \<open>t2 \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Q a)\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Throw_subset[THEN set_mp])
+    thus \<open>t \<in> \<D> ?lhs\<close>
+    proof cases
+      case D_P thus \<open>t \<in> \<D> ?lhs\<close>
+        by (auto simp add: D_Throw "$" intro: D\<^sub>m\<^sub>i\<^sub>n_D ftF_Nil)
+    next
+      case D_Q
+      have \<open>t1 @ [ev a] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (metis D_Q(2, 3) Diff_iff Un_iff min_elems3)
+      from "$"[OF this] D_Q(2, 3, 4, 5) have \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close>
+        by (auto dest: is_processT3_TR_append intro: minimal_events_of_memI(1))
+      with D_Q(1, 2, 6) show \<open>t \<in> \<D> ?lhs\<close> by (simp add: D_Throw) (metis D\<^sub>m\<^sub>i\<^sub>n_D)
+    qed
+  next
+    fix t X assume \<open>(t, X) \<in> \<F> ?lhs\<close> \<open>t \<notin> \<D> ?lhs\<close>
+    then consider (F_P) \<open>(t, X) \<in> \<F> P\<close> \<open>set t \<inter> ev ` A = {}\<close>
+      | (F_Q) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
+        \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>(t2, X) \<in> \<F> (Q a)\<close>
+      by (auto simp add: Throw_projs)
+    thus \<open>(t, X) \<in> \<F> ?rhs\<close>
+    proof cases
+      case F_P thus \<open>(t, X) \<in> \<F> ?rhs\<close> by (auto simp add: F_Throw)
+    next
+      case F_Q
+      from \<open>(t, X) \<in> \<F> ?lhs\<close>[THEN F_imp_ftF] \<open>t \<notin> \<D> ?lhs\<close> F_Q(1, 3) have \<open>t1 \<notin> \<D> P\<close>
+        by (simp add: D_Throw)
+          (metis ftF_nonempty_append_imp list.distinct(1))
+      hence \<open>t1 @ [ev a] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (metis F_Q(2) Un_iff min_elems3 Un_Diff_cancel)
+      from "$"[OF this] F_Q(3, 4) have \<open>set t1 \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close> \<open>a \<in> A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> by auto
+      with F_Q(1, 2, 5) show \<open>(t, X) \<in> \<F> ?rhs\<close> by (auto simp add: F_Throw)
+    qed
+  next
+    fix t X assume \<open>(t, X) \<in> \<F> ?rhs\<close> \<open>t \<notin> \<D> ?rhs\<close>
+    then consider (F_P) \<open>(t, X) \<in> \<F> P\<close> \<open>set t \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close>
+      | (F_Q) t1 a t2 where \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
+        \<open>set t1 \<inter> ev ` (A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) = {}\<close> \<open>a \<in> A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> \<open>(t2, X) \<in> \<F> (Q a)\<close>
+      by (auto simp add: Throw_projs)
+    thus \<open>(t, X) \<in> \<F> ?lhs\<close>
+    proof cases
+      case F_P
+      from \<open>(t, X) \<in> \<F> ?rhs\<close>[THEN F_imp_ftF] \<open>t \<notin> \<D> ?rhs\<close> F_P(2) have \<open>t \<notin> \<D> P\<close>
+        by (elim ftF_E, simp_all add: D_Throw)
+          (fastforce, metis ftF_single is_processT9)
+      with F_P(1) have \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close> by (blast intro: F_T)
+      from "$"[OF this] F_P(2) have \<open>set t \<inter> ev ` A = {}\<close> by simp
+      with F_P(1) show \<open>(t, X) \<in> \<F> ?lhs\<close> by (simp add: F_Throw)
+    next
+      case F_Q
+      from \<open>(t, X) \<in> \<F> ?rhs\<close>[THEN F_imp_ftF] \<open>t \<notin> \<D> ?rhs\<close> F_Q(1, 3) have \<open>t1 \<notin> \<D> P\<close>
+        by (simp add: D_Throw)
+          (metis ftF_nonempty_append_imp list.distinct(1))
+      hence \<open>t1 @ [ev a] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+        by (metis F_Q(2) Un_iff min_elems3 Un_Diff_cancel)
+      from "$"[OF this] F_Q(2, 3, 4) \<open>t1 \<notin> \<D> P\<close> have \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close>
+        by (auto dest: is_processT3_TR_append intro: minimal_events_of_memI(1))
+      with F_Q(1, 2, 5) show \<open>(t, X) \<in> \<F> ?lhs\<close> by (auto simp add: F_Throw)
+    qed
+  qed
+qed
+
+corollary Throw_is_restrictable_on_superset_minimal_events_of :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<subseteq> A \<Longrightarrow> P \<Theta> a \<in> S. Q a = P \<Theta> a \<in> (S \<inter> A). Q a\<close>
+  by (metis Throw_is_restrictable_on_minimal_events_of inf.absorb_iff2 inf_assoc)
+
+corollary Throw_disjoint_minimal_events_of: \<open>A \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) = {} \<Longrightarrow> P \<Theta> a \<in> A. Q a = P\<close>
+  by (metis Throw_empty_set Throw_is_restrictable_on_minimal_events_of)
+
+
+
 
 
 (*<*)

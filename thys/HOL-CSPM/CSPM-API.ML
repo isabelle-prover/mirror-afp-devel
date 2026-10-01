@@ -78,7 +78,7 @@ structure Cspm_API : sig
     val mk_write: term -> term -> term                    \<comment> \<open> \<^term>\<open>a \<rightarrow> P\<close>\<close> 
     val mk_write_: term -> term -> term                   \<comment> \<open> \<^term>\<open>a \<rightarrow> P\<close>, param. tick\<close>
     val mk_Det: term -> term -> term                      \<comment> \<open> \<^term>\<open>P \<box> Q\<close>\<close>
-    val mk_NDet: term -> term -> term                     \<comment> \<open> \<^term>\<open>P \<sqinter> Q\<close>\<close>
+    val mk_Ndet: term -> term -> term                     \<comment> \<open> \<^term>\<open>P \<sqinter> Q\<close>\<close>
     val mk_Sync: term -> term -> term -> term             \<comment> \<open> \<^term>\<open>P \<lbrakk>A\<rbrakk> Q\<close>\<close>
     val mk_Inter: term -> term -> term                    \<comment> \<open> \<^term>\<open>P ||| Q\<close>\<close>
     val mk_Par: term -> term -> term                      \<comment> \<open> \<^term>\<open>P || Q\<close>\<close>
@@ -189,7 +189,7 @@ fun mk_Det P Q =
     in  Const(\<^const_name>\<open>Det\<close>,ty --> ty --> ty) $ P $ Q end
 
 val _ = \<^term>\<open>P \<sqinter> Q\<close>
-fun mk_NDet P Q = 
+fun mk_Ndet P Q = 
     let val ty = fastype_of P 
     in  Const(\<^const_name>\<open>Ndet\<close>,ty --> ty --> ty) $ P $ Q end
 

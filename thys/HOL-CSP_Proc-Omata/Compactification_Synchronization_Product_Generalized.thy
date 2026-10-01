@@ -508,13 +508,16 @@ theorem P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_nd_combine\<^sub>R\<^sub>l\<^s
   shows \<open>P \<sigma>\<^sub>0 \<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q \<sigma>s = S (\<sigma>\<^sub>0 # \<sigma>s)\<close>
 proof -
   let ?A' = \<open>\<lparr>\<tau> = \<tau> \<llangle>A\<^sub>0 \<^sub>n\<^sub>d\<otimes>\<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r A\<^sub>1\<rrangle>, \<omega> = \<lambda>\<sigma>. (\<lambda>(x, y). x # y) ` \<omega> \<llangle>A\<^sub>0 \<^sub>n\<^sub>d\<otimes>\<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r A\<^sub>1\<rrangle> \<sigma>\<rparr>\<close>
+  have * : \<open>(\<lambda>r s. case Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj r s of \<diamond> \<Rightarrow> \<diamond> |
+                   \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>case r_s of (\<sigma>\<^sub>0, \<sigma>s) \<Rightarrow> \<sigma>\<^sub>0 # \<sigma>s\<rfloor>) = Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj\<close>
+    by (intro ext) (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
   from P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_nd_combine\<^sub>P\<^sub>a\<^sub>i\<^sub>r_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF \<rho>_disjoint_\<epsilon>]
   have \<open>P \<sigma>\<^sub>0 \<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q \<sigma>s = P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<llangle>\<llangle>A\<^sub>0 \<^sub>n\<^sub>d\<otimes>\<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r A\<^sub>1\<rrangle>\<rrangle>\<^sub>n\<^sub>d (\<sigma>\<^sub>0, \<sigma>s)\<close> by (simp add: P_def Q_def)
   hence \<open>RenamingTick (P \<sigma>\<^sub>0 \<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q \<sigma>s) (\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s) =
          RenamingTick (P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<llangle>\<llangle>A\<^sub>0 \<^sub>n\<^sub>d\<otimes>\<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r A\<^sub>1\<rrangle>\<rrangle>\<^sub>n\<^sub>d (\<sigma>\<^sub>0, \<sigma>s)) (\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s)\<close> by simp
   also have \<open>RenamingTick (P \<sigma>\<^sub>0 \<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r Q \<sigma>s) (\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s) = P \<sigma>\<^sub>0 \<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t Q \<sigma>s\<close>
-    by (auto intro: inj_onI Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        [of \<open>\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s\<close>, simplified])
+    by (auto intro: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        [of \<open>\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s\<close>, unfolded "*"] inj_onI)
   also have \<open>RenamingTick (P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<llangle>\<llangle>A\<^sub>0 \<^sub>n\<^sub>d\<otimes>\<lbrakk>E\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r A\<^sub>1\<rrangle>\<rrangle>\<^sub>n\<^sub>d (\<sigma>\<^sub>0, \<sigma>s)) (\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s) = S (\<sigma>\<^sub>0 # \<sigma>s)\<close>
   proof (unfold RenamingTick_P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_nd S_def,
       rule P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_nd_eqI_strong[of \<open>\<lambda>(\<sigma>\<^sub>0, \<sigma>s). \<sigma>\<^sub>0 # \<sigma>s\<close> ?A' \<open>(\<sigma>\<^sub>0, \<sigma>s)\<close>, simplified])

@@ -69,7 +69,7 @@ definition finite_ticks :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub
 lemma finite_ticksI :
   \<open>(\<And>t. t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> finite {r. t @ [\<checkmark>(r)] \<in> \<T> P}) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(P)\<close>
   by (simp add: finite_ticks_def)
-    (metis (mono_tags, lifting) Collect_cong append_T_imp_tickFree front_tickFree_Cons_iff
+    (metis (mono_tags, lifting) Collect_cong append_T_imp_tF ftF_Cons_iff
       is_processT7 is_processT9 not_Cons_self2 not_finite_existsD)
 
 lemma finite_ticksD :
@@ -163,10 +163,10 @@ lemma anti_mono_finite_ticks [finite_ticks_simps] :
 proof (rule finite_ticksI)
   fix t assume \<open>t \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close>
   have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> P} = {r. t @ [\<checkmark>(r)] \<in> \<T> Q}\<close>
-    by (meson \<open>t \<notin> \<D> P\<close> is_processT9 le_approx2T \<open>P \<sqsubseteq> Q\<close>)
+    by (meson \<open>t \<notin> \<D> P\<close> is_processT9 le_approxD2_T \<open>P \<sqsubseteq> Q\<close>)
   also have \<open>finite \<dots>\<close>
   proof (rule \<open>\<bbbF>\<^sub>\<checkmark>(Q)\<close>[THEN finite_ticksD])
-    from \<open>t \<notin> \<D> P\<close> le_approx1 \<open>P \<sqsubseteq> Q\<close> show \<open>t \<notin> \<D> (Q)\<close> by blast
+    from \<open>t \<notin> \<D> P\<close> le_approxD(1) \<open>P \<sqsubseteq> Q\<close> show \<open>t \<notin> \<D> (Q)\<close> by blast
   qed
   finally show \<open>finite {r. t @ [\<checkmark>(r)] \<in> \<T> P}\<close> .
 qed
@@ -188,7 +188,7 @@ next
     from \<open>t \<notin> \<D> (\<Squnion>i. Y i)\<close> obtain j where \<open>t \<notin> \<D> (Y j)\<close>
       by (metis D_LUB_2 \<open>chain Y\<close> limproc_is_thelub)
     have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (\<Squnion>i. Y i)} = {r. t @ [\<checkmark>(r)] \<in> \<T> (Y j)}\<close>
-      by (meson \<open>chain Y\<close> \<open>t \<notin> \<D> (Y j)\<close> is_processT9 is_ub_thelub le_approx2T)
+      by (meson \<open>chain Y\<close> \<open>t \<notin> \<D> (Y j)\<close> is_processT9 is_ub_thelub le_approxD2_T)
     also have \<open>finite \<dots>\<close>
       by (fact \<open>\<forall>i. \<bbbF>\<^sub>\<checkmark>(Y i)\<close>[THEN spec, THEN finite_ticksD, OF \<open>t \<notin> \<D> (Y j)\<close>])
     finally show \<open>finite {r. t @ [\<checkmark>(r)] \<in> \<T> (\<Squnion>i. Y i)}\<close> .
@@ -296,7 +296,7 @@ next
       next
         fix u assume \<open>u \<in> {u. \<exists>v. t = u @ v \<and> u \<in> \<T> P}\<close>
         then obtain v where \<open>u \<in> \<T> P\<close> \<open>t = u @ v\<close> by blast
-        with \<open>t \<in> \<T> (P \<triangle> Q)\<close> append_T_imp_tickFree consider \<open>tF u\<close> | \<open>v = []\<close> by blast
+        with \<open>t \<in> \<T> (P \<triangle> Q)\<close> append_T_imp_tF consider \<open>tF u\<close> | \<open>v = []\<close> by blast
         thus \<open>finite {r. drop (length u) t @ [\<checkmark>(r)] \<in> \<T> Q}\<close>
         proof cases
           assume \<open>tF u\<close>
@@ -336,24 +336,24 @@ proof (rule finite_ticksI)
       from \<open>set t \<inter> ev ` A = {}\<close>
       have \<open>t \<in> \<D> P \<Longrightarrow> (if tF t then t else butlast t) \<in> \<D> (P \<Theta> a\<in>A. Q a)\<close>
         by (cases t rule: rev_cases, simp_all add: D_Throw)
-          (metis D_imp_front_tickFree \<open>set t \<inter> ev ` A = {}\<close> append.right_neutral butlast_snoc
-            div_butlast_when_non_tickFree_iff front_tickFree_Nil front_tickFree_nonempty_append_imp
-            not_Cons_self2 not_is_ev tickFree_Cons_iff tickFree_append_iff)
-      with \<open>t \<notin> \<D> (P \<Theta> a\<in>A. Q a)\<close> D_imp_front_tickFree div_butlast_when_non_tickFree_iff
+          (metis D_imp_ftF \<open>set t \<inter> ev ` A = {}\<close> append.right_neutral butlast_snoc
+            div_butlast_when_non_tF_iff ftF_Nil ftF_nonempty_append_imp
+            not_Cons_self2 not_is_ev tF_Cons_iff tF_append_iff)
+      with \<open>t \<notin> \<D> (P \<Theta> a\<in>A. Q a)\<close> D_imp_ftF div_butlast_when_non_tF_iff
       show \<open>t \<notin> \<D> P\<close> by blast
     qed
     ultimately show \<open>finite {r. t @ [\<checkmark>(r)] \<in> \<T> (P \<Theta> a\<in>A. Q a)}\<close> by (fact finite_subset)
   next
     fix t1 a t2 assume * : \<open>t = t1 @ ev a # t2\<close> \<open>t1 @ [ev a] \<in> \<T> P\<close>
       \<open>set t1 \<inter> ev ` A = {}\<close> \<open>a \<in> A\<close> \<open>t2 \<in> \<T> (Q a)\<close>
+    have ** : \<open>\<And>r. \<not> tF [\<checkmark>(r)]\<close> by simp
     from \<open>t \<notin> \<D> (P \<Theta> a\<in>A. Q a)\<close>
     have \<open>t \<notin> {t1 @ t2 |t1 t2. t1 \<in> \<D> P \<and> tF t1 \<and> set t1 \<inter> ev ` A = {} \<and> ftF t2}\<close>
       by (simp add: D_Throw UnI1)
-
     with "*" have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (P \<Theta> a\<in>A. Q a)} = {r. t2 @ [\<checkmark>(r)] \<in> \<T> (Q a)}\<close>
-      by (simp add: T_Throw, safe)
-        (metis Cons_eq_appendI append_assoc butlast_snoc front_tickFree_charn
-          non_tickFree_tick tickFree_Nil tickFree_append_iff tickFree_imp_front_tickFree,
+      by (simp (no_asm_simp) add: T_Throw, safe)
+        (metis "**" Cons_eq_appendI append_assoc butlast_snoc ftF_charn
+           tF_Nil tF_append_iff tF_imp_ftF,
           solves \<open>simp add: Throw_T_third_clause_breaker\<close>, metis)
     also have \<open>finite \<dots>\<close>
     proof (rule \<open>\<And>a. a \<in> A \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(Q a)\<close>[THEN finite_ticksD, OF \<open>a \<in> A\<close>])
@@ -373,8 +373,8 @@ proof (rule finite_ticksI)
          (\<Union>u\<in>{u. t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u \<and> u \<in> \<T> P}. {g r |r. u @ [\<checkmark>(r)] \<in> \<T> P})\<close>
     by (auto simp add: subset_iff Renaming_projs append_eq_map_conv tick_eq_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       (use is_processT3_TR_append in blast,
-        metis append_Nil butlast_append event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_iff_tickFree_butlast
-        map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree snoc_eq_iff_butlast tickFree_butlast)
+        metis append_Nil butlast_append event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_iff_tF_butlast
+        tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff snoc_eq_iff_butlast tF_butlast)
   moreover have \<open>finite \<dots>\<close>
   proof (rule finite_UN_I)
     have \<open>finitary (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)\<close> by (simp add: Cont_RenH2 \<open>finitary f\<close> \<open>finitary g\<close>)
@@ -386,9 +386,9 @@ proof (rule finite_ticksI)
     hence \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> \<open>u \<in> \<T> P\<close> by simp_all
     with \<open>t \<notin> \<D> (Renaming P f g)\<close> have \<open>u \<notin> \<D> P\<close>
       by (simp add: D_Renaming)
-        (metis (no_types, opaque_lifting) D_imp_front_tickFree append_Nil append_Nil2
-          div_butlast_when_non_tickFree_iff front_tickFree_charn map_butlast
-          map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree snoc_eq_iff_butlast tickFree_Nil)
+        (metis (no_types, opaque_lifting) D_imp_ftF append_Nil append_Nil2
+          div_butlast_when_non_tF_iff ftF_charn map_butlast
+          tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff snoc_eq_iff_butlast tF_Nil)
     thus \<open>finite {g r |r. u @ [\<checkmark>(r)] \<in> \<T> P}\<close>
       by (simp add: finite_ticksD \<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>)
   qed
@@ -408,9 +408,9 @@ next
     hence \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (P \<^bold>; Q)} \<subseteq>
            (\<Union>u \<in> {u. \<exists>v r. t = u @ v \<and> u @ [\<checkmark>(r)] \<in> \<T> P}. {r. drop (length u) t @ [\<checkmark>(r)] \<in> \<T> Q})\<close>
       by (auto simp add: Seq_projs intro: is_processT9)
-        (metis (no_types, opaque_lifting) T_imp_front_tickFree append_butlast_last_id
-          append_eq_conv_conj butlast_append butlast_snoc front_tickFree_nonempty_append_imp
-          last_appendR list.distinct(1) non_tickFree_tick tickFree_append_iff)
+        (metis (no_types, lifting) append_T_imp_tF append_eq_append_conv_if
+          append_eq_first_pref_spec butlast_append butlast_snoc
+          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) le_length_mono tF_Cons_iff tF_Nil tF_append_iff)
     moreover have \<open>finite \<dots>\<close>
     proof (rule finite_UN_I)
       show \<open>finite {u. \<exists>v r. t = u @ v \<and> u @ [\<checkmark>(r)] \<in> \<T> P}\<close>
@@ -418,7 +418,7 @@ next
     next
       fix u assume \<open>u \<in> {u. \<exists>v r. t = u @ v \<and> u @ [\<checkmark>(r)] \<in> \<T> P}\<close>
       then obtain v r where \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>t = u @ v\<close> by blast
-      with append_T_imp_tickFree consider \<open>tF u\<close> | \<open>v = []\<close> by blast
+      with append_T_imp_tF consider \<open>tF u\<close> | \<open>v = []\<close> by blast
       thus \<open>finite {r. drop (length u) t @ [\<checkmark>(r)] \<in> \<T> Q}\<close>
       proof cases
         assume \<open>tF u\<close>
@@ -455,9 +455,9 @@ proof (rule finite_ticksI)
     ultimately obtain t_P t_Q where \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close>
       \<open>(t @ [\<checkmark>(r)]) setinterleaves ((t_P, t_Q), range tick \<union> ev ` S)\<close>
       by (simp add: Sync_projs)
-        (metis (no_types, lifting) append.right_neutral front_tickFree_Nil setinterleaving_sym)
+        (metis (no_types, lifting) append.right_neutral ftF_Nil setinterleaving_dual)
     from this(1-4) SyncWithTick_imp_NTF[OF this(5)] show \<open>r \<in> ?rhs\<close>
-      by simp (metis T_imp_front_tickFree front_tickFree_append_iff is_processT7 not_Cons_self2)
+      by simp (metis T_imp_ftF ftF_append_iff is_processT7 not_Cons_self2)
   qed
   moreover have \<open>finite \<dots>\<close>
   proof (rule finite_UN_I, safe)

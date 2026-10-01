@@ -45,7 +45,7 @@ chapter\<open> Example: Dining Philosophers \<close>
 
 (*<*)
 theory DiningPhilosophers                                               
-  imports "HOL-CSPM"
+  imports "HOL-CSPM" "HOL-CSP.GenFixrec-HOLCF"
 begin 
   (*>*)
 
@@ -66,8 +66,8 @@ begin
 
 text \<open>We use a datatype for representing the dinner's events.\<close>
 
-datatype dining_event  =    picks (phil:nat) (fork:nat) 
-  | putsdown (phil:nat) (fork:nat)
+datatype dining_event  = picks (phil:nat) (fork:nat) 
+                       | putsdown (phil:nat) (fork:nat)
 
 
 text \<open>We introduce the right handed philosophers, the left handed philosopher and the forks.\<close>
@@ -100,29 +100,20 @@ corollary \<open>N = 3 \<Longrightarrow> PHILS = (LPHIL0 ||| RPHIL 1 ||| RPHIL 2
 text \<open>Finally, the dinner is obtained by putting forks and philosophers in parallel.\<close>
 
 definition DINING :: \<open>dining_event process\<close>
-  where \<open>DINING = (FORKS || PHILS)\<close>
+  where   \<open>DINING = (FORKS || PHILS)\<close>
 
 
 end
 
 
-section \<open>Formalization with fixrec package\<close>
+section \<open>Formalization with the Fixrec package\<close>
 
-text \<open>The fixrec package of \<^session>\<open>HOLCF\<close> provides a more readable syntax
-      (essentially, it allows us to "get rid of \<open>\<mu>\<close>" in equations like \<^term>\<open>\<mu> X. P X\<close>).\<close>
-
-text \<open>First, we need to see \<^typ>\<open>nat\<close> as \<^class>\<open>cpo\<close>.\<close>
-
-instantiation nat :: discrete_cpo
-begin
-
-definition below_nat_def:
-  "(x::nat) \<sqsubseteq> y \<longleftrightarrow> x = y"
-
-instance proof
-qed (rule below_nat_def)
-
-end
+text \<open>The \<^verbatim>\<open>Fixrec\<close> package provides a more readable syntax
+      (essentially, it allows us to "get rid of \<open>\<mu>\<close>" in equations like \<^term>\<open>\<mu> X. P X\<close>).
+      In contrast to the \<^verbatim>\<open>fixrec\<close> package of \<^session>\<open>HOLCF\<close>, it does not require
+      continuous function spaces: the processes are ordinary (total) HOL functions, and no
+      \<^class>\<open>cpo\<close> instances of the argument types (like \<^typ>\<open>nat\<close>) are needed.
+      \<^verbatim>\<open>Fixrec\<close> works inside the locale, the equations may refer to its parameter \<open>N\<close>.\<close>
 
 locale DiningPhilosophers_fixrec =
 
@@ -136,34 +127,32 @@ begin
 text \<open>We use a datatype for representing the dinner's events.\<close>
 
 datatype dining_event  =    picks (phil:nat) (fork:nat) 
-  | putsdown (phil:nat) (fork:nat)
+                          | putsdown (phil:nat) (fork:nat)
 
 
 text \<open>We introduce the right handed philosophers, the left handed philosopher and the forks.\<close>
 
-fixrec     RPHIL  :: \<open>nat \<rightarrow> dining_event process\<close>
-  and LPHIL0 :: \<open>dining_event process\<close>
-  and FORK   :: \<open>nat \<rightarrow> dining_event process\<close>
+Fixrec
+      RPHIL   :: \<open>nat \<Rightarrow> dining_event process\<close>
+  and LPHIL0  :: \<open>dining_event process\<close>
+  and FORK    :: \<open>nat \<Rightarrow> dining_event process\<close>
   where 
-    RPHIL_rec [simp del] :
-    \<open>RPHIL\<cdot>i = (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> 
-              (putsdown i (i-1) \<rightarrow> (putsdown i i \<rightarrow> RPHIL\<cdot>i))))\<close>
-  | LPHIL0_rec[simp del] :
-    \<open>LPHIL0 = (picks 0 (N-1) \<rightarrow> (picks 0 0 \<rightarrow> 
-              (putsdown 0 0 \<rightarrow> (putsdown 0 (N-1) \<rightarrow> LPHIL0))))\<close>
-  | FORK_rec  [simp del] :
-    \<open>FORK\<cdot>i  = (picks i i \<rightarrow> (putsdown i i \<rightarrow> FORK\<cdot>i)) \<box>
-              (picks ((i+1) mod N) i \<rightarrow> (putsdown ((i+1) mod N) i \<rightarrow> FORK\<cdot>i))\<close>
+    RPHIL_rec  : \<open>RPHIL i = (picks i i \<rightarrow> (picks i (i-1) \<rightarrow> 
+                                 (putsdown i (i-1) \<rightarrow> (putsdown i i \<rightarrow> RPHIL i))))\<close>
+  | LPHIL0_rec : \<open>LPHIL0 = (picks 0 (N-1) \<rightarrow> (picks 0 0 \<rightarrow> 
+                                 (putsdown 0 0 \<rightarrow> (putsdown 0 (N-1) \<rightarrow> LPHIL0))))\<close>
+  | FORK_rec   : \<open>FORK i  = (picks i i \<rightarrow> (putsdown i i \<rightarrow> FORK i)) \<box>
+                            (picks ((i+1) mod N) i \<rightarrow> (putsdown ((i+1) mod N) i \<rightarrow> FORK i))\<close>
 
 
 text \<open>Now we use the architectural operators for modelling the interleaving of
       the philosophers, and the interleaving of the forks.\<close>
 
-definition \<open>PHILS \<equiv> \<^bold>|\<^bold>|\<^bold>| P \<in># add_mset LPHIL0 (mset (map (\<lambda>i. RPHIL\<cdot>i) [1..<N])). P\<close>
-definition \<open>FORKS \<equiv> \<^bold>|\<^bold>|\<^bold>| P \<in># mset (map (\<lambda>i. FORK\<cdot>i) [0..<N]). P\<close>
+definition \<open>PHILS \<equiv> \<^bold>|\<^bold>|\<^bold>| P \<in># add_mset LPHIL0 (mset (map RPHIL [1..<N])). P\<close>
+definition \<open>FORKS \<equiv> \<^bold>|\<^bold>|\<^bold>| P \<in># mset (map FORK [0..<N]). P\<close>
 
 
-corollary \<open>N = 3 \<Longrightarrow> PHILS = (LPHIL0 ||| RPHIL\<cdot>1 ||| RPHIL\<cdot>2)\<close>
+corollary \<open>N = 3 \<Longrightarrow> PHILS = (LPHIL0 ||| RPHIL 1 ||| RPHIL 2)\<close>
   \<comment> \<open>just a test\<close>
   unfolding PHILS_def by (simp add: eval_nat_numeral upt_rec Sync_assoc)
 
@@ -171,11 +160,11 @@ corollary \<open>N = 3 \<Longrightarrow> PHILS = (LPHIL0 ||| RPHIL\<cdot>1 ||| R
 text \<open>Finally, the dinner is obtained by putting forks and philosophers in parallel.\<close>
 
 definition DINING :: \<open>dining_event process\<close>
-  where \<open>DINING = (FORKS || PHILS)\<close>
+  where   \<open>DINING = (FORKS || PHILS)\<close>
 
 
 end
 
 (*<*)
 end
-  (*>*)
+(*>*)

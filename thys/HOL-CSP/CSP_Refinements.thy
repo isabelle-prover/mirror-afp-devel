@@ -101,13 +101,11 @@ lemma trace_divergence_refine_optimizedI :
 
 subsection \<open>Idempotency\<close>
 
-(* TODO: rename in ..._refl ? *)
-
-lemma  idem_F[simp] : \<open>P \<sqsubseteq>\<^sub>F P\<close>
-  and  idem_D[simp] : \<open>P \<sqsubseteq>\<^sub>D P\<close>
-  and  idem_T[simp] : \<open>P \<sqsubseteq>\<^sub>T P\<close>
-  and idem_FD[simp] : \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-  and idem_DT[simp] : \<open>P \<sqsubseteq>\<^sub>D\<^sub>T P\<close>
+lemma  F_refl[simp] : \<open>P \<sqsubseteq>\<^sub>F P\<close>
+  and  D_refl[simp] : \<open>P \<sqsubseteq>\<^sub>D P\<close>
+  and  T_refl[simp] : \<open>P \<sqsubseteq>\<^sub>T P\<close>
+  and FD_refl[simp] : \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+  and DT_refl[simp] : \<open>P \<sqsubseteq>\<^sub>D\<^sub>T P\<close>
   by (simp_all add: refine_defs) 
 
 
@@ -119,7 +117,7 @@ lemma BOT_leF [simp] : \<open>\<bottom> \<sqsubseteq>\<^sub>F Q\<close>
   and BOT_leFD[simp] : \<open>\<bottom> \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
   and BOT_leDT[simp] : \<open>\<bottom> \<sqsubseteq>\<^sub>D\<^sub>T Q\<close>
   by (simp_all add: refine_defs le_approx_lemma_F
-      le_approx_lemma_T le_approx1)
+      le_approx_lemma_T le_approxD(1))
 
 
 
@@ -155,7 +153,7 @@ lemma      leF_imp_leT : \<open>P \<sqsubseteq>\<^sub>F Q \<Longrightarrow> P \<
   and leF_leD_imp_leFD : \<open>P \<sqsubseteq>\<^sub>F Q \<Longrightarrow> P \<sqsubseteq>\<^sub>D Q \<Longrightarrow> P \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
   and leD_leT_imp_leDT : \<open>P \<sqsubseteq>\<^sub>D Q \<Longrightarrow> P \<sqsubseteq>\<^sub>T Q \<Longrightarrow> P \<sqsubseteq>\<^sub>D\<^sub>T Q\<close>
   by (simp_all add: failure_refine_def trace_refine_def divergence_refine_def
-      trace_divergence_refine_def less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
+      trace_divergence_refine_def failure_divergence_refine_def)
     (use T_F_spec in blast)
 
 
@@ -195,7 +193,7 @@ lemma le_D_adm [simp] : \<open>adm (\<lambda>x. u x \<sqsubseteq>\<^sub>D v x)\<
 proof (unfold adm_def divergence_refine_def, intro allI impI subsetI)
   fix Y s assume * : \<open>chain Y\<close> \<open>\<forall>i. \<D> (v (Y i)) \<subseteq> \<D> (u (Y i))\<close> \<open>s \<in> \<D> (v (Lub Y))\<close>
   have \<open>v (Y i) \<sqsubseteq> v (\<Squnion>i. Y i)\<close> for i by (simp add: "*"(1) is_ub_thelub monofunE \<open>monofun v\<close>)
-  with "*"(2) le_approx1 have \<open>\<D> (v (\<Squnion>i. Y i)) \<subseteq> \<D> (u (Y i))\<close> for i by blast
+  with "*"(2) le_approxD(1) have \<open>\<D> (v (\<Squnion>i. Y i)) \<subseteq> \<D> (u (Y i))\<close> for i by blast
   with "*"(3) show \<open>s \<in> \<D> (u (Lub Y))\<close>
     by (auto simp add: ch2ch_cont \<open>cont u\<close> \<open>chain Y\<close> D_LUB limproc_is_thelub cont2contlubE)
 qed

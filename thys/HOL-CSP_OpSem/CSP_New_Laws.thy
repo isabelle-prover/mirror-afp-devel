@@ -59,7 +59,7 @@ lemma add_complementary_initials_in_refusal: \<open>X \<in> \<R> P \<Longrightar
 
 lemma TickRightSync: 
   \<open>\<checkmark>(r) \<in> S \<Longrightarrow> ftF u \<Longrightarrow> t setinterleaves ((u, [\<checkmark>(r)]), S) \<Longrightarrow> t = u \<and> last u = \<checkmark>(r)\<close>
-  by (simp add: TickLeftSync setinterleaving_sym)
+  by (simp add: TickLeftSync setinterleaving_dual)
 
   
 
@@ -402,7 +402,9 @@ corollary \<open>deadlock_free P \<Longrightarrow> deadlock_free Q \<Longrightar
 
 
 
+section \<open>\<^const>\<open>Hiding\<close>, \<^const>\<open>Mprefix\<close> and @{const [source] Sliding}\<close>
 
+subsection \<open>Disjoint Sets\<close>
 
 text \<open>This is a result similar to @{thm [source] Hiding_Mprefix_disjoint}
       when we add a @{const [source] Sliding} in the expression.\<close>
@@ -766,7 +768,7 @@ next
           by (simp add: "*"(1) "**"(1, 4) image_iff \<open>a \<notin> B\<close>)
         from "*" "**"(1, 2, 3, 5) show \<open>s \<in> \<D> ?lhs\<close>
           by (simp add: D_Throw D_Sliding D_Mprefix image_iff)
-             (metis "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+             (metis "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
       next
         fix t1 b t2 assume ** : \<open>s' = t1 @ ev b # t2\<close> \<open>t1 @ [ev b] \<in> \<T> (P a)\<close>
                                 \<open>set t1 \<inter> ev ` B = {}\<close> \<open>b \<in> B\<close> \<open>t2 \<in> \<D> (Q b)\<close>
@@ -916,7 +918,7 @@ proof (subst Process_eq_spec_optimized, safe)
     by (auto simp add: image_iff T_SKIP split: if_split_asm)
   have \<open>tl s \<in> \<D> (P a \<lbrakk>S\<rbrakk> SKIP res')\<close>
     by (simp add: D_Sync)
-       (metis "*"(1, 2, 6, 7) "**"(2, 3) list.sel(3) tickFree_tl)
+       (metis "*"(1, 2, 6, 7) "**"(2, 3) list.sel(3) tF_tl)
   with "**"(1) show \<open>s \<in> \<D> (if res = res' then ?rhs1 else ?rhs2)\<close>
     by (simp add: D_Det D_Ndet D_Mprefix "**"(2))
 next
@@ -933,7 +935,7 @@ next
     using "*"(2) "**"(4, 6) by (auto simp add: T_SKIP)
   with "*"(2) "**"(1, 2, 3, 5, 6) show \<open>s \<in> \<D> ?lhs\<close>
     by (simp add: D_Sync D_SKIP D_Det D_Mprefix T_SKIP image_iff)
-       (metis (no_types, opaque_lifting) "*"(1) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+       (metis (no_types, opaque_lifting) "*"(1) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
 next
   fix s Z
   assume same_div : \<open>\<D> ?lhs = \<D> (if res = res' then ?rhs1 else ?rhs2)\<close>

@@ -81,6 +81,9 @@ lemma T_read :
   \<open>\<T> (c\<^bold>?a\<in>A \<rightarrow> P a) = insert [] {ev a # s |a s. a \<in> c ` A \<and> s \<in> \<T> ((P \<circ> inv_into A c) a)}\<close>
   by (simp add: read_def T_Mprefix)
 
+lemma T_readI: \<open>inj_on c A \<Longrightarrow> x \<in> A \<Longrightarrow> s \<in> \<T> (Qf x) \<Longrightarrow> ev (c x) # s \<in> \<T> (read c A Qf)\<close>
+  by (auto simp: T_read)
+
 lemma T_read_inj_on :
   \<open>inj_on c A \<Longrightarrow> \<T> (c\<^bold>?a\<in>A \<rightarrow> P a) = insert [] {ev (c a) # s |a s. a \<in> A \<and> s \<in> \<T> (P a)}\<close>
   by (auto simp add: T_read)
@@ -88,6 +91,11 @@ lemma T_read_inj_on :
 
 lemmas read_projs = F_read D_read T_read
   and read_inj_on_projs = F_read_inj_on D_read_inj_on T_read_inj_on
+
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_read :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (c\<^bold>?a \<in> A \<rightarrow> P a)  = {ev a # t |a t. a \<in> c ` A \<and> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ((P \<circ> inv_into A c) a)}\<close>
+  by (simp_all add: read_def D\<^sub>m\<^sub>i\<^sub>n_Mprefix)
 
 
 
@@ -131,6 +139,11 @@ lemmas ndet_write_projs = F_ndet_write D_ndet_write T_ndet_write
   and ndet_write_inj_on_projs = F_ndet_write_inj_on D_ndet_write_inj_on T_ndet_write_inj_on
 
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_ndet_write :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (c\<^bold>!\<^bold>!a \<in> A \<rightarrow> P a) = {ev a # t |a t. a \<in> c ` A \<and> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ((P \<circ> inv_into A c) a)}\<close>
+  by (simp_all add: ndet_write_def D\<^sub>m\<^sub>i\<^sub>n_Mndetprefix)
+
+
 
 subsubsection \<open>\<^const>\<open>write\<close> and \<^const>\<open>write0\<close>\<close>
 
@@ -153,12 +166,21 @@ lemma D_write0 : \<open>\<D> (a \<rightarrow> P) = {ev a # s |s. s \<in> \<D> P}
 lemma T_write : \<open>\<T> (c\<^bold>!a \<rightarrow> P) = insert [] {ev (c a) # s |s. s \<in> \<T> P}\<close>
   by (simp add: write_def T_Mprefix)
 
+lemma T_writeI: \<open>s \<in> \<T> Proc \<Longrightarrow> ev (c a) # s \<in> \<T> (c\<^bold>!a \<rightarrow> Proc)\<close> by (simp add: T_write)
+
 lemma T_write0 : \<open>\<T> (a \<rightarrow> P) = insert [] {ev a # s |s. s \<in> \<T> P}\<close>
   by (simp add: write0_def T_Mprefix)
+
+lemma T_write0I: \<open>s \<in> \<T> Proc \<Longrightarrow> ev a # s \<in> \<T> (a \<rightarrow> Proc)\<close> by (simp add: T_write0)
 
 
 lemmas write_projs = F_write D_write T_write
   and write0_projs = F_write0 D_write0 T_write0
+
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_write0 : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (a   \<rightarrow> P) = {ev a     # t |t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P}\<close>
+  and D\<^sub>m\<^sub>i\<^sub>n_write  : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (c\<^bold>!a \<rightarrow> P) = {ev (c a) # t |t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P}\<close>
+  by (simp_all add: write_def write0_def D\<^sub>m\<^sub>i\<^sub>n_Mprefix) 
 
 
 

@@ -148,7 +148,7 @@ lemma mono_Sync_FD : \<open>\<lbrakk>P \<sqsubseteq>\<^sub>F\<^sub>D P'; Q \<sqs
 proof (rule trans_FD[of _ \<open>P' \<lbrakk>S\<rbrakk> Q\<close>])
   show \<open>P \<lbrakk>S\<rbrakk> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>S\<rbrakk> Q\<close> if \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close> for P P' Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   proof (rule failure_divergence_refine_optimizedI)
-    from le_ref1 le_ref2T \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close>
+    from le_FD_D(1) le_FD_D(3) \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close>
     show \<open>s \<in> \<D> (P' \<lbrakk>S\<rbrakk> Q) \<Longrightarrow> s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close> for s
       unfolding D_Sync by blast
   next
@@ -164,7 +164,7 @@ proof (rule trans_FD[of _ \<open>P' \<lbrakk>S\<rbrakk> Q\<close>])
       from subset_div D_F show \<open>s \<in> \<D> (P' \<lbrakk>S\<rbrakk> Q) \<Longrightarrow> (s, Z) \<in> \<F> (P \<lbrakk>S\<rbrakk> Q)\<close> by blast
     next
       case F
-      with le_ref2[OF \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close>] show \<open>(s, Z) \<in> \<F> (P \<lbrakk>S\<rbrakk> Q)\<close> unfolding F_Sync by blast
+      with le_FD_D(2)[OF \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close>] show \<open>(s, Z) \<in> \<F> (P \<lbrakk>S\<rbrakk> Q)\<close> unfolding F_Sync by blast
     qed
   qed
   thus \<open>Q \<sqsubseteq>\<^sub>F\<^sub>D Q' \<Longrightarrow> P' \<lbrakk>S\<rbrakk> Q \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>S\<rbrakk> Q'\<close> by (metis Sync_commute)
@@ -244,7 +244,7 @@ proof (unfold divergence_refine_def, rule subsetI)
     have \<open>isInfHidden_seqRun (\<lambda>i. ev a) P A t\<close>
     proof (intro allI conjI)
       have \<open>seqRun t (\<lambda>i. ev a) i \<in> \<D> Q\<close> for i
-        by (induct i) (simp_all add: \<open>t \<in> \<D> Q\<close> is_processT7 tickFree_seqRun_iff "*"(2))
+        by (induct i) (simp_all add: \<open>t \<in> \<D> Q\<close> is_processT7 tF_seqRun_iff "*"(2))
       thus \<open>seqRun t (\<lambda>i. ev a) i \<in> \<T> P\<close> for i
         by (meson D_T \<open>P \<sqsubseteq>\<^sub>T Q\<close> trace_refine_def subset_iff)
     next
@@ -314,8 +314,8 @@ next
       next
         show \<open>isInfHiddenRun f P A \<and> t \<in> range f \<Longrightarrow> s \<in> \<T> (P \ A)\<close> for f
           by (simp add: T_Hiding)
-            (metis T_nonTickFree_imp_decomp \<open>s = trace_hide t (ev ` A)\<close>
-              \<open>t \<in> \<T> P\<close> append_self_conv front_tickFree_Nil tick_T_F)
+            (metis T_not_tF_imp_decomp \<open>s = trace_hide t (ev ` A)\<close>
+              \<open>t \<in> \<T> P\<close> append_self_conv ftF_Nil tick_T_F)
       qed
     next
       from mono_Hiding_leT_imp_leD[OF \<open>A \<noteq> {}\<close> \<open>P \<sqsubseteq>\<^sub>T Q\<close>]
@@ -635,13 +635,13 @@ lemma STOP_T_iff: \<open>STOP \<sqsubseteq>\<^sub>T P \<longleftrightarrow> P = 
   by (metis STOP_iff_T insert_absorb is_processT1_TR subset_singleton_iff trace_refine_def)
 
 lemma STOP_F_iff: \<open>STOP \<sqsubseteq>\<^sub>F P \<longleftrightarrow> P = STOP\<close>
-  using STOP_T_iff idem_F leF_imp_leT by blast
+  using STOP_T_iff F_refl leF_imp_leT by blast
 
 lemma STOP_FD_iff: \<open>STOP \<sqsubseteq>\<^sub>F\<^sub>D P \<longleftrightarrow> P = STOP\<close>
   using STOP_F_iff leFD_imp_leF by blast
 
 lemma STOP_DT_iff: \<open>STOP \<sqsubseteq>\<^sub>D\<^sub>T P \<longleftrightarrow> P = STOP\<close>
-  using STOP_T_iff idem_DT leDT_imp_leT by blast
+  using STOP_T_iff DT_refl leDT_imp_leT by blast
 
 
 lemma SKIP_FD_iff: \<open>SKIP r \<sqsubseteq>\<^sub>F\<^sub>D P \<longleftrightarrow> P = SKIP r\<close> for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -661,12 +661,13 @@ next
       proof cases
         from \<open>SKIP r \<sqsubseteq>\<^sub>F\<^sub>D P\<close> show \<open>s = [] \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> P\<close>
           by (simp add: refine_defs F_SKIP D_SKIP subset_iff)
-            (metis T_F append_Nil is_processT1_TR is_processT5_S7 is_processT6_TR_notin not_Cons_self2)
+            (metis T_F append_Nil is_processT1_TR is_processT5_S7
+              is_processT6_TR_notin not_Cons_self2)
       next
         from \<open>SKIP r \<sqsubseteq>\<^sub>F\<^sub>D P\<close> show \<open>s = [\<checkmark>(r)] \<Longrightarrow> (s, X) \<in> \<F> P\<close>
           by (simp add: refine_defs F_SKIP D_SKIP subset_iff)
-            (metis (no_types) Int_insert_right_if0 is_processT1 list.simps(15) non_tickFree_tick
-              tickFree_Nil tickFree_def tick_T_F trace_tick_continuation_or_all_tick_failuresE)
+            (metis T_F_spec UNIV_I append_Nil is_processT1
+              is_processT5_S7 list.distinct(1) tick_T_F)
       qed
     qed
   qed
@@ -730,12 +731,12 @@ proof (auto simp add: F_Seq F_SKIP D_Seq D_SKIP subset_iff intro: T_F, goal_case
             metis F_T append.right_neutral is_processT4_empty is_processT5_S4 process_charn)
     by (erule_tac x = \<open>butlast s\<close> in allE,
         metis F_T append.right_neutral append_butlast_last_id append_single_T_imp_tickFree
-        last_snoc nonTickFree_n_frontTickFree non_tickFree_tick process_charn self_append_conv2)
+        last_snoc not_tF_and_ftF non_tickFree_tick process_charn self_append_conv2)
 next
   case (2 s X)
   thus ?case
     by (metis F_T append_Nil2 append_self_conv2 butlast_snoc front_tickFree_iff_tickFree_butlast
-        insert_Diff insert_Diff_single nonTickFree_n_frontTickFree non_tickFree_tick process_charn)
+        insert_Diff insert_Diff_single not_tF_and_ftF non_tickFree_tick process_charn)
 qed (metis F_T append.left_neutral insertI1 insert_absorb2 is_processT5_S6 tickFree_Nil)+
 
  *)

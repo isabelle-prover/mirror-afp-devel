@@ -54,7 +54,7 @@ proof -
     show \<open>([], {}) \<in> ?f\<close> by (simp add: process_charn)
   next
     show \<open>(t, X) \<in> ?f \<Longrightarrow> ftF t\<close> for t X
-      by simp (meson front_tickFree_append is_processT)
+      by simp (meson ftF_append is_processT)
   next
     fix t u
     assume \<open>(t @ u, {}) \<in> ?f\<close>
@@ -78,7 +78,7 @@ proof -
           by (metis (no_types, lifting) Prefix_Order.prefixI append_Nil2
               diff_is_0_eq nle_le take_all take_append take_eq_Nil)
         with "*"(2, 3, 4, 5) show \<open>(t, {}) \<in> ?f\<close>
-          by simp (metis append_take_drop_id front_tickFree_dw_closed)
+          by simp (metis append_take_drop_id ftF_dw_closed)
       qed
     qed
   next
@@ -90,17 +90,17 @@ proof -
   next
     show \<open>(t @ [\<checkmark>(r)], {}) \<in> ?f \<Longrightarrow> (t, X - {\<checkmark>(r)}) \<in> ?f\<close> for t r X
       by (simp, elim disjE exE, solves \<open>simp add: is_processT6\<close>)
-        (metis append_assoc butlast_snoc front_tickFree_dw_closed
-          nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append_iff)
+        (metis butlast_append event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_iff_tF_butlast
+          snoc_eq_iff_butlast tF_append_iff tF_butlast)
   next
-    from front_tickFree_append is_processT7 tickFree_append_iff
+    from ftF_append is_processT7 tF_append_iff
     show \<open>t \<in> ?d \<and> tF t \<and> ftF u \<Longrightarrow> t @ u \<in> ?d\<close> for t u by fastforce
   next
     from D_F show \<open>t \<in> ?d \<Longrightarrow> (t, X) \<in> ?f\<close> for t X by blast
   next
     show \<open>t @ [\<checkmark>(r)] \<in> ?d \<Longrightarrow> t \<in> ?d\<close> for t r
-      by simp (metis butlast_append butlast_snoc front_tickFree_iff_tickFree_butlast is_processT9
-          non_tickFree_tick tickFree_Nil tickFree_append_iff tickFree_imp_front_tickFree)
+      by simp (metis append.right_neutral butlast_append event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+          ftF_dw_closed is_processT9 snoc_eq_iff_butlast tF_butlast)
   qed
 qed
 
@@ -131,7 +131,7 @@ lemma D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE:
   | u v where \<open>t = u @ v\<close> \<open>u \<in> \<T> P\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
 proof -
   note assms = that
-  from \<open>t \<in> \<D> (P \<down> n)\<close> have \<open>ftF t\<close> by (simp add: D_imp_front_tickFree)
+  from \<open>t \<in> \<D> (P \<down> n)\<close> have \<open>ftF t\<close> by (simp add: D_imp_ftF)
   from \<open>t \<in> \<D> (P \<down> n)\<close> consider \<open>t \<in> \<D> P\<close>
     | u v where \<open>t = u @ v\<close> \<open>u \<in> \<T> P\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
     by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
@@ -153,10 +153,10 @@ proof -
         show \<open>length (take n t) = n\<close> by (simp add: min_def \<open>\<not> length t \<le> n\<close>)
       next
         show \<open>tF (take n t)\<close> by (metis \<open>ftF t\<close> append_take_drop_id drop_eq_Nil2
-              front_tickFree_append_iff \<open>\<not> length t \<le> n\<close>)
+              ftF_append_iff \<open>\<not> length t \<le> n\<close>)
       next
         show \<open>ftF (drop n t)\<close> by (metis \<open>ftF t\<close> append_take_drop_id drop_eq_Nil
-              front_tickFree_append_iff that)
+              ftF_append_iff that)
       qed
     qed
   qed
@@ -173,8 +173,8 @@ proof -
   thus thesis
   proof cases
     show \<open>(t, X) \<in> \<F> P \<Longrightarrow> thesis\<close>
-      by (metis F_T F_imp_front_tickFree append_take_drop_id
-          drop_eq_Nil front_tickFree_nonempty_append_imp
+      by (metis F_T F_imp_ftF append_take_drop_id
+          drop_eq_Nil ftF_nonempty_append_imp
           is_processT3_TR_append length_take min_def that)
   next
     show \<open>t \<in> \<D> (P \<down> n) \<Longrightarrow> thesis\<close> by (meson D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE is_processT8 that)
@@ -195,8 +195,8 @@ lemmas restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_elims =
 lemma D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI :
   \<open>t \<in> \<D> P \<or> t \<in> \<T> P \<and> (length t = n \<and> tF t \<or> n < length t) \<Longrightarrow> t \<in> \<D> (P \<down> n)\<close>
   by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, elim disjE conjE)
-    (solves simp, use front_tickFree_Nil in blast, 
-      metis (no_types) T_imp_front_tickFree append_self_conv front_tickFree_nonempty_append_imp
+    (solves simp, use ftF_Nil in blast, 
+      metis (no_types) T_imp_ftF append_self_conv ftF_nonempty_append_imp
       id_take_nth_drop is_processT3_TR_append leD length_take min.absorb4 take_all_iff)
 
 lemma F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI :
@@ -230,21 +230,52 @@ lemma length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub
   \<open>length t < n \<Longrightarrow> t \<in> \<D> (P \<down> n) \<Longrightarrow> t \<in> \<D> P\<close>
   by (auto elim: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
 
-lemma not_tickFree_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff :
+lemma not_tF_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff :
   \<open>length t \<le> n \<Longrightarrow> \<not> tF t \<Longrightarrow> (t, X) \<in> \<F> (P \<down> n) \<longleftrightarrow> (t, X) \<in> \<F> P\<close>
   by (auto simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
-lemma not_tickFree_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff :
+lemma not_tF_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff :
   \<open>length t \<le> n \<Longrightarrow> \<not> tF t \<Longrightarrow> t \<in> \<D> (P \<down> n) \<longleftrightarrow> t \<in> \<D> P\<close>
   by (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<down> n) = {t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<and> length t \<le> n} \<union> {t \<in> \<T> P - \<D> P. length t = n \<and> tF t}\<close>
+  (is \<open>?lhs = ?rhs\<close>)
+proof (intro subset_antisym subsetI)
+  fix t assume \<open>t \<in> ?lhs\<close>
+  thus \<open>t \<in> ?rhs\<close>
+  proof (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE[OF D\<^sub>m\<^sub>i\<^sub>n_D])
+    from \<open>t \<in> ?lhs\<close> show \<open>t \<in> \<D> P \<Longrightarrow> length t \<le> n \<Longrightarrow> t \<in> ?rhs\<close>
+      by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+  next
+    fix u v assume * : \<open>t = u @ v\<close> \<open>u \<in> \<T> P\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
+    have \<open>v = []\<close>
+    proof (rule ccontr)
+      assume \<open>v \<noteq> []\<close>
+      with "*" have \<open>butlast t \<in> \<D> (P \<down> n)\<close>
+        by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI butlast_append
+            ftF_iff_tF_butlast is_processT7 tF_imp_ftF)
+      with \<open>t \<in> ?lhs\<close> have \<open>t = []\<close>
+        by (metis Divergences\<^sub>m\<^sub>i\<^sub>n_def Prefix_Order.prefixI append_butlast_last_id
+            list.discI min_elems_no_list_set_list_set self_append_conv)
+      with \<open>v \<noteq> []\<close> show False by (simp add: "*"(1))
+    qed
+    with "*"(1-4) \<open>t \<in> ?lhs\<close> show \<open>t \<in> ?rhs\<close>
+      by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def)
+  qed
+next
+  show \<open>t \<in> ?rhs \<Longrightarrow> t \<in> ?lhs\<close> for t
+    by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def intro: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI
+        elim!: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      (meson Prefix_Order.prefixI dual_order.strict_iff_not dual_order.trans less_length_mono,
+        metis Prefix_Order.strict_prefixE' is_processT7 tF_append_iff tF_imp_ftF,
+        metis Prefix_Order.prefixI leD le_length_mono less_length_mono)
+qed
+
+
 end
 
-
-(* TODO: move this in HOL-CSP ? *)
-lemma front_tickFreeE :
-  \<open>\<lbrakk>ftF t; tF t \<Longrightarrow> thesis; \<And>t' r. t = t' @ [\<checkmark>(r)] \<Longrightarrow> tF t' \<Longrightarrow> thesis\<rbrakk> \<Longrightarrow> thesis\<close>
-  by (metis front_tickFree_append_iff nonTickFree_n_frontTickFree not_Cons_self2)
 
 
 subsection \<open>Proof obligation\<close>
@@ -259,7 +290,7 @@ next
   proof (rule Process_eq_optimizedI)
     show \<open>t \<in> \<D> (P \<down> n \<down> m) \<Longrightarrow> t \<in> \<D> (P \<down> min n m)\<close> for t
       by (elim restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_elims)
-        (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k intro: front_tickFree_append)
+        (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k intro: ftF_append)
   next
     show \<open>t \<in> \<D> (P \<down> min n m) \<Longrightarrow> t \<in> \<D> (P \<down> n \<down> m)\<close> for t
       by (elim restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_elims)
@@ -315,26 +346,25 @@ proof intro_classes
 next
   show \<open>P \<down> n \<sqsubseteq> Q \<down> n\<close> if \<open>P \<sqsubseteq> Q\<close> for P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and n
   proof (unfold le_approx_def Refusals_after_def, safe)
-    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approx1] \<open>P \<sqsubseteq> Q\<close>[THEN le_approx2T]
+    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD(1)] \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD2_T]
     show \<open>t \<in> \<D> (Q \<down> n) \<Longrightarrow> t \<in> \<D> (P \<down> n)\<close> for t
       by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k subset_iff) (metis D_T)
   next
-    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approx2] \<open>P \<sqsubseteq> Q\<close>[THEN le_approx_lemma_T]
+    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD(2)] \<open>P \<sqsubseteq> Q\<close>[THEN le_approx_lemma_T]
     show \<open>t \<notin> \<D> (P \<down> n) \<Longrightarrow> (t, X) \<in> \<F> (P \<down> n) \<Longrightarrow> (t, X) \<in> \<F> (Q \<down> n)\<close>
       and \<open>t \<notin> \<D> (P \<down> n) \<Longrightarrow> (t, X) \<in> \<F> (Q \<down> n) \<Longrightarrow> (t, X) \<in> \<F> (P \<down> n)\<close> for t X
       by (auto simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
   next
-    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approx3] \<open>P \<sqsubseteq> Q\<close>[THEN le_approx2T]
-    show \<open>t \<in> min_elems (\<D> (P \<down> n)) \<Longrightarrow> t \<in> \<T> (Q \<down> n)\<close> for t
-      by (simp add: min_elems_def restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs ball_Un subset_iff)
-        (metis is_processT7)
+    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD(3)] \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD2_T]
+    show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<down> n) \<Longrightarrow> t \<in> \<T> (Q \<down> n)\<close> for t
+      by (auto simp add: D\<^sub>m\<^sub>i\<^sub>n_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
   qed
 next
   fix P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   assume \<open>\<not> P \<sqsubseteq> Q\<close>
   then consider t where \<open>t \<in> \<D> Q\<close> \<open>t \<notin> \<D> P\<close>
     | t X where \<open>t \<notin> \<D> P\<close> \<open>(t, X) \<in> \<F> P \<longleftrightarrow> (t, X) \<notin> \<F> Q\<close>
-    | t where \<open>t \<in> min_elems (\<D> P)\<close> \<open>t \<notin> \<T> Q\<close>
+    | t where \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>t \<notin> \<T> Q\<close>
     unfolding le_approx_def Refusals_after_def by blast
   thus \<open>\<exists>n. \<not> P \<down> n \<sqsubseteq> Q \<down> n\<close>
   proof cases
@@ -354,13 +384,11 @@ next
       unfolding le_approx_def Refusals_after_def by blast
     thus \<open>\<exists>n. \<not> P \<down> n \<sqsubseteq> Q \<down> n\<close> ..
   next
-    fix t assume \<open>t \<in> min_elems (\<D> P)\<close> \<open>t \<notin> \<T> Q\<close>
-    hence \<open>t \<in> min_elems (\<D> (P \<down> Suc (length t)))\<close> \<open>t \<notin> \<T> (Q \<down> Suc (length t))\<close>
-      by (simp_all add: min_elems_def D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_D
-          T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_T)
-        (meson length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k less_SucI less_length_mono)
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>t \<notin> \<T> Q\<close>
+    hence \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<down> Suc (length t))\<close> \<open>t \<notin> \<T> (Q \<down> Suc (length t))\<close>
+      by (simp_all add: D\<^sub>m\<^sub>i\<^sub>n_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_T)
     hence \<open>\<not> P \<down> Suc (length t) \<sqsubseteq> Q \<down> Suc (length t)\<close>
-      unfolding le_approx_def by blast
+      using Divergences\<^sub>m\<^sub>i\<^sub>n_def le_approx_def by blast
     thus \<open>\<exists>n. \<not> P \<down> n \<sqsubseteq> Q \<down> n\<close> ..
   qed
 next
@@ -388,10 +416,10 @@ proof (unfold failure_refine_def, safe)
       by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (meson F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE that)
   next
     fix s' t'
-    assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+    assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
     from \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> have \<open>s' \<in> \<T> P\<close>
       by (metis F_T T_F dual_order.refl length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k that)
-    with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+    with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
     show \<open>(s, X) \<in> \<F> (P \<down> n)\<close> by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
   qed
 qed
@@ -406,10 +434,10 @@ proof (unfold trace_refine_def, safe)
       by (simp add: T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (meson T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE that)
   next
     fix s' t'
-    assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+    assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
     from \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> have \<open>s' \<in> \<T> P\<close>
       using length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k that by blast
-    with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+    with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
     show \<open>s \<in> \<T> (P \<down> n)\<close> by (simp add: T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
   qed
 qed
@@ -429,10 +457,10 @@ next
         by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (meson D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE that(2))
     next
       fix s' t'
-      assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+      assume \<open>s = s' @ t'\<close> \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
       from \<open>s' \<in> \<T> Q\<close> \<open>length s' = n\<close> have \<open>s' \<in> \<T> P\<close>
         using length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k that(1) by blast
-      with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tickFree s'\<close> \<open>front_tickFree t'\<close>
+      with \<open>s = s' @ t'\<close> \<open>length s' = n\<close> \<open>tF s'\<close> \<open>ftF t'\<close>
       show \<open>s \<in> \<D> (P \<down> n)\<close> by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
     qed
   qed
@@ -468,8 +496,8 @@ lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP [simp] : 
 
 lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_STOP_iff : \<open>P \<down> n = STOP \<longleftrightarrow> n \<noteq> 0 \<and> P = STOP\<close>
   by (simp add: STOP_iff_T T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set_eq_iff)
-    (metis (no_types, lifting) append_self_conv2 front_tickFree_single gr0I
-      less_numeral_extra(3) list.discI list.size(3) tickFree_Nil)
+    (metis (no_types, lifting) append_self_conv2 ftF_single gr0I
+      less_numeral_extra(3) list.discI list.size(3) tF_Nil)
 
 
 lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP [simp] : \<open>SKIP r \<down> n = (if n = 0 then \<bottom> else SKIP r)\<close>
@@ -524,13 +552,12 @@ next
   show \<open>t \<notin> \<D> (P \<down> n) \<Longrightarrow> (t, X) \<in> \<F> P \<Longrightarrow> (t, X) \<in> \<F> (P \<down> n)\<close> for t X
     by (auto simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
 next
-  show \<open>t \<in> min_elems (\<D> (P \<down> n)) \<Longrightarrow> t \<in> \<T> P\<close> for t
-    by (auto simp add: min_elems_def D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ball_Un D_T)
-      (metis append.right_neutral front_tickFree_charn less_append nil_less2)
+  show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<down> n) \<Longrightarrow> t \<in> \<T> P\<close> for t
+    by (auto simp add: D\<^sub>m\<^sub>i\<^sub>n_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k D\<^sub>m\<^sub>i\<^sub>n_D D_T)
 qed
 
 lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self : \<open>P \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-  by (simp add: le_approx_imp_le_ref restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
+  by (simp add: le_approx_imp_le_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
 
 lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_F_self : \<open>P \<down> n \<sqsubseteq>\<^sub>F P\<close>
   by (simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self leFD_imp_leF)
@@ -553,7 +580,7 @@ lemma Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
       restriction_chain_restrictions)
 
 lemma Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD : \<open>P \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P \<down> Suc n\<close>
-  by (simp add: Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k le_approx_imp_le_ref)
+  by (simp add: Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k le_approx_imp_le_FD)
 
 lemma Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_F  : \<open>P \<down> n \<sqsubseteq>\<^sub>F P \<down> Suc n\<close>
   by (simp add: Suc_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD leFD_imp_leF)
@@ -575,7 +602,7 @@ lemma le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k 
 
 
 lemma le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD : \<open>n \<le> m \<Longrightarrow> P \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P \<down> m\<close>
-  by (simp add: le_approx_imp_le_ref le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+  by (simp add: le_approx_imp_le_FD le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
 lemma le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_F : \<open>n \<le> m \<Longrightarrow> P \<down> n \<sqsubseteq>\<^sub>F P \<down> m\<close>
   by (simp add: leFD_imp_leF le_right_mono_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD)
@@ -757,14 +784,14 @@ proof (rule ext)
     qed
   next
     fix t assume \<open>t \<in> \<D> (\<sigma> n \<down> n)\<close>
-    hence \<open>ftF t\<close> by (simp add: D_imp_front_tickFree)
+    hence \<open>ftF t\<close> by (simp add: D_imp_ftF)
     with \<open>t \<in> \<D> (\<sigma> n \<down> n)\<close> consider \<open>length t < n\<close> \<open>t \<in> \<D> (\<sigma> n)\<close>
       | t' r where \<open>t = t' @ [\<checkmark>(r)]\<close> \<open>tF t'\<close> \<open>length t' < n\<close> \<open>t' \<in> \<D> (\<sigma> n)\<close>
       | u v  where \<open>t = u @ v\<close> \<open>u \<in> \<T> (\<sigma> n)\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
       by (auto elim!: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
         (metis D_T Suc_le_lessD antisym_conv2 append.right_neutral
-          front_tickFree_Nil front_tickFree_nonempty_append_imp
-          is_processT9 length_append_singleton nonTickFree_n_frontTickFree)
+          ftF_Nil ftF_nonempty_append_imp
+          is_processT9 length_append_singleton not_tF_and_ftF)
     thus \<open>t \<in> \<D> ((\<Squnion>n. \<sigma> n) \<down> n)\<close>
     proof cases
       show \<open>length t < n \<Longrightarrow> t \<in> \<D> (\<sigma> n) \<Longrightarrow> t \<in> \<D> ((\<Squnion>n. \<sigma> n) \<down> n)\<close>
@@ -780,7 +807,7 @@ proof (rule ext)
       from \<open>length u = n\<close> \<open>u \<in> \<T> (\<sigma> n)\<close> have \<open>u \<in> \<T> (\<sigma> (Suc n))\<close>
         by (metis length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k nat_le_linear
             restriction_chainD \<open>restriction_chain \<sigma>\<close>)
-      from \<open>chain \<sigma>\<close> \<open>u \<in> \<T> (\<sigma> (Suc n))\<close> D_T le_approx2T po_class.chain_mono
+      from \<open>chain \<sigma>\<close> \<open>u \<in> \<T> (\<sigma> (Suc n))\<close> D_T le_approxD2_T po_class.chain_mono
       have \<open>i \<le> Suc n \<Longrightarrow> u \<in> \<T> (\<sigma> i)\<close> for i by blast
       moreover have \<open>Suc n < i \<Longrightarrow> u \<in> \<T> (\<sigma> i)\<close> for i
         by (subst T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_T[symmetric])
@@ -793,14 +820,14 @@ proof (rule ext)
     qed
   next
     show \<open>(t, X) \<in> \<F> ((\<Squnion>n. \<sigma> n) \<down> n) \<Longrightarrow> t \<notin> \<D> ((\<Squnion>n. \<sigma> n) \<down> n) \<Longrightarrow> (t, X) \<in> \<F> (\<sigma> n \<down> n)\<close> for t X
-      by (meson \<open>chain \<sigma>\<close> is_processT8 is_ub_thelub proc_ord2a restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
+      by (meson \<open>chain \<sigma>\<close> is_processT8 is_ub_thelub le_approxD(2) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
   next
     fix t X assume \<open>(t, X) \<in> \<F> (\<sigma> n \<down> n)\<close> \<open>t \<notin> \<D> (\<sigma> n \<down> n)\<close>
     hence \<open>length t \<le> n\<close> \<open>(t, X) \<in> \<F> (\<sigma> n)\<close> \<open>t \<notin> \<D> (\<sigma> n)\<close>
       by (auto elim!: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
     thus \<open>(t, X) \<in> \<F> ((\<Squnion>i. \<sigma> i) \<down> n)\<close>
       by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-        (meson \<open>chain \<sigma>\<close> is_ub_thelub le_approx2)
+        (meson \<open>chain \<sigma>\<close> is_ub_thelub le_approxD(2))
   qed
 qed
 

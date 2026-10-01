@@ -65,9 +65,9 @@ proof -
     show \<open>([], {}) \<in> ?f\<close>
       by (simp add: is_processT1)
   next
-    show \<open>(s, X) \<in> ?f \<Longrightarrow> front_tickFree s\<close> for s X
-      apply (cases s; simp add: image_iff)
-      by (meson F_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) front_tickFree_Cons_iff)
+    show \<open>(s, X) \<in> ?f \<Longrightarrow> ftF s\<close> for s X
+      by (cases s; simp add: image_iff)
+        (meson F_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) ftF_Cons_iff)
   next
     show \<open>(s @ t, {}) \<in> ?f \<Longrightarrow> (s, {}) \<in> ?f\<close> for s t
       by (auto intro: is_processT3)
@@ -76,14 +76,13 @@ proof -
       by (auto intro: is_processT4)
   next
     show \<open>(s, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> ?f) \<Longrightarrow> (s, X \<union> Y) \<in> ?f\<close> for s X Y
-      apply (cases s; simp add: disjoint_iff image_iff)
-      using is_processT1 apply blast
-      by (metis is_processT5)
+      by (cases s; simp add: disjoint_iff image_iff)
+        (blast intro: is_processT1, metis is_processT5)
   next
     show \<open>(s @ [\<checkmark>(r)], {}) \<in> ?f \<Longrightarrow> (s, X - {\<checkmark>(r)}) \<in> ?f\<close> for s r X
       by (cases s) (auto intro: is_processT6)
   next
-    show \<open>s \<in> ?d \<and> tickFree s \<and> front_tickFree t \<Longrightarrow> s @ t \<in> ?d\<close> for s t
+    show \<open>s \<in> ?d \<and> tF s \<and> ftF t \<Longrightarrow> s @ t \<in> ?d\<close> for s t
       by (cases s) (auto intro: is_processT7)
   next
     show \<open>s \<in> ?d \<Longrightarrow> (s, X) \<in> ?f\<close> for s X
@@ -121,6 +120,9 @@ lemma T_Mprefix: \<open>\<T> (\<box>a \<in> A \<rightarrow> P a) = insert [] {ev
     (use F_T T_F in blast)+
 
 lemmas Mprefix_projs = F_Mprefix D_Mprefix T_Mprefix
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_Mprefix : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (\<box>a \<in> A \<rightarrow> P a) = {ev a # t |a t. a \<in> A \<and> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P a)}\<close>
+  by (fastforce simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_Mprefix min_elems_def)
 
 
 lemma mono_Mprefix_eq: \<open>(\<And>a. a \<in> A \<Longrightarrow> P a = Q a) \<Longrightarrow> Mprefix A P = Mprefix A Q\<close>
@@ -179,14 +181,14 @@ subsubsection\<open> Core of Proof  \<close>
 lemma mono_Mprefix : \<open>\<box>a \<in> A \<rightarrow> P a \<sqsubseteq> \<box>a \<in> A \<rightarrow> Q a\<close> (is \<open>?P \<sqsubseteq> ?Q\<close>)
   if \<open>\<And>a. a \<in> A \<Longrightarrow> P a \<sqsubseteq> Q a\<close>
 proof (unfold le_approx_def, intro conjI impI allI subsetI)
-  from that[THEN le_approx1] show \<open>s \<in> \<D> ?Q \<Longrightarrow> s \<in> \<D> ?P\<close> for s
+  from that[THEN le_approxD(1)] show \<open>s \<in> \<D> ?Q \<Longrightarrow> s \<in> \<D> ?P\<close> for s
     by (auto simp add: D_Mprefix)
 next
-  from that[THEN le_approx2] show \<open>s \<notin> \<D> ?P \<Longrightarrow> \<R>\<^sub>a ?P s = \<R>\<^sub>a ?Q s\<close> for s
+  from that[THEN le_approxD(2)] show \<open>s \<notin> \<D> ?P \<Longrightarrow> \<R>\<^sub>a ?P s = \<R>\<^sub>a ?Q s\<close> for s
     by (auto simp add: Refusals_after_def D_Mprefix F_Mprefix)
 next
-  from that[THEN le_approx3] show \<open>s \<in> min_elems (\<D> ?P) \<Longrightarrow> s \<in> \<T> ?Q\<close> for s
-    by (simp add: min_elems_def D_Mprefix T_Mprefix subset_iff) (metis less_cons)
+  from that[THEN le_approxD(3)] show \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?P \<Longrightarrow> s \<in> \<T> ?Q\<close> for s
+    by (auto simp add: min_elems_def D_Mprefix T_Mprefix subset_iff D\<^sub>m\<^sub>i\<^sub>n_Mprefix)
 qed
 
 

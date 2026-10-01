@@ -64,23 +64,23 @@ next
   next
     assume \<open>\<not> tF v\<close>
     with "*"(1, 3) have \<open>w = []\<close> \<open>d = v\<close> by simp_all
-    from D_imp_front_tickFree \<open>d = v\<close> \<open>d \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
+    from D_imp_ftF \<open>d = v\<close> \<open>d \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
     have \<open>ftF v\<close> by blast
     with \<open>\<not> tF v\<close> obtain r v' where \<open>v = v' @ [\<checkmark>(r)]\<close>
-      by (meson nonTickFree_n_frontTickFree)
+      by (meson not_tF_and_ftF)
     with "*"(4) obtain t' u'
       where ** : \<open>t = t' @ [\<checkmark>(r)]\<close> \<open>u = u' @ [\<checkmark>(r)]\<close>
         \<open>v' setinterleaves ((t', u'), range tick \<union> ev ` A)\<close>
       by (simp add: \<open>v = v' @ [\<checkmark>(r)]\<close>)
-        (meson "*"(5) D_imp_front_tickFree SyncWithTick_imp_NTF T_imp_front_tickFree)
+        (meson "*"(5) D_imp_ftF SyncWithTick_imp_NTF T_imp_ftF)
     have \<open>t' \<in> \<D> P \<and> u' \<in> \<T> Q \<or> t' \<in> \<D> Q \<and> u' \<in> \<T> P\<close>
       by (metis "*"(5) "**"(1,2) is_processT3_TR_append is_processT9)
     with "**"(3) \<open>d = v\<close> \<open>ftF v\<close> \<open>v = v' @ [\<checkmark>(r)]\<close>
-      front_tickFree_nonempty_append_imp show \<open>d \<in> ?rhs\<close> by blast
+      ftF_nonempty_append_imp show \<open>d \<in> ?rhs\<close> by blast
   qed
 qed
 
-lemma tickFree_interleave_iff :
+lemma tF_interleave_iff :
   \<open>t setinterleaves ((u, v), S) \<Longrightarrow> tF t \<longleftrightarrow> tF u \<and> tF v\<close>
   by (induct \<open>(u, S, v)\<close> arbitrary: t u v rule: setinterleaving.induct)
     (auto split: if_split_asm option.split_asm)
@@ -103,16 +103,16 @@ next
   from "4.prems" show ?case
     apply (simp add: subset_iff split: if_split_asm)
        apply (metis (no_types, lifting) "4.hyps"(1) Un_iff
-        mem_Collect_eq subsetI tickFree_Cons_iff)
+        mem_Collect_eq subsetI tF_Cons_iff)
       apply (metis (no_types, lifting) "4.hyps"(2,4) "4.prems"(2,3) SyncHd_Tl
-        SyncSameHdTl list.sel(1) setinterleaving_sym tickFree_Cons_iff)
+        SyncSameHdTl list.sel(1) setinterleaving_dual tF_Cons_iff)
     by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust imageI rangeI)+
 qed
 
 lemma interleave_subsetR :
   \<open>tF t \<Longrightarrow> {a. ev a \<in> set v} \<subseteq> A \<Longrightarrow>
    t setinterleaves ((u, v), range tick \<union> ev ` A) \<Longrightarrow> t = u\<close>
-  by (simp add: interleave_subsetL setinterleaving_sym)
+  by (simp add: interleave_subsetL setinterleaving_dual)
 
 
 lemma interleave_imp_lengthLR_le :
@@ -132,11 +132,11 @@ proof (induct \<open>(u, S, v)\<close>
 next
   case (2 y v)
   thus ?case by (simp split: if_split_asm)
-      (metis si_empty1 insert_iff nil_le)
+      (metis si_empty1 insert_iff Nil_le)
 next
   case (3 x u)
   thus ?case by (simp split: if_split_asm)
-      (metis si_empty1 insert_iff nil_le)
+      (metis si_empty1 insert_iff Nil_le)
 next
   case (4 x u y v)
   show ?case
@@ -284,7 +284,7 @@ next
   ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
     by (metis "*"(5) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI nless_le)
   with "**"(1) assms(1, 2) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-    by (metis is_processT7 tickFree_append_iff tickFree_imp_front_tickFree)
+    by (metis is_processT7 tF_append_iff tF_imp_ftF)
 next
   fix t_P' t_P''
   assume * : \<open>t_P = t_P' @ t_P''\<close> \<open>t_P' \<in> \<T> P\<close> \<open>length t_P' = n\<close>
@@ -303,7 +303,7 @@ next
   ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
     by (metis "*"(3) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI nless_le)
   with "**"(1) assms(1, 2) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
-    by (metis is_processT7 tickFree_append_iff tickFree_imp_front_tickFree)
+    by (metis is_processT7 tF_append_iff tF_imp_ftF)
 next
   fix t_P' t_P'' t_Q' t_Q''
   assume $ : \<open>t_P = t_P' @ t_P''\<close> \<open>t_P' \<in> \<T> P\<close> \<open>length t_P' = n\<close>
@@ -322,10 +322,10 @@ next
       using "$"(3) "$$"(3) interleave_imp_lengthLR_le by blast
     ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
       by (metis "$$"(1) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI Prefix_Order.prefixE
-          assms(1) nless_le tickFree_append_iff)
+          assms(1) nless_le tF_append_iff)
     thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
       by (metis "$$"(1) Prefix_Order.prefixE assms(1,2) is_processT7
-          tickFree_append_iff tickFree_imp_front_tickFree)
+          tF_append_iff tF_imp_ftF)
   next
     fix u' t_P''' assume $$ : \<open>u' \<le> u\<close> \<open>t_P''' \<le> t_P'\<close>
       \<open>u' setinterleaves ((t_P''', t_Q'), range tick \<union> ev ` A)\<close>
@@ -336,10 +336,10 @@ next
       using "$"(8) "$$"(3) interleave_imp_lengthLR_le by blast
     ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
       by (metis "$$"(1) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI Prefix_Order.prefixE
-          assms(1) nless_le tickFree_append_iff)
+          assms(1) nless_le tF_append_iff)
     thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close>
       by (metis "$$"(1) Prefix_Order.prefixE assms(1,2) is_processT7
-          tickFree_append_iff tickFree_imp_front_tickFree)
+          tF_append_iff tF_imp_ftF)
   qed
 qed
 
@@ -356,7 +356,7 @@ proof (unfold refine_defs, safe)
       (solves \<open>simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD_div_oneside\<close>,
         metis Sync_commute restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD_div_oneside)
   thus \<open>(t, X) \<in> \<F> ((P \<down> n) \<lbrakk>A\<rbrakk> (Q \<down> n)) \<Longrightarrow> (t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> for t X
-    by (meson is_processT8 le_approx2 mono_Sync restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
+    by (meson is_processT8 le_approxD(2) mono_Sync restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
 qed
 
 text \<open>The equality does not hold in general, but we can establish it
@@ -389,18 +389,18 @@ next
         assume \<open>t_P \<in> \<D> P \<or> t_Q \<in> \<D> Q\<close>
         with \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> setinter \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>tF u\<close>
         have \<open>t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q)\<close>
-          using setinterleaving_sym by (simp add: D_Sync) blast
+          using setinterleaving_dual by (simp add: D_Sync) blast
         thus \<open>t \<in> \<D> ?rhs\<close> by (fact div)
       next
         assume \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close>
         with \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> \<open>\<^bold>\<alpha>(P) \<subseteq> A \<or> \<^bold>\<alpha>(Q) \<subseteq> A\<close>
         have \<open>{a. ev a \<in> set t_P} \<subseteq> A \<or> {a. ev a \<in> set t_Q} \<subseteq> A\<close>
-          by (auto dest: subsetD intro: strict_events_of_memI)
+          by (auto intro: strict_events_of_memI)
         with interleave_subsetL[OF \<open>tF u\<close> _ setinter]
           interleave_subsetR[OF \<open>tF u\<close> _ setinter]
         have \<open>u = t_P \<or> u = t_Q\<close> by blast
         with \<open>length u = n\<close> have \<open>length t_P = n \<or> length t_Q = n\<close> by auto
-        moreover from \<open>tF u\<close> tickFree_interleave_iff[OF setinter]
+        moreover from \<open>tF u\<close> tF_interleave_iff[OF setinter]
         have \<open>tF t_P\<close> \<open>tF t_Q\<close> by simp_all
         ultimately have \<open>t_P \<in> \<D> (P \<down> n) \<or> t_Q \<in> \<D> (Q \<down> n)\<close>
           using \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
@@ -410,7 +410,7 @@ next
         ultimately show \<open>t \<in> \<D> ?rhs\<close>
           using \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>tF u\<close> setinter
           by (simp add: D_Sync_optimized)
-            (metis setinterleaving_sym)
+            (metis setinterleaving_dual)
       qed
     qed
   } note * = this
@@ -459,7 +459,7 @@ next
   case (3 N m)
   show ?case
     by (simp add: \<open>N \<noteq> {#}\<close>)
-      (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD mono_Sync_FD[OF idem_FD "3.hyps"(4)]])
+      (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD mono_Sync_FD[OF FD_refl "3.hyps"(4)]])
 qed
 
 
@@ -517,7 +517,7 @@ proof (rule order_non_destructiveI, clarify)
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
     show \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> for t
       by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-                in_mono le_ref1 mono_Sync_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                in_mono le_FD_D(1) mono_Sync_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
                 restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync_FD)
   next
     show \<open>(s, X) \<in> \<F> (P' \<lbrakk>A\<rbrakk> Q') \<Longrightarrow> (s, X) \<in> \<F> (P \<lbrakk>A\<rbrakk> Q \<down> n)\<close> for s X
@@ -532,4 +532,4 @@ qed
 
 (*<*)
 end
-(*>*)
+  (*>*)

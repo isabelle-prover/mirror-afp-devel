@@ -95,7 +95,7 @@ text \<open>We did this in a fully-abstract way, that is:
 
 
 
-text \<open>We presented two examples: Dining philosophers, and the 'Plain old telephone system' POTS.
+text \<open>We presented two examples: Dining philosophers, and and the 'Plain old telephone system' POTS.
 
       In both, we underlined the usefulness of the architectural operators
       for modeling complex systems.\<close>

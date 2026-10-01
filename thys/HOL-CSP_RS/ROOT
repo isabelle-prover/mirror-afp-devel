@@ -36,7 +36,7 @@ chapter AFP
 
 session "HOL-CSP_RS" = "HOL-CSP_OpSem" +
   description "Instantiation of HOL-CSP as a restriction Space."
-  options [timeout = 300]
+  options [timeout = 1200]
   sessions
     "Restriction_Spaces-HOLCF"
   theories
@@ -51,7 +51,15 @@ session "HOL-CSP_RS" = "HOL-CSP_OpSem" +
     After_Operator_Non_Too_Destructive
     Hiding_Destructive
     CSP_Restriction_Adm
+    "GenFixrec-RS"
     "HOL-CSP_RS" (global)
+  (* Fixrec: tests and examples *)
+    Fixrec_RS  \<comment> \<open>conceptual tests of the RS instance of Fixrec\<close>
+    CopyBuffer_RS
+    "FunSeriesInHOL-CSP_RS"
+    DiningPhilosophers  \<comment> \<open>Fixrec [RS, HOLCF]\<close>
+    POTS_Combined  \<comment> \<open>stress test: RS where constructive, HOLCF as fallback\<close>
+    Dali_Combined  \<comment> \<open>RS acceptance of a large model (Throw, parametrised processes)\<close>
   document_files
     "root.tex"
 

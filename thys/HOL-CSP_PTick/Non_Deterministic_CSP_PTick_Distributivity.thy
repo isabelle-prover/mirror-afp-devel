@@ -65,7 +65,7 @@ lemma Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_Ndet_right : \<open>P 
 
 subsection \<open>Synchronization Product\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
 lemma Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_left : 
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<sqinter> a\<in>A. Q a = (if A = {} then P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP else \<sqinter> a\<in>A. (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q a))\<close>
@@ -88,8 +88,8 @@ next
     with \<open>A \<noteq> {}\<close> consider \<open>t \<in> \<D> ?lhs\<close>
       | (fail) t_P t_Q X_P X_Q a where
         \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>a \<in> A\<close> \<open>(t_Q, X_Q) \<in> \<F> (Q a)\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs F_GlobalNdet by force
     thus \<open>(t, X) \<in> \<F> ?rhs\<close>
     proof cases
@@ -125,8 +125,8 @@ next
     with \<open>A \<noteq> {}\<close> consider \<open>t \<in> \<D> ?lhs\<close>
       | (fail) t_P t_Q X_P X_Q a where
         \<open>(t_P, X_P) \<in> \<F> (P a)\<close> \<open>a \<in> A\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs F_GlobalNdet by force
     thus \<open>(t, X) \<in> \<F> ?rhs\<close>
     proof cases
@@ -142,7 +142,7 @@ next
 qed
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_GlobalNdet_cartprod:
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_GlobalNdet_cartprod:
   \<open>(\<sqinter> (a, b) \<in> A \<times> B. (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) = 
    (if A = {} \<or> B = {} then STOP else (\<sqinter>a \<in> A. P a) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> (\<sqinter>b \<in> B. Q b))\<close>  
   by (simp add: GlobalNdet_cartprod Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_left

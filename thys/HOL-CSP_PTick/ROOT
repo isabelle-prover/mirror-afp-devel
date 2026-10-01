@@ -1,5 +1,3 @@
-chapter AFP
-
 (***********************************************************************************
  * Copyright (c) 2025 Université Paris-Saclay
  *
@@ -36,7 +34,7 @@ chapter AFP
 session "HOL-CSP_PTick" = "HOL-CSP_RS" +
   description \<open>HOL-CSP_PTick: Parameterized Termination for
                Sequential Composition and Synchronization Product\<close>
-  options [timeout = 600]
+  options [timeout = 600, document = "pdf", document_output = "output"]
   theories
   CSP_PTick_Introduction
   Finite_Ticks

@@ -40,6 +40,9 @@
 %\pagestyle{plain}
 
 
+% theories from the Fixrec package start with chapters (book style): map them to parts
+\renewcommand{\isamarkupchapter}[1]{\part{#1}}
+
 \begin{document}
 
 \title{HOL-CSP\_RS: CSP Semantics over Restriction Spaces}

@@ -67,7 +67,7 @@ proof -
   have \<open>is_process bot\<^sub>0\<close>
     unfolding is_process_def bot\<^sub>0_def
     by (simp add: FAILURES_def DIVERGENCES_def)
-      (meson front_tickFree_append_iff front_tickFree_dw_closed)
+      (meson ftF_append_iff ftF_dw_closed)
   have F_bot : \<open>\<F> bot = {(s, X). ftF s}\<close>
     by (metis CollectI FAILURES_def Failures.rep_eq \<open>is_process bot\<^sub>0\<close> 
         bot\<^sub>0_def bot_def fst_eqD process_of_process\<^sub>0_inverse)
@@ -75,18 +75,21 @@ proof -
     by (metis CollectI DIVERGENCES_def Divergences.rep_eq \<open>is_process bot\<^sub>0\<close>
         bot\<^sub>0_def bot_def process_of_process\<^sub>0_inverse prod.sel(2))
   hence T_bot : \<open>\<T> bot = {s. ftF s}\<close>
-    by (metis D_T T_imp_front_tickFree mem_Collect_eq subsetI subset_Un_eq sup.orderE)
+    by (metis D_T T_imp_ftF mem_Collect_eq subsetI subset_Un_eq sup.orderE)
   have \<open>bot = \<bottom>\<close>
-    by (simp add: eq_bottom_iff le_approx_def Refusals_after_def F_bot D_bot
-        min_elems_Collect_ftF_is_Nil)
-      (metis D_front_tickFree_subset process_charn)
+    by (metis (no_types, opaque_lifting) Process_eq_spec is_processT2
+        is_processT8 le_approxD(1) mem_Collect_eq minimal subrelI
+        subset_antisym subset_eq D_bot)
   with F_bot D_bot T_bot
   show \<open>\<F> \<bottom> = {(s :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, X). ftF s}\<close>
     \<open>\<D> \<bottom> = {d :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. ftF d}\<close>
     \<open>\<T> \<bottom> = {s :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. ftF s}\<close> by simp_all
 qed
 
-lemmas BOT_projs = F_BOT D_BOT T_BOT
+lemma D\<^sub>m\<^sub>i\<^sub>n_BOT : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n \<bottom> = {[]}\<close>
+  by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_BOT min_elems_Collect_ftF_is_singl_Nil)
+
+lemmas BOT_projs = F_BOT D_BOT T_BOT D\<^sub>m\<^sub>i\<^sub>n_BOT
 
 
 lemma BOT_iff_Nil_D : \<open>P = \<bottom> \<longleftrightarrow> [] \<in> \<D> P\<close>
@@ -95,10 +98,10 @@ proof (rule iffI)
 next
   show \<open>P = \<bottom>\<close> if \<open>[] \<in> \<D> P\<close>
   proof (subst Process_eq_spec_optimized, safe)
-    show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> \<bottom>\<close> for s by (simp add: D_BOT D_imp_front_tickFree)
+    show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> \<bottom>\<close> for s by (simp add: D_BOT D_imp_ftF)
   next
     show \<open>s \<in> \<D> \<bottom> \<Longrightarrow> s \<in> \<D> P\<close> for s
-      by (metis \<open>[] \<in> \<D> P\<close> append_Nil process_charn tickFree_Nil)
+      by (metis \<open>[] \<in> \<D> P\<close> append_Nil process_charn tF_Nil)
   next
     show \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> \<bottom>\<close> for s X
       using le_approx_lemma_F by blast
@@ -108,8 +111,13 @@ next
   qed
 qed
 
+lemma Divergences\<^sub>m\<^sub>i\<^sub>n_def_bis : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n P = (if P = \<bottom> then {[]} else {t \<in> \<D> P. butlast t \<notin> \<D> P})\<close>
+  by (auto simp add: D\<^sub>m\<^sub>i\<^sub>n_BOT intro: D\<^sub>m\<^sub>i\<^sub>n_memI D\<^sub>m\<^sub>i\<^sub>n_D)
+    (metis BOT_iff_Nil_D D\<^sub>m\<^sub>i\<^sub>n_D Divergences\<^sub>m\<^sub>i\<^sub>n_def Prefix_Order.prefixI
+      append_self_conv min_elems_no_list_set_list_set snoc_eq_iff_butlast)
+
 lemma BOT_iff_tick_D : \<open>P = \<bottom> \<longleftrightarrow> (\<exists>r. [\<checkmark>(r)] \<in> \<D> P)\<close>
-  by (metis BOT_iff_Nil_D D_BOT front_tickFree_single is_processT9_tick mem_Collect_eq)
+  by (metis BOT_iff_Nil_D D_BOT ftF_single is_processT9_tick mem_Collect_eq)
 
 
 
@@ -135,7 +143,10 @@ lemma D_SKIP : \<open>\<D> (SKIP r) = {}\<close>
 lemma T_SKIP : \<open>\<T> (SKIP r) = {[], [\<checkmark>(r)]}\<close>
   by (auto simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_SKIP)
 
-lemmas SKIP_projs = F_SKIP D_SKIP T_SKIP
+lemma D\<^sub>m\<^sub>i\<^sub>n_SKIP : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (SKIP r) = {}\<close>
+  by (simp_all add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_SKIP)
+
+lemmas SKIP_projs = F_SKIP D_SKIP T_SKIP D\<^sub>m\<^sub>i\<^sub>n_SKIP
 
 
 lemma inj_SKIP : \<open>inj SKIP\<close>
@@ -162,7 +173,10 @@ lemma D_STOP : \<open>\<D> STOP = {}\<close>
 lemma T_STOP : \<open>\<T> STOP = {[]}\<close>
   by (simp add: Traces.rep_eq TRACES_def Failures.rep_eq[symmetric] F_STOP)
 
-lemmas STOP_projs = F_STOP D_STOP T_STOP
+lemma D\<^sub>m\<^sub>i\<^sub>n_STOP : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n STOP = {}\<close>
+  by (simp_all add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_STOP)
+
+lemmas STOP_projs = F_STOP D_STOP T_STOP D\<^sub>m\<^sub>i\<^sub>n_STOP
 
 
 lemma STOP_iff_T : \<open>P = STOP \<longleftrightarrow> \<T> P = {[]}\<close>
@@ -173,8 +187,8 @@ next
   show \<open>P = STOP\<close>
   proof (subst Process_eq_spec, safe)
     show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> STOP\<close> for s
-      by (metis D_T \<open>\<T> P = {[]}\<close> front_tickFree_single not_Cons_self
-          process_charn self_append_conv2 singletonD tickFree_Nil)
+      by (metis D_T \<open>\<T> P = {[]}\<close> ftF_single not_Cons_self
+          process_charn self_append_conv2 singletonD tF_Nil)
   next
     show \<open>s \<in> \<D> STOP \<Longrightarrow> s \<in> \<D> P\<close> for s by (simp add: D_STOP)
   next

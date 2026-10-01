@@ -141,6 +141,12 @@ lemma T_GlobalNdet': \<open>\<T> (\<sqinter> a \<in> A. P a) = insert [] (\<Unio
 lemmas GlobalNdet_projs = F_GlobalNdet D_GlobalNdet T_GlobalNdet'
 
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (\<sqinter>a \<in> A. P a) \<subseteq> (\<Union>a\<in>A. \<D>\<^sub>m\<^sub>i\<^sub>n (P a))\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_GlobalNdet min_elems_def)
+
+
+
+
 lemma mono_GlobalNdet_eq:
   \<open>(\<And>a. a \<in> A \<Longrightarrow> P a = Q a) \<Longrightarrow> GlobalNdet A P = GlobalNdet A Q\<close>
   by (subst Process_eq_spec, simp add: F_GlobalNdet D_GlobalNdet)
@@ -328,8 +334,8 @@ qed
 section \<open>Continuity\<close>
 
 lemma mono_GlobalNdet : \<open>(\<And>a. a \<in> A \<Longrightarrow> P a \<sqsubseteq> Q a) \<Longrightarrow> (\<sqinter>a \<in> A. P a) \<sqsubseteq> \<sqinter>a \<in> A. Q a\<close>
-  by (simp add: le_approx_def D_GlobalNdet Refusals_after_def F_GlobalNdet
-      min_elems_def T_GlobalNdet subset_iff) blast
+  by (auto simp add: le_approx_def Refusals_after_def GlobalNdet_projs
+      dest!: D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset[THEN set_mp]) blast+
 
 lemma chain_GlobalNdet : \<open>chain Y \<Longrightarrow> chain (\<lambda>i. \<sqinter>a \<in> A. Y i a)\<close>
   by (simp add: ch2ch_monofun fun_belowD mono_GlobalNdet monofunI)

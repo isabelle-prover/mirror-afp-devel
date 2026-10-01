@@ -54,18 +54,18 @@ that we need make sense, and prove the quasi-associativity.
 
 subsection \<open>Formalization\<close>
 
-locale Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale =
-  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1 : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>(\<otimes>\<checkmark>1)\<close> +
-  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2 : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>(\<otimes>\<checkmark>2)\<close> +
-  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3 : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>(\<otimes>\<checkmark>3)\<close> +
-  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4 : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>(\<otimes>\<checkmark>4)\<close>
-  for tick_join1 :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> (infixl \<open>\<otimes>\<checkmark>1\<close> 100)
-    and tick_join2 :: \<open>'t \<Rightarrow> 'u \<Rightarrow> 'v option\<close> (infixl \<open>\<otimes>\<checkmark>2\<close> 100)
-    and tick_join3 :: \<open>'r \<Rightarrow> 'w \<Rightarrow> 'x option\<close> (infixl \<open>\<otimes>\<checkmark>3\<close> 100)
-    and tick_join4 :: \<open>'s \<Rightarrow> 'u \<Rightarrow> 'w option\<close> (infixl \<open>\<otimes>\<checkmark>4\<close> 100) +
+locale Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc =
+  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1 : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<otimes>\<checkmark>1)\<close> +
+  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2 : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<otimes>\<checkmark>2)\<close> +
+  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3 : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<otimes>\<checkmark>3)\<close> +
+  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4 : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>(\<otimes>\<checkmark>4)\<close>
+  for tj1 :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close> (infixl \<open>\<otimes>\<checkmark>1\<close> 100)
+    and tj2 :: \<open>'t \<Rightarrow> 'u \<Rightarrow> 'v option\<close> (infixl \<open>\<otimes>\<checkmark>2\<close> 100)
+    and tj3 :: \<open>'r \<Rightarrow> 'w \<Rightarrow> 'x option\<close> (infixl \<open>\<otimes>\<checkmark>3\<close> 100)
+    and tj4 :: \<open>'s \<Rightarrow> 'u \<Rightarrow> 'w option\<close> (infixl \<open>\<otimes>\<checkmark>4\<close> 100) +
   fixes tick_assoc_ren      :: \<open>'v \<Rightarrow> 'x\<close> (\<open>\<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3\<close>)
     and tick_assoc_ren_conv :: \<open>'x \<Rightarrow> 'v\<close> (\<open>\<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2\<close>)
-  assumes None_assms_tick_join :
+  assumes None_assms_tj :
     \<open>r \<otimes>\<checkmark>1 s = \<diamond> \<Longrightarrow> s \<otimes>\<checkmark>4 u = \<diamond> \<or> r \<otimes>\<checkmark>3 \<lceil>s \<otimes>\<checkmark>4 u\<rceil> = \<diamond>\<close>
     \<open>r \<otimes>\<checkmark>1 s \<noteq> \<diamond> \<Longrightarrow> \<lceil>r \<otimes>\<checkmark>1 s\<rceil> \<otimes>\<checkmark>2 u = \<diamond> \<Longrightarrow> s \<otimes>\<checkmark>4 u = \<diamond> \<or> r \<otimes>\<checkmark>3 \<lceil>s \<otimes>\<checkmark>4 u\<rceil> = \<diamond>\<close>
     \<open>s \<otimes>\<checkmark>4 u = \<diamond> \<Longrightarrow> r \<otimes>\<checkmark>1 s = \<diamond> \<or> \<lceil>r \<otimes>\<checkmark>1 s\<rceil> \<otimes>\<checkmark>2 u = \<diamond>\<close>
@@ -79,32 +79,32 @@ begin
 
 text \<open>There is a symmetry over the variables.\<close>
 
-sublocale Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale_sym :
-  Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale \<open>\<lambda>u s. s \<otimes>\<checkmark>4 u\<close> \<open>\<lambda>w r. r \<otimes>\<checkmark>3 w\<close> \<open>\<lambda>u t. t \<otimes>\<checkmark>2 u\<close>
+sublocale Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_dual :
+  Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc \<open>\<lambda>u s. s \<otimes>\<checkmark>4 u\<close> \<open>\<lambda>w r. r \<otimes>\<checkmark>3 w\<close> \<open>\<lambda>u t. t \<otimes>\<checkmark>2 u\<close>
   \<open>\<lambda>s r. r \<otimes>\<checkmark>1 s\<close> \<open>\<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2\<close> \<open>\<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3\<close>
   by unfold_locales
-    (fact None_assms_tick_join tick_assoc_ren_hyp tick_assoc_ren_conv_hyp)+
+    (fact None_assms_tj tick_assoc_ren_hyp tick_assoc_ren_conv_hyp)+
 
 end
 
 
 subsection \<open>First Properties\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) tick_assoc_ren_tick_assoc_ren_conv :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) tick_assoc_ren_tick_assoc_ren_conv :
   \<open>\<exists>r s u w. s \<otimes>\<checkmark>4 u = \<lfloor>w\<rfloor> \<and> r \<otimes>\<checkmark>3 w = \<lfloor>x\<rfloor> \<Longrightarrow>
    \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 (\<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2 x) = x\<close>
-  by (metis None_assms_tick_join(1,2) option.collapse option.distinct(1)
+  by (metis None_assms_tj(1,2) option.collapse option.distinct(1)
       option.sel tick_assoc_ren_hyp tick_assoc_ren_conv_hyp)
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) tick_assoc_ren_conv_tick_assoc_ren :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) tick_assoc_ren_conv_tick_assoc_ren :
   \<open>\<exists>r s t u. r \<otimes>\<checkmark>1 s = \<lfloor>t\<rfloor> \<and> t \<otimes>\<checkmark>2 u = \<lfloor>v\<rfloor> \<Longrightarrow> \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2 (\<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 v) = v\<close>
-  by (metis Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale_sym.tick_assoc_ren_tick_assoc_ren_conv)
+  by (metis Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_dual.tick_assoc_ren_tick_assoc_ren_conv)
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) inj_on_tick_assoc_ren :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) inj_on_tick_assoc_ren :
   \<open>inj_on \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 {v. \<exists>r s t u. r \<otimes>\<checkmark>1 s = \<lfloor>t\<rfloor> \<and> t \<otimes>\<checkmark>2 u = \<lfloor>v\<rfloor>}\<close>
   by (rule inj_onI, simp) (metis tick_assoc_ren_conv_tick_assoc_ren)
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) inj_on_tick_assoc_ren_conv :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) inj_on_tick_assoc_ren_conv :
   \<open>inj_on \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2 {x. \<exists>r s u w. s \<otimes>\<checkmark>4 u = \<lfloor>w\<rfloor> \<and> r \<otimes>\<checkmark>3 w = \<lfloor>x\<rfloor>}\<close>
   by (rule inj_onI, simp) (metis tick_assoc_ren_tick_assoc_ren_conv)
 
@@ -112,7 +112,7 @@ lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) inj_on_tick
 
 subsection \<open>Associativity for the Traces\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_left : 
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_left : 
   \<open>\<lbrakk>t\<^sub>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>1)\<^esub> ((t\<^sub>r, t\<^sub>s), A);
     t\<^sub>v setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>2)\<^esub> ((t\<^sub>t, t\<^sub>u), A)\<rbrakk> \<Longrightarrow>
     \<exists>t\<^sub>w. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3) t\<^sub>v setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>3)\<^esub> ((t\<^sub>r, t\<^sub>w), A) \<and>
@@ -373,10 +373,10 @@ proof -
       \<open>t\<^sub>v' setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>2)\<^esub> ((t\<^sub>t, t\<^sub>u), A)\<close>
       by (auto split: option.split_asm)
     from \<open>r\<^sub>r \<otimes>\<checkmark>1 r\<^sub>s = \<lfloor>r\<^sub>t\<rfloor>\<close> \<open>r\<^sub>t \<otimes>\<checkmark>2 r\<^sub>u = \<lfloor>r\<^sub>v\<rfloor>\<close> obtain r\<^sub>w where \<open>r\<^sub>s \<otimes>\<checkmark>4 r\<^sub>u = \<lfloor>r\<^sub>w\<rfloor>\<close>
-      by (metis None_assms_tick_join(3) not_None_eq option.sel)
+      by (metis None_assms_tj(3) not_None_eq option.sel)
     from \<open>r\<^sub>s \<otimes>\<checkmark>4 r\<^sub>u = \<lfloor>r\<^sub>w\<rfloor>\<close> \<open>r\<^sub>r \<otimes>\<checkmark>1 r\<^sub>s = \<lfloor>r\<^sub>t\<rfloor>\<close> \<open>r\<^sub>t \<otimes>\<checkmark>2 r\<^sub>u = \<lfloor>r\<^sub>v\<rfloor>\<close>
     obtain r\<^sub>x where \<open>r\<^sub>r \<otimes>\<checkmark>3 r\<^sub>w = \<lfloor>r\<^sub>x\<rfloor>\<close>
-      by (metis None_assms_tick_join(4) option.distinct(1) option.exhaust_sel option.sel)
+      by (metis None_assms_tj(4) option.distinct(1) option.exhaust_sel option.sel)
     have \<open>\<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 r\<^sub>v = r\<^sub>x\<close>
       by (metis \<open>r\<^sub>r \<otimes>\<checkmark>1 r\<^sub>s = \<lfloor>r\<^sub>t\<rfloor>\<close> \<open>r\<^sub>r \<otimes>\<checkmark>3 r\<^sub>w = \<lfloor>r\<^sub>x\<rfloor>\<close> \<open>r\<^sub>s \<otimes>\<checkmark>4 r\<^sub>u = \<lfloor>r\<^sub>w\<rfloor>\<close>
           \<open>r\<^sub>t \<otimes>\<checkmark>2 r\<^sub>u = \<lfloor>r\<^sub>v\<rfloor>\<close> tick_assoc_ren_hyp option.sel)
@@ -395,19 +395,19 @@ qed
 
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_right :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_right :
   \<open>t\<^sub>w setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>4)\<^esub> ((t\<^sub>s, t\<^sub>u), A) \<Longrightarrow>
    t\<^sub>x setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>3)\<^esub> ((t\<^sub>r, t\<^sub>w), A) \<Longrightarrow>
    \<exists>t\<^sub>t. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2) t\<^sub>x setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>2)\<^esub> ((t\<^sub>t, t\<^sub>u), A) \<and>
         t\<^sub>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>1)\<^esub> ((t\<^sub>r, t\<^sub>s), A)\<close>
-  by (subst (1 2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym, subst (asm) (1 2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (fact Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale_sym.setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_left)
+  by (subst (1 2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual, subst (asm) (1 2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (fact Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_dual.setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_left)
 
 
 
 subsection \<open>Associativity\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc
 begin
 
 notation Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<open>(_ \<lbrakk>_\<rbrakk>\<^sub>\<checkmark>\<^sub>1 _)\<close> [70, 0, 71] 70)
@@ -450,10 +450,10 @@ proof -
       obtain t_Q_R where **** : \<open>?map_event t\<^sub>1\<^sub>1\<^sub>1 setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>3)\<^esub> ((t_P, t_Q_R), S)\<close>
         \<open>t_Q_R setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>4)\<^esub> ((t_Q, t_R\<^sub>1), S)\<close> by blast
       have \<open>tF (?map_event t\<^sub>1)\<close>
-        by (simp add: \<open>tF t\<^sub>1\<close> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (simp add: \<open>tF t\<^sub>1\<close> tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>ftF (?map_event (t\<^sub>1\<^sub>1\<^sub>2 @ t\<^sub>1\<^sub>2) @ t\<^sub>2)\<close>
-        by (metis "*"(1) "***"(1) \<open>ftF t\<^sub>2\<close> \<open>tF t\<^sub>1\<close> front_tickFree_append
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+        by (metis "*"(1) "***"(1) \<open>ftF t\<^sub>2\<close> \<open>tF t\<^sub>1\<close> ftF_append
+            tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
       moreover from "**"(5)
       have \<open>t_P \<in> \<D> P \<and> t_Q_R \<in> \<T> (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R) \<or> t_P \<in> \<T> P \<and> t_Q_R \<in> \<D> (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R)\<close>
       proof (elim disjE conjE)
@@ -464,12 +464,12 @@ proof -
         thus ?thesis ..
       next
         assume \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<D> Q\<close>
-        from "**"(2, 4) have \<open>tF t_Q\<close> by (simp add: tickFree_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
-        with "****"(2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree_imp have \<open>tF t_Q_R\<close> by blast
+        from "**"(2, 4) have \<open>tF t_Q\<close> by (simp add: tF_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
+        with "****"(2) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tF_imp have \<open>tF t_Q_R\<close> by blast
         moreover from "***"(2) \<open>t_R \<in> \<T> R\<close> is_processT3_TR_append have \<open>t_R\<^sub>1 \<in> \<T> R\<close> by blast
         ultimately have \<open>t_P \<in> \<T> P \<and> t_Q_R \<in> \<D> (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R)\<close>
           unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-          using "****"(2) \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<D> Q\<close> front_tickFree_Nil by blast
+          using "****"(2) \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<D> Q\<close> ftF_Nil by blast
         thus ?thesis ..
       qed
       ultimately show \<open>t \<in> \<D> ?lhs\<close>
@@ -485,14 +485,14 @@ proof -
           \<open>t_Q' setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>4)\<^esub> ((t_Q, t_R), S)\<close> by blast
       from "*"(2) "**"(2) "***" \<open>t_R \<in> \<D> R\<close> have \<open>t_Q' \<in> \<D> (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R)\<close>
         by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-          (metis append.right_neutral front_tickFree_Nil
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
+          (metis append.right_neutral ftF_Nil
+            tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>t = ?map_event t\<^sub>1\<^sub>1 @ (?map_event t\<^sub>1\<^sub>2 @ t\<^sub>2)\<close>
         by (simp add: "*"(1) \<open>t = ?map_event t\<^sub>1 @ t\<^sub>2\<close>)
       moreover have \<open>tF (?map_event t\<^sub>1\<^sub>1)\<close>
-        by (simp add: "*"(2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (simp add: "*"(2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover from "*"(1) \<open>ftF t\<^sub>2\<close> \<open>tF t\<^sub>1\<close> have \<open>ftF (?map_event t\<^sub>1\<^sub>2 @ t\<^sub>2)\<close>
-        using front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff by blast
+        using ftF_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff by blast
       ultimately show \<open>t \<in> \<D> ?lhs\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k using "**"(1) "***"(1) by blast
     qed
@@ -512,10 +512,10 @@ proof -
         \<open>(t\<^sub>1, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 -` X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
       from "*"(1) \<open>t \<notin> \<D> ?rhs\<close> have \<open>t\<^sub>1 \<notin> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
         by (cases \<open>tF t\<^sub>1\<close>, simp_all add: D_Renaming)
-          (use front_tickFree_Nil in blast,
-            metis D_imp_front_tickFree front_tickFree_append_iff is_processT9
-            map_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree
-            nonTickFree_n_frontTickFree non_tickFree_tick tickFree_Nil)
+          (blast intro: ftF_Nil,
+            metis (no_types, lifting) "*"(3) append_Nil butlast_snoc
+            div_butlast_when_non_tF_iff ftF_charn ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff
+            is_processT2 map_butlast tF_Nil tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       with "*"(3) obtain t_P_Q X_P_Q t_R X_R
         where ** : \<open>(t_P_Q, X_P_Q) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close> \<open>(t_R, X_R) \<in> \<F> R\<close>
           \<open>t\<^sub>1 setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>2)\<^esub> ((t_P_Q, t_R), S)\<close>
@@ -532,37 +532,36 @@ proof -
         have \<open>t\<^sub>1 \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
         proof (cases \<open>tF t_P_Q\<close>)
           assume \<open>tF t_P_Q\<close>
-          with "**"(3)[THEN setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree_imp[rotated]] have \<open>tF t\<^sub>1\<close> by simp
+          with "**"(3)[THEN setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tF_imp[rotated]] have \<open>tF t\<^sub>1\<close> by simp
           with "**"(3) "**"(2)[THEN F_T] \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close>
           show \<open>t\<^sub>1 \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
             by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-              (meson front_tickFree_Nil self_append_conv)
+              (meson ftF_Nil self_append_conv)
         next
           assume \<open>\<not> tF t_P_Q\<close>
           then obtain t_P_Q' r where \<open>tF t_P_Q'\<close> \<open>t_P_Q = t_P_Q' @ [\<checkmark>(r)]\<close>
-            by (metis D_imp_front_tickFree \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close> butlast_snoc
-                front_tickFree_iff_tickFree_butlast nonTickFree_n_frontTickFree)
+            by (metis D_imp_ftF \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close> butlast_snoc
+                ftF_iff_tF_butlast not_tF_and_ftF)
           moreover from "**"(2,3) \<open>\<not> tF t_P_Q\<close> obtain t_R' s
             where \<open>tF t_R'\<close> \<open>t_R = t_R' @ [\<checkmark>(s)]\<close>
-            by (metis  F_imp_front_tickFree butlast_snoc front_tickFree_iff_tickFree_butlast
-                nonTickFree_n_frontTickFree setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree_imp)
+            by (metis  F_imp_ftF butlast_snoc ftF_iff_tF_butlast
+                not_tF_and_ftF setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tF_imp)
           ultimately obtain r_s t\<^sub>1' where \<open>t\<^sub>1 = t\<^sub>1' @ [\<checkmark>(r_s)]\<close>
             \<open>t\<^sub>1' setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>2)\<^esub> ((t_P_Q', t_R'), S)\<close>
             using "**"(3) by (auto elim!: setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_tick_snoc_tickE)
           moreover have \<open>t_P_Q' \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close>
-            by (metis D_imp_front_tickFree \<open>\<not> tF t_P_Q\<close> \<open>t_P_Q = t_P_Q' @ [\<checkmark>(r)]\<close>
-                \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close> butlast_snoc div_butlast_when_non_tickFree_iff)
+            by (metis D_imp_ftF \<open>\<not> tF t_P_Q\<close> \<open>t_P_Q = t_P_Q' @ [\<checkmark>(r)]\<close>
+                \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close> butlast_snoc div_butlast_when_non_tF_iff)
           moreover have \<open>t_R' \<in> \<T> R\<close>
             using "**"(2) F_T \<open>t_R = t_R' @ [\<checkmark>(s)]\<close> is_processT3_TR_append by blast
           ultimately have \<open>t\<^sub>1' \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
             by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-              (metis "**"(3) D_imp_front_tickFree \<open>tF t_R'\<close> \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close>
-                \<open>t_R = t_R' @ [\<checkmark>(s)]\<close> append.right_neutral butlast_snoc front_tickFree_charn
-                front_tickFree_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tickFree_Nil tickFree_append_iff)
-          thus \<open>t\<^sub>1 \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
-            by (simp add: \<open>t\<^sub>1 = t\<^sub>1' @ [\<checkmark>(r_s)]\<close>)
-              (metis "*"(3) F_imp_front_tickFree \<open>t\<^sub>1 = t\<^sub>1' @ [\<checkmark>(r_s)]\<close> butlast_snoc
-                div_butlast_when_non_tickFree_iff non_tickFree_tick tickFree_append_iff)
+              (metis "**"(3) D_imp_ftF \<open>tF t_R'\<close> \<open>t_P_Q \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q)\<close>
+                \<open>t_R = t_R' @ [\<checkmark>(s)]\<close> append.right_neutral butlast_snoc ftF_charn
+                ftF_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_Nil tF_append_iff)
+          with "*"(3) div_butlast_when_non_tF_iff is_processT2
+          show \<open>t\<^sub>1 \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close>
+            by (fastforce simp add: \<open>t\<^sub>1 = t\<^sub>1' @ [\<checkmark>(r_s)]\<close>)
         qed
         with \<open>t\<^sub>1 \<notin> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R)\<close> show \<open>(t, X) \<in> \<F> ?lhs\<close> ..
       next
@@ -597,7 +596,7 @@ proof -
                 where $ : \<open>s \<otimes>\<checkmark>4 t = \<lfloor>s_t\<rfloor>\<close> \<open>r \<otimes>\<checkmark>3 s_t = \<lfloor>r_s_t\<rfloor>\<close> by blast
               then obtain r' s' t' r_s'
                 where $$ : \<open>r' \<otimes>\<checkmark>1 s' = \<lfloor>r_s'\<rfloor>\<close> \<open>r_s' \<otimes>\<checkmark>2 t' = \<lfloor>\<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2 r_s_t\<rfloor>\<close>
-                by (metis None_assms_tick_join(1,2) option.collapse option.discI
+                by (metis None_assms_tj(1,2) option.collapse option.discI
                     option.sel tick_assoc_ren_conv_hyp)
               have \<open>\<checkmark>(\<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2 r_s_t) \<in> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3 -` X\<close>
                 by (metis \<open>e = \<checkmark>(r_s_t)\<close> \<open>e \<in> X\<close> "$" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(10)
@@ -605,8 +604,8 @@ proof -
               from **(4)[THEN set_mp, OF this] fail(4)[THEN set_mp, of \<open>\<checkmark>(r_s')\<close>]
               show \<open>e \<in> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<otimes>\<checkmark>3) X_P S (super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<otimes>\<checkmark>4) X_Q S X_R)\<close>
                 by (simp add: \<open>e = \<checkmark>(r_s_t)\<close> subset_iff super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
-                  (metis (no_types, lifting) "$$" None_assms_tick_join(3,4)
-                    Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.inj_tick_join option.collapse option.discI
+                  (metis (no_types, lifting) "$$" None_assms_tj(3,4)
+                    Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.inj_tj option.collapse option.discI
                     option.sel tick_assoc_ren_hyp tick_assoc_ren_tick_assoc_ren_conv)
             next
               assume \<open>\<nexists>r s t s_t. s \<otimes>\<checkmark>4 t = \<lfloor>s_t\<rfloor> \<and> r \<otimes>\<checkmark>3 s_t = \<lfloor>r_s_t\<rfloor>\<close>
@@ -626,7 +625,7 @@ end
 
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) strict_ticks_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset :
   \<open>\<^bold>\<checkmark>\<^bold>s(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q) \<subseteq> {r_s |r_s r s. r \<otimes>\<checkmark> s = \<lfloor>r_s\<rfloor> \<and>
                                  r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<and> s \<in> \<^bold>\<checkmark>\<^bold>s(Q)}\<close> (is \<open>_ \<subseteq> ?S\<close>)
 proof (rule subsetI, elim strict_ticks_of_memE)
@@ -645,8 +644,8 @@ proof (rule subsetI, elim strict_ticks_of_memE)
       assume \<open>\<not> (t_P' \<notin> \<D> P \<and> t_Q' \<notin> \<D> Q)\<close>
       with \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> have \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
         by (simp add: D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k "*"(2,3,4))
-          (metis "*"(4) append.right_neutral append_T_imp_tickFree front_tickFree_Nil
-            is_processT3_TR_append not_Cons_self2 setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree_imp)
+          (metis "*"(4) append.right_neutral append_T_imp_tF ftF_Nil
+            is_processT3_TR_append not_Cons_self2 setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tF_imp)
       with \<open>t \<notin> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close> show False ..
     qed
     with "*"(2, 3) \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> have \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close> \<open>s \<in> \<^bold>\<checkmark>\<^bold>s(Q)\<close>
@@ -656,24 +655,24 @@ proof (rule subsetI, elim strict_ticks_of_memE)
 qed
 
 
-theorem (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc :
+theorem (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc :
   \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>3 (Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R) = RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R) \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3\<close> (is \<open>?lhs = ?rhs\<close>)
 proof (rule FD_antisym)
   show \<open>?lhs \<sqsubseteq>\<^sub>F\<^sub>D ?rhs\<close> by (fact Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_oneside)
 next
-  from Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_oneside[of R S Q P]
-  have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S
-        (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q S P) \<sqsubseteq>\<^sub>F\<^sub>D
-        RenamingTick (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S Q) S P) \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2\<close> .
-  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q S P = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q\<close>
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S P_Q = P_Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R\<close> for P_Q
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S Q = Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R\<close>
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q_R S P = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>3 Q_R\<close> for Q_R
-    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+  from Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_assoc_oneside[of R S Q P]
+  have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S
+        (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q S P) \<sqsubseteq>\<^sub>F\<^sub>D
+        RenamingTick (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+        (Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S Q) S P) \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2\<close> .
+  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q S P = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q\<close>
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>1.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S P_Q = P_Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R\<close> for P_Q
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>2.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k R S Q = Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>4 R\<close>
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>4.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+  also have \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Q_R S P = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>3 Q_R\<close> for Q_R
+    by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<^sub>3.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
   finally have \<open>P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>1 Q \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>2 R \<sqsubseteq>\<^sub>F\<^sub>D RenamingTick ?lhs \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2\<close> .
   hence \<open>?rhs \<sqsubseteq>\<^sub>F\<^sub>D RenamingTick (RenamingTick ?lhs \<otimes>\<checkmark>3\<Rightarrow>\<otimes>\<checkmark>2) \<otimes>\<checkmark>2\<Rightarrow>\<otimes>\<checkmark>3\<close>
     by (fact mono_Renaming_FD)

@@ -201,6 +201,9 @@ lemma T_GlobalDet': \<open>\<T> (\<box> x \<in> A. P x) = (insert [] (\<Union> x
 
 lemmas GlobalDet_projs = F_GlobalDet D_GlobalDet T_GlobalDet
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_GlobalDet_subset : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (\<box>a \<in> A. P a) \<subseteq> (\<Union>a\<in>A. \<D>\<^sub>m\<^sub>i\<^sub>n (P a))\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_GlobalDet min_elems_def)
+
 
 lemma mono_GlobalDet_eq:
   \<open>(\<And>x. x \<in> A \<Longrightarrow> P x = Q x) \<Longrightarrow> GlobalDet A P = GlobalDet A Q\<close>
@@ -265,11 +268,6 @@ lemma GlobalDet_unit[simp] : \<open>(\<box> x \<in> {a}. P x) = P a\<close>
   by (auto simp add: Process_eq_spec F_GlobalDet D_GlobalDet
       intro: is_processT8 is_processT6_TR_notin)
 
-(* TODO: move this ? *)
-lemma GlobalDet_empty[simp] : \<open>(\<box>a \<in> {}. P a) = STOP\<close>
-  by (simp add: STOP_iff_T T_GlobalDet)
-
-
 lemma GlobalDet_distrib_unit:
   \<open>(\<box> x \<in> insert a A. P x) = P a \<box> (\<box> x \<in> (A - {a}). P x)\<close>
   by (metis GlobalDet_factorization_union GlobalDet_unit Un_Diff_cancel insert_is_Un)
@@ -279,6 +277,15 @@ lemma GlobalDet_distrib_unit_bis :
   \<open>a \<notin> A \<Longrightarrow> (\<box> x \<in> insert a A. P x) = P a \<box> (\<box> x \<in> A. P x)\<close>
   by (simp add: GlobalDet_distrib_unit)
 
+
+lemma GlobalDet_empty[simp] : \<open>(\<box>a \<in> {}. P a) = STOP\<close>
+  by (simp add: STOP_iff_T T_GlobalDet)
+
+lemma GlobalDet_is_BOT_iff : \<open>(\<box>a\<in>A. P a) = \<bottom> \<longleftrightarrow> (\<exists>a\<in>A. P a = \<bottom>)\<close>
+  by (simp add: BOT_iff_Nil_D D_GlobalDet)
+
+lemma GlobalDet_BOT [simp] : \<open>a \<in> A \<Longrightarrow> P a = \<bottom> \<Longrightarrow> (\<box>a\<in>A. P a) = \<bottom>\<close>
+  by (auto simp add: GlobalDet_is_BOT_iff)
 
 
 subsection \<open>Behaviour of \<^const>\<open>GlobalDet\<close> with \<^const>\<open>Det\<close>\<close>
@@ -461,12 +468,12 @@ subsection \<open>Continuity\<close>
 lemma mono_GlobalDet : \<open>(\<box>a \<in> A. P a) \<sqsubseteq> \<box>a \<in> A. Q a\<close> if \<open>\<And>x. x \<in> A \<Longrightarrow> P x \<sqsubseteq> Q x\<close>
 proof (unfold le_approx_def, safe)
   show \<open>s \<in> \<D> (\<box>a \<in> A. Q a) \<Longrightarrow> s \<in> \<D> (\<box>a \<in> A. P a)\<close> for s
-    using that[THEN le_approx1] by (auto simp add: D_GlobalDet)
+    using that[THEN le_approxD(1)] by (auto simp add: D_GlobalDet)
 next
   fix s X assume \<open>s \<notin> \<D> (\<box>a \<in> A. P a)\<close> \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. P a) s\<close>
   from \<open>s \<notin> \<D> (\<box>a \<in> A. P a)\<close> have * : \<open>\<forall>a\<in>A. s \<notin> \<D> (P a)\<close>
     by (simp add: D_GlobalDet)
-  with that le_approx2
+  with that le_approxD(2)
   have ** : \<open>a \<in> A \<Longrightarrow> (s, X) \<in> \<F> (Q a) \<longleftrightarrow> (s, X) \<in> \<F> (P a)\<close> for a X by blast
   from \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. P a) s\<close> "*"
   consider \<open>s = []\<close> \<open>\<And>a. a \<in> A \<Longrightarrow> (s, X) \<in> \<F> (P a)\<close>
@@ -488,7 +495,7 @@ next
     fix a r assume \<open>a \<in> A\<close> \<open>s = []\<close> \<open>\<checkmark>(r) \<notin> X\<close> \<open>[\<checkmark>(r)] \<in> \<T> (P a)\<close>
     from \<open>a \<in> A\<close> \<open>[\<checkmark>(r)] \<in> \<T> (P a)\<close> have \<open>[\<checkmark>(r)] \<in> \<T> (Q a)\<close>
       by (fold T_F_spec, simp add: "**"[OF \<open>a \<in> A\<close>])
-        (metis "*" \<open>s = []\<close> is_processT9 proc_ord2a self_append_conv2 that)
+        (metis "*" \<open>s = []\<close> is_processT9 le_approxD(2) self_append_conv2 that)
     with \<open>a \<in> A\<close> \<open>s = []\<close> \<open>\<checkmark>(r) \<notin> X\<close> show \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. Q a) s\<close>
       by (auto simp add: Refusals_after_def F_GlobalDet)
   qed
@@ -496,7 +503,7 @@ next
   fix s X assume \<open>s \<notin> \<D> (\<box>a \<in> A. P a)\<close> \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. Q a) s\<close>
   from \<open>s \<notin> \<D> (\<box>a \<in> A. P a)\<close> have * : \<open>\<forall>a\<in>A. s \<notin> \<D> (P a)\<close>
     by (simp add: D_GlobalDet)
-  with that le_approx2
+  with that le_approxD(2)
   have ** : \<open>a \<in> A \<Longrightarrow> (s, X) \<in> \<F> (Q a) \<longleftrightarrow> (s, X) \<in> \<F> (P a)\<close> for a X by blast
   from \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. Q a) s\<close>
   consider \<open>s = []\<close> \<open>\<And>a. a \<in> A \<Longrightarrow> (s, X) \<in> \<F> (Q a)\<close>
@@ -518,20 +525,19 @@ next
   next
     show \<open>a \<in> A \<Longrightarrow> s = [] \<Longrightarrow> s \<in> \<D> (Q a) \<Longrightarrow> X \<in> \<R>\<^sub>a (\<box>a \<in> A. P a) s\<close> for a
       by (simp add: Refusals_after_def F_GlobalDet)
-        (meson le_approx1 subsetD that)
+        (meson le_approxD(1) subsetD that)
   next
     fix a r assume \<open>a \<in> A\<close> \<open>s = []\<close> \<open>\<checkmark>(r) \<notin> X\<close> \<open>[\<checkmark>(r)] \<in> \<T> (Q a)\<close>
     from \<open>a \<in> A\<close> \<open>[\<checkmark>(r)] \<in> \<T> (Q a)\<close> have \<open>[\<checkmark>(r)] \<in> \<T> (P a)\<close>
       by (fold T_F_spec, simp add: "**"[OF \<open>a \<in> A\<close>])
-        (metis "*" \<open>s = []\<close> is_processT9 proc_ord2a self_append_conv2 that)
+        (metis "*" \<open>s = []\<close> is_processT9 le_approxD(2) self_append_conv2 that)
     with \<open>a \<in> A\<close> \<open>s = []\<close> \<open>\<checkmark>(r) \<notin> X\<close> show \<open>X \<in> \<R>\<^sub>a (\<box>a \<in> A. P a) s\<close>
       by (auto simp add: Refusals_after_def F_GlobalDet)
   qed
 next
-  from that[THEN le_approx3]
-  show \<open>s \<in> min_elems (\<D> (\<box>a \<in> A. P a)) \<Longrightarrow> s \<in> \<T> (\<box>a \<in> A. Q a)\<close> for s
-    by (auto simp add: min_elems_def subset_iff less_list_def less_eq_list_def
-        prefix_def D_GlobalDet T_GlobalDet) blast
+  from that[THEN le_approxD(3)]
+  show \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (\<box>a \<in> A. P a) \<Longrightarrow> s \<in> \<T> (\<box>a \<in> A. Q a)\<close> for s
+    by (auto dest!: D\<^sub>m\<^sub>i\<^sub>n_GlobalDet_subset[THEN set_mp] simp add: T_GlobalDet)
 qed
 
 

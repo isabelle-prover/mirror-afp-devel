@@ -114,7 +114,7 @@ proof (rule failure_divergence_refine_optimizedI)
     assume \<open>t \<in> \<D> P\<close>
     with mem_D_imp_mem_D_Hiding have \<open>trace_hide t (ev ` A) \<in> \<D> (P \ A)\<close> by blast
     thus \<open>s \<in> \<D> (P \ A \ B)\<close>
-      by (subst D_Hiding) (use"*"(1, 2, 3) "**" Hiding_tickFree in blast)
+      by (subst D_Hiding) (use"*"(1, 2, 3) "**" Hiding_tF in blast)
   next
     fix f assume ** : \<open>isInfHiddenRun f P (A \<union> B) \<and> t \<in> range f\<close>
     hence \<open>strict_mono f\<close> by simp
@@ -166,7 +166,7 @@ proof (rule failure_divergence_refine_optimizedI)
       assume \<open>\<exists>m. \<forall>i>m. last (ff i) \<in> ev ` A\<close>
       then obtain m where $ : \<open>m < i \<Longrightarrow> last (ff i) \<in> ev ` A\<close> for i by blast
       hence \<open>tF (ff m)\<close>
-        by (metis "***" strict_prefixE' append_T_imp_tickFree list.distinct(1) strict_mono_Suc_iff)
+        by (metis "***" strict_prefixE' append_T_imp_tF list.distinct(1) strict_mono_Suc_iff)
       have $$ : \<open>\<exists>t. ff (i + m) = ff m @ t \<and> set t \<subseteq> ev ` A\<close> for i
       proof (induct i)
         show \<open>\<exists>t. ff (0 + m) = ff m @ t \<and> set t \<subseteq> ev ` A\<close> by simp
@@ -191,7 +191,7 @@ proof (rule failure_divergence_refine_optimizedI)
         apply (simp add: D_Hiding)
         apply (rule exI[of _ \<open>trace_hide (ff m) (ev ` A)\<close>], rule exI[of _ u], intro conjI)
         subgoal by (fact \<open>ftF u\<close>)
-        subgoal using Hiding_tickFree \<open>tF (ff m)\<close> by blast
+        subgoal using Hiding_tF \<open>tF (ff m)\<close> by blast
         subgoal by (metis (no_types) "*"(3) "***" rangeE trace_hide_ev_union)
         apply (rule disjI1)
         apply (rule exI[of _ \<open>ff m\<close>], rule exI[of _ \<open>[]\<close>], simp add: \<open>tF (ff m)\<close>)
@@ -235,7 +235,7 @@ proof (rule failure_divergence_refine_optimizedI)
         apply (simp add: D_Hiding)
         apply (rule exI[of _ \<open>trace_hide t (ev ` A)\<close>], rule exI[of _ u], intro conjI)
         subgoal by (fact \<open>ftF u\<close>)
-        subgoal using Hiding_tickFree \<open>tF t\<close> by blast
+        subgoal using Hiding_tF \<open>tF t\<close> by blast
         subgoal by (simp add: "*"(3))
         apply (rule disjI2)
         apply (rule exI[of _ \<open>\<lambda>i. trace_hide (fff i) (ev ` A)\<close>], intro conjI)
@@ -283,7 +283,7 @@ proof (rule order_antisym)
           \<open>t' \<in> \<D> P \<or> (\<exists>x. isInfHidden_seqRun_strong x P A t')\<close>
         by (elim D_Hiding_seqRunE)
       from "*"(1, 2) "**"(3) have *** : \<open>ftF (trace_hide u' (ev ` B) @ u)\<close>
-        using Hiding_tickFree front_tickFree_append tickFree_append_iff by blast
+        using Hiding_tF ftF_append tF_append_iff by blast
       show \<open>s \<in> \<D> (P \ (A \<union> B))\<close>
         apply (unfold D_Hiding_seqRun, clarify)
         apply (rule exI[of _ t'], rule exI[of _ \<open>trace_hide u' (ev ` B) @ u\<close>])
@@ -392,7 +392,7 @@ proof (rule order_antisym)
         by (metis "***"(2) imageE is_processT2_TR is_processT3_TR)
       hence \<open>tF (ff j)\<close> for j
         using strict_monoD[OF "$$"(1), of j \<open>Suc j\<close>, simplified]
-        by (metis strict_prefixE' front_tickFree_append_iff list.distinct(1))
+        by (metis strict_prefixE' ftF_append_iff list.distinct(1))
       from "$$"(2) "***"(2) have \<open>ff (j + i) \<in> \<T> P\<close> for i j
         by (simp add: subset_iff) (meson is_processT3_TR rangeI)
       have $$$$ : \<open>\<exists>w. trace_hide (ff i) (ev ` A) \<le> t @ w\<close> for i
@@ -427,8 +427,8 @@ proof (rule order_antisym)
           subgoal by (metis \<open>\<And>i. j \<le> i \<Longrightarrow> fff i = fff j\<close> fff_def le_add1)
           subgoal by (metis Nat.add_0_right rangeI) .
         thus False
-          by (metis (no_types) "**" prefixE T_imp_front_tickFree append.right_neutral assm_bis
-              front_tickFree_append_iff is_processT3_TR is_processT7 t_le_seqRun)
+          by (metis (no_types) "**" prefixE T_imp_ftF append.right_neutral assm_bis
+              ftF_append_iff is_processT3_TR is_processT7 t_le_seqRun)
       qed
       then obtain j where \<open>t \<le> trace_hide (ff j) (ev ` A)\<close> ..
       have "\<pounds>" : \<open>s = trace_hide (ff j) (ev ` (A \<union> B)) @ u\<close>
@@ -503,12 +503,11 @@ qed
 
 
 
-
 subsection\<open> Sync Operator Laws \<close>  
 
 subsubsection\<open> Preliminaries \<close>
 
-lemma tickFree_isInfHiddenRun : \<open>tF s\<close>
+lemma tF_isInfHiddenRun : \<open>tF s\<close>
   if \<open>isInfHiddenRun f P A\<close> and \<open>s \<in> range f\<close>
 proof -
   from \<open>s \<in> range f\<close> obtain i where \<open>s = f i\<close> ..
@@ -516,12 +515,12 @@ proof -
   ultimately obtain t where \<open>t \<noteq> []\<close> \<open>f (Suc i) = s @ t\<close> by (meson strict_prefixE' list.discI)
   moreover from \<open>isInfHiddenRun f P A\<close> is_processT2_TR
   have \<open>ftF (f (Suc i))\<close> by blast
-  ultimately show \<open>tF s\<close> by (simp add: front_tickFree_append_iff)
+  ultimately show \<open>tF s\<close> by (simp add: ftF_append_iff)
 qed
 
 lemma Hiding_interleave: 
   \<open>r setinterleaves ((t, u), C) \<Longrightarrow>
-   (trace_hide r A) setinterleaves ((trace_hide t A, trace_hide u A), C)\<close>
+   trace_hide r A setinterleaves ((trace_hide t A, trace_hide u A), C)\<close>
   (* The hypothesis \<open>A \<inter> C = {}\<close> was useless, see if we can obtain more powerful results *)
 proof (induct \<open>(t, C, u)\<close> arbitrary: r t u rule: setinterleaving.induct)
   case 1 thus ?case by simp
@@ -533,7 +532,7 @@ next
   case (4 x t y u)
   thus ?case 
     by (simp split: if_splits)
-      (safe, simp_all, (use SyncSingleHeadAdd setinterleaving_sym in blast)+)
+      (safe, simp_all, (use SyncSingleHeadAdd setinterleaving_dual in blast)+)
 qed
 
 lemma non_Sync_interleaving: 
@@ -586,7 +585,7 @@ next
   thus \<open>\<exists>u'. u = trace_hide u' S \<and> u' \<le> a # t\<close>
   proof cases
     show \<open>u = [] \<Longrightarrow> \<exists>u'. u = trace_hide u' S \<and> u' \<le> a # t\<close>
-      by (metis filter.simps(1) nil_le)
+      by (metis filter.simps(1) Nil_le)
   next
     assume \<open>a \<in> S\<close> \<open>u \<le> trace_hide t S\<close>
     from hyp[OF \<open>u \<le> trace_hide t S\<close>] obtain u' where \<open>u = trace_hide u' S \<and> u' \<le> t\<close> ..
@@ -610,7 +609,7 @@ proof (induct \<open>(t1, S, u1)\<close> arbitrary: s1 t1 u1 rule: setinterleavi
 next
   case (2 y u1)
   thus ?case by (auto split: if_split_asm)
-      (use SyncSingleHeadAdd setinterleaving_sym in blast)
+      (use SyncSingleHeadAdd setinterleaving_dual in blast)
 next
   case (3 x t1)
   thus ?case by (auto split: if_split_asm) (blast intro: SyncSingleHeadAdd)
@@ -651,8 +650,8 @@ proof (subst Process_eq_spec_optimized, safe)
         apply (simp add: "*"(3) D_Sync)
         apply (rule exI[of _ \<open>?trH_A t'\<close>], rule exI[of _ \<open>?trH_A u'\<close>],
             rule exI[of _ \<open>?trH_A r'\<close>], rule exI[of _ \<open>?trH_A v' @ u\<close>])
-        apply (simp add: "*"(3) "**"(3) Hiding_tickFree)
-        using "*"(1, 2) "**"(3) Hiding_tickFree front_tickFree_append tickFree_append_iff by blast
+        apply (simp add: "*"(3) "**"(3) Hiding_tF)
+        using "*"(1, 2) "**"(3) Hiding_tF ftF_append tF_append_iff by blast
     } note $ = this
     from "**"(5) show \<open>s \<in> \<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close>
     proof (elim disjE conjE)
@@ -745,7 +744,7 @@ proof (subst Process_eq_spec_optimized, safe)
 
       have \<open>ftF u\<close> by (fact "*"(1))
       moreover have \<open>tF (?trH_A (seqRun t x i)) \<or> u = []\<close>
-        by (metis "*"(2) "**" Hiding_tickFree trace_hide_seqRun_eq_iff)
+        by (metis "*"(2) "**" Hiding_tF trace_hide_seqRun_eq_iff)
       moreover have \<open>s = ?trH_A (seqRun t x i) @ u\<close>
         by (metis "*"(3) "**" trace_hide_seqRun_eq_iff)
       moreover have \<open>?trH_A (seqRun t x i) setinterleaves ((?trH_A (ft i), ?trH_A (fu i)), ?tick_S)\<close>
@@ -755,10 +754,10 @@ proof (subst Process_eq_spec_optimized, safe)
         apply (rule exI[of _ \<open>ft'' 0\<close>])
         apply (rule exI[of _ \<open>?trH_A v\<close>])
         apply (intro conjI)
-        subgoal by (metis assms(3) Hiding_front_tickFree \<open>ft i = ft'' 0 @ v\<close>
-              front_tickFree_Nil front_tickFree_nonempty_append_imp is_processT2_TR) 
-        subgoal by (metis strict_prefixE' T_imp_front_tickFree \<open>range ft'' \<subseteq> \<T> P\<close> \<open>strict_mono ft''\<close>
-              front_tickFree_append_iff list.distinct(1) range_subsetD strict_mono_Suc_iff)
+        subgoal by (metis assms(3) Hiding_ftF \<open>ft i = ft'' 0 @ v\<close>
+              ftF_Nil ftF_nonempty_append_imp is_processT2_TR) 
+        subgoal by (metis strict_prefixE' T_imp_ftF \<open>range ft'' \<subseteq> \<T> P\<close> \<open>strict_mono ft''\<close>
+              ftF_append_iff list.distinct(1) range_subsetD strict_mono_Suc_iff)
         subgoal by (simp add: \<open>ft i = ft'' 0 @ v\<close>)
         subgoal using "$$" \<open>range ft'' \<subseteq> \<T> P\<close> \<open>strict_mono ft''\<close> by blast .
       moreover have \<open>?trH_A (fu i) \<in> \<T> (Q \ A)\<close>
@@ -776,8 +775,8 @@ proof (subst Process_eq_spec_optimized, safe)
           apply (rule exI[of _ \<open>fu' j\<close>], rule exI[of _ \<open>[]\<close>])
           apply (intro conjI)
           subgoal by simp
-          subgoal by (metis "$$$"(1) strict_prefixE' T_imp_front_tickFree neq_Nil_conv
-                front_tickFree_nonempty_append_imp strict_mono_Suc_iff)
+          subgoal by (metis "$$$"(1) strict_prefixE' T_imp_ftF neq_Nil_conv
+                ftF_nonempty_append_imp strict_mono_Suc_iff)
           subgoal by (simp add: "$$$"(2))
           subgoal using "$$$"(1) by blast .
       qed
@@ -792,7 +791,7 @@ proof (subst Process_eq_spec_optimized, safe)
     next
       from "$" "****" \<open>\<And>i. set (ft i) \<union> set (fu i) \<subseteq> set t \<union> ev ` A\<close>
       show \<open>infinite (range fu) \<Longrightarrow> s \<in> \<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close> 
-        by (metis Sync_commute setinterleaving_sym sup_commute)
+        by (metis Sync_commute setinterleaving_dual sup_commute)
     qed
   qed
 next
@@ -833,7 +832,7 @@ next
         have $ : \<open>?trH_A t_P \<in> \<D> (P \ A)\<close>
           apply (unfold D_Hiding, clarify)
           apply (rule exI[of _ \<open>t_P\<close>], rule exI[of _ \<open>[]\<close>])
-          using tickFree_isInfHiddenRun D_P front_tickFree_Nil by blast
+          using tF_isInfHiddenRun D_P ftF_Nil by blast
         from F(2) F_T mem_T_imp_mem_T_Hiding
         have $$ : \<open>?trH_A t_Q \<in> \<T> (Q \ A)\<close> by blast
         show \<open>(s, X) \<in> \<F> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close>
@@ -850,14 +849,14 @@ next
         have $$ : \<open>?trH_A t_Q \<in> \<D> (Q \ A)\<close>
           apply (unfold D_Hiding, clarify)
           apply (rule exI[of _ \<open>t_Q\<close>], rule exI[of _ \<open>[]\<close>])
-          using tickFree_isInfHiddenRun D_Q front_tickFree_Nil by blast
+          using tF_isInfHiddenRun D_Q ftF_Nil by blast
         show \<open>(s, X) \<in> \<F> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close>
           apply (simp add: F_Sync)
           apply (rule disjI2)
           apply (rule exI[of _ \<open>?trH_A t_Q\<close>])
           apply (rule exI[of _ \<open>?trH_A t_P\<close>])
           apply (rule exI[of _ \<open>?trH_A t\<close>], rule exI[of _ \<open>[]\<close>])
-          by (simp add: "*"(1) F(3) Hiding_interleave setinterleaving_sym "$" "$$")
+          by (simp add: "*"(1) F(3) Hiding_interleave setinterleaving_dual "$" "$$")
       next
         case F_both
         from F(4) \<open>A \<inter> S = {}\<close> have \<open>ev ` A \<subseteq> X_P\<close> and \<open>ev ` A \<subseteq> X_Q\<close> by auto
@@ -883,7 +882,7 @@ next
       \<open>t_P \<in> \<D> (P \ A) \<and> t_Q \<in> \<T> (Q \ A) \<or> t_P \<in> \<D> (Q \ A) \<and> t_Q \<in> \<T> (P \ A)\<close>
     unfolding D_Sync by blast
   from \<open>s \<in> \<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close> have \<open>ftF s\<close>
-    by (simp add: D_imp_front_tickFree)
+    by (simp add: D_imp_ftF)
   { fix t_P t_Q and P Q
     assume ** : \<open>r setinterleaves ((t_P, t_Q), ?tick_S)\<close>
       \<open>t_P \<in> \<D> (P \ A)\<close> \<open>t_Q \<in> \<T> (Q \ A)\<close>
@@ -915,12 +914,12 @@ next
       proof (rule D_Hiding_seqRunI)
         show \<open>ftF (r2 @ v)\<close>
           by (metis "*"(1, 3) "****"(2) \<open>ftF s\<close>
-              front_tickFree_append_iff tickFree_append_iff)
+              ftF_append_iff tF_append_iff)
       next
         show \<open>tF r1'\<close>
-          by (metis "$"(1) "$$"(2) "***"(2) F_imp_front_tickFree SyncWithTick_imp_NTF
-              \<open>(t_Q', ev ` A) \<in> \<F> Q\<close> front_tickFree_dw_closed nonTickFree_n_frontTickFree
-              non_tickFree_tick tickFree_append_iff ftf_Sync tickFree_imp_front_tickFree)
+          by (metis "$"(1) "$$"(2) "***"(2) SyncWithTick_imp_NTF \<open>(t_Q', ev ` A) \<in> \<F> Q\<close>
+              event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_dw_closed ftf_Sync is_processT2 not_tF_and_ftF tF_Cons_iff
+              tF_append_iff tF_imp_ftF)
       next
         from "$$"(1) "*"(3) "****"(2) append.assoc
         show \<open>s = ?trH_A r1' @ r2 @ v\<close> by blast
@@ -932,7 +931,7 @@ next
           moreover have \<open>t_Q1' \<in> \<T> Q\<close>
             by (metis "$"(1) F_T prefixI \<open>(t_Q', ev ` A) \<in> \<F> Q\<close> is_processT3_TR)
           ultimately have \<open>r1' \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
-            unfolding D_Sync using "$$"(2) front_tickFree_Nil by blast
+            unfolding D_Sync using "$$"(2) ftF_Nil by blast
           thus \<open>r1' \<in> \<D> (P \<lbrakk>S\<rbrakk> Q) \<or> (\<exists>x. isInfHidden_seqRun x (P \<lbrakk>S\<rbrakk> Q) A r1')\<close> ..
         next
           fix x assume "\<pounds>" : \<open>isInfHidden_seqRun_strong x P A t\<close>
@@ -979,7 +978,7 @@ next
           assume \<open>t' \<in> \<D> Q\<close>
           with "$$"(2) \<open>t_bis \<in> \<T> P\<close> have \<open>r1_bis_unhidden \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
             by (simp add: D_Sync)
-              (use front_tickFree_Nil setinterleaving_sym in blast)
+              (use ftF_Nil setinterleaving_dual in blast)
           with "$$"(1) mem_D_imp_mem_D_Hiding show \<open>r1_bis \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \ A)\<close> by blast
         next
           fix y assume \<pounds> : \<open>isInfHidden_seqRun_strong y Q A t'\<close>
@@ -1003,10 +1002,8 @@ next
           proof (rule D_Hiding_seqRunI)
             show \<open>ftF []\<close> by simp
           next
-            show \<open>tF r1_bis_unhidden\<close>
-              by (metis "$$"(2) D_Q(2) SyncWithTick_imp_NTF T_imp_front_tickFree \<open>t_bis \<in> \<T> P\<close>
-                  ftf_Sync nonTickFree_n_frontTickFree non_tickFree_tick
-                  tickFree_append_iff tickFree_imp_front_tickFree)
+            from "$$$$" isInfHidden_seqRun_imp_tF
+            show \<open>tF r1_bis_unhidden\<close> by blast
           next
             show \<open>r1_bis = ?trH_A r1_bis_unhidden @ []\<close> by (simp add: $$(1))
           next
@@ -1017,7 +1014,7 @@ next
         with "$"(1) show \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \ A)\<close>
           unfolding less_eq_list_def prefix_def
           by (metis (no_types, opaque_lifting) "*"(3) "****"(2) \<open>ftF s\<close>
-              append_Nil2 front_tickFree_append_iff front_tickFree_dw_closed is_processT7)
+              append_Nil2 ftF_append_iff ftF_dw_closed is_processT7)
       next
         assume \<open>t_Q1 \<le> ?trH_A t'\<close>
         from le_trace_hide[OF this] obtain t_Q1_unhidden
@@ -1064,7 +1061,7 @@ next
           proof (unfold D_Hiding_seqRun, clarify, intro exI conjI)
             show \<open>ftF []\<close> by simp
           next
-            from isInfHidden_seqRun_imp_tickFree[OF "\<pounds>\<pounds>\<pounds>"] show \<open>tF r1_unhidden\<close> .
+            from isInfHidden_seqRun_imp_tF[OF "\<pounds>\<pounds>\<pounds>"] show \<open>tF r1_unhidden\<close> .
           next
             show \<open>r1 = ?trH_A r1_unhidden @ []\<close> by (simp add: "$$"(1))
           next
@@ -1074,7 +1071,7 @@ next
         qed
         thus \<open>s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q \ A)\<close>
           by (metis "*"(3) "****"(2) \<open>ftF s\<close> append.right_neutral
-              front_tickFree_append_iff front_tickFree_dw_closed is_processT7)
+              ftF_append_iff ftF_dw_closed is_processT7)
       qed
     qed
   } note $ = this
@@ -1105,15 +1102,15 @@ next
       assume \<open>s_P \<in> \<D> (P \ A)\<close>
       moreover from F(2) F_T have \<open>s_Q \<in> \<T> (Q \ A)\<close> by blast
       ultimately have \<open>s \<in> \<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close>
-        using F(3) front_tickFree_Nil unfolding D_Sync by blast
+        using F(3) ftF_Nil unfolding D_Sync by blast
       with same_div D_F show \<open>(s, X) \<in> \<F> (P \<lbrakk>S\<rbrakk> Q \ A)\<close> by blast
     next
       from F(1) F_T have \<open>s_P \<in> \<T> (P \ A)\<close> by blast
       moreover assume \<open>s_Q \<in> \<D> (Q \ A)\<close>
       moreover have \<open>s setinterleaves ((s_Q, s_P), range tick \<union> ev ` S)\<close>
-        by (simp add: F(3) setinterleaving_sym)
+        by (simp add: F(3) setinterleaving_dual)
       ultimately have \<open>s \<in> \<D> ((P \ A) \<lbrakk>S\<rbrakk> (Q \ A))\<close>
-        using front_tickFree_Nil unfolding D_Sync by blast
+        using ftF_Nil unfolding D_Sync by blast
       with same_div D_F show \<open>(s, X) \<in> \<F> (P \<lbrakk>S\<rbrakk> Q \ A)\<close> by blast
     next
       case F_both
@@ -1199,8 +1196,8 @@ next
           \<Longrightarrow> (s, X) \<in> \<F> (Renaming (P \<box> Q) f g)\<close> for r
       by (auto simp add: T_Renaming F_Renaming D_Det F_Det
           dest: map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_eq_tick_iff[THEN iffD1, OF sym, of r])
-        (metis append_eq_Cons_conv list.map_disc_iff map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree
-          non_tickFree_tick tickFree_Nil tickFree_append_iff)+
+        (metis (no_types, lifting) Nil_is_map_conv append_eq_Cons_conv
+          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)+
   qed
 next
   show \<open>s \<in> \<D> (Renaming (P \<box> Q) f g) \<Longrightarrow> s \<in> \<D> (Renaming P f g \<box> Renaming Q f g)\<close>
@@ -1314,10 +1311,10 @@ proof (rule Process_eq_optimizedI)
       by (auto simp add: T_Renaming)
     moreover from \<open>u2 \<in> \<D> Q\<close> \<open>tF u\<close> \<open>u = u1 @ u2\<close>
     have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 \<in> \<D> (Renaming Q f g)\<close>
-      by (simp add: D_Renaming) (use front_tickFree_Nil in blast)
+      by (simp add: D_Renaming) (use ftF_Nil in blast)
     ultimately have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u \<in> \<D> ?rhs\<close> by (auto simp add: \<open>u = u1 @ u2\<close> D_Seq)
     thus \<open>t \<in> \<D> ?rhs\<close> by (simp add: \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u @ v\<close> \<open>ftF v\<close>
-          \<open>tF u\<close> is_processT7 map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+          \<open>tF u\<close> is_processT7 tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   qed
 next
   fix t assume \<open>t \<in> \<D> ?rhs\<close>
@@ -1325,7 +1322,7 @@ next
   then consider \<open>t \<in> \<D> (Renaming P f g)\<close>
     | t1 t2 s where \<open>t = t1 @ t2\<close> \<open>t1 @ [\<checkmark>(s)] \<in> \<T> (Renaming P f g)\<close>
       \<open>t1 @ [\<checkmark>(s)] \<notin> \<D> (Renaming P f g)\<close> \<open>t2 \<in> \<D> (Renaming Q f g)\<close>
-    by (simp add: D_Seq) (metis D_imp_front_tickFree append_T_imp_tickFree
+    by (simp add: D_Seq) (metis D_imp_ftF append_T_imp_tF
         is_processT7 is_processT9 list.distinct(1))
   thus \<open>t \<in> \<D> ?lhs\<close>
   proof cases
@@ -1346,7 +1343,7 @@ next
     with \<open>ftF u3\<close> \<open>tF u2\<close> \<open>u1 @ [\<checkmark>(r)] \<in> \<T> P\<close> show \<open>t \<in> \<D> ?lhs\<close>
       by (simp add: \<open>t = t1 @ t2\<close> \<open>t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close>
           \<open>t2 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u2 @ u3\<close> D_Renaming)
-        (metis append_T_imp_tickFree append_eq_appendI map_append not_Cons_self tickFree_append_iff)
+        (metis append_T_imp_tF append_eq_appendI map_append not_Cons_self tF_append_iff)
   qed
 next
   fix t X assume \<open>(t, X) \<in> \<F> ?lhs\<close> \<open>t \<notin> \<D> ?lhs\<close>
@@ -1357,8 +1354,8 @@ next
   consider \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> range tick) \<in> \<F> P\<close> \<open>tF u\<close>
     | u1 r u2 where \<open>u = u1 @ u2\<close> \<open>u1 @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>(u2, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> Q\<close>
     by (auto simp add: \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> Seq_projs D_Renaming)
-      (metis D_imp_front_tickFree butlast_snoc front_tickFree_iff_tickFree_butlast front_tickFree_single
-        is_processT8 is_processT9 map_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree nonTickFree_n_frontTickFree)
+      (metis D_imp_ftF butlast_snoc ftF_iff_tF_butlast ftF_single
+        is_processT8 is_processT9 map_append ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff not_tF_and_ftF)
   thus \<open>(t, X) \<in> \<F> ?rhs\<close>
   proof cases
     assume \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> range tick) \<in> \<F> P\<close> \<open>tF u\<close>
@@ -1368,7 +1365,7 @@ next
     have \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` range tick) \<in> \<F> P\<close>
       by (meson is_processT4)
     with \<open>tF u\<close> show \<open>(t, X) \<in> \<F> ?rhs\<close>
-      by (auto simp add: F_Seq \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> F_Renaming map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+      by (auto simp add: F_Seq \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> F_Renaming tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   next
     fix u1 u2 r assume \<open>u = u1 @ u2\<close> \<open>u1 @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>(u2, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> Q\<close>
     from \<open>u1 @ [\<checkmark>(r)] \<in> \<T> P\<close> have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ [\<checkmark>(g r)] \<in> \<T> (Renaming P f g)\<close>
@@ -1393,13 +1390,13 @@ next
     from this(2) have \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<union> range tick) \<in> \<F> P\<close>
       by (rule is_processT4) auto
     with \<open>tF t\<close> show \<open>(t, X) \<in> \<F> ?lhs\<close>
-      by (auto simp add: F_Renaming F_Seq \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+      by (auto simp add: F_Renaming F_Seq \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   next
     fix t1 t2 s assume \<open>t = t1 @ t2\<close> \<open>t1 @ [\<checkmark>(s)] \<in> \<T> (Renaming P f g)\<close> \<open>(t2, X) \<in> \<F> (Renaming Q f g)\<close>
     from \<open>t \<notin> \<D> ?rhs\<close> have \<open>t1 @ [\<checkmark>(s)] \<notin> \<D> (Renaming P f g)\<close>
       by (simp add: \<open>t = t1 @ t2\<close> D_Seq)
-        (metis D_imp_front_tickFree F_imp_front_tickFree \<open>(t2, X) \<in> \<F> (Renaming Q f g)\<close>
-          front_tickFree_append_iff is_processT7 is_processT9 not_Cons_self)
+        (metis D_imp_ftF F_imp_ftF \<open>(t2, X) \<in> \<F> (Renaming Q f g)\<close>
+          ftF_append_iff is_processT7 is_processT9 not_Cons_self)
     with \<open>t1 @ [\<checkmark>(s)] \<in> \<T> (Renaming P f g)\<close> obtain u1'
       where \<open>t1 @ [\<checkmark>(s)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1'\<close> \<open>u1' \<in> \<T> P\<close>
       unfolding Renaming_projs by blast

@@ -38,7 +38,7 @@ section \<open>Destructiveness of Hiding\<close>
 theory Hiding_Destructive
   imports "HOL-CSPM" Prefixes_Constructive
 begin
-(*>*)
+  (*>*)
 
 
 subsection \<open>Refinement\<close>
@@ -59,19 +59,19 @@ proof (unfold refine_defs, safe)
     proof cases
       assume \<open>u \<in> \<D> (P \ S)\<close>
       hence \<open>t \<in> \<D> (P \ S)\<close> by (simp add: \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>tF u\<close> is_processT7)
-      with restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self le_approx1 mono_Hiding
+      with restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self le_approxD(1) mono_Hiding
       show \<open>t \<in> \<D> ((P \<down> n) \ S)\<close> by blast
     next
       fix u' assume \<open>u = trace_hide u' (ev ` S)\<close> \<open>(u', ev ` S) \<in> \<F> P\<close>
-      with \<open>length u = n\<close> \<open>tF u\<close> Hiding_tickFree length_filter_le F_T
-      have \<open>n \<le> length u'\<close> \<open>tickFree u'\<close> \<open>u' \<in> \<T> P\<close> by blast+
+      with \<open>length u = n\<close> \<open>tF u\<close> Hiding_tF length_filter_le F_T
+      have \<open>n \<le> length u'\<close> \<open>tF u'\<close> \<open>u' \<in> \<T> P\<close> by blast+
       with \<open>u = trace_hide u' (ev ` S)\<close>
       have \<open>u' = (take n u') @ (drop n u') \<and> take n u' \<in> \<T> P \<and>
             length (take n u') = n \<and> tF (take n u') \<and> ftF (drop n u')\<close>
         by (simp add: min_def) (metis append_take_drop_id is_processT3_TR_append
-            tickFree_append_iff tickFree_imp_front_tickFree)
+            tF_append_iff tF_imp_ftF)
       with D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k have \<open>u' \<in> \<D> (P \<down> n)\<close> by blast
-      with Hiding_tickFree \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>u = trace_hide u' (ev ` S)\<close> \<open>tF u\<close>
+      with Hiding_tF \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>u = trace_hide u' (ev ` S)\<close> \<open>tF u\<close>
       show \<open>t \<in> \<D> ((P \<down> n) \ S)\<close> by (simp add: D_Hiding) blast
     qed
   qed
@@ -85,7 +85,7 @@ proof (unfold refine_defs, safe)
     from "*" D_F show \<open>s \<in> \<D> ((P \ S) \<down> n) \<Longrightarrow> (s, X) \<in> \<F> ((P \<down> n) \ S)\<close> by blast
   next
     show \<open>(s, X) \<in> \<F> (P \ S) \<Longrightarrow> (s, X) \<in> \<F> ((P \<down> n) \ S)\<close>
-      using restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self D_F mono_Hiding proc_ord2a by blast
+      using restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self D_F mono_Hiding le_approxD(2) by blast
   qed
 qed
 

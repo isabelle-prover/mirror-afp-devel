@@ -41,9 +41,9 @@ section \<open>Synchronization Product\<close>
 
 subsection \<open>Refinement\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_div_oneside :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_div_oneside :
   assumes \<open>tF u\<close> \<open>ftF v\<close> \<open>t_P \<in> \<D> (P \<down> n)\<close> \<open>t_Q \<in> \<T> (Q \<down> n)\<close>
-    \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
+    \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
   shows \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
 proof (insert assms(3, 4), elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
   from assms(1, 2, 5) show \<open>t_P \<in> \<D> P \<Longrightarrow> t_Q \<in> \<T> Q \<Longrightarrow> u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
@@ -56,7 +56,7 @@ next
   from setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_le_prefixR[OF assms(5) this]
   obtain t_P' t_P'' u' u''
     where ** : \<open>u = u' @ u''\<close> \<open>t_P = t_P' @ t_P''\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), A)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), A)\<close>
     by (meson Prefix_Order.prefixE)
   from assms(1) \<open>u = u' @ u''\<close> have \<open>tF u'\<close> by auto
   moreover from "*"(1,4) "**"(2,3) have \<open>u' \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
@@ -66,7 +66,7 @@ next
   ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
     by (metis "*"(5) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI nless_le)
   with "**"(1) assms(1, 2) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
-    by (metis is_processT7 tickFree_append_iff tickFree_imp_front_tickFree)
+    by (metis is_processT7 tF_append_iff tF_imp_ftF)
 next
   fix t_P' t_P''
   assume * : \<open>t_P = t_P' @ t_P''\<close> \<open>t_P' \<in> \<T> P\<close> \<open>length t_P' = n\<close>
@@ -75,7 +75,7 @@ next
   from setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_le_prefixL[OF assms(5) this]
   obtain t_Q' t_Q'' u' u''
     where ** : \<open>u = u' @ u''\<close> \<open>t_Q = t_Q' @ t_Q''\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), A)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), A)\<close>
     by (meson Prefix_Order.prefixE)
   from assms(1) \<open>u = u' @ u''\<close> have \<open>tF u'\<close> by auto
   moreover from "*"(2,6) "**"(2,3) have \<open>u' \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
@@ -85,7 +85,7 @@ next
   ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
     by (metis "*"(3) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI nless_le)
   with "**"(1) assms(1, 2) show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
-    by (metis is_processT7 tickFree_append_iff tickFree_imp_front_tickFree)
+    by (metis is_processT7 tF_append_iff tF_imp_ftF)
 next
   fix t_P' t_P'' t_Q' t_Q''
   assume $ : \<open>t_P = t_P' @ t_P''\<close> \<open>t_P' \<in> \<T> P\<close> \<open>length t_P' = n\<close>
@@ -96,7 +96,7 @@ next
   show \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
   proof (elim disjE conjE exE)
     fix u' t_Q''' assume $$ : \<open>u' \<le> u\<close> \<open>t_Q''' \<le> t_Q'\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'''), A)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'''), A)\<close>
     from "$"(7) "$$"(2) is_processT3_TR have \<open>t_Q''' \<in> \<T> Q\<close> by blast
     with $$(3) \<open>t_P' \<in> \<T> P\<close> have \<open>u' \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
       by (auto simp add: T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
@@ -104,13 +104,13 @@ next
       using "$"(3) "$$"(3) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_imp_lengthLR_le by blast
     ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
       by (metis "$$"(1) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI Prefix_Order.prefixE
-          assms(1) nless_le tickFree_append_iff)
+          assms(1) nless_le tF_append_iff)
     thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
       by (metis "$$"(1) Prefix_Order.prefixE assms(1,2) is_processT7
-          tickFree_append_iff tickFree_imp_front_tickFree)
+          tF_append_iff tF_imp_ftF)
   next
     fix u' t_P''' assume $$ : \<open>u' \<le> u\<close> \<open>t_P''' \<le> t_P'\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P''', t_Q'), A)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P''', t_Q'), A)\<close>
     from "$"(2) "$$"(2) is_processT3_TR have \<open>t_P''' \<in> \<T> P\<close> by blast
     with $$(3) \<open>t_Q' \<in> \<T> Q\<close> have \<open>u' \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
       by (auto simp add: T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
@@ -118,31 +118,31 @@ next
       using "$"(8) "$$"(3) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_imp_lengthLR_le by blast
     ultimately have \<open>u' \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
       by (metis "$$"(1) D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI Prefix_Order.prefixE
-          assms(1) nless_le tickFree_append_iff)
+          assms(1) nless_le tF_append_iff)
     thus \<open>u @ v \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close>
       by (metis "$$"(1) Prefix_Order.prefixE assms(1,2) is_processT7
-          tickFree_append_iff tickFree_imp_front_tickFree)
+          tF_append_iff tF_imp_ftF)
   qed
 qed
 
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD :
   \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n \<sqsubseteq>\<^sub>F\<^sub>D (P \<down> n) \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> (Q \<down> n)\<close> (is \<open>?lhs \<sqsubseteq>\<^sub>F\<^sub>D ?rhs\<close>)
 proof (unfold refine_defs, safe)
   show \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
     by (unfold D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, safe)
       (solves \<open>simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_div_oneside\<close>,
-        metis Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_div_oneside
-        Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+        metis Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_div_oneside
+        Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
   thus \<open>(t, X) \<in> \<F> ((P \<down> n) \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> (Q \<down> n)) \<Longrightarrow> (t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close> for t X
-    by (meson is_processT8 le_approx2 mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
+    by (meson is_processT8 le_approxD(2) mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
 qed
 
 text \<open>The equality does not hold in general, but we can establish it
       by adding an assumption over the strict alphabets of the processes.\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) strict_events_of_subset_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) strict_events_of_subset_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n = (P \<down> n) \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> (Q \<down> n)\<close> (is \<open>?lhs = ?rhs\<close>)
   if \<open>\<^bold>\<alpha>(P) \<subseteq> A \<or> \<^bold>\<alpha>(Q) \<subseteq> A\<close>
 proof (rule FD_antisym)
@@ -154,7 +154,7 @@ next
   { fix t u v assume \<open>t = u @ v\<close> \<open>u \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close> \<open>length u = n\<close> \<open>tF u\<close> \<open>ftF v\<close>
     from this(2) consider \<open>u \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
       | t_P t_Q where \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     hence \<open>t \<in> \<D> ?rhs\<close>
     proof cases
@@ -162,7 +162,7 @@ next
         by (simp add: \<open>ftF v\<close> \<open>t = u @ v\<close> \<open>tF u\<close> div is_processT7)
     next
       fix t_P t_Q assume \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
-        and setinter : \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
+        and setinter : \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
       consider \<open>t_P \<in> \<D> P \<or> t_Q \<in> \<D> Q\<close> | \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close> by blast
       thus \<open>t \<in> \<D> ?rhs\<close>
       proof cases
@@ -174,12 +174,12 @@ next
         assume \<open>t_P \<notin> \<D> P\<close> \<open>t_Q \<notin> \<D> Q\<close>
         with \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> \<open>\<^bold>\<alpha>(P) \<subseteq> A \<or> \<^bold>\<alpha>(Q) \<subseteq> A\<close>
         have \<open>{a. ev a \<in> set t_P} \<subseteq> A \<or> {a. ev a \<in> set t_Q} \<subseteq> A\<close>
-          by (auto dest: subsetD intro: strict_events_of_memI)
+          by (auto intro: strict_events_of_memI)
         with setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subsetL[OF \<open>tF u\<close> _ setinter]
           setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subsetR[OF \<open>tF u\<close> _ setinter]
         have \<open>u = map ev (map of_ev t_P) \<or> u = map ev (map of_ev t_Q)\<close> by blast
         with \<open>length u = n\<close> have \<open>length t_P = n \<or> length t_Q = n\<close> by auto
-        moreover from \<open>tF u\<close> tickFree_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff[OF setinter]
+        moreover from \<open>tF u\<close> tF_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff[OF setinter]
         have \<open>tF t_P\<close> \<open>tF t_Q\<close> by simp_all
         ultimately have \<open>t_P \<in> \<D> (P \<down> n) \<or> t_Q \<in> \<D> (Q \<down> n)\<close>
           using \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
@@ -207,8 +207,8 @@ next
       assume \<open>(t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
       then consider \<open>t \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
         | (fail) t_P t_Q X_P X_Q where \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), A)\<close>
-          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P A X_Q\<close>
+          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), A)\<close>
+          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P A X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       thus \<open>(t, X) \<in> \<F> ?rhs\<close>
       proof cases
@@ -239,10 +239,10 @@ next
   show \<open>\<^bold>\<lbrakk>A\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l1 # l2 # L). P l \<down> n \<sqsubseteq>\<^sub>F\<^sub>D \<^bold>\<lbrakk>A\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l1 # l2 # L). (P l \<down> n)\<close>
     by simp
       (fact trans_FD[OF Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD
-          Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF idem_FD hyp]])
+          Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF FD_refl hyp]])
 qed
 
-text (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 The generalization of the lemma
 @{thm strict_events_of_subset_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[no_vars]}
 is not straightforward. We can already observe with only three processes that
@@ -278,7 +278,7 @@ next
 qed
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>P ||\<^sub>\<checkmark> Q \<down> n = (P \<down> n) ||\<^sub>\<checkmark> (Q \<down> n)\<close>
   by (simp add: strict_events_of_subset_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
@@ -290,7 +290,7 @@ corollary restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_MultiPar\<
 
 subsection \<open>Non Destructiveness\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_non_destructive :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_non_destructive :
   \<open>non_destructive (\<lambda>(P, Q). P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
 proof (rule order_non_destructiveI, clarify)
   fix P P' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and Q Q' :: \<open>('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and n
@@ -300,11 +300,11 @@ proof (rule order_non_destructiveI, clarify)
   show \<open>P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n \<sqsubseteq>\<^sub>F\<^sub>D P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q' \<down> n\<close>
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
     show \<open>t \<in> \<D> (P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q') \<Longrightarrow> t \<in> \<D> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close> for t
-      by (metis (no_types, lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> in_mono le_ref1 mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD
+      by (metis (no_types, lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> in_mono le_FD_D(1) mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD
           restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD)
   next
     show \<open>(t, X) \<in> \<F> (P' \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q') \<Longrightarrow> (t, X) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q \<down> n)\<close> for t X
-      by (metis (no_types, lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> le_ref2 mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD
+      by (metis (no_types, lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> le_FD_D(2) mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD
                 restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD subsetD)
   qed
 qed
@@ -313,7 +313,7 @@ qed
 
 subsection \<open>Setup\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
   [restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset, simp] :
   \<open>non_destructive f \<Longrightarrow> non_destructive g \<Longrightarrow> non_destructive (\<lambda>x. f x \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> g x)\<close>
   \<open>constructive f \<Longrightarrow> constructive g \<Longrightarrow> constructive (\<lambda>x. f x \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> g x)\<close>

@@ -166,7 +166,7 @@ text\<open>
   with potential interleaving. The semantics becomes compositional, and internal communication
   between sub-components of a component can be modeled by the concealment operator. 
 
-  Hoares work \<^cite>\<open>"Hoare:1985:CSP:3921"\<close> was strongly inspired by this initial idea.
+  Hoare's work \<^cite>\<open>"Hoare:1985:CSP:3921"\<close> was strongly inspired by this initial idea.
   However, it became quickly clear that the simplistic automata vision is not a satisfying
   paradigm for all aspects of concurrency. Particularly regarding the nature of communication,
   where one "sends" actively information and the other "receives" it, the bi-directional 
@@ -212,13 +212,13 @@ notation dummyHide   (infixr  "\<setminus>" 50)
   (*>*)
 
 text\<open>
-   Let a and b be any two events in some set of events @{term "\<Sigma>"}. The two processes
+   Let a and b be any two events in some set of events \<^term>\<open>\<Sigma>\<close>. The two processes
 
-   \<^descr>    @{term   "(a \<rightarrow> STOP) \<box> (b \<rightarrow> STOP)"}   \hspace{7cm}            (1)
+   \<^descr>    \<^term>\<open>(a \<rightarrow> STOP) \<box> (b \<rightarrow> STOP)\<close>   \hspace{7cm}            (1)
 
    and
 
-   \<^descr>    @{term   "(a \<rightarrow> STOP) \<sqinter> (b \<rightarrow> STOP)"}  \hspace{7cm}            (2)
+   \<^descr>    \<^term>\<open>(a \<rightarrow> STOP) \<sqinter> (b \<rightarrow> STOP)\<close>  \hspace{7cm}            (2)
 
 
 \<close>
@@ -226,33 +226,33 @@ text\<open>
    cannot be distinguished under the trace semantics, in which both processes 
    are capable of performing the same sequences of events, i.e. both have the 
    same set of traces \<^term>\<open>{[],[a],[b]}\<close>. This is because both processes can either 
-   engage in @{term "a"} and then @{term "STOP"}, or engage in @{term "b"} and 
-   then @{term "STOP"}. We would, however, like to distinguish between @{term "a"} 
-   \<^emph>\<open>deterministic\<close> choice of @{term "a"} or @{term "b"} (1) and @{term "a"} 
-   \<^emph>\<open>non deterministic\<close> choice of @{term "a"} or @{term "b"} (2).
+   engage in \<^term>\<open>a\<close> and then \<^term>\<open>STOP\<close>, or engage in \<^term>\<open>b\<close> and 
+   then \<^term>\<open>STOP\<close>. We would, however, like to distinguish between \<^term>\<open>a\<close> 
+   \<^emph>\<open>deterministic\<close> choice of \<^term>\<open>a\<close> or \<^term>\<open>b\<close> (1) and  \<^term>\<open>a\<close>
+   \<^emph>\<open>non deterministic\<close> choice of \<^term>\<open>a\<close> or \<^term>\<open>b\<close> (2).
    
    
    This can be done by considering the events that a process can refuse to engage 
    in when these events are offered by the environment; it cannot refuse either, 
-   so we say its maximal refusal set is the set containing all elements of @{term "\<Sigma>"} other 
-   than @{term "a"} and @{term "b"}, written @{term "\<Sigma>-{a,b}"}, i.e. it can 
-   refuse all elements in @{term "\<Sigma>"} other than @{term "a"} or @{term "b"}. In the case 
+   so we say its maximal refusal set is the set containing all elements of \<^term>\<open>\<Sigma>\<close> other 
+   than \<^term>\<open>a\<close> and \<^term>\<open>b\<close>, written \<^term>\<open>\<Sigma>-{a,b}\<close>, i.e. it can 
+   refuse all elements in \<^term>\<open>\<Sigma>\<close> other than \<^term>\<open>a\<close> or \<^term>\<open>b\<close>. In the case 
    of the non deterministic process (2), however, we wish to express that if the environment 
-   offers the event @{term "a"} say, the process non deterministically chooses either to engage in 
-   @{term "a"}, to refuse it and engage in @{term "b"} (likewise for @{term "b"}). We say 
-   therefore, that process (2) has two maximal refusal sets, @{term "\<Sigma>-{a}"} and 
-   @{term "\<Sigma>-{b}"}, because it can refuse to engage in either @{term "a"} or 
-   @{term "b"}, but not both. The notion of refusal sets is in this way used to distinguish 
+   offers the event \<^term>\<open>a\<close> say, the process non deterministically chooses either to engage in 
+   \<^term>\<open>a\<close>, to refuse it and engage in \<^term>\<open>b\<close> (likewise for \<^term>\<open>b\<close>). We say 
+   therefore, that process (2) has two maximal refusal sets, \<^term>\<open>\<Sigma>-{a}\<close> and 
+   \<^term>\<open>\<Sigma>-{b}\<close>, because it can refuse to engage in either \<^term>\<open>a\<close> or 
+   \<^term>\<open>b\<close>, but not both. The notion of refusal sets is in this way used to distinguish 
    non determinism from determinism in choices.
 \<close>
 
 subsection\<open>Infinite Chatter\<close>
 
 text\<open>
-   Consider the infinite process @{term [source] "\<mu> X. a \<rightarrow> X"}
-   which performs an infinite stream of @{term "a"}'s. If one now conceals the event a in 
+   Consider the infinite process @{term [source] \<open>\<mu> X. a \<rightarrow> X\<close>}
+   which performs an infinite stream of \<^term>\<open>a\<close>'s. If one now conceals the event a in 
    this process by writing
-   \<^descr>      @{term [source] "(\<mu> X. a \<rightarrow> X) \<setminus> {a}"}    \hspace{7.8cm}            (3)
+   \<^descr>      @{term [source] \<open>(\<mu> X. a \<rightarrow> X) \<setminus> {a}\<close>}    \hspace{7.8cm}            (3)
 \<close>   
 text\<open>
    it no longer becomes possible to distinguish the behaviour of this process 
@@ -261,10 +261,10 @@ text\<open>
    in an unbounded sequence of internal actions invisible to the environment. We say 
    the process has diverged, and introduce the notion of a divergence set to denote 
    all sequences events that can cause a process to diverge. Hence, the process \<^term>\<open>STOP\<close> 
-   is assigned the divergence set @{term "{}"}, since it can not diverge, whereas the process 
+   is assigned the divergence set \<^term>\<open>{}\<close>, since it can not diverge, whereas the process 
    (3) above diverges on any sequence of events since the process begins to diverge 
-   immediately, i.e. its divergence set is @{term "\<Sigma>\<^sup>*"} , where @{term "\<Sigma>\<^sup>*"} denotes the 
-   set of all  sequences with elements in @{term "\<Sigma>"}. Divergence is undesirable and so 
+   immediately, i.e. its divergence set is \<^term>\<open>\<Sigma>\<^sup>*\<close> , where \<^term>\<open>\<Sigma>\<^sup>*\<close> denotes the 
+   set of all  sequences with elements in \<^term>\<open>\<Sigma>\<close>. Divergence is undesirable and so 
    it is essential to be able to express it to ensure that it is avoided.
 \<close>
 
@@ -277,20 +277,20 @@ text\<open>
 text\<open>
    The theory \<^verbatim>\<open>Process\<close> establishes the basic common notions for events, traces, ticks and
    tickfree-ness, the type definitions for failures and divergences as well as the
-   global constraints on them (called the ``axioms'' in Hoare's Book.) captured in a 
+   global constraints on them (called the ``axioms'' in Hoare's Book) captured in a 
    predicate \<^verbatim>\<open>is_process\<close>. On this basis, the set of failures and divergences satisfying
    \<^verbatim>\<open>is_process\<close> is turned into the type \<^verbatim>\<open>'a process\<close> via a type-definition 
    (making \<^verbatim>\<open>is_process\<close> as the central data invariant). In the sequel, it is shown that
-   \<^verbatim>\<open>'a process\<close> belongs to the type-class @{class "cpo"} stemming from @{theory HOLCF} which 
+   \<^verbatim>\<open>'a process\<close> belongs to the type-class \<^class>\<open>cpo\<close> stemming from \<^theory>\<open>HOLCF\<close> which 
    makes the concepts of complete partial order, continuity, fixpoint-induction and general 
    recursion available to all expressions of type \<^verbatim>\<open>'a process\<close>. \<close>
 
 text\<open> 
-   The theory \<^verbatim>\<open>Process\<close> also establishes the two partial orderings @{term "P \<le> P'"} for 
-   refinements and @{term "P \<sqsubseteq> P'"} for the approximation on processes used to give semantics
+   The theory \<^verbatim>\<open>Process\<close> also establishes the two partial orderings \<^term>\<open>P \<le> P'\<close> for 
+   refinements and \<^term>\<open>P \<sqsubseteq> P'\<close> for the approximation on processes used to give semantics
    to recursion. The latter is well-known to be logically weaker than the former.
    Note that, unfortunately, the use of these two symbols in HOL-CSP 2.0, where the 
-   latter is already used in the @{theory HOLCF}-theory, is just the other way round as 
+   latter is already used in the \<^theory>\<open>HOLCF\<close>-theory, is just the other way round as 
    in the literature. 
    For this reason, the refinement notations \<open>P \<sqsubseteq>\<^sub>F\<^sub>D P'\<close>, \<open>P \<sqsubseteq>\<^sub>F P'\<close>, \<open>P \<sqsubseteq>\<^sub>D P'\<close>, \<open>P \<sqsubseteq>\<^sub>T P'\<close>,
    \<open>P \<sqsubseteq>\<^sub>D\<^sub>T P'\<close> have been introduced to be notationally closer to Roscoe's book.\<close>

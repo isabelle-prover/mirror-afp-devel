@@ -87,8 +87,8 @@ proof (subst Process_eq_spec_optimized, safe)
       fix a t1'
       assume \<open>t1 = a # t1'\<close>
       then obtain a' where \<open>t1 = ev a' # t1'\<close> (* a = ev a' *)
-        by (metis "*"(2) append_Cons append_Nil append_T_imp_tickFree
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick not_Cons_self tickFree_append_iff)
+        by (metis "*"(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) ftF_nonempty_append_imp
+            is_processT2_TR not_Cons_self2 tF_Cons_iff)
       with "*"(2, 3, 4, 5) show \<open>s \<in> \<D> ?rhs\<close>
         by (auto simp add: "*"(1) D_Mprefix T_Mprefix D_Throw)
     qed
@@ -118,7 +118,7 @@ next
     proof cases
       fix t1 t2 assume ** : \<open>s = ev a # t1 @ t2\<close> \<open>t1 \<in> \<D> (P a)\<close> \<open>tF t1\<close>
         \<open>set t1 \<inter> ev ` B = {}\<close> \<open>ftF t2\<close>
-      have *** : \<open>ev a # t1 \<in> \<D> (\<box>a\<in>A \<rightarrow> P a) \<and> tickFree (ev a # t1) \<and>
+      have *** : \<open>ev a # t1 \<in> \<D> (\<box>a\<in>A \<rightarrow> P a) \<and> tF (ev a # t1) \<and>
                   set (ev a # t1) \<inter> ev ` B = {}\<close>
         by (simp add: D_Mprefix image_iff "*"(1) "**"(2, 3, 4) \<open>a \<notin> B\<close>)
       show \<open>s \<in> \<D> ?lhs\<close>
@@ -161,8 +161,8 @@ next
       fix a t1'
       assume \<open>t1 = a # t1'\<close>
       then obtain a' where \<open>t1 = ev a' # t1'\<close> (* a = ev a' *)
-        by (metis "*"(2) append_Cons append_Nil append_T_imp_tickFree
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick not_Cons_self tickFree_append_iff)
+        by (metis \<open>t1 = a # t1'\<close> not_Cons_self2 "*"(2) tF_Cons_iff
+            is_processT2_TR event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) ftF_nonempty_append_imp)
       with "*"(2, 3, 5) show \<open>(s, X) \<in> \<F> ?rhs\<close>
         by (auto simp add: F_Mprefix T_Mprefix F_Throw "*"(1, 4))
     qed
@@ -203,7 +203,7 @@ next
         fix t1 t2 assume ** : \<open>s' = t1 @ t2\<close> \<open>t1 \<in> \<D> (P a')\<close> \<open>tF t1\<close>
           \<open>set t1 \<inter> ev ` B = {}\<close> \<open>ftF t2\<close>
         have *** : \<open>s = (ev a' # t1) @ t2 \<and> ev a' # t1 \<in> \<D> (\<box>a\<in>A \<rightarrow> P a) \<and>
-                    tickFree (ev a' # t1) \<and> set (ev a' # t1) \<inter> ev ` B = {}\<close>
+                    tF (ev a' # t1) \<and> set (ev a' # t1) \<inter> ev ` B = {}\<close>
           by (simp add: D_Mprefix \<open>a' \<notin> B\<close> image_iff "*"(1, 2) "**"(1, 2, 3, 4))
         show \<open>(s, X) \<in> \<F> ?lhs\<close>
           by (simp add: F_Throw F_Mprefix) (metis "**"(5) "***")
@@ -251,7 +251,7 @@ next
   thus \<open>s \<in> \<D> ?lhs\<close>
   proof cases
     show \<open>s \<in> \<D> Q \<Longrightarrow> s \<in> \<D> ?lhs\<close>
-      by (simp add: D_Interrupt) (use Nil_elem_T tickFree_Nil in blast)
+      by (simp add: D_Interrupt) (use Nil_elem_T tF_Nil in blast)
   next
     fix a s' assume \<open>s = ev a # s'\<close> \<open>a \<in> A\<close> \<open>s' \<in> \<D> (P a \<triangle> Q)\<close>
     from this(3) consider \<open>s' \<in> \<D> (P a)\<close>
@@ -264,7 +264,7 @@ next
     next
       show \<open>\<lbrakk>s' = t1 @ t2; t1 \<in> \<T> (P a); tF t1; t2 \<in> \<D> Q\<rbrakk> \<Longrightarrow> s \<in> \<D> ?lhs\<close> for t1 t2
         by (simp add: \<open>s = ev a # s'\<close> D_Interrupt T_Mprefix)
-          (metis Cons_eq_appendI \<open>a \<in> A\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+          (metis Cons_eq_appendI \<open>a \<in> A\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
     qed
   qed
 next
@@ -274,9 +274,9 @@ next
   then consider \<open>s \<in> \<D> ?lhs\<close> 
     | t1 r where \<open>s = t1 @ [\<checkmark>(r)]\<close> \<open>t1 @ [\<checkmark>(r)] \<in> \<T> (Mprefix A P)\<close>
     | r where \<open>s @ [\<checkmark>(r)] \<in> \<T> (Mprefix A P)\<close> \<open>\<checkmark>(r) \<notin> X\<close>
-    | \<open>(s, X) \<in> \<F> (Mprefix A P)\<close> \<open>tickFree s\<close> \<open>([], X) \<in> \<F> Q\<close>
-    | t1 t2 where \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (Mprefix A P)\<close> \<open>tickFree t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
-    | r where \<open>s \<in> \<T> (Mprefix A P)\<close> \<open>tickFree s\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
+    | \<open>(s, X) \<in> \<F> (Mprefix A P)\<close> \<open>tF s\<close> \<open>([], X) \<in> \<F> Q\<close>
+    | t1 t2 where \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (Mprefix A P)\<close> \<open>tF t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
+    | r where \<open>s \<in> \<T> (Mprefix A P)\<close> \<open>tF s\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
     by (simp add: F_Interrupt D_Interrupt) blast
   thus \<open>(s, X) \<in> \<F> ?rhs\<close>
   proof cases
@@ -291,18 +291,18 @@ next
         (metis (no_types, opaque_lifting) Diff_insert_absorb append_Nil
           event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) hd_append2 list.sel(1, 3) neq_Nil_conv tl_append2)
   next
-    show \<open>(s, X) \<in> \<F> (Mprefix A P) \<Longrightarrow> tickFree s \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
-      by (simp add: F_Det F_Mprefix F_Interrupt image_iff) (metis tickFree_Cons_iff)
+    show \<open>(s, X) \<in> \<F> (Mprefix A P) \<Longrightarrow> tF s \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
+      by (simp add: F_Det F_Mprefix F_Interrupt image_iff) (metis tF_Cons_iff)
   next
-    show \<open>s = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> (Mprefix A P) \<Longrightarrow> tickFree t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
+    show \<open>s = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> (Mprefix A P) \<Longrightarrow> tF t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
           t2 \<noteq> [] \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close> for t1 t2
       by (simp add: F_Det T_Mprefix F_Mprefix F_Interrupt image_iff)
-        (metis append_Cons append_Nil tickFree_Cons_iff)
+        (metis append_Cons append_Nil tF_Cons_iff)
   next
-    show \<open>s \<in> \<T> (Mprefix A P) \<Longrightarrow> tickFree s \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow>
+    show \<open>s \<in> \<T> (Mprefix A P) \<Longrightarrow> tF s \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow>
           \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close> for r
       by (simp add: F_Det T_Mprefix F_Mprefix F_Interrupt image_iff)
-        (metis Diff_insert_absorb tickFree_Cons_iff)
+        (metis Diff_insert_absorb tF_Cons_iff)
   qed
 next
   fix s X
@@ -321,7 +321,7 @@ next
     proof cases
       show \<open>(s, X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
         by (simp add: F_Interrupt)
-          (metis Nil_elem_T \<open>s \<noteq> []\<close> append_Nil tickFree_Nil)
+          (metis Nil_elem_T \<open>s \<noteq> []\<close> append_Nil tF_Nil)
     next
       assume \<open>\<exists>a s'. s = ev a # s' \<and> a \<in> A \<and> (s', X) \<in> \<F> (P a \<triangle> Q)\<close>
       then obtain a s'
@@ -329,9 +329,9 @@ next
       from "*"(3) consider \<open>s' \<in> \<D> (P a \<triangle> Q)\<close>
         | t1 r where \<open>s' = t1 @ [\<checkmark>(r)]\<close> \<open>t1 @ [\<checkmark>(r)] \<in> \<T> (P a)\<close>
         | r where \<open>s' @ [\<checkmark>(r)] \<in> \<T> (P a)\<close> \<open>\<checkmark>(r) \<notin> X\<close>
-        | \<open>(s', X) \<in> \<F> (P a)\<close> \<open>tickFree s'\<close> \<open>([], X) \<in> \<F> Q\<close>
-        | t1 t2 where \<open>s' = t1 @ t2\<close> \<open>t1 \<in> \<T> (P a)\<close> \<open>tickFree t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
-        | r where \<open>s' \<in> \<T> (P a)\<close> \<open>tickFree s'\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
+        | \<open>(s', X) \<in> \<F> (P a)\<close> \<open>tF s'\<close> \<open>([], X) \<in> \<F> Q\<close>
+        | t1 t2 where \<open>s' = t1 @ t2\<close> \<open>t1 \<in> \<T> (P a)\<close> \<open>tF t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
+        | r where \<open>s' \<in> \<T> (P a)\<close> \<open>tF s'\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
         by (simp add: F_Interrupt D_Interrupt) blast
       thus \<open>(s, X) \<in> \<F> ?lhs\<close>
       proof cases
@@ -339,7 +339,7 @@ next
         hence \<open>s \<in> \<D> ?lhs\<close>
           apply (simp add: D_Interrupt D_Mprefix T_Mprefix "*"(1, 2) image_iff)
           apply (elim disjE exE conjE; simp)
-          by (metis "*"(2) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+          by (metis "*"(2) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
         with D_F same_div show \<open>(s, X) \<in> \<F> ?lhs\<close> by blast 
       next
         show \<open>s' = t1 @ [\<checkmark>(r)] \<Longrightarrow> t1 @ [\<checkmark>(r)] \<in> \<T> (P a) \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for t1 r
@@ -348,16 +348,16 @@ next
         show \<open>s' @ [\<checkmark>(r)] \<in> \<T> (P a) \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
           by (simp add: "*"(1, 2) F_Interrupt T_Mprefix) blast
       next
-        show \<open>(s', X) \<in> \<F> (P a) \<Longrightarrow> tickFree s' \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
+        show \<open>(s', X) \<in> \<F> (P a) \<Longrightarrow> tF s' \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
           by (simp add: "*"(1, 2) F_Interrupt F_Mprefix image_iff)
       next
-        show \<open>s' = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> (P a) \<Longrightarrow> tickFree t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
+        show \<open>s' = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> (P a) \<Longrightarrow> tF t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
               t2 \<noteq> [] \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for t1 t2
           apply (simp add: F_Interrupt T_Mprefix "*"(1))
-          by (metis (no_types, lifting) "*"(1, 2) Cons_eq_appendI F_imp_front_tickFree
-              append_is_Nil_conv assm front_tickFree_Cons_iff tickFree_Cons_iff)
+          by (metis (no_types, lifting) "*"(1, 2) Cons_eq_appendI F_imp_ftF
+              append_is_Nil_conv assm ftF_Cons_iff tF_Cons_iff)
       next
-        show \<open>s' \<in> \<T> (P a) \<Longrightarrow> tickFree s' \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
+        show \<open>s' \<in> \<T> (P a) \<Longrightarrow> tF s' \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
           by (simp add: F_Interrupt T_Mprefix "*"(1, 2) image_iff) blast
       qed
     qed

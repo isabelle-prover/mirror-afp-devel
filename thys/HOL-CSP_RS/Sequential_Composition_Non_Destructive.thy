@@ -56,8 +56,8 @@ proof -
            length (u @ take (n - length u) w) = n \<and>
            tF (u @ take (n - length u) w) \<and> ftF (drop (n - length u) w @ x)\<close>
       by (simp add: \<open>t = u @ v\<close> T_Seq)
-        (metis append_T_imp_tickFree append_take_drop_id front_tickFree_append
-          is_processT3_TR_append list.distinct(1) tickFree_append_iff)
+        (metis append_T_imp_tF append_take_drop_id ftF_append
+          is_processT3_TR_append list.distinct(1) tF_append_iff)
     with D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k have \<open>t \<in> \<D> ?lhs\<close> by blast
   } note ** = this
 
@@ -78,8 +78,8 @@ proof -
         thus \<open>t \<in> \<D> ?lhs\<close>
         proof cases
           show \<open>u @ [\<checkmark>(r)] \<in> \<D> (P \<down> n) \<Longrightarrow> t \<in> \<D> ?lhs\<close>
-            by (metis "*" D_imp_front_tickFree \<open>t = u @ v\<close> \<open>v \<in> \<D> (Q \<down> n)\<close>
-                front_tickFree_append_iff is_processT7 is_processT9 not_Cons_self)
+            by (metis "*" D_imp_ftF \<open>t = u @ v\<close> \<open>v \<in> \<D> (Q \<down> n)\<close>
+                ftF_append_iff is_processT7 is_processT9 not_Cons_self)
         next
           from \<open>v \<in> \<D> (Q \<down> n)\<close> show \<open>u @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> length u < n \<Longrightarrow> t \<in> \<D> ?lhs\<close>
           proof (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE exE conjE)
@@ -99,7 +99,7 @@ proof -
           restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
 
     show \<open>(t, X) \<in> \<F> ?lhs\<close> if \<open>(t, X) \<in> \<F> ?rhs\<close> for t X
-      by (meson F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI div is_processT8 mono proc_ord2a that)
+      by (meson F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI div is_processT8 mono le_approxD(2) that)
   qed
 qed
 
@@ -113,7 +113,7 @@ next
   assume hyp: \<open>(SEQ l \<in>@ L. P l) \<down> n \<sqsubseteq>\<^sub>F\<^sub>D SEQ l \<in>@ L. (P l \<down> n)\<close>
   have \<open>(SEQ l \<in>@ (L @ [a]). P l) \<down> n = (SEQ l \<in>@ L. P l \<^bold>; P a) \<down> n\<close> by simp
   also have \<open>\<dots> \<sqsubseteq>\<^sub>F\<^sub>D SEQ l \<in>@ L. (P l \<down> n) \<^bold>; (P a \<down> n)\<close>
-    by (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq_FD mono_Seq_FD[OF hyp idem_FD]])
+    by (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq_FD mono_Seq_FD[OF hyp FD_refl]])
   also have \<open>\<dots> = SEQ l\<in>@(L @ [a]). (P l \<down> n)\<close> by simp
   finally show \<open>(SEQ l \<in>@ (L @ [a]). P l) \<down> n \<sqsubseteq>\<^sub>F\<^sub>D \<dots>\<close> .
 qed
@@ -133,7 +133,7 @@ proof (rule order_non_destructiveI, clarify)
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
     show \<open>t \<in> \<D> (P' \<^bold>; Q') \<Longrightarrow> t \<in> \<D> (P \<^bold>; Q \<down> n)\<close> for t
       by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close>
-                in_mono le_ref1 mono_Seq_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                in_mono le_FD_D(1) mono_Seq_FD restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
                 restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq_FD)
   next
     show \<open>(s, X) \<in> \<F> (P' \<^bold>; Q') \<Longrightarrow> (s, X) \<in> \<F> (P \<^bold>; Q \<down> n)\<close> for s X

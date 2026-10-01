@@ -75,7 +75,7 @@ text \<open>From the Isabelle-2025 version on, the classical constant tick (\<op
       has been replaced by a parameterized version carrying a kind of return value.\<close>
 
 datatype ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k =
-    is_ev   : ev   (of_ev   : 'a)
+  is_ev   : ev   (of_ev   : 'a)
   | is_tick : tick (of_tick : 'r) (\<open>\<checkmark>'(_')\<close>)
 
 
@@ -84,6 +84,8 @@ text \<open>``ptick'' stands for parameterized tick, and we introduce the type s
       the classical process event type.\<close>
 
 type_synonym 'a event = \<open>('a, unit) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+
+translations (type) "'a event" <= (type) "('a, unit) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" 
 
 abbreviation tick_unit :: \<open>'a event\<close> (\<open>\<checkmark>\<close>) where \<open>\<checkmark> \<equiv> \<checkmark>(())\<close>
 
@@ -124,26 +126,28 @@ text \<open>We recover the classical version with \<^typ>\<open>unit\<close>.\<c
 
 type_synonym 'a trace = \<open>('a, unit) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 
+translations
+  (type) "('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" <= (type) "('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k list"
+  (type) "'a trace" <= (type) "('a, unit) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
+
 
 text\<open>We chose as standard ordering on traces the prefix ordering.\<close>
 
-
 text\<open>Some facts on the prefix ordering.\<close>
 
-lemma nil_le     [simp]: \<open>[] \<le> s\<close>
-  and nil_le2    [simp]: \<open>s \<le> [] \<longleftrightarrow> s = []\<close>
-  and nil_less   [simp]: \<open>\<not> t < []\<close>
-  and nil_less2  [simp]: \<open>[] < t @ [a]\<close>
+lemma Nil_le     [simp]: \<open>[] \<le> s\<close>
+  and Nil_le2    [simp]: \<open>s \<le> [] \<longleftrightarrow> s = []\<close>
+  and Nil_less   [simp]: \<open>\<not> t < []\<close>
+  and Nil_less2  [simp]: \<open>[] < t @ [a]\<close>
   and less_self  [simp]: \<open>t < t @ [a]\<close>
   and le_cons    [simp]: \<open>a # s \<le> a # t \<longleftrightarrow> s \<le> t\<close>
   and le_append  [simp]: \<open>b @ s \<le> b @ t \<longleftrightarrow> s \<le> t\<close>
   and less_cons  [simp]: \<open>a # s < a # t \<longleftrightarrow> s < t\<close>
   and less_append[simp]: \<open>b @ s < b @ t \<longleftrightarrow> s < t\<close>
-
-and   le_length_mono: \<open>s \<le> t \<Longrightarrow> length s \<le> length t\<close>
-and less_length_mono: \<open>s < t \<Longrightarrow> length s < length t\<close>
-and   le_tail: \<open>s \<noteq> [] \<Longrightarrow> s \<le> t \<Longrightarrow> tl s \<le> tl t\<close>
-and less_tail: \<open>s \<noteq> [] \<Longrightarrow> s < t \<Longrightarrow> tl s < tl t\<close>
+  and   le_length_mono: \<open>s \<le> t \<Longrightarrow> length s \<le> length t\<close>
+  and less_length_mono: \<open>s < t \<Longrightarrow> length s < length t\<close>
+  and   le_tail: \<open>s \<noteq> [] \<Longrightarrow> s \<le> t \<Longrightarrow> tl s \<le> tl t\<close>
+  and less_tail: \<open>s \<noteq> [] \<Longrightarrow> s < t \<Longrightarrow> tl s < tl t\<close>
               apply (simp_all add: less_eq_list_def less_list_def prefix_length_le)
     apply (metis prefix_length_less prefix_order.dual_order.not_eq_order_implies_strict)
    apply (metis prefix_def tl_append2)
@@ -210,87 +214,101 @@ definition tickFree :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^s
   where \<open>tF s \<equiv> range tick \<inter> set s = {}\<close>
 
 definition front_tickFree :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> bool\<close> (\<open>ftF\<close>)
-  where \<open>ftF s \<equiv> s = [] \<or> tickFree (tl (rev s))\<close>
+  where \<open>ftF s \<equiv> s = [] \<or> tF (tl (rev s))\<close>
 
-lemma tickFree_Nil        [simp] : \<open>tF []\<close>
-  and tickFree_Cons_iff   [simp] : \<open>tF (a # t) \<longleftrightarrow> is_ev a \<and> tF t\<close>
-  and tickFree_append_iff [simp] : \<open>tF (s @ t) \<longleftrightarrow> tF s    \<and> tF t\<close>
-  and tickFree_rev_iff    [simp] : \<open>tF (rev t) \<longleftrightarrow> tF t\<close>
-  and non_tickFree_tick   [simp] : \<open>\<not> tF [\<checkmark>(r)]\<close>
+lemma tF_Nil        [simp] : \<open>tF []\<close>
+  and tF_Cons_iff   [simp] : \<open>tF (a # t) \<longleftrightarrow> is_ev a \<and> tF t\<close>
+  and tF_append_iff [simp] : \<open>tF (s @ t) \<longleftrightarrow> tF s    \<and> tF t\<close>
+  and tF_rev_iff    [simp] : \<open>tF (rev t) \<longleftrightarrow> tF t\<close>
   by (cases a; auto simp add: tickFree_def)+
 
-lemma tickFree_iff_is_map_ev : \<open>tF t \<longleftrightarrow> (\<exists>u. t = map ev u)\<close>
+lemma tF_iff_is_map_ev : \<open>tF t \<longleftrightarrow> (\<exists>u. t = map ev u)\<close>
   by (induct t) (simp_all add: Cons_eq_map_conv is_ev_def)
 
-lemma front_tickFree_Nil   [simp] : \<open>ftF []\<close>
-  and front_tickFree_single[simp] : \<open>ftF [a]\<close>
+lemma ftF_Nil    [simp] : \<open>ftF []\<close>
+  and ftF_single [simp] : \<open>ftF [a]\<close>
   by (simp_all add: front_tickFree_def)
 
 
-lemma tickFree_tl : \<open>tF s \<Longrightarrow> tF (tl s)\<close>
+lemma tF_tl : \<open>tF s \<Longrightarrow> tF (tl s)\<close>
   by (cases s) simp_all
 
-lemma non_tickFree_imp_not_Nil: \<open>\<not> tF s \<Longrightarrow> s \<noteq> []\<close>
-  using tickFree_Nil by blast
+lemma not_tF_imp_not_Nil: \<open>\<not> tF s \<Longrightarrow> s \<noteq> []\<close>
+  using tF_Nil by blast
 
-lemma tickFree_butlast: \<open>tF s \<longleftrightarrow> tF (butlast s) \<and> (s \<noteq> [] \<longrightarrow> is_ev (last s))\<close>
+lemma tF_butlast: \<open>tF s \<longleftrightarrow> tF (butlast s) \<and> (s \<noteq> [] \<longrightarrow> is_ev (last s))\<close>
   by (induct s) simp_all
 
-lemma front_tickFree_iff_tickFree_butlast: \<open>ftF s \<longleftrightarrow> tF (butlast s)\<close>
+lemma ftF_iff_tF_butlast: \<open>ftF s \<longleftrightarrow> tF (butlast s)\<close>
   by (induct s) (auto simp add: front_tickFree_def)
 
-lemma front_tickFree_Cons_iff: \<open>ftF (a # s) \<longleftrightarrow> s = [] \<or> is_ev a \<and> ftF s\<close>
-  by (simp add: front_tickFree_iff_tickFree_butlast)
+lemma ftF_Cons_iff: \<open>ftF (a # s) \<longleftrightarrow> s = [] \<or> is_ev a \<and> ftF s\<close>
+  by (simp add: ftF_iff_tF_butlast)
 
-lemma front_tickFree_append_iff:
+lemma ftF_append_iff:
   \<open>ftF (s @ t) \<longleftrightarrow> (if t = [] then ftF s else tF s \<and> ftF t)\<close>
-  by (simp add: butlast_append front_tickFree_iff_tickFree_butlast)
+  by (simp add: butlast_append ftF_iff_tF_butlast)
 
-lemma tickFree_imp_front_tickFree [simp] : \<open>tF s \<Longrightarrow> ftF s\<close>
-  by (simp add: front_tickFree_def tickFree_tl)
+lemma tF_imp_ftF [simp] : \<open>tF s \<Longrightarrow> ftF s\<close>
+  by (simp add: front_tickFree_def tF_tl)
 
-lemma front_tickFree_charn: \<open>ftF s \<longleftrightarrow> s = [] \<or> (\<exists>a t. s = t @ [a] \<and> tF t)\<close>
+lemma ftF_charn: \<open>ftF s \<longleftrightarrow> s = [] \<or> (\<exists>a t. s = t @ [a] \<and> tF t)\<close>
   by (cases s rule: rev_cases) (simp_all add: front_tickFree_def)
 
 
-lemma nonTickFree_n_frontTickFree: \<open>\<not> tF s \<Longrightarrow> ftF s \<Longrightarrow> \<exists>t r. s = t @ [\<checkmark>(r)]\<close>
-  by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust front_tickFree_append_iff list.distinct(1)
-      rev_exhaust tickFree_Cons_iff tickFree_Nil tickFree_append_iff)
+lemma not_tF_and_ftF: \<open>\<not> tF s \<Longrightarrow> ftF s \<Longrightarrow> \<exists>t r. s = t @ [\<checkmark>(r)]\<close>
+  by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust ftF_append_iff list.distinct(1)
+      rev_exhaust tF_Cons_iff tF_Nil tF_append_iff)
 
-lemma front_tickFree_dw_closed : \<open>ftF (s @ t) \<Longrightarrow> ftF s\<close>
-  by (metis front_tickFree_append_iff tickFree_imp_front_tickFree)
+lemma ftF_dw_closed : \<open>ftF (s @ t) \<Longrightarrow> ftF s\<close>
+  by (metis ftF_append_iff tF_imp_ftF)
 
-lemma front_tickFree_append: \<open>tF s \<Longrightarrow> ftF t \<Longrightarrow> ftF (s @ t)\<close>
-  by (simp add: front_tickFree_append_iff)
+lemma ftF_append: \<open>tF s \<Longrightarrow> ftF t \<Longrightarrow> ftF (s @ t)\<close>
+  by (simp add: ftF_append_iff)
 
-lemma tickFree_imp_front_tickFree_snoc: \<open>tF s \<Longrightarrow> ftF (s @ [a])\<close>
-  by (simp add: front_tickFree_append)
+lemma tF_imp_ftF_snoc: \<open>tF s \<Longrightarrow> ftF (s @ [a])\<close>
+  by (simp add: ftF_append)
 
-lemma front_tickFree_nonempty_append_imp: \<open>ftF (t @ r) \<Longrightarrow> r \<noteq> [] \<Longrightarrow> tF t \<and> ftF r\<close>
-  by (simp add: front_tickFree_append_iff)
+lemma ftF_nonempty_append_imp: \<open>ftF (t @ r) \<Longrightarrow> r \<noteq> [] \<Longrightarrow> tF t \<and> ftF r\<close>
+  by (simp add: ftF_append_iff)
 
-lemma tickFree_map_ev [simp] : \<open>tF (map ev t)\<close>
+lemma tF_map_ev [simp] : \<open>tF (map ev t)\<close>
   by (induct t) simp_all
 
-lemma tickFree_map_tick_iff [simp] : \<open>tF (map tick t) \<longleftrightarrow> t = []\<close>
+lemma tF_map_tick_iff [simp] : \<open>tF (map tick t) \<longleftrightarrow> t = []\<close>
   by (induct t) simp_all
 
-lemma front_tickFree_map_tick_iff [simp] : \<open>ftF (map tick t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
-  by (simp add: front_tickFree_iff_tickFree_butlast map_butlast[symmetric])
+lemma ftF_map_tick_iff [simp] : \<open>ftF (map tick t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
+  by (simp add: ftF_iff_tF_butlast map_butlast[symmetric])
     (metis append_Nil append_butlast_last_id butlast.simps(1, 2))
 
 \<comment> \<open>\<^term>\<open>map ev (map f t)\<close> if automatically simplified into \<^term>\<open>map (ev \<circ> f) t\<close> by the
     simplified, so we need to add the following versions.\<close>
 
-lemma tickFree_map_ev_comp [simp] : \<open>tF (map (ev \<circ> f) t)\<close>
-  by (metis list.map_comp tickFree_map_ev)
+lemma tF_map_ev_comp [simp] : \<open>tF (map (ev \<circ> f) t)\<close>
+  by (metis list.map_comp tF_map_ev)
 
-lemma tickFree_map_tick_comp_iff [simp] : \<open>tF (map (tick \<circ> f) t) \<longleftrightarrow> t = []\<close>
-  by (fold map_map, unfold tickFree_map_tick_iff) simp
+lemma tF_map_tick_comp_iff [simp] : \<open>tF (map (tick \<circ> f) t) \<longleftrightarrow> t = []\<close>
+  by (fold map_map, unfold tF_map_tick_iff) simp
 
-lemma front_tickFree_map_tick_comp_iff [simp] : \<open>ftF (map (tick \<circ> f) t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
-  by (fold map_map, unfold front_tickFree_map_tick_iff)
+lemma ftF_map_tick_comp_iff [simp] : \<open>ftF (map (tick \<circ> f) t) \<longleftrightarrow> t = [] \<or> (\<exists>r. t = [r])\<close>
+  by (fold map_map, unfold ftF_map_tick_iff)
     (simp add: map_eq_Cons_conv)
+
+
+lemma tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff : \<open>tF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s) \<longleftrightarrow> tF s\<close>
+  by (induct s) (simp_all add: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.case_eq_if)
+
+lemma ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff : \<open>ftF (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) s) \<longleftrightarrow> ftF s\<close>
+  by (simp add: ftF_iff_tF_butlast tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff flip: map_butlast)
+
+lemma suffix_tick_le_ftf_imp_eq: \<open>ftF t \<Longrightarrow> s @ [tick r] \<le> t \<Longrightarrow> s @ [tick r] = t\<close>
+  by (metis Prefix_Order.prefixE event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_append_iff
+      self_append_conv tF_Cons_iff tF_append_iff)
+
+lemma ftF_E :
+  \<open>\<lbrakk>ftF t; tF t \<Longrightarrow> thesis; \<And>t' r. t = t' @ [\<checkmark>(r)] \<Longrightarrow> tF t' \<Longrightarrow> thesis\<rbrakk> \<Longrightarrow> thesis\<close>
+  by (metis ftF_append_iff not_tF_and_ftF not_Cons_self2)
 
 
 
@@ -303,6 +321,16 @@ type_synonym 'a failure = \<open>('a, unit) failure\<^sub>p\<^sub>t\<^sub>i\<^su
 type_synonym ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 type_synonym 'a divergence = \<open>('a, unit) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 type_synonym ('a, 'r) process\<^sub>0 = \<open>('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set \<times> ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
+
+
+
+
+translations
+  (type) "('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" <= (type) "('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set"
+  (* (type) "('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" <= (type) "('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<times> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
+     is unfortunately not possible: Error in syntax translation rule: duplicate vars in lhs *)
+  (type) "'a refusal" <= (type) "('a, unit) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
+
 
 definition FAILURES :: \<open>('a, 'r) process\<^sub>0 \<Rightarrow> ('a, 'r) failure\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close>
   where \<open>FAILURES P \<equiv> fst P\<close>
@@ -379,9 +407,9 @@ lemma is_process1 : \<open>([], {}) \<in> FAILURES P\<close>
 
 
 
-lemma trace_with_Tick_imp_tickFree_front :
+lemma trace_with_Tick_imp_tF_front :
   \<open>is_process P \<Longrightarrow> t @ [\<checkmark>(r)] \<in> TRACES P \<Longrightarrow> tF t\<close>
-  by (simp add: TRACES_def) (meson front_tickFree_append_iff is_process2 neq_Nil_conv)
+  by (simp add: TRACES_def) (meson ftF_append_iff is_process2 neq_Nil_conv)
 
 
 section \<open> The Abstraction to the process-Type \<close>
@@ -400,7 +428,7 @@ text \<open>Again, the old version without parameterized termination can be reco
 type_synonym 'a process = \<open>('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 
 translations
-  (type) "'a process"  \<rightleftharpoons> (type)  "('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
+  (type) "'a process" <= (type)  "('a, unit) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k"
 
 setup_lifting type_definition_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 
@@ -510,14 +538,14 @@ lemma is_processT3_TR_append : \<open>t @ u \<in> \<T> P \<Longrightarrow> t \<i
 
 lemma nonempty_divE : 
   \<open>\<D> P \<noteq> {} \<Longrightarrow> (\<And>t. tF t \<Longrightarrow> t \<in> \<D> P \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
-  by (metis ex_in_conv front_tickFree_nonempty_append_imp is_processT2 is_processT8
-      is_processT9 neq_Nil_conv nonTickFree_n_frontTickFree)
+  by (metis ex_in_conv ftF_nonempty_append_imp is_processT2 is_processT8
+      is_processT9 neq_Nil_conv not_tF_and_ftF)
 
 
-lemma div_butlast_when_non_tickFree_iff :
+lemma div_butlast_when_non_tF_iff :
   \<open>ftF s \<Longrightarrow> (if tF s then s else butlast s) \<in> \<D> P \<longleftrightarrow> s \<in> \<D> P\<close>
-  by (cases s rule: rev_cases; simp add: front_tickFree_iff_tickFree_butlast)
-    (metis front_tickFree_Cons_iff is_processT7 is_processT9 is_tick_def)
+  by (cases s rule: rev_cases; simp add: ftF_iff_tF_butlast)
+    (metis ftF_Cons_iff is_processT7 is_processT9 is_tick_def)
 
 
 
@@ -551,13 +579,13 @@ lemma trace_tick_continuation_or_all_tick_failuresE:
 
 lemmas Nil_elem_T [simp] = is_processT1_TR
 
-lemmas F_imp_front_tickFree = is_processT2
-  and D_imp_front_tickFree = is_processT8[THEN is_processT2]
-  and T_imp_front_tickFree = T_F[THEN is_processT2]
+lemmas F_imp_ftF = is_processT2
+  and D_imp_ftF = is_processT8[THEN is_processT2]
+  and T_imp_ftF = T_F[THEN is_processT2]
 
 
-lemma D_front_tickFree_subset : \<open>\<D> P \<subseteq> Collect ftF\<close>
-  by (auto simp: D_imp_front_tickFree)
+lemma D_ftF_subset : \<open>\<D> P \<subseteq> Collect ftF\<close>
+  by (auto simp: D_imp_ftF)
 
 lemma F_D_part : \<open>\<F> P = {(s, x). s \<in> \<D> P} \<union> {(s, x). s \<notin> \<D> P \<and> (s, x) \<in> \<F> P}\<close>
   by (auto simp add: is_processT8)
@@ -565,17 +593,18 @@ lemma F_D_part : \<open>\<F> P = {(s, x). s \<in> \<D> P} \<union> {(s, x). s \<
 lemma D_F : \<open>{(s, x). s \<in> \<D> P} \<subseteq> \<F> P\<close>
   using F_D_part by blast
 
-lemma append_T_imp_tickFree:  \<open>t @ s \<in> \<T> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tF t\<close>
-  by (meson front_tickFree_append_iff is_processT2_TR)
+lemma append_T_imp_tF:  \<open>t @ s \<in> \<T> P \<Longrightarrow> s \<noteq> [] \<Longrightarrow> tF t\<close>
+  by (meson ftF_append_iff is_processT2_TR)
 
 lemma tick_T_F: \<open>t @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (t @ [\<checkmark>(r)], X) \<in> \<F> P\<close>
-  by (meson append_T_imp_tickFree is_processT5_S7 list.discI non_tickFree_tick tickFree_append_iff)
+  by (metis append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) impossible_Cons is_processT5_S7 leI
+      length_greater_0_conv list.size(3) tF_Cons_iff tF_append_iff)
 
 lemma is_processT9_tick: \<open>[\<checkmark>(r)] \<in> \<D> P \<Longrightarrow> ftF s \<Longrightarrow> s \<in> \<D> P\<close>
-  by (metis append_Nil is_processT7 is_processT9 tickFree_Nil)
+  by (metis append_Nil is_processT7 is_processT9 tF_Nil)
 
-lemma T_nonTickFree_imp_decomp: \<open>t \<in> \<T> P \<Longrightarrow> \<not> tF t \<Longrightarrow> \<exists>s r. t = s @ [\<checkmark>(r)]\<close>
-  by (simp add: is_processT2_TR nonTickFree_n_frontTickFree)
+lemma T_not_tF_imp_decomp: \<open>t \<in> \<T> P \<Longrightarrow> \<not> tF t \<Longrightarrow> \<exists>s r. t = s @ [\<checkmark>(r)]\<close>
+  by (simp add: is_processT2_TR not_tF_and_ftF)
 
 
 
@@ -592,25 +621,45 @@ The former provides just a set of minimal elements from a given set
 of elements of type-class $ord$ \ldots \<close>
 
 definition min_elems :: \<open>('s::ord) set \<Rightarrow> 's set\<close>
-  where   \<open>min_elems X \<equiv> {s \<in> X. \<forall>t \<in> X. \<not> (t < s)}\<close>
+  where   \<open>min_elems X \<equiv> {s \<in> X. \<forall>t \<in> X. \<not> t < s}\<close>
 
-lemma Nil_min_elems : \<open>[] \<in> A \<Longrightarrow> [] \<in> min_elems A\<close>
-  by (simp add: min_elems_def)
 
-lemma min_elems_le_self[simp] : \<open>(min_elems A) \<subseteq> A\<close>
+lemma min_elems_le_self [simp] : \<open>min_elems A \<subseteq> A\<close>
   by (auto simp: min_elems_def)
+
+lemma min_elems_empty [simp] : \<open>min_elems {} = {}\<close>
+  using min_elems_le_self by blast
+
+lemma min_elems_Un_subset_Un_min_elems :
+  \<open>min_elems (A \<union> B) \<subseteq> min_elems A \<union> min_elems B\<close>
+  and min_elems_Int_superset_Int_min_elems :
+  \<open>min_elems A \<inter> min_elems B \<subseteq> min_elems (A \<inter> B)\<close>
+  and min_elems_UN_subset_UN_min_elems :
+  \<open>min_elems (\<Union>a \<in> A. S a) \<subseteq> (\<Union>a \<in> A. min_elems (S a))\<close>
+  and min_elems_INT_superset_INT_min_elems :
+  \<open>A \<noteq> {} \<Longrightarrow> (\<Inter>a \<in> A. min_elems (S a)) \<subseteq> min_elems (\<Inter>a \<in> A. S a)\<close>
+  by (auto simp add: min_elems_def)
+
+lemma min_elems_idempotent : \<open>min_elems (min_elems A) = min_elems A\<close>
+  unfolding min_elems_def by blast
+
+
+lemma Nil_mem_min_elems : \<open>[] \<in> A \<Longrightarrow> [] \<in> min_elems A\<close>
+  by (simp add: min_elems_def)
 
 lemmas elem_min_elems = Set.set_mp[OF min_elems_le_self]
 
-lemma min_elems_Collect_ftF_is_Nil : \<open>min_elems (Collect ftF) = {[]}\<close>
+lemma min_elems_Collect_ftF_is_singl_Nil : \<open>min_elems (Collect ftF) = {[]}\<close>
   by (simp add: min_elems_def less_eq_list_def set_eq_iff)
-    (metis front_tickFree_charn nil_less nil_less2)
+    (metis ftF_charn Nil_less Nil_less2)
 
-lemma min_elems5 : \<open>(s :: 'a list) \<in> A \<Longrightarrow> \<exists>t\<le>s. t \<in> min_elems A\<close>
+
+lemma ex_le_mem_min_elems_list_set :
+  \<open>(s :: 'a list) \<in> A \<Longrightarrow> \<exists>t\<le>s. t \<in> min_elems A\<close>
 proof -
   have * : \<open>x \<in> A \<Longrightarrow> length x \<le> n \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x :: \<open>'a list\<close> and A n
   proof (induct n arbitrary: x rule: nat_induct)
-    show \<open>x \<in> A \<Longrightarrow> length x \<le> 0 \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x by (simp add: Nil_min_elems)
+    show \<open>x \<in> A \<Longrightarrow> length x \<le> 0 \<Longrightarrow> \<exists>s\<le>x. s \<in> min_elems A\<close> for x by (simp add: Nil_mem_min_elems)
   next
     fix n x
     assume \<open>x \<in> A\<close> \<open>length x \<le> Suc n\<close>
@@ -628,20 +677,33 @@ proof -
   thus \<open>s \<in> A \<Longrightarrow> \<exists>t\<le>s. t \<in> min_elems A\<close> by auto
 qed
 
-lemma min_elems4: \<open>A \<noteq> {} \<Longrightarrow> \<exists>s. (s :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<in> min_elems A\<close>
-  by (auto dest: min_elems5)
+lemma min_elems_list_set_is_empty_iff :
+  \<open>min_elems (A :: 'a list set) = {} \<longleftrightarrow> A = {}\<close>
+  by (auto dest: ex_le_mem_min_elems_list_set)
 
-lemma min_elems_charn: \<open>t \<in> A \<Longrightarrow> \<exists> t' r. t = (t' @ r) \<and> t' \<in> min_elems A\<close>
-  by (meson prefixE min_elems5)
+lemma min_elems_list_set_charn : \<open>t \<in> A \<Longrightarrow> \<exists> t' r. t = (t' @ r) \<and> t' \<in> min_elems A\<close>
+  by (meson prefixE ex_le_mem_min_elems_list_set)
 
-lemma min_elems_no: \<open>(s::'a list) \<in> min_elems A \<Longrightarrow> t \<in> A \<Longrightarrow> t \<le> s \<Longrightarrow> s = t\<close>
+lemma min_elems_no_list_set_list_set :
+  \<open>(s :: 'a list) \<in> min_elems A \<Longrightarrow> t \<in> A \<Longrightarrow> t \<le> s \<Longrightarrow> s = t\<close>
   by (metis (mono_tags, lifting) mem_Collect_eq min_elems_def order_neq_le_trans)
+
+
+text \<open>New in Isabelle26: the concept of minimal divergence is isolated as
+a notion in its own right, facilitating several denotational proofs
+(through stronger theorems) and providing the basis for defining the
+concept of minimal alphabet (again, leading to stronger theorems).\<close>
+
+definition Divergences\<^sub>m\<^sub>i\<^sub>n :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) divergence\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<D>\<^sub>m\<^sub>i\<^sub>n\<close>)
+  where \<open>\<D>\<^sub>m\<^sub>i\<^sub>n P \<equiv> min_elems (\<D> P)\<close>
+
 
 text\<open> \ldots while the second returns the set of possible
 refusal sets after a given trace $s$ and a given process
 $P$: \<close>
 
-definition Refusals_after :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<R>\<^sub>a\<close>)
+definition Refusals_after ::
+  \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) refusal\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k set\<close> (\<open>\<R>\<^sub>a\<close>)
   where   \<open>\<R>\<^sub>a P tr \<equiv> {ref. (tr, ref) \<in> \<F> P}\<close>
 
 text\<open> In the following, we link the process theory to the underlying 
@@ -655,9 +717,8 @@ text\<open> declares approximation ordering $\_ \sqsubseteq \_$ also written
         \<^verbatim>\<open>_ << _\<close>. \<close>
 
 
-definition le_approx_def : \<open>P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and>
-                                    (\<forall>s. s \<notin> \<D> P \<longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a Q s) \<and> 
-                                     min_elems (\<D> P) \<subseteq> \<T> Q\<close>
+definition le_approx_def :
+  \<open>P \<sqsubseteq> Q \<equiv> \<D> Q \<subseteq> \<D> P \<and> (\<forall>s. s \<notin> \<D> P \<longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a Q s) \<and> \<D>\<^sub>m\<^sub>i\<^sub>n P \<subseteq> \<T> Q\<close>
 
 text\<open> The approximation ordering captures the fact that more concrete
 processes should be more defined by ordering the divergence sets
@@ -671,53 +732,95 @@ instance ..
 end
 
 
-lemma le_approx1: \<open>P \<sqsubseteq> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close>
-  by (simp add: le_approx_def)
+text \<open>Some lemmas about \<^term>\<open>\<D>\<^sub>m\<^sub>i\<^sub>n\<close>.\<close>
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_subset_D : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n P \<subseteq> \<D> P\<close>
+  by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def)
+
+corollary D\<^sub>m\<^sub>i\<^sub>n_D : \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> t \<in> \<D> P\<close>
+  by (fact D\<^sub>m\<^sub>i\<^sub>n_subset_D[THEN set_mp])
+
+lemma mem_D_imp_ex_le_mem_D\<^sub>m\<^sub>i\<^sub>n : \<open>t \<in> \<D> P \<Longrightarrow> \<exists>u\<le>t. u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+  by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def ex_le_mem_min_elems_list_set)
+
+lemma tF_mem_D\<^sub>m\<^sub>i\<^sub>n : \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> tF t\<close>
+  by (metis D_imp_ftF Divergences\<^sub>m\<^sub>i\<^sub>n_def Prefix_Order.prefixI
+      elem_min_elems ftF_E is_processT9 min_elems_no_list_set_list_set)
+
+lemma D_is_D\<^sub>m\<^sub>i\<^sub>n_extended : \<open>\<D> P = {t @ u |t u. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<and> ftF u}\<close>
+  by (simp add: set_eq_iff Divergences\<^sub>m\<^sub>i\<^sub>n_def)
+    (metis D_imp_ftF Divergences\<^sub>m\<^sub>i\<^sub>n_def elem_min_elems ftF_Nil
+      ftF_nonempty_append_imp is_processT7 min_elems_list_set_charn tF_mem_D\<^sub>m\<^sub>i\<^sub>n)
 
 
-lemma le_approx2: \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> ((s, X) \<in> \<F> Q) = ((s, X) \<in> \<F> P)\<close>
-  by (auto simp: Refusals_after_def le_approx_def)
+lemma D\<^sub>m\<^sub>i\<^sub>n_memI : \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> if \<open>t \<in> \<D> P\<close> \<open>butlast t \<notin> \<D> P\<close>
+proof (rule ccontr)
+  assume \<open>t \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+  with \<open>t \<in> \<D> P\<close> obtain t' where \<open>t' \<le> t\<close> \<open>t' \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+    by (metis mem_D_imp_ex_le_mem_D\<^sub>m\<^sub>i\<^sub>n)
+  from \<open>t \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>t' \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> \<open>t' \<le> t\<close>
+  obtain t'' where \<open>butlast t = t' @ t''\<close>
+    by (metis Prefix_Order.prefixE Prefix_Order.prefix_snoc
+        append_butlast_last_id append_is_Nil_conv)
+  with \<open>t \<in> \<D> P\<close> have \<open>ftF t''\<close>
+    by (metis D_imp_ftF ftF_iff_tF_butlast tF_append_iff tF_imp_ftF)
+  moreover from tF_mem_D\<^sub>m\<^sub>i\<^sub>n \<open>t' \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> have \<open>tF t'\<close> .
+  ultimately have \<open>butlast t \<in> \<D> P\<close>
+    by (simp add: D\<^sub>m\<^sub>i\<^sub>n_D \<open>butlast t = t' @ t''\<close> \<open>t' \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close> is_processT7)
+  with \<open>butlast t \<notin> \<D> P\<close> show False ..
+qed
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_subset_D_imp_D_subset_D : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n P \<subseteq> \<D> Q \<Longrightarrow> \<D> P \<subseteq> \<D> Q\<close>
+  by (auto simp add: D_is_D\<^sub>m\<^sub>i\<^sub>n_extended subset_iff)
+    (metis append.assoc ftF_append_iff tF_append_iff tF_mem_D\<^sub>m\<^sub>i\<^sub>n)
+
+lemma Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version :
+  \<open>\<lbrakk>\<And>t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> t \<in> \<D> Q; \<And>t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q \<Longrightarrow> t \<in> \<D> P;
+   \<And>t X. (t, X) \<in> \<F> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> t \<notin> \<D> Q \<Longrightarrow> (t, X) \<in> \<F> Q;
+   \<And>t X. (t, X) \<in> \<F> Q \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> t \<notin> \<D> Q \<Longrightarrow> (t, X) \<in> \<F> P\<rbrakk> \<Longrightarrow> P = Q\<close>
+  by (metis D\<^sub>m\<^sub>i\<^sub>n_subset_D_imp_D_subset_D Process_eq_spec is_processT8 subrelI subsetI subset_antisym)
 
 
-lemma le_approx3: \<open>P \<sqsubseteq> Q \<Longrightarrow> min_elems(\<D> P) \<subseteq> \<T> Q\<close>
-  by (simp add: le_approx_def)
 
-lemma le_approx2T: \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> Q \<longleftrightarrow> s \<in> \<T> P\<close>
-  by (auto simp: le_approx2 T_F_spec[symmetric])
+text \<open>Some lemmas about \<^term>\<open>(\<sqsubseteq>)\<close>.\<close>
+
+lemma le_approxD :
+  \<open>P \<sqsubseteq> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close>
+  \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P \<longleftrightarrow> (s, X) \<in> \<F> Q\<close>
+  \<open>P \<sqsubseteq> Q \<Longrightarrow> \<D>\<^sub>m\<^sub>i\<^sub>n P \<subseteq> \<T> Q\<close>
+  by (auto simp add: le_approx_def Refusals_after_def)
+
+lemma le_approxD2_T: \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> P \<longleftrightarrow> s \<in> \<T> Q\<close>
+  by (auto simp: le_approxD(2) T_F_spec[symmetric])
 
 lemma le_approx_lemma_F : \<open>P \<sqsubseteq> Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P\<close>
-  by (meson le_approx2 process_charn subrelI)
-
-lemmas order_lemma = le_approx_lemma_F
+  by (meson le_approxD(2) process_charn subrelI)
 
 lemma le_approx_lemma_T: \<open>P \<sqsubseteq> Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P\<close>
-  by(auto dest!:le_approx_lemma_F simp: T_F_spec[symmetric])
-
-lemma proc_ord2a : \<open>P \<sqsubseteq> Q \<Longrightarrow> s \<notin> \<D> P \<Longrightarrow> (s, X) \<in> \<F> P \<longleftrightarrow> (s, X) \<in> \<F> Q\<close>
-  by (auto simp: le_approx_def Refusals_after_def)
+  by(auto dest!: le_approx_lemma_F simp: T_F_spec[symmetric])
 
 
 instance process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) po
 proof intro_classes
   show \<open>P \<sqsubseteq> P\<close> for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (metis D_T elem_min_elems le_approx_def subsetI)
+    by (metis D_T Divergences\<^sub>m\<^sub>i\<^sub>n_def elem_min_elems le_approx_def subsetI)
 next
   show \<open>P \<sqsubseteq> Q \<Longrightarrow> Q \<sqsubseteq> P \<Longrightarrow> P = Q\<close> for P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (simp add: Process_eq_spec le_approx1 le_approx_lemma_F subset_antisym)
+    by (simp add: Process_eq_spec le_approxD(1) le_approx_lemma_F subset_antisym)
 next
   fix P Q R :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   assume \<open>P \<sqsubseteq> Q\<close> and \<open>Q \<sqsubseteq> R\<close>
   show \<open>P \<sqsubseteq> R\<close> 
   proof (unfold le_approx_def, intro conjI allI impI)
-    show \<open>\<D> R \<subseteq> \<D> P\<close> by (meson \<open>P \<sqsubseteq> Q\<close> \<open>Q \<sqsubseteq> R\<close> dual_order.trans le_approx1)
+    show \<open>\<D> R \<subseteq> \<D> P\<close> by (meson \<open>P \<sqsubseteq> Q\<close> \<open>Q \<sqsubseteq> R\<close> dual_order.trans le_approxD(1))
   next
     show \<open>s \<notin> \<D> P \<Longrightarrow> \<R>\<^sub>a P s = \<R>\<^sub>a R s\<close> for s
       by (metis \<open>P \<sqsubseteq> Q\<close> \<open>Q \<sqsubseteq> R\<close> le_approx_def subsetD)
   next
-    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approx1]  \<open>P \<sqsubseteq> Q\<close>[THEN le_approx3]
-      \<open>Q \<sqsubseteq> R\<close>[THEN le_approx2T] \<open>Q \<sqsubseteq> R\<close>[THEN le_approx3]
-    show \<open>min_elems (\<D> P) \<subseteq> \<T> R\<close>
-      by (simp add: min_elems_def subset_iff) blast
+    from \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD(1)] \<open>P \<sqsubseteq> Q\<close>[THEN le_approxD(3)]
+      \<open>Q \<sqsubseteq> R\<close>[THEN le_approxD2_T] \<open>Q \<sqsubseteq> R\<close>[THEN le_approxD(3)]
+    show \<open>\<D>\<^sub>m\<^sub>i\<^sub>n P \<subseteq> \<T> R\<close>
+      by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def subset_iff) blast
   qed
 qed
 
@@ -745,26 +848,25 @@ Some facts from the theory of complete partial orders:
 \<close>
 
 
-lemma min_elems3: \<open>s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<notin> min_elems (\<D> P) \<Longrightarrow> s \<in> \<D> P\<close>
-  by (simp add: min_elems_def less_eq_list_def less_list_def)
-    (metis D_imp_front_tickFree append.right_neutral front_tickFree_append_iff
-      front_tickFree_dw_closed is_processT7 prefix_def)
 
 
-lemma min_elems1: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<in> min_elems (\<D> P)\<close>
-  using min_elems3 by blast
+lemma min_elems1: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+  by (metis D\<^sub>m\<^sub>i\<^sub>n_memI butlast_snoc)
 
 lemma min_elems2: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> Q\<close>
-  by (meson T_F in_mono le_approx3 le_approx_lemma_F min_elems3)
+  by (meson T_F is_processT8 le_approxD(3) le_approxD2_T min_elems1 subset_eq)
+
+lemma min_elems3: \<open>s @ [c] \<in> \<D> P \<Longrightarrow> s @ [c] \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> s \<in> \<D> P\<close>
+  by (metis D\<^sub>m\<^sub>i\<^sub>n_memI butlast_snoc)
 
 lemma min_elems6: \<open>s \<notin> \<D> P \<Longrightarrow> s @ [c] \<in> \<D> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> (s @ [c], {}) \<in> \<F> S\<close>
   by (auto intro!: min_elems2)
 
 lemma ND_F_dir2: \<open>s \<notin> \<D> P \<Longrightarrow> (s, {}) \<in> \<F> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> (s, {}) \<in> \<F> Q\<close>
-  by (meson is_processT8 le_approx2)
+  by (meson is_processT8 le_approxD(2))
 
 lemma ND_F_dir2': \<open>s \<notin> \<D> P \<Longrightarrow> s \<in> \<T> P \<Longrightarrow> P \<sqsubseteq> S \<Longrightarrow> Q \<sqsubseteq> S \<Longrightarrow> s \<in> \<T> Q\<close>
-  by (meson D_T le_approx2T)
+  by (meson D_T le_approxD2_T)
 
 
 lemma chain_lemma: \<open>chain S \<Longrightarrow> S i \<sqsubseteq> S k \<or> S k \<sqsubseteq> S i\<close>
@@ -802,7 +904,7 @@ next
     from assm \<open>c \<in> Y\<close> obtain j where ** : \<open>(s @ [c], {}) \<notin> \<F> (S j)\<close> by blast
 
     from chain_lemma[OF \<open>chain S\<close>, of i j] "*" "**" show False
-      by (elim disjE; use \<open>s \<notin> \<D> (S i)\<close> is_processT8 min_elems6 proc_ord2a in blast)
+      by (elim disjE; use \<open>s \<notin> \<D> (S i)\<close> is_processT8 min_elems6 le_approxD(2) in blast)
   qed
 next
   show \<open>(s @ [\<checkmark>(r)], {}) \<in> \<Inter> (\<F> ` range S) \<Longrightarrow>
@@ -843,6 +945,10 @@ lemma F_LUB_2: \<open>(s, X) \<in> \<F> lim_proc \<longleftrightarrow> (\<forall
   and Refusals_after_LUB_2: \<open>X \<in> \<R>\<^sub>a lim_proc s \<longleftrightarrow> (\<forall>i. X \<in> \<R>\<^sub>a (S i) s)\<close>
   by (simp_all add: F_LUB D_LUB T_LUB Refusals_LUB Refusals_after_LUB)
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_LUB_superset : \<open>(\<Inter>i. \<D>\<^sub>m\<^sub>i\<^sub>n (S i)) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n lim_proc\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_LUB min_elems_def)
+
+
 end
 
 
@@ -875,11 +981,9 @@ text\<open>Note that this just another syntax to our standard process refinement
      defined in the theory Process. \<close> 
 
 
-lemma le_ref1  : \<open>P \<le> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close>
-  and le_ref2  : \<open>P \<le> Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P\<close>
-  and le_ref2T : \<open>P \<le> Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P\<close>
-  and le_approx_imp_le_ref: \<open>(P::('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<sqsubseteq> Q \<Longrightarrow> P \<le> Q\<close>
-  by (simp_all add: less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def le_approx1 le_approx_lemma_F)
+lemma le_FD_D : \<open>P \<le> Q \<Longrightarrow> \<D> Q \<subseteq> \<D> P\<close> \<open>P \<le> Q \<Longrightarrow> \<F> Q \<subseteq> \<F> P\<close> \<open>P \<le> Q \<Longrightarrow> \<T> Q \<subseteq> \<T> P\<close>
+  and le_approx_imp_le_FD: \<open>P \<sqsubseteq> Q \<Longrightarrow> P \<le> Q\<close>
+  by (simp_all add: less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def le_approxD(1) le_approx_lemma_F)
     (use T_F_spec in blast)
 
 lemma F_subset_imp_T_subset : \<open>\<F> P \<subseteq> \<F> Q \<Longrightarrow> \<T> P \<subseteq> \<T> Q\<close>
@@ -888,8 +992,8 @@ lemma F_subset_imp_T_subset : \<open>\<F> P \<subseteq> \<F> Q \<Longrightarrow>
 lemma D_extended_is_D :
   \<open>{t @ u |t u. t \<in> \<D> P \<and> tF t \<and> ftF u} = \<D> P\<close>
   by (auto simp add: is_processT7)
-    (metis D_imp_front_tickFree append.right_neutral butlast_snoc front_tickFree_append_iff
-      front_tickFree_charn is_processT9 nonTickFree_n_frontTickFree tickFree_Nil)
+    (metis D_imp_ftF append.right_neutral butlast_snoc ftF_append_iff
+      ftF_charn is_processT9 not_tF_and_ftF tF_Nil)
 
 
 lemma Process_eq_optimizedI :
@@ -899,6 +1003,11 @@ lemma Process_eq_optimizedI :
   by (simp add: Process_eq_spec_optimized, safe, auto intro: is_processT8)
 
 
+lemma failure_divergence_refineI_D\<^sub>m\<^sub>i\<^sub>n_version :
+  \<open>\<lbrakk>\<And>t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q \<Longrightarrow> t \<in> \<D> P;
+   \<And>t X. (t, X) \<in> \<F> Q \<Longrightarrow> t \<notin> \<D> Q \<Longrightarrow> (t, X) \<in> \<F> P\<rbrakk> \<Longrightarrow> P \<le> Q\<close>
+  by (meson D\<^sub>m\<^sub>i\<^sub>n_subset_D_imp_D_subset_D is_processT8 less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def subrelI subset_iff)
+
 
 instance  process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) order
   by intro_classes (auto simp: less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def less_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def Process_eq_spec)
@@ -906,14 +1015,15 @@ instance  process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: (type, type) order
 
 lemma lim_proc_is_ub: \<open>chain S \<Longrightarrow> range S <| lim_proc S\<close>
   by (simp add: is_ub_def le_approx_def F_LUB D_LUB T_LUB Refusals_after_def)
-    (intro allI conjI, blast, use chain_lemma is_processT8 le_approx2 in blast,
-      use D_T chain_lemma le_approx2T le_approx_def in blast)
+    (intro allI conjI, blast, use chain_lemma is_processT8 le_approxD(2) in blast,
+      use D_T chain_lemma le_approxD2_T le_approx_def in blast)
 
 
-lemma chain_min_elem_div_is_min_for_sequel:
-  \<open>chain S \<Longrightarrow> s \<in> min_elems (\<D> (S i)) \<Longrightarrow> i \<le> j \<Longrightarrow> s \<in> \<D> (S j) \<Longrightarrow> s \<in> min_elems (\<D> (S j))\<close>
-  by (metis elem_min_elems insert_absorb insert_subset le_approx1 
-      min_elems5 min_elems_no po_class.chain_mono)
+lemma chain_mem_D\<^sub>m\<^sub>i\<^sub>n_is_D\<^sub>m\<^sub>i\<^sub>n_for_sequel:
+  \<open>chain S \<Longrightarrow> s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (S i) \<Longrightarrow> i \<le> j \<Longrightarrow> s \<in> \<D> (S j) \<Longrightarrow> s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (S j)\<close>
+  by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def)
+    (metis elem_min_elems insert_absorb insert_subset le_approxD(1) 
+      ex_le_mem_min_elems_list_set min_elems_no_list_set_list_set po_class.chain_mono)
 
 
 lemma limproc_is_lub: \<open>range S <<| lim_proc S\<close> if \<open>chain S\<close>
@@ -923,27 +1033,27 @@ next
   show \<open>lim_proc S \<sqsubseteq> P\<close> if \<open>range S <| P\<close> for P
   proof (unfold le_approx_def, intro conjI allI impI subsetI)
     show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> (lim_proc S)\<close> for s
-      by (meson D_LUB_2 \<open>chain S\<close> \<open>range S <| P\<close> is_ub_def le_approx1 rangeI subsetD)
+      by (meson D_LUB_2 \<open>chain S\<close> \<open>range S <| P\<close> is_ub_def le_approxD(1) rangeI subsetD)
   next
     show \<open>s \<notin> \<D> (lim_proc S) \<Longrightarrow> \<R>\<^sub>a (lim_proc S) s = \<R>\<^sub>a P s\<close> for s
       by (metis \<open>chain S\<close> \<open>range S <| P\<close> D_LUB_2 le_approx_def lim_proc_is_ub ub_rangeD)
   next
     fix s
-    assume \<open>s \<in> min_elems (\<D> (lim_proc S))\<close>
-    from elem_min_elems[OF this] have \<open>\<forall>i. s \<in> \<D> (S i)\<close>
-      by (simp add: \<open>chain S\<close> D_LUB)
-    have \<open>\<exists>i. \<forall>j\<ge>i. s \<in> min_elems (\<D> (S j))\<close>
+    assume \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (lim_proc S)\<close>
+    with \<open>chain S\<close> have \<open>\<forall>i. s \<in> \<D> (S i)\<close>
+      by (metis D\<^sub>m\<^sub>i\<^sub>n_D D_LUB_2)
+    have \<open>\<exists>i. \<forall>j\<ge>i. s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (S j)\<close>
     proof (rule ccontr)
-      assume \<open>\<nexists>i. \<forall>j\<ge>i. s \<in> min_elems (\<D> (S j))\<close>
-      hence \<open>\<forall>i. \<exists>j\<ge>i. s \<notin> min_elems (\<D> (S j))\<close> by simp
-      with \<open>\<forall>i. s \<in> \<D> (S i)\<close> chain_min_elem_div_is_min_for_sequel \<open>chain S\<close>
-      have \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> by blast
-      from \<open>s \<in> min_elems (\<D> (lim_proc S))\<close> \<open>\<forall>i. s \<in> \<D> (S i)\<close> show False
-        by (cases s rule: rev_cases; simp add: min_elems_def D_LUB \<open>chain S\<close>)
-          (use Nil_min_elems \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> in blast,
-            metis (no_types, lifting) INT_iff \<open>\<forall>j. s \<notin> min_elems (\<D> (S j))\<close> less_self min_elems3)
+      assume \<open>\<nexists>i. \<forall>j\<ge>i. s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (S j)\<close>
+      hence \<open>\<forall>i. \<exists>j\<ge>i. s \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n (S j)\<close> by simp
+      with \<open>\<forall>i. s \<in> \<D> (S i)\<close> chain_mem_D\<^sub>m\<^sub>i\<^sub>n_is_D\<^sub>m\<^sub>i\<^sub>n_for_sequel \<open>chain S\<close>
+      have \<open>\<forall>j. s \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n (S j)\<close> by blast
+      with \<open>chain S\<close> \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (lim_proc S)\<close> \<open>\<forall>i. s \<in> \<D> (S i)\<close> show False
+        by (metis (no_types, lifting) D\<^sub>m\<^sub>i\<^sub>n_memI D_LUB_2 D_imp_ftF
+            Divergences\<^sub>m\<^sub>i\<^sub>n_def Nil_mem_min_elems butlast_snoc
+            ftF_charn less_self mem_Collect_eq min_elems_def)
     qed
-    thus \<open>s \<in> \<T> P\<close> by (meson le_approx3 order.refl subset_eq \<open>range S <| P\<close> ub_rangeD)
+    thus \<open>s \<in> \<T> P\<close> by (meson le_approxD(3) order.refl subset_eq \<open>range S <| P\<close> ub_rangeD)
   qed
 qed
 
@@ -1045,7 +1155,7 @@ proof
   have \<open>is_process bot\<^sub>0\<close>
     unfolding is_process_def bot\<^sub>0_def
     by (simp add: FAILURES_def DIVERGENCES_def)
-      (meson front_tickFree_append_iff front_tickFree_dw_closed)
+      (meson ftF_append_iff ftF_dw_closed)
   have F_bot : \<open>\<F> bot = {(s, X). ftF s}\<close>
     by (metis CollectI FAILURES_def Failures.rep_eq \<open>is_process bot\<^sub>0\<close> 
         bot\<^sub>0_def bot_def fst_eqD process_of_process\<^sub>0_inverse)
@@ -1058,13 +1168,13 @@ proof
     show \<open>bot \<sqsubseteq> y\<close> for y
     proof (unfold le_approx_def, intro conjI allI impI subsetI)
       show \<open>s \<in> \<D> y \<Longrightarrow> s \<in> \<D> bot\<close> for s
-        by (simp add: D_bot D_imp_front_tickFree)
+        by (simp add: D_bot D_imp_ftF)
     next
-      from F_imp_front_tickFree show \<open>s \<notin> \<D> bot \<Longrightarrow> \<R>\<^sub>a bot s = \<R>\<^sub>a y s\<close> for s
+      from F_imp_ftF show \<open>s \<notin> \<D> bot \<Longrightarrow> \<R>\<^sub>a bot s = \<R>\<^sub>a y s\<close> for s
         by (auto simp add: D_bot Refusals_after_def F_bot)
     next
-      show \<open>s \<in> min_elems (\<D> bot) \<Longrightarrow> s \<in> \<T> y\<close> for s
-        by (simp add: D_bot min_elems_Collect_ftF_is_Nil)
+      show \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n bot \<Longrightarrow> s \<in> \<T> y\<close> for s
+        by (simp add: D_bot Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_Collect_ftF_is_singl_Nil)
     qed
   qed
 qed
@@ -1076,7 +1186,7 @@ section\<open> Process Refinement is Admissible \<close>
 lemma le_FD_adm : \<open>cont (u :: ('b::cpo) \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<Longrightarrow> monofun v \<Longrightarrow> adm (\<lambda>x. u x \<le> v x)\<close>
   apply (unfold less_eq_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def adm_def)
   apply (simp add: cont2contlubE D_LUB F_LUB ch2ch_cont limproc_is_thelub monofun_def)
-  by (meson INF_greatest dual_order.trans is_ub_thelub le_approx1 le_approx_lemma_F)
+  by (meson INF_greatest dual_order.trans is_ub_thelub le_approxD(1) le_approx_lemma_F)
 
 lemmas le_FD_adm_cont[simp] = le_FD_adm[OF _ cont2mono]
 
@@ -1143,6 +1253,7 @@ method prove_finite_subset_of_prefixes for t :: \<open>('a, 'r) trace\<^sub>p\<^
            use prefixI in blast, simp add: prefixes_fin)\<close>
 
 
+
 (*<*)
 end
-(*>*)
+  (*>*)

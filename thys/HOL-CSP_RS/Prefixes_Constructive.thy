@@ -54,12 +54,12 @@ next
       by (auto simp add: \<open>n = Suc m\<close> Mprefix_projs D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
   next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
-    with D_imp_front_tickFree obtain a t'
+    with D_imp_ftF obtain a t'
       where \<open>a \<in> A\<close> \<open>t = ev a # t'\<close> \<open>ftF t'\<close> \<open>t' \<in> \<D> (P a \<down> m)\<close>
       by (auto simp add: \<open>n = Suc m\<close> D_Mprefix)
     thus \<open>t \<in> \<D> ?lhs\<close>
       by (simp add: \<open>n = Suc m\<close> D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Mprefix_projs)
-        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tickFree_Cons_iff)
+        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tF_Cons_iff)
   next
     show \<open>(t, X) \<in> \<F> ?lhs \<Longrightarrow> (t, X) \<in> \<F> ?rhs\<close> for t X
       by (auto simp add: \<open>n = Suc m\<close> restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs Mprefix_projs)
@@ -82,12 +82,12 @@ next
       by (auto simp add: \<open>n = Suc m\<close> Mndetprefix_projs D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
   next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
-    with D_imp_front_tickFree obtain a t'
+    with D_imp_ftF obtain a t'
       where \<open>a \<in> A\<close> \<open>t = ev a # t'\<close> \<open>ftF t'\<close> \<open>t' \<in> \<D> (P a \<down> m)\<close>
       by (auto simp add: \<open>n = Suc m\<close> D_Mndetprefix')
     thus \<open>t \<in> \<D> ?lhs\<close>
       by (simp add: \<open>n = Suc m\<close> D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Mndetprefix_projs)
-        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tickFree_Cons_iff)
+        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tF_Cons_iff)
   next
     show \<open>(t, X) \<in> \<F> ?lhs \<Longrightarrow> (t, X) \<in> \<F> ?rhs\<close> for t X
       by (auto simp add: \<open>n = Suc m\<close> restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs

@@ -92,7 +92,7 @@ proof (split if_split, intro conjI impI)
 next
   show \<open>A \<noteq> {} \<Longrightarrow> P \<lbrakk>S\<rbrakk> (\<sqinter> a\<in>A. Q a) = \<sqinter> a\<in>A. (P \<lbrakk>S\<rbrakk> Q a)\<close>
     by (simp add: Process_eq_spec Sync_projs F_GlobalNdet D_GlobalNdet T_GlobalNdet)
-      (safe; simp; use front_tickFree_Nil in blast) \<comment> \<open>quicker than auto proof\<close>
+      (safe; simp; use ftF_Nil in blast) \<comment> \<open>quicker than auto proof\<close>
 qed
 
 corollary Sync_distrib_GlobalNdet_right : 

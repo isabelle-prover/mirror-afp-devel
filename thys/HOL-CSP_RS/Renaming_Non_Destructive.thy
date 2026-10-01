@@ -47,12 +47,12 @@ lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Renaming:
 proof (rule Process_eq_optimizedI)
   show \<open>t \<in> \<D> ?lhs \<Longrightarrow> t \<in> \<D> ?rhs\<close> for t
     by (auto simp add: Renaming_projs D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      (metis append.right_neutral front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree,
-        use front_tickFree_append in blast)
+      (metis append.right_neutral ftF_Nil tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff,
+        use ftF_append in blast)
 next
   show \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
     by (auto simp add: Renaming_projs D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        front_tickFree_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        ftF_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
 next
   fix t X assume \<open>(t, X) \<in> \<F> ?lhs\<close> \<open>t \<notin> \<D> ?lhs\<close>
   then obtain u where \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> P\<close> \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close>
@@ -72,14 +72,14 @@ next
     proof (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
       from \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close> show \<open>u \<in> \<D> P \<Longrightarrow> t \<in> \<D> ?rhs\<close>
         by (cases \<open>tF u\<close>, simp_all add: D_Renaming D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-          (use front_tickFree_Nil in blast,
-            metis D_imp_front_tickFree butlast_snoc div_butlast_when_non_tickFree_iff
-            front_tickFree_iff_tickFree_butlast front_tickFree_single map_append
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree nonTickFree_n_frontTickFree)
+          (use ftF_Nil in blast,
+            metis D_imp_ftF butlast_snoc div_butlast_when_non_tF_iff
+            ftF_iff_tF_butlast ftF_single map_append
+            ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff not_tF_and_ftF)
     next
       show \<open>\<lbrakk>u = v @ w; v \<in> \<T> P; length v = n; tF v; ftF w\<rbrakk> \<Longrightarrow> t \<in> \<D> ?rhs\<close> for v w
         by (simp add: D_Renaming D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close>)
-          (use front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree in blast)
+          (use ftF_Nil ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff in blast)
     qed
     with \<open>t \<notin> \<D> ?rhs\<close> have False ..
     thus \<open>(t, X) \<in> \<F> ?lhs\<close> ..

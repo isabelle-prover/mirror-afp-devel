@@ -112,7 +112,7 @@ next
     from assms show \<open>(s, X) \<in> \<F> P \<Longrightarrow> (s, X) \<in> \<F> (SKIP r)\<close> for s X
       by (cases s, auto simp add: F_SKIP accepts_initials_def_bis Refusals_iff dest!: F_T)
         (metis initials_is initials_memI singletonD,
-          metis T_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff
+          metis T_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff
           initials_is initials_memI singletonD)
   qed
 qed
@@ -286,7 +286,7 @@ corollary accepts_initials_Seq :
   by (fold Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_const, unfold accepts_initials_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF that]) fast
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) accepts_initials_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) accepts_initials_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>determ\<^sup>0 (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close> if \<open>determ\<^sup>0 P\<close> \<open>determ\<^sup>0 Q\<close>
 proof (rule accepts_initialsI)
   from \<open>determ\<^sup>0 P\<close> \<open>determ\<^sup>0 Q\<close> have \<open>P \<noteq> \<bottom>\<close> \<open>Q \<noteq> \<bottom>\<close> by auto
@@ -347,7 +347,7 @@ proof (rule accepts_initialsI)
       from this(3) have \<open>\<checkmark>(r) \<in> X_P\<close>
         by (simp flip:  \<open>r \<otimes>\<checkmark> s = \<lfloor>r_s\<rfloor>\<close> add: \<open>e = \<checkmark>(r_s)\<close> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
           (metis Refusals_iff \<open>([], X_Q) \<in> \<F> Q\<close> \<open>\<checkmark>(s) \<in> Q\<^sup>0\<close> \<open>r \<otimes>\<checkmark> s = \<lfloor>r_s\<rfloor>\<close>
-            accepts_initials_def_bis inj_tick_join that(2))
+            accepts_initials_def_bis inj_tj that(2))
       with \<open>\<checkmark>(r) \<in> P\<^sup>0\<close> \<open>([], X_P) \<in> \<F> P\<close> show False
         by (fold Refusals_iff) (metis accepts_initialsD_bis \<open>determ\<^sup>0 P\<close>)
     qed
@@ -447,8 +447,8 @@ proof -
       from non_BOT show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> ?rhs\<close> for s
         by (cases s; simp add: D_Det D_SKIP D_STOP D_Mprefix BOT_iff_Nil_D
             image_iff D_After initial_tick_iff_is_SKIP)
-          (metis BOT_iff_tick_D initials_memI D_T D_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust front_tickFree_Cons_iff initials_SKIP non_BOT singletonD)
+          (metis BOT_iff_tick_D initials_memI D_T D_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust ftF_Cons_iff initials_SKIP non_BOT singletonD)
     next
       have * : \<open>\<exists>r. \<checkmark>(r) \<in> P\<^sup>0 \<Longrightarrow> \<exists>!r. \<checkmark>(r) \<in> P\<^sup>0\<close>
         by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.inject(2) initial_tick_iff_is_SKIP initials_SKIP singletonD)
@@ -495,7 +495,7 @@ lemma tick_not_initial_imp_STOP_Ndet_Mndetprefix_After_FD:
     and \<^term>\<open>\<D> P = {}\<close> but we already have this.\<close>
 
 lemma \<open>lifelock_free P \<longleftrightarrow> \<D> P = {} \<and> (\<forall>t \<in> \<T> P. tF t)\<close>
-  using lifelock_free_is_non_terminating non_terminating_is_right nonterminating_implies_div_free by blast
+  using lifelock_free_is_non_terminating non_terminating_is_right non_terminating_implies_div_free by blast
 
 
 
@@ -506,8 +506,8 @@ proof (unfold failure_refine_def, safe)
   fix t X assume \<open>(t, X) \<in> \<F> P\<close>
   then consider \<open>t = []\<close> | r where \<open>t = [\<checkmark>(r)]\<close> \<open>r \<in> {r. \<checkmark>(r) \<in> P\<^sup>0}\<close>
     | a t' where \<open>t = ev a # t'\<close> \<open>a \<in> {a. ev a \<in> P\<^sup>0}\<close>
-    by (cases t, simp_all) (metis F_T F_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust
-        front_tickFree_Cons_iff initials_memI is_ev_def)
+    by (cases t, simp_all) (metis F_T F_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust
+        ftF_Cons_iff initials_memI is_ev_def)
   thus \<open>(t, X) \<in> \<F> (STOP \<sqinter> ?lhs1 \<sqinter> ?lhs2)\<close>
   proof cases
     show \<open>t = [] \<Longrightarrow> (t, X) \<in> \<F> (STOP \<sqinter> ?lhs1 \<sqinter> ?lhs2)\<close> by (simp add: F_Ndet F_STOP)
@@ -530,7 +530,7 @@ proof (unfold divergence_refine_def, rule subsetI)
   fix t assume \<open>t \<in> \<D> P\<close>
   with \<open>P \<noteq> \<bottom>\<close> obtain a t' where \<open>t = ev a # t'\<close>
     by (cases t, simp add: BOT_iff_Nil_D, simp add: BOT_iff_tick_D)
-      (metis D_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust front_tickFree_Cons_iff is_ev_def)
+      (metis D_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust ftF_Cons_iff is_ev_def)
   with \<open>t \<in> \<D> P\<close> show \<open>t \<in> \<D> ?lhs\<close>
     by (auto simp add: D_Mprefix D_After intro: D_T initials_memI)
 qed
@@ -598,8 +598,8 @@ lemma deterministic_STOP [simp] : \<open>determ STOP\<close>
 
 lemma deterministic_div_free : \<open>determ P \<Longrightarrow> \<D> P = {}\<close>
   by (auto simp add: deterministic_def)
-    (metis D_T D_imp_front_tickFree append_butlast_last_id div_butlast_when_non_tickFree_iff
-      front_tickFree_single is_processT7 is_processT8 tickFree_Nil)
+    (metis D_T D_imp_ftF append_butlast_last_id div_butlast_when_non_tF_iff
+      ftF_single is_processT7 is_processT8 tF_Nil)
 
 lemma not_deterministic_BOT [simp] : \<open>\<not> determ \<bottom>\<close>
   using BOT_iff_Nil_D deterministic_div_free by blast
@@ -614,7 +614,7 @@ lemma mono_deterministic_FD: \<open>P \<sqsubseteq>\<^sub>F\<^sub>D Q \<Longrigh
   using leFD_imp_leF mono_deterministic_F by blast
 
 lemma mono_deterministic: \<open>P \<sqsubseteq> Q \<Longrightarrow> determ P \<Longrightarrow> determ Q\<close>
-  using le_approx_imp_le_ref mono_deterministic_FD by auto
+  using le_approx_imp_le_FD mono_deterministic_FD by auto
 
 
 lemma restriction_adm_deterministic [restriction_adm_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset, simp] :
@@ -756,7 +756,7 @@ proof (unfold failure_divergence_refine_def failure_refine_def divergence_refine
   show \<open>\<D> (process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T (Abs_process\<^sub>T T)) \<subseteq> \<D> P\<close> by (simp add: D_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T)
 next
   have * : \<open>T \<in> {T. is_process\<^sub>T T}\<close>
-    by (auto simp add: T_def is_process\<^sub>T_def T_imp_front_tickFree intro: is_processT3_TR_append)
+    by (auto simp add: T_def is_process\<^sub>T_def T_imp_ftF intro: is_processT3_TR_append)
       (metis prefix_prefix append_eq_first_pref_spec less_list_def nless_le self_append_conv,
         metis less_self)
 
@@ -772,17 +772,19 @@ next
       with \<open>(s, X) \<in> \<F> (process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T (Abs_process\<^sub>T T))\<close> have \<open>\<checkmark>(termination_choice s) \<notin> X\<close>
         unfolding F_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T Traces\<^sub>T.abs_eq Abs_process\<^sub>T_inverse[OF "*"]
         by (simp add: subset_iff T_def)
-          (metis prefix_snoc append_T_imp_tickFree nless_le
-            non_tickFree_tick not_Cons_self2 tickFree_append_iff)
+          (metis (mono_tags, lifting) Prefix_Order.prefix_snoc
+            Prefix_Order.same_prefix_nil append.right_neutral is_processT2_TR
+            order_less_le suffix_tick_le_ftf_imp_eq)
       with \<open>s @ [\<checkmark>(termination_choice s)] \<in> \<T> P\<close> show \<open>(s, X) \<in> \<F> P\<close>
         by (metis  is_processT6_TR_notin)
     next
       assume \<open>\<nexists>r. s @ [\<checkmark>(r)] \<in> \<T> P\<close>
       with \<open>(s, X) \<in> \<F> (process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T (Abs_process\<^sub>T T))\<close> have \<open>X \<subseteq> - {e. s @ [e] \<in> \<T> P}\<close>
         unfolding F_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_of_process\<^sub>T Traces\<^sub>T.abs_eq Abs_process\<^sub>T_inverse[OF "*"]
-        by (simp add: subset_iff T_def)
-          (metis prefix_snoc append_T_imp_tickFree nless_le
-            non_tickFree_tick not_Cons_self2 tickFree_append_iff)
+        by (auto simp add: subset_iff T_def)
+          (metis order_less_le order_less_le Prefix_Order.prefix_snoc[of _ s]
+            Prefix_Order.prefix_snoc[of \<open>_ @ [\<checkmark>(_)]\<close> _ \<open>\<checkmark>(_)\<close>] is_processT2_TR
+            append1_eq_conv[of s _ _ \<open>\<checkmark>(_)\<close>] suffix_tick_le_ftf_imp_eq[of \<open>s @ [_]\<close>])
       with is_processT5_S7[OF \<open>s \<in> \<T> P\<close>] show \<open>(s, X) \<in> \<F> P\<close> by blast
     qed
   qed
@@ -804,7 +806,8 @@ proof (intro iffI allI impI)
     proof (rule ccontr)
       assume \<open>\<not> \<T> P \<subseteq> \<T> Q\<close>
       then obtain s e where * : \<open>s @ [e] \<in> min_elems (\<T> P - \<T> Q)\<close>
-        by (metis DiffD2 Diff_eq_empty_iff Nil_elem_T elem_min_elems min_elems4 rev_exhaust)
+        by (metis DiffD2 diff_shunt elem_min_elems ex_in_conv is_processT1_TR
+            min_elems_list_set_is_empty_iff rev_exhaust)
       hence \<open>s \<in> \<T> Q\<close> unfolding min_elems_def 
         by simp (metis DiffI T_F_spec is_processT3 less_self)
       with "*" have \<open>(s, {e}) \<in> \<F> Q\<close> 
@@ -841,7 +844,7 @@ next
 
   define T where \<open>T \<equiv> {s \<in> \<T> P. \<forall>s' < s. (\<exists>r. s' @ [\<checkmark>(r)] \<in> \<T> P) \<longrightarrow> s = s' @ [\<checkmark>(termination_choice s')]}\<close>
   have * : \<open>T \<in> {T. is_process\<^sub>T T}\<close>
-    by (auto simp add: T_def is_process\<^sub>T_def T_imp_front_tickFree intro: is_processT3_TR_append)
+    by (auto simp add: T_def is_process\<^sub>T_def T_imp_ftF intro: is_processT3_TR_append)
       (metis prefix_prefix append_eq_first_pref_spec less_list_def nless_le self_append_conv,
         metis less_self)
   assume maximal : \<open>\<forall>Q. P \<sqsubseteq>\<^sub>F\<^sub>D Q \<longrightarrow> P = Q\<close>
@@ -900,7 +903,7 @@ next
     fix t e assume \<open>t @ [e] \<in> \<T> P\<close>
     have \<open>t \<in> \<T> P\<close> and \<open>tF t\<close>
       by (meson prefixI \<open>t @ [e] \<in> \<T> P\<close> is_processT3_TR)
-        (use \<open>t @ [e] \<in> \<T> P\<close> append_T_imp_tickFree in blast)
+        (use \<open>t @ [e] \<in> \<T> P\<close> append_T_imp_tF in blast)
     with \<open>t \<in> \<T> P\<close> that[rule_format, OF this] show \<open>t @ [e] \<in> \<T> P \<Longrightarrow> (t, {e}) \<notin> \<F> P\<close>
       by (simp add: accepts_initials_def Refusals_iff initials_def T_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq F_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq)
   qed
@@ -913,6 +916,17 @@ subsection \<open>Operators preserving Determinism\<close>
 lemma deterministic_Mprefix_iff :
   \<open>determ (\<box>a \<in> A \<rightarrow> P a) \<longleftrightarrow> (\<forall>a \<in> A. determ (P a))\<close>
   by (auto simp add: deterministic_def Mprefix_projs) (metis append_Cons)
+
+corollary deterministic_RUN : \<open>determ (RUN A)\<close>
+proof (unfold RUN_restriction_fix_def, induct rule: restriction_fix_ind)
+  case constructive show ?case by simp
+next
+  case adm show ?case by simp
+next
+  case base show \<open>determ STOP\<close> by simp
+next
+  case (step X) thus ?case by (simp add: deterministic_Mprefix_iff)
+qed
 
 corollary deterministic_write0_iff : \<open>determ (a \<rightarrow> P) \<longleftrightarrow> determ P\<close>
   unfolding write0_def by (simp add: deterministic_Mprefix_iff)
@@ -1026,8 +1040,8 @@ proof -
     with that(2) have \<open>t @ [e'] \<in> \<T> P\<close>
       by simp (metis F_T T_F append.assoc append_Cons append_Nil is_processT3)
     hence False
-      by (metis "*" T_imp_front_tickFree \<open>u = e' # u'\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_append_iff
-          not_Cons_self snoc_eq_iff_butlast that(2) tickFree_Cons_iff)
+      by (metis "*" T_imp_ftF \<open>u = e' # u'\<close> event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_append_iff
+          not_Cons_self snoc_eq_iff_butlast that(2) tF_Cons_iff)
     thus \<open>u = [] \<and> e = \<checkmark>(r)\<close> by simp
   qed
 qed
@@ -1039,8 +1053,8 @@ proof -
     by (metis T_snoc_tick_imp_no_continuation_if_deterministic append.left_neutral
         event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.discI(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust that(1,3))
   thus \<open>u \<noteq> [] \<and> is_ev (hd u) \<or> is_ev e\<close>
-    by (metis T_imp_front_tickFree append_eq_appendI front_tickFree_append_iff
-        list.exhaust_sel not_Cons_self snoc_eq_iff_butlast that(2) tickFree_Cons_iff)
+    by (metis T_imp_ftF append_eq_appendI ftF_append_iff
+        list.exhaust_sel not_Cons_self snoc_eq_iff_butlast that(2) tF_Cons_iff)
 qed
 
 
@@ -1059,7 +1073,7 @@ proof (rule deterministicI)
   thus \<open>(t, {e}) \<notin> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
   proof cases
     show \<open>e = ev a \<Longrightarrow> t = map (ev \<circ> of_ev) u \<Longrightarrow> u @ [ev a] \<in> \<T> P \<Longrightarrow> tF u \<Longrightarrow> (t, {e}) \<notin> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close> for a u
-      by (auto simp add: tickFree_map_ev_of_ev_inj \<open>\<D> P = {}\<close> Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def map_eq_append_conv)
+      by (auto simp add: tF_map_ev_of_ev_inj \<open>\<D> P = {}\<close> Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def map_eq_append_conv)
         (meson deterministicD empty_subsetI insertI1 insert_subset is_processT4 \<open>determ P\<close>,
           meson T_snoc_tick_imp_no_continuation_if_deterministic event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) \<open>determ P\<close>)
   next
@@ -1068,16 +1082,17 @@ proof (rule deterministicI)
       by (cases v rule: rev_cases) simp_all
     from \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> T_snoc_tick_imp_no_continuation_if_deterministic[OF \<open>determ P\<close>]
     have * : \<open>map (ev \<circ> of_ev) u @ v' = map (ev \<circ> of_ev) w @ x \<and> w @ [\<checkmark>(s)] \<in> \<T> P \<Longrightarrow> w = u \<and> s = r\<close> for w x s
-      by (auto simp add: append_eq_append_conv2 map_eq_append_conv append_eq_map_conv append_T_imp_tickFree
-                  dest!: tickFree_map_ev_of_ev_inj[THEN iffD1, rotated 2]) blast+
+      by (auto simp add: append_eq_append_conv2 map_eq_append_conv append_eq_map_conv append_T_imp_tF
+                  dest!: tF_map_ev_of_ev_inj[THEN iffD1, rotated 2]) blast+
     have \<open>determ (Q r)\<close>
       by (metis \<open>\<D> P = {}\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> empty_iff strict_ticks_of_memI that(2))
     with \<open>v = v' @ [e]\<close> \<open>v \<in> \<T> (Q r)\<close>
     have \<open>(v', {e}) \<notin> \<F> (Q r)\<close> by (simp add: deterministicD)
     { fix v'' assume \<open>(u @ v'', ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k {e}) \<in> \<F> P\<close> \<open>tF v''\<close> \<open>v' = map (ev \<circ> of_ev) v''\<close>
+      from T_snoc_tick_imp_no_continuation_if_deterministic[OF \<open>determ P\<close>]
+        this(1, 2) \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close>
       have \<open>v'' = []\<close>
-        by (metis F_T F_imp_front_tickFree T_snoc_tick_imp_no_continuation_if_deterministic \<open>(u @ v'', ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k {e}) \<in> \<F> P\<close>
-            \<open>tF v''\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> front_tickFree_charn front_tickFree_nonempty_append_imp non_tickFree_tick \<open>determ P\<close>)
+        by (metis F_T F_imp_ftF  ftF_charn ftF_nonempty_append_imp event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff)
       with \<open>(u @ v'', ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k {e}) \<in> \<F> P\<close> have \<open>(u, {\<checkmark>(r)}) \<in> \<F> P\<close>
         by (simp add: ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
           (meson UNIV_I UnCI empty_subsetI insert_subset is_processT4 rev_image_eqI)
@@ -1085,7 +1100,7 @@ proof (rule deterministicI)
     }
     with "*" \<open>(v', {e}) \<notin> \<F> (Q r)\<close> show \<open>(t, {e}) \<notin> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
       by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs \<open>\<D> P = {}\<close> \<open>t = map (ev \<circ> of_ev) u @ v'\<close> append_eq_map_conv \<open>tF u\<close>
-                        dest!: tickFree_map_ev_of_ev_inj[THEN iffD1, rotated 2])+
+                        dest!: tF_map_ev_of_ev_inj[THEN iffD1, rotated 2])+
   qed
 qed
 
@@ -1104,6 +1119,7 @@ lemma (in AfterExt) initial_imp_deterministic_After\<^sub>t\<^sub>i\<^sub>c\<^su
   \<open>e \<in> P\<^sup>0 \<Longrightarrow> (case e of \<checkmark>(r) \<Rightarrow> determ (\<Omega> P r)) \<Longrightarrow>
    determ P \<Longrightarrow> determ (P after\<^sub>\<checkmark> e)\<close>
   unfolding deterministic_def by (cases e) (simp_all add: T_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k F_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+
 
 
 
@@ -1135,10 +1151,159 @@ qed
 
 
 
+text \<open>New in Isabelle26: we deal with the synchronization product operator.\<close>
+
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj :
+  \<open>\<lbrakk>({a. ev a \<in> set u1} \<union> {a. ev a \<in> set u2}) \<inter>
+    ({a. ev a \<in> set v1} \<union> {a. ev a \<in> set v2}) \<subseteq> A;
+    t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u1, v1), A);
+    t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u2, v2), A)\<rbrakk> \<Longrightarrow> u1 = u2 \<and> v1 = v2\<close>
+proof (induct t arbitrary: u1 v1 u2 v2)
+  case Nil thus ?case by (auto dest: Nil_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+next
+  case (Cons e t)
+  show ?case
+  proof (cases e)
+    fix r_s assume \<open>e = \<checkmark>(r_s)\<close>
+    with Cons show ?case
+      by (auto elim!: Cons_tick_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE dest: inj_tj)
+  next
+    fix a assume \<open>e = ev a\<close>
+    from Cons.prems(2)[unfolded \<open>e = ev a\<close>] show ?case
+    proof (elim Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      fix u1' assume * : \<open>a \<notin> A\<close> \<open>u1 = ev a # u1'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u1', v1), A)\<close>
+      from Cons.prems(1) "*"(1) have \<open>\<not> v2 = ev a # v2'\<close> for v2'
+        by (force simp add: "*"(2) subset_iff)
+      with Cons.prems(3) obtain u2'
+        where ** : \<open>u2 = ev a # u2'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u2', v2), A)\<close>
+        by (auto simp add: \<open>e = ev a\<close> elim: Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      from Cons.hyps[OF _ "*"(3) "**"(2)] Cons.prems(1) show ?case
+        by (auto simp add: "*"(2) "**"(1))
+    next
+      fix v1' assume * : \<open>a \<notin> A\<close> \<open>v1 = ev a # v1'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u1, v1'), A)\<close>
+      from Cons.prems(1) "*"(1) have \<open>\<not> u2 = ev a # u2'\<close> for u2'
+        by (force simp add: "*"(2) subset_iff)
+      with Cons.prems(3) obtain v2'
+        where ** : \<open>v2 = ev a # v2'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u2, v2'), A)\<close>
+        by (auto simp add: \<open>e = ev a\<close> elim: Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      from Cons.hyps[OF _ "*"(3) "**"(2)] Cons.prems(1) show ?case
+        by (auto simp add: "*"(2) "**"(1))
+    next
+      fix u1' v1' assume * : \<open>a \<in> A\<close> \<open>u1 = ev a # u1'\<close> \<open>v1 = ev a # v1'\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u1', v1'), A)\<close>
+      from Cons.prems(3) "*"(1) obtain u2' v2'
+        where ** : \<open>u2 = ev a # u2'\<close> \<open>v2 = ev a # v2'\<close>
+          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u2', v2'), A)\<close>
+        by (auto simp add: \<open>e = ev a\<close> elim: Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      from Cons.hyps[OF _ "*"(4) "**"(3)] Cons.prems(1) show ?case
+        by (auto simp add: "*"(2, 3) "**"(1, 2)) 
+    qed
+  qed
+qed
+
+
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_UNIV_inj :
+  \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u1, v1), UNIV) \<Longrightarrow>
+   t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((u2, v2), UNIV) \<Longrightarrow> u1 = u2 \<and> v1 = v2\<close>
+  by (meson setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj subset_UNIV)
+
+
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) weak_disjoint_deterministic_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>determ (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close> if \<open>\<^bold>\<alpha>(P) \<inter> \<^bold>\<alpha>(Q) \<subseteq> A\<close> and determ : \<open>determ P\<close> \<open>determ Q\<close>
+proof (rule deterministicI)
+  fix t e assume \<open>t @ [e] \<in> \<T> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
+  moreover have \<open>\<D> P = {}\<close> \<open>\<D> Q = {}\<close> by (simp_all add: deterministic_div_free that(2, 3))
+  ultimately obtain t_P t_Q
+    where * : \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> \<open>t @ [e] setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P, t_Q), A)\<close>
+    unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
+  from \<open>\<^bold>\<alpha>(P) \<inter> \<^bold>\<alpha>(Q) \<subseteq> A\<close> have \<open>\<alpha>(P) \<inter> \<alpha>(Q) \<subseteq> A\<close>
+    by (simp add: events_of_is_strict_events_of_or_UNIV \<open>\<D> P = {}\<close> \<open>\<D> Q = {}\<close>)
+  let ?S = \<open>\<lambda>t u v w. ({a. ev a \<in> set t} \<union> {a. ev a \<in> set u}) \<inter>
+                      ({a. ev a \<in> set v} \<union> {a. ev a \<in> set w})\<close>
+  show \<open>(t, {e}) \<notin> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
+  proof (rule notI)
+    assume \<open>(t, {e}) \<in> \<F> (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
+    then obtain t_P' t_Q' X_P X_Q
+      where ** : \<open>(t_P', X_P) \<in> \<F> P\<close> \<open>(t_Q', X_Q) \<in> \<F> Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P', t_Q'), A)\<close>
+        \<open>e \<in> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<otimes>\<checkmark>) X_P A X_Q\<close>
+      unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs \<open>\<D> P = {}\<close> \<open>\<D> Q = {}\<close> by blast
+    show False
+    proof (cases e)
+      fix r_s assume \<open>e = \<checkmark>(r_s)\<close>
+      with "*"(3) obtain r s t_P'' t_Q''
+        where *** : \<open>r \<otimes>\<checkmark> s = \<lfloor>r_s\<rfloor>\<close> \<open>t_P = t_P'' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q'' @ [\<checkmark>(s)]\<close>
+          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P'', t_Q''), A)\<close>
+        by (auto elim: snoc_tick_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+      from \<open>\<alpha>(P) \<inter> \<alpha>(Q) \<subseteq> A\<close> "*"(1, 2) "**"(1, 2)[THEN F_T]
+      have \<open>?S t_P'' t_P' t_Q'' t_Q' \<subseteq> A\<close>
+        by (auto simp add: "***"(2, 3) intro: is_processT3_TR_append events_of_memI)
+      hence \<open>t_P'' = t_P' \<and> t_Q'' = t_Q'\<close>
+        by (fact setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj[OF _ "***"(4) "**"(3)]) 
+      with "*"(1, 2) "**"(1, 2, 4) "***"(1) show False
+        by (auto simp add: "***"(2, 3) super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = \<checkmark>(r_s)\<close>
+            dest: "***"(1)[THEN inj_tj] determ[THEN deterministicD] intro: is_processT4)
+    next
+      fix a assume \<open>e = ev a\<close>
+      with "*"(3)[THEN rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff[THEN iffD2]] consider
+        (L)  t_P'' where \<open>a \<notin> A\<close> \<open>t_P = t_P'' @ [ev a]\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P'', t_Q), A)\<close>
+      | (R)  t_Q'' where \<open>a \<notin> A\<close> \<open>t_Q = t_Q'' @ [ev a]\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P, t_Q''), A)\<close>
+      | (LR) t_P'' t_Q'' where \<open>a \<in> A\<close> \<open>t_P = t_P'' @ [ev a]\<close> \<open>t_Q = t_Q'' @ [ev a]\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((t_P'', t_Q''), A)\<close>
+        by (auto elim!: Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
+          (metis rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff rev_swap)+
+      thus False
+      proof cases
+        case L
+        from \<open>\<alpha>(P) \<inter> \<alpha>(Q) \<subseteq> A\<close> "*"(1, 2) "**"(1, 2)[THEN F_T]
+        have \<open>?S t_P'' t_P' t_Q t_Q' \<subseteq> A\<close>
+          by (auto simp add: L(2) intro: is_processT3_TR_append events_of_memI)
+        hence \<open>t_P'' = t_P' \<and> t_Q = t_Q'\<close>
+          by (fact setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj[OF _ L(3) "**"(3)])
+        with "*"(1) "**"(1, 4) show False
+          by (auto simp add: L(1, 2) super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = ev a\<close>
+              dest: determ(1)[THEN deterministicD] intro: is_processT4)
+      next
+        case R
+        from \<open>\<alpha>(P) \<inter> \<alpha>(Q) \<subseteq> A\<close> "*"(1, 2) "**"(1, 2)[THEN F_T]
+        have \<open>?S t_P t_P' t_Q'' t_Q' \<subseteq> A\<close>
+          by (auto simp add: R(2) intro: is_processT3_TR_append events_of_memI)
+        hence \<open>t_P = t_P' \<and> t_Q'' = t_Q'\<close>
+          by (fact setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj[OF _ R(3) "**"(3)])
+        with "*"(2) "**"(2, 4) show False
+          by (auto simp add: R(1, 2) super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = ev a\<close>
+              dest: determ(2)[THEN deterministicD] intro: is_processT4)
+      next
+        case LR
+        from \<open>\<alpha>(P) \<inter> \<alpha>(Q) \<subseteq> A\<close> "*"(1, 2) "**"(1, 2)[THEN F_T]
+        have \<open>?S t_P'' t_P' t_Q'' t_Q' \<subseteq> A\<close>
+          by (auto simp add: LR(2, 3) intro: is_processT3_TR_append events_of_memI)
+        hence \<open>t_P'' = t_P' \<and> t_Q'' = t_Q'\<close>
+          by (fact setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj[OF _ LR(4) "**"(3)])
+        with "*"(1, 2) "**"(1, 2, 4) show False
+          by (auto simp add: LR(1, 2, 3) super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = ev a\<close>
+              dest: determ[THEN deterministicD] intro: is_processT4)
+      qed
+    qed
+  qed
+qed
+
+
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) deterministic_Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>determ P \<Longrightarrow> determ Q \<Longrightarrow> determ (P ||\<^sub>\<checkmark> Q)\<close>
+  by (simp add: weak_disjoint_deterministic_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) disjoint_deterministic_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>\<^bold>\<alpha>(P) \<inter> \<^bold>\<alpha>(Q) = {} \<Longrightarrow> determ P \<Longrightarrow> determ Q \<Longrightarrow> determ (P |||\<^sub>\<checkmark> Q)\<close>
+  by (simp add: weak_disjoint_deterministic_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+
+
+
+
 section \<open>Application to Operational Semantics\<close>
 
 
-lemma (in OpSemFD) tickFree_trace_trans_preserves_deterministic:
+lemma (in OpSemFD) tF_trace_trans_preserves_deterministic:
   \<open>(P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<^sub>F\<^sub>D\<leadsto>\<^sup>* t Q \<Longrightarrow> tF t \<Longrightarrow> deterministic P \<Longrightarrow> deterministic Q\<close>
 proof (induct rule: trace_trans.induct)
   show \<open>P \<^sub>F\<^sub>D\<leadsto>\<^sub>\<tau> P' \<Longrightarrow> deterministic P \<Longrightarrow> deterministic P'\<close> for P P' :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -1152,7 +1317,7 @@ next
     \<open>tF t \<Longrightarrow> deterministic P' \<Longrightarrow> deterministic P''\<close>
   from \<open>P \<^sub>F\<^sub>D\<leadsto>\<^bsub>a\<^esub> P'\<close> \<open>deterministic P\<close> have \<open>deterministic P'\<close>
     using deterministic_iff_maximal_for_leFD ev_trans_is initial_imp_deterministic_After by blast
-  with \<open>tF t \<Longrightarrow> deterministic P' \<Longrightarrow> deterministic P''\<close> \<open>tickFree (ev a # t)\<close>
+  with \<open>tF t \<Longrightarrow> deterministic P' \<Longrightarrow> deterministic P''\<close> \<open>tF (ev a # t)\<close>
   show \<open>deterministic P''\<close> by simp
 qed
 
@@ -1166,7 +1331,7 @@ lemma (in OpSemFD) deterministic_F_trace_trans_reality_check:
   \<open>deterministic P \<Longrightarrow> tF t \<Longrightarrow>
    (t, X) \<in> \<F> (P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<longleftrightarrow> (\<exists>Q. (P \<^sub>F\<^sub>D\<leadsto>\<^sup>*t Q) \<and> X \<inter> Q\<^sup>0 = {})\<close>
   by (simp add: F_trace_trans_reality_check)
-    (metis deterministic_imp_Refusals_iff tickFree_trace_trans_preserves_deterministic)
+    (metis deterministic_imp_Refusals_iff tF_trace_trans_preserves_deterministic)
 
 
 

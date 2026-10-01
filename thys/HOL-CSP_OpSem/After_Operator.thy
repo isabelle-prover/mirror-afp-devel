@@ -96,7 +96,7 @@ proof -
       from \<open>ev a \<in> P\<^sup>0\<close> show \<open>([], {}) \<in> ?f\<close> by (simp add: initials_memD T_F_spec)
     next
       show \<open>(t, X) \<in> ?f \<Longrightarrow> ftF t\<close> for t X
-        by simp (metis front_tickFree_Cons_iff front_tickFree_Nil is_processT2)
+        by simp (metis ftF_Cons_iff ftF_Nil is_processT2)
     next
       show \<open>(t @ u, {}) \<in> ?f \<Longrightarrow> (t, {}) \<in> ?f\<close> for t u by (simp add: is_processT3)
     next
@@ -135,7 +135,16 @@ lemma T_After :
   \<open>\<T> (P after a) = (if ev a \<in> P\<^sup>0 then {s. ev a # s \<in> \<T> P} else \<T> (\<Psi> P a))\<close>
   by (auto simp add: T_F_spec[symmetric] F_After)
 
-lemmas After_projs = F_After D_After T_After
+lemma (in After) D\<^sub>m\<^sub>i\<^sub>n_After :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P after a) = (if P = \<bottom> then {[]} else if ev a \<in> P\<^sup>0 then {t. ev a # t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P} else \<D>\<^sub>m\<^sub>i\<^sub>n (\<Psi> P a))\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_After D_BOT min_elems_no_list_set_list_set Nil_mem_min_elems,
+      auto simp add: min_elems_def BOT_iff_Nil_D,
+      metis Prefix_Order.strict_prefix_simps(3) list.exhaust)
+
+
+lemmas After_projs = F_After D_After T_After D\<^sub>m\<^sub>i\<^sub>n_After
+
+
 
 
 lemma not_initial_After : \<open>ev a \<notin> P\<^sup>0 \<Longrightarrow> P after a = \<Psi> P a\<close>
@@ -152,38 +161,26 @@ section \<open>Monotony\<close>
 lemma mono_After : \<open>P after a \<sqsubseteq> Q after a\<close>
   if \<open>P \<sqsubseteq> Q\<close> and \<open>ev a \<notin> Q\<^sup>0 \<Longrightarrow> \<Psi> P a \<sqsubseteq> \<Psi> Q a\<close>
 proof (subst le_approx_def, safe)
-  from that(1)[THEN anti_mono_initials] that(1)[THEN le_approx2T] that[THEN le_approx1]
+  from that(1)[THEN anti_mono_initials] that(1)[THEN le_approxD2_T] that[THEN le_approxD(1)]
   show \<open>t \<in> \<D> (Q after a) \<Longrightarrow> t \<in> \<D> (P after a)\<close> for t
     by (simp add: D_After initials_def subset_iff split: if_split_asm)
-      (metis D_imp_front_tickFree append_Cons append_Nil butlast.simps(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1)
-        is_processT7 last.simps tickFree_Nil tickFree_butlast)
+      (metis D_imp_ftF append_Cons append_Nil butlast.simps(2) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1)
+        is_processT7 last.simps tF_Nil tF_butlast)
 next
-  from that(1)[THEN anti_mono_initials] that(2)[THEN le_approx2] that(1)[THEN proc_ord2a]
+  from that(1)[THEN anti_mono_initials] that(2)[THEN le_approxD(2)] that(1)[THEN le_approxD(2)]
   show \<open>t \<notin> \<D> (P after a) \<Longrightarrow> X \<in> \<R>\<^sub>a (P after a) t \<Longrightarrow> X \<in> \<R>\<^sub>a (Q after a) t\<close> for t X
     by (simp add: Refusals_after_def After_projs initials_def subset_iff split: if_split_asm)
       (metis initials_memI F_T initials_def mem_Collect_eq, blast)
 next
-  from that(1)[THEN anti_mono_initials] that[THEN le_approx2] that(1)[THEN le_approx2T]
+  from that(1)[THEN anti_mono_initials] that[THEN le_approxD(2)] that(1)[THEN le_approxD2_T]
   show \<open>t \<notin> \<D> (P after a) \<Longrightarrow> X \<in> \<R>\<^sub>a (Q after a) t \<Longrightarrow> X \<in> \<R>\<^sub>a (P after a) t\<close> for t X
     by (simp add: Refusals_after_def After_projs initials_def subset_iff split: if_split_asm)
-      (metis F_imp_front_tickFree append_Cons append_Nil butlast.simps(2)
-        event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) is_processT7 last.simps tickFree_Nil tickFree_butlast)
+      (metis F_imp_ftF append_Cons append_Nil butlast.simps(2)
+        event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) is_processT7 last.simps tF_Nil tF_butlast)
 next
-  show \<open>t \<in> min_elems (\<D> (P after a)) \<Longrightarrow> t \<in> \<T> (Q after a)\<close> for t 
-  proof (cases \<open>P = \<bottom>\<close>)
-    assume \<open>t \<in> min_elems (\<D> (P after a))\<close> and \<open>P = \<bottom>\<close>
-    hence \<open>t = []\<close>
-      by (simp add: BOT_iff_Nil_D D_After D_BOT min_elems_def)
-        (metis append_butlast_last_id front_tickFree_single nil_less2)
-    thus \<open>t \<in> \<T> (Q after a)\<close> by simp
-  next
-    from that(1)[THEN anti_mono_initials] that(1)[THEN le_approx2T]
-      that(2)[THEN le_approx3] min_elems6[OF _ _ that(1)]
-    show \<open>t \<in> min_elems (\<D> (P after a)) \<Longrightarrow> P \<noteq> \<bottom> \<Longrightarrow> t \<in> \<T> (Q after a)\<close>
-      apply (auto simp add: min_elems_def After_projs BOT_iff_Nil_D split: if_split_asm)
-      by (metis T_F_spec append_butlast_last_id butlast.simps(2) less_self)
-        (metis (mono_tags, lifting) T_F_spec append_Nil initials_def mem_Collect_eq)
-  qed
+  from le_approxD(3)[OF \<open>P \<sqsubseteq> Q\<close>] le_approxD(3)[OF that(2)] anti_mono_initials[OF \<open>P \<sqsubseteq> Q\<close>]
+  show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P after a) \<Longrightarrow> t \<in> \<T> (Q after a)\<close> for t
+    by (auto simp add: After_projs split: if_split_asm dest: initials_memD intro: initials_memI)
 qed
 
 
@@ -698,8 +695,8 @@ proof (subst Process_eq_spec_optimized, safe)
   show \<open>\<D> ((P \<lbrakk>S\<rbrakk> Q) after a) = \<D> (P after a \<lbrakk>S\<rbrakk> Q) \<Longrightarrow>
         (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a) \<Longrightarrow> (s, X) \<in> \<F> (P after a \<lbrakk>S\<rbrakk> Q)\<close> for s X
     by (simp add: "*" F_After initials_Sync initial_hyps notin image_iff split: if_split_asm)
-      (metis After_BOT BOT_Sync CollectI D_BOT F_imp_front_tickFree Sync_BOT
-        front_tickFree_Cons_iff front_tickFree_Nil is_processT8)
+      (metis After_BOT BOT_Sync CollectI D_BOT F_imp_ftF Sync_BOT
+        ftF_Cons_iff ftF_Nil is_processT8)
 next
 
   fix s X
@@ -736,7 +733,7 @@ next
   }
   thus \<open>(s, X) \<in> \<F> (P after a \<lbrakk>S\<rbrakk> Q) \<Longrightarrow> (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close> 
     by (simp add: F_After initials_Sync initial_hyps After_BOT F_BOT image_iff
-        notin F_imp_front_tickFree front_tickFree_Cons_iff)
+        notin F_imp_ftF ftF_Cons_iff)
 next
 
   { fix s
@@ -763,7 +760,7 @@ next
              tl t \<in> \<D> (P after a) \<and> u \<in> \<T> Q\<close>
         by (simp add: D_After initial_hyps(1))
           (metis "*"(1, 2, 3) "**" "***" list.collapse list.sel(3) 
-            tickFree_tl tl_append2)
+            tF_tl tl_append2)
       thus \<open>s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q)\<close> by (simp add: D_Sync) blast
     next
       assume \<open>t \<in> \<D> Q \<and> u \<in> \<T> P\<close>
@@ -772,7 +769,7 @@ next
              t \<in> \<D> Q \<and> tl u \<in> \<T> (P after a)\<close>
         by (simp add: T_After initial_hyps(1))
           (metis "*"(1, 2, 3) "**" "***" list.collapse
-            list.sel(3) tickFree_tl tl_append2)
+            list.sel(3) tF_tl tl_append2)
       thus \<open>s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q)\<close>
         by (simp add: D_Sync) blast
     qed
@@ -782,7 +779,7 @@ next
     by (simp add: D_After initials_Sync initial_hyps notin image_iff "*"
         split: if_split_asm)
       (elim disjE;
-        simp add: After_BOT D_BOT, metis front_tickFree_Cons_iff front_tickFree_Nil)
+        simp add: After_BOT D_BOT, metis ftF_Cons_iff ftF_Nil)
 next 
 
   fix s
@@ -815,7 +812,7 @@ next
   }
   thus \<open>s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q) \<Longrightarrow> s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close>
     by (simp add: D_After initials_Sync initial_hyps After_BOT D_BOT
-        notin image_iff D_imp_front_tickFree front_tickFree_Cons_iff)
+        notin image_iff D_imp_ftF ftF_Cons_iff)
 qed
 
 
@@ -873,8 +870,8 @@ proof (subst Process_eq_spec_optimized, safe)
   show \<open>\<D> ((P \<lbrakk>S\<rbrakk> Q) after a) = \<D> (P after a \<lbrakk>S\<rbrakk> Q after a) \<Longrightarrow>
         (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a) \<Longrightarrow> (s, X) \<in> \<F> (P after a \<lbrakk>S\<rbrakk> Q after a)\<close> for s X
     by (simp add: "*" F_After initials_Sync initial_hyps image_iff split: if_split_asm)
-      (metis After_BOT BOT_Sync BOT_iff_Nil_D CollectI D_BOT F_imp_front_tickFree
-        Sync_BOT front_tickFree_Cons_iff is_processT8)
+      (metis After_BOT BOT_Sync BOT_iff_Nil_D CollectI D_BOT F_imp_ftF
+        Sync_BOT ftF_Cons_iff is_processT8)
 next
 
   fix s X
@@ -907,7 +904,7 @@ next
   }
   thus \<open>(s, X) \<in> \<F> (P after a \<lbrakk>S\<rbrakk> Q after a) \<Longrightarrow> (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close>
     by (simp add: F_After initials_Sync initial_hyps F_BOT image_iff
-        F_imp_front_tickFree front_tickFree_Cons_iff)
+        F_imp_ftF ftF_Cons_iff)
 next
 
   { fix s
@@ -924,13 +921,13 @@ next
           (tl t \<in> \<D> (P after a) \<and> tl u \<in> \<T> (Q after a) \<or> 
            tl t \<in> \<D> (Q after a) \<and> tl u \<in> \<T> (P after a))\<close>
       using "*"(2, 3, 5) "**" apply (simp add: D_After initial_hyps T_After)
-      by (metis list.collapse list.sel(3) tickFree_tl tl_append2)
+      by (metis list.collapse list.sel(3) tF_tl tl_append2)
     with "*"(1) "**" have \<open>s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q after a)\<close> by (simp add: D_Sync) blast
   } note * = this
 
   show \<open>s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a) \<Longrightarrow> s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q after a)\<close> for s
     by (simp add: "*" D_After initials_Sync initial_hyps image_iff split: if_split_asm)
-      (metis After_BOT BOT_Sync BOT_iff_Nil_D D_BOT Sync_BOT front_tickFree_Cons_iff mem_Collect_eq)
+      (metis After_BOT BOT_Sync BOT_iff_Nil_D D_BOT Sync_BOT ftF_Cons_iff mem_Collect_eq)
 next
 
   fix s
@@ -944,7 +941,7 @@ next
       by (simp add: inside "*"(4))
     have \<open>ev a # s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
       by (simp add: D_Sync inside)
-        (metis "*"(1, 2, 3, 5) "**" Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+        (metis "*"(1, 2, 3, 5) "**" Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
   }
   thus \<open>s \<in> \<D> (P after a \<lbrakk>S\<rbrakk> Q after a) \<Longrightarrow> s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close>
     by (simp add: D_After initials_Sync initial_hyps After_BOT D_BOT inside)
@@ -998,7 +995,7 @@ proof (subst Process_eq_spec_optimized, safe)
         using "*" "**"(1, 2, 4) initial_hyps(1) apply blast
         apply (rule disjI2, subst Sync_commute, rule *[OF **(2, 1)])
         by (simp_all add: "**"(4) Int_commute Un_commute Sync_commute
-            setinterleaving_sym initial_hyps(2))
+            setinterleaving_dual initial_hyps(2))
     next
       assume \<open>s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close>
       from this[simplified same_div] D_F
@@ -1009,8 +1006,8 @@ proof (subst Process_eq_spec_optimized, safe)
   show \<open>\<D> ((P \<lbrakk>S\<rbrakk> Q) after a) = \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a)) \<Longrightarrow>
         (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a) \<Longrightarrow> (s, X) \<in> \<F> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close> for s X
     by (simp add: "**" F_After initials_Sync initial_hyps image_iff split: if_split_asm)
-      (metis After_BOT BOT_Sync BOT_iff_Nil_D D_BOT F_imp_front_tickFree Sync_commute
-        front_tickFree_Cons_iff is_processT8 mem_Collect_eq)
+      (metis After_BOT BOT_Sync BOT_iff_Nil_D D_BOT F_imp_ftF Sync_commute
+        ftF_Cons_iff is_processT8 mem_Collect_eq)
 next
 
   { fix s X P Q
@@ -1044,7 +1041,7 @@ next
   show \<open>\<D> ((P \<lbrakk>S\<rbrakk> Q) after a) = \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a)) \<Longrightarrow>
         (s, X) \<in> \<F> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a)) \<Longrightarrow> (s, X) \<in> \<F> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close> for s X
     apply (simp add: F_After initials_Sync initial_hyps F_BOT image_iff
-        F_imp_front_tickFree front_tickFree_Cons_iff)
+        F_imp_ftF ftF_Cons_iff)
     apply (rule impI, simp add: F_Ndet, elim disjE conjE)
     by (simp add: "*" initial_hyps(1))
       (metis "*" Ndet_commute Sync_commute initial_hyps(2))
@@ -1068,7 +1065,7 @@ next
         using "**"(3) "***" initial_hyps(1) apply (simp add: D_After, intro conjI)
         by (metis list.sel(3) tl_append2) (metis list.collapse)
       thus \<open>s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close>
-        using "*"(2) "**"(1, 2) tickFree_tl by (simp add: D_Ndet D_Sync) blast
+        using "*"(2) "**"(1, 2) tF_tl by (simp add: D_Ndet D_Sync) blast
     next
       assume * : \<open>t \<in> \<D> P \<and> u \<in> \<T> Q\<close>
         \<open>u \<noteq> [] \<and> hd u = ev a \<and> tl r setinterleaves ((t, tl u), range tick \<union> ev ` S)\<close>
@@ -1076,7 +1073,7 @@ next
         using "**"(3) initial_hyps(2) "***" apply (simp add: T_After, intro conjI)
         by (metis list.sel(3) tl_append2) (metis list.collapse)
       thus \<open>s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close>
-        using "*"(2) "**"(1, 2) tickFree_tl by (simp add: D_Ndet D_Sync) blast
+        using "*"(2) "**"(1, 2) tF_tl by (simp add: D_Ndet D_Sync) blast
     next
       assume * : \<open>t \<in> \<D> Q \<and> u \<in> \<T> P\<close>
         \<open>t \<noteq> [] \<and> hd t = ev a \<and> tl r setinterleaves ((tl t, u), range tick \<union> ev ` S)\<close>
@@ -1084,7 +1081,7 @@ next
         using "**"(1, 2, 3) initial_hyps apply (simp add: D_After, intro conjI)
         by (metis "***" list.sel(3) tl_append2) (metis list.collapse)
       thus \<open>s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close>
-        using "*"(2) "**"(1, 2) tickFree_tl by (simp add: D_Ndet D_Sync) blast
+        using "*"(2) "**"(1, 2) tF_tl by (simp add: D_Ndet D_Sync) blast
     next
       assume * : \<open>t \<in> \<D> Q \<and> u \<in> \<T> P\<close>
         \<open>u \<noteq> [] \<and> hd u = ev a \<and> tl r setinterleaves ((t, tl u), range tick \<union> ev ` S)\<close>
@@ -1092,14 +1089,14 @@ next
         using "**"(1, 2, 3) initial_hyps apply (simp add: T_After, intro conjI)
         by (metis "***" list.sel(3) tl_append2) (metis list.collapse)
       thus \<open>s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close>
-        using "*"(2) "**"(1, 2) tickFree_tl by (simp add: D_Ndet D_Sync) blast
+        using "*"(2) "**"(1, 2) tF_tl by (simp add: D_Ndet D_Sync) blast
     qed
   } note * = this
 
   show \<open>s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a) \<Longrightarrow> s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a))\<close> for s
     by (simp add: "*" D_After initials_Sync initial_hyps image_iff split: if_split_asm)
       (metis D_BOT Ndet_is_BOT_iff Sync_is_BOT_iff
-        front_tickFree_Cons_iff front_tickFree_Nil mem_Collect_eq)
+        ftF_Cons_iff ftF_Nil mem_Collect_eq)
 next
 
   { fix s P Q
@@ -1116,21 +1113,21 @@ next
         using "*"(4) by (cases u; simp add: notin image_iff "*"(1, 2, 3))
       show \<open>ev a # s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
         by (simp add: D_Sync)
-          (metis "*"(1, 2, 3) "**" "***" append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+          (metis "*"(1, 2, 3) "**" "***" append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
     next
       assume ** : \<open>t \<in> \<D> Q \<and> ev a # u \<in> \<T> P\<close>
       have *** : \<open>(ev a # r) setinterleaves ((t, ev a # u), range tick \<union> ev ` S)\<close>
         using "*"(4) by (cases t; simp add: notin image_iff "*"(1, 2, 3))
       show \<open>ev a # s \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
         by (simp add: D_Sync)
-          (metis "*"(1, 2, 3) "**" "***" append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+          (metis "*"(1, 2, 3) "**" "***" append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
     qed
   } note * = this 
 
   show \<open>s \<in> \<D> ((P after a \<lbrakk>S\<rbrakk> Q) \<sqinter> (P \<lbrakk>S\<rbrakk> Q after a)) \<Longrightarrow> s \<in> \<D> ((P \<lbrakk>S\<rbrakk> Q) after a)\<close> for s
     by (simp add: D_After initials_Sync D_BOT image_iff notin)
-      (metis "*" D_Ndet D_imp_front_tickFree Sync_commute
-        UnE event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) front_tickFree_Cons_iff initial_hyps)
+      (metis "*" D_Ndet D_imp_ftF Sync_commute
+        UnE event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) ftF_Cons_iff initial_hyps)
 
 qed
 
@@ -1185,14 +1182,14 @@ proof -
         with "*"(3) have *** : \<open>s = trace_hide (ev a # t) (ev ` A) @ u\<close> by simp
         show \<open>s \<in> \<D> (P \ A)\<close>
           by (simp add: D_Hiding)
-            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
       next
         assume \<open>a \<notin> A\<close>
         with "*"(3) have *** : \<open>ev a # s = trace_hide (ev a # t) (ev ` A) @ u\<close>
           by (simp add: image_iff)
         have \<open>ev a # s \<in> \<D> (P \ A)\<close>
           by (simp add: D_Hiding)
-            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
         thus \<open>s \<in> \<D> ((P \ A) after a)\<close> by (simp add: D_After initial' \<open>a \<notin> A\<close>)
       qed
     next
@@ -1207,14 +1204,14 @@ proof -
         with "*"(3) have *** : \<open>s = trace_hide (ev a # t) (ev ` A) @ u\<close> by simp
         show \<open>s \<in> \<D> (P \ A)\<close>
           by (simp add: D_Hiding)
-            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
       next
         assume \<open>a \<notin> A\<close>
         with "*"(3) have *** : \<open>ev a # s = trace_hide (ev a # t) (ev ` A) @ u\<close>
           by (simp add: image_iff)
         have \<open>ev a # s \<in> \<D> (P \ A)\<close>
           by (simp add: D_Hiding)
-            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+            (metis "*"(1, 2) "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
         thus \<open>s \<in> \<D> ((P \ A) after a)\<close> by (simp add: D_After initial' \<open>a \<notin> A\<close>)
       qed
     qed
@@ -1684,22 +1681,22 @@ proof -
       by (simp add: D_After initial)
     thus \<open>t \<in> \<D> ((P \<triangle> Q) after a)\<close>
       by (simp add: D_After initial initials_Interrupt D_Interrupt)
-        (metis Nil_elem_T append_Nil tickFree_Nil)
+        (metis Nil_elem_T append_Nil tF_Nil)
   next
     show \<open>(t, X) \<in> \<F> (Q after a) \<Longrightarrow> (t, X) \<in> \<F> ((P \<triangle> Q) after a)\<close> for t X
       by (simp add: F_After initials_Interrupt F_Interrupt initial)
-        (metis Nil_elem_T append_Nil list.distinct(1) tickFree_Nil)
+        (metis Nil_elem_T append_Nil list.distinct(1) tF_Nil)
   qed
 
   moreover have \<open>(P \<triangle> Q) after a \<sqsubseteq>\<^sub>F\<^sub>D P after a \<triangle> Q\<close> if initial: \<open>ev a \<in> P\<^sup>0\<close>
   proof (unfold failure_divergence_refine_def failure_refine_def divergence_refine_def, safe)
     show \<open>t \<in> \<D> (P after a \<triangle> Q) \<Longrightarrow> t \<in> \<D> ((P \<triangle> Q) after a)\<close> for t
       by (simp add: D_Interrupt D_After initial T_After initials_Interrupt)
-        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)
+        (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)
   next
     show \<open>(t, X) \<in> \<F> (P after a \<triangle> Q) \<Longrightarrow> (t, X) \<in> \<F> ((P \<triangle> Q) after a)\<close> for t X
       by (simp add: F_Interrupt F_After initial initials_Interrupt T_After D_After, elim disjE)
-        (metis [[metis_verbose = false]] Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tickFree_Cons_iff)+ 
+        (metis [[metis_verbose = false]] Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) tF_Cons_iff)+ 
   qed
 
   moreover have \<open>Q after a \<sqsubseteq>\<^sub>F\<^sub>D (P \<triangle> Q) after a\<close>
@@ -1723,7 +1720,7 @@ proof -
     show \<open>t \<in> \<D> ((P \<triangle> Q) after a) \<Longrightarrow> t \<in> \<D> (P after a \<triangle> Q)\<close> for t
       by (simp add: After_projs initials_Interrupt initial_hyps D_Interrupt)
         (metis append_Nil hd_append2 list.exhaust_sel D_T
-          list.sel(1, 3) tickFree_Cons_iff tl_append2)
+          list.sel(1, 3) tF_Cons_iff tl_append2)
   next
     fix t X
     assume \<open>(t, X) \<in> \<F> ((P \<triangle> Q) after a)\<close>
@@ -1734,7 +1731,7 @@ proof -
       by (simp add: F_Interrupt After_projs initial_hyps(1), elim disjE)
         (metis (no_types, opaque_lifting) [[metis_verbose = false]]
           append_self_conv2 event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(3) tl_append2 F_T list.exhaust_sel
-          list.sel(1, 3) tickFree_Cons_iff D_T hd_append2)+
+          list.sel(1, 3) tF_Cons_iff D_T hd_append2)+
   qed
 
   moreover have \<open>(Q after a) \<sqinter> (P after a \<triangle> Q) \<sqsubseteq>\<^sub>F\<^sub>D (P \<triangle> Q) after a\<close>
@@ -1745,7 +1742,7 @@ proof -
       by (simp add: D_After initials_Interrupt)
     thus \<open>t \<in> \<D> ((Q after a) \<sqinter> (P after a \<triangle> Q))\<close>
       by (simp add: D_Interrupt After_projs D_Ndet both_initial)
-        (metis tickFree_tl append_Cons append_Nil list.exhaust_sel list.sel(1, 3))
+        (metis tF_tl append_Cons append_Nil list.exhaust_sel list.sel(1, 3))
   next
     fix t X assume \<open>(t, X) \<in> \<F> ((P \<triangle> Q) after a)\<close>
     with both_initial(1) have \<open>(ev a # t, X) \<in> \<F> (P \<triangle> Q)\<close>
@@ -1754,7 +1751,7 @@ proof -
       by (simp add: F_Interrupt F_Ndet After_projs both_initial, elim disjE)
         (metis (no_types, opaque_lifting) [[metis_verbose = false]] 
           event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) list.sel(1, 3) append_Nil hd_append2
-          list.exhaust_sel process_charn tickFree_Cons_iff tl_append2)+
+          list.exhaust_sel process_charn tF_Cons_iff tl_append2)+
   qed
 
   ultimately show ?thesis
@@ -1875,7 +1872,7 @@ proof -
       hence \<open>S i \<noteq> {}\<close> for i by (simp add: S_def D_After "*")
       moreover have \<open>finite (S 0)\<close> unfolding S_def by (prove_finite_subset_of_prefixes t)
       moreover have \<open>S (Suc i) \<subseteq> S i\<close> for i
-        by (simp add: S_def subset_iff) (metis in_mono le_approx1 po_class.chainE chain_Y)
+        by (simp add: S_def subset_iff) (metis in_mono le_approxD(1) po_class.chainE chain_Y)
       ultimately have \<open>(\<Inter>i. S i) \<noteq> {}\<close> by (rule Inter_nonempty_finite_chained_sets)
       then obtain t1 where \<open>\<forall>i. t1 \<in> S i\<close>
         by (meson INT_iff ex_in_conv iso_tuple_UNIV_I)
@@ -1892,7 +1889,7 @@ proof -
       moreover from \<open>(t, X) \<in> \<F> ?rhs\<close> have \<open>(t, X) \<in> \<F> (Y j after a)\<close>
         by (simp add: limproc_is_thelub chain_After \<open>chain Y\<close> F_LUB)
       ultimately show \<open>(t, X) \<in> \<F> ?lhs\<close>
-        using chain_Y initial is_ub_thelub mono_After proc_ord2a by blast
+        using chain_Y initial is_ub_thelub mono_After le_approxD(2) by blast
     qed
   next
     assume \<open>ev a \<notin> (\<Squnion>i. Y i)\<^sup>0\<close>

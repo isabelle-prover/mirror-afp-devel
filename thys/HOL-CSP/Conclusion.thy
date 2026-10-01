@@ -49,6 +49,8 @@ chapter\<open>Conclusion\<close>
 theory Conclusion
   imports "HOL-CSP"
 begin
+
+declare [[show_question_marks=false]]
   (*>*)
 
 section\<open>Related Work\<close>
@@ -109,27 +111,30 @@ section\<open>A Summary on New Results\<close>
 text\<open>Compared to the original version of HOL-CSP 1.0, the present theory is complete relative to
 Roscoe's Book\<^cite>\<open>"roscoe:csp:1998"\<close>. It contains a number of new theorems and some interesting
 (and unexpected) generalizations: 
-\<^enum> @{thm mono_Hiding} is now also valid for the infinite case (arbitrary hide-set A).
-\<^enum> \<^term>\<open>P \ (A \<union> B) = (P \ A) \ B\<close> is true for \<^term>\<open>finite A\<close> (see @{thm Hiding_Un});
+\<^enum> @{thm mono_Hiding} is now also valid for the infinite case (arbitrary hide-set \<^term>\<open>A\<close>).
+\<^enum> \<^term>\<open>P \ (A \<union> B) = (P \ A) \ B\<close> is true for \<^term>\<open>finite A\<close> (see @{thm [source] Hiding_Un});
   this was not even proven in HOL-CSP 1.0 for the singleton case! It can be considered as the
   most complex theorem of this theory.
-\<^enum> distribution laws of \<^const>\<open>Hiding\<close> over \<^const>\<open>Sync\<close> @{thm Hiding_Sync}; 
+\<^enum> distribution laws of @{const [source] Hiding} over \<^const>\<open>Sync\<close> @{thm Hiding_Sync}; 
   however, this works only in the finite case. A true monster proof.
-\<^enum> distribution of \<^const>\<open>Mprefix\<close> over \<^const>\<open>Sync\<close> @{thm Mprefix_Sync_Mprefix} in the most
-  generalized case. Also a true monster proof, but reworked using symmetries and
+\<^enum> distribution of \<^const>\<open>Mprefix\<close> over \<^const>\<open>Sync\<close> @{thm [display] Mprefix_Sync_Mprefix}
+  in the most generalized case. Also a true monster proof, but reworked using symmetries and
   abstractions to be more reasonable (and faster) 
 \<^enum> the synchronization operator is associative @{thm "Sync_assoc"}.
   (In HOL-CSP 1.0, this had only be shown for special cases like @{thm Sync_assoc[where S = \<open>UNIV\<close>]}).
 \<^enum> the generalized non deterministic prefix choice operator --- relevant for proofs of deadlock-freeness ---
-  has been added to the theory @{thm "Mndetprefix_def"}; it is proven monotone and
+  has been added to the theory @{thm "Mndetprefix_GlobalNdet"}; it is proven monotone and
   continuous @{thm Mndetprefix_cont} in the general case
   (in contrast to the global choice without prefix, see @{thm GlobalNdet_cont}).
   This is relevant for the definition of the deadlock reference processes @{thm DF_def} and @{thm "DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def"}.
 \<^enum> since Isabelle-2025, new support for read \<^term>\<open>c\<^bold>?a\<in>A \<rightarrow> P a\<close> and non deterministic write
   \<^term>\<open>c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a\<close> has been added. Also, sliding choice has been added and new algebraic
   laws involving this operator (see @{thm Hiding_Mprefix_non_disjoint}) have been proven.
+\<^enum> TODO : since Isabelle-2026, Guard, Dmin and minimal\_events\_of  .
 \<close>
 
 (*<*)
+declare [[show_question_marks=true]]
+
 end
   (*>*)

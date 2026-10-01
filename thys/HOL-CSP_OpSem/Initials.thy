@@ -264,8 +264,8 @@ next
     next
       from \<open>e \<in> (P \<^bold>; Q)\<^sup>0\<close> \<open>P \<noteq> \<bottom>\<close> show \<open>e = \<checkmark>(r) \<Longrightarrow> e \<in> ?rhs\<close> for r
         by (simp add: image_iff initials_def T_Seq BOT_iff_tick_D)
-          (metis (no_types, opaque_lifting) append_T_imp_tickFree append_eq_Cons_conv
-            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) not_Cons_self2 tickFree_Cons_iff)
+          (metis (no_types, opaque_lifting) append_T_imp_tF append_eq_Cons_conv
+            event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) not_Cons_self2 tF_Cons_iff)
     qed
   next
     fix e assume \<open>e \<in> ?rhs\<close>
@@ -303,7 +303,7 @@ next
         by (auto dest: initials_memD)
       have \<open>[e] setinterleaves (([e], []), range tick \<union> ev ` S)\<close>
         using \<open>e \<notin> range tick \<union> ev ` S\<close> by simp
-      with \<open>[e] \<in> \<T> P \<or> [e] \<in> \<T> Q\<close> is_processT1_TR setinterleaving_sym
+      with \<open>[e] \<in> \<T> P \<or> [e] \<in> \<T> Q\<close> is_processT1_TR setinterleaving_dual
       have \<open>[e] \<in> \<T> (P \<lbrakk>S\<rbrakk> Q)\<close> by (simp (no_asm) add: T_Sync) blast
       thus \<open>e \<in> (P \<lbrakk>S\<rbrakk> Q)\<^sup>0\<close> by (simp add: initials_memI)
     next
@@ -329,7 +329,7 @@ next
       show \<open>t \<in> \<T> P \<Longrightarrow> u \<in> \<T> Q \<Longrightarrow> [e] setinterleaves ((t, u), range tick \<union> ev ` S)
             \<Longrightarrow> e \<in> ?rhs\<close> for t u
         by (cases t; cases u; simp add: initials_def image_iff split: if_split_asm)
-          (use empty_setinterleaving setinterleaving_sym in blast)+
+          (use empty_setinterleaving setinterleaving_dual in blast)+
     next
       case div
       have \<open>r \<noteq> []\<close> using div(4, 5) BOT_iff_Nil_D empty_setinterleaving that by blast
@@ -340,7 +340,7 @@ next
       ultimately show \<open>e \<in> ?rhs\<close> 
         using div(4, 5)
         by (cases u, simp_all add: initials_def subset_iff T_Sync image_iff split: if_split_asm)
-          (metis [[metis_verbose = false]] D_T setinterleaving_sym empty_setinterleaving)+
+          (metis [[metis_verbose = false]] D_T setinterleaving_dual empty_setinterleaving)+
     qed
   qed
 qed
@@ -392,7 +392,7 @@ next
   assume \<open>?rhs\<close>
   then obtain t where * : \<open>set t \<subseteq> ev ` S\<close>
     \<open>t \<in> \<D> P \<or> (\<exists>f. isInfHiddenRun f P S \<and> t \<in> range f)\<close> by blast
-  hence \<open>tickFree t \<and> [] = trace_hide t (ev ` S)\<close>
+  hence \<open>tF t \<and> [] = trace_hide t (ev ` S)\<close>
     unfolding tickFree_def by (auto simp add: D_Hiding subset_iff)
   with "*"(2) show \<open>[] \<in> \<D> (P \ S)\<close> by (simp add: D_Hiding) metis
 qed
@@ -408,13 +408,13 @@ proof (intro iffI)
   proof (cases e)
     fix r assume \<open>e = \<checkmark>(r)\<close>
     with assm have \<open>P \ S = \<bottom>\<close>
-      using BOT_iff_tick_D front_tickFree_Nil is_processT9_tick by blast
+      using BOT_iff_tick_D ftF_Nil is_processT9_tick by blast
     thus \<open>P \ S = \<bottom> \<or> ?ugly_assertion\<close> by blast
   next
     fix x
     assume \<open>e = ev x\<close>
     with assm obtain t u
-      where * : \<open>front_tickFree u\<close> \<open>tickFree t\<close>
+      where * : \<open>ftF u\<close> \<open>tF t\<close>
         \<open>[ev x] = trace_hide t (ev ` S) @ u\<close>
         \<open>t \<in> \<D> P \<or> (\<exists> f. isInfHiddenRun f P S \<and> t \<in> range f)\<close>
       by (simp add: D_Hiding) blast
@@ -441,8 +441,8 @@ next
   next
     show \<open>?ugly_assertion \<Longrightarrow> [e] \<in> \<D> (P \ S)\<close>
       by (elim exE conjE, simp add: D_Hiding)
-        (metis Hiding_tickFree append_Cons append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1)
-          front_tickFree_Nil non_tickFree_imp_not_Nil tickFree_Cons_iff)
+        (metis Hiding_tF append_Cons append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1)
+          ftF_Nil not_tF_imp_not_Nil tF_Cons_iff)
   qed
 qed
 
@@ -469,7 +469,7 @@ next
     { fix x
       assume assms : \<open>x \<in> S\<close> \<open>ev x \<in> initials (P \ S)\<close>
       then consider \<open>\<exists>t. [ev x] = trace_hide t (ev ` S) \<and> (t, ev ` S) \<in> \<F> P\<close>
-        | \<open>\<exists>t u. front_tickFree u \<and> tickFree t \<and> [ev x] = trace_hide t (ev ` S) @ u \<and> 
+        | \<open>\<exists>t u. ftF u \<and> tF t \<and> [ev x] = trace_hide t (ev ` S) @ u \<and> 
                  (t \<in> \<D> P \<or> (\<exists> f. isInfHiddenRun f P S \<and> t \<in> range f))\<close>
         by (simp add: initials_def T_Hiding) blast
       hence \<open>P \ S = \<bottom>\<close>
@@ -478,10 +478,10 @@ next
         hence False by (metis Cons_eq_filterD image_eqI assms(1))
         thus \<open>P \ S = \<bottom>\<close> by blast
       next
-        assume \<open>\<exists>t u. front_tickFree u \<and> tickFree t \<and> [ev x] = trace_hide t (ev ` S) @ u \<and>
+        assume \<open>\<exists>t u. ftF u \<and> tF t \<and> [ev x] = trace_hide t (ev ` S) @ u \<and>
                       (t \<in> \<D> P \<or> (\<exists> f. isInfHiddenRun f P S \<and> t \<in> range f))\<close>
         then obtain t u 
-          where * : \<open>front_tickFree u\<close> \<open>tickFree t\<close> \<open>[ev x] = trace_hide t (ev ` S) @ u\<close>
+          where * : \<open>ftF u\<close> \<open>tF t\<close> \<open>[ev x] = trace_hide t (ev ` S) @ u\<close>
             \<open>t \<in> \<D> P \<or> (\<exists> f. isInfHiddenRun f P S \<and> t \<in> range f)\<close> by blast
         from *(3) have ** : \<open>set t \<subseteq> ev ` S\<close>
           by (induct t) (simp_all add: assms(1) split: if_split_asm)
@@ -506,8 +506,9 @@ next
       thus \<open>e \<in> ?set\<close>
       proof (cases e)
         have \<open>e = \<checkmark>(r) \<Longrightarrow> set (butlast t) \<subseteq> ev ` S \<and> butlast t @ [\<checkmark>(r)] \<in> \<T> P\<close> for r
-          using "**" by (cases t rule: rev_cases; simp add: F_T empty_filter_conv subset_eq split: if_split_asm)
-            (metis F_T Hiding_tickFree append_T_imp_tickFree neq_Nil_conv non_tickFree_tick)
+          using "**" by (cases t rule: rev_cases; simp add: F_T empty_filter_conv subset_eq Cons_eq_filter_iff split: if_split_asm)
+            (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_nonempty_append_imp is_processT2
+              list.distinct(1) tF_Cons_iff tF_append_iff)
         thus \<open>e = \<checkmark>(r) \<Longrightarrow> e \<in> ?set\<close> for r by auto
       next
         fix x
@@ -749,7 +750,7 @@ next
     then obtain a t where \<open>t \<in> \<T> P\<close> \<open>ev a \<in> set t\<close>
       by (meson equals0I events_of_memD)
     from \<open>t \<in> \<T> P\<close> consider \<open>t = []\<close> | r where \<open>t = [\<checkmark>(r)]\<close> | b t' where \<open>t = ev b # t'\<close>
-      by (metis T_imp_front_tickFree \<open>ev a \<in> set t\<close> front_tickFree_Cons_iff
+      by (metis T_imp_ftF \<open>ev a \<in> set t\<close> ftF_Cons_iff
           is_ev_def list.distinct(1) list.set_cases)
     thus False
     proof cases

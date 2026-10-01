@@ -962,9 +962,8 @@ corollary deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_DINING: "deadloc
   by (simp add: deadlock_free_DINING deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
 
 
-(* < *)
+
 end
 end
-(* > *)
 
 

@@ -91,7 +91,7 @@ next
   have * : \<open>(e # u, X) \<in> \<F> (P after\<^sub>\<T> t)\<close> by (rule hyp; use prems in simp)
   thus \<open>(u, X) \<in> \<F> (P after\<^sub>\<T> (t @ [e]))\<close>
     by (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_snoc F_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
-      (metis initials_memI F_T non_tickFree_tick prems(1) tickFree_append_iff)
+      (metis F_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) initials_memI prems(1) tF_Cons_iff tF_append_iff)
 qed
 
 
@@ -106,7 +106,7 @@ next
   have * : \<open>e # u \<in> \<D> (P after\<^sub>\<T> t)\<close> by (rule hyp; use prems in simp)
   thus \<open>u \<in> \<D> (P after\<^sub>\<T> (t @ [e]))\<close>
     by (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_snoc D_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
-      (metis initials_memI D_T non_tickFree_tick prems(1) tickFree_append_iff)
+      (metis D_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) initials_memI prems(1) tF_Cons_iff tF_append_iff)
 qed
 
 
@@ -120,8 +120,8 @@ next
   have * : \<open>e # u \<in> \<T> (P after\<^sub>\<T> t)\<close> by (rule hyp, use prem in simp)
   thus \<open>u \<in> \<T> (P after\<^sub>\<T> (t @ [e]))\<close>
     by (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_snoc T_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
-      (metis initials_memI append_T_imp_tickFree
-        is_processT1_TR non_tickFree_tick prem tickFree_append_iff)
+      (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_append_iff initials_memI
+        is_processT1_TR is_processT2_TR prem tF_Cons_iff tF_append_iff)
 qed
 
 
@@ -146,11 +146,11 @@ proof safe
     case (snoc e t)
     from initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e snoc.prems(1) have * : \<open>e \<in> (P after\<^sub>\<T> t)\<^sup>0\<close> by blast
     obtain a where \<open>e = ev a\<close> 
-      by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick snoc.prems(2) tickFree_append_iff)
+      by (meson is_ev_def snoc.prems(2) tF_Cons_iff tF_append_iff)
     show ?case
       apply (simp, rule snoc.hyps)
         apply (metis prefixI is_processT3_TR snoc.prems(1))
-       apply (use snoc.prems(2) tickFree_append_iff in blast)
+       apply (use snoc.prems(2) tF_append_iff in blast)
       using snoc.prems(3) "*" by (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_snoc F_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>e = ev a\<close>)
   qed
 next
@@ -168,8 +168,8 @@ proof safe
   next
     case (snoc e t)
     from initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e snoc.prems(1) have * : \<open>e \<in> (P after\<^sub>\<T> t)\<^sup>0\<close> by blast
-    obtain a where \<open>e = ev a\<close> 
-      by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick snoc.prems(2) tickFree_append_iff)
+    obtain a where \<open>e = ev a\<close>
+      by (meson is_ev_def snoc.prems(2) tF_Cons_iff tF_append_iff)
     show ?case
       apply (simp, rule snoc.hyps)
         apply (metis prefixI is_processT3_TR snoc.prems(1))
@@ -190,7 +190,7 @@ proof safe
     case (snoc e t)
     from initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e snoc.prems(1) have * : \<open>e \<in> (P after\<^sub>\<T> t)\<^sup>0\<close> by blast
     obtain a where \<open>e = ev a\<close> 
-      by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick snoc.prems(2) tickFree_append_iff)
+      by (meson is_ev_def snoc.prems(2) tF_Cons_iff tF_append_iff)
     show ?case
       apply (simp, rule snoc.hyps)
         apply (meson prefixI is_processT3_TR snoc.prems(1))
@@ -291,10 +291,10 @@ next
     fix t e
     assume   hyp : \<open>t \<in> \<T> P \<Longrightarrow> tF t \<Longrightarrow> P after\<^sub>\<T> t \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close>
       and prems : \<open>t @ [e] \<in> \<T> P\<close> \<open>tF (t @ [e])\<close>
-    from prems T_F_spec is_processT3 tickFree_append_iff
+    from prems T_F_spec is_processT3 tF_append_iff
     have * : \<open>t \<in> \<T> P\<close> \<open>tF t\<close> by blast+
-    obtain a where \<open>e = ev a\<close> 
-      by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust non_tickFree_tick prems(2) tickFree_append_iff)
+    obtain a where \<open>e = ev a\<close>
+      by (meson is_ev_def prems(2) tF_Cons_iff tF_append_iff)
     thus \<open>P after\<^sub>\<T> (t @ [e]) \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close>
       by (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_snoc After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def)
         (use initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e prems(1) in
@@ -305,7 +305,7 @@ qed
 lemma reachable_processes_trans: \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> R \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c Q \<Longrightarrow> R \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close>
   apply (simp add: reachable_processes_is, elim bexE)
   apply (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_append[symmetric] T_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq)
-  using tickFree_append_iff by blast
+  using tF_append_iff by blast
 
 
 
@@ -337,7 +337,7 @@ next
     assume   hyp : \<open>\<And>Q. t \<in> \<T> Q \<Longrightarrow> tF t \<Longrightarrow> Q \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c (Q after\<^sub>\<T> t)\<close>
       and prems : \<open>e # t \<in> \<T> Q\<close> \<open>tF (e # t)\<close>
     from prems obtain a where \<open>e = ev a\<close> \<open>ev a \<in> Q\<^sup>0\<close>
-      by (metis initials_memI is_ev_def tickFree_Cons_iff)
+      by (metis initials_memI is_ev_def tF_Cons_iff)
     with prems have \<open>t \<in> \<T> (Q after a)\<close> \<open>tF t\<close> by (simp_all add: T_After)
     from hyp[OF this] have \<open>Q after a \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c (Q after\<^sub>\<T> (e # t))\<close>
       by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def \<open>e = ev a\<close>)
@@ -349,7 +349,7 @@ qed
 lemma antecedent_processes_trans: \<open>Q \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> R \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c Q \<Longrightarrow> R \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close>
   apply (simp add: antecedent_processes_is, elim bexE)
   apply (simp add: After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_append[symmetric] T_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq)
-  using tickFree_append_iff by blast
+  using tF_append_iff by blast
 
 
 corollary antecedent_processes_iff_rev_reachable_processes: \<open>P \<in> \<A>\<^sub>p\<^sub>r\<^sub>o\<^sub>c Q \<longleftrightarrow> Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close>
@@ -390,14 +390,14 @@ next
     show \<open>e \<in> P\<^bsup>Suc n\<^esup> \<Longrightarrow> e \<in> \<Union> {(P after\<^sub>\<T> t)\<^sup>0 |t. t \<in> \<T> P \<and> tF t \<and> length t = Suc n}\<close> for e
       by (auto simp add: hyp T_After)
         (metis (no_types, lifting) AfterExt.After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def AfterExt.After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e.simps(2)
-          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(5) is_ev_def length_Cons tickFree_Cons_iff)
+          event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(5) is_ev_def length_Cons tF_Cons_iff)
   next
     fix e t
     assume assms : \<open>e \<in> (P after\<^sub>\<T> t)\<^sup>0\<close> \<open>t \<in> \<T> P\<close> \<open>tF t\<close> \<open>length t = Suc n\<close>
     from assms(1-3) have * : \<open>t @ [e] \<in> \<T> P\<close>
       unfolding initials_def by (simp add: T_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_eq)
     from assms(3, 4)obtain a t' where ** : \<open>t = ev a # t'\<close> \<open>tF t'\<close> \<open>length t' = n\<close>
-      by (metis Suc_length_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) tickFree_Cons_iff)
+      by (metis Suc_length_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) tF_Cons_iff)
     with initials_memI assms(2) have \<open>ev a \<in> P\<^sup>0\<close> by blast
     show \<open>e \<in> P\<^bsup>Suc n\<^esup>\<close>
     proof (unfold nth_initials.simps(2), rule UnionI)
@@ -484,7 +484,7 @@ next
         qed
       next
         from Cons.prems(1) have \<open>e = \<checkmark>(r) \<Longrightarrow> t = []\<close> for r
-          by simp (meson T_imp_front_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff)
+          by simp (meson T_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff)
         with \<open>ev a \<in> set t\<close> show \<open>e = \<checkmark>(r) \<Longrightarrow> reachable_ev P a\<close> for r by simp
       qed
     qed
@@ -492,7 +492,7 @@ next
 qed
 
 
-lemma reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T:
+lemma reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T:
   \<open>reachable_ev P a \<longleftrightarrow> (\<exists>t \<in> \<T> P. tF t \<and> ev a \<in> (P after\<^sub>\<T> t)\<^sup>0)\<close>
 proof (intro iffI)                                          
   show \<open>reachable_ev P a \<Longrightarrow> \<exists>t\<in>\<T> P. tF t \<and> ev a \<in> (P after\<^sub>\<T> t)\<^sup>0\<close>
@@ -546,7 +546,7 @@ subsubsection \<open>Properties\<close>
 corollary reachable_ev_set_is_mem_Collect_reachable_ev:
   \<open>\<R>\<^sub>e\<^sub>v P = {a. reachable_ev P a}\<close>
   by (auto simp add: reachable_ev_set_def reachable_processes_is
-      reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T)  
+      reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T)  
 
 corollary events_of_is_reachable_ev_set: \<open>\<alpha>(P) = \<R>\<^sub>e\<^sub>v P\<close>
   by (simp add: reachable_ev_set_is_mem_Collect_reachable_ev
@@ -563,7 +563,7 @@ corollary events_of_antecedent_processes_superset: \<open>Q \<in> \<A>\<^sub>p\<
 
 lemma events_of_is_Union_nth_initials: \<open>\<alpha>(P) = (\<Union>n. {a. ev a \<in> P\<^bsup>n\<^esup>})\<close>
   by (auto simp add: nth_initials_is events_of_iff_reachable_ev
-      reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T)+
+      reachable_ev_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T)+
 
 
 subsubsection \<open>Reachable Tick\<close>
@@ -600,7 +600,7 @@ next
   next
     case (Cons e t)
     obtain a where \<open>e = ev a\<close>
-      by (meson Cons.prems append_T_imp_tickFree is_ev_def not_Cons_self2 tickFree_Cons_iff)
+      by (meson Cons.prems append_T_imp_tF is_ev_def not_Cons_self2 tF_Cons_iff)
     moreover from Cons.prems have \<open>e \<in> P\<^sup>0\<close> by (auto intro: initials_memI)
     ultimately have \<open>t @ [\<checkmark>(r)] \<in> \<T> (P after a)\<close>
       using Cons.prems by (simp add: T_After \<open>e = ev a\<close>)
@@ -611,7 +611,7 @@ next
 qed
 
 
-lemma reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T:
+lemma reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T:
   \<open>reachable_tick P r \<longleftrightarrow> (\<exists>t \<in> \<T> P. tF t \<and> \<checkmark>(r) \<in> (P after\<^sub>\<T> t)\<^sup>0)\<close>
 proof (intro iffI)                                      
   show \<open>reachable_tick P r \<Longrightarrow> \<exists>t\<in>\<T> P. tF t \<and> \<checkmark>(r) \<in> (P after\<^sub>\<T> t)\<^sup>0\<close>
@@ -664,7 +664,7 @@ subsubsection \<open>Properties\<close>
 corollary reachable_tick_set_is_mem_Collect_reachable_tick :
   \<open>\<R>\<^sub>\<checkmark> P = {a. reachable_tick P a}\<close>
   by (auto simp add: reachable_tick_set_def reachable_processes_is
-      reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T)  
+      reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T)  
 
 corollary ticks_of_is_reachable_tick_set : \<open>\<checkmark>s(P) = \<R>\<^sub>\<checkmark> P\<close>
   by (simp add: reachable_tick_set_is_mem_Collect_reachable_tick
@@ -680,7 +680,7 @@ corollary ticks_of_antecedent_processes_superset : \<open>Q \<in> \<A>\<^sub>p\<
 
 lemma ticks_of_is_Union_nth_initials: \<open>\<checkmark>s(P) = (\<Union>n. {r. \<checkmark>(r) \<in> P\<^bsup>n\<^esup>})\<close>
   by (auto simp add: nth_initials_is ticks_of_iff_reachable_tick
-      reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tickFree_T)+
+      reachable_tick_iff_in_initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_for_some_tF_T)+
 
 
 

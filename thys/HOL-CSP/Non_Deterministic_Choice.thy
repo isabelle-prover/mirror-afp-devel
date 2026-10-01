@@ -105,6 +105,9 @@ lemma T_Ndet : \<open>\<T> (P \<sqinter> Q) = \<T> P \<union> \<T> Q\<close>
 
 lemmas Ndet_projs = F_Ndet D_Ndet T_Ndet
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_Ndet_subset : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<sqinter> Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> \<D>\<^sub>m\<^sub>i\<^sub>n Q\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_Ndet min_elems_def)
+
 
 
 subsection\<open>Basic Laws\<close>
@@ -122,13 +125,14 @@ subsection\<open>The Continuity Rule\<close>
 
 lemma mono_Ndet : \<open>P \<sqinter> Q \<sqsubseteq> P' \<sqinter> Q'\<close> if \<open>P \<sqsubseteq> P'\<close> and \<open>Q \<sqsubseteq> Q'\<close>
 proof (unfold le_approx_def, intro conjI allI impI)
-  show \<open>\<D> (P' \<sqinter> Q') \<subseteq> \<D> (P \<sqinter> Q)\<close> by (metis D_Ndet Un_mono le_approx1 that)
+  show \<open>\<D> (P' \<sqinter> Q') \<subseteq> \<D> (P \<sqinter> Q)\<close> by (metis D_Ndet Un_mono le_approxD(1) that)
 next
   show \<open>s \<notin> \<D> (P \<sqinter> Q) \<Longrightarrow> \<R>\<^sub>a (P \<sqinter> Q) s = \<R>\<^sub>a (P' \<sqinter> Q') s\<close> for s
-    using that[THEN le_approx2] by (simp add: D_Ndet Refusals_after_def F_Ndet)
+    using that[THEN le_approxD(2)] by (simp add: D_Ndet Refusals_after_def F_Ndet)
 next
-  show \<open>min_elems (\<D> (P \<sqinter> Q)) \<subseteq> \<T> (P' \<sqinter> Q')\<close>
-    using that[THEN le_approx3] by (auto simp add: min_elems_def D_Ndet T_Ndet)
+  show \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<sqinter> Q) \<subseteq> \<T> (P' \<sqinter> Q')\<close>
+    using that[THEN le_approxD(3)]
+    by (auto simp add: T_Ndet dest: D\<^sub>m\<^sub>i\<^sub>n_Ndet_subset[THEN set_mp])
 qed
 
 

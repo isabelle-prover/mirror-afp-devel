@@ -56,12 +56,12 @@ lemma \<open>non_terminating P \<Longrightarrow> P \<^bold>;\<^sub>\<checkmark> 
 
 subsubsection \<open>Synchronization Product\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) non_terminating_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) non_terminating_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>non_terminating P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S Q \<Longrightarrow> non_terminating (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
   \<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> non_terminating Q \<Longrightarrow> non_terminating (P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> Q)\<close>
   by (simp add: lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-      non_terminating_is_right nonterminating_implies_div_free,
-      use setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree_imp in blast)+
+      non_terminating_is_right non_terminating_implies_div_free,
+      use setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tF_imp in blast)+
 
 
 
@@ -85,7 +85,7 @@ proof (unfold deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right, in
     from df_assms show \<open>([], UNIV) \<notin> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
       by (simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_UNIV)
         (metis F_T append_Nil deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free
-               deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right empty_iff strict_ticks_of_memI tickFree_Nil)
+               deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right empty_iff strict_ticks_of_memI tF_Nil)
   next
     from df_assms(1) have \<open>\<D> P = {}\<close>
       by (simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free)
@@ -97,7 +97,7 @@ proof (unfold deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right, in
     thus \<open>(t @ [e], UNIV) \<notin> \<F> (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
       by (cases; simp_all add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs ref_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_UNIV)
         (metis (no_types) F_T \<open>\<D> P = {}\<close> \<open>tF (t @ [e])\<close> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right
-                          empty_iff strict_ticks_of_memI that tickFree_append_iff)+
+                          empty_iff strict_ticks_of_memI that tF_append_iff)+
   qed
 qed
 
@@ -112,7 +112,7 @@ corollary deadlock_free_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
 
 subsubsection \<open>Synchronization Product\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
 lemma deadlock_free_Det_bis :
   \<open>P = STOP \<and> Q \<noteq> STOP \<or> deadlock_free P \<Longrightarrow>
@@ -226,7 +226,7 @@ qed (auto simp add: Renaming_Mprefix Renaming_Ndet
 
 section \<open>Data Independence\<close>
 
-text (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 When working with the new interleaving \<^term>\<open>P |||\<^sub>\<checkmark> Q\<close>, we intuitively expect it to be
 \<^const>\<open>deadlock_free\<close> when both \<^term>\<open>P\<close> and \<^term>\<open>Q\<close> are.
 The purpose of this section is to prove it.
@@ -234,7 +234,7 @@ The purpose of this section is to prove it.
 
 subsection \<open>An interesting equivalence\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) deadlock_free_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff_DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF:
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) deadlock_free_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff_DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF:
   \<open>(\<forall>P Q. deadlock_free P \<longrightarrow> deadlock_free Q \<longrightarrow> deadlock_free (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q))
    \<longleftrightarrow> DF UNIV \<sqsubseteq>\<^sub>F\<^sub>D (DF UNIV \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF UNIV)\<close> (is \<open>?lhs \<longleftrightarrow> ?rhs\<close>)
 proof (rule iffI)
@@ -254,15 +254,15 @@ subsection \<open>\<^const>\<open>STOP\<close> and \<^const>\<open>SKIP\<close> 
 text \<open>The two results below form a stronger (and generalized)
       version of @{thm DF_FD_DF_Sync_SKIP_iff[of r s A S]}.\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_imp_disjoint :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_imp_disjoint :
   \<open>A \<inter> S = {}\<close> if \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIPS R\<close>
 proof (rule ccontr)
   assume \<open>A \<inter> S \<noteq> {}\<close>
   then obtain a where \<open>a \<in> A\<close> and \<open>a \<in> S\<close> by blast
   have \<open>DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D DF {a} \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIPS R\<close>
-    by (intro mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF _ idem_FD]) (simp add: DF_subset \<open>a \<in> A\<close>)
+    by (intro mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF _ FD_refl]) (simp add: DF_subset \<open>a \<in> A\<close>)
   also have \<open>\<dots> = STOP\<close>
     by (subst DF_unfold)
       (simp add: \<open>a \<in> S\<close> SKIPS_def Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_left
@@ -299,17 +299,17 @@ corollary DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP_imp_disjoin
 
 end
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_imp_disjoint :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_imp_disjoint :
   \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D SKIPS R \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF A \<Longrightarrow> A \<inter> S = {}\<close>
-  by (metis Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_imp_disjoint Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+  by (metis Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_imp_disjoint Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) disjoint_imp_DF_eq_SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) disjoint_imp_DF_eq_SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
   \<open>A \<inter> S = {} \<Longrightarrow> DF A = SKIPS R \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF A\<close>
-  by (metis Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.disjoint_imp_DF_eq_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+  by (metis Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.disjoint_imp_DF_eq_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_imp_disjoint :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_imp_disjoint :
   \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D STOP \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF A \<Longrightarrow> A \<inter> S = {}\<close>
   and DF_FD_SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_imp_disjoint :
   \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF A \<Longrightarrow> A \<inter> S = {}\<close>
@@ -327,7 +327,7 @@ corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_STOP_Sy
 
 subsection \<open>Finally, \<^term>\<open>deadlock_free (P ||| Q)\<close>\<close>
 
-theorem (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_weak : \<open>DF (A \<union> B) \<sqsubseteq>\<^sub>F DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B\<close>
+theorem (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_weak : \<open>DF (A \<union> B) \<sqsubseteq>\<^sub>F DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B\<close>
   if nonempty: \<open>A \<noteq> {}\<close> \<open>B \<noteq> {}\<close>
     and intersect_hyp: \<open>B \<inter> S = {} \<or> (\<exists>y. B \<inter> S = {y} \<and> A \<inter> S \<subseteq> {y})\<close>
 proof -
@@ -392,7 +392,7 @@ proof -
 qed
 
 
-theorem (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
+theorem (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
   \<open>DF (A \<union> B) \<sqsubseteq>\<^sub>F DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B\<close> if \<open>A \<noteq> {}\<close> \<open>B \<noteq> {}\<close>
   and \<open>A \<inter> S = {} \<or> (\<exists>a. A \<inter> S = {a} \<and> B \<inter> S \<subseteq> {a}) \<or>
        B \<inter> S = {} \<or> (\<exists>b. B \<inter> S = {b} \<and> A \<inter> S \<subseteq> {b})\<close>
@@ -407,13 +407,13 @@ proof -
   next
     from that(1, 2) show \<open>A \<inter> S = {} \<or> (\<exists>a. A \<inter> S = {a} \<and> B \<inter> S \<subseteq> {a}) \<Longrightarrow>
                           DF (A \<union> B) \<sqsubseteq>\<^sub>F DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B\<close>
-      by (fold Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym, subst Un_commute)
-        (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_weak)
+      by (fold Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual, subst Un_commute)
+        (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.DF_F_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_weak)
   qed
 qed
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF :
   \<open>DF (A \<union> B) \<sqsubseteq>\<^sub>F\<^sub>D DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B\<close> if \<open>A \<noteq> {}\<close> \<open>B \<noteq> {}\<close>
   and \<open>A \<inter> S = {} \<or> (\<exists>a. A \<inter> S = {a} \<and> B \<inter> S \<subseteq> {a}) \<or>
        B \<inter> S = {} \<or> (\<exists>b. B \<inter> S = {b} \<and> A \<inter> S \<subseteq> {b})\<close>
@@ -421,7 +421,7 @@ lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_DF_Sync\<^s
   by (simp add: refine_defs div_free_DF D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
 
-theorem (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_iff:
+theorem (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_iff:
   \<open>DF (A \<union> B) \<sqsubseteq>\<^sub>F\<^sub>D DF A \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> DF B \<longleftrightarrow> 
    (     if A = {} then B \<inter> S = {}
     else if B = {} then A \<inter> S = {}
@@ -476,7 +476,7 @@ next
       (use "3.prems"(2) in \<open>simp add: "3.prems"(1) subset_singleton_iff
                                       Int_Un_distrib2 Un_singleton_iff, safe, simp_all\<close>)
   also have \<open>\<dots> \<sqsubseteq>\<^sub>F\<^sub>D DF (X l0) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l\<in>@(l1 # L). (DF (X l))\<close>
-    by (intro Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF idem_FD] "3.hyps"(2))
+    by (intro Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.mono_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF FD_refl] "3.hyps"(2))
       (use "3.prems" in auto)
   also have \<open>\<dots> = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l\<in>@(l0 # l1 # L). DF (X l)\<close> by simp
   finally show ?case .
@@ -486,24 +486,24 @@ qed
 
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>DF {a} = DF {a} \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP \<longleftrightarrow> a \<notin> S\<close>
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>DF {a} = DF {a} \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP \<longleftrightarrow> a \<notin> S\<close>
   by (metis DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP_imp_disjoint boolean_algebra.conj_zero_left
       disjoint_imp_DF_eq_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP insert_disjoint(1) order_refl)
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>DF {a} \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP = STOP \<longleftrightarrow> a \<in> S\<close>
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>DF {a} \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP = STOP \<longleftrightarrow> a \<in> S\<close>
   by (metis DF_unfold Diff_eq_empty_iff Diff_triv Int_empty_left Int_insert_left
       Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_right Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP
       Mndetprefix_is_STOP_iff Mprefix_empty empty_not_insert insert_Diff1)
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_FD_DF_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF : \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D DF A |||\<^sub>\<checkmark> DF A\<close>
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_FD_DF_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF : \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D DF A |||\<^sub>\<checkmark> DF A\<close>
   by (metis DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_iff inf_bot_right sup.idem)
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) DF_UNIV_FD_DF_UNIV_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_UNIV:
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) DF_UNIV_FD_DF_UNIV_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF_UNIV:
   \<open>DF UNIV \<sqsubseteq>\<^sub>F\<^sub>D DF UNIV |||\<^sub>\<checkmark> DF UNIV\<close>
   by (fact DF_FD_DF_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF)
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_deadlock_free :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_deadlock_free :
   \<open>deadlock_free P \<Longrightarrow> deadlock_free Q \<Longrightarrow> deadlock_free (P |||\<^sub>\<checkmark> Q)\<close>
   using DF_FD_DF_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF deadlock_free_of_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff_DF_FD_DF_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_DF by blast
 

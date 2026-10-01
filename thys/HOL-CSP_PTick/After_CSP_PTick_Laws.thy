@@ -80,7 +80,7 @@ next
   next
     show \<open>e \<in> ?rhs \<Longrightarrow> e \<in> (P \<^bold>;\<^sub>\<checkmark> Q)\<^sup>0\<close> for e
       by (simp add: initials_def Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs, elim disjE exE conjE)
-        (fastforce, metis list.simps(8) self_append_conv2 tickFree_Nil)
+        (fastforce, metis list.simps(8) self_append_conv2 tF_Nil)
   qed
 qed
 
@@ -88,11 +88,11 @@ qed
 
 subsection \<open>Synchronization Product\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) initials_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) initials_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0 =
    (if P = \<bottom> \<or> Q = \<bottom> then UNIV else
     {ev a |a. a \<in> S \<and> ev a \<in> P\<^sup>0 \<and> ev a \<in> Q\<^sup>0 \<or> a \<notin> S \<and> (ev a \<in> P\<^sup>0 \<or> ev a \<in> Q\<^sup>0)} \<union>
-    {\<checkmark>(r_s) |r_s r s. tick_join r s = Some r_s \<and> \<checkmark>(r) \<in> P\<^sup>0 \<and> \<checkmark>(s) \<in> Q\<^sup>0})\<close>
+    {\<checkmark>(r_s) |r_s r s. tj r s = Some r_s \<and> \<checkmark>(r) \<in> P\<^sup>0 \<and> \<checkmark>(s) \<in> Q\<^sup>0})\<close>
   (is \<open>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0 = (if P = \<bottom> \<or> Q = \<bottom> then UNIV else ?rhs_ev \<union> ?rhs_tick)\<close>)
 proof (split if_split, intro conjI impI)
   show \<open>P = \<bottom> \<or> Q = \<bottom> \<Longrightarrow> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0 = UNIV\<close>
@@ -108,7 +108,7 @@ next
       thus \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
       proof cases
         fix a assume \<open>e = ev a\<close> \<open>a \<in> S\<close> \<open>ev a \<in> P\<^sup>0\<close> \<open>ev a \<in> Q\<^sup>0\<close>
-        have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> (([ev a], [ev a]), S)\<close>
+        have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> (([ev a], [ev a]), S)\<close>
           by (simp add: \<open>a \<in> S\<close>)
         from \<open>ev a \<in> P\<^sup>0\<close> \<open>ev a \<in> Q\<^sup>0\<close> show \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
           by (simp add: \<open>e = ev a\<close> initials_def T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (use "*" in blast)
@@ -117,13 +117,13 @@ next
         from \<open>ev a \<in> P\<^sup>0 \<or> ev a \<in> Q\<^sup>0\<close> show \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
         proof (elim disjE)
           assume \<open>ev a \<in> P\<^sup>0\<close>
-          have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> (([ev a], []), S)\<close>
+          have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> (([ev a], []), S)\<close>
             by (simp add: \<open>a \<notin> S\<close>)
           from \<open>ev a \<in> P\<^sup>0\<close> show \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
             by (simp add: \<open>e = ev a\<close> initials_def T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (meson "*" is_processT1_TR)
         next
           assume \<open>ev a \<in> Q\<^sup>0\<close>
-          have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> (([], [ev a]), S)\<close>
+          have * : \<open>[ev a] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> (([], [ev a]), S)\<close>
             by (simp add: \<open>a \<notin> S\<close>)
           from \<open>ev a \<in> Q\<^sup>0\<close> show \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
             by (simp add: \<open>e = ev a\<close> initials_def T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (meson "*" is_processT1_TR)
@@ -131,26 +131,26 @@ next
       qed
     next
       assume \<open>e \<in> ?rhs_tick\<close>
-      then obtain r_s r s where \<open>tick_join r s = Some r_s\<close>
+      then obtain r_s r s where \<open>tj r s = Some r_s\<close>
         \<open>e = \<checkmark>(r_s)\<close> \<open>\<checkmark>(r) \<in> P\<^sup>0\<close> \<open>\<checkmark>(s) \<in> Q\<^sup>0\<close> by blast
-      have * : \<open>[\<checkmark>(r_s)] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> (([\<checkmark>(r)], [\<checkmark>(s)]), S)\<close>
-        by (simp add: \<open>tick_join r s = Some r_s\<close>)
+      have * : \<open>[\<checkmark>(r_s)] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> (([\<checkmark>(r)], [\<checkmark>(s)]), S)\<close>
+        by (simp add: \<open>tj r s = Some r_s\<close>)
       from \<open>\<checkmark>(r) \<in> P\<^sup>0\<close> \<open>\<checkmark>(s) \<in> Q\<^sup>0\<close> show \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
         by (simp add: \<open>e = \<checkmark>(r_s)\<close> initials_def T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) (use "*" in blast)
     qed
   next
     fix e assume \<open>e \<in> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<^sup>0\<close>
     then consider t_P t_Q where \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close>
-      \<open>[e] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close> 
+      \<open>[e] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close> 
     | (div) t u t_P t_Q
     where \<open>[e] = t @ u\<close> \<open>ftF u\<close> \<open>tF t \<or> u = []\<close>
-      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
       \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding initials_def T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     thus \<open>e \<in> ?rhs_ev \<union> ?rhs_tick\<close>
     proof cases
       show \<open>t_P \<in> \<T> P \<Longrightarrow> t_Q \<in> \<T> Q \<Longrightarrow>
-            [e] setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S) \<Longrightarrow>
+            [e] setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S) \<Longrightarrow>
             e \<in> ?rhs_ev \<union> ?rhs_tick\<close> for t_P t_Q
         by (cases e; cases t_P; cases t_Q)
           (auto simp add: initials_def setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps
@@ -227,11 +227,11 @@ next
       proof cases
         case D_P thus \<open>t \<in> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
           by (simp add: denot_projs "$" initial_P Cons_eq_append_conv Cons_eq_map_conv)
-            (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff)
+            (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff)
       next
         case D_Q thus \<open>t \<in> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
           by (simp add: denot_projs "$" initial_P Cons_eq_append_conv Cons_eq_map_conv)
-            (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) is_ev_def tickFree_Cons_iff)
+            (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) is_ev_def tF_Cons_iff)
       qed
     next
       fix t X assume \<open>(t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> \<open>t \<notin> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
@@ -240,7 +240,7 @@ next
       | (F_Q) t' r u where \<open>ev a # t = map (ev \<circ> of_ev) t' @ u\<close> \<open>t' @ [\<checkmark>(r)] \<in> \<T> P\<close>
         \<open>tF t'\<close> \<open>(u, X) \<in> \<F> (Q r)\<close>
         by (auto simp add: denot_projs "$" initial_P)
-          (metis (mono_tags, lifting) comp_apply list.simps(9) tickFree_Cons_iff)
+          (metis (mono_tags, lifting) comp_apply list.simps(9) tF_Cons_iff)
       thus \<open>(t, X) \<in> \<F> (P after\<^sub>\<alpha> a \<^bold>;\<^sub>\<checkmark> Q)\<close>
       proof cases
         case F_P thus \<open>(t, X) \<in> \<F> (P after\<^sub>\<alpha> a \<^bold>;\<^sub>\<checkmark> Q)\<close>
@@ -261,11 +261,11 @@ next
       proof cases
         case F_P thus \<open>(t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
           by (simp add: denot_projs "$" initial_P Cons_eq_map_conv)
-            (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff)
+            (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff)
       next
         case F_Q thus \<open>(t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
           by (simp add: denot_projs "$" initial_P Cons_eq_append_conv Cons_eq_map_conv)
-            (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff)
+            (metis append_Cons event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff)
       qed
     qed
   qed
@@ -297,17 +297,17 @@ proof -
       proof cases
         case D_P with non_BOT \<open>ev a \<notin> P\<^sup>0\<close> show \<open>t \<in> \<D> ?rhs\<close>
           by (simp add: denot_projs Cons_eq_append_conv Cons_eq_map_conv BOT_iff_Nil_D)
-            (metis D_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI tickFree_Cons_iff)
+            (metis D_T event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI tF_Cons_iff)
       next
         case D_Q with \<open>ev a \<notin> P\<^sup>0\<close> show \<open>t \<in> \<D> ?rhs\<close>
           by (simp add: denot_projs Cons_eq_append_conv Cons_eq_map_conv)
             (metis D_T append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI
-              is_processT3_TR_append tickFree_Cons_iff)
+              is_processT3_TR_append tF_Cons_iff)
       qed
     next
       from \<open>?prem\<close> show \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> for t
         by (simp add: denot_projs "$" Cons_eq_append_conv)
-          (metis append_Nil initials_memD tickFree_Nil)
+          (metis append_Nil initials_memD tF_Nil)
     next
       fix t X assume \<open>(t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> \<open>t \<notin> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
       then consider (F_P) t' where \<open>ev a # t = map (ev \<circ> of_ev) t'\<close>
@@ -329,7 +329,7 @@ proof -
       from \<open>?prem\<close> show \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> t \<notin> \<D> ?rhs \<Longrightarrow>
                          (t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> for t X
         by (simp add: denot_projs "$" Cons_eq_append_conv Cons_eq_map_conv split: if_split_asm)
-          (metis initials_memD self_append_conv2 tickFree_Nil)
+          (metis initials_memD self_append_conv2 tF_Nil)
     qed
   qed
 qed
@@ -363,9 +363,9 @@ next
   next
     from \<open>P \<noteq> \<bottom>\<close> show \<open>t \<in> \<D> ((P after\<^sub>\<alpha> a \<^bold>;\<^sub>\<checkmark> Q) \<sqinter> ?rhs) \<Longrightarrow> t \<in> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> for t
       by (auto simp add: denot_projs assms initials_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Cons_eq_append_conv Cons_eq_map_conv)
-        (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tickFree_Cons_iff,
-          metis Cons_eq_appendI append_T_imp_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) list.distinct(1),
-          metis append_Nil initials_memD tickFree_Nil)
+        (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) tF_Cons_iff,
+          metis Cons_eq_appendI append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) list.distinct(1),
+          metis append_Nil initials_memD tF_Nil)
   next
     fix t X assume \<open>(t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close> \<open>t \<notin> \<D> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
     then consider (F_P) t' where \<open>ev a # t = map (ev \<circ> of_ev) t'\<close>
@@ -391,12 +391,12 @@ next
       show \<open>(t, X) \<in> \<F> (P after\<^sub>\<alpha> a \<^bold>;\<^sub>\<checkmark> Q) \<Longrightarrow> t \<notin> \<D> (P after\<^sub>\<alpha> a \<^bold>;\<^sub>\<checkmark> Q) \<Longrightarrow>
             (t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
         by (simp add: denot_projs assms initials_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>P \<noteq> \<bottom>\<close> Cons_eq_append_conv Cons_eq_map_conv)
-          (metis (no_types, lifting) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) is_ev_def tickFree_Cons_iff)
+          (metis (no_types, lifting) Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1) is_ev_def tF_Cons_iff)
     next
       from assms show \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> t \<notin> \<D> ?rhs \<Longrightarrow> (t, X) \<in> \<F> ((P \<^bold>;\<^sub>\<checkmark> Q) after\<^sub>\<beta> a)\<close>
         by (simp add: denot_projs initials_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>P \<noteq> \<bottom>\<close>
             Cons_eq_append_conv Cons_eq_map_conv split: if_split_asm)
-          (metis append_Nil initials_memD tickFree_Nil)
+          (metis append_Nil initials_memD tF_Nil)
     qed
   qed
 qed
@@ -426,9 +426,9 @@ subsection \<open>Synchronization Product\<close>
 
 text \<open>Because of the types, we have to extend the \<^theory_text>\<open>locale\<close>.\<close>
 
-locale After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale = Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale tick_join +
+locale After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k = Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj +
   After\<^sub>l\<^sub>h\<^sub>s : After \<Psi>\<^sub>l\<^sub>h\<^sub>s + After\<^sub>r\<^sub>h\<^sub>s : After \<Psi>\<^sub>r\<^sub>h\<^sub>s + After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k : After \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-  for tick_join :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close>
+  for tj :: \<open>'r \<Rightarrow> 's \<Rightarrow> 't option\<close>
     and \<Psi>\<^sub>l\<^sub>h\<^sub>s :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<Psi>\<^sub>r\<^sub>h\<^sub>s :: \<open>[('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
     and \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>[('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a] \<Rightarrow> ('a, 't) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -438,8 +438,8 @@ notation After\<^sub>l\<^sub>h\<^sub>s.After (infixl \<open>after\<^sub>l\<^sub>
 notation After\<^sub>r\<^sub>h\<^sub>s.After (infixl \<open>after\<^sub>r\<^sub>h\<^sub>s\<close> 86)
 notation After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After (infixl \<open>after\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> 86)
 
-sublocale After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym :
-  After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>s r. tick_join r s\<close> \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+sublocale After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual :
+  After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>\<lambda>s r. tj r s\<close> \<Psi>\<^sub>r\<^sub>h\<^sub>s \<Psi>\<^sub>l\<^sub>h\<^sub>s \<Psi>\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
   by unfold_locales
 
 
@@ -459,7 +459,7 @@ next
     with init have \<open>ev a # t \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close> by (simp add: After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.D_After)
     then obtain u v t_P t_Q
       where * : \<open>ev a # t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     from "*"(4, 5) non_BOT have \<open>u \<noteq> []\<close>
@@ -467,7 +467,7 @@ next
     with "*"(1) obtain u' where \<open>u = ev a # u'\<close> \<open>t = u' @ v\<close>
       by (cases u) simp_all
     from "*"(4, 5) initial_hyps(2) obtain t_P'
-      where \<open>t_P = ev a # t_P'\<close> \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+      where \<open>t_P = ev a # t_P'\<close> \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       by (cases t_P; cases t_Q)
         (auto simp add: setinterleaving\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simps \<open>u = ev a # u'\<close>
           split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.splits if_split_asm option.split_asm
@@ -483,14 +483,14 @@ next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
     then obtain u v t_P t_Q
       where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<T> Q \<or>
          t_P \<in> \<T> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<D> Q\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     have \<open>ev a # t = (ev a # u) @ v\<close> by (simp add: "*"(1))
     moreover from "*"(2) have \<open>tF (ev a # u)\<close> by simp
     moreover from "*"(4)
-    have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev a # t_P, t_Q), S)\<close>
+    have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev a # t_P, t_Q), S)\<close>
       by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
           setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinL)
     moreover from "*"(5) have \<open>ev a # t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or>
@@ -507,11 +507,11 @@ next
       by (simp_all add: After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After_projs init)
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from "*"(2, 3) initial_hyps(2) obtain t_P'
-      where \<open>t_P = ev a # t_P'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+      where \<open>t_P = ev a # t_P'\<close> \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       by (metis Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE F_T initials_memI)
     moreover from "*"(1) have \<open>(t_P', X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close>
       by (simp add: \<open>t_P = ev a # t_P'\<close> After\<^sub>l\<^sub>h\<^sub>s.F_After initial_hyps(1))
@@ -522,13 +522,13 @@ next
       \<open>t \<notin> \<D> ?rhs\<close>
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from "*"(1) have \<open>(ev a # t_P, X_P) \<in> \<F> P\<close>
       by (simp add: After\<^sub>l\<^sub>h\<^sub>s.F_After initial_hyps(1))
     moreover from "*"(3)
-    have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev a # t_P, t_Q), S)\<close>
+    have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev a # t_P, t_Q), S)\<close>
       by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
           setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinL)
     ultimately have \<open>(ev a # t, X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
@@ -538,12 +538,12 @@ next
 qed
 
 
-lemma (in After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) not_initialL_initialR_not_in_After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k:
+lemma (in After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) not_initialL_initialR_not_in_After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k:
   \<open>(P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q) after\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k a = P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q after\<^sub>r\<^sub>h\<^sub>s a\<close> (is \<open>?lhs = ?rhs\<close>)
   if initial_hyps: \<open>ev a \<notin> P\<^sup>0\<close> \<open>ev a \<in> Q\<^sup>0\<close> and notin: \<open>a \<notin> S\<close>
-  using After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.initialL_not_initialR_not_in_After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
+  using After_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.initialL_not_initialR_not_in_After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
     [OF \<open>ev a \<in> Q\<^sup>0\<close> \<open>ev a \<notin> P\<^sup>0\<close> \<open>a \<notin> S\<close>]
-  by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
+  by (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
 
 
 lemma not_initialL_in_After_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k:
@@ -574,7 +574,7 @@ next
     hence \<open>ev a # t \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close> by (simp add: After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.D_After init)
     then obtain u v t_P t_Q
       where * : \<open>ev a # t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     from "*"(4, 5) non_BOT have \<open>u \<noteq> []\<close>
@@ -583,7 +583,7 @@ next
       by (cases u) simp_all
     from "*"(4) inside initial_hyps(1, 2) \<open>u = ev a # u'\<close>
     obtain t_P' t_Q' where \<open>t_P = ev a # t_P'\<close> \<open>t_Q = ev a # t_Q'\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), S)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), S)\<close>
       by (metis (no_types, opaque_lifting) Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
     moreover from "*"(2) have \<open>tF u'\<close> by (simp add: \<open>u = ev a # u'\<close>)
     moreover from "*"(5)
@@ -597,13 +597,13 @@ next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
     then obtain u v t_P t_Q
       where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<T> (Q after\<^sub>r\<^sub>h\<^sub>s a) \<or>
                  t_P \<in> \<T> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<D> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     from "*"(1) have \<open>ev a # t = (ev a # u) @ v\<close> by simp
     moreover from "*"(2) have \<open>tF (ev a # u)\<close> by simp
-    moreover from "*"(4) have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub>
+    moreover from "*"(4) have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub>
                                ((ev a # t_P, ev a # t_Q), S)\<close>
       by (simp add: inside)
     moreover from "*"(5) have \<open>ev a # t_P \<in> \<D> P \<and> ev a # t_Q \<in> \<T> Q \<or>
@@ -618,12 +618,12 @@ next
       by (simp_all add: After.After_projs init)
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from "*"(3) obtain t_P' t_Q'
       where \<open>t_P = ev a # t_P'\<close> \<open>t_Q = ev a # t_Q'\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q'), S)\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q'), S)\<close>
       by (metis (no_types) Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE inside)
     moreover from "*"(1, 2) have \<open>(t_P', X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close>
       \<open>(t_Q', X_Q) \<in> \<F> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
@@ -636,13 +636,13 @@ next
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close>
         \<open>(t_Q, X_Q) \<in> \<F> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from "*"(1, 2) have \<open>(ev a # t_P, X_P) \<in> \<F> P\<close>
       \<open>(ev a # t_Q, X_Q) \<in> \<F> Q\<close>
       by (simp_all add: After.F_After initial_hyps)
-    moreover from "*"(3) have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub>
+    moreover from "*"(3) have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub>
                                ((ev a # t_P, ev a # t_Q), S)\<close>
       by (simp add: inside)
     ultimately have \<open>(ev a # t, X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
@@ -670,7 +670,7 @@ next
       by (simp add: After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.D_After init)
     then obtain u v t_P t_Q
       where * : \<open>ev a # t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     from "*"(4, 5) non_BOT have \<open>u \<noteq> []\<close>
@@ -680,14 +680,14 @@ next
     from "*"(2) have \<open>tF u'\<close> by (simp add: \<open>u = ev a # u'\<close>)
     from "*"(4) notin \<open>u = ev a # u'\<close>
     consider t_P' where \<open>t_P = ev a # t_P'\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
     | t_Q' where \<open>t_Q = ev a # t_Q'\<close>
-      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+      \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
       by (metis (no_types) Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
     thus \<open>t \<in> \<D> (?rhs1 \<sqinter> ?rhs2)\<close>
     proof cases
       fix t_P' assume $ : \<open>t_P = ev a # t_P'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       from "*"(5) have \<open>t_P' \<in> \<D> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<T> Q \<or>
                         t_P' \<in> \<T> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<D> Q\<close>
         by (simp add: "$"(1) After\<^sub>l\<^sub>h\<^sub>s.After_projs initial_hyps(1))
@@ -696,7 +696,7 @@ next
       thus \<open>t \<in> \<D> (?rhs1 \<sqinter> ?rhs2)\<close> by (simp add: D_Ndet)
     next
       fix t_Q' assume $ : \<open>t_Q = ev a # t_Q'\<close>
-        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+        \<open>u' setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
       from "*"(5) have \<open>t_P \<in> \<D> P \<and> t_Q' \<in> \<T> (Q after\<^sub>r\<^sub>h\<^sub>s a) \<or>
                         t_P \<in> \<T> P \<and> t_Q' \<in> \<D> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
         by (simp add: "$"(1) After\<^sub>r\<^sub>h\<^sub>s.After_projs initial_hyps(2))
@@ -713,14 +713,14 @@ next
       assume \<open>t \<in> \<D> ?rhs1\<close>
       then obtain u v t_P t_Q
         where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
           \<open>t_P \<in> \<D> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<T> Q \<or>
                    t_P \<in> \<T> (P after\<^sub>l\<^sub>h\<^sub>s a) \<and> t_Q \<in> \<D> Q\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       from "*"(1) have \<open>ev a # t = (ev a # u) @ v\<close> by simp
       moreover from "*"(2) have \<open>tF (ev a # u)\<close> by simp
       moreover from "*"(4)
-      have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev a # t_P, t_Q), S)\<close>
+      have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev a # t_P, t_Q), S)\<close>
         by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
             setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinL)
       moreover from "*"(5) have \<open>ev a # t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or>
@@ -732,13 +732,13 @@ next
       assume \<open>t \<in> \<D> ?rhs2\<close>
       then obtain u v t_P t_Q
         where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
           \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> (Q after\<^sub>r\<^sub>h\<^sub>s a) \<or>
                    t_P \<in> \<T> P \<and> t_Q \<in> \<D> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
       from "*"(1) have \<open>ev a # t = (ev a # u) @ v\<close> by simp
       moreover from "*"(2) have \<open>tF (ev a # u)\<close> by simp
-      moreover from "*"(4) have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, ev a # t_Q), S)\<close>
+      moreover from "*"(4) have \<open>ev a # u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, ev a # t_Q), S)\<close>
         by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
             setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinR)
       moreover from "*"(5) have \<open>t_P \<in> \<D> P \<and> ev a # t_Q \<in> \<T> Q \<or>
@@ -754,19 +754,19 @@ next
       by (simp_all add: After\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.After_projs init)
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+        \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from "*"(3) notin
     consider t_P' where \<open>t_P = ev a # t_P'\<close>
-      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
     | t_Q' where \<open>t_Q = ev a # t_Q'\<close>
-      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+      \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
       by (metis (no_types) Cons_ev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
     thus \<open>(t, X) \<in> \<F> (?rhs1 \<sqinter> ?rhs2)\<close>
     proof cases
       fix t_P' assume $ : \<open>t_P = ev a # t_P'\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P', t_Q), S)\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P', t_Q), S)\<close>
       from "*"(1) have \<open>(t_P', X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close>
         by (simp add: "$"(1) After\<^sub>l\<^sub>h\<^sub>s.F_After initial_hyps(1))
       with "$"(2) "*"(2, 4) have \<open>(t, X) \<in> \<F> ?rhs1\<close>
@@ -774,7 +774,7 @@ next
       thus \<open>(t, X) \<in> \<F> (?rhs1 \<sqinter> ?rhs2)\<close> by (simp add: F_Ndet)
     next
       fix t_Q' assume $ : \<open>t_Q = ev a # t_Q'\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q'), S)\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q'), S)\<close>
       from "*"(2) have \<open>(t_Q', X_Q) \<in> \<F> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
         by (simp add: "$"(1) After\<^sub>r\<^sub>h\<^sub>s.F_After initial_hyps(2))
       with "$"(2) "*"(1, 4) have \<open>(t, X) \<in> \<F> ?rhs2\<close>
@@ -791,13 +791,13 @@ next
       assume \<open>(t, X) \<in> \<F> ?rhs1\<close> \<open>t \<notin> \<D> ?rhs1\<close>
       then obtain t_P t_Q X_P X_Q
         where * : \<open>(t_P, X_P) \<in> \<F> (P after\<^sub>l\<^sub>h\<^sub>s a)\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       from "*"(1) have \<open>(ev a # t_P, X_P) \<in> \<F> P\<close>
         by (simp add: After\<^sub>l\<^sub>h\<^sub>s.F_After initial_hyps(1))
       moreover from "*"(3)
-      have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((ev a # t_P, t_Q), S)\<close>
+      have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((ev a # t_P, t_Q), S)\<close>
         by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
             setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinL)
       ultimately show \<open>(ev a # t, X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
@@ -806,13 +806,13 @@ next
       assume \<open>(t, X) \<in> \<F> ?rhs2\<close> \<open>t \<notin> \<D> ?rhs2\<close>
       then obtain t_P t_Q X_P X_Q
         where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> (Q after\<^sub>r\<^sub>h\<^sub>s a)\<close>
-          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
-          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tick_join X_P S X_Q\<close>
+          \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
+          \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k tj X_P S X_Q\<close>
         unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
       from "*"(2) have \<open>(ev a # t_Q, X_Q) \<in> \<F> Q\<close>
         by (simp add: After\<^sub>r\<^sub>h\<^sub>s.F_After initial_hyps(2))
       moreover from "*"(3)
-      have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, ev a # t_Q), S)\<close>
+      have \<open>ev a # t setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, ev a # t_Q), S)\<close>
         by (metis notin rev.simps(2) rev_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev_rev_iff
             setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc_notinR)
       ultimately show \<open>(ev a # t, X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>

@@ -140,7 +140,7 @@ proof -
     case (add x F)
     then show \<open>P (add_mset x F)\<close>
       using Diff_eq_empty_iff_mset add_diff_cancel_left add_diff_cancel_left'
-        add_single_right_eq_add_mset local.insert mset_subset_eq_insertD
+        add_single_right_eq_add_mset[symmetric] local.insert mset_subset_eq_insertD
         subset_mset.le_iff_add subset_mset.less_imp_le by fastforce
   qed
 qed
@@ -181,7 +181,7 @@ proof-
     show \<open>P (add_mset x (add_mset a F))\<close>
       apply (subst hyp) 
           apply (simp add: \<open>A = add_mset a A'\<close>)
-         apply (metis \<open>add_mset x (add_mset a F) \<subseteq># A\<close> add_single_right_eq_add_mset
+         apply (metis \<open>add_mset x (add_mset a F) \<subseteq># A\<close> add_single_right_eq_add_mset[symmetric]
           mset_subset_eq_insertD subset_mset.add_diff_inverse 
           subset_mset.add_le_cancel_left subset_mset_def)
         apply (meson \<open>add_mset x (add_mset a F) \<subseteq># A\<close> mset_subset_eq_insertD

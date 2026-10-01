@@ -58,7 +58,6 @@ text \<open>We already have @{thm non_destructive_id(2)}, and can easily notice
       We add a \<^theory_text>\<open>simproc_setup\<close> to enable the simplifier to automatically handle goals
       of this form, regardless of the number of arguments on which the function is applied.\<close>
 
-
 simproc_setup apply_non_destructiveness (\<open>non_destructive (\<lambda>f. E f)\<close>) = \<open>
   fn _ => fn ctxt => fn lhs =>
     (case Thm.term_of lhs of _ $ foo =>
@@ -83,6 +82,7 @@ simproc_setup apply_non_destructiveness (\<open>non_destructive (\<lambda>f. E f
 
 lemma \<open>non_destructive (\<lambda>f. f a b c d e f' g h i j k l m n o' p q r s t u v w x y z)\<close>
   using [[simp_trace]] by simp \<comment> \<open>test\<close>
+
 
 
 (*<*)

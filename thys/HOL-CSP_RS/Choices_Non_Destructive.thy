@@ -69,7 +69,7 @@ next
   next
     show \<open>([], X) \<in> \<F> ?rhs \<Longrightarrow> ([], X) \<in> \<F> ?lhs\<close> for X
       by (auto simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs F_GlobalDet)
-        (metis append_eq_Cons_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tickFree_Cons_iff)
+        (metis append_eq_Cons_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff)
   next
     show \<open>(e # t, X) \<in> \<F> ?lhs \<Longrightarrow> (e # t, X) \<in> \<F> ?rhs\<close> for e t X
       by (auto simp add: \<open>n \<noteq> 0\<close> F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k GlobalDet_projs split: if_split_asm)

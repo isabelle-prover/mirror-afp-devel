@@ -36,7 +36,7 @@ chapter \<open>Non Destructiveness Rules\<close>
 theory Sequential_Composition_Generalized_Non_Destructive
   imports "HOL-CSP_RS" CSP_PTick_Monotonicities
 begin
-(*>*)
+  (*>*)
 
 
 section \<open>Sequential Composition\<close>
@@ -52,13 +52,13 @@ proof -
       from this(2) consider (D_P) u v where \<open>t = map (ev \<circ> of_ev) u @ v\<close> \<open>u \<in> \<D> (P \<down> n)\<close> \<open>tF u\<close> \<open>ftF v\<close>
         | (D_Q) u r v where \<open>t = map (ev \<circ> of_ev) u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>length u < n\<close> \<open>tF u\<close> \<open>v \<in> \<D> ((Q \<down> n) r)\<close>
         by (auto simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-         (metis D_P D_imp_front_tickFree D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT3_TR_append linorder_less_linear,
-           metis D_P D_imp_front_tickFree D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7 is_processT9)
+         (metis D_P D_imp_ftF D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT3_TR_append linorder_less_linear,
+           metis D_P D_imp_ftF D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI is_processT7 is_processT9)
       hence \<open>t \<in> \<D> ?lhs\<close>
       proof cases
         case D_P thus \<open>t \<in> \<D> ?lhs\<close>
           by (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE, simp_all add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-            (metis, metis front_tickFree_append length_map tickFree_map_ev_comp)
+            (metis, metis ftF_append length_map tF_map_ev_comp)
       next
         case D_Q
         from D_Q(5) show \<open>t \<in> \<D> ?lhs\<close>
@@ -80,14 +80,14 @@ proof -
       qed
     }
     thus \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
-      by (metis D_imp_front_tickFree div_butlast_when_non_tickFree_iff front_tickFree_iff_tickFree_butlast)
+      by (metis D_imp_ftF div_butlast_when_non_tF_iff ftF_iff_tF_butlast)
   next
     have \<open>(P \<down> n) \<^bold>;\<^sub>\<checkmark> (Q \<down> n) \<sqsubseteq> P \<^bold>;\<^sub>\<checkmark> Q\<close>
       by (simp add: fun_below_iff mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k restriction_fun_def
           restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self)
     thus \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> \<D> ((P \<down> n) \<^bold>;\<^sub>\<checkmark> (Q \<down> n)) \<subseteq> \<D> (P \<^bold>;\<^sub>\<checkmark> Q \<down> n) \<Longrightarrow>
           (t, X) \<in> \<F> ?lhs\<close> for t X
-      by (meson F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI in_mono is_processT8 le_approx2)
+      by (meson F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI in_mono is_processT8 le_approxD(2))
   qed
 qed
 
@@ -103,7 +103,7 @@ next
   have \<open>((SEQ\<^sub>\<checkmark> l \<in>@ (a # L). P l) \<down> n) r = P a r \<^bold>;\<^sub>\<checkmark> (SEQ\<^sub>\<checkmark> l \<in>@ L. P l) \<down> n\<close>
     by (simp add: restriction_fun_def)
   also have \<open>\<dots> \<sqsubseteq>\<^sub>F\<^sub>D (P a r \<down> n) \<^bold>;\<^sub>\<checkmark> SEQ\<^sub>\<checkmark> l \<in>@ L. (P l \<down> n)\<close>
-    by (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF idem_FD hyp]])
+    by (fact trans_FD[OF restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD[OF FD_refl hyp]])
   also have \<open>\<dots> = (SEQ\<^sub>\<checkmark> l \<in>@ (a # L). (P l \<down> n)) r\<close>
     by (simp add: restriction_fun_def)
   finally show \<open>((SEQ\<^sub>\<checkmark> l \<in>@ (a # L). P l) \<down> n) r \<sqsubseteq>\<^sub>F\<^sub>D \<dots>\<close> .
@@ -123,7 +123,7 @@ proof (rule order_non_destructiveI, clarify)
   proof (rule leFD_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI)
     show \<open>t \<in> \<D> (P' \<^bold>;\<^sub>\<checkmark> Q') \<Longrightarrow> t \<in> \<D> (P \<^bold>;\<^sub>\<checkmark> Q \<down> n)\<close> for t
       by (metis (mono_tags, opaque_lifting) \<open>P \<down> n = P' \<down> n\<close> \<open>Q \<down> n = Q' \<down> n\<close> in_mono
-                le_ref1 mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD restriction_fun_def restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
+                le_FD_D(1) mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD restriction_fun_def restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self
                 restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD)
   next
     show \<open>(s, X) \<in> \<F> (P' \<^bold>;\<^sub>\<checkmark> Q') \<Longrightarrow> (s, X) \<in> \<F> (P \<^bold>;\<^sub>\<checkmark> Q \<down> n)\<close> for s X
@@ -173,10 +173,10 @@ next
         show \<open>t \<in> \<D> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
           by (auto simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
             (metis D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI add_leE length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-                   length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map order_le_imp_less_or_eq tickFree_map_ev_comp,
-              metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI add_leD1 front_tickFree_Nil initials_memI' is_processT3_TR_append
+                   length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map order_le_imp_less_or_eq tF_map_ev_comp,
+              metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI add_leD1 ftF_Nil initials_memI' is_processT3_TR_append
                     le_SucE length_greater_0_conv length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map
-                    less_numeral_extra(3) one_is_add order_less_le_trans self_append_conv2 tickFree_map_ev_comp)
+                    less_numeral_extra(3) one_is_add order_less_le_trans self_append_conv2 tF_map_ev_comp)
       next
         fix k assume \<open>n = Suc k\<close>
         from \<open>t \<in> \<D> (f y \<^bold>;\<^sub>\<checkmark> g y)\<close>
@@ -190,11 +190,11 @@ next
             by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
               (metis D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI length_append length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
                      length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map linorder_not_less
-                     not_less_iff_gr_or_eq that(1) tickFree_map_ev_comp trans_less_add1)
+                     not_less_iff_gr_or_eq that(1) tF_map_ev_comp trans_less_add1)
         next
           case D_Q
           from \<open>\<checkmark>(r) \<notin> (f y)\<^sup>0\<close> D_Q(2, 3) obtain a u' where \<open>u = ev a # u'\<close>
-            by (metis append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI neq_Nil_conv tickFree_Cons_iff)
+            by (metis append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI neq_Nil_conv tF_Cons_iff)
           with \<open>length t \<le> Suc n\<close> D_Q(1)
           consider \<open>v = []\<close> \<open>length u = Suc n\<close> | \<open>u' = []\<close> \<open>length v = n\<close> | \<open>length u \<le> n\<close> \<open>length v < n\<close>
             by simp
@@ -205,20 +205,18 @@ next
             from D_Q(1-3) \<open>f x \<down> Suc n = f y \<down> Suc n\<close>
             show \<open>v = [] \<Longrightarrow> length u = Suc n \<Longrightarrow> t \<in> \<D> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
               by (simp add: D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-                (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI front_tickFree_Nil is_processT3_TR_append le_Suc_eq
-                       length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map self_append_conv tickFree_map_ev_comp)
+                (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI ftF_Nil is_processT3_TR_append le_Suc_eq
+                       length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map self_append_conv tF_map_ev_comp)
           next
             assume \<open>u' = []\<close> \<open>length v = n\<close>
             from \<open>f x \<down> Suc n = f y \<down> Suc n\<close> \<open>n = Suc k\<close> \<open>u = ev a # u'\<close> \<open>u' = []\<close>
             have \<open>u @ [\<checkmark>(r)] \<in> \<T> (f x)\<close>
-              by simp
-                (smt (verit, best) D_Q(2) D_T One_nat_def T_F_spec add_Suc_shift append_Cons
-                     append_self_conv2 le_add1 le_approx2 length_Cons list.size(3)
-                     non_tickFree_tick not_tickFree_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff plus_1_eq_Suc
-                     restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self tickFree_append_iff)
+              by simp (metis (no_types, lifting) D_Q(2) One_nat_def Suc_le_mono
+                  T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI append_Cons append_eq_append_conv2 append_self_conv
+                  le_add1 length_Cons length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k list.size(3) plus_1_eq_Suc)
             from D_Q(4) consider \<open>tF v\<close> \<open>v \<in> \<T> (g x r)\<close> | \<open>\<not> tF v\<close> \<open>v \<in> \<D> (g x r)\<close>
               by (metis D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI \<open>g x \<down> n = g y \<down> n\<close> \<open>length v = n\<close> dual_order.refl
-                  length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k not_tickFree_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff restriction_fun_def)
+                  length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k not_tF_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff restriction_fun_def)
             thus \<open>t \<in> \<D> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
             proof cases
               assume \<open>tF v\<close> \<open>v \<in> \<T> (g x r)\<close>
@@ -258,15 +256,15 @@ next
         with \<open>length t \<le> Suc n\<close> \<open>(t, X) \<in> \<F> (f y \<^bold>;\<^sub>\<checkmark> g y)\<close> \<open>f x \<down> Suc n = f y \<down> Suc n\<close> \<open>\<And>r. \<checkmark>(r) \<notin> (f y)\<^sup>0\<close>
         show \<open>(t, X) \<in> \<F> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
           by (auto simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-            (metis F_T F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI antisym_conv2 append_Nil2 front_tickFree_Nil
+            (metis F_T F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI antisym_conv2 append_Nil2 ftF_Nil
                    length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_less_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-                   length_map tickFree_map_ev_comp,
-              metis add_leE front_tickFree_Nil initials_memI is_processT3_TR_append le_Suc_eq le_ref2T
+                   length_map tF_map_ev_comp,
+              metis add_leE ftF_Nil initials_memI is_processT3_TR_append le_Suc_eq le_FD_D(3)
                     le_zero_eq length_0_conv length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map one_is_add
-                    restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self self_append_conv2 subset_iff tickFree_map_ev_comp,
+                    restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_self self_append_conv2 subset_iff tF_map_ev_comp,
               metis D_T D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI add_leD1 le_SucE le_imp_less_Suc
                     length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_less_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-                    length_map tickFree_map_ev_comp)
+                    length_map tF_map_ev_comp)
       next
         fix k assume \<open>n = Suc k\<close>
         from \<open>(t, X) \<in> \<F> (f y \<^bold>;\<^sub>\<checkmark> g y)\<close> consider \<open>t \<in> \<D> (f y \<^bold>;\<^sub>\<checkmark> g y)\<close>
@@ -306,7 +304,7 @@ next
       next
         case F_Q
         from \<open>\<checkmark>(r) \<notin> (f y)\<^sup>0\<close> F_Q(2, 3) obtain a u' where \<open>u = ev a # u'\<close>
-            by (metis append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI neq_Nil_conv tickFree_Cons_iff)
+            by (metis append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) initials_memI neq_Nil_conv tF_Cons_iff)
           with \<open>length t \<le> Suc n\<close> F_Q(1)
           consider \<open>v = []\<close> \<open>length u = Suc n\<close> | \<open>u' = []\<close> \<open>length v = n\<close> | \<open>length u \<le> n\<close> \<open>length v < n\<close>
             by simp
@@ -317,20 +315,18 @@ next
             from F_Q(1-3) \<open>f x \<down> Suc n = f y \<down> Suc n\<close>
             show \<open>v = [] \<Longrightarrow> length u = Suc n \<Longrightarrow> (t, X) \<in> \<F> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
               by (simp add: F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-                (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI front_tickFree_Nil is_processT3_TR_append le_Suc_eq
-                       length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map self_append_conv tickFree_map_ev_comp)
+                (metis T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI ftF_Nil is_processT3_TR_append le_Suc_eq
+                       length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k length_map self_append_conv tF_map_ev_comp)
           next
             assume \<open>u' = []\<close> \<open>length v = n\<close>
             from \<open>f x \<down> Suc n = f y \<down> Suc n\<close> \<open>n = Suc k\<close> \<open>u = ev a # u'\<close> \<open>u' = []\<close>
             have \<open>u @ [\<checkmark>(r)] \<in> \<T> (f x)\<close>
-              by simp
-                (smt (verit, best) F_Q(2) D_T One_nat_def T_F_spec add_Suc_shift append_Cons
-                     append_self_conv2 le_add1 le_approx2 length_Cons list.size(3)
-                     non_tickFree_tick not_tickFree_in_D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff plus_1_eq_Suc
-                     restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_approx_self tickFree_append_iff)
+              by simp (metis (no_types, lifting) F_Q(2) One_nat_def Suc_le_mono
+                  T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI append_Cons append_eq_append_conv2 append_self_conv
+                  le_add1 length_Cons length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k list.size(3) plus_1_eq_Suc)
             from F_Q(4) consider \<open>tF v\<close> \<open>v \<in> \<T> (g x r)\<close> | \<open>\<not> tF v\<close> \<open>(v, X) \<in> \<F> (g x r)\<close>
               by (metis F_T F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kI \<open>g x \<down> n = g y \<down> n\<close> \<open>length v = n\<close> dual_order.refl
-                  length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k not_tickFree_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff restriction_fun_def)
+                  length_le_in_T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k not_tF_in_F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff restriction_fun_def)
             thus \<open>(t, X) \<in> \<F> (f x \<^bold>;\<^sub>\<checkmark> g x \<down> Suc n)\<close>
             proof cases
               assume \<open>tF v\<close> \<open>v \<in> \<T> (g x r)\<close>

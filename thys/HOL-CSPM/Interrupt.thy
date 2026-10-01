@@ -77,8 +77,8 @@ proof -
     thus \<open>([], {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by fast
   next
     show \<open>(t, X) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7 \<Longrightarrow> ftF t\<close> for t X
-      by (simp add: is_processT2 D_imp_front_tickFree front_tickFree_append)
-        (meson front_tickFree_append front_tickFree_dw_closed is_processT2_TR process_charn)
+      by (simp add: is_processT2 D_imp_ftF ftF_append)
+        (meson ftF_append ftF_dw_closed is_processT2_TR process_charn)
   next
     fix t u
     show \<open>(t @ u, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7 \<Longrightarrow>
@@ -98,12 +98,12 @@ proof -
       proof (elim disjE)
         assume \<open>(t @ u @ [a], {}) \<in> ?f1\<close>
         hence \<open>(t, {}) \<in> ?f3\<close>
-          by simp (meson T_F append_T_imp_tickFree is_processT snoc_eq_iff_butlast) 
+          by simp (meson T_F append_T_imp_tF is_processT snoc_eq_iff_butlast) 
         thus \<open>(t, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by blast
       next
         assume \<open>(t @ u @ [a], {}) \<in> ?f2\<close>
         hence \<open>(t, {}) \<in> ?f3\<close>
-          by simp (metis T_F Nil_is_append_conv append_T_imp_tickFree is_processT list.discI)
+          by simp (metis T_F Nil_is_append_conv append_T_imp_tF is_processT list.discI)
         thus \<open>(t, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by blast
       next
         assume \<open>(t @ u @ [a], {}) \<in> ?f3\<close>
@@ -118,7 +118,7 @@ proof -
         proof (cases \<open>u' = []\<close>)
           assume \<open>u' = []\<close>
           with "*"(1, 2, 3) have \<open>(t, {}) \<in> ?f3\<close>
-            by simp (metis T_F process_charn tickFree_append_iff)
+            by simp (metis T_F process_charn tF_append_iff)
           thus \<open>(t, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by blast
         next
           assume \<open>u' \<noteq> []\<close>
@@ -132,7 +132,7 @@ proof -
       next
         assume \<open>(t @ u @ [a], {}) \<in> ?f6\<close>
         hence \<open>(t, {}) \<in> ?f3\<close>
-          by simp (meson D_T append_T_imp_tickFree process_charn snoc_eq_iff_butlast)
+          by simp (meson D_T append_T_imp_tF process_charn snoc_eq_iff_butlast)
         thus \<open>(t, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by blast
       next
         assume \<open>(t @ u @ [a], {}) \<in> ?f7\<close>
@@ -140,7 +140,7 @@ proof -
           where * : \<open>t @ u @ [a] = t' @ u'\<close> \<open>t' \<in> \<T> P\<close> \<open>tF t'\<close> \<open>u' \<in> \<D> Q\<close> by blast
         hence \<open>(t @ u, {}) \<in> (if length u' \<le> 1 then ?f3 else ?f4)\<close>
           apply (cases u' rule: rev_cases; simp)
-          by (metis T_F append_assoc process_charn tickFree_append_iff)
+          by (metis T_F append_assoc process_charn tF_append_iff)
             (metis D_T T_F is_processT3)
         thus \<open>(t, {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close>
           by (intro hyp) (meson UnI1 UnI2)
@@ -200,8 +200,8 @@ proof -
     next
       assume \<open>(t, X) \<in> ?f3\<close>
       with assm[THEN conjunct2] have \<open>(t, X \<union> Y) \<in> ?f3\<close>
-        by simp (metis F_T T_F T_nonTickFree_imp_decomp append1_eq_conv append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct_disc(2)
-            is_processT5_S7' list.distinct(1) tickFree_Cons_iff tickFree_append_iff)
+        by simp (metis F_T T_F T_not_tF_imp_decomp append1_eq_conv append_Nil event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct_disc(2)
+            is_processT5_S7' list.distinct(1) tF_Cons_iff tF_append_iff)
       thus \<open>(t, X \<union> Y) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> by blast
     next
       assume \<open>(t, X) \<in> ?f4\<close>
@@ -225,8 +225,8 @@ proof -
   next
     fix t r X
     have * : \<open>(t @ [\<checkmark>(r)], {}) \<notin> ?f2 \<union> ?f3 \<union> ?f5\<close>
-      by simp (metis T_imp_front_tickFree front_tickFree_Cons_iff front_tickFree_append_iff
-          non_tickFree_tick tickFree_Cons_iff tickFree_Nil)
+      by simp (meson event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff
+          ftF_nonempty_append_imp is_processT2_TR list.discI)
     assume \<open>(t @ [\<checkmark>(r)], {}) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close>
     with "*" have \<open>(t @ [\<checkmark>(r)], {}) \<in> ?f1 \<or> (t @ [\<checkmark>(r)], {}) \<in> ?f4 \<or>
                    (t @ [\<checkmark>(r)], {}) \<in> ?f6 \<or> (t @ [\<checkmark>(r)], {}) \<in> ?f7\<close> by fast
@@ -261,7 +261,7 @@ proof -
     show \<open>t \<in> ?d1 \<union> ?d2 \<and> tF t \<and> ftF u \<Longrightarrow> t @ u \<in> ?d1 \<union> ?d2\<close> for t u
       apply (simp, elim conjE disjE exE)
       by (solves \<open>simp add: is_processT7\<close>)      
-        (meson append.assoc is_processT7 tickFree_append_iff)
+        (meson append.assoc is_processT7 tF_append_iff)
   next
     show \<open>t \<in> ?d1 \<union> ?d2 \<Longrightarrow> (t, X) \<in> ?f1 \<union> ?f2 \<union> ?f3 \<union> ?f4 \<union> ?f5 \<union> ?f6 \<union> ?f7\<close> for t X
       by blast
@@ -313,10 +313,23 @@ lemma T_Interrupt :
        apply (meson is_processT4_empty is_processT6)
       apply auto[2]
     apply (metis is_processT8)
-   apply (metis is_processT4_empty nonTickFree_n_frontTickFree process_charn)
-  by (metis append.right_neutral is_processT4_empty tickFree_Nil)
+  apply (metis F_T T_F_spec is_processT1 is_processT2 not_tF_and_ftF)
+  by (metis append.right_neutral is_processT4_empty tF_Nil)
 
 lemmas Interrupt_projs = F_Interrupt D_Interrupt T_Interrupt
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_Interrupt_subset :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<triangle> Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> {t @ u |t u. t \<in> \<T> P - \<D> P \<and> tF t \<and> u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q}\<close>
+  (is \<open>_ \<subseteq> _ \<union> ?rhs\<close>)
+proof -
+  have \<open>\<D> (P \<triangle> Q) = \<D> P \<union> {t @ u |t u. t \<in> \<T> P - \<D> P \<and> tF t \<and> u \<in> \<D> Q}\<close> (is \<open>_ = _ \<union> ?lhs\<close>)
+    by (simp add: D_Interrupt set_eq_iff) (metis D_imp_ftF is_processT7)
+  hence \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<triangle> Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> min_elems ?lhs\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_Un_subset_Un_min_elems)
+  moreover have \<open>min_elems ?lhs \<subseteq> ?rhs\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def subset_iff) (metis less_append)
+  ultimately show ?thesis by blast
+qed
 
 
 
@@ -325,36 +338,30 @@ subsection \<open>Monotony\<close>
 lemma mono_Interrupt : \<open>P \<triangle> Q \<sqsubseteq> P' \<triangle> Q'\<close> if \<open>P \<sqsubseteq> P'\<close> and \<open>Q \<sqsubseteq> Q'\<close>
 proof (unfold le_approx_def, intro conjI allI impI subsetI)
   show \<open>s \<in> \<D> (P' \<triangle> Q') \<Longrightarrow> s \<in> \<D> (P \<triangle> Q)\<close> for s
-    using \<open>P \<sqsubseteq> P'\<close>[THEN le_approx1] \<open>Q \<sqsubseteq> Q'\<close>[THEN le_approx1]
-      \<open>P \<sqsubseteq> P'\<close>[THEN le_approx2T] D_T by (simp add: D_Interrupt) blast
+    using \<open>P \<sqsubseteq> P'\<close>[THEN le_approxD(1)] \<open>Q \<sqsubseteq> Q'\<close>[THEN le_approxD(1)]
+      \<open>P \<sqsubseteq> P'\<close>[THEN le_approxD2_T] D_T by (simp add: D_Interrupt) blast
 next
   show \<open>s \<notin> \<D> (P \<triangle> Q) \<Longrightarrow> \<R>\<^sub>a (P \<triangle> Q) s = \<R>\<^sub>a (P' \<triangle> Q') s\<close> for s
     apply (simp add: D_Interrupt Refusals_after_def F_Interrupt,
         intro subset_antisym subsetI; simp, elim disjE)
-                apply (metis le_approx2T \<open>P \<sqsubseteq> P'\<close>)
-               apply (metis is_processT9 le_approx2T \<open>P \<sqsubseteq> P'\<close>)
-              apply (metis F_T append.right_neutral le_approx2 \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
-             apply (metis is_processT2 is_processT7 le_approx2T proc_ord2a \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
-            apply (metis append_Nil2 is_processT9 le_approx2T self_append_conv2 \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+                apply (metis le_approxD2_T \<open>P \<sqsubseteq> P'\<close>)
+               apply (metis is_processT9 le_approxD2_T \<open>P \<sqsubseteq> P'\<close>)
+              apply (metis F_T append.right_neutral le_approxD(2) \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+             apply (metis is_processT2 is_processT7 le_approxD2_T le_approxD(2) \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+            apply (metis append_Nil2 is_processT9 le_approxD2_T self_append_conv2 \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
            apply metis
-          apply (metis le_approx2T \<open>P \<sqsubseteq> P'\<close>)
+          apply (metis le_approxD2_T \<open>P \<sqsubseteq> P'\<close>)
          apply (metis le_approx_lemma_T subset_eq \<open>P \<sqsubseteq> P'\<close>)
-        apply (metis is_processT8 le_approx2 \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
-       apply (metis is_processT2 is_processT7 le_approx2 le_approx2T \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>) 
-      apply (metis D_T le_approx2T \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
-     apply (metis in_mono le_approx1 \<open>P \<sqsubseteq> P'\<close>)
-    by (metis le_approx1 le_approx2T process_charn subsetD \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+        apply (metis is_processT8 le_approxD(2) \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+       apply (metis is_processT2 is_processT7 le_approxD(2) le_approxD2_T \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>) 
+      apply (metis D_T le_approxD2_T \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
+     apply (metis in_mono le_approxD(1) \<open>P \<sqsubseteq> P'\<close>)
+    by (metis le_approxD(1) le_approxD2_T process_charn subsetD \<open>P \<sqsubseteq> P'\<close> \<open>Q \<sqsubseteq> Q'\<close>)
 next
-  (* from \<open>P \<sqsubseteq> P'\<close>[THEN le_approx3] \<open>Q \<sqsubseteq> Q'\<close>[THEN le_approx3] *)
-  show \<open>s \<in> min_elems (\<D> (P \<triangle> Q)) \<Longrightarrow> s \<in> \<T> (P' \<triangle> Q')\<close> for s
-    apply (rule set_mp[of \<open>min_elems (\<D> P) \<union> {t1 @ t2| t1 t2. t1 \<in> \<T> P' \<and> tickFree t1 \<and> t2 \<in> min_elems (\<D> Q)}\<close>])
-      (* apply (use \<open>P \<sqsubseteq> P'\<close>[THEN le_approx3] \<open>Q \<sqsubseteq> Q'\<close>[THEN le_approx3] in simp) *)
-     apply (rule Un_least)
-      apply (simp add: T_Interrupt le_approx3 le_supI1 \<open>P \<sqsubseteq> P'\<close>)
-     apply (simp add: T_Interrupt subset_iff, metis le_approx_def subset_iff \<open>Q \<sqsubseteq> Q'\<close>)
-    apply (simp add: min_elems_def D_Interrupt less_list_def)
-      (* TODO: break this smt *)
-    by (smt (verit, ccfv_threshold) D_imp_front_tickFree same_prefix_prefix Un_iff is_processT7 le_approx2T mem_Collect_eq same_append_eq that(1))
+  from le_approxD(3)[OF \<open>P \<sqsubseteq> P'\<close>] le_approxD(3)[OF \<open>Q \<sqsubseteq> Q'\<close>]
+    le_approxD2_T[OF \<open>P \<sqsubseteq> P'\<close>] le_approxD2_T[OF \<open>Q \<sqsubseteq> Q'\<close>]
+  show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<triangle> Q) \<Longrightarrow> t \<in> \<T> (P' \<triangle> Q')\<close> for t
+    by (auto dest!: D\<^sub>m\<^sub>i\<^sub>n_Interrupt_subset[THEN set_mp] simp add: T_Interrupt)
 qed
 
 
@@ -376,7 +383,7 @@ next
 next
   show \<open>(t, X) \<in> \<F> P \<Longrightarrow> (t, X) \<in> \<F> (P \<triangle> STOP)\<close> for t X
     by (simp add: F_Interrupt STOP_projs)
-      (metis F_T T_nonTickFree_imp_decomp)
+      (metis F_T T_not_tF_imp_decomp)
 qed
 
 lemma STOP_Interrupt [simp] : \<open>STOP \<triangle> P = P\<close>
@@ -397,7 +404,7 @@ qed
 
 lemma Interrupt_is_STOP_iff : \<open>P \<triangle> Q = STOP \<longleftrightarrow> P = STOP \<and> Q = STOP\<close>
   by (simp add: STOP_iff_T T_Interrupt set_eq_iff)
-    (metis append_self_conv2 is_processT1_TR tickFree_Nil)
+    (metis append_self_conv2 is_processT1_TR tF_Nil)
 
 
 lemma Interrupt_BOT [simp] : \<open>P \<triangle> \<bottom> = \<bottom>\<close>
@@ -414,13 +421,13 @@ proof (subst Process_eq_spec, safe)
     by (auto simp add: D_Interrupt D_Det SKIP_projs)
 next
   show \<open>t \<in> \<D> (SKIP r \<box> P) \<Longrightarrow> t \<in> \<D> (SKIP r \<triangle> P)\<close> for t
-    by (auto simp add: D_Interrupt D_Det SKIP_projs intro: tickFree_Nil)
+    by (auto simp add: D_Interrupt D_Det SKIP_projs intro: tF_Nil)
 next
   show \<open>(t, X) \<in> \<F> (SKIP r \<triangle> P) \<Longrightarrow> (t, X) \<in> \<F> (SKIP r \<box> P)\<close> for t X
     by (cases t) (auto simp add: F_Interrupt SKIP_projs F_Det intro: is_processT8)
 next
   show \<open>(t, X) \<in> \<F> (SKIP r \<box> P) \<Longrightarrow> (t, X) \<in> \<F> (SKIP r \<triangle> P)\<close> for t X
-    by (cases t) (auto simp add: F_Interrupt SKIP_projs F_Det intro: tickFree_Nil)
+    by (cases t) (auto simp add: F_Interrupt SKIP_projs F_Det intro: tF_Nil)
 qed
 
 
@@ -432,52 +439,52 @@ proof -
     fix s
     assume \<open>s \<in> \<D> ?lhs\<close>
     then consider \<open>s \<in> \<D> P\<close>
-      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tickFree t1 \<and> t2 \<in> \<D> (Q \<triangle> R)\<close>
+      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tF t1 \<and> t2 \<in> \<D> (Q \<triangle> R)\<close>
       by (simp add: D_Interrupt) blast
     thus \<open>s \<in> \<D> ?rhs\<close>
     proof cases
       show \<open>s \<in> \<D> P \<Longrightarrow> s \<in> \<D> ?rhs\<close> by (simp add: D_Interrupt)
     next
-      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tickFree t1 \<and> t2 \<in> \<D> (Q \<triangle> R)\<close>
+      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tF t1 \<and> t2 \<in> \<D> (Q \<triangle> R)\<close>
       then obtain t1 t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close>
-        \<open>tickFree t1\<close> \<open>t2 \<in> \<D> (Q \<triangle> R)\<close> by blast
+        \<open>tF t1\<close> \<open>t2 \<in> \<D> (Q \<triangle> R)\<close> by blast
       from "*"(4) consider \<open>t2 \<in> \<D> Q\<close>
-        | \<open>\<exists>u1 u2. t2 = u1 @ u2 \<and> u1 \<in> \<T> Q \<and> tickFree u1 \<and> u2 \<in> \<D> R\<close>
+        | \<open>\<exists>u1 u2. t2 = u1 @ u2 \<and> u1 \<in> \<T> Q \<and> tF u1 \<and> u2 \<in> \<D> R\<close>
         by (simp add: D_Interrupt) blast
       thus \<open>s \<in> \<D> ?rhs\<close>
       proof cases
         from "*"(1, 2, 3) show \<open>t2 \<in> \<D> Q \<Longrightarrow> s \<in> \<D> ?rhs\<close> by (simp add: D_Interrupt) blast
       next
-        show \<open>\<exists>u1 u2. t2 = u1 @ u2 \<and> u1 \<in> \<T> Q \<and> tickFree u1 \<and> u2 \<in> \<D> R \<Longrightarrow> s \<in> \<D> ?rhs\<close>
+        show \<open>\<exists>u1 u2. t2 = u1 @ u2 \<and> u1 \<in> \<T> Q \<and> tF u1 \<and> u2 \<in> \<D> R \<Longrightarrow> s \<in> \<D> ?rhs\<close>
           by (simp add: "*"(1) D_Interrupt T_Interrupt)
-            (metis "*"(2, 3) append_assoc tickFree_append_iff)
+            (metis "*"(2, 3) append_assoc tF_append_iff)
       qed
     qed
   next
     fix s
     assume \<open>s \<in> \<D> ?rhs\<close>
     then consider \<open>s \<in> \<D> (P \<triangle> Q)\<close>
-      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tickFree t1 \<and> t2 \<in> \<D> R\<close>
+      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tF t1 \<and> t2 \<in> \<D> R\<close>
       by (simp add: D_Interrupt) blast
     thus \<open>s \<in> \<D> ?lhs\<close>
     proof cases
       show \<open>s \<in> \<D> (P \<triangle> Q) \<Longrightarrow> s \<in> \<D> ?lhs\<close> by (simp add: D_Interrupt) blast
     next
-      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tickFree t1 \<and> t2 \<in> \<D> R\<close>
+      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tF t1 \<and> t2 \<in> \<D> R\<close>
       then obtain t1 t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (P \<triangle> Q)\<close>
-        \<open>tickFree t1\<close> \<open>t2 \<in> \<D> R\<close> by blast
+        \<open>tF t1\<close> \<open>t2 \<in> \<D> R\<close> by blast
       from "*"(2) consider \<open>t1 \<in> \<T> P\<close>
-        | \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tickFree u1 \<and> u2 \<in> \<T> Q\<close>
+        | \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tF u1 \<and> u2 \<in> \<T> Q\<close>
         by (simp add: T_Interrupt) blast
       thus \<open>s \<in> \<D> ?lhs\<close>
       proof cases
         show \<open>t1 \<in> \<T> P \<Longrightarrow> s \<in> \<D> ?lhs\<close>
           by (simp add: D_Interrupt "*"(1))
-            (metis "*"(3, 4) Nil_elem_T append_Nil tickFree_Nil)
+            (metis "*"(3, 4) Nil_elem_T append_Nil tF_Nil)
       next
-        show \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tickFree u1 \<and> u2 \<in> \<T> Q \<Longrightarrow> s \<in> \<D> ?lhs\<close>
+        show \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tF u1 \<and> u2 \<in> \<T> Q \<Longrightarrow> s \<in> \<D> ?lhs\<close>
           by (simp add: D_Interrupt "*"(1)) 
-            (metis "*"(3, 4) append.assoc tickFree_append_iff)
+            (metis "*"(3, 4) append.assoc tF_append_iff)
       qed
     qed
   next
@@ -487,9 +494,9 @@ proof -
     then consider \<open>s \<in> \<D> ?lhs\<close>
       | \<open>\<exists>t1 r. s = t1 @ [\<checkmark>(r)] \<and> t1 @ [\<checkmark>(r)] \<in> \<T> P\<close>
       | \<open>\<exists>r. s @ [\<checkmark>(r)] \<in> \<T> P \<and> \<checkmark>(r) \<notin> X\<close>
-      | \<open>(s, X) \<in> \<F> P \<and> tickFree s \<and> ([], X) \<in> \<F> (Q \<triangle> R)\<close>
-      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tickFree t1 \<and> (t2, X) \<in> \<F> (Q \<triangle> R) \<and> t2 \<noteq> []\<close>
-      | \<open>\<exists>r. s \<in> \<T> P \<and> tickFree s \<and> [\<checkmark>(r)] \<in> \<T> (Q \<triangle> R) \<and> \<checkmark>(r) \<notin> X\<close>
+      | \<open>(s, X) \<in> \<F> P \<and> tF s \<and> ([], X) \<in> \<F> (Q \<triangle> R)\<close>
+      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tF t1 \<and> (t2, X) \<in> \<F> (Q \<triangle> R) \<and> t2 \<noteq> []\<close>
+      | \<open>\<exists>r. s \<in> \<T> P \<and> tF s \<and> [\<checkmark>(r)] \<in> \<T> (Q \<triangle> R) \<and> \<checkmark>(r) \<notin> X\<close>
       by (subst (asm) F_Interrupt, simp add: D_Interrupt) blast
     thus \<open>(s, X) \<in> \<F> ?rhs\<close>
     proof cases
@@ -501,7 +508,7 @@ proof -
       show \<open>\<exists>r. s @ [\<checkmark>(r)] \<in> \<T> P \<and> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
         by (simp add: F_Interrupt T_Interrupt) (metis Diff_insert_absorb)
     next
-      assume assm : \<open>(s, X) \<in> \<F> P \<and> tickFree s \<and> ([], X) \<in> \<F> (Q \<triangle> R)\<close>
+      assume assm : \<open>(s, X) \<in> \<F> P \<and> tF s \<and> ([], X) \<in> \<F> (Q \<triangle> R)\<close>
       with non_BOT(2, 3) consider r where \<open>[\<checkmark>(r)] \<in> \<T> Q \<and> \<checkmark>(r) \<notin> X\<close>
         | \<open>([], X) \<in> \<F> Q \<and> ([], X) \<in> \<F> R\<close>
         | r where \<open>[] \<in> \<T> Q \<and> [\<checkmark>(r)] \<in> \<T> R \<and> \<checkmark>(r) \<notin> X\<close>
@@ -518,16 +525,16 @@ proof -
           by (simp add: F_Interrupt T_Interrupt) (metis Diff_insert_absorb F_T assm)
       qed
     next
-      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tickFree t1 \<and>
+      assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> P \<and> tF t1 \<and>
                       (t2, X) \<in> \<F> (Q \<triangle> R) \<and> t2 \<noteq> []\<close>
-      then obtain t1 t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tickFree t1\<close> 
+      then obtain t1 t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tF t1\<close> 
         \<open>(t2, X) \<in> \<F> (Q \<triangle> R)\<close> \<open>t2 \<noteq> []\<close> by blast
       from "*"(4) consider \<open>t2 \<in> \<D> (Q \<triangle> R)\<close>
         | u1 r where \<open>t2 = u1 @ [\<checkmark>(r)]\<close> \<open>u1 @ [\<checkmark>(r)] \<in> \<T> Q\<close>
         | r where \<open>t2 @ [\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
-        | \<open>(t2, X) \<in> \<F> Q\<close> \<open>tickFree t2\<close> \<open>([], X) \<in> \<F> R\<close>
-        | u1 u2 where \<open>t2 = u1 @ u2\<close> \<open>u1 \<in> \<T> Q\<close> \<open>tickFree u1\<close> \<open>(u2, X) \<in> \<F> R\<close> \<open>u2 \<noteq> []\<close>
-        | r where \<open>t2 \<in> \<T> Q\<close> \<open>tickFree t2\<close> \<open>[\<checkmark>(r)] \<in> \<T> R\<close> \<open>\<checkmark>(r) \<notin> X\<close>
+        | \<open>(t2, X) \<in> \<F> Q\<close> \<open>tF t2\<close> \<open>([], X) \<in> \<F> R\<close>
+        | u1 u2 where \<open>t2 = u1 @ u2\<close> \<open>u1 \<in> \<T> Q\<close> \<open>tF u1\<close> \<open>(u2, X) \<in> \<F> R\<close> \<open>u2 \<noteq> []\<close>
+        | r where \<open>t2 \<in> \<T> Q\<close> \<open>tF t2\<close> \<open>[\<checkmark>(r)] \<in> \<T> R\<close> \<open>\<checkmark>(r) \<notin> X\<close>
         by (simp add: F_Interrupt D_Interrupt) blast
       thus \<open>(s, X) \<in> \<F> ?rhs\<close>
       proof cases
@@ -541,22 +548,22 @@ proof -
         from "*"(1, 2, 3) show \<open>t2 @ [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close> for r
           by (simp add: F_Interrupt T_Interrupt) (metis Diff_insert_absorb)
       next
-        from "*"(1) show \<open>(t2, X) \<in> \<F> Q \<Longrightarrow> tickFree t2 \<Longrightarrow> ([], X) \<in> \<F> R \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
+        from "*"(1) show \<open>(t2, X) \<in> \<F> Q \<Longrightarrow> tF t2 \<Longrightarrow> ([], X) \<in> \<F> R \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
           by (simp add: F_Interrupt T_Interrupt) (metis "*"(2, 3, 5))
       next
-        from "*"(1, 2, 3) show \<open>t2 = u1 @ u2 \<Longrightarrow> u1 \<in> \<T> Q \<Longrightarrow> tickFree u1 \<Longrightarrow>
+        from "*"(1, 2, 3) show \<open>t2 = u1 @ u2 \<Longrightarrow> u1 \<in> \<T> Q \<Longrightarrow> tF u1 \<Longrightarrow>
                                 (u2, X) \<in> \<F> R \<Longrightarrow> u2 \<noteq> [] \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close> for u1 u2
           by (simp add: F_Interrupt T_Interrupt)
-            (metis (mono_tags, lifting) append_assoc tickFree_append_iff)
+            (metis (mono_tags, lifting) append_assoc tF_append_iff)
       next
-        from "*"(1, 2, 3) show \<open>t2 \<in> \<T> Q \<Longrightarrow> tickFree t2 \<Longrightarrow>
+        from "*"(1, 2, 3) show \<open>t2 \<in> \<T> Q \<Longrightarrow> tF t2 \<Longrightarrow>
           [\<checkmark>(r)] \<in> \<T> R \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close> for r
           by (simp add: F_Interrupt T_Interrupt) (metis Diff_insert_absorb)
       qed
     next
-      show \<open>\<exists>r. s \<in> \<T> P \<and> tickFree s \<and> [\<checkmark>(r)] \<in> \<T> (Q \<triangle> R) \<and> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
-        by (simp add: F_Interrupt T_Interrupt)
-          (metis Diff_insert_absorb append_eq_Cons_conv non_tickFree_tick tickFree_append_iff)
+      show \<open>\<exists>r. s \<in> \<T> P \<and> tF s \<and> [\<checkmark>(r)] \<in> \<T> (Q \<triangle> R) \<and> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?rhs\<close>
+        by  (simp add: F_Interrupt T_Interrupt)
+          (metis Diff_insert_absorb append_eq_Cons_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff)
     qed
   next
     fix s X
@@ -565,9 +572,9 @@ proof -
     then consider \<open>s \<in> \<D> ?rhs\<close>
       | \<open>\<exists>t1 r. s = t1 @ [\<checkmark>(r)] \<and> t1 @ [\<checkmark>(r)] \<in> \<T> (P \<triangle> Q)\<close>
       | r where \<open>s @ [\<checkmark>(r)] \<in> \<T> (P \<triangle> Q)\<close> \<open>\<checkmark>(r) \<notin> X\<close>
-      | \<open>(s, X) \<in> \<F> (P \<triangle> Q) \<and> tickFree s \<and> ([], X) \<in> \<F> R\<close>
-      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tickFree t1 \<and> (t2, X) \<in> \<F> R \<and> t2 \<noteq> []\<close>
-      | \<open>\<exists>r. s \<in> \<T> (P \<triangle> Q) \<and> tickFree s \<and> [\<checkmark>(r)] \<in> \<T> R \<and> \<checkmark>(r) \<notin> X\<close>
+      | \<open>(s, X) \<in> \<F> (P \<triangle> Q) \<and> tF s \<and> ([], X) \<in> \<F> R\<close>
+      | \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> tF t1 \<and> (t2, X) \<in> \<F> R \<and> t2 \<noteq> []\<close>
+      | \<open>\<exists>r. s \<in> \<T> (P \<triangle> Q) \<and> tF s \<and> [\<checkmark>(r)] \<in> \<T> R \<and> \<checkmark>(r) \<notin> X\<close>
       by (subst (asm) F_Interrupt, simp add: D_Interrupt) blast 
     thus \<open>(s, X) \<in> \<F> ?lhs\<close>
     proof cases
@@ -579,31 +586,31 @@ proof -
     next
       fix r assume \<open>s @ [\<checkmark>(r)] \<in> \<T> (P \<triangle> Q)\<close> \<open>\<checkmark>(r) \<notin> X\<close>
       from this(1) consider \<open>s @ [\<checkmark>(r)] \<in> \<T> P\<close>
-        | t1 t2 where \<open>s @ [\<checkmark>(r)] = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tickFree t1\<close> \<open>t2 \<in> \<T> Q\<close>
+        | t1 t2 where \<open>s @ [\<checkmark>(r)] = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tF t1\<close> \<open>t2 \<in> \<T> Q\<close>
         by (simp add: T_Interrupt) blast
       thus \<open>(s, X) \<in> \<F> ?lhs\<close>
       proof cases
         show \<open>s @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
           by (simp add: F_Interrupt) (metis Diff_insert_absorb \<open>\<checkmark>(r) \<notin> X\<close>)
       next
-        show \<open>s @ [\<checkmark>(r)] = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> P \<Longrightarrow> tickFree t1 \<Longrightarrow> t2 \<in> \<T> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for t1 t2
-
+        have non_tF_tick : \<open>\<And>r. \<not> tF [\<checkmark>(r)]\<close> by simp
+        show \<open>s @ [\<checkmark>(r)] = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> P \<Longrightarrow> tF t1 \<Longrightarrow> t2 \<in> \<T> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for t1 t2
 (* TODO: break the smts *)
           apply (simp add: F_Interrupt T_Interrupt, safe, simp_all)
-             apply (smt (z3) Diff_insert_absorb T_nonTickFree_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append.assoc append1_eq_conv append_self_conv2 non_tickFree_tick tickFree_append_iff) 
-            apply (metis \<open>s @ [\<checkmark>(r)] \<in> \<T> (P \<triangle> Q)\<close> append_T_imp_tickFree list.discI)
-           apply (smt (z3) Diff_insert_absorb T_nonTickFree_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append1_eq_conv append_assoc is_processT6_TR non_tickFree_tick tickFree_append_iff)
-          apply (smt (z3) Diff_insert_absorb T_nonTickFree_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append1_eq_conv append_assoc non_tickFree_tick self_append_conv2 tickFree_append_iff)
+             apply (smt (z3) Diff_insert_absorb T_not_tF_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append.assoc append1_eq_conv append_self_conv2 non_tF_tick tF_append_iff) 
+            apply (metis \<open>s @ [\<checkmark>(r)] \<in> \<T> (P \<triangle> Q)\<close> append_T_imp_tF list.discI)
+           apply (smt (z3) Diff_insert_absorb T_not_tF_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append1_eq_conv append_assoc is_processT6_TR non_tF_tick tF_append_iff)
+          apply (smt (z3) Diff_insert_absorb T_not_tF_imp_decomp \<open>\<checkmark>(r) \<notin> X\<close> append1_eq_conv append_assoc non_tF_tick self_append_conv2 tF_append_iff)
           done
       qed
     next
-      assume assm : \<open>(s, X) \<in> \<F> (P \<triangle> Q) \<and> tickFree s \<and> ([], X) \<in> \<F> R\<close>
+      assume assm : \<open>(s, X) \<in> \<F> (P \<triangle> Q) \<and> tF s \<and> ([], X) \<in> \<F> R\<close>
       from assm[THEN conjunct1] consider \<open>s \<in> \<D> (P \<triangle> Q)\<close>
         | t1 r where \<open>s = t1 @ [\<checkmark>(r)]\<close> \<open>t1 @ [\<checkmark>(r)] \<in> \<T> P\<close>
         | r where \<open>s @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>\<checkmark>(r) \<notin> X\<close>
-        | \<open>(s, X) \<in> \<F> P\<close> \<open>tickFree s\<close> \<open>([], X) \<in> \<F> Q\<close>
-        | t1 t2 where \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tickFree t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
-        | r where \<open>s \<in> \<T> P\<close> \<open>tickFree s\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
+        | \<open>(s, X) \<in> \<F> P\<close> \<open>tF s\<close> \<open>([], X) \<in> \<F> Q\<close>
+        | t1 t2 where \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> P\<close> \<open>tF t1\<close> \<open>(t2, X) \<in> \<F> Q\<close> \<open>t2 \<noteq> []\<close>
+        | r where \<open>s \<in> \<T> P\<close> \<open>tF s\<close> \<open>[\<checkmark>(r)] \<in> \<T> Q\<close> \<open>\<checkmark>(r) \<notin> X\<close>
         by (simp add: F_Interrupt D_Interrupt) blast
       thus \<open>(s, X) \<in> \<F> ?lhs\<close>
       proof cases
@@ -617,39 +624,39 @@ proof -
         show \<open>s @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
           by (simp add: F_Interrupt) (metis Diff_insert_absorb)
       next
-        show \<open>(s, X) \<in> \<F> P \<Longrightarrow> tickFree s \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
+        show \<open>(s, X) \<in> \<F> P \<Longrightarrow> tF s \<Longrightarrow> ([], X) \<in> \<F> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
           by (simp add: F_Interrupt assm[THEN conjunct2])
       next
-        show \<open>s = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> P \<Longrightarrow> tickFree t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
+        show \<open>s = t1 @ t2 \<Longrightarrow> t1 \<in> \<T> P \<Longrightarrow> tF t1 \<Longrightarrow> (t2, X) \<in> \<F> Q \<Longrightarrow>
               t2 \<noteq> [] \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for t1 t2
-          by (simp add: F_Interrupt) (metis assm[THEN conjunct2] tickFree_append_iff)
+          by (simp add: F_Interrupt) (metis assm[THEN conjunct2] tF_append_iff)
       next
-        show \<open>s \<in> \<T> P \<Longrightarrow> tickFree s \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
+        show \<open>s \<in> \<T> P \<Longrightarrow> tF s \<Longrightarrow> [\<checkmark>(r)] \<in> \<T> Q \<Longrightarrow> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close> for r
           by (simp add: F_Interrupt T_Interrupt) (metis Diff_insert_absorb)
       qed
     next
       assume \<open>\<exists>t1 t2. s = t1 @ t2 \<and> t1 \<in> \<T> (P \<triangle> Q) \<and> 
-                      tickFree t1 \<and> (t2, X) \<in> \<F> R \<and> t2 \<noteq> []\<close>
+                      tF t1 \<and> (t2, X) \<in> \<F> R \<and> t2 \<noteq> []\<close>
       then obtain t1 t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (P \<triangle> Q)\<close>
-        \<open>tickFree t1\<close> \<open>(t2, X) \<in> \<F> R\<close> \<open>t2 \<noteq> []\<close> by blast
+        \<open>tF t1\<close> \<open>(t2, X) \<in> \<F> R\<close> \<open>t2 \<noteq> []\<close> by blast
       from "*"(2) consider \<open>t1 \<in> \<T> P\<close>
-        | \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tickFree u1 \<and> u2 \<in> \<T> Q\<close>
+        | \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and> tF u1 \<and> u2 \<in> \<T> Q\<close>
         by (simp add: T_Interrupt) blast
       thus \<open>(s, X) \<in> \<F> ?lhs\<close>
       proof cases
         from "*"(1, 3, 4, 5) show \<open>t1 \<in> \<T> P \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
           by (simp add: F_Interrupt T_Interrupt)
-            (metis Nil_elem_T append_Nil tickFree_Nil)
+            (metis Nil_elem_T append_Nil tF_Nil)
       next
         from "*"(1, 3, 4, 5) show \<open>\<exists>u1 u2. t1 = u1 @ u2 \<and> u1 \<in> \<T> P \<and>
-                                           tickFree u1 \<and> u2 \<in> \<T> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
+                                           tF u1 \<and> u2 \<in> \<T> Q \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
           by (elim exE, simp add: F_Interrupt) (metis append_is_Nil_conv)
       qed
     next
-      show \<open>\<exists>r. s \<in> \<T> (P \<triangle> Q) \<and> tickFree s \<and> [\<checkmark>(r)] \<in> \<T> R \<and> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
+      show \<open>\<exists>r. s \<in> \<T> (P \<triangle> Q) \<and> tF s \<and> [\<checkmark>(r)] \<in> \<T> R \<and> \<checkmark>(r) \<notin> X \<Longrightarrow> (s, X) \<in> \<F> ?lhs\<close>
         by (simp add: F_Interrupt T_Interrupt)
           (metis Diff_insert_absorb Nil_elem_T append.right_neutral
-            append_Nil tickFree_append_iff)
+            append_Nil tF_append_iff)
     qed
   qed
 
@@ -680,7 +687,7 @@ next
   fix s
   define S
     where \<open>S i \<equiv> {t1. s = t1 \<and> t1 \<in> \<D> (Y i)} \<union>
-                  {t1. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<T> (Y i) \<and> tickFree t1 \<and> t2 \<in> \<D> Q}\<close> for i
+                  {t1. \<exists>t2. s = t1 @ t2 \<and> t1 \<in> \<T> (Y i) \<and> tF t1 \<and> t2 \<in> \<D> Q}\<close> for i
   assume \<open>s \<in> \<D> ?rhs\<close>
   hence \<open>s \<in> \<D> (Y i \<triangle> Q)\<close> for i
     by (simp add: limproc_is_thelub D_LUB chain_Interrupt_left chain)
@@ -689,7 +696,7 @@ next
     unfolding S_def by (prove_finite_subset_of_prefixes s)
   moreover have \<open>S (Suc i) \<subseteq> S i\<close> for i
     unfolding S_def apply (intro allI Un_mono subsetI; simp)
-    by (metis in_mono le_approx1 po_class.chainE chain)
+    by (metis in_mono le_approxD(1) po_class.chainE chain)
       (metis le_approx_lemma_T po_class.chain_def subset_eq chain)
   ultimately have \<open>(\<Inter>i. S i) \<noteq> {}\<close>
     by (rule Inter_nonempty_finite_chained_sets)
@@ -701,7 +708,7 @@ next
     thus \<open>s \<in> \<D> ?lhs\<close> by (simp add: D_Interrupt limproc_is_thelub D_LUB chain)
   next
     case False
-    with "*" obtain j t2 where ** : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (Y j)\<close> \<open> tickFree t1\<close> \<open>t2 \<in> \<D> Q\<close>
+    with "*" obtain j t2 where ** : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> (Y j)\<close> \<open> tF t1\<close> \<open>t2 \<in> \<D> Q\<close>
       by (simp add: S_def) blast
     from "*" D_T have \<open>\<forall>i. t1 \<in> \<T> (Y i)\<close> by (simp add: S_def) blast
     with "**"(1, 3, 4) show \<open>s \<in> \<D> ?lhs\<close>
@@ -725,7 +732,7 @@ next
     moreover from \<open>(s, X) \<in> \<F> (\<Squnion>i. Y i \<triangle> Q)\<close> have \<open>(s, X) \<in> \<F> (Y j \<triangle> Q)\<close>
       by (simp add: limproc_is_thelub chain_Interrupt_left \<open>chain Y\<close> F_LUB)
     ultimately show \<open>(s, X) \<in> \<F> ((\<Squnion>i. Y i) \<triangle> Q)\<close>
-      by (fact le_approx2[OF mono_Interrupt[OF is_ub_thelub[OF \<open>chain Y\<close>] below_refl], THEN iffD2])
+      using is_ub_thelub le_approxD(2) mono_Interrupt that by blast
   qed
 qed
 
@@ -742,17 +749,18 @@ next
     show \<open>s \<in> \<D> S \<Longrightarrow> s \<in> \<D> (S \<triangle> (\<Squnion>i. Y i))\<close> by (simp add: D_Interrupt)
   next
     assume \<open>s \<notin> \<D> S\<close>
-    define T where \<open>T i \<equiv> {t1. \<exists>t2 r. s = t1 @ t2 \<and> t1 \<in> \<T> S \<and> tickFree t1 \<and> t2 \<in> \<D> (Y i)}\<close> for i
+    define T where \<open>T i \<equiv> {t1. \<exists>t2 r. s = t1 @ t2 \<and> t1 \<in> \<T> S \<and> tF t1 \<and> t2 \<in> \<D> (Y i)}\<close> for i
     from \<open>s \<notin> \<D> S\<close> \<open>s \<in> \<D> (\<Squnion>i. S \<triangle> Y i)\<close> have \<open>T i \<noteq> {}\<close> for i
       by (simp add: T_def limproc_is_thelub chain_Interrupt_right \<open>chain Y\<close> D_LUB D_Interrupt) blast
     moreover have \<open>finite (T 0)\<close>
       unfolding T_def by (prove_finite_subset_of_prefixes s)
     moreover have \<open>T (Suc i) \<subseteq> T i\<close> for i
-      unfolding T_def apply (intro allI Un_mono subsetI; simp)
-      by (metis le_approx1 po_class.chainE subset_iff \<open>chain Y\<close>)
+      unfolding T_def
+      by (intro allI Un_mono subsetI; simp)
+        (metis le_approxD(1) po_class.chainE subset_iff \<open>chain Y\<close>)
     ultimately have \<open>(\<Inter>i. T i) \<noteq> {}\<close> by (rule Inter_nonempty_finite_chained_sets)
     then obtain t1 where \<open>\<forall>i. t1 \<in> T i\<close> by auto
-    then obtain t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> S\<close> \<open>tickFree t1\<close> \<open>\<forall>i. t2 \<in> \<D> (Y i)\<close>
+    then obtain t2 where * : \<open>s = t1 @ t2\<close> \<open>t1 \<in> \<T> S\<close> \<open>tF t1\<close> \<open>\<forall>i. t2 \<in> \<D> (Y i)\<close>
       by (simp add: T_def) blast
     thus \<open>s \<in> \<D> (S \<triangle> (\<Squnion>i. Y i))\<close>
       by (simp add: D_Interrupt limproc_is_thelub \<open>chain Y\<close> D_LUB) blast
@@ -775,7 +783,7 @@ next
     moreover from \<open>(s, X) \<in> \<F> (\<Squnion>i. S \<triangle> Y i)\<close> have \<open>(s, X) \<in> \<F> (S \<triangle> Y j)\<close>
       by (simp add: limproc_is_thelub chain_Interrupt_right \<open>chain Y\<close> F_LUB)
     ultimately show \<open>(s, X) \<in> \<F> (S \<triangle> (\<Squnion>i. Y i))\<close>
-      by (fact le_approx2[OF mono_Interrupt[OF below_refl is_ub_thelub[OF \<open>chain Y\<close>]], THEN iffD2])
+      using is_ub_thelub le_approxD(2) mono_Interrupt that by blast
   qed
 qed
 

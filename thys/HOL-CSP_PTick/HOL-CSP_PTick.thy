@@ -47,8 +47,8 @@ section \<open>Main Entry Point\<close>
 text \<open>This is where the session \<^session>\<open>HOL-CSP_PTick\<close> should be imported from.\<close>
 
 
-declare finite_ticks_simps     [simp]
-declare finite_ticks_fun_simps [simp]
+declare (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) finite_ticks_simps     [simp]
+declare (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) finite_ticks_fun_simps [simp]
 
 
 unbundle no option_type_syntax

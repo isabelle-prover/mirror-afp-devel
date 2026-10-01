@@ -528,7 +528,7 @@ next
       next
         fix r assume \<open>e = \<checkmark>(r)\<close>
         hence \<open>s = [\<checkmark>(r)]\<close>
-          by (metis "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) front_tickFree_Cons_iff is_processT2)
+          by (metis "**" "***" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff is_processT2)
         thus \<open>(s, X) \<in> \<F> (DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV)\<close>
           by (subst F_DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S, simp)
       qed

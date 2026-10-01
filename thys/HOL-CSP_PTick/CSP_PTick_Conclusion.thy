@@ -128,7 +128,7 @@ Finally, an architectural version is defined. It satisfies the following propert
 
 subsection \<open>Synchronization Product\<close>
 
-text (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 The main motivation for generalizing the synchronization product was to
 have a satisfying handling of the synchronization of two terminations.
 Indeed, with the \<^const>\<open>Sync\<close> operator inherited from \<^session>\<open>HOL-CSP\<close>,
@@ -190,7 +190,7 @@ Again, the expected step law has been established.
 \end{center}
 \<close>
 
-text (in OpSemTransitions_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in OpSemTransitions_Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 In this abstract setup, the operational laws have also been derived.
 
 \begin{center}
@@ -211,7 +211,7 @@ In this abstract setup, the operational laws have also been derived.
 \<close>
 
 
-text (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) \<open>
+text (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<open>
 Continuity and non-destructiveness hold in general,
 and an architectural version is defined. It satisfies the following property.
 

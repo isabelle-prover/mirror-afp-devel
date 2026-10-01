@@ -275,7 +275,7 @@ proof (subst Process_eq_spec_optimized, safe)
       by (simp add: D_Mprefix) (metis disjoint_iff disjoint)
     have \<open>ftF u \<and> tF t' \<and> trace_hide t' (ev ` S) @ u = trace_hide t' (ev ` S) @ u \<and> t' \<in> \<D> (P a)\<close>
       apply (simp add: "*"(1) "**"(4))
-      using "*"(2) "**"(3) tickFree_Cons_iff by blast
+      using "*"(2) "**"(3) tF_Cons_iff by blast
     show \<open>s \<in> \<D> ?rhs\<close>
       apply (simp add: D_Mprefix "*"(3) "**"(1, 2, 3) image_iff[of \<open>ev _\<close>] D_Hiding)
       using \<open>?this\<close> by blast
@@ -286,7 +286,7 @@ proof (subst Process_eq_spec_optimized, safe)
     from "**"(1) T_Mprefix obtain a
       where *** : \<open>a \<in> A\<close> \<open>a \<notin> S\<close> \<open>f (Suc 0) \<noteq> []\<close> \<open>hd (f (Suc 0)) = ev a\<close>
       by (simp add: T_Mprefix)
-        (metis disjoint disjoint_iff list.sel(1) nil_less strict_mono_Suc_iff)
+        (metis disjoint disjoint_iff list.sel(1) Nil_less strict_mono_Suc_iff)
     from "**"(1)[THEN conjunct2, THEN conjunct2, rule_format, of 1]
       "**"(1)[simplified isInfHiddenRun_1] "***"(1, 4) disjoint
     have **** : \<open>f j \<noteq> [] \<and> hd (f j) = ev a\<close> for j
@@ -299,7 +299,7 @@ proof (subst Process_eq_spec_optimized, safe)
     hence \<open>tF t' \<and> trace_hide t' (ev ` S) @ u = trace_hide t' (ev ` S) @ u \<and>
            isInfHiddenRun (\<lambda>i. tl (f i)) (P a) S \<and> t' \<in> range (\<lambda>i. tl (f i))\<close>
       apply (simp, intro conjI)
-      using "*"(2) tickFree_Cons_iff apply blast
+      using "*"(2) tF_Cons_iff apply blast
       apply (meson "**"(1) "****" less_tail strict_mono_Suc_iff)
       using "**"(1) apply (simp add: T_Mprefix "****") 
       apply (metis "****" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.inject(1) list.sel(1, 3))
@@ -393,7 +393,7 @@ proof (subst Process_eq_spec_optimized, safe)
     proof (cases \<open>f 0 = []\<close>)
       assume \<open>f 0 = []\<close>
       hence \<open>f 1 \<noteq> []\<close>
-        by (metis "**"(1) One_nat_def monotoneD nil_less zero_less_Suc)
+        by (metis "**"(1) One_nat_def monotoneD Nil_less zero_less_Suc)
       with "**"(1)[THEN conjunct2, THEN conjunct1, rule_format, of 1]
       obtain a where *** : \<open>a \<in> A\<close> \<open>f 1 \<noteq> []\<close> \<open>hd (f 1) = ev a\<close>
         by (auto simp add: T_Mprefix)
@@ -423,12 +423,12 @@ proof (subst Process_eq_spec_optimized, safe)
          tl t \<in> range (\<lambda>i. if i = 0 \<and> t = [] then [] else tl (f (Suc i)))\<close>
         apply (intro conjI)
         apply (use "*"(1) in blast)
-        apply (metis "*"(2) tickFree_tl)
+        apply (metis "*"(2) tF_tl)
         apply (metis "*"(3) "**"(1) \<open>f 0 = []\<close> \<open>t = f k\<close> empty_filter_conv
             filter.simps(1) list.sel(2) list.set_sel(2))
         apply (simp add: monotone_on_def,
             metis "**"(1) strict_prefix_simps(1) Suc_less_eq less_tail
-            nil_le nless_le not_less_less_Suc_eq strict_monoD)
+            Nil_le nless_le not_less_less_Suc_eq strict_monoD)
         apply blast
         apply (simp, metis "**"(1) "****" \<open>f 0 = []\<close> empty_filter_conv
             filter.simps(1) list.set_sel(2) zero_less_Suc)
@@ -461,7 +461,7 @@ proof (subst Process_eq_spec_optimized, safe)
         have \<open>tF (tl t) \<and> s = trace_hide (tl t) (ev ` S) @ u \<and>
               isInfHiddenRun (\<lambda>i. tl (f i)) (P a) S \<and> tl t \<in> range (\<lambda>i. tl (f i))\<close>
           apply (simp add: "*"(3), intro conjI)
-          apply (metis "*"(2) tickFree_tl)
+          apply (metis "*"(2) tF_tl)
           apply (cases t; simp; metis "****" \<open>a \<in> S\<close> \<open>t = f k\<close> image_iff list.sel(1))
           apply (meson "**"(1) "****" less_tail strict_mono_Suc_iff)
           using "**"(1) apply (simp add: T_Mprefix "****")
@@ -477,7 +477,7 @@ proof (subst Process_eq_spec_optimized, safe)
         have \<open>tF (tl t) \<and> trace_hide (tl t) (ev ` S) @ u = trace_hide (tl t) (ev ` S) @ u \<and>
               isInfHiddenRun (\<lambda>i. tl (f i)) (P a) S \<and> tl t \<in> range (\<lambda>i. tl (f i))\<close>
           apply (simp add: "*"(3), intro conjI)
-          apply (metis "*"(2) tickFree_tl)
+          apply (metis "*"(2) tF_tl)
           apply (meson "**"(1) "****" less_tail strict_mono_Suc_iff)
           using "**"(1) apply (simp add: T_Mprefix "****")
           apply (metis "****" event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.inject(1) list.sel(1, 3))
@@ -780,8 +780,8 @@ next
     have \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
     proof (cases \<open>u = []\<close>)
       case True
-      hence \<open>hd s = ev e\<close> by (metis "*"(2) EmptyLeftSync setinterleaving_sym assms(3, 4) hd_append nonNil)
-      also from "*"(1, 2, 4) setinterleaving_sym assms(4, 8)[simplified True] have \<open>e \<in> A\<close> 
+      hence \<open>hd s = ev e\<close> by (metis "*"(2) EmptyLeftSync setinterleaving_dual assms(3, 4) hd_append nonNil)
+      also from "*"(1, 2, 4) setinterleaving_dual assms(4, 8)[simplified True] have \<open>e \<in> A\<close> 
         using emptyLeftNonSync hd_in_set by fastforce
       ultimately show \<open>s \<in> \<D> (?rhs A A' P B B' Q)\<close>
         apply (simp add: D_Det)
@@ -791,8 +791,8 @@ next
         apply (rule exI[of _ \<open>tl t\<close>], rule exI[of _ \<open>[]\<close>],
             rule exI[of _ \<open>tl r\<close>], rule exI[of _ v])
         apply (auto simp add: assms(1, 3, 6)[simplified True] * nonNil)[1]
-        apply (metis assms(2) tickFree_tl)
-        using setinterleaving_sym SyncTlEmpty True assms(4) by blast
+        apply (metis assms(2) tF_tl)
+        using setinterleaving_dual SyncTlEmpty True assms(4) by blast
     next
       case False
       with assms(6) obtain e' where ** : \<open>hd u = ev e'\<close> \<open>tl u \<in> \<T> (Q e')\<close> \<open>e' \<in> B \<or> e' \<in> B'\<close>
@@ -822,20 +822,20 @@ next
         apply (metis list.exhaust_sel nonNil)
         apply (rule exI[of _ \<open>tl t\<close>], rule exI[of _ u],
             rule exI[of _ \<open>tl r\<close>], rule exI[of _ v])
-        apply (simp add: assms(1, 3, 6) *(3) nonNil, use assms(2) nonNil tickFree_tl in blast)
+        apply (simp add: assms(1, 3, 6) *(3) nonNil, use assms(2) nonNil tF_tl in blast)
         apply (rule disjI2, rule disjI1, simp add: D_Mprefix nonNil D_Sync)
         apply (rule exI[of _ e'], rule exI[of _ \<open>tl s\<close>], simp, intro conjI)
         apply (metis list.exhaust_sel nonNil)
         apply (rule exI[of _ t], rule exI[of _ \<open>tl u\<close>],
             rule exI[of _ \<open>tl r\<close>], rule exI[of _ v])
-        apply (metis "*" "**"(2) assms(1, 2, 3) list.exhaust_sel nonNil tickFree_tl tl_append2)
+        apply (metis "*" "**"(2) assms(1, 2, 3) list.exhaust_sel nonNil tF_tl tl_append2)
         apply (rule disjI2, rule disjI2, auto simp add: D_Mprefix nonNil image_iff)
         apply (simp add: D_Sync)
         apply (rule exI[of _ e'], rule exI[of _ \<open>tl s\<close>], simp, intro conjI)
         apply (metis list.collapse nonNil)
         apply (rule exI[of _ \<open>tl t\<close>], rule exI[of _ \<open>tl u\<close>],
             rule exI[of _ \<open>tl r\<close>], rule exI[of _ v])
-        by (use *(3) **(2) assms(1, 2, 3) nonNil tickFree_tl in \<open>auto simp add: nonNil\<close>)
+        by (use *(3) **(2) assms(1, 2, 3) nonNil tF_tl in \<open>auto simp add: nonNil\<close>)
     qed
   } note * = this
 
@@ -936,7 +936,7 @@ lemma Renaming_Mprefix:
 proof (subst Process_eq_spec_optimized, safe)
   show \<open>s \<in> \<D> ?lhs \<Longrightarrow> s \<in> \<D> ?rhs\<close> for s
     by (auto simp add: D_Renaming D_Mprefix D_GlobalNdet)
-      (use list.map_sel(2) tickFree_tl in blast)
+      (use list.map_sel(2) tF_tl in blast)
 next
   fix s
   assume \<open>s \<in> \<D> ?rhs\<close>

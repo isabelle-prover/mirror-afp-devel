@@ -46,7 +46,7 @@
 chapter\<open> Annex: A Note on a Classical Example: The ``Merge Anomaly''\<close>
 
 theory MergeAnomaly
-  imports "HOL-CSP"
+  imports "HOL-CSP" "GenFixrec-HOLCF"
 begin
 
 text\<open>Manfred Broy proposed in his 'Habilitationsschrift' (\<^footnote>\<open>Published in 
@@ -65,42 +65,39 @@ failure/divergence semantics.
 First, we define the three processes corresponding to the notation \<open>1\<^sup>\<infinity>\<close>, \<open>0\<^sup>\<infinity>\<close> and \<open>1.0\<^sup>\<infinity>\<close>:
 \<close>
 
-definition ones      :: "nat process" where \<open>ones =  (\<mu> X. 1 \<rightarrow> X)\<close>
-definition zeros     :: "nat process" where \<open>zeros = (\<mu> X. 0 \<rightarrow> X)\<close>
-definition oneszeros :: "nat process" where \<open>oneszeros = (\<mu> X. \<box>x\<in>{0,1} \<rightarrow> X)\<close>
 
-text\<open>... and derive the more handy recursive stream-equations:\<close>
+Fixrec ones     ::"nat process" where ones_rec      :  "ones  =  1 \<rightarrow> ones"
+Fixrec zeros    ::"nat process" where zeros_rec     :  "zeros =  0 \<rightarrow> zeros"
+Fixrec oneszeros::"nat process" where oneszeros_rec :  "oneszeros = \<box>x\<in>{0,1} \<rightarrow> oneszeros"
 
-lemma ones_rec: "ones =  1 \<rightarrow> ones"  by (subst cont_process_rec[OF ones_def]) simp_all
-
-lemma zeros_rec: "zeros =  0 \<rightarrow> zeros" by (subst cont_process_rec[OF zeros_def]) simp_all
-
-lemma oneszeros_rec: "oneszeros = \<box>x\<in>{0,1} \<rightarrow> oneszeros" 
-      by (subst cont_process_rec[OF oneszeros_def]) simp_all
 
 text\<open>Now, we can establish that \<open>ones ||| zeros\<close> and \<open>oneszeros\<close> are indeed equal
 in the failure/divergence semantics in  \<^theory>\<open>HOL-CSP\<close>. This is formally proven as follows: \<close>
 
-lemma ones_Inter_zeros_eq_oneszeros : \<open>ones ||| zeros = oneszeros\<close>
+
+lemma ones_Inter_zeros_eq_oneszeros2 : \<open>ones ||| zeros = oneszeros\<close>
 proof (rule FD_antisym)
   show \<open>oneszeros \<sqsubseteq>\<^sub>F\<^sub>D ones ||| zeros\<close>
-  proof (unfold oneszeros_def, induct rule: cont_fix_ind)
+  proof(induct rule: oneszeros_induct,simp_all)
     fix X assume \<open>X \<sqsubseteq>\<^sub>F\<^sub>D ones ||| zeros\<close>
     have \<open>ones ||| zeros = (1 \<rightarrow> (ones ||| 0 \<rightarrow> zeros)) \<box> (0 \<rightarrow> (1 \<rightarrow> ones ||| zeros))\<close>
-      by (subst ones_rec, subst zeros_rec) (simp add: write0_Inter_write0)
+      by (metis ones_rec write0_Inter_write0 zeros_rec)
     also have \<open>\<dots> = (1 \<rightarrow> (ones ||| zeros)) \<box> (0 \<rightarrow> (ones ||| zeros))\<close>
-      by (simp del: One_nat_def flip: ones_rec zeros_rec)
+      using ones_def ones_rec ones_rec_def zeros_def zeros_rec zeros_rec_def 
+      by presburger
     also have \<open>\<dots> = \<box>a\<in>{0, 1} \<rightarrow> (ones ||| zeros)\<close>
-      by (metis Mprefix_Un_distrib Mprefix_singl Un_insert_right sup_bot.right_neutral)
-    also have \<open>\<box>a\<in>{0, 1} \<rightarrow> X \<sqsubseteq>\<^sub>F\<^sub>D \<dots>\<close>
+      by (metis Mprefix_Un_distrib Mprefix_singl Un_insert_right boolean_algebra.disj_zero_right)
+    also have \<open>\<box>a\<in>{0, 1} \<rightarrow> X \<sqsubseteq>\<^sub>F\<^sub>D \<dots>\<close> 
       by (simp add: \<open>X \<sqsubseteq>\<^sub>F\<^sub>D ones ||| zeros\<close> mono_Mprefix_FD)
-    finally show \<open>\<box>a\<in>{0, 1} \<rightarrow> X \<sqsubseteq>\<^sub>F\<^sub>D ones ||| zeros\<close> .
-  qed simp_all
+    finally show \<open>\<box>a\<in>{0, Suc 0} \<rightarrow> X \<sqsubseteq>\<^sub>F\<^sub>D ones ||| zeros\<close>  by simp
+  qed 
 next
   show \<open>ones ||| zeros \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close>
     \<comment> \<open>With stronger theoretical footprint, this could be skipped since \<^const>\<open>oneszeros\<close>
         is a deterministic process (therefore maximal for \<^term>\<open>(\<sqsubseteq>\<^sub>F\<^sub>D)\<close>).\<close>
-  proof (unfold ones_def zeros_def, induct rule: parallel_fix_ind_inc)
+    apply(simp only: ones_rec_def [simplified ones_def[symmetric]]
+                     zeros_rec_def [simplified zeros_def[symmetric]])
+  proof (induct rule: parallel_fix_ind_inc)
     fix X Y
     assume hyps : \<open>(\<Lambda> X. 1 \<rightarrow> X)\<cdot>X ||| Y \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close> 
                   \<open>X ||| (\<Lambda> Y. 0 \<rightarrow> Y)\<cdot>Y \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close>
@@ -109,12 +106,12 @@ next
       by (simp add: write0_Inter_write0)
     also have \<open>\<dots> = \<box>a \<in> {0, 1} \<rightarrow> (if a = 0 then 1 \<rightarrow> X ||| Y else X ||| 0 \<rightarrow> Y)\<close>
       by (auto simp add: write0_def Mprefix_Det_Mprefix intro: mono_Mprefix_eq)
-    also have \<open>\<dots> \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close>
-      by (subst oneszeros_rec)
-        (use hyps in \<open>auto intro: mono_Mprefix_FD\<close>)
+    also have \<open>\<dots> \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close> 
+      by (subst oneszeros_rec) (use hyps in \<open>auto intro: mono_Mprefix_FD\<close>)
     finally show \<open>(\<Lambda> X. 1 \<rightarrow> X)\<cdot>X ||| (\<Lambda> Y. 0 \<rightarrow> Y)\<cdot>Y \<sqsubseteq>\<^sub>F\<^sub>D oneszeros\<close> .
   qed simp_all
 qed
+
 
 text\<open>As a consequence, in the trace model, we can establish that there will be no ``Anomaly''
 in \<^theory>\<open>HOL-CSP\<close>, so \<open>ones ||| (1 \<rightarrow> zeros)\<close> will be equal to \<open>1 \<rightarrow> oneszeros\<close> in the
@@ -122,6 +119,7 @@ originally intended trace-projection. The proof proceeds indirectly over inducti
 This is the recommended proof strategy if arguments over trace sets have to be established. In 
 contrast, an argument over the \<^term>\<open>lfp\<close>-operator, which seems natural at first sight, is amazingly 
 complicated. We have:\<close>
+
 
 lemma \<open>\<T> (ones ||| (1 \<rightarrow> zeros)) = \<T> (1 \<rightarrow> oneszeros)\<close> (is \<open>?lhs = ?rhs\<close>)
 proof (rule set_eqI)
@@ -136,30 +134,24 @@ proof (rule set_eqI)
       hence \<open>e = ev 1\<close> \<open>t \<in> \<T> oneszeros\<close>
         by (simp_all add: T_write0)
       thus \<open>e # t \<in> \<T> (ones ||| 1 \<rightarrow> zeros)\<close>
-        apply (subst ones_rec)
-        apply (simp del: One_nat_def add: write0_Inter_write0 T_Det T_write0)
-        apply (fold ones_rec ones_Inter_zeros_eq_oneszeros)
-        ..
+        apply (subst ones_rec) 
+        apply (simp del: One_nat_def add: write0_Inter_write0 T_Det T_write0) 
+        by (metis ones_rec ones_Inter_zeros_eq_oneszeros2)
     next
-      show \<open>e # t \<in> \<T> (ones ||| 1 \<rightarrow> zeros) \<Longrightarrow> e # t \<in> \<T> (1 \<rightarrow> oneszeros)\<close>
-        apply (subst (asm) ones_rec)
-        apply (simp del: One_nat_def add: write0_Inter_write0 T_Det T_write0)
-        apply (fold ones_rec)
-        apply (unfold Cons.hyps)
-        apply (unfold ones_Inter_zeros_eq_oneszeros)
-        apply (subst (asm) (2) oneszeros_rec, subst oneszeros_rec)
-        by (auto simp add: T_Mprefix T_write0)
+      show \<open>e # t \<in> \<T> (ones ||| 1 \<rightarrow> zeros) \<Longrightarrow> e # t \<in> \<T> (1 \<rightarrow> oneszeros)\<close> 
+        apply (subst (asm) ones_rec) 
+        apply (simp del: One_nat_def add: write0_Inter_write0 T_Det T_write0) 
+        by (metis Det_projs(3) Un_iff local.Cons ones_Inter_zeros_eq_oneszeros2 ones_rec 
+                  write0_Inter_write0 zeros_rec) 
     qed
   qed
 qed
-
 
 text\<open>However, \<open>ones ||| (1 \<rightarrow> zeros)\<close> will be \<^emph>\<open>not\<close> equal to \<open>1 \<rightarrow> oneszeros\<close> in the failure
 model and therefore not in the failure/divergence model. The deeper reason is the interleave
 operator \<^emph>\<open>can neither refuse\<close> \<open>0\<close> or \<open>1\<close>; it is designed to be sensitive to the process 
 context and let pass any possible interleaving admitted by the context which is reflected 
 in the rule @{thm Read_Write_CSP_Laws.write0_Inter_write0}.\<close>
-
 
 lemma \<open>ones ||| (1 \<rightarrow> zeros) \<noteq> 1 \<rightarrow> oneszeros\<close> (is \<open>?P1 \<noteq> ?P2\<close>) 
 proof -
@@ -187,7 +179,7 @@ Since interleaving \<^emph>\<open>can neither refuse\<close> \<open>0\<close> or
 lemma \<open>ones ||| zeros \<noteq> oneszeros'\<close>
 proof (rule notI)
   assume \<open>ones ||| zeros = oneszeros'\<close>
-  with ones_Inter_zeros_eq_oneszeros have \<open>oneszeros' = oneszeros\<close> by metis
+  with ones_Inter_zeros_eq_oneszeros2 have \<open>oneszeros' = oneszeros\<close> by metis
   moreover have \<open>([], {ev 0}) \<in> \<F> oneszeros'\<close>
     by (subst oneszeros'_rec)
       (simp add: F_Mndetprefix')

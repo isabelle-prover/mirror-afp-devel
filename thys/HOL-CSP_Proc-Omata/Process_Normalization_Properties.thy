@@ -38,7 +38,7 @@ chapter \<open>Advanced Properties of ProcOmata\<close>
 theory Process_Normalization_Properties
   imports Process_Normalization Deterministic_Processes
 begin
-(*>*)
+  (*>*)
 
 
 section \<open>Determinism of deterministic ProcOmata\<close>
@@ -502,7 +502,7 @@ lemma ticks_of_P_d: \<open>\<checkmark>s(P\<llangle>A\<rrangle>\<^sub>d \<sigma>
 
 lemma non_terminating_iff_empty_ticks_of :
   \<open>non_terminating P \<longleftrightarrow> \<checkmark>s(P) = {}\<close>
-  by (simp add: non_terminating_is_right tickFree_traces_iff_empty_ticks_of)
+  by (simp add: non_terminating_is_right tF_traces_iff_empty_ticks_of)
 
 
 
@@ -584,4 +584,4 @@ lemma is_ticks_length_P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_d_iff :
 
 (*<*)
 end
-(*>*)
+  (*>*)

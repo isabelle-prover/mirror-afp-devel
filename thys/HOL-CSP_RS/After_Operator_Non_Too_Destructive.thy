@@ -61,7 +61,7 @@ next
       by (elim D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
         (simp_all add: \<open>ev e \<in> P\<^sup>0\<close> After_projs
           initials_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k,
-          meson Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tickFree_Cons_iff)
+          meson Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tF_Cons_iff)
   next
     show \<open>t \<in> \<D> ?rhs \<Longrightarrow> t \<in> \<D> ?lhs\<close> for t
       by (auto simp add: D_After initials_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>ev e \<in> P\<^sup>0\<close>
@@ -71,7 +71,7 @@ next
       by (elim F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>kE)
         (simp_all add: \<open>ev e \<in> P\<^sup>0\<close> After_projs
           initials_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k F_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k,
-          meson Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tickFree_Cons_iff)
+          meson Cons_eq_appendI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) length_Cons tF_Cons_iff)
   next
     show \<open>(t, X) \<in> \<F> ?rhs \<Longrightarrow> (t, X) \<in> \<F> ?lhs\<close> for t X
       by (auto simp add: F_After initials_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>ev e \<in> P\<^sup>0\<close>
@@ -91,7 +91,7 @@ proof (induct t arbitrary: n rule: rev_induct)
 next
   fix e t n
   assume   hyp : \<open>t \<in> \<T> P \<Longrightarrow> tF t \<Longrightarrow> P after\<^sub>\<T> t \<down> n = (P \<down> (n + length t)) after\<^sub>\<T> t\<close> for n
-  assume prems : \<open>t @ [e] \<in> \<T> P\<close> \<open>tickFree (t @ [e])\<close>
+  assume prems : \<open>t @ [e] \<in> \<T> P\<close> \<open>tF (t @ [e])\<close>
   from prems(2) obtain a where \<open>e = ev a\<close> by (cases e) simp_all
   with initials_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e[OF prems(1)] have \<open>ev a \<in> (P after\<^sub>\<T> t)\<^sup>0\<close> by simp
   from prems is_processT3_TR_append have \<open>t \<in> \<T> P\<close> \<open>tF t\<close> by auto

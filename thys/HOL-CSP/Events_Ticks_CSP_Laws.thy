@@ -72,6 +72,21 @@ lemma events_of_memE :
   \<open>a \<in> \<alpha>(P) \<Longrightarrow> (\<And>t. t \<in> \<T> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
   by (meson events_of_memD)
 
+lemma events_of_memE_optimized_tF :
+  \<open>(\<And>t. t \<in> \<T> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> tF t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> if \<open>a \<in> \<alpha>(P)\<close>
+proof -
+  from \<open>a \<in> \<alpha>(P)\<close> obtain t where \<open>t \<in> \<T> P\<close> \<open>ev a \<in> set t\<close>
+    by (meson events_of_memE)
+  have \<open>(if tF t then t else butlast t) \<in> \<T> P\<close>
+    by simp (metis \<open>t \<in> \<T> P\<close> append_butlast_last_id is_processT3_TR_append tF_Nil)
+  moreover from T_not_tF_imp_decomp \<open>ev a \<in> set t\<close> \<open>t \<in> \<T> P\<close>
+  have \<open>ev a \<in> set (if tF t then t else butlast t)\<close> by force
+  moreover from T_imp_ftF \<open>t \<in> \<T> P\<close> ftF_iff_tF_butlast
+  have \<open>tF (if tF t then t else butlast t)\<close> by (metis (full_types))
+  ultimately show \<open>(\<And>t. t \<in> \<T> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> tF t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> by blast
+qed
+
+
 
 definition strict_events_of :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 'a set\<close> (\<open>\<^bold>\<alpha>'(_')\<close>)
   where \<open>\<^bold>\<alpha>(P) \<equiv> \<Union>t\<in>\<T> P - \<D> P. {a. ev a \<in> set t}\<close>
@@ -87,6 +102,22 @@ lemma strict_events_of_memE :
   \<open>a \<in> \<^bold>\<alpha>(P) \<Longrightarrow> (\<And>t. t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
   by (meson strict_events_of_memD)
 
+lemma strict_events_of_memE_optimized_tF :
+  \<open>(\<And>t. t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> tF t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> if \<open>a \<in> \<^bold>\<alpha>(P)\<close>
+proof -
+  from \<open>a \<in> \<^bold>\<alpha>(P)\<close> obtain t where \<open>t \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close> \<open>ev a \<in> set t\<close>
+    by (meson strict_events_of_memE)
+  have \<open>(if tF t then t else butlast t) \<in> \<T> P\<close>
+    by simp (metis \<open>t \<in> \<T> P\<close> append_butlast_last_id is_processT3_TR_append tF_Nil)
+  moreover have \<open>(if tF t then t else butlast t) \<notin> \<D> P\<close>
+    using T_imp_ftF \<open>t \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close> div_butlast_when_non_tF_iff by blast
+  moreover from T_not_tF_imp_decomp \<open>ev a \<in> set t\<close> \<open>t \<in> \<T> P\<close>
+  have \<open>ev a \<in> set (if tF t then t else butlast t)\<close> by force
+  moreover from T_imp_ftF \<open>t \<in> \<T> P\<close> ftF_iff_tF_butlast
+  have \<open>tF (if tF t then t else butlast t)\<close> by (metis (full_types))
+  ultimately show \<open>(\<And>t. t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> tF t \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close> by blast
+qed
+
 
 lemma events_of_is_strict_events_of_or_UNIV :
   \<open>\<alpha>(P) = (if \<D> P = {} then \<^bold>\<alpha>(P) else UNIV)\<close>
@@ -101,6 +132,55 @@ qed
 
 lemma strict_events_of_subset_events_of : \<open>\<^bold>\<alpha>(P) \<subseteq> \<alpha>(P)\<close>
   by (simp add: events_of_is_strict_events_of_or_UNIV)
+
+
+
+text \<open>
+New in Isabelle26; we already had the notions of \<^const>\<open>events_of\<close> (alphabet),
+and the stronger notion \<^const>\<open>strict_events_of\<close> (strict alphabet), but this is not enough.
+The issue is simple: \<^term>\<open>\<alpha>(P)\<close> is too big (is the process \<^term>\<open>P\<close> diverges, \<^prop>\<open>\<alpha>(P) = UNIV\<close>)
+and \<^term>\<open>\<^bold>\<alpha>(P)\<close> is too small (we lose all information about divergences).
+
+We therefore introduce something in between.
+\<close>
+
+
+definition minimal_events_of :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> 'a set\<close> (\<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n'(_')\<close>)
+  where \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<equiv> \<^bold>\<alpha>(P) \<union> (\<Union>t\<in>\<D>\<^sub>m\<^sub>i\<^sub>n P. {a. ev a \<in> set t})\<close>
+
+lemma no_div_imp_strict_events_of_is_minimal_events_of :
+  \<open>\<D> P = {} \<Longrightarrow> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) = \<^bold>\<alpha>(P)\<close>
+  by (auto simp add: minimal_events_of_def dest: D\<^sub>m\<^sub>i\<^sub>n_D)
+
+lemma minimal_events_of_def_bis :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) = \<^bold>\<alpha>(P) \<union> {a. \<exists>t. t @ [ev a] \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P}\<close>
+  by (auto simp add: minimal_events_of_def strict_events_of_def Divergences\<^sub>m\<^sub>i\<^sub>n_def_bis)
+    (metis (no_types) D_T Diff_iff Un_iff append_butlast_last_id empty_iff
+      empty_set is_processT3_TR_append list.simps(15) set_append singleton_iff)
+
+
+lemma minimal_events_of_memI :
+  \<open>t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  unfolding minimal_events_of_def strict_events_of_def by auto
+
+lemma minimal_events_of_memD :
+  \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow> \<exists>t \<in> \<T> P. tF t \<and> ev a \<in> set t \<and> (t \<notin> \<D> P \<or> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P)\<close>
+  by (simp add: minimal_events_of_def)
+    (metis Divergences\<^sub>m\<^sub>i\<^sub>n_def tF_mem_D\<^sub>m\<^sub>i\<^sub>n
+      strict_events_of_memE_optimized_tF D_T elem_min_elems)
+
+lemma minimal_events_of_memE :
+  \<open>\<lbrakk>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P); \<And>t. tF t \<Longrightarrow> t \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> thesis;
+    \<And>t. tF t \<Longrightarrow> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> ev a \<in> set t \<Longrightarrow> thesis\<rbrakk> \<Longrightarrow> thesis\<close>
+  by (metis minimal_events_of_memD)
+
+
+lemma minimal_events_of_subset_events_of : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<subseteq> \<alpha>(P)\<close>
+  by (simp add: events_of_is_strict_events_of_or_UNIV
+      no_div_imp_strict_events_of_is_minimal_events_of)
+
+
 
 
 subsection \<open>Ticks of a Process\<close>
@@ -129,8 +209,8 @@ lemma strict_ticks_of_memI :
 lemma strict_ticks_of_memD :
   \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> \<exists>t. t @ [\<checkmark>(r)] \<in> \<T> P \<and> t \<notin> \<D> P\<close>
   by (simp add: strict_ticks_of_def)
-    (metis T_imp_front_tickFree butlast_snoc
-      front_tickFree_iff_tickFree_butlast front_tickFree_single is_processT7)
+    (metis T_imp_ftF butlast_snoc
+      ftF_iff_tF_butlast ftF_single is_processT7)
 
 lemma strict_ticks_of_memE :
   \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> (\<And>t. t @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> t \<notin> \<D> P \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
@@ -157,7 +237,7 @@ section \<open>Laws\<close>
 
 subsection \<open>Preliminaries\<close>
 
-lemma inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tickFree :
+lemma inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tF :
   \<open>inj_on (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) {t \<in> \<T> P. tF t}\<close> if \<open>inj_on f \<alpha>(P)\<close>
 proof (rule inj_onI)
   have * : \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g \<circ> ev = ev \<circ> f\<close> by (rule ext) simp
@@ -181,7 +261,7 @@ proof (rule inj_onI)
   fix t t' assume $ : \<open>t \<in> {t \<in> \<T> P. tF t}\<close> \<open>t' \<in> {t \<in> \<T> P. tF t}\<close>
     \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t'\<close>
   from "$"(1, 2) obtain v v' where \<open>t = map ev v\<close> \<open>t' = map ev v'\<close>
-    by (auto simp add: tickFree_iff_is_map_ev)
+    by (auto simp add: tF_iff_is_map_ev)
   with "$" "*" "**" show \<open>t = t'\<close> by auto
 qed
 
@@ -194,11 +274,11 @@ proof (rule inj_onI)
     | r r' u u' where \<open>t = u @ [\<checkmark>(r)]\<close> \<open>t' = u' @ [\<checkmark>(r')]\<close> \<open>tF u\<close> \<open>tF u'\<close>
       \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u'\<close>
     by (cases t rule: rev_cases; cases t' rule: rev_cases, simp_all)
-      (metis append_T_imp_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_disc_iff(1) neq_Nil_conv)
+      (metis append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_disc_iff(1) neq_Nil_conv)
   thus \<open>t = t'\<close>
   proof cases
     show \<open>t = t'\<close> if \<open>tF t\<close> \<open>tF t'\<close>
-      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tickFree
+      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tF
           [OF \<open>inj_on f \<alpha>(P)\<close>, THEN inj_onD, OF "$"(3)])
         (simp_all add: "$"(1, 2) \<open>tF t\<close> \<open>tF t'\<close>)
   next
@@ -207,7 +287,7 @@ proof (rule inj_onI)
     from "$$"(1, 2) "$"(1, 2) have \<open>u \<in> \<T> P\<close> \<open>u' \<in> \<T> P\<close>
       by (meson is_processT3_TR_append)+
     have \<open>u = u'\<close>
-      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tickFree
+      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tF
           [OF \<open>inj_on f \<alpha>(P)\<close>, THEN inj_onD, OF "$$"(5)])
         (simp_all add: \<open>u \<in> \<T> P\<close> \<open>u' \<in> \<T> P\<close> \<open>tF u\<close> \<open>tF u'\<close>)
     moreover from "$"(1-3) "$$"(1, 2) have \<open>r = r'\<close>
@@ -217,7 +297,7 @@ proof (rule inj_onI)
 qed
 
 
-lemma inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tickFree :
+lemma inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tF :
   \<open>inj_on (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) {t \<in> \<T> P - \<D> P. tF t}\<close> if \<open>inj_on f \<^bold>\<alpha>(P)\<close>
 proof (rule inj_onI)
   have * : \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g \<circ> ev = ev \<circ> f\<close> by (rule ext) simp
@@ -244,7 +324,7 @@ proof (rule inj_onI)
   fix t t' assume $ : \<open>t \<in> {t \<in> \<T> P - \<D> P. tF t}\<close> \<open>t' \<in> {t \<in> \<T> P - \<D> P. tF t}\<close>
     \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t'\<close>
   from "$"(1, 2) obtain v v' where \<open>t = map ev v\<close> \<open>t' = map ev v'\<close>
-    by (auto simp add: tickFree_iff_is_map_ev)
+    by (auto simp add: tF_iff_is_map_ev)
   with "$" "*" "**" show \<open>t = t'\<close> by auto
 qed
 
@@ -258,11 +338,11 @@ proof (rule inj_onI)
     | r r' u u' where \<open>t = u @ [\<checkmark>(r)]\<close> \<open>t' = u' @ [\<checkmark>(r')]\<close> \<open>tF u\<close> \<open>tF u'\<close>
       \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u'\<close>
     by (cases t rule: rev_cases; cases t' rule: rev_cases, simp_all)
-      (metis append_T_imp_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_disc_iff(1) neq_Nil_conv)
+      (metis append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.map_disc_iff(1) neq_Nil_conv)
   thus \<open>t = t'\<close>
   proof cases
     show \<open>t = t'\<close> if \<open>tF t\<close> \<open>tF t'\<close>
-      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tickFree
+      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tF
           [OF \<open>inj_on f \<^bold>\<alpha>(P)\<close>, THEN inj_onD, OF "$"(3)])
         (use "$"(1, 2) in \<open>simp_all add: \<open>tF t\<close> \<open>tF t'\<close>\<close>)
   next
@@ -271,7 +351,7 @@ proof (rule inj_onI)
     from "$$"(1-4) "$"(1, 2) have \<open>u \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close> \<open>u' \<in> \<T> P\<close> \<open>u' \<notin> \<D> P\<close>
       by (auto intro: is_processT3_TR_append is_processT7)
     have \<open>u = u'\<close>
-      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tickFree
+      by (rule inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_diff_D_tF
           [OF \<open>inj_on f \<^bold>\<alpha>(P)\<close>, THEN inj_onD, OF "$$"(5)])
         (simp_all add: \<open>u \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close> \<open>u' \<in> \<T> P\<close> \<open>u' \<notin> \<D> P\<close> \<open>tF u\<close> \<open>tF u'\<close>)
     moreover from "$"(1-3) "$$"(1, 2) have \<open>r = r'\<close>
@@ -281,13 +361,82 @@ proof (rule inj_onI)
 qed
 
 
+
+lemma add_Compl_minimal_events_of_Compl_strict_events_of_in_F :
+  \<open>(t, X \<union> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))) \<in> \<F> P\<close> if \<open>(t, X) \<in> \<F> P\<close>
+for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  \<comment>\<open>very powerful result\<close>
+proof (cases \<open>t \<in> \<D> P\<close>)
+  show \<open>t \<in> \<D> P \<Longrightarrow> ?thesis\<close> by (fact is_processT8)
+next
+  assume \<open>t \<notin> \<D> P\<close>
+  from \<open>(t, X) \<in> \<F> P\<close> have \<open>(t, X \<union> (ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P)))) \<in> \<F> P\<close>
+  proof (rule is_processT5, intro allI impI)
+    fix e :: \<open>('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> assume \<open>e \<in> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))\<close>
+    then consider a where \<open>e = ev a\<close> \<open>a \<notin> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+      | r where \<open>e = \<checkmark>(r)\<close> \<open>r \<notin> \<^bold>\<checkmark>\<^bold>s(P)\<close> by blast
+    thus \<open>(t @ [e], {}) \<notin> \<F> P\<close>
+    proof cases
+      from \<open>t \<notin> \<D> P\<close> show \<open>e = ev a \<Longrightarrow> a \<notin> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow> (t @ [e], {}) \<notin> \<F> P\<close> for a
+        by (metis F_T Un_iff list.set_intros(1)
+            min_elems3 minimal_events_of_memI set_append)
+    next
+      from \<open>t \<notin> \<D> P\<close> show \<open>e = \<checkmark>(r) \<Longrightarrow> r \<notin> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> (t @ [e], {}) \<notin> \<F> P\<close> for r
+        by (meson F_T is_processT9 strict_ticks_of_memI)
+    qed
+  qed
+  also have \<open>X \<union> (ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))) =
+             X \<union> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))\<close> by blast
+  finally show ?thesis .
+qed
+
+
+lemma mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset :
+  \<open>set t \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P)\<close> if \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close>
+  \<comment>\<open>very powerful result\<close>
+proof (rule subsetI)
+  show \<open>e \<in> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P)\<close> if \<open>e \<in> set t\<close> for e
+  proof (cases e)
+    from \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close> \<open>e \<in> set t\<close>
+    show \<open>e = ev a \<Longrightarrow> e \<in> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P)\<close> for a
+      by (auto intro: minimal_events_of_memI)
+  next
+    fix r assume \<open>e = \<checkmark>(r)\<close>
+    from \<open>e \<in> set t\<close> have \<open>t \<notin> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+      by (auto dest: tF_mem_D\<^sub>m\<^sub>i\<^sub>n simp add: \<open>e = \<checkmark>(r)\<close> tickFree_def disjoint_iff)
+    with \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P)\<close> have \<open>t \<in> \<T> P - \<D> P\<close> by simp
+    with T_imp_ftF have \<open>ftF t\<close> by blast
+    with \<open>e \<in> set t\<close> obtain t' where \<open>t = t' @ [\<checkmark>(r)]\<close>
+      by (auto simp add: \<open>e = \<checkmark>(r)\<close> in_set_conv_decomp
+          ftF_append_iff ftF_Cons_iff)
+    with \<open>t \<in> \<T> P - \<D> P\<close> have \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>
+      by (auto intro: strict_ticks_of_memI)
+    thus \<open>e \<in> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P)\<close>
+      by (simp add: \<open>e = \<checkmark>(r)\<close>)
+  qed
+qed
+
+
+lemma inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_D\<^sub>m\<^sub>i\<^sub>n_Un_T_diff_D :
+  \<open>inj_on (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g)) (\<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P))\<close>
+  if \<open>inj_on f \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> and \<open>inj_on g \<^bold>\<checkmark>\<^bold>s(P)\<close>
+proof (rule inj_onI, (drule mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset)+)
+  show \<open>\<lbrakk>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u;
+         set t \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P); set u \<subseteq> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> tick ` \<^bold>\<checkmark>\<^bold>s(P)\<rbrakk>
+        \<Longrightarrow> t = u\<close> for t u
+    by (induct t arbitrary: u, simp_all)
+      (safe, use that in \<open>auto dest: inj_onD\<close>)
+qed
+
+
+
 subsection \<open>Events of a Process\<close>
 
 lemma events_of_BOT  [simp] : \<open>\<alpha>(\<bottom>) = UNIV\<close>
   and events_of_SKIP [simp] : \<open>\<alpha>(SKIP r) = {}\<close>
   and events_of_STOP [simp] : \<open>\<alpha>(STOP) = {}\<close>
   by (auto simp add: events_of_def T_BOT T_SKIP T_STOP)
-    (meson front_tickFree_single list.set_intros(1))
+    (meson ftF_single list.set_intros(1))
 
 lemma anti_mono_events_of_T: \<open>P \<sqsubseteq>\<^sub>T Q \<Longrightarrow> \<alpha>(Q) \<subseteq> \<alpha>(P)\<close>
   unfolding trace_refine_def events_of_def by blast
@@ -302,7 +451,7 @@ lemma anti_mono_events_of_DT: \<open>P \<sqsubseteq>\<^sub>D\<^sub>T Q \<Longrig
   by (intro anti_mono_events_of_T leDT_imp_leT)
 
 lemma anti_mono_events_of : \<open>P \<sqsubseteq> Q \<Longrightarrow> \<alpha>(Q) \<subseteq> \<alpha>(P)\<close>
-  by (intro anti_mono_events_of_FD le_approx_imp_le_ref)
+  by (intro anti_mono_events_of_FD le_approx_imp_le_FD)
 
 
 
@@ -357,7 +506,7 @@ lemma events_of_Renaming:
 proof (simp, intro conjI impI)
   show \<open>\<D> P \<noteq> {} \<Longrightarrow> \<alpha>(Renaming P f g) = UNIV\<close>
     by (simp add: events_of_is_strict_events_of_or_UNIV D_Renaming)
-      (metis front_tickFree_Nil nonempty_divE)
+      (metis ftF_Nil nonempty_divE)
 next
   show \<open>\<D> P = {} \<Longrightarrow> \<alpha>(Renaming P f g) = f ` \<alpha>(P)\<close>
     by (auto simp add: events_of_def T_Renaming image_UN image_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.case_eq_if)
@@ -383,7 +532,7 @@ proof (intro subset_antisym subsetI)
 next
   show \<open>a \<in> ?A \<Longrightarrow> a \<in> \<alpha>(P \<^bold>; Q)\<close> for a
     by (elim UnE events_of_memE, simp_all add: events_of_def T_Seq split: if_split_asm)
-      (metis T_nonTickFree_imp_decomp Un_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) is_processT1_TR set_ConsD set_append,
+      (metis T_not_tF_imp_decomp Un_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) is_processT1_TR set_ConsD set_append,
         metis Un_iff ex_in_conv set_append strict_ticks_of_memD)
 qed
 
@@ -404,19 +553,19 @@ proof (rule subset_antisym[OF events_of_Sync_subset])
       case True
       thus ?thesis 
         by (metis "1"(1) "1"(3) emptyLeftSelf insert_absorb insert_disjoint(2)
-            is_processT1_TR setinterleaving_sym tickFree_def)
+            is_processT1_TR setinterleaving_dual tickFree_def)
     next
       case False
       then obtain t_P' r where \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>tF t_P'\<close> \<open>t_P' \<in> \<T> P\<close>
-        by (metis "1"(1) prefixI T_nonTickFree_imp_decomp
-            append_T_imp_tickFree is_processT3_TR not_Cons_self)
+        by (metis "1"(1) prefixI T_not_tF_imp_decomp
+            append_T_imp_tF is_processT3_TR not_Cons_self)
       moreover have \<open>ev e \<in> set t_P'\<close>
         using "1"(3) calculation(1) by auto
       ultimately show ?thesis
         apply (rule_tac x = t_P' in exI, simp)
         apply (rule_tac x = t_P' in exI, simp)
         apply (rule_tac x = \<open>[]\<close> in exI, simp)
-        by (metis disjoint_iff emptyLeftSelf setinterleaving_sym tickFree_def)
+        by (metis disjoint_iff emptyLeftSelf setinterleaving_dual tickFree_def)
     qed
   qed
   thus \<open>\<alpha>(P) \<union> \<alpha>(Q) \<subseteq> \<alpha>(P ||| Q)\<close> by (metis Sync_commute Un_least)
@@ -431,7 +580,7 @@ lemma events_of_Par_div    :
 proof -
   assume \<open>\<D> P \<inter> \<T> Q \<union> \<D> Q \<inter> \<T> P \<noteq> {}\<close>
   hence \<open>\<D> (P || Q) \<noteq> {}\<close> by (simp add: D_Sync setinterleaving_UNIV_iff)
-      (use front_tickFree_Nil in blast)
+      (use ftF_Nil in blast)
   thus \<open>\<alpha>(P || Q) = UNIV\<close> by (simp add: events_of_is_strict_events_of_or_UNIV)
 next
   show \<open>\<D> P \<inter> \<T> Q \<union> \<D> Q \<inter> \<T> P = {} \<Longrightarrow> \<alpha>(P || Q) \<subseteq> \<alpha>(P) \<inter> \<alpha>(Q)\<close>
@@ -561,9 +710,9 @@ proof (intro subsetI)
     fix u assume \<open>u \<in> \<T> (Renaming P f g)\<close> \<open>u \<notin> \<D> (Renaming P f g)\<close> \<open>ev b \<in> set u\<close>
     then obtain u' where \<open>tF u'\<close> \<open>u' \<in> \<T> (Renaming P f g)\<close> \<open>u' \<notin> \<D> (Renaming P f g)\<close> \<open>ev b \<in> set u'\<close>
       by (cases u rule: rev_cases, simp_all)
-        (metis prefixI \<open>ev b \<in> set u\<close> append_T_imp_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) front_tickFree_single
-          is_processT3_TR is_processT7 not_Cons_self2 tickFree_Cons_iff tickFree_Nil tickFree_append_iff)
-    from this(1-3) front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree obtain t
+        (metis prefixI \<open>ev b \<in> set u\<close> append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) ftF_single
+          is_processT3_TR is_processT7 not_Cons_self2 tF_Cons_iff tF_Nil tF_append_iff)
+    from this(1-3) ftF_Nil tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff obtain t
       where \<open>u' = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t\<close> \<open>t \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close> unfolding Renaming_projs by blast
     from this(1) \<open>ev b \<in> set u'\<close> obtain a where \<open>b = f a\<close> \<open>ev a \<in> set t\<close>
       by (auto simp add: in_set_conv_decomp)
@@ -584,8 +733,8 @@ next
     from \<open>t \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close> \<open>ev a \<in> set t\<close> obtain t'
       where \<open>tF t'\<close> \<open>t' \<in> \<T> P\<close> \<open>t' \<notin> \<D> P\<close> \<open>ev a \<in> set t'\<close>
       by (cases t rule: rev_cases, simp_all)
-        (metis prefixI \<open>ev a \<in> set t\<close> append_T_imp_tickFree event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) front_tickFree_single
-          is_processT3_TR is_processT7 not_Cons_self2 tickFree_Cons_iff tickFree_Nil tickFree_append_iff)
+        (metis prefixI \<open>ev a \<in> set t\<close> append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) ftF_single
+          is_processT3_TR is_processT7 not_Cons_self2 tF_Cons_iff tF_Nil tF_append_iff)
     from \<open>t' \<in> \<T> P\<close> have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t' \<in> \<T> (Renaming P f g)\<close>
       by (auto simp add: T_Renaming)
     have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t' \<notin> \<D> (Renaming P f g)\<close>
@@ -598,13 +747,13 @@ next
         where ** : \<open>t' = t1 @ t2\<close> \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t2 = u2\<close>
           \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close>
         by (metis (no_types) append_eq_map_conv)
-      from "**"(1) \<open>t' \<in> \<T> P\<close> \<open>tF t'\<close> is_processT3_TR_append tickFree_append_iff
+      from "**"(1) \<open>t' \<in> \<T> P\<close> \<open>tF t'\<close> is_processT3_TR_append tF_append_iff
       have \<open>t1 \<in> {t \<in> \<T> P. tF t}\<close> by auto
       moreover have \<open>u1 \<in> {t \<in> \<T> P. tF t}\<close> by (simp add: D_T \<open>tF u1\<close> \<open>u1 \<in> \<D> P\<close>)
-      ultimately have \<open>t1 = u1\<close> by (intro inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tickFree
+      ultimately have \<open>t1 = u1\<close> by (intro inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tF
             [THEN inj_onD, OF \<open>inj_on f \<alpha>(P)\<close> "**"(3)])
       with "*"(1-3) "**"(1, 2) \<open>t' \<notin> \<D> P\<close> is_processT7
-        map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree show False by blast
+        ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff show False by blast
     qed
     moreover from \<open>ev a \<in> set t'\<close> \<open>b = f a\<close> have \<open>ev b \<in> set (map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t')\<close> by force
     ultimately show \<open>b \<in> \<^bold>\<alpha>(Renaming P f g)\<close>
@@ -614,18 +763,116 @@ qed
 
 
 
-lemma strict_events_of_Seq_subseteq :
+lemma strict_events_of_Seq_subset :
   \<open>\<^bold>\<alpha>(P \<^bold>; Q) \<subseteq> \<^bold>\<alpha>(P) \<union> (if \<^bold>\<checkmark>\<^bold>s(P) = {} then {} else \<^bold>\<alpha>(Q))\<close>
   by (rule subsetI, elim strict_events_of_memE, simp add: Seq_projs)
-    (metis T_imp_front_tickFree Un_iff append_T_imp_tickFree empty_iff is_processT7
+    (metis T_imp_ftF Un_iff append_T_imp_tF empty_iff is_processT7
       is_processT9 not_Cons_self2 set_append strict_events_of_memI strict_ticks_of_memI)
 
 
 lemma strict_events_of_Sync_subset : \<open>\<^bold>\<alpha>(P \<lbrakk>S\<rbrakk> Q) \<subseteq> \<^bold>\<alpha>(P) \<union> \<^bold>\<alpha>(Q)\<close>
   by (subst strict_events_of_def, auto simp add: Sync_projs subset_iff)
-    (metis (full_types) append_Nil2 front_tickFree_Nil ftf_Sync1
-      setinterleaving_sym strict_events_of_memI)
+    (metis (full_types) append_Nil2 ftF_Nil ftf_Sync1
+      setinterleaving_dual strict_events_of_memI)
 
+
+
+
+
+subsection \<open>Minimal Events of a Process\<close>
+
+lemma minimal_events_of_BOT   [simp] : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(\<bottom>) = {}\<close>
+  and minimal_events_of_STOP  [simp] : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(STOP) = {}\<close>
+  and minimal_events_of_SKIP  [simp] : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(SKIP r) = {}\<close>
+  by (auto simp add: minimal_events_of_def D\<^sub>m\<^sub>i\<^sub>n_BOT D\<^sub>m\<^sub>i\<^sub>n_SKIP D\<^sub>m\<^sub>i\<^sub>n_STOP)
+
+
+lemma minimal_events_of_Mprefix:
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(\<box>a\<in>A \<rightarrow> P a) = A \<union> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P a))\<close>
+  by (simp add: set_eq_iff minimal_events_of_def strict_events_of_Mprefix D\<^sub>m\<^sub>i\<^sub>n_Mprefix)
+    (use D\<^sub>m\<^sub>i\<^sub>n_BOT in fastforce)
+
+lemma minimal_events_of_Mndetprefix:
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(\<sqinter>a\<in>A \<rightarrow> P a) = A \<union> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P a))\<close>
+  by (simp add: set_eq_iff minimal_events_of_def strict_events_of_Mndetprefix D\<^sub>m\<^sub>i\<^sub>n_Mndetprefix)
+    (use D\<^sub>m\<^sub>i\<^sub>n_BOT in fastforce)
+
+
+corollary minimal_events_of_write0 : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(a \<rightarrow> P) = insert a \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  by (simp add: write0_def minimal_events_of_Mprefix)
+
+corollary minimal_events_of_write : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(c\<^bold>!a \<rightarrow> P) = insert (c a) \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  by (simp add: write_def minimal_events_of_Mprefix)
+
+corollary minimal_events_of_read :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(c\<^bold>?a\<in>A \<rightarrow> P a) = c ` A \<union> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P (inv_into A c (c a))))\<close>
+  by (auto simp add: read_def minimal_events_of_Mprefix)
+
+corollary minimal_events_of_ndet_write :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a) = c ` A \<union> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P (inv_into A c (c a))))\<close>
+  by (auto simp add: ndet_write_def minimal_events_of_Mndetprefix)
+
+
+lemma minimal_events_of_GlobalNdet_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(\<sqinter>a \<in> A. P a) \<subseteq> (\<Union>a\<in>A. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P a))\<close>
+  by (auto simp add: minimal_events_of_def
+      dest!: strict_events_of_GlobalNdet_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset[THEN set_mp])
+
+
+lemma minimal_events_of_Ndet_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<sqinter> Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+  by (auto simp add: minimal_events_of_def
+      dest!: strict_events_of_Ndet_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_Ndet_subset[THEN set_mp])
+
+lemma minimal_events_of_Det_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<box> Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+  by (auto simp add: minimal_events_of_def
+      dest!: strict_events_of_Det_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_Det_subset[THEN set_mp])
+
+lemma minimal_events_of_Sliding_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<rhd> Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+  by (auto simp add: minimal_events_of_def
+      dest!: strict_events_of_Sliding_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_Sliding_subset[THEN set_mp])
+
+
+lemma minimal_events_of_Renaming_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(Renaming P f g) \<subseteq> f ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  by (auto simp add: minimal_events_of_def append_eq_map_conv ev_eq_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff image_iff
+      dest!: strict_events_of_Renaming_subset[THEN set_mp] D\<^sub>m\<^sub>i\<^sub>n_Renaming_subset[THEN set_mp]) blast
+    (* TODO: make an injective version ? *)
+
+
+lemma minimal_events_of_Seq_subset :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<^bold>; Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> (\<Union>r\<in>\<^bold>\<checkmark>\<^bold>s(P). \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q))\<close>
+  oops (* proven in HOL-CSP_PTick *)
+
+lemma minimal_events_of_Sync_subset :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \<lbrakk>S\<rbrakk> Q) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q)\<close>
+  oops (* proven in HOL-CSP_PTick *)
+
+
+lemma minimal_events_of_Hiding_subset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P \ A) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close>
+proof (rule subsetI)
+  show \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P \ A) \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close> for a
+  proof (elim minimal_events_of_memE)
+    fix t assume * : \<open>t \<in> \<T> (P \ A)\<close> \<open>t \<notin> \<D> (P \ A)\<close> \<open>ev a \<in> set t\<close>
+    from "*"(1, 2) obtain u where ** : \<open>t = trace_hide u (ev ` A)\<close> \<open>(u, ev ` A) \<in> \<F> P\<close>
+      unfolding T_Hiding D_Hiding by blast
+    from "*"(2) "**"(1) have \<open>u \<notin> \<D> P\<close> by (metis mem_D_imp_mem_D_Hiding)
+    with "*"(3) "**" show \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close>
+      by (auto intro: minimal_events_of_memI(1) dest: F_T)
+  next
+    fix t assume * : \<open>tF t\<close> \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \ A)\<close> \<open>ev a \<in> set t\<close>
+    from "*"(2) obtain u x
+      where ** : \<open>tF u\<close> \<open>t = trace_hide u (ev ` A)\<close>
+        \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<or> isInfHidden_seqRun_strong x P A u\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Hiding_subset[THEN set_mp])
+    from "**"(3) show \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close>
+    proof (elim disjE)
+      from "*"(3) "**"(2) show \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close>
+        by (auto intro: minimal_events_of_memI(2))
+    next
+      assume \<open>isInfHidden_seqRun_strong x P A u\<close>
+      from this[THEN spec, of 0] "*"(3) "**"(2)
+      show \<open>a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) - A\<close> by (auto intro: minimal_events_of_memI(1))
+    qed
+  qed
+qed
 
 
 
@@ -636,7 +883,7 @@ lemma ticks_of_BOT  [simp] : \<open>\<checkmark>s(\<bottom>) = UNIV\<close>
   and ticks_of_SKIP [simp] : \<open>\<checkmark>s(SKIP r) = {r}\<close>
   and ticks_of_STOP [simp] : \<open>\<checkmark>s(STOP) = {}\<close>
   by (simp_all add: set_eq_iff ticks_of_def T_BOT T_SKIP T_STOP)
-    (metis append_Nil front_tickFree_single)
+    (metis append_Nil ftF_single)
 
 lemma anti_mono_ticks_of_T: \<open>P \<sqsubseteq>\<^sub>T Q \<Longrightarrow> \<checkmark>s(Q) \<subseteq> \<checkmark>s(P)\<close>
   unfolding trace_refine_def ticks_of_def by blast
@@ -651,7 +898,7 @@ lemma anti_mono_ticks_of_DT: \<open>P \<sqsubseteq>\<^sub>D\<^sub>T Q \<Longrigh
   by (intro anti_mono_ticks_of_T leDT_imp_leT)
 
 lemma anti_mono_ticks_of : \<open>P \<sqsubseteq> Q \<Longrightarrow> \<checkmark>s(Q) \<subseteq> \<checkmark>s(P)\<close>
-  by (intro anti_mono_ticks_of_FD le_approx_imp_le_ref)
+  by (intro anti_mono_ticks_of_FD le_approx_imp_le_FD)
 
 
 
@@ -707,7 +954,7 @@ lemma ticks_of_Renaming:
 proof (simp, intro conjI impI)
   show \<open>\<D> P \<noteq> {} \<Longrightarrow> \<checkmark>s(Renaming P f g) = UNIV\<close>
     by (simp add: ticks_of_is_strict_ticks_of_or_UNIV D_Renaming)
-      (meson front_tickFree_Nil nonempty_divE)
+      (meson ftF_Nil nonempty_divE)
 next
   show \<open>\<checkmark>s(Renaming P f g) = g ` \<checkmark>s(P)\<close> if \<open>\<D> P = {}\<close>
   proof (intro subset_antisym subsetI)
@@ -727,18 +974,18 @@ lemma ticks_of_Seq :
 proof (intro subset_antisym subsetI)
   show \<open>a \<in> ?lhs \<Longrightarrow> a \<in> ?rhs\<close> for a
     by (elim ticks_of_memE, auto simp add: T_Seq ticks_of_def)
-      (metis T_nonTickFree_imp_decomp append_T_imp_tickFree last_appendR
-        last_snoc non_tickFree_tick tickFree_Nil tickFree_append_iff)
+      (metis T_not_tF_imp_decomp append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+        last_appendR last_snoc tF_Cons_iff tF_Nil tF_append_iff)
 next
   show \<open>a \<in> ?rhs \<Longrightarrow> a \<in> ?lhs\<close> for a
     by (auto simp add: ticks_of_def T_Seq split: if_split_asm)
-      (meson append_assoc, metis all_not_in_conv front_tickFree_single is_processT7 nonempty_divE)
+      (meson append_assoc, metis all_not_in_conv ftF_single is_processT7 nonempty_divE)
 qed
 
 
 lemma ticks_of_Sync_subset : \<open>\<checkmark>s(P \<lbrakk>S\<rbrakk> Q) \<subseteq> \<checkmark>s(P) \<union> \<checkmark>s(Q)\<close>
   by (auto simp add: T_Sync elim!: ticks_of_memE)
-    (metis SyncWithTick_imp_NTF T_imp_front_tickFree ticks_of_memI,
+    (metis SyncWithTick_imp_NTF T_imp_ftF ticks_of_memI,
       (metis UNIV_I empty_iff ticks_of_is_strict_ticks_of_or_UNIV)+)
 
 lemma ticks_of_no_div_Sync_subset :
@@ -761,7 +1008,7 @@ lemma ticks_of_Par_div :
 proof -
   assume \<open>\<D> P \<inter> \<T> Q \<union> \<D> Q \<inter> \<T> P \<noteq> {}\<close>
   hence \<open>\<D> (P || Q) \<noteq> {}\<close> by (simp add: D_Sync setinterleaving_UNIV_iff)
-      (use front_tickFree_Nil in blast)
+      (use ftF_Nil in blast)
   thus \<open>\<checkmark>s(P || Q) = UNIV\<close> by (simp add: ticks_of_is_strict_ticks_of_or_UNIV)
 next
   show \<open>\<D> P \<inter> \<T> Q \<union> \<D> Q \<inter> \<T> P = {} \<Longrightarrow> \<checkmark>s(P || Q) \<subseteq> \<checkmark>s(P) \<inter> \<checkmark>s(Q)\<close>
@@ -787,8 +1034,8 @@ next
       unfolding T_Hiding D_Hiding by blast
     then obtain t' where \<open>t' @ [\<checkmark>(r)] \<in> \<T> P\<close>
       by (cases t rule: rev_cases, auto split: if_split_asm intro: F_T)
-        (metis F_T Hiding_tickFree append_T_imp_tickFree list.distinct(1)
-          non_tickFree_tick tickFree_append_iff)
+        (metis F_T Hiding_tF append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2)
+          not_Cons_self2 tF_Cons_iff tF_append_iff)
     thus \<open>r \<in> \<checkmark>s(P)\<close> by (simp add: ticks_of_memI)
   next
     fix r assume \<open>r \<in> \<checkmark>s(P)\<close>
@@ -801,8 +1048,8 @@ qed
 
 
 
-lemma tickFree_traces_iff_empty_ticks_of : \<open>(\<forall>t \<in> \<T> P. tF t) \<longleftrightarrow> \<checkmark>s(P) = {}\<close>
-  using T_nonTickFree_imp_decomp unfolding ticks_of_def by auto
+lemma tF_traces_iff_empty_ticks_of : \<open>(\<forall>t \<in> \<T> P. tF t) \<longleftrightarrow> \<checkmark>s(P) = {}\<close>
+  using T_not_tF_imp_decomp unfolding ticks_of_def by auto
 
 
 
@@ -890,9 +1137,8 @@ proof (intro subsetI)
     \<open>u \<notin> \<D> (Renaming P f g)\<close> by (meson strict_ticks_of_memD)
   then obtain t r where \<open>s = g r\<close> \<open>u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t\<close> \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close>
     by (auto simp add: Renaming_projs append_eq_map_conv tick_eq_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
-      (use append_T_imp_tickFree front_tickFree_Nil in blast,
-        metis append_assoc butlast_snoc front_tickFree_iff_tickFree_butlast map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree
-        nonTickFree_n_frontTickFree non_tickFree_tick tickFree_append_iff tickFree_imp_front_tickFree)
+      (use append_T_imp_tF ftF_Nil in blast,metis (lifting) butlast_append butlast_snoc event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_charn
+        ftF_dw_closed tF_Cons_iff tF_append_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
   thus \<open>s \<in> g ` \<^bold>\<checkmark>\<^bold>s(P)\<close> by (auto intro: strict_ticks_of_memI is_processT9)
 qed
 
@@ -915,18 +1161,18 @@ next
         \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t @ [\<checkmark>(s)] = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1 @ u2\<close>
         by (auto simp add: D_Renaming)
       from "*"(1, 2, 4) obtain u2' where \<open>u2 = u2' @ [\<checkmark>(s)]\<close>
-        by (metis last_appendR map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree nonTickFree_n_frontTickFree
-            non_tickFree_tick snoc_eq_iff_butlast tickFree_append_iff)
+        by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) last_appendR last_snoc
+            not_tF_and_ftF tF_Cons_iff tF_Nil tF_append_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       obtain t1 t2 where ** : \<open>t = t1 @ t2\<close> \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close>
         by (metis "*"(4) \<open>u2 = u2' @ [\<checkmark>(s)]\<close> append.assoc append_eq_map_conv butlast_snoc)
       moreover from "*"(2) \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close> calculation have \<open>t1 \<in> {t \<in> \<T> P. tF t}\<close>
-        by simp (metis is_processT3_TR_append map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by simp (metis is_processT3_TR_append tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>u1 \<in> {t \<in> \<T> P. tF t}\<close> by (simp add: "*"(2) "*"(3) D_T)
       ultimately have \<open>t1 = u1\<close>
-        by (intro inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tickFree[THEN inj_onD, OF \<open>inj_on f \<alpha>(P)\<close>])
+        by (intro inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_T_tF[THEN inj_onD, OF \<open>inj_on f \<alpha>(P)\<close>])
       with "*"(2, 3) "**"(1) \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>t \<notin> \<D> P\<close> show False
-        using T_imp_front_tickFree front_tickFree_dw_closed
-          front_tickFree_nonempty_append_imp is_processT7 by simp blast
+        using T_imp_ftF ftF_dw_closed
+          ftF_nonempty_append_imp is_processT7 by simp blast
     qed
     ultimately show \<open>s \<in> \<^bold>\<checkmark>\<^bold>s(Renaming P f g)\<close> by (simp add: strict_ticks_of_memI)
   qed
@@ -938,10 +1184,11 @@ lemma strict_ticks_of_Seq_subset : \<open>\<^bold>\<checkmark>\<^bold>s(P \<^bol
 proof (rule subsetI, elim strict_ticks_of_memE)
   show \<open>t @ [\<checkmark>(r)] \<in> \<T> (P \<^bold>; Q) \<Longrightarrow> t \<notin> \<D> (P \<^bold>; Q) \<Longrightarrow>
         r \<in> (if \<^bold>\<checkmark>\<^bold>s(P) = {} then {} else \<^bold>\<checkmark>\<^bold>s(Q))\<close> for r t
-    by (simp add: Seq_projs strict_ticks_of_def)
-      (metis (no_types, lifting) T_imp_front_tickFree T_nonTickFree_imp_decomp
-        append_T_imp_tickFree butlast_append butlast_snoc is_processT7 is_processT9
-        last_appendR last_snoc non_tickFree_tick tickFree_Nil tickFree_append_iff)
+    by (auto simp add: Seq_projs strict_ticks_of_def intro: is_processT9)
+      (metis butlast_snoc ftF_iff_tF_butlast is_processT2_TR is_processT7 is_processT9,
+        metis (no_types, lifting) T_not_tF_imp_decomp append1_eq_conv
+        append_T_imp_tF append_assoc butlast_snoc div_butlast_when_non_tF_iff
+        event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) is_processT2_TR not_Cons_self2 tF_Cons_iff tF_append_iff)
 qed
 
 
@@ -957,25 +1204,224 @@ proof (rule subsetI)
   then obtain t_P' t_Q'
     where * : \<open>t_P = t_P' @ [\<checkmark>(r)]\<close> \<open>t_Q = t_Q' @ [\<checkmark>(r)]\<close> \<open>t_P' \<in> \<T> P\<close> \<open>t_Q' \<in> \<T> Q\<close>
       \<open>t setinterleaves ((t_P', t_Q'), range tick \<union> ev ` S)\<close>
-    by (metis SyncWithTick_imp_NTF T_imp_front_tickFree is_processT3_TR_append)
+    by (metis SyncWithTick_imp_NTF T_imp_ftF is_processT3_TR_append)
   have \<open>t_P' \<notin> \<D> P\<close>
   proof (rule ccontr)
     assume \<open>\<not> t_P' \<notin> \<D> P\<close>
     with "*"(4, 5) have \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
-      by (simp add: D_Sync) (use front_tickFree_Nil in blast)
+      by (simp add: D_Sync) (use ftF_Nil in blast)
     with \<open>t \<notin> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close> show False ..
   qed
   moreover have \<open>t_Q' \<notin> \<D> Q\<close>
   proof (rule ccontr)
     assume \<open>\<not> t_Q' \<notin> \<D> Q\<close>
     with "*"(3, 5) have \<open>t \<in> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close>
-      by (simp add: D_Sync) (use front_tickFree_Nil setinterleaving_sym in blast)
+      by (simp add: D_Sync) (use ftF_Nil setinterleaving_dual in blast)
     with \<open>t \<notin> \<D> (P \<lbrakk>S\<rbrakk> Q)\<close> show False ..
   qed
   ultimately show \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<inter> \<^bold>\<checkmark>\<^bold>s(Q)\<close>
     using "*"(1, 2) \<open>t_P \<in> \<T> P\<close> \<open>t_Q \<in> \<T> Q\<close> 
     by (meson IntI is_processT9 strict_ticks_of_memI)
 qed
+
+
+lemma strict_ticks_of_Hiding_subset : \<open>\<^bold>\<checkmark>\<^bold>s(P \ B) \<subseteq> \<^bold>\<checkmark>\<^bold>s(P)\<close>
+proof (intro subsetI)
+  fix r assume \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P \ B)\<close>
+  then obtain t where \<open>t @ [\<checkmark>(r)] \<in> \<T> (P \ B)\<close> \<open>t @ [\<checkmark>(r)] \<notin> \<D> (P \ B)\<close>
+    by (meson is_processT9 strict_ticks_of_memD)
+  then obtain u where * : \<open>t @ [\<checkmark>(r)] = trace_hide u (ev ` B)\<close> \<open>u \<in> \<T> P\<close>
+    unfolding D_Hiding T_Hiding using F_T by fast
+  from "*"(1) \<open>t @ [\<checkmark>(r)] \<notin> \<D> (P \ B)\<close> have \<open>u \<notin> \<D> P\<close>
+    by (metis mem_D_imp_mem_D_Hiding)
+  from "*" obtain u' where \<open>u = u' @ [\<checkmark>(r)]\<close>
+    by (cases u rule: rev_cases, auto dest!: trace_hide_append
+        split: if_split_asm simp add: Cons_eq_filter_iff)
+      (metis Nil_is_append_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff
+        ftF_nonempty_append_imp is_processT2_TR list.distinct(1))
+  with \<open>u \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close> show \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>
+    by (simp add: strict_ticks_of_memI)
+qed
+
+
+
+section \<open>Restriction of the Events\<close>
+
+text \<open>This is the main motivation behind the introduction of \<^term>\<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> in Isabelle26:
+we can obtain powerful theorems for restricting the set of events that we have to consider
+for some operators.\<close>
+
+subsection \<open>Hiding\<close>
+
+theorem Hiding_is_restrictable_on_superset_minimal_events_of:
+  fixes S :: \<open>'a set\<close> and P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  assumes superset : \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<subseteq> A\<close>
+  defines \<open>S' \<equiv> S \<inter> A\<close>
+  shows \<open>P \ S = P \ S'\<close>
+proof -
+  from superset
+  have \<open>set t \<subseteq> tick ` \<^bold>\<checkmark>\<^bold>s(P) \<union> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow>
+        trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for t :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+    by (induct t) (auto simp add: S'_def image_iff subset_iff)
+  with mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset have same_trace_hide :
+    \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P) \<Longrightarrow> trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for t by blast
+
+  have seqRun_mem_T_Diff_D :
+    \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow> seqRun t x i \<in> \<T> P - \<D> P\<close> for x t S i by simp
+  from mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset[OF UnI2[OF this]]
+  have \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow> x i \<in> ev ` \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close> for x t S i
+    by (simp add: seqRun_def subset_iff image_iff)
+      (metis atLeastLessThan_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) le0 lessI)
+  moreover have \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow>
+                 trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for x t
+    by (metis Diff_iff UnI2 same_trace_hide seqRun_0)
+  ultimately have IH_strong_iff :
+    \<open>isInfHidden_seqRun_strong x P S t \<longleftrightarrow> isInfHidden_seqRun_strong x P S' t\<close> for x t
+    using superset
+    by (safe, simp_all add: S'_def subset_iff image_iff)
+      (metis (no_types, lifting) IntI event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.sel(1), blast)
+
+  show \<open>P \ S = P \ S'\<close>
+  proof (rule Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version)
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \ S)\<close>
+    then obtain u x where * : \<open>tF u\<close> \<open>t = trace_hide u (ev ` S)\<close>
+      \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<or> isInfHidden_seqRun_strong x P S u\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Hiding_subset[THEN set_mp])
+    from "*"(2, 3) have \<open>t = trace_hide u (ev ` S')\<close>
+      by (metis Diff_iff Un_iff same_trace_hide seqRun_0)
+    moreover from "*"(3) have \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<or> isInfHidden_seqRun_strong x P S' u\<close>
+      by (simp add: IH_strong_iff)
+    ultimately show \<open>t \<in> \<D> (P \ S')\<close>
+      by (simp add: D_Hiding_seqRun)
+        (use "*"(1) in \<open>blast dest: D\<^sub>m\<^sub>i\<^sub>n_D intro: ftF_Nil\<close>)
+  next
+    fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \ S')\<close>
+    then obtain u x where * : \<open>tF u\<close> \<open>t = trace_hide u (ev ` S')\<close>
+      \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<or> isInfHidden_seqRun_strong x P S' u\<close>
+      by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Hiding_subset[THEN set_mp])
+    from "*"(2, 3) have \<open>t = trace_hide u (ev ` S)\<close>
+      by (metis Diff_iff Un_iff same_trace_hide seqRun_0)
+    moreover from "*"(3) have \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<or> isInfHidden_seqRun_strong x P S u\<close>
+      by (simp add: IH_strong_iff)
+    ultimately show \<open>t \<in> \<D> (P \ S)\<close>
+      by (simp add: D_Hiding_seqRun)
+        (use "*"(1) in \<open>blast dest: D\<^sub>m\<^sub>i\<^sub>n_D intro: ftF_Nil\<close>)
+  next
+    fix t X assume \<open>(t, X) \<in> \<F> (P \ S)\<close> \<open>t \<notin> \<D> (P \ S)\<close>
+    then obtain u where * : \<open>t = trace_hide u (ev ` S)\<close> \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>
+      unfolding F_Hiding D_Hiding by blast
+    from "*" \<open>t \<notin> \<D> (P \ S)\<close> have \<open>u \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close>
+      by (auto dest: F_T intro: mem_D_imp_mem_D_Hiding)
+    with "*"(1) have \<open>t = trace_hide u (ev ` S')\<close>
+      by (simp add: same_trace_hide)
+    moreover have \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>
+    proof (rule is_processT4)
+      show \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close> by (fact "*"(2))
+    next
+      show \<open>X \<union> ev ` S' \<subseteq> X \<union> ev ` S\<close> by (auto simp add: S'_def)
+    qed
+    ultimately show \<open>(t, X) \<in> \<F> (P \ S')\<close>
+      by (auto simp add: F_Hiding)
+  next
+    fix t X assume \<open>(t, X) \<in> \<F> (P \ S')\<close> \<open>t \<notin> \<D> (P \ S')\<close>
+    then obtain u where * : \<open>t = trace_hide u (ev ` S')\<close> \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>
+      unfolding F_Hiding D_Hiding by blast
+    from "*" \<open>t \<notin> \<D> (P \ S')\<close> have \<open>u \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close>
+      by (auto dest: F_T intro: mem_D_imp_mem_D_Hiding)
+    with "*"(1) have \<open>t = trace_hide u (ev ` S)\<close>
+      by (simp add: same_trace_hide)
+    moreover have \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>
+    proof (rule is_processT4[OF add_Compl_minimal_events_of_Compl_strict_events_of_in_F])
+      show \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close> by (fact "*"(2))
+    next
+      from superset show \<open>X \<union> ev ` S \<subseteq> X \<union> ev ` S' \<union> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))\<close>
+        by (auto simp add: S'_def)
+    qed
+    ultimately show \<open>(t, X) \<in> \<F> (P \ S)\<close>
+      by (auto simp add: F_Hiding)
+  qed
+qed
+
+
+corollary Hiding_is_restrictable_on_minimal_events_of : \<open>P \ S = P \ S \<inter> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  by (simp add: Hiding_is_restrictable_on_superset_minimal_events_of)
+
+text \<open>This version is closer to the intuition that we may have, but the first one would be more
+useful if we don't want to compute the events of a process but know a superset approximation.\<close>
+
+
+
+subsection \<open>Renaming\<close>
+
+lemma Renaming_is_restrictable_on_minimal_events_of_strict_ticks_of :
+  \<open>Renaming P f g = Renaming P f' g'\<close>
+  if fun_hyps : \<open>\<And>a. a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow> f a = f' a\<close>
+    \<open>\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> g r = g' r\<close>
+  for f f' :: \<open>'a \<Rightarrow> 'b\<close> and g g' :: \<open>'r \<Rightarrow> 't\<close>
+proof -
+  have * : \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close>
+    if fun_hyps_bis : \<open>\<And>a. a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow> f a = f' a\<close> \<open>\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> g r = g' r\<close>
+    for f f' :: \<open>'a \<Rightarrow> 'b\<close> and g g' :: \<open>'r \<Rightarrow> 't\<close>
+  proof -
+    have $ : \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> (\<T> P - \<D> P) \<Longrightarrow>
+              map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close> for u
+      by (drule mem_D\<^sub>m\<^sub>i\<^sub>n_Un_T_Diff_D_imp_set_subset)
+        (induct u, auto simp add: fun_hyps_bis)
+    show \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close>
+    proof (rule failure_divergence_refineI_D\<^sub>m\<^sub>i\<^sub>n_version)
+      fix t assume \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (Renaming P f' g')\<close>
+      then obtain u where * : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close> \<open>u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+        by (blast dest: D\<^sub>m\<^sub>i\<^sub>n_Renaming_subset[THEN set_mp])
+      have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close>
+        by (metis "$" "*"(2) Un_iff)
+      with "*" show \<open>t \<in> \<D> (Renaming P f g)\<close>
+        by  (auto simp add: D_Renaming intro: D\<^sub>m\<^sub>i\<^sub>n_D ftF_Nil tF_mem_D\<^sub>m\<^sub>i\<^sub>n)
+    next
+      fix t X assume \<open>(t, X) \<in> \<F> (Renaming P f' g')\<close> \<open>t \<notin> \<D> (Renaming P f' g')\<close>
+      then obtain u where * : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close>
+        \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g' -` X) \<in> \<F> P\<close>
+        unfolding Renaming_projs by blast
+      with \<open>t \<notin> \<D> (Renaming P f' g')\<close> have \<open>u \<notin> \<D> P\<close>
+        by (simp add: Renaming_projs)
+          (metis (no_types, lifting) D_imp_ftF Nil_is_map_conv append.right_neutral
+            div_butlast_when_non_tF_iff ftF_Nil ftF_iff_tF_butlast
+            ftF_single map_butlast snoc_eq_iff_butlast tF_Nil)
+      with "*" "$" have \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close>
+        by (metis F_T Un_Diff_cancel Un_iff)
+      moreover have \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> P\<close>
+      proof (rule is_processT4)
+        show \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g' -` X \<union> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))) \<in> \<F> P\<close>
+          by (fact add_Compl_minimal_events_of_Compl_strict_events_of_in_F[OF "*"(2)])
+      next
+        show \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<subseteq> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g' -` X \<union> ev ` (- \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)) \<union> tick ` (- \<^bold>\<checkmark>\<^bold>s(P))\<close> (is \<open>?ref1 \<subseteq> ?ref2\<close>)
+        proof (rule subsetI)
+          show \<open>e \<in> ?ref1 \<Longrightarrow> e \<in> ?ref2\<close> for e
+            by (cases e) (auto simp add: fun_hyps_bis)
+        qed
+      qed
+      ultimately show \<open>(t, X) \<in> \<F> (Renaming P f g)\<close>
+        by (auto simp add: F_Renaming)
+    qed
+  qed
+  show \<open>Renaming P f g = Renaming P f' g'\<close>
+  proof (rule FD_antisym)
+    show \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close> \<open>Renaming P f' g' \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f g\<close>
+      by (simp_all add: "*" fun_hyps)
+  qed
+qed
+
+
+
+subsection \<open>Synchronization Product\<close>
+
+lemma Sync_is_restrictable_on_minimal_events_of :
+  \<open>P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> (\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q))\<rbrakk> Q\<close>
+  oops (* proven in HOL-CSP_PTick *)
+
+corollary Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_superset_minimal_events_of :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q) \<subseteq> A \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> A\<rbrakk> Q\<close>
+  oops (* proven in HOL-CSP_PTick *)
+
 
 
 (*<*)

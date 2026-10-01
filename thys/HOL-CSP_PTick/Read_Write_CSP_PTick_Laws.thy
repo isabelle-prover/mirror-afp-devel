@@ -58,7 +58,7 @@ subsection \<open>Synchronization Product\<close>
 
 subsubsection \<open>General Laws\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
 paragraph \<open> \<^const>\<open>read\<close> \<close>
 
@@ -171,7 +171,7 @@ proof -
 qed
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_forced_read_right:
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_forced_read_right:
   \<open>c\<^bold>?a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>?b\<in>B \<rightarrow> Q b =
    (c\<^bold>?a\<in>(A - c -` S) \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>?b\<in>B \<rightarrow> Q b)) \<box>
    (d\<^bold>?b\<in>(B - d -` S) \<rightarrow> (c\<^bold>?a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<box>
@@ -180,8 +180,8 @@ corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) read_Sync\<^s
   if \<open>c ` A \<inter> S = {} \<or> inj_on c A\<close>
     \<open>d ` B \<inter> S = {} \<or> inj_on d B\<close>
     \<open>\<And>a b. a \<in> A \<Longrightarrow> b \<in> B \<Longrightarrow> c a = d b \<Longrightarrow> d b \<in> S \<Longrightarrow> a = b\<close>
-  unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym
-  by (subst Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_forced_read_left[OF that(2, 1)], metis that(3))
+  unfolding Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual
+  by (subst Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_forced_read_left[OF that(2, 1)], metis that(3))
     (auto simp add: Det_commute intro: arg_cong2[where f = \<open>(\<box>)\<close>])
 
 
@@ -380,12 +380,12 @@ proof -
         intro!: mono_Mndetprefix_eq arg_cong2[where f = \<open>(\<sqinter>)\<close>])
 qed
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_subset_same_chan:
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_subset_same_chan:
   \<open>c\<^bold>?a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> c\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b =
    (if B \<subseteq> A then c\<^bold>!\<^bold>!b\<in>B \<rightarrow> (P b \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b) else (c\<^bold>!\<^bold>!b\<in>(A \<inter> B) \<rightarrow> (P b \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<sqinter> STOP)\<close>
   if \<open>c ` A \<subseteq> S\<close> \<open>c ` B \<subseteq> S\<close> \<open>inj_on c (A \<union> B)\<close>
-  by (subst (1 2 3) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_subset_same_chan
+  by (subst (1 2 3) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_subset_same_chan
       [OF that(2, 1)] Un_commute Int_commute that(3))
 
 
@@ -437,17 +437,17 @@ proof -
 qed
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_right :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_right :
   \<open>c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>?b\<in>B \<rightarrow> Q b = d\<^bold>?b\<in>B \<rightarrow> (c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)\<close>
   if \<open>c ` A \<subseteq> S\<close> \<open>d ` B \<inter> S = {}\<close>
-  by (subst (1 2) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_left[OF that(2, 1)])
+  by (subst (1 2) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_left[OF that(2, 1)])
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_right :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) read_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_right :
   \<open>c\<^bold>?a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b = d\<^bold>!\<^bold>!b\<in>B \<rightarrow> (c\<^bold>?a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)\<close>
   if \<open>c ` A \<subseteq> S\<close> \<open>d ` B \<inter> S = {}\<close>
-  by (subst (1 2) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_left[OF that(2, 1)])
+  by (subst (1 2) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_read_left[OF that(2, 1)])
 
 
 
@@ -653,12 +653,12 @@ next
   qed
 qed
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_write_subset :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_write_subset :
   \<open>(c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> (d\<^bold>!b \<rightarrow> Q) =
    (  if d b \<notin> c ` A then STOP else if c ` A = {d b} then d\<^bold>!b \<rightarrow> (P (inv_into A c (d b)) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)
     else (d\<^bold>!b \<rightarrow> (P (inv_into A c (d b)) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)) \<sqinter> STOP)\<close> if \<open>c ` A \<subseteq> S\<close> \<open>d b \<in> S\<close>
-  by (subst (1 2 3) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_subset that)
+  by (subst (1 2 3) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_subset that)
 
 
 lemma write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write_indep :
@@ -1055,29 +1055,29 @@ next
   qed
 qed
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write :
   \<open>inj_on d B \<Longrightarrow> SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b =
    (  if d ` B \<inter> S = {} then d\<^bold>!\<^bold>!b\<in>B \<rightarrow> (SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)
     else (d\<^bold>!\<^bold>!b\<in>(B - d -` S) \<rightarrow> (SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<sqinter> STOP)\<close>
-  by (subst (1 2 3) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
+  by (subst (1 2 3) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
 
 
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP :
   \<open>\<sqinter>a \<in> A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIP r =
    (if A \<inter> S = {} then \<sqinter>a \<in> A \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIP r)
    else (\<sqinter>a \<in> (A - S) \<rightarrow> (P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> SKIP r)) \<sqinter> STOP)\<close>  
   using ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP[of id A P S r]
   by (simp add: ndet_write_id_is_Mndetprefix)
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP_Mndetprefix :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP_Mndetprefix :
   \<open>SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<sqinter>b \<in> B \<rightarrow> Q b =
    (  if B \<inter> S = {} then \<sqinter>b \<in> B \<rightarrow> (SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)
     else (\<sqinter>b \<in> (B - S) \<rightarrow> (SKIP r \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<sqinter> STOP)\<close>
-  by (subst (1 2 3) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
+  by (subst (1 2 3) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
 
 
 
@@ -1150,12 +1150,12 @@ next
   qed
 qed
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_ndet_write :
   \<open>inj_on d B \<Longrightarrow> STOP \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> d\<^bold>!\<^bold>!b\<in>B \<rightarrow> Q b =
    (  if d ` B \<inter> S = {} then d\<^bold>!\<^bold>!b\<in>B \<rightarrow> (STOP \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)
     else (d\<^bold>!\<^bold>!b\<in>(B - d -` S) \<rightarrow> (STOP \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)) \<sqinter> STOP)\<close>
-  by (subst (1 2 3) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP)
+  by (subst (1 2 3) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.ndet_write_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP)
 
 
 end

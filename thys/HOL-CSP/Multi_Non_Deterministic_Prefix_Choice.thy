@@ -131,6 +131,9 @@ lemma T_Mndetprefix' : \<open>\<T> (\<sqinter>a \<in> A \<rightarrow> P a) = ins
 
 lemmas Mndetprefix_projs = F_Mndetprefix' D_Mndetprefix' T_Mndetprefix'
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_Mndetprefix : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (\<sqinter>a \<in> A \<rightarrow> P a) = {ev a # t |a t. a \<in> A \<and> t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P a)}\<close>
+  by (fastforce simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def Mndetprefix_projs min_elems_def)
+
 
 text\<open> Thus we know now, that Mndetprefix yields processes. Direct consequences are the following
   distributivities: \<close>
@@ -158,14 +161,14 @@ subsection\<open>General case Continuity\<close>
 lemma mono_Mndetprefix : \<open>\<sqinter>a \<in> A \<rightarrow> P a \<sqsubseteq> \<sqinter>a \<in> A \<rightarrow> Q a\<close>
   (is \<open>?P \<sqsubseteq> ?Q\<close>) if \<open>\<And>a. a \<in> A \<Longrightarrow> P a \<sqsubseteq> Q a\<close>
 proof (unfold le_approx_def, intro conjI impI allI subsetI)
-  from that[THEN le_approx1] show \<open>s \<in> \<D> ?Q \<Longrightarrow> s \<in> \<D> ?P\<close> for s
+  from that[THEN le_approxD(1)] show \<open>s \<in> \<D> ?Q \<Longrightarrow> s \<in> \<D> ?P\<close> for s
     by (auto simp add: D_Mndetprefix')
 next
-  from that[THEN le_approx2] show \<open>s \<notin> \<D> ?P \<Longrightarrow> \<R>\<^sub>a ?P s = \<R>\<^sub>a ?Q s\<close> for s
+  from that[THEN le_approxD(2)] show \<open>s \<notin> \<D> ?P \<Longrightarrow> \<R>\<^sub>a ?P s = \<R>\<^sub>a ?Q s\<close> for s
     by (auto simp add: Refusals_after_def D_Mndetprefix' F_Mndetprefix')
 next
-  from that[THEN le_approx3] show \<open>s \<in> min_elems (\<D> ?P) \<Longrightarrow> s \<in> \<T> ?Q\<close> for s
-    by (simp add: min_elems_def D_Mndetprefix' T_Mndetprefix' subset_iff) (metis less_cons)
+  from that[THEN le_approxD(3)] show \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n ?P \<Longrightarrow> s \<in> \<T> ?Q\<close> for s
+    by (auto simp add: D\<^sub>m\<^sub>i\<^sub>n_Mndetprefix T_Mndetprefix')
 qed
 
 

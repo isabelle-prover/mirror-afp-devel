@@ -113,7 +113,14 @@ lemma T_Det : \<open>\<T> (P \<box> Q) = \<T> P \<union> \<T> Q\<close>
   by (unfold Traces.rep_eq TRACES_def F_Det Failures.rep_eq[symmetric])
     (simp add: T_F F_T set_eq_iff, metis F_T T_F is_processT1)
 
+lemma T_DetI1: \<open>s \<in> \<T> Proc1 \<Longrightarrow> s \<in> \<T> (Proc1 \<box> Proc2)\<close> by (simp add: T_Det)
+lemma T_DetI2: \<open>s \<in> \<T> Proc2 \<Longrightarrow> s \<in> \<T> (Proc1 \<box> Proc2)\<close> by (simp add: T_Det)
+
+
 lemmas Det_projs = F_Det D_Det T_Det
+
+lemma D\<^sub>m\<^sub>i\<^sub>n_Det_subset : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<box> Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> \<D>\<^sub>m\<^sub>i\<^sub>n Q\<close>
+  by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def D_Det min_elems_def)
 
 
 
@@ -133,22 +140,23 @@ lemma Det_id [simp] : \<open>P \<box> P = P\<close>
 
 subsection\<open>The Continuity-Rule\<close>
 
-lemma mono_Det : \<open>(P :: ('a, 'r)process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<sqsubseteq> P' \<Longrightarrow> Q \<sqsubseteq> Q' \<Longrightarrow> P \<box> Q \<sqsubseteq> P' \<box> Q'\<close>
+lemma mono_Det : \<open>P \<sqsubseteq> P' \<Longrightarrow> Q \<sqsubseteq> Q' \<Longrightarrow> P \<box> Q \<sqsubseteq> P' \<box> Q'\<close>
+  for P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 proof -
   have \<open>(P :: ('a, 'r)process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<box> S \<sqsubseteq> Q \<box> S\<close> if \<open>P \<sqsubseteq> Q\<close> for P S Q
   proof (unfold le_approx_def, intro conjI impI allI subsetI)
     show \<open>s \<in> \<D> (Q \<box> S) \<Longrightarrow> s \<in> \<D> (P \<box> S)\<close> for s
       apply (simp add: D_Det)
-      using le_approx_imp_le_ref le_ref1 that by blast
+      using le_approx_imp_le_FD le_FD_D(1) that by blast
   next
     show \<open>s \<notin> \<D> (P \<box> S) \<Longrightarrow> \<R>\<^sub>a (P \<box> S) s = \<R>\<^sub>a (Q \<box> S) s\<close> for s
       apply (cases s; simp add: D_Det Refusals_after_def F_Det set_eq_iff)
-       apply (meson front_tickFree_Nil in_mono is_processT9_tick le_approx1 le_approx2T proc_ord2a that)
-      using le_approx2 that by auto[1]
+      apply (meson ftF_Nil in_mono is_processT9_tick le_approxD(2) le_approxD2_T
+          le_approx_imp_le_FD le_FD_D(1) that)
+      by (meson ftF_Nil in_mono is_processT9_tick le_approxD(1) le_approxD(2) that)
   next
-    show \<open>s \<in> min_elems (\<D> (P \<box> S)) \<Longrightarrow> s \<in> \<T> (Q \<box> S)\<close> for s
-      by (simp add: min_elems_def D_Det T_Det)
-        (metis D_T UnCI elem_min_elems in_mono le_approx3 min_elems5 order_neq_le_trans that)
+    from le_approxD(3)[OF \<open>P \<sqsubseteq> Q\<close>] show \<open>s \<in> \<D>\<^sub>m\<^sub>i\<^sub>n (P \<box> S) \<Longrightarrow> s \<in> \<T> (Q \<box> S)\<close> for s
+      by (auto simp add: T_Det dest!: D\<^sub>m\<^sub>i\<^sub>n_Det_subset[THEN set_mp] intro: D\<^sub>m\<^sub>i\<^sub>n_D D_T)
   qed
 
   thus \<open>P \<sqsubseteq> P' \<Longrightarrow> Q \<sqsubseteq> Q' \<Longrightarrow> P \<box> Q \<sqsubseteq> P' \<box> Q'\<close>
@@ -165,7 +173,7 @@ proof (subst Process_eq_spec, safe)
     by (auto simp add: limproc_is_thelub F_Det D_LUB F_LUB T_LUB chain_Det \<open>chain Y\<close>)
 next
   show \<open>(s, X) \<in> \<F> (\<Squnion>i. Y i \<box> S) \<Longrightarrow> (s, X) \<in> \<F> (Lub Y \<box> S)\<close> for s X
-    using le_approx2T[OF is_ub_thelub[OF \<open>chain Y\<close>]]
+    using le_approxD2_T[OF is_ub_thelub[OF \<open>chain Y\<close>]]
     apply (cases s; simp add: limproc_is_thelub F_Det D_LUB F_LUB T_LUB chain_Det \<open>chain Y\<close>)
     by (metis append_Nil is_processT8 is_processT9)
 next

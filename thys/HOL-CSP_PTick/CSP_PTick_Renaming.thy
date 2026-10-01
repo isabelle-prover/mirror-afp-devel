@@ -45,7 +45,7 @@ text \<open>
 This chapter contains several developments related to the \<^const>\<open>Renaming\<close> operator.
 Some are not directly related to this session and may be moved
 to \<^session>\<open>HOL-CSP\<close> or \<^session>\<open>HOL-CSPM\<close> in the future,
-while others specifically concern the operator \<^const>\<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>. 
+while others specifically concern the operator \<^const>\<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>. 
 \<close>
 
 
@@ -206,7 +206,7 @@ lemma trace_tick_swap_eq_ev_ConsE :
   by (simp, metis trace_tick_swap_trace_tick_swap)+
 
 
-lemma trace_tick_swap_tickFree :
+lemma trace_tick_swap_tF :
   \<open>tF t \<Longrightarrow> trace_tick_swap t = map (ev \<circ> of_ev) t\<close> for t :: \<open>('a, ('r \<times> 's)) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 proof (induct t)
   show \<open>trace_tick_swap [] = map (ev \<circ> of_ev) []\<close> by simp
@@ -214,11 +214,11 @@ next
   fix e and t :: \<open>('a, ('r \<times> 's)) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   assume \<open>tF (e # t)\<close> and \<open>tF t \<Longrightarrow> trace_tick_swap t = map (ev \<circ> of_ev) t\<close>
   moreover from \<open>tF (e # t)\<close> obtain a where \<open>e = ev a\<close> \<open>tF t\<close>
-    by (meson is_ev_def tickFree_Cons_iff)
+    by (meson is_ev_def tF_Cons_iff)
   ultimately show  \<open>trace_tick_swap (e # t) = map (ev \<circ> of_ev) (e # t)\<close> by simp
 qed
 
-lemma trace_tick_swap_front_tickFree :
+lemma trace_tick_swap_ftF :
   \<open>trace_tick_swap t = (  if tF t then map (ev \<circ> of_ev) t
                   else map (ev \<circ> of_ev) (butlast t) @ [case last t of \<checkmark>((r, s)) \<Rightarrow> \<checkmark>((s, r))])\<close>
   if \<open>ftF t\<close> for t :: \<open>('a, ('r \<times> 's)) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
@@ -226,15 +226,15 @@ proof -
   show ?thesis
   proof (split if_split, intro conjI impI)
     show \<open>tF t \<Longrightarrow> trace_tick_swap t = map (ev \<circ> of_ev) t\<close>
-      by (simp add: trace_tick_swap_tickFree)
+      by (simp add: trace_tick_swap_tF)
   next
     assume \<open>\<not> tF t\<close>
     with \<open>ftF t\<close> obtain t' r s where \<open>t = t' @ [\<checkmark>((r, s))]\<close> \<open>tF t'\<close>
-      by (metis front_tickFree_append_iff nonTickFree_n_frontTickFree not_Cons_self2 surj_pair)
+      by (metis ftF_append_iff not_tF_and_ftF not_Cons_self2 surj_pair)
     hence \<open>trace_tick_swap t = trace_tick_swap t' @ [\<checkmark>((s, r))]\<close>
       by (metis trace_tick_swap_append trace_tick_swap.simps(1, 3))
     also from \<open>tF t'\<close> \<open>t = t' @ [\<checkmark>((r, s))]\<close>
-    have \<open>trace_tick_swap t' = map (ev \<circ> of_ev) (butlast t)\<close> by (simp add: trace_tick_swap_tickFree)
+    have \<open>trace_tick_swap t' = map (ev \<circ> of_ev) (butlast t)\<close> by (simp add: trace_tick_swap_tF)
     also from \<open>t = t' @ [\<checkmark>((r, s))]\<close>
     have \<open>[\<checkmark>((s, r))] = [case last t of \<checkmark>((r, s)) \<Rightarrow> \<checkmark>((s, r))]\<close> by simp
     finally show \<open>trace_tick_swap t = map (ev \<circ> of_ev) (butlast t) @
@@ -243,12 +243,12 @@ proof -
 qed
 
 
-lemma tickFree_trace_tick_swap_iff [simp] : \<open>tF (trace_tick_swap t) \<longleftrightarrow> tF t\<close>
-  by (metis tickFree_map_ev_comp trace_tick_swap_tickFree trace_tick_swap_trace_tick_swap)
+lemma tF_trace_tick_swap_iff [simp] : \<open>tF (trace_tick_swap t) \<longleftrightarrow> tF t\<close>
+  by (metis tF_map_ev_comp trace_tick_swap_tF trace_tick_swap_trace_tick_swap)
 
-lemma front_tickFree_trace_tick_swap_iff [simp] : \<open>ftF (trace_tick_swap t) \<longleftrightarrow> ftF t\<close>
-  by (metis (no_types, lifting) front_tickFree_iff_tickFree_butlast map_butlast
-      tickFree_trace_tick_swap_iff trace_tick_swap_def)
+lemma ftF_trace_tick_swap_iff [simp] : \<open>ftF (trace_tick_swap t) \<longleftrightarrow> ftF t\<close>
+  by (metis (no_types, lifting) ftF_iff_tF_butlast map_butlast
+      tF_trace_tick_swap_iff trace_tick_swap_def)
 
 
 
@@ -324,11 +324,11 @@ lemma refusal_tick_swap_eq_insert_evE :
   \<open>refusal_tick_swap Y = insert \<checkmark>((r, s)) X \<Longrightarrow> (\<And>Y'. Y = insert \<checkmark>((s, r)) Y' \<Longrightarrow> X = refusal_tick_swap Y' \<Longrightarrow> thesis) \<Longrightarrow> thesis\<close>
   by (simp, metis refusal_tick_swap_refusal_tick_swap)+
 
-lemma refusal_tick_swap_tickFree :
+lemma refusal_tick_swap_tF :
   \<open>X \<subseteq> range ev \<Longrightarrow> refusal_tick_swap X = (ev \<circ> of_ev) ` X\<close>
   by (force simp add: refusal_tick_swap_def)
 
-lemma tickFree_refusal_tick_swap_iff :
+lemma tF_refusal_tick_swap_iff :
   \<open>refusal_tick_swap X \<subseteq> range ev \<longleftrightarrow> X \<subseteq> range ev\<close>
   by (simp add: refusal_tick_swap_def subset_iff image_def)
     (metis tick_swap.simps(1) tick_swap_tick_swap)
@@ -453,7 +453,7 @@ proof -
   next
     show \<open>(t, X) \<in> ?f \<Longrightarrow> ftF t\<close> for t X
       by (simp add: failure_tick_swap_def)
-        (use is_processT2 front_tickFree_trace_tick_swap_iff in blast)
+        (use is_processT2 ftF_trace_tick_swap_iff in blast)
   next
     show \<open>(t @ u, {}) \<in> ?f \<Longrightarrow> (t, {}) \<in> ?f\<close> for t u
       by (simp add: failure_tick_swap_def) (metis trace_tick_swap_append is_processT3)
@@ -583,16 +583,16 @@ theorem TickSwap_is_Renaming :
   \<open>TickSwap P = Renaming P id prod.swap\<close> (is \<open>?lhs = ?rhs\<close>)
 proof (subst Process_eq_spec_optimized, safe)
   fix t assume \<open>t \<in> \<D> ?lhs\<close>
-  with D_imp_front_tickFree have \<open>ftF t\<close> by blast
+  with D_imp_ftF have \<open>ftF t\<close> by blast
   define t1 where \<open>t1 \<equiv> trace_tick_swap (if tF t then t else butlast t)\<close>
   define t2 where \<open>t2 \<equiv> if tF t then [] else [last t]\<close>
   have \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id prod.swap) t1 @ t2\<close>
     by (simp add: t1_def t2_def flip: trace_tick_swap_is_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-      (metis append_butlast_last_id tickFree_Nil)
-  moreover from \<open>ftF t\<close> front_tickFree_iff_tickFree_butlast t1_def have \<open>tF t1\<close> by auto
+      (metis append_butlast_last_id tF_Nil)
+  moreover from \<open>ftF t\<close> ftF_iff_tF_butlast t1_def have \<open>tF t1\<close> by auto
   moreover have \<open>ftF t2\<close> by (simp add: t2_def)
   moreover from t1_def D_TickSwap' \<open>ftF t\<close> \<open>t \<in> \<D> ?lhs\<close>
-    div_butlast_when_non_tickFree_iff have \<open>t1 \<in> \<D> P\<close> by blast
+    div_butlast_when_non_tF_iff have \<open>t1 \<in> \<D> P\<close> by blast
   ultimately show \<open>t \<in> \<D> ?rhs\<close> unfolding D_Renaming by blast
 next
   fix t assume \<open>t \<in> \<D> ?rhs\<close>
@@ -979,7 +979,7 @@ lemma RenamingTick_id_unfolded [iff] :
 
 
 lemmas strict_ticks_of_RenamingTick_subset = strict_ticks_of_Renaming_subset [where f = id]
-  and strict_ticks_of_inj_on_RenamingTick = strict_ticks_of_inj_on_Renaming [where f = id, simplified]
+  and strict_ticks_of_RenamingTick = strict_ticks_of_inj_on_Renaming [where f = id, simplified]
 
 lemmas monos_RenamingTick = monos_Renaming[where f = id]
 
@@ -1045,11 +1045,11 @@ lemma RenamingEv_RenamingTick_is_Renaming :
 
 subsection \<open>Properties\<close>
 
-lemma isInfHidden_seqRun_imp_tickFree_seqRun :
+lemma isInfHidden_seqRun_imp_tF_seqRun :
   \<open>isInfHidden_seqRun x P A t \<Longrightarrow> tF (seqRun t x i)\<close>
-  by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) image_iff isInfHidden_seqRun_imp_tickFree tickFree_seqRun_iff)
+  by (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(1) image_iff isInfHidden_seqRun_imp_tF tF_seqRun_iff)
 
-lemma tickFree_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is :
+lemma tF_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is :
   \<open>tF t \<Longrightarrow> map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) t = map (ev \<circ> f \<circ> of_ev) t\<close>
   by (induct t) (auto simp add: is_ev_def)
 
@@ -1077,11 +1077,11 @@ proof -
     proof (elim disjE exE)
       assume \<open>u \<in> \<D> P\<close>
       with "**"(2) have \<open>?map u \<in> \<D> (?RT P)\<close>
-        by (auto simp add: D_Renaming intro: front_tickFree_Nil)
+        by (auto simp add: D_Renaming intro: ftF_Nil)
       thus \<open>t \<in> \<D> ?rhs\<close>
         by (simp add: D_Hiding "*"(1) "**"(3) flip: "$")
-          (metis "*"(2, 3) "**"(2, 3) front_tickFree_append
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+          (metis "*"(2, 3) "**"(2, 3) ftF_append
+            tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
     next
       fix x assume *** : \<open>isInfHidden_seqRun_strong x P A u\<close>
       have \<open>isInfHidden_seqRun (ev \<circ> of_ev \<circ> x) (?RT P) A (?map u)\<close>
@@ -1099,8 +1099,8 @@ proof -
       qed
       thus \<open>t \<in> \<D> ?rhs\<close>
         by (simp (no_asm) add: D_Hiding_seqRun "*"(1) "**"(3) flip: "$")
-          (metis "*"(2, 3) "**"(2, 3) front_tickFree_append
-            map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree tickFree_append_iff)
+          (metis "*"(2, 3) "**"(2, 3) ftF_append
+            tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff tF_append_iff)
     qed
   next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
@@ -1115,24 +1115,24 @@ proof -
       from mem_D_imp_mem_D_Hiding "**"(4) have \<open>?th_A u1 \<in> \<D> (P \ A)\<close> .
       thus \<open>t \<in> \<D> ?lhs\<close>
         by (simp add: D_Renaming "*"(3) "**"(1) "$")
-          (metis "*"(1, 2) "**"(1, 2) Hiding_tickFree
-            front_tickFree_append tickFree_append_iff)
+          (metis "*"(1, 2) "**"(1, 2) Hiding_tF
+            ftF_append tF_append_iff)
     next
       fix x assume ** : \<open>isInfHidden_seqRun_strong x (?RT P) A u\<close>
       hence \<open>\<forall>i. \<exists>v. seqRun u x i = ?map v \<and> v \<in> \<T> P\<close>
         unfolding Renaming_projs by blast
       then obtain f where *** : \<open>seqRun u x i = ?map (f i)\<close> \<open>f i \<in> \<T> P\<close> for i by metis
       have \<open>tF (f i)\<close> for i
-        by (metis isInfHidden_seqRun_imp_tickFree_seqRun
-            "**" "***"(1) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+        by (metis isInfHidden_seqRun_imp_tF_seqRun
+            "**" "***"(1) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       hence \<open>?map (f i) = map (ev \<circ> of_ev) (f i)\<close> for i
-        by (simp add: tickFree_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
+        by (simp add: tF_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is)
       from "***"(1)[unfolded this]
       have \<open>map (ev \<circ> of_ev) (seqRun u x i) =
             (map (ev \<circ> of_ev) (map (ev \<circ> of_ev) (f i)) :: ('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)\<close> for i by simp
       also have \<open>map (ev \<circ> of_ev) (map (ev \<circ> of_ev) (f i)) = f i\<close> for i
         using \<open>\<And>i. tF (f i)\<close>[of i] 
-        by (auto simp add: tickFree_iff_is_map_ev)
+        by (auto simp add: tF_iff_is_map_ev)
       finally have \<open>f i = map (ev \<circ> of_ev) (seqRun u x i)\<close> for i by (rule sym)
       hence **** : \<open>f i = seqRun (f 0) (ev \<circ> of_ev \<circ> x) i\<close> for i
         by (simp add: seqRun_def "***"(1))
@@ -1145,12 +1145,12 @@ proof -
       qed
       with \<open>\<And>i. tF (f i)\<close> have \<open>?th_A (f 0) \<in> \<D> (P \ A)\<close>
         by (simp add: D_Hiding_seqRun)
-          (metis append.right_neutral comp_apply front_tickFree_Nil)
+          (metis append.right_neutral comp_apply ftF_Nil)
       moreover have \<open>?th_A u = ?map (?th_A (f 0))\<close>
         by (metis "$" "***"(1) seqRun_0)
       ultimately show \<open>t \<in> \<D> ?lhs\<close>
         by (simp add: D_Renaming "*"(3))
-          (use "*"(1) Hiding_tickFree \<open>\<And>i. tF (f i)\<close> in blast)
+          (use "*"(1) Hiding_tF \<open>\<And>i. tF (f i)\<close> in blast)
     qed
   next
     fix t X assume \<open>(t, X) \<in> \<F> ?lhs\<close> \<open>t \<notin> \<D> ?lhs\<close>
@@ -1165,11 +1165,11 @@ proof -
     proof cases
       assume \<open>t' \<in> \<D> (P \ A)\<close>
       hence \<open>tF t' \<or> (\<exists>t'' r. t' = t'' @ [\<checkmark>(r)] \<and> tF t'')\<close>
-        by (metis D_imp_front_tickFree front_tickFree_append_iff
-            nonTickFree_n_frontTickFree not_Cons_self2)
+        by (metis D_imp_ftF ftF_append_iff
+            not_tF_and_ftF not_Cons_self2)
       with \<open>t' \<in> \<D> (P \ A)\<close> \<open>t \<notin> \<D> ?lhs\<close> have False
         by (elim disjE exE conjE, simp_all add: D_Renaming "*"(1))
-          (use front_tickFree_Nil in blast, metis front_tickFree_single is_processT9)
+          (use ftF_Nil in blast, metis ftF_single is_processT9)
       thus \<open>(t, X) \<in> \<F> ?rhs\<close> ..
     next
       case "**"
@@ -1189,11 +1189,11 @@ proof -
     proof cases
       assume \<open>t' \<in> \<D> (?RT P)\<close>
       hence \<open>tF t' \<or> (\<exists>t'' r. t' = t'' @ [\<checkmark>(r)] \<and> tF t'')\<close>
-        by (metis D_imp_front_tickFree front_tickFree_append_iff
-            nonTickFree_n_frontTickFree not_Cons_self2)
+        by (metis D_imp_ftF ftF_append_iff
+            not_tF_and_ftF not_Cons_self2)
       with \<open>t' \<in> \<D> (?RT P)\<close> \<open>t \<notin> \<D> ?rhs\<close> have False
         by (elim disjE exE, auto simp add: D_Hiding_seqRun "*"(1) image_iff
-            intro: front_tickFree_single is_processT9)
+            intro: ftF_single is_processT9)
       thus \<open>(t, X) \<in> \<F> ?lhs\<close> ..
     next
       case "**"
@@ -1223,152 +1223,38 @@ proof -
 qed
 
 
-
-lemma Renaming_is_restrictable_on_events_of_strict_ticks_of :
-  \<open>Renaming P f g = Renaming P f' g'\<close>
-  if fun_hyps : \<open>\<And>a. a \<in> \<alpha>(P) \<Longrightarrow> f a = f' a\<close>
-    \<open>\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> g r = g' r\<close>
-  for f f' :: \<open>'a \<Rightarrow> 'b\<close> and g g' :: \<open>'r \<Rightarrow> 't\<close>
-    \<comment> \<open>probably also possible to strengthen with \<^const>\<open>strict_events_of\<close>\<close>
-proof -
-  have * : \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close>
-    if fun_hyps_bis : \<open>\<And>a. a \<in> \<alpha>(P) \<Longrightarrow> f a = f' a\<close> \<open>\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> g r = g' r\<close>
-    for f f' :: \<open>'a \<Rightarrow> 'b\<close> and g g' :: \<open>'r \<Rightarrow> 't\<close>
-  proof -
-    have $ : \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close>
-      if \<open>u \<in> \<T> P\<close> and \<open>tF u\<close> for u
-    proof -
-      from \<open>u \<in> \<T> P\<close> have \<open>ev a \<in> set u \<Longrightarrow> a \<in> \<alpha>(P)\<close> for a
-        by (meson events_of_memI)
-      with \<open>tF u\<close> show \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close>
-        by (induct u, simp_all)
-          (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.collapse(1) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(9) fun_hyps_bis(1))
-    qed
-    have \<open>(\<forall>t. t \<in> \<D> (Renaming P f' g') \<longrightarrow> t \<in> \<D> (Renaming P f g)) \<and>
-          (\<forall>t X. (t, X) \<in> \<F> (Renaming P f' g') \<longrightarrow> t \<notin> \<D> (Renaming P f' g') \<longrightarrow> (t, X) \<in> \<F> (Renaming P f g))\<close>
-    proof (intro conjI allI impI)
-      fix t assume \<open>t \<in> \<D> (Renaming P f' g')\<close>
-      then obtain u1 u2 where * : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u1 @ u2\<close>
-        \<open>tF u1\<close> \<open>ftF u2\<close> \<open>u1 \<in> \<D> P\<close> unfolding D_Renaming by blast
-      have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u1 = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u1\<close>
-        by (simp add: \<open>tF u1\<close> "$" "*"(4) D_T)
-      with "*" show \<open>t \<in> \<D> (Renaming P f g)\<close>
-        by (auto simp add: D_Renaming)
-    next
-      fix t X assume \<open>(t, X) \<in> \<F> (Renaming P f' g')\<close> \<open>t \<notin> \<D> (Renaming P f' g')\<close>
-      then obtain u where * : \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u\<close>
-        \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g' -` X) \<in> \<F> P\<close>
-        unfolding Renaming_projs by blast
-      show \<open>(t, X) \<in> \<F> (Renaming P f g)\<close>
-      proof (cases \<open>tF u\<close>)
-        assume \<open>tF u\<close>
-        have \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g' -` X \<union> {ev a |a. a \<notin> \<alpha>(P)} \<union>
-              {\<checkmark>(r) |r. r \<notin> \<^bold>\<checkmark>\<^bold>s(P)}) \<in> \<F> P\<close> (is \<open>(u, ?Y) \<in> \<F> P\<close>)
-          by (intro is_processT5, simp_all add: "*"(2))
-            (meson T_F_spec events_of_memI in_set_conv_decomp,
-              metis (mono_tags, lifting) "*"(1) D_Renaming F_imp_front_tickFree T_F_spec
-              \<open>t \<notin> \<D> (Renaming P f' g')\<close> append_Nil2 append_T_imp_tickFree is_processT1
-              is_processT9 list.simps(3) mem_Collect_eq strict_ticks_of_memI)
-        moreover from fun_hyps_bis
-        have \<open>e \<in> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X \<Longrightarrow> e \<in> ?Y\<close> for e
-          by (cases e) auto
-        ultimately have \<open>(u, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g -` X) \<in> \<F> P\<close>
-          by (meson is_processT4 subset_eq)
-        moreover have \<open>t = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u\<close>
-          by (metis "$" "*" F_T \<open>tF u\<close>)
-        ultimately show \<open>(t, X) \<in> \<F> (Renaming P f g)\<close>
-          by (auto simp add: F_Renaming)
-      next
-        assume \<open>\<not> tF u\<close>
-        then obtain u' r where \<open>tF u'\<close> \<open>u = u' @ [\<checkmark>(r)]\<close>
-          by (metis "*"(2) F_imp_front_tickFree front_tickFree_append_iff
-              nonTickFree_n_frontTickFree not_Cons_self2)
-        from "*"(2) F_T \<open>u = u' @ [\<checkmark>(r)]\<close> have \<open>u' @ [\<checkmark>(r)] \<in> \<T> P\<close> by blast
-        have $$ : \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' = map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u'\<close>
-          by (metis "$" "*"(2) F_T \<open>tF u'\<close> \<open>u = u' @ [\<checkmark>(r)]\<close> is_processT3_TR_append)
-        have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)] \<in> \<T> (Renaming P f g)\<close>
-        proof (cases \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>)
-          assume \<open>r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>
-          hence \<open>g' r = g r\<close> by (simp add: fun_hyps_bis(2))
-          with "$$" show \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)] \<in> \<T> (Renaming P f g)\<close>
-            by (simp add: T_Renaming) (use \<open>u' @ [\<checkmark>(r)] \<in> \<T> P\<close> in auto)
-        next
-          assume \<open>r \<notin> \<^bold>\<checkmark>\<^bold>s(P)\<close>
-          hence \<open>u' \<in> \<D> P\<close>
-            by (metis \<open>u' @ [\<checkmark>(r)] \<in> \<T> P\<close> is_processT9 strict_ticks_of_memI)
-          hence \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f g) u' \<in> \<D> (Renaming P f g)\<close>
-            using D_Renaming F_imp_front_tickFree \<open>tF u'\<close> is_processT1 by blast
-          with "$$" have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' \<in> \<D> (Renaming P f g)\<close> by presburger
-          hence \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)] \<in> \<D> (Renaming P f g)\<close>
-            by (simp add: \<open>tF u'\<close> is_processT7 map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
-          thus \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)] \<in> \<T> (Renaming P f g)\<close>
-            by (simp add: D_T)
-        qed
-        hence \<open>(map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)], X) \<in> \<F> (Renaming P f g)\<close>
-          by (simp add: tick_T_F)
-        also have \<open>map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k f' g') u' @ [\<checkmark>(g' r)] = t\<close>
-          by (simp add: "*"(1) \<open>u = u' @ [\<checkmark>(r)]\<close>)
-        finally show \<open>(t, X) \<in> \<F> (Renaming P f g)\<close> .
-      qed
-    qed
-    thus \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close>
-      by (auto simp add: refine_defs intro: is_processT8) 
-  qed
-  show \<open>Renaming P f g = Renaming P f' g'\<close>
-  proof (rule FD_antisym)
-    show \<open>Renaming P f g \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f' g'\<close> \<open>Renaming P f' g' \<sqsubseteq>\<^sub>F\<^sub>D Renaming P f g\<close>
-      by (simp_all add: "*" fun_hyps)
-  qed
-qed
-
-
-corollary Renaming_is_restrictable_on_events_of_ticks_of :
-  \<open>\<lbrakk>\<And>a. a \<in> \<alpha>(P) \<Longrightarrow> f a = f' a; \<And>r. r \<in> \<checkmark>s(P) \<Longrightarrow> g r = g' r\<rbrakk>
-   \<Longrightarrow> Renaming P f g = Renaming P f' g'\<close>
-  by (rule Renaming_is_restrictable_on_events_of_strict_ticks_of)
-    (simp_all add: ticks_of_is_strict_ticks_of_or_UNIV)
-
-
-corollary RenamingEv_is_restrictable_on_events_of :
-  \<open>(\<And>a. a \<in> \<alpha>(P) \<Longrightarrow> f a = f' a) \<Longrightarrow> RenamingEv P f = RenamingEv P f'\<close>
-  by (fact Renaming_is_restrictable_on_events_of_ticks_of
+corollary RenamingEv_is_restrictable_on_minimal_events_of :
+  \<open>(\<And>a. a \<in> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<Longrightarrow> f a = f' a) \<Longrightarrow> RenamingEv P f = RenamingEv P f'\<close>
+  by (fact Renaming_is_restrictable_on_minimal_events_of_strict_ticks_of
       [of P f f' id id, simplified])
 
 
 corollary RenamingTick_is_restrictable_on_strict_ticks_of :
   \<open>(\<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> g r = g' r) \<Longrightarrow> RenamingTick P g = RenamingTick P g'\<close>
-  by (fact Renaming_is_restrictable_on_events_of_strict_ticks_of
+  by (fact Renaming_is_restrictable_on_minimal_events_of_strict_ticks_of
       [of P id id g g', simplified])
-
-
-corollary RenamingTick_is_restrictable_on_ticks_of :
-  \<open>(\<And>r. r \<in> \<checkmark>s(P) \<Longrightarrow> g r = g' r) \<Longrightarrow> RenamingTick P g = RenamingTick P g'\<close>
-  by (fact Renaming_is_restrictable_on_events_of_ticks_of
-      [of P id id g g', simplified])
-
-
 
 
 
 section \<open>Renaming and Generalized Synchronization Product\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) inj_on_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>RenamingTick (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q) g =
-   Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. case r \<otimes>\<checkmark> s of \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>g r_s\<rfloor> | \<diamond> \<Rightarrow> \<diamond>) P S Q\<close>
+   Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. case r \<otimes>\<checkmark> s of \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>g r_s\<rfloor> | \<diamond> \<Rightarrow> \<diamond>) P S Q\<close>
   (is \<open>?lhs = ?rhs\<close>)
-  if inj_on_g : \<open>inj_on g range_tick_join\<close>
+  if inj_on_g : \<open>inj_on g range_tj\<close>
 proof -
   let ?map_evt = \<open>\<lambda>g. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g)\<close>
-  let ?tick_join' = \<open>\<lambda>r s. case r \<otimes>\<checkmark> s of \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>g r_s\<rfloor> | \<diamond> \<Rightarrow> \<diamond>\<close>
-  interpret Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k' : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale ?tick_join'
-    by (intro interpretable_inj_on_range_tick_join inj_on_g)
-      \<comment>\<open>Thus \<^term>\<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tick_join' P S Q\<close> is well defined.\<close>
+  let ?tj' = \<open>\<lambda>r s. case r \<otimes>\<checkmark> s of \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>g r_s\<rfloor> | \<diamond> \<Rightarrow> \<diamond>\<close>
+  interpret Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k' : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tj'
+    by (intro interpretable_inj_on_range_tj inj_on_g)
+      \<comment>\<open>Thus \<^term>\<open>Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tj' P S Q\<close> is well defined.\<close>
   have inj_on_inv_into_g :
-    \<open>inj_on (inv_into range_tick_join g) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.range_tick_join\<close>
+    \<open>inj_on (inv_into range_tj g) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.range_tj\<close>
     by (rule inj_onI, simp split: option.split_asm)
       (metis (mono_tags, lifting) f_inv_into_f image_eqI mem_Collect_eq)
-  from inv_into_f_f inj_on_g have expanded_tick_join :
-    \<open>(\<otimes>\<checkmark>) = (\<lambda>r s. case ?tick_join' r s of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>inv_into range_tick_join g r_s\<rfloor>)\<close>
+  from inv_into_f_f inj_on_g have expanded_tj :
+    \<open>(\<otimes>\<checkmark>) = (\<lambda>r s. case ?tj' r s of \<diamond> \<Rightarrow> \<diamond> | \<lfloor>r_s\<rfloor> \<Rightarrow> \<lfloor>inv_into range_tj g r_s\<rfloor>)\<close>
     by (fastforce split: split: option.split)
   show \<open>?lhs = ?rhs\<close>
   proof (rule Process_eq_optimizedI)
@@ -1378,43 +1264,43 @@ proof -
       unfolding D_Renaming by blast
     from "*"(4) obtain v1 w1 t_P t_Q
       where ** : \<open>u1 = v1 @ w1\<close> \<open>tF v1\<close> \<open>ftF w1\<close>
-        \<open>v1 setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>v1 setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
     from inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF inj_on_g "**"(4)]
-    have \<open>?map_evt g v1 setinterleaves\<^sub>\<checkmark>\<^bsub>?tick_join'\<^esub> ((t_P, t_Q), S)\<close> .
+    have \<open>?map_evt g v1 setinterleaves\<^sub>\<checkmark>\<^bsub>?tj'\<^esub> ((t_P, t_Q), S)\<close> .
     moreover from "*"(1-3) "**"(1, 2)
     have \<open>t = ?map_evt g v1 @ (?map_evt g w1 @ u2) \<and>
           tF (?map_evt g v1) \<and> ftF (?map_evt g w1 @ u2)\<close>
-      by (simp add: front_tickFree_append_iff map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+      by (simp add: ftF_append_iff tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
     ultimately show \<open>t \<in> \<D> ?rhs\<close>
       using "**"(5) by (simp (no_asm) add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) blast
   next
     fix t assume \<open>t \<in> \<D> ?rhs\<close>
     then obtain u v t_P t_Q
       where * : \<open>t = u @ v\<close> \<open>tF u\<close> \<open>ftF v\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>?tick_join'\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>?tj'\<^esub> ((t_P, t_Q), S)\<close>
         \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
-    from \<open>tF u\<close> have \<open>e \<in> set u \<Longrightarrow> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (g \<circ> inv_into range_tick_join g) e = e\<close> for e
+    from \<open>tF u\<close> have \<open>e \<in> set u \<Longrightarrow> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (g \<circ> inv_into range_tj g) e = e\<close> for e
       by (cases e) (simp_all add: tickFree_def disjoint_iff)
-    hence \<open>t = ?map_evt g (?map_evt (inv_into range_tick_join g) u) @ v\<close>
+    hence \<open>t = ?map_evt g (?map_evt (inv_into range_tj g) u) @ v\<close>
       by (simp add: "*"(1) flip: map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comp)
         (induct u, simp_all)
-    moreover have \<open>tF (?map_evt (inv_into range_tick_join g) u)\<close>
-      by (simp add: "*"(2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+    moreover have \<open>tF (?map_evt (inv_into range_tj g) u)\<close>
+      by (simp add: "*"(2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
     moreover
     {
-      have \<open>?map_evt (inv_into range_tick_join g) u =
-            ?map_evt (inv_into range_tick_join g) u @ []\<close> by simp
-      moreover have \<open>tF ((map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (inv_into range_tick_join g))) u)\<close>
-        by (simp add: "*"(2) map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_tickFree)
+      have \<open>?map_evt (inv_into range_tj g) u =
+            ?map_evt (inv_into range_tj g) u @ []\<close> by simp
+      moreover have \<open>tF ((map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (inv_into range_tj g))) u)\<close>
+        by (simp add: "*"(2) tF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)
       moreover have \<open>ftF []\<close> by simp
       moreover from Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        [OF inj_on_inv_into_g "*"(4), folded expanded_tick_join]
-      have \<open>?map_evt (inv_into range_tick_join g) u
-            setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close> .
-      ultimately have \<open>?map_evt (inv_into range_tick_join g) u \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
+        [OF inj_on_inv_into_g "*"(4), folded expanded_tj]
+      have \<open>?map_evt (inv_into range_tj g) u
+            setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close> .
+      ultimately have \<open>?map_evt (inv_into range_tj g) u \<in> \<D> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
         unfolding D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k using "*"(5) by blast
     }
     ultimately show \<open>t \<in> \<D> ?lhs\<close>
@@ -1426,41 +1312,41 @@ proof -
       unfolding Renaming_projs by blast
     with \<open>t \<notin> \<D> ?lhs\<close> obtain t_P t_Q X_P X_Q
       where ** : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close>
         \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<otimes>\<checkmark>) X_P S X_Q\<close>
       by (auto simp add: D_Renaming Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
-        (metis append.right_neutral front_tickFree_Nil map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree)+
-    have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>?tick_join'\<^esub> ((t_P, t_Q), S)\<close>
+        (metis append.right_neutral ftF_Nil ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff)+
+    have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>?tj'\<^esub> ((t_P, t_Q), S)\<close>
       using "*"(1) "**"(3) inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k inj_on_g by blast
     moreover from vimage_inj_on_subset_super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff[OF inj_on_g, THEN iffD1, OF "**"(4)]
-    have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tick_join' X_P S X_Q\<close> .
+    have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tj' X_P S X_Q\<close> .
     ultimately show \<open>(t, X) \<in> \<F> ?rhs\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k using "**"(1, 2) by fast
   next
     fix t X assume \<open>(t, X) \<in> \<F> ?rhs\<close> \<open>t \<notin> \<D> ?rhs\<close>
     then obtain t_P t_Q X_P X_Q
       where * : \<open>(t_P, X_P) \<in> \<F> P\<close> \<open>(t_Q, X_Q) \<in> \<F> Q\<close>
-        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>?tick_join'\<^esub> ((t_P, t_Q), S)\<close>
-        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tick_join' X_P S X_Q\<close>
+        \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>?tj'\<^esub> ((t_P, t_Q), S)\<close>
+        \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ?tj' X_P S X_Q\<close>
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
-    from Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_imp_set_range_tick_join[OF "*"(3)]
-    have \<open>{r_s. \<checkmark>(r_s) \<in> set t} \<subseteq> Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.range_tick_join\<close> .
-    hence \<open>e \<in> set t \<Longrightarrow> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (g \<circ> inv_into range_tick_join g) e = e\<close> for e
+    from Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_imp_set_range_tj[OF "*"(3)]
+    have \<open>{r_s. \<checkmark>(r_s) \<in> set t} \<subseteq> Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.range_tj\<close> .
+    hence \<open>e \<in> set t \<Longrightarrow> map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id (g \<circ> inv_into range_tj g) e = e\<close> for e
       by (cases e, auto simp add: subset_iff split: option.split_asm)
         (metis (mono_tags, lifting) inv_into_f_f mem_Collect_eq inj_on_g)
-    hence \<open>t = ?map_evt g (?map_evt (inv_into range_tick_join g) t)\<close>
+    hence \<open>t = ?map_evt g (?map_evt (inv_into range_tj g) t)\<close>
       by (simp add: "*"(1) flip: map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comp)
         (induct t, simp_all)
     moreover
     { from Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k'.inj_on_map_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
-        [OF inj_on_inv_into_g "*"(3), folded expanded_tick_join]
-      have \<open>?map_evt (inv_into range_tick_join g) t
-            setinterleaves\<^sub>\<checkmark>\<^bsub>tick_join\<^esub> ((t_P, t_Q), S)\<close> .
+        [OF inj_on_inv_into_g "*"(3), folded expanded_tj]
+      have \<open>?map_evt (inv_into range_tj g) t
+            setinterleaves\<^sub>\<checkmark>\<^bsub>tj\<^esub> ((t_P, t_Q), S)\<close> .
       moreover from vimage_inj_on_subset_super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff
         [OF inj_on_g, THEN iffD2, OF "*"(4)]
       have \<open>map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X \<subseteq>
             super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<otimes>\<checkmark>) X_P S X_Q\<close> .
-      ultimately have \<open>(?map_evt (inv_into range_tick_join g) t,
+      ultimately have \<open>(?map_evt (inv_into range_tj g) t,
                         map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X) \<in> \<F> (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q)\<close>
         by (auto simp add: F_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k "*"(1, 2))
     }
@@ -1470,15 +1356,15 @@ qed
 
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) inj_RenamingTick_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_RenamingTick :
   \<open>RenamingTick P g \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> RenamingTick Q h =
-   Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. g r \<otimes>\<checkmark> h s) P S Q\<close> (is \<open>?lhs = ?rhs\<close>)
+   Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. g r \<otimes>\<checkmark> h s) P S Q\<close> (is \<open>?lhs = ?rhs\<close>)
   if \<open>inj g\<close> and \<open>inj h\<close>
     (* is \<open>Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. g r \<otimes>\<checkmark> h s)\<close> \<open>inj_on g \<^bold>\<checkmark>\<^bold>s(P)\<close> \<open>inj_on h \<^bold>\<checkmark>\<^bold>s(Q)\<close> enough ? *)
   for P :: \<open>('a, 'r') process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and Q :: \<open>('a, 's') process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
 proof -
-  interpret tjoin_interpreted : Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale \<open>\<lambda>r s. g r \<otimes>\<checkmark> h s\<close>
-    by unfold_locales (meson injD inj_tick_join \<open>inj g\<close> \<open>inj h\<close>)
+  interpret tjoin_interpreted : Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<open>\<lambda>r s. g r \<otimes>\<checkmark> h s\<close>
+    by unfold_locales (meson injD inj_tj \<open>inj g\<close> \<open>inj h\<close>)
   let ?map_evt = \<open>\<lambda>g. map (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g)\<close>
   let ?map_ev  = \<open>\<lambda>t. map ev (map of_ev t)\<close>
   let ?RT      = RenamingTick
@@ -1520,7 +1406,7 @@ proof -
       moreover from \<open>t_Q = t_Q\<^sub>1 @ t_Q\<^sub>2\<close> is_processT3_TR_append "$$"(6)
       have \<open>t_Q\<^sub>1 \<in> \<T> Q\<close> by blast
       ultimately show \<open>t \<in> \<D> ?rhs\<close>
-        using "$"(1-3) "$$"(4) "$$$"(1) front_tickFree_append
+        using "$"(1-3) "$$"(4) "$$$"(1) ftF_append
         by (auto simp add: tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
     next
       assume \<open>t_Q' \<in> \<D> (?RT Q h)\<close> \<open>t_P' \<in> \<T> (?RT P g)\<close> \<open>t_P' \<notin> \<D> (?RT P g)\<close>
@@ -1537,7 +1423,7 @@ proof -
       moreover from \<open>t_P = t_P\<^sub>1 @ t_P\<^sub>2\<close> is_processT3_TR_append "$$"(6)
       have \<open>t_P\<^sub>1 \<in> \<T> P\<close> by blast
       ultimately show \<open>t \<in> \<D> ?rhs\<close>
-        using "$"(1-3) "$$"(4) "$$$"(1) front_tickFree_append
+        using "$"(1-3) "$$"(4) "$$$"(1) ftF_append
         by (auto simp add: tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
     next
       assume \<open>t_P' \<in> \<D> (?RT P g)\<close> \<open>t_Q' \<in> \<D> (?RT Q h)\<close>
@@ -1561,7 +1447,7 @@ proof -
         moreover have \<open>take (length t_Q\<^sub>1_bis) t_Q\<^sub>1 \<in> \<T> Q\<close>
           by (metis "$$"(8) D_T append_take_drop_id is_processT3_TR_append)
         ultimately show \<open>t \<in> \<D> ?rhs\<close>
-          using "$"(1-3) "$$"(4) "$$$"(1) front_tickFree_append
+          using "$"(1-3) "$$"(4) "$$$"(1) ftF_append
           by (auto simp add: tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
       next
         assume \<open>t_Q\<^sub>1_bis = ?map_evt h t_Q\<^sub>1 @ take (length t_Q\<^sub>1_bis - length t_Q\<^sub>1) t_Q\<^sub>2\<close>
@@ -1580,7 +1466,7 @@ proof -
         ultimately show \<open>t \<in> \<D> ?rhs\<close>
           by (simp add: tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
             (metis (no_types, lifting) "$"(1,2,3) "$$"(8) "$$$"(1) "$$$$"(1)
-              append.assoc front_tickFree_append tickFree_append_iff)
+              append.assoc ftF_append tF_append_iff)
       qed
     qed
   next
@@ -1589,12 +1475,12 @@ proof -
       \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>\<lambda>r s. g r \<otimes>\<checkmark> h s\<^esub> ((t_P, t_Q), S)\<close>
       \<open>t_P \<in> \<D> P \<and> t_Q \<in> \<T> Q \<or> t_P \<in> \<T> P \<and> t_Q \<in> \<D> Q\<close>
       unfolding tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k by blast
-    from tickFree_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff[THEN iffD1, OF "$"(4, 2)]
+    from tF_setinterleaves\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff[THEN iffD1, OF "$"(4, 2)]
     have \<open>tF t_P\<close> \<open>tF t_Q\<close> by simp_all
 
     with "$"(5) have \<open>?map_evt g t_P \<in> \<D> (?RT P g) \<and> ?map_evt h t_Q \<in> \<T> (?RT Q h) \<or>
                     ?map_evt g t_P \<in> \<T> (?RT P g) \<and> ?map_evt h t_Q \<in> \<D> (?RT Q h)\<close>
-      by (simp add: Renaming_projs) (metis append.right_neutral front_tickFree_Nil)
+      by (simp add: Renaming_projs) (metis append.right_neutral ftF_Nil)
     moreover from "***"[THEN iffD2, OF "$"(4)]
     have \<open>u setinterleaves\<^sub>\<checkmark>\<^bsub>(\<otimes>\<checkmark>)\<^esub> ((?map_evt g t_P, ?map_evt h t_Q), S)\<close> .
     ultimately show \<open>t \<in> \<D> ?lhs\<close>
@@ -1607,14 +1493,14 @@ proof -
       unfolding Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from \<open>t \<notin> \<D> ?lhs\<close> "$"(1, 2)[THEN F_T] "$"(3)
     have \<open>t_P' \<notin> \<D> (?RT P g) \<and> t_Q' \<notin> \<D> (?RT Q h)\<close>
-      by (simp add: D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k') (metis append_self_conv front_tickFree_Nil)
+      by (simp add: D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k') (metis append_self_conv ftF_Nil)
     with "$"(1, 2) obtain t_P t_Q
       where $$ : \<open>t_P' = ?map_evt g t_P\<close> \<open>(t_P, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X_P') \<in> \<F> P\<close>
         \<open>t_Q' = ?map_evt h t_Q\<close> \<open>(t_Q, map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id h -` X_Q') \<in> \<F> Q\<close>
       unfolding Renaming_projs by blast
     from "$"(3)[unfolded "$$"(1, 3), THEN "***"[THEN iffD1]]
     have \<open>t setinterleaves\<^sub>\<checkmark>\<^bsub>\<lambda>r s. g r \<otimes>\<checkmark> h s\<^esub> ((t_P, t_Q), S)\<close> .
-    moreover from "$"(4) inj_tick_join
+    moreover from "$"(4) inj_tj
     have \<open>X \<subseteq> super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k (\<lambda>r s. g r \<otimes>\<checkmark> h s)
             (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id g -` X_P') S (map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k id h -` X_Q')\<close>
       by (simp add: super_ref_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def, safe) blast
@@ -1629,7 +1515,7 @@ proof -
       unfolding tjoin_interpreted.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs by blast
     from \<open>t \<notin> \<D> ?rhs\<close> have \<open>t_P \<notin> \<D> P \<and> t_Q \<notin> \<D> Q\<close>
       by (simp add: tjoin_interpreted.D_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k')
-        (metis "$"(1-3) F_T append.right_neutral front_tickFree_Nil)
+        (metis "$"(1-3) F_T append.right_neutral ftF_Nil)
     hence $$ : \<open>t_P @ [\<checkmark>(r)] \<in> \<T> P \<Longrightarrow> r \<in> \<^bold>\<checkmark>\<^bold>s(P)\<close>
       \<open>t_Q @ [\<checkmark>(s)] \<in> \<T> Q \<Longrightarrow> s \<in> \<^bold>\<checkmark>\<^bold>s(Q)\<close> for r s
       by (meson is_processT9 strict_ticks_of_memI)+
@@ -1637,7 +1523,7 @@ proof -
     proof (rule iffI)
       from \<open>t_P \<notin> \<D> P \<and> t_Q \<notin> \<D> Q\<close> have \<open>?map_evt g t_P \<notin> \<D> (?RT P g)\<close>
         by (simp add: D_Renaming map_eq_append_conv "****")
-          (use is_processT7 map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree in blast)
+          (use is_processT7 ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff in blast)
       hence \<open>?map_evt g t_P @ [\<checkmark>(g_r)] \<notin> \<D> (?RT P g)\<close> by (meson is_processT9)
       moreover assume \<open>?map_evt g t_P @ [\<checkmark>(g_r)] \<in> \<T> (?RT P g)\<close>
       ultimately show \<open>?map_evt g t_P @ [\<checkmark>(g_r)] \<in> \<T> (?RT P g) \<Longrightarrow> \<exists>r. g_r = g r \<and> t_P @ [\<checkmark>(r)] \<in> \<T> P\<close>
@@ -1650,7 +1536,7 @@ proof -
     proof (rule iffI)
       from \<open>t_P \<notin> \<D> P \<and> t_Q \<notin> \<D> Q\<close> have \<open>?map_evt h t_Q \<notin> \<D> (?RT Q h)\<close>
         by (simp add: D_Renaming map_eq_append_conv "*****")
-          (use is_processT7 map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_front_tickFree in blast)
+          (use is_processT7 ftF_map_event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_iff in blast)
       hence \<open>?map_evt h t_Q @ [\<checkmark>(h_s)] \<notin> \<D> (?RT Q h)\<close> by (meson is_processT9)
       moreover assume \<open>?map_evt h t_Q @ [\<checkmark>(h_s)] \<in> \<T> (?RT Q h)\<close>
       ultimately show \<open>?map_evt h t_Q @ [\<checkmark>(h_s)] \<in> \<T> (?RT Q h) \<Longrightarrow> \<exists>s. h_s = h s \<and> t_Q @ [\<checkmark>(s)] \<in> \<T> Q\<close>

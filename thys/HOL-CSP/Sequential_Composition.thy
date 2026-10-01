@@ -65,8 +65,8 @@ proof -
       by simp (metis (no_types, opaque_lifting) T_F_spec append_Nil f_inv_into_f
           is_processT1 is_processT5_S7)
   next
-    show \<open>(s, X) \<in> ?f \<Longrightarrow> front_tickFree s\<close> for s X
-      by (auto simp: is_processT2 append_T_imp_tickFree front_tickFree_append D_imp_front_tickFree)   
+    show \<open>(s, X) \<in> ?f \<Longrightarrow> ftF s\<close> for s X
+      by (auto simp: is_processT2 append_T_imp_tF ftF_append D_imp_ftF)   
   next
     show \<open>(s @ t, {}) \<in> ?f \<Longrightarrow> (s, {}) \<in> ?f\<close> for s t
     proof (induct t arbitrary: s)
@@ -79,7 +79,7 @@ proof -
       then consider (F_P) \<open>(s @ [e], range tick) \<in> \<F> P\<close> \<open>tF s\<close>
         | (F_Q) t u r where \<open>s @ [e] = t @ u\<close> \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>(u, {}) \<in> \<F> Q\<close>
         by (auto intro: is_processT8)
-          (meson F_T append_T_imp_tickFree is_processT8 not_Cons_self2)
+          (meson F_T append_T_imp_tF is_processT8 not_Cons_self2)
       thus \<open>(s, {}) \<in> ?f\<close>
       proof cases
         case F_P
@@ -97,7 +97,7 @@ proof -
           with F_Q(2) \<open>s @ [e] = t\<close> show \<open>(s, {}) \<in> ?f\<close>
             by (elim trace_tick_continuation_or_all_tick_failuresE, simp_all)
               (metis append.right_neutral is_processT1,
-                metis append_T_imp_tickFree not_Cons_self2 tickFree_append_iff)
+                metis append_T_imp_tF not_Cons_self2 tF_append_iff)
         next
           from F_Q show \<open>u = u' @ [e'] \<Longrightarrow> (s, {}) \<in> ?f\<close> for u' e'
             by simp (metis is_processT3)
@@ -110,7 +110,7 @@ proof -
   next
     fix s X Y assume * : \<open>(s, X) \<in> ?f \<and> (\<forall>c. c \<in> Y \<longrightarrow> (s @ [c], {}) \<notin> ?f)\<close>
     from "*" consider \<open>s \<in> ?d\<close>
-      | (F_P) \<open>(s, X \<union> range tick) \<in> \<F> P\<close> \<open>tickFree s\<close>
+      | (F_P) \<open>(s, X \<union> range tick) \<in> \<F> P\<close> \<open>tF s\<close>
       | (F_Q) t u r where \<open>s = t @ u\<close> \<open>t @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>(u, X) \<in> \<F> Q\<close> by fast
     thus \<open>(s, X \<union> Y) \<in> ?f\<close>
     proof cases
@@ -125,7 +125,7 @@ proof -
           by (metis Diff_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust rangeI)
         from "*"[THEN conjunct2, rule_format, OF \<open>ev r \<in> Y\<close>]
         show \<open>(s @ [c], {}) \<notin> \<F> P\<close>
-          by (simp add: \<open>c = ev r\<close> \<open>tickFree s\<close> image_iff)
+          by (simp add: \<open>c = ev r\<close> \<open>tF s\<close> image_iff)
             (metis append_Nil2 is_processT1 trace_tick_continuation_or_all_tick_failuresE)
       qed
       also have \<open>X \<union> range tick \<union> ?Y_evs = X \<union> Y \<union> range tick\<close> by fast
@@ -141,21 +141,20 @@ proof -
   next
     show \<open>s \<in> ?d \<and> tF s \<and> ftF t \<Longrightarrow> s @ t \<in> ?d\<close> for s t
       by (simp, elim conjE disjE exE)
-        (metis is_processT7, meson append_assoc is_processT7 tickFree_append_iff)
+        (metis is_processT7, meson append_assoc is_processT7 tF_append_iff)
   next  
     from is_processT8 show \<open>s \<in> ?d \<Longrightarrow> (s, X) \<in> ?f\<close> for s X by simp blast
   next
     show \<open>s @ [\<checkmark>(r)] \<in> ?d \<Longrightarrow> s \<in> ?d\<close> for s r
-      by (simp, elim conjE disjE exE)
-        (meson is_processT9,
-          metis (no_types) D_T T_nonTickFree_imp_decomp append.assoc append_T_imp_tickFree
-          butlast_snoc is_processT9 non_tickFree_tick not_Cons_self2 tickFree_append_iff)
+      by (simp, elim conjE disjE exE, metis is_processT9)
+        (metis D_imp_ftF append_T_imp_tF butlast_append butlast_snoc
+          div_butlast_when_non_tF_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_Nil tF_append_iff)
     fix s r X assume \<open>(s @ [\<checkmark>(r)], {}) \<in> ?f\<close>
     then consider \<open>s @ [\<checkmark>(r)] \<in> ?d\<close>
       | (F_Q) t u r' where \<open>s @ [\<checkmark>(r)] = t @ u\<close> \<open>t @ [\<checkmark>(r')] \<in> \<T> P\<close> \<open>(u, X) \<in> \<F> Q\<close>
       by (auto simp add: is_processT8)
-        (metis F_T append_T_imp_tickFree is_processT5_S7
-          non_tickFree_tick not_Cons_self2 tickFree_append_iff)
+        (metis T_F_spec append_T_imp_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) is_processT5_S7
+          not_Cons_self2 tF_Cons_iff tF_append_iff)
     thus \<open>(s, X - {\<checkmark>(r)}) \<in> ?f\<close>
     proof cases
       assume \<open>s @ [\<checkmark>(r)] \<in> ?d\<close>
@@ -165,7 +164,8 @@ proof -
       case F_Q
       from F_Q(1, 2) obtain u' where \<open>u = u' @ [\<checkmark>(r)]\<close>
         by (cases u rule: rev_cases, simp_all)
-          (meson append_T_imp_tickFree non_tickFree_tick not_Cons_self2 tickFree_append_iff)
+          (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_append_iff is_processT2_TR
+            list.distinct(1) tF_Cons_iff tF_append_iff)
       with F_Q(3) have \<open>(u', X - {\<checkmark>(r)}) \<in> \<F> Q\<close> by (simp add: F_T is_processT6_TR)
       with F_Q(1, 2) \<open>u = u' @ [\<checkmark>(r)]\<close> show \<open>(s, X - {\<checkmark>(r)}) \<in> ?f\<close> by auto
     qed
@@ -203,6 +203,23 @@ lemma T_Seq :
 
 lemmas Seq_projs = F_Seq D_Seq T_Seq
 
+lemma D\<^sub>m\<^sub>i\<^sub>n_Seq_subset :
+  \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<^bold>; Q) \<subseteq> \<D>\<^sub>m\<^sub>i\<^sub>n P \<union> {t @ u |t u. \<exists>r. t @ [\<checkmark>(r)] \<in> \<T> P - \<D> P \<and> tF t \<and> u \<in> \<D>\<^sub>m\<^sub>i\<^sub>n Q}\<close>
+  (is \<open>_ \<subseteq> _ \<union> ?rhs\<close>)
+proof -
+  have \<open>\<D> (P \<^bold>; Q) = \<D> P \<union> {t @ u |t u r. t @ [\<checkmark>(r)] \<in> \<T> P - \<D> P \<and> u \<in> \<D> Q}\<close> (is \<open>_ = _ \<union> ?lhs\<close>)
+    by (auto simp add: Seq_projs)
+      (metis D_imp_ftF append_T_imp_tF is_processT7 is_processT9 not_Cons_self)
+  hence \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<^bold>; Q) \<subseteq> min_elems (\<D> P) \<union> min_elems ?lhs\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_Un_subset_Un_min_elems)
+  moreover have \<open>min_elems (\<D> P) = \<D>\<^sub>m\<^sub>i\<^sub>n P\<close>
+    by (simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def)
+  moreover have \<open>min_elems ?lhs \<subseteq> ?rhs\<close>
+    by (auto simp add: Divergences\<^sub>m\<^sub>i\<^sub>n_def min_elems_def)
+      (metis append_T_imp_tF less_append neq_Nil_conv)
+  ultimately show ?thesis by blast
+qed
+
 
 
 section\<open> Continuity Rule \<close>
@@ -211,94 +228,41 @@ lemma mono_Seq : \<open>P \<sqsubseteq> Q \<Longrightarrow> R \<sqsubseteq> S \<
 proof -
   have \<open>P \<^bold>; S \<sqsubseteq> Q \<^bold>; S\<close> if \<open>P \<sqsubseteq> Q\<close> for P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> and S
   proof (unfold le_approx_def, intro conjI allI impI subset_antisym)
+    from le_approxD(1)[OF \<open>P \<sqsubseteq> Q\<close>] le_approxD2_T[OF \<open>P \<sqsubseteq> Q\<close>]
     show \<open>\<D> (Q \<^bold>; S) \<subseteq> \<D> (P \<^bold>; S)\<close>
-      apply (rule subsetI, simp add: D_Seq, elim disjE exE conjE)
-      by (meson in_mono le_approx1 \<open>P \<sqsubseteq> Q\<close>) (metis D_T le_approx2T \<open>P \<sqsubseteq> Q\<close>)
+      by (simp add: D_Seq set_eq_iff subset_iff) (metis D_T)
   next
+    from le_approxD(2)[OF \<open>P \<sqsubseteq> Q\<close>] le_approxD2_T[OF \<open>P \<sqsubseteq> Q\<close>]
     show \<open>s \<notin> \<D> (P \<^bold>; S) \<Longrightarrow> \<R>\<^sub>a (P \<^bold>; S) s \<subseteq> \<R>\<^sub>a (Q \<^bold>; S) s\<close> for s
-      apply (auto simp add: D_Seq Refusals_after_def F_Seq set_eq_iff append_T_imp_tickFree)[1]
-      by (meson le_approx2 \<open>P \<sqsubseteq> Q\<close>)
-        (metis F_imp_front_tickFree append_T_imp_tickFree is_processT7 is_processT9 le_approx2T not_Cons_self2 \<open>P \<sqsubseteq> Q\<close>)+
+      by (auto simp add: D_Seq Refusals_after_def F_Seq append_T_imp_tF)
+        (metis (no_types, lifting) append_T_imp_tF is_processT2
+          is_processT7 is_processT9 not_Cons_self2)+
   next
+    from le_approxD(1, 2)[OF \<open>P \<sqsubseteq> Q\<close>] le_approxD2_T[OF \<open>P \<sqsubseteq> Q\<close>]
     show \<open>s \<notin> \<D> (P \<^bold>; S) \<Longrightarrow> \<R>\<^sub>a (Q \<^bold>; S) s \<subseteq> \<R>\<^sub>a (P \<^bold>; S) s\<close> for s
-      apply (auto simp add: D_Seq Refusals_after_def F_Seq set_eq_iff append_T_imp_tickFree)
-          apply (meson le_approx2 \<open>P \<sqsubseteq> Q\<close>)
-      by ((metis D_T le_approx2T \<open>P \<sqsubseteq> Q\<close>)+)[2]
-        ((meson in_mono le_approx1 \<open>P \<sqsubseteq> Q\<close>)+)[2]
+      by (auto simp add: Seq_projs Refusals_after_def append_T_imp_tF) (metis D_T)+
   next
-    show \<open>min_elems (\<D> (P \<^bold>; S)) \<subseteq> \<T> (Q \<^bold>; S)\<close>
-    proof (rule subset_trans; rule subsetI)
-      fix t assume \<open>t \<in> min_elems (\<D> (P \<^bold>; S))\<close>
-      hence \<open>t \<in> \<D> (P \<^bold>; S)\<close> by (meson elem_min_elems)
-      then consider \<open>t \<in> \<D> P\<close> | u v r where \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close> \<open>v \<in> \<D> S\<close>
-        by (simp add: D_Seq)
-          (metis D_imp_front_tickFree append_T_imp_tickFree is_processT7 not_Cons_self2)
-      thus \<open>t \<in> min_elems (\<D> P) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<notin> \<D> P \<and> v \<in> min_elems (\<D> S)}\<close>
-      proof cases
-        assume \<open>t \<in> \<D> P\<close>
-        with \<open>t \<in> min_elems (\<D> (P \<^bold>; S))\<close> have \<open>t \<in> min_elems (\<D> P)\<close>
-          by (auto simp add: D_Seq min_elems_def)
-        thus \<open>t \<in> min_elems (\<D> P) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<notin> \<D> P \<and> v \<in> min_elems (\<D> S)}\<close> ..
-      next
-        fix u v r assume \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> P\<close> \<open>u \<notin> \<D> P\<close> \<open>v \<in> \<D> S\<close>
-        with \<open>t \<in> min_elems (\<D> (P \<^bold>; S))\<close>
-        have \<open>t \<in> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<notin> \<D> P \<and> v \<in> min_elems (\<D> S)}\<close>
-          by (simp add: D_Seq min_elems_def)
-            (metis (mono_tags, lifting) Un_iff less_append mem_Collect_eq)
-        thus \<open>t \<in> min_elems (\<D> P) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<notin> \<D> P \<and> v \<in> min_elems (\<D> S)}\<close> ..
-      qed
-    next
-      show \<open>t \<in> min_elems (\<D> P) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> P \<and> u \<notin> \<D> P \<and> v \<in> min_elems (\<D> S)}
-            \<Longrightarrow> t \<in> \<T> (Q \<^bold>; S)\<close> for t
-        by (simp add: T_Seq, elim disjE exE conjE)
-          (metis (no_types, lifting) Prefix_Order.prefixI T_nonTickFree_imp_decomp
-            elem_min_elems in_mono is_processT9 le_approx3 min_elems_no
-            not_Cons_self2 self_append_conv \<open>P \<sqsubseteq> Q\<close>,
-            metis D_T elem_min_elems is_processT9 le_approx2T \<open>P \<sqsubseteq> Q\<close>)
-    qed
+    from le_approxD(3)[OF \<open>P \<sqsubseteq> Q\<close>] le_approxD2_T[OF \<open>P \<sqsubseteq> Q\<close>]
+    show \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (P \<^bold>; S) \<subseteq> \<T> (Q \<^bold>; S)\<close>
+      by (auto dest!: D\<^sub>m\<^sub>i\<^sub>n_Seq_subset[THEN set_mp] simp add: T_Seq intro: tF_mem_D\<^sub>m\<^sub>i\<^sub>n)
+        (metis D\<^sub>m\<^sub>i\<^sub>n_D D_T)
   qed
 
   moreover have \<open>S \<^bold>; P \<sqsubseteq> S \<^bold>; Q\<close> if \<open>P \<sqsubseteq> Q\<close> for P Q and S :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   proof (unfold le_approx_def, intro conjI allI impI subset_antisym)
     show \<open>\<D> (S \<^bold>; Q) \<subseteq> \<D> (S \<^bold>; P)\<close>
-      by (rule subsetI, simp add: D_Seq) (metis in_mono le_approx1 that)
+      by (rule subsetI, simp add: D_Seq) (metis in_mono le_approxD(1) that)
   next
+    from le_approxD(2)[OF \<open>P \<sqsubseteq> Q\<close>]
     show \<open>s \<notin> \<D> (S \<^bold>; P) \<Longrightarrow> \<R>\<^sub>a (S \<^bold>; P) s \<subseteq> \<R>\<^sub>a (S \<^bold>; Q) s\<close> for s
-      apply (auto simp add: D_Seq Refusals_after_def F_Seq append_T_imp_tickFree)
-      by (metis proc_ord2a that)+
+      by (simp add: D_Seq Refusals_after_def F_Seq append_T_imp_tF) blast
   next
+    from le_approxD(2)[OF \<open>P \<sqsubseteq> Q\<close>]
     show \<open>s \<notin> \<D> (S \<^bold>; P) \<Longrightarrow> \<R>\<^sub>a (S \<^bold>; Q) s \<subseteq> \<R>\<^sub>a (S \<^bold>; P) s\<close> for s
-      apply (auto simp add: D_Seq Refusals_after_def F_Seq append_T_imp_tickFree)
-      by (metis proc_ord2a that)+
+      by (simp add: D_Seq Refusals_after_def F_Seq append_T_imp_tF) blast
   next
-    show \<open>min_elems (\<D> (S \<^bold>; P)) \<subseteq> \<T> (S \<^bold>; Q)\<close>
-    proof (rule subset_trans; rule subsetI)
-      fix t assume \<open>t \<in> min_elems (\<D> (S \<^bold>; P))\<close>
-      hence \<open>t \<in> \<D> (S \<^bold>; P)\<close> by (meson elem_min_elems)
-      then consider \<open>t \<in> \<D> S\<close> | u v r where \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> S\<close> \<open>u \<notin> \<D> S\<close> \<open>v \<in> \<D> P\<close>
-        by (simp add: D_Seq)
-          (metis D_imp_front_tickFree append_T_imp_tickFree is_processT7 not_Cons_self2)
-      thus \<open>t \<in> min_elems (\<D> S) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> S \<and> u \<notin> \<D> S \<and> v \<in> min_elems (\<D> P)}\<close>
-      proof cases
-        assume \<open>t \<in> \<D> S\<close>
-        with \<open>t \<in> min_elems (\<D> (S \<^bold>; P))\<close> have \<open>t \<in> min_elems (\<D> S)\<close>
-          by (auto simp add: D_Seq min_elems_def)
-        thus \<open>t \<in> min_elems (\<D> S) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> S \<and> u \<notin> \<D> S \<and> v \<in> min_elems (\<D> P)}\<close> ..
-      next
-        fix u v r assume \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> S\<close> \<open>u \<notin> \<D> S\<close> \<open>v \<in> \<D> P\<close>
-        with \<open>t \<in> min_elems (\<D> (S \<^bold>; P))\<close>
-        have \<open>t \<in> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> S \<and> u \<notin> \<D> S \<and> v \<in> min_elems (\<D> P)}\<close>
-          by (simp add: D_Seq min_elems_def)
-            (metis (mono_tags, lifting) Un_iff less_append mem_Collect_eq)
-        thus \<open>t \<in> min_elems (\<D> S) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> S \<and> u \<notin> \<D> S \<and> v \<in> min_elems (\<D> P)}\<close> ..
-      qed
-    next
-      show \<open>t \<in> min_elems (\<D> S) \<union> {u @ v |u v r. u @ [\<checkmark>(r)] \<in> \<T> S \<and> u \<notin> \<D> S \<and> v \<in> min_elems (\<D> P)}
-            \<Longrightarrow> t \<in> \<T> (S \<^bold>; Q)\<close> for t
-        by (simp add:  T_Seq, elim disjE exE conjE)
-          (use elem_min_elems in blast,
-            metis insert_absorb insert_subset le_approx3 \<open>P \<sqsubseteq> Q\<close>)
-    qed
+    from le_approxD(3)[OF \<open>P \<sqsubseteq> Q\<close>] show \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (S \<^bold>; P) \<subseteq> \<T> (S \<^bold>; Q)\<close>
+      by (auto dest!: D\<^sub>m\<^sub>i\<^sub>n_Seq_subset[THEN set_mp] simp add: T_Seq intro: tF_mem_D\<^sub>m\<^sub>i\<^sub>n D\<^sub>m\<^sub>i\<^sub>n_D)
   qed
 
   ultimately show \<open>P \<sqsubseteq> Q \<Longrightarrow> R \<sqsubseteq> S \<Longrightarrow> P \<^bold>; R \<sqsubseteq> Q \<^bold>; S\<close> by (meson below_trans)
@@ -328,7 +292,7 @@ next
   moreover have \<open>finite (T 0)\<close> unfolding T_def by (prove_finite_subset_of_prefixes t)
   moreover have \<open>T (Suc i) \<subseteq> T i\<close> for i
     unfolding T_def apply (intro allI Un_mono subsetI, simp_all)
-    by (meson \<open>chain Y\<close> in_mono le_approx1 po_class.chainE)
+    by (meson \<open>chain Y\<close> in_mono le_approxD(1) po_class.chainE)
       (metis \<open>chain Y\<close> le_approx_lemma_T po_class.chain_def subset_iff)
   ultimately have \<open>(\<Inter>i. T i) \<noteq> {}\<close> by (rule Inter_nonempty_finite_chained_sets)
   then obtain u where \<open>\<forall>i. u \<in> T i\<close> by fast
@@ -341,12 +305,12 @@ next
     with \<open>\<forall>i. u \<in> T i\<close> obtain r v j
       where \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> (Y j)\<close> \<open>u \<notin> \<D> (Y j)\<close> \<open>v \<in> \<D> S\<close>
       by (simp add: T_def)
-        (metis D_imp_front_tickFree append_T_imp_tickFree is_processT7 not_Cons_self2)
+        (metis D_imp_ftF append_T_imp_tF is_processT7 not_Cons_self2)
     from \<open>u \<notin> \<D> (Y j)\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> (Y j)\<close> have \<open>\<forall>i\<ge>j. u @ [\<checkmark>(r)] \<in> \<T> (Y i)\<close>
       by (meson ND_F_dir2' \<open>chain Y\<close> \<open>u \<notin> \<D> (Y j)\<close> is_processT9 is_ub_thelub)
     hence \<open>u @ [\<checkmark>(r)] \<in> \<T> (\<Squnion>i. Y i)\<close>
       by (simp add: limproc_is_thelub T_LUB \<open>chain Y\<close>)
-        (meson D_T \<open>chain Y\<close> le_approx2T nle_le po_class.chain_mono)
+        (meson D_T \<open>chain Y\<close> le_approxD2_T nle_le po_class.chain_mono)
     with \<open>v \<in> \<D> S\<close> show \<open>t \<in> \<D> ?lhs\<close> by (auto simp add: \<open>t = u @ v\<close> D_Seq \<open>chain Y\<close>)
   qed
 next
@@ -367,13 +331,13 @@ next
     fix j assume \<open>t \<notin> \<D> (Y j)\<close> \<open>(t, X \<union> range tick) \<in> \<F> (Y j)\<close> \<open>tF t\<close>
     hence \<open>(t, X \<union> range tick) \<in> \<F> (\<Squnion>i. Y i)\<close>
       by (simp add: limproc_is_thelub \<open>chain Y\<close> F_LUB)
-        (metis is_processT8 nle_le po_class.chain_mono proc_ord2a \<open>chain Y\<close>)
+        (metis is_processT8 nle_le po_class.chain_mono le_approxD(2) \<open>chain Y\<close>)
     with \<open>tF t\<close> show \<open>(t, X) \<in> \<F> ?lhs\<close> by (simp add: F_Seq)
   next
     fix j u r v assume \<open>t \<notin> \<D> (Y j)\<close> \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> (Y j)\<close> \<open>(v, X) \<in> \<F> S\<close>
     hence \<open>u @ [\<checkmark>(r)] \<in> \<T> (\<Squnion>i. Y i)\<close>
       by (simp add: limproc_is_thelub \<open>chain Y\<close> T_LUB)
-        (meson F_imp_front_tickFree ND_F_dir2' T_F_spec append_T_imp_tickFree
+        (meson F_imp_ftF ND_F_dir2' T_F_spec append_T_imp_tF
           is_processT7 is_ub_thelub min_elems2 not_Cons_self2 \<open>chain Y\<close>)
     with \<open>(v, X) \<in> \<F> S\<close> show \<open>(t, X) \<in> \<F> ?lhs\<close> by (auto simp add: F_Seq \<open>t = u @ v\<close>)
   qed
@@ -397,8 +361,9 @@ next
     moreover have \<open>finite (T 0)\<close>
       unfolding T_def by (prove_finite_subset_of_prefixes t)
     moreover have \<open>T (Suc i) \<subseteq> T i\<close> for i
-      unfolding T_def apply (intro allI Un_mono subsetI; simp)
-      by (metis le_approx1 po_class.chainE subset_iff \<open>chain Y\<close>)
+      unfolding T_def
+      by (intro allI Un_mono subsetI; simp)
+        (metis le_approxD(1) po_class.chainE subset_iff \<open>chain Y\<close>)
     ultimately have \<open>(\<Inter>i. T i) \<noteq> {}\<close> by (rule Inter_nonempty_finite_chained_sets)
     then obtain u where \<open>\<forall>i. u \<in> T i\<close> by fast
     then obtain v r where \<open>t = u @ v\<close> \<open>u @ [\<checkmark>(r)] \<in> \<T> S\<close> \<open>\<forall>i. v \<in> \<D> (Y i)\<close>
@@ -423,7 +388,7 @@ next
     moreover from \<open>(t, X) \<in> \<F> ?rhs\<close> have \<open>(t, X) \<in> \<F> (S \<^bold>; Y j)\<close>
       by (simp add: limproc_is_thelub chain_Seq_right \<open>chain Y\<close> F_LUB)
     ultimately show \<open>(t, X) \<in> \<F> ?lhs\<close>
-      by (fact le_approx2[OF mono_Seq[OF below_refl is_ub_thelub[OF \<open>chain Y\<close>]], THEN iffD2])
+      using \<open>chain Y\<close> by (metis chain_const is_ub_thelub le_approxD(2) lub_const mono_Seq)
   qed
 qed
 

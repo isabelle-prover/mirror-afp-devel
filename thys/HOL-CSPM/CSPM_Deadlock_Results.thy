@@ -117,7 +117,7 @@ lemma \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<equiv> DF
 
 lemma deadlock_free_F: \<open>deadlock_free P \<longleftrightarrow> DF UNIV \<sqsubseteq>\<^sub>F P\<close>
   by (auto simp add: deadlock_free_def refine_defs F_subset_imp_T_subset
-      non_terminating_refine_DF nonterminating_implies_div_free)
+      non_terminating_refine_DF non_terminating_implies_div_free)
 
 
 
@@ -189,8 +189,8 @@ lemma deadlock_free_Ndet_iff: \<open>deadlock_free (P \<sqinter> Q) \<longleftri
 
 
 lemma deadlock_free_is_right: (* see OpSem *)
-  \<open>deadlock_free (P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<longleftrightarrow> (\<forall>s \<in> \<T> P. tickFree s \<and> (s,      UNIV) \<notin> \<F> P)\<close>
-  \<open>deadlock_free  P                \<longleftrightarrow> (\<forall>s \<in> \<T> P. tickFree s \<and> (s, ev ` UNIV) \<notin> \<F> P)\<close>
+  \<open>deadlock_free (P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) \<longleftrightarrow> (\<forall>s \<in> \<T> P. tF s \<and> (s,      UNIV) \<notin> \<F> P)\<close>
+  \<open>deadlock_free  P                \<longleftrightarrow> (\<forall>s \<in> \<T> P. tF s \<and> (s, ev ` UNIV) \<notin> \<F> P)\<close>
   oops
 
 
@@ -210,7 +210,6 @@ lemma deadlock_free_GlobalDet :
   \<open>\<lbrakk>A \<noteq> {}; \<And>a. a \<in> A \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (P a)\<rbrakk> \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S (\<box>a \<in> A. P a)\<close>
   by (metis GlobalNdet_FD_GlobalDet deadlock_free_GlobalNdet_iff deadlock_free_def trans_FD)
     (metis GlobalNdet_FD_GlobalDet deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_FD deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_GlobalNdet_iff trans_FD)
-
 
 
 lemma deadlock_free_Det:
@@ -244,7 +243,7 @@ lemma FD_Mndetprefix_iff:
 
 
 lemma Mndetprefix_FD: \<open>(\<exists>a \<in> A. (a \<rightarrow> Q) \<sqsubseteq>\<^sub>F\<^sub>D P) \<Longrightarrow> \<sqinter> a \<in> A \<rightarrow> Q \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-  by (metis FD_Mndetprefix_iff ex_in_conv idem_FD trans_FD)
+  by (metis FD_Mndetprefix_iff ex_in_conv FD_refl trans_FD)
 
 
 
@@ -406,7 +405,7 @@ next
     if \<open>x \<sqsubseteq>\<^sub>F\<^sub>D Renaming (CHAOS A) f g\<close> for x
     by (subst CHAOS_unfold)
       (auto simp add: Renaming_Mprefix Renaming_Ndet
-        intro!: mono_Ndet_FD[OF idem_FD] mono_Mprefix_FD that)
+        intro!: mono_Ndet_FD[OF FD_refl] mono_Mprefix_FD that)
 qed
 
 lemma Renaming_CHAOS_FD_CHAOS:
@@ -422,7 +421,7 @@ next
     if \<open>Renaming x f g \<sqsubseteq>\<^sub>F\<^sub>D CHAOS (f ` A)\<close> for x
     by (subst CHAOS_unfold)
       (auto simp add: Renaming_Mprefix Renaming_Ndet
-        intro!: mono_Ndet_FD[OF idem_FD] mono_Mprefix_FD that)
+        intro!: mono_Ndet_FD[OF FD_refl] mono_Mprefix_FD that)
 qed
 
 
@@ -554,7 +553,7 @@ proof
   { assume a1: \<open>DF A \<sqsubseteq>\<^sub>F\<^sub>D DF A \<lbrakk>S\<rbrakk> P\<close> and a2: \<open>A \<inter> S \<noteq> {}\<close>
     from a2 obtain x where f1: \<open>x \<in> A\<close> and f2: \<open>x \<in> S\<close> by blast
     have \<open>DF A \<lbrakk>S\<rbrakk> P \<sqsubseteq>\<^sub>F\<^sub>D DF {x} \<lbrakk>S\<rbrakk> P\<close>
-      by (intro mono_Sync_FD[OF _ idem_FD]) (simp add: DF_subset f1)
+      by (intro mono_Sync_FD[OF _ FD_refl]) (simp add: DF_subset f1)
     also have \<open>\<dots> = STOP\<close>
       apply (subst DF_unfold)
       using P_disj apply (rule disjE; simp)
@@ -591,12 +590,11 @@ next
           case (Cons x t)
           from Cons(4) have f1: \<open>u = []\<close>
             apply (subst disjE[OF P_disj], simp_all add: F_T_P) 
-            by (metis Cons.prems(1, 2, 4) F_T F_imp_front_tickFree Int_iff TickLeftSync
-                append_T_imp_tickFree inf_sup_absorb is_processT5_S7 list.distinct(1)
-                non_tickFree_tick rangeI setinterleaving_sym tickFree_Cons_iff tickFree_Nil tickFree_butlast)
+            by (metis Cons.prems(1, 2, 4) F_T TickLeftSync Un_iff append_butlast_last_id
+                is_processT2 list.distinct(1) range_eqI setinterleaving_dual tick_T_F)
           from Cons(2, 3) show False
             apply (subst (asm) (1 2) F_DF, auto simp add: a3)
-            by (metis Cons.hyps Cons.prems(3, 4) setinterleaving_sym
+            by (metis Cons.hyps Cons.prems(3, 4) setinterleaving_dual
                 SyncTlEmpty emptyLeftProperty f1 list.sel(3))
         qed
       qed
@@ -624,7 +622,7 @@ next
     have \<open>(\<sqinter>a \<in> A \<rightarrow> x) \<lbrakk>S\<rbrakk> P \<sqsubseteq>\<^sub>F\<^sub>D (a \<rightarrow> DF A)\<close> if \<open>a \<in> A\<close> for a
       apply (rule trans_FD[OF mono_Sync_FD
             [OF Mndetprefix_FD_subset
-              [of \<open>{a}\<close>, simplified, OF that] idem_FD]])
+              [of \<open>{a}\<close>, simplified, OF that] FD_refl]])
       apply (rule disjE[OF P_disj], simp_all)
        apply (subst Mprefix_Sync_Mprefix_left
           [of \<open>{a}\<close> _ \<open>{}\<close> \<open>\<lambda>a. x\<close>, simplified, folded write0_def])
@@ -817,7 +815,7 @@ next
       using "2.hyps"(2, 5) apply blast
       apply (subst Sync_commute,
           rule trans_FD[OF mono_Sync_FD
-            [OF idem_FD "2.hyps"(5)[THEN conjunct1]]])
+            [OF FD_refl "2.hyps"(5)[THEN conjunct1]]])
       by (simp add: "2.hyps"(1, 4) mset_set_empty_iff)
   next
     show \<open>\<forall>c \<in> A. X c \<inter> S = {} \<or> (\<exists>y. X c \<inter> S = {y} \<and> 

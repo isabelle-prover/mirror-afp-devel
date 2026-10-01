@@ -53,9 +53,9 @@ subsection \<open>Synchronization Product\<close>
 
 subsubsection \<open>Behaviour of \<^const>\<open>SKIPS\<close>\<close>
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS :
   \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> SKIPS S = \<sqinter>(r, s) \<in> R \<times> S. (case r \<otimes>\<checkmark> s of \<lfloor>r_s\<rfloor> \<Rightarrow> SKIP r_s | \<diamond> \<Rightarrow> STOP)\<close>
-  by (simp add: SKIPS_def Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_left Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_right)
+  by (simp add: SKIPS_def Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_left Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_distrib_GlobalNdet_right SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP)
     (simp add: GlobalNdet_cartprod[of R S \<open>\<lambda>r s. case r \<otimes>\<checkmark> s of \<diamond> \<Rightarrow> STOP | \<lfloor>r_s\<rfloor> \<Rightarrow> SKIP r_s\<close>]
       GlobalNdet_sets_commute[of R S \<open>\<lambda>r s. case r \<otimes>\<checkmark> s of \<diamond> \<Rightarrow> STOP | \<lfloor>r_s\<rfloor> \<Rightarrow> SKIP r_s\<close>])
 
@@ -64,15 +64,15 @@ text \<open>In order for the right-hand side to be rewritten as a SKIPS, an assu
       the ticks involved must be able to be combined.\<close>
 
 lemma GlobalNdet_prod_SKIP_is_SKIPS :
-  \<open>\<sqinter>(r, s) \<in> R \<times> S. SKIP \<lceil>tick_join r s\<rceil> =
-   SKIPS ((the \<circ> (\<lambda>(r, s). tick_join r s)) ` (R \<times> S))\<close>
+  \<open>\<sqinter>(r, s) \<in> R \<times> S. SKIP \<lceil>tj r s\<rceil> =
+   SKIPS ((the \<circ> (\<lambda>(r, s). tj r s)) ` (R \<times> S))\<close>
   by (simp add: SKIPS_def mono_GlobalNdet_eq2 split_def)
 
 
 lemma GlobalNdet_prod_case_SKIP_STOP_is_GlobalNdet_prod_SKIP_iff :
-  \<open>\<sqinter>(r, s) \<in> R \<times> S. (case tick_join r s of \<diamond> \<Rightarrow> STOP | \<lfloor>r_s\<rfloor> \<Rightarrow> SKIP r_s) =
-   \<sqinter>(r, s) \<in> R \<times> S. SKIP \<lceil>tick_join r s\<rceil>
-   \<longleftrightarrow> (\<forall>r s. r \<in> R \<longrightarrow> s \<in> S \<longrightarrow> tick_join r s \<noteq> \<diamond>)\<close>
+  \<open>\<sqinter>(r, s) \<in> R \<times> S. (case tj r s of \<diamond> \<Rightarrow> STOP | \<lfloor>r_s\<rfloor> \<Rightarrow> SKIP r_s) =
+   \<sqinter>(r, s) \<in> R \<times> S. SKIP \<lceil>tj r s\<rceil>
+   \<longleftrightarrow> (\<forall>r s. r \<in> R \<longrightarrow> s \<in> S \<longrightarrow> tj r s \<noteq> \<diamond>)\<close>
   (is \<open>?lhs1 = ?lhs2 \<longleftrightarrow> ?rhs\<close>)
 proof (rule iffI)
   show \<open>?rhs \<Longrightarrow> ?lhs1 = ?lhs2\<close>
@@ -80,19 +80,19 @@ proof (rule iffI)
 next
   have \<open>UNIV \<in> \<R> ?lhs2 \<longleftrightarrow> R = {} \<or> S = {}\<close>
     by (simp add: Refusals_iff F_GlobalNdet F_SKIP)
-  moreover have \<open>UNIV \<in> \<R> ?lhs1 \<longleftrightarrow> R = {} \<or> S = {} \<or> (\<exists>r s. r \<in> R \<and> s \<in> S \<and> tick_join r s = \<diamond>)\<close>
+  moreover have \<open>UNIV \<in> \<R> ?lhs1 \<longleftrightarrow> R = {} \<or> S = {} \<or> (\<exists>r s. r \<in> R \<and> s \<in> S \<and> tj r s = \<diamond>)\<close>
     by (auto simp add: Refusals_iff F_GlobalNdet F_SKIP F_STOP split: option.split)
   ultimately show \<open>?lhs1 = ?lhs2 \<Longrightarrow> ?rhs\<close> by (metis empty_iff)
 qed
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_bis :
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS_bis :
   \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> SKIPS S = SKIPS ((the \<circ> (\<lambda>(r, s). r \<otimes>\<checkmark> s)) ` (R \<times> S))\<close>
   if \<open>\<And>r s. r \<in> R \<Longrightarrow> s \<in> S \<Longrightarrow> r \<otimes>\<checkmark> s \<noteq> \<diamond>\<close>
   by (unfold SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS, fold GlobalNdet_prod_SKIP_is_SKIPS)
     (simp add: SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS GlobalNdet_prod_case_SKIP_STOP_is_GlobalNdet_prod_SKIP_iff that)
 
 
-lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale)
+lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
   SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP [simp] : \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> STOP = STOP\<close>
   and STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS [simp] : \<open>STOP \<lbrakk>A\<rbrakk>\<^sub>\<checkmark> SKIPS S = STOP\<close>
   by (fact SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS[where S = \<open>{}\<close>, simplified]
@@ -103,7 +103,7 @@ lemma (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale)
 
 subsubsection \<open>Derived step Laws with Non-Determinism\<close>
 
-context Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale begin
+context Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k begin
 
 lemma Mprefix_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix :
   \<open>\<box>a\<in>A \<rightarrow> P a |||\<^sub>\<checkmark> \<box>b\<in>B \<rightarrow> Q b =
@@ -435,7 +435,7 @@ corollary Mprefix_Par\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix :
 
 corollary Mndetprefix_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix :
   \<open>\<sqinter>a \<in> A \<rightarrow> P a |||\<^sub>\<checkmark> \<box>b \<in> B \<rightarrow> Q b =
-   (  if A = {} then \<box>b \<in> B \<rightarrow> RenamingTick (Q b \<^bold>; STOP) (\<lambda>s. the (tick_join (g s) s))
+   (  if A = {} then \<box>b \<in> B \<rightarrow> RenamingTick (Q b \<^bold>; STOP) (\<lambda>s. the (tj (g s) s))
     else \<sqinter>a\<in>A. (a \<rightarrow> (P a |||\<^sub>\<checkmark> \<box>b \<in> B \<rightarrow> Q b)) \<box>
                 (\<box>b\<in>B \<rightarrow> (a \<rightarrow> P a |||\<^sub>\<checkmark> Q b)))\<close>
   by (simp add: Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix_indep
@@ -443,7 +443,7 @@ corollary Mndetprefix_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mprefix :
 
 corollary Mprefix_Inter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix :
   \<open>\<box>a \<in> A \<rightarrow> P a |||\<^sub>\<checkmark> \<sqinter>b \<in> B \<rightarrow> Q b =
-   (  if B = {} then \<box>a \<in> A \<rightarrow> RenamingTick (P a \<^bold>; STOP) (\<lambda>r. the (tick_join r (g r)))
+   (  if B = {} then \<box>a \<in> A \<rightarrow> RenamingTick (P a \<^bold>; STOP) (\<lambda>r. the (tj r (g r)))
     else \<sqinter>b\<in>B. (b \<rightarrow> (\<box>a \<in> A \<rightarrow> P a |||\<^sub>\<checkmark> Q b)) \<box>
                 (\<box>a\<in>A \<rightarrow> (P a |||\<^sub>\<checkmark> b \<rightarrow> Q b)))\<close>
   by (simp add: Mprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix_indep
@@ -652,11 +652,11 @@ qed
 end
 
 
-corollary (in Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale) Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix_right :
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix_right :
   \<open>\<sqinter>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> \<sqinter>b\<in>B \<rightarrow> Q b = \<sqinter>b\<in>B \<rightarrow> (\<sqinter>a\<in>A \<rightarrow> P a \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q b)\<close>
   (is \<open>?lhs = ?rhs\<close>) if \<open>A \<subseteq> S\<close> \<open>B \<inter> S = {}\<close>
-  by (subst (1 2) Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_sym)
-    (simp add: Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_locale_sym.Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix_left that)
+  by (subst (1 2) Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual)
+    (simp add: Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual.Mndetprefix_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Mndetprefix_left that)
 
 
 
