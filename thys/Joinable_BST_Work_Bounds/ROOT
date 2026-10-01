@@ -1,0 +1,17 @@
+chapter AFP
+
+session "Joinable_BST_Work_Bounds" = "HOL-Analysis" +
+  options [timeout = 3600]
+  sessions
+    "HOL-Data_Structures"
+    "HOL-Library"
+  theories
+    Analytical
+    BalancedBinary
+    StronglyJoinable
+    StronglyJoinableAVL
+    StronglyJoinableRBT
+    Submodularity
+  document_files
+    "root.bib"
+    "root.tex"

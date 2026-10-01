@@ -1,0 +1,9 @@
+chapter AFP
+
+session Napoleon = Morley_Theorem +
+  options [document = pdf, timeout = 1200]
+  theories
+    Napoleon
+  document_files
+    "root.tex"
+    "root.bib"

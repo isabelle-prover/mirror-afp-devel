@@ -1575,6 +1575,24 @@ host = [
 [connor.homepages]
 connor_homepage = "https://liamoc.net"
 
+[cordeiro]
+name = "Luiz Gustavo Cordeiro"
+orcid = "0000-0002-5436-0250"
+
+[cordeiro.emails]
+
+[cordeiro.emails.cordeiro_email]
+user = [
+  "luiz",
+  "cordeiro",
+]
+host = [
+  "ufsc",
+  "br",
+]
+
+[cordeiro.homepages]
+
 [cordwell]
 name = "Katherine Kosaian"
 
@@ -2274,6 +2292,23 @@ host = [
 
 [fiedler.homepages]
 
+[finken]
+name = "Evan Finken"
+orcid = "0009-0007-7499-502X"
+
+[finken.emails]
+
+[finken.emails.finken_email]
+user = [
+  "evan",
+]
+host = [
+  "finken",
+  "name",
+]
+
+[finken.homepages]
+
 [fleuriot]
 name = "Jacques D. Fleuriot"
 
@@ -2915,6 +2950,14 @@ host = [
 
 [haberl.homepages]
 
+[hadjikosti]
+name = "Marialena Hadjikosti"
+orcid = "0009-0004-8021-075X"
+
+[hadjikosti.emails]
+
+[hadjikosti.homepages]
+
 [haftmann]
 name = "Florian Haftmann"
 
@@ -3033,6 +3076,23 @@ host = [
 
 [haslbeckm.homepages]
 haslbeckm_homepage = "http://in.tum.de/~haslbema/"
+
+[haucke]
+name = "Marco Haucke"
+
+[haucke.emails]
+
+[haucke.emails.haucke_email]
+user = [
+  "marco",
+  "haucke",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[haucke.homepages]
 
 [havle]
 name = "Oto Havle"
@@ -4201,6 +4261,23 @@ host = [
 
 [koller.homepages]
 
+[kraisch]
+name = "Vithor Lindermann Kraisch"
+orcid = "0009-0005-9574-9069"
+
+[kraisch.emails]
+
+[kraisch.emails.kraisch_email]
+user = [
+  "vithorkr",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[kraisch.homepages]
+
 [krasnopol]
 name = "Florent Krasnopol"
 orcid = "0009-0000-6577-4320"
@@ -4879,7 +4956,6 @@ host = [
 ]
 
 [lyu.homepages]
-
 
 [maadoori]
 name = "Vivek Soorya Maadoori"
@@ -7003,6 +7079,25 @@ name = "Christian Saile"
 [saile.homepages]
 saile_homepage = "http://dss.in.tum.de/staff/christian-saile.html"
 
+[salamon]
+name = "András Z. Salamon"
+orcid = "0000-0002-1415-9712"
+
+[salamon.emails]
+
+[salamon.emails.salamon_email]
+user = [
+  "Andras",
+  "Salamon",
+]
+host = [
+  "st-andrews",
+  "ac",
+  "uk",
+]
+
+[salamon.homepages]
+
 [sanan]
 name = "David Sanan"
 
@@ -8979,6 +9074,23 @@ name = "Timmy Weerwag"
 [weerwag.emails]
 
 [weerwag.homepages]
+
+[wehar]
+name = "Michael Wehar"
+orcid = "0009-0007-9251-7128"
+
+[wehar.emails]
+
+[wehar.emails.wehar_email]
+user = [
+  "mwehar",
+]
+host = [
+  "haverford",
+  "edu",
+]
+
+[wehar.homepages]
 
 [weidner]
 name = "Arno Wilhelm-Weidner"

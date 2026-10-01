@@ -4,6 +4,37 @@
     <title>Arthur Freitas Ramos</title>
     <link>https://isa-afp.org/authors/ramos/</link>
     <description>AFP entries of Arthur Freitas Ramos</description><item>
+  <title>The Földes–Hammer Characterization of Split Graphs</title>
+  <link>https://isa-afp.org/entries/Foldes_Hammer.html</link>
+  <pubDate>Fri, 11 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Földes–Hammer Characterization of Split Graphs in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>The Wallace--Simson Line Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Simson.html</link>
   <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
@@ -40,6 +71,13 @@
   <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>
   <description>The Chevalley-Warning Theorem in the AFP</description>
     <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>The Fundamental Group of the Circle</title>
+  <link>https://isa-afp.org/entries/Fundamental_Group_Circle.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Fundamental Group of the Circle in the AFP</description>
+    <category>Mathematics/Topology</category>
 </item>
 <item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>

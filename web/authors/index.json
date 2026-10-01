@@ -325,6 +325,16 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbIkFuZHJhcyIsIlNhbGFtb24iXSwiaG9zdCI6WyJzdC1hbmRyZXdzIiwiYWMiLCJ1ayJdfQ=="
+  ],
+  "homepages": [],
+  "id": "salamon",
+  "link": "../authors/salamon/",
+  "name": "András Z. Salamon",
+  "orcid": "0000-0002-1415-9712"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbImFwbGF0emVyIl0sImhvc3QiOlsiY3MiLCJjbXUiLCJlZHUiXX0="
   ],
   "homepages": [
@@ -1494,6 +1504,16 @@
   "id": "brenner",
   "link": "../authors/brenner/",
   "name": "Eva Brenner"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbImV2YW4iXSwiaG9zdCI6WyJmaW5rZW4iLCJuYW1lIl19"
+  ],
+  "homepages": [],
+  "id": "finken",
+  "link": "../authors/finken/",
+  "name": "Evan Finken",
+  "orcid": "0009-0007-7499-502X"
  },
  {
   "emails": [
@@ -3054,6 +3074,16 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbImx1aXoiLCJjb3JkZWlybyJdLCJob3N0IjpbInVmc2MiLCJiciJdfQ=="
+  ],
+  "homepages": [],
+  "id": "cordeiro",
+  "link": "../authors/cordeiro/",
+  "name": "Luiz Gustavo Cordeiro",
+  "orcid": "0000-0002-5436-0250"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbImx1a2FzIiwiYSIsImJydWVnZ2VyIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0="
   ],
   "homepages": [],
@@ -3183,12 +3213,29 @@
  },
  {
   "emails": [
+   "eyJ1c2VyIjpbIm1hcmNvIiwiaGF1Y2tlIl0sImhvc3QiOlsidHVtIiwiZGUiXX0="
+  ],
+  "homepages": [],
+  "id": "haucke",
+  "link": "../authors/haucke/",
+  "name": "Marco Haucke"
+ },
+ {
+  "emails": [
    "eyJ1c2VyIjpbIm1hcmlhIiwic3BpY2hrb3ZhIl0sImhvc3QiOlsicm1pdCIsImVkdSIsImF1Il19"
   ],
   "homepages": [],
   "id": "spichkova",
   "link": "../authors/spichkova/",
   "name": "Maria Spichkova"
+ },
+ {
+  "emails": [],
+  "homepages": [],
+  "id": "hadjikosti",
+  "link": "../authors/hadjikosti/",
+  "name": "Marialena Hadjikosti",
+  "orcid": "0009-0004-8021-075X"
  },
  {
   "emails": [],
@@ -3581,6 +3628,16 @@
   "id": "rawson",
   "link": "../authors/rawson/",
   "name": "Michael Rawson"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbIm13ZWhhciJdLCJob3N0IjpbImhhdmVyZm9yZCIsImVkdSJdfQ=="
+  ],
+  "homepages": [],
+  "id": "wehar",
+  "link": "../authors/wehar/",
+  "name": "Michael Wehar",
+  "orcid": "0009-0007-9251-7128"
  },
  {
   "emails": [
@@ -5120,6 +5177,16 @@
   "id": "preoteasa",
   "link": "../authors/preoteasa/",
   "name": "Viorel Preoteasa"
+ },
+ {
+  "emails": [
+   "eyJ1c2VyIjpbInZpdGhvcmtyIl0sImhvc3QiOlsiZ21haWwiLCJjb20iXX0="
+  ],
+  "homepages": [],
+  "id": "kraisch",
+  "link": "../authors/kraisch/",
+  "name": "Vithor Lindermann Kraisch",
+  "orcid": "0009-0005-9574-9069"
  },
  {
   "emails": [

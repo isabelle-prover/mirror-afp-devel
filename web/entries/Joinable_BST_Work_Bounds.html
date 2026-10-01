@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees - Archive of Formal Proofs</title>
+    <meta name="description" content="Work Bounds for Strongly Joinable Balanced Binary Search Trees in the Archive of Formal Proofs">
+    <meta property="og:description" content="Work Bounds for Strongly Joinable Balanced Binary Search Trees in the Archive of Formal Proofs">
+    <meta property="og:title" content="Work Bounds for Strongly Joinable Balanced Binary Search Trees">
+    <meta property="og:url" content="https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>W</span>ork <span class='first'>B</span>ounds for <span class='first'>S</span>trongly <span class='first'>J</span>oinable <span class='first'>B</span>alanced <span class='first'>B</span>inary <span class='first'>S</span>earch <span class='first'>T</span>rees
+  </h1>
+  <div>
+      <p><a href="../authors/haucke/">Marco Haucke</a> <a class="obfuscated" data="eyJ1c2VyIjpbIm1hcmNvIiwiaGF1Y2tlIl0sImhvc3QiOlsidHVtIiwiZGUiXX0=">📧</a>
+      </p>
+      <p class="date">September 24, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry formalises the complexity analysis of set operations on strongly joinable trees as defined by <a href="https://doi.org/10.1145/3512769">Blelloch, Ferizovic and Sun</a>. It is proved that union, intersection, and difference run in time $O(m \log(n/m + 1))$ for input sets of size $m$ and $n$ where $m \le n$.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>Claude Fable 5.1 (Anthropic) was used to derive the instantiation of the framework for red-black trees (theory StronglyJoinableRBT) and part of the appendix (theory Submodularity), as well as pointwise resolving of SMT steps/apply scripts.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/data-structures/">Computer science/Data structures</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Blelloch, G., Ferizovic, D., & Sun, Y. (2022). Joinable Parallel Balanced Binary Trees. ACM Transactions on Parallel Computing, 9(2), 1–41. <a href="https://doi.org/10.1145/3512769">https://doi.org/10.1145/3512769</a>
+</li>
+      </ul>
+      <h3>Session Joinable_BST_Work_Bounds</h3>
+      <ul>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/Analytical.html">Analytical</a></li>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/BalancedBinary.html">BalancedBinary</a></li>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/StronglyJoinable.html">StronglyJoinable</a></li>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/StronglyJoinableAVL.html">StronglyJoinableAVL</a></li>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/StronglyJoinableRBT.html">StronglyJoinableRBT</a></li>
+          <li><a href="../thys/Joinable_BST_Work_Bounds/Submodularity.html">Submodularity</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Joinable_BST_Work_Bounds/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Joinable_BST_Work_Bounds/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/Joinable_BST_Work_Bounds/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">Joinable_BST_Work_Bounds-AFP</p>
+        <pre id="copy-text">@article{Joinable_BST_Work_Bounds-AFP,
+  author  = {Marco Haucke},
+  title   = {Work Bounds for Strongly Joinable Balanced Binary Search Trees},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-Joinable_BST_Work_Bounds-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

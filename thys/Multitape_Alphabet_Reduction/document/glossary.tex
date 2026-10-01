@@ -1,0 +1,76 @@
+% Shared glossary for the Multitape Alphabet Enlargement and Reduction entries.
+% The canonical copy lives here at t/document/glossary.tex and is
+% symlinked into each session's document/ dir (and listed in that
+% session's ROOT document_files).  It holds the substrate-level
+% vocabulary common to every session; each session's root.tex does
+% \input{glossary} under its own \subsection{Glossary} and then appends
+% its own transformation-specific terms.  Edit this one file to tweak
+% the shared wording everywhere.
+\subsection{Glossary}
+
+The machine type is $\mathrm{mttm}$, the ten-component descriptor
+$\mathrm{MTTM}\ Q\ \Sigma\ \Gamma\ bl\ le\ \delta\ s\ t\ r\ k$: state
+set, input alphabet, tape alphabet, blank symbol, left endmarker,
+transition relation, start/accept/reject states, and tape count.
+Throughout, $M$ is the source machine.
+
+\paragraph{Projections.}  Positional selectors that read one component
+out of $M$:
+\begin{itemize}
+\item \texttt{k\_tm}\,$M$ --- the tape count $k_M$ (a natural number);
+\item \texttt{Sigma\_tm}\,$M$ --- the input alphabet $\Sigma_M$;
+\item \texttt{\isasymGamma\_tm}\,$M$ --- the tape alphabet $\Gamma_M$;
+\item \texttt{bl\_tm}\,$M$ --- the blank symbol;
+\item \texttt{delta\_tm}\,$M$ --- the transition relation $\delta_M$;
+\item \texttt{t\_tm}\,$M$ --- the accept state.
+\end{itemize}
+
+\paragraph{Shared substrate predicates.}
+Each entry opens with the gist, then the precise conditions.
+\begin{description}
+\item[\texttt{valid\_mttm}\,$M$] \emph{``$M$ is a legal machine''.}  The
+  structural invariant: $Q$ and $\Gamma$ finite,
+  $\Sigma \subseteq \Gamma$, the three distinguished states lie in $Q$,
+  blank and endmarker are tape-but-not-input symbols,
+  accept $\neq$ reject, $k > 0$, the transition relation is correctly
+  typed, the \emph{left-endmarker read discipline} holds (reading the
+  endmarker forces re-writing it and never moving off the left edge),
+  and every tape beyond index $k$ is frozen blank.
+\item[\texttt{well\_formed\_mttm}\,$M$] \emph{a legal machine that also
+  starts cleanly and keeps its endmarker.}  An abbreviation:
+  \texttt{valid\_mttm}\,$M$ strengthened with \emph{non-degeneracy}
+  (start $\neq$ accept, start $\neq$ reject, endmarker $\neq$ blank) and
+  the endmarker \emph{write} discipline \texttt{le\_unique}\,$M$.
+  Required wherever a run must genuinely start, the endmarker must be
+  detectable, and it must never be forged.
+\item[\texttt{le\_unique}\,$M$] \emph{the left endmarker is never
+  freshly planted.}  A machine property in the same family as
+  \texttt{det\_mttm} --- an opt-in structural guarantee a downstream
+  construction may rely on.  Precisely: no transition writes the
+  endmarker where it was not already reading it
+  ($a'\,j = le \Rightarrow a\,j = le$ over $\delta$).  Folded into
+  \texttt{well\_formed\_mttm}; the alphabet transformations use it to
+  pin the endmarker, and the origin-floating speed-up wrapper is the
+  one construction that deliberately forgoes it (so it is
+  \texttt{valid\_mttm} but not \texttt{well\_formed\_mttm}).
+\item[\texttt{det\_mttm}\,$M$] \emph{$M$ is deterministic.}  The
+  transition relation is a partial function: each (state, read-vector)
+  pair has at most one successor triple --- the functionality predicate
+  layered on the otherwise relational $\delta$.
+\item[$L(M) = \texttt{Lang\_mttm}\,M$] \emph{the language $M$ accepts.}
+  All input words $w$ (with $\mathrm{set}\,w \subseteq \Sigma_M$) from
+  which some run reaches the accept state; acceptance is
+  \emph{existential} over runs --- nondeterministic.
+\item[\texttt{accepts\_in\_time\_mttm}\,$M\,w\,t$] \emph{$M$ accepts
+  $w$ within $t$ steps.}  Weak time-bounded acceptance: some run of
+  length at most $t$ reaches the accept state.
+\end{description}
+
+\paragraph{The input lives on a work tape.}  The substrate has
+\emph{no} separate read-only input tape: the input word is placed on
+tape $0$, which is an ordinary work tape.  This is why
+\texttt{valid\_mttm} requires $\Sigma \subseteq \Gamma$ --- every input
+symbol occupies a tape cell, so it must also be a tape symbol --- and it
+is load-bearing for the alphabet transformations, which re-encode the
+input \emph{in place} on tape $0$ rather than copying it to a fresh
+tape.

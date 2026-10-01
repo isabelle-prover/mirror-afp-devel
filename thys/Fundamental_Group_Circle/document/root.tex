@@ -1,0 +1,66 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage[english]{babel}
+\usepackage{hyperref}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Fundamental Group of the Circle}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+  We formalise the classical theorem of algebraic topology that the
+  fundamental group of the circle is isomorphic to the additive group of the
+  integers, $\pi_1(S^1) \cong \mathbb{Z}$.  The circle is modelled as the unit
+  sphere in the complex plane with basepoint~$1$, and the carrier of the
+  fundamental group is the set of path-homotopy classes of loops based
+  at~$1$, with concatenation as the group operation.  The group laws are
+  obtained from the homotopy groupoid laws of the Isabelle analysis library.
+  The isomorphism with~$\mathbb{Z}$ is given by the degree map, sending a
+  homotopy class to the winding number about the origin of any representative
+  loop; that this is a bijective group homomorphism follows from the
+  winding-number classification of loops in the punctured plane, together
+  with a radial retraction onto the circle.  The entry is self-contained on
+  top of the Isabelle distribution.
+
+  AI assistance was used for proof engineering.  The final definitions,
+  statements, and proofs are checked by Isabelle.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The fundamental group of the circle is one of the first non-trivial
+computations in algebraic topology: it is the infinite cyclic group, so
+$\pi_1(S^1) \cong \mathbb{Z}$.  The result underlies many classical
+theorems, including the Brouwer fixed-point theorem in dimension two and the
+fundamental theorem of algebra.  Standard textbook treatments can be found in
+Hatcher~\cite{Hatcher2002} and Munkres~\cite{Munkres2000}.
+
+Rather than developing covering-space theory, this entry follows an analytic
+route that is directly supported by the Isabelle distribution.  The circle is
+modelled as the unit sphere in the complex plane with basepoint~$1$, and the
+group is built from path-homotopy classes of based loops.  The isomorphism
+with~$\mathbb{Z}$ is realised by the \emph{degree} map, which sends a homotopy
+class to the winding number about the origin of any representative loop.  The
+winding-number theory of the Isabelle analysis library
+provides exactly the facts needed: winding numbers are integer valued on
+loops, additive under concatenation, and classify loops in the punctured
+plane up to homotopy.  A radial retraction of the punctured plane onto the
+circle transfers homotopies back to the circle, which yields injectivity of
+the degree map.
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

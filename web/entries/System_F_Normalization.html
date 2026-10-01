@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Strong Normalization for Church-Style System F - Archive of Formal Proofs</title>
+    <meta name="description" content="Strong Normalization for Church-Style System F in the Archive of Formal Proofs">
+    <meta property="og:description" content="Strong Normalization for Church-Style System F in the Archive of Formal Proofs">
+    <meta property="og:title" content="Strong Normalization for Church-Style System F">
+    <meta property="og:url" content="https://isa-afp.org/entries/System_F_Normalization.html">
+    <meta property="og:image" content="https://isa-afp.org/images/afp.png">
+    <meta property="og:type" content="article">
+  <link rel="stylesheet" type="text/css" href="../css/front.min.css">
+  <link rel="icon" href="../images/favicon.ico" type="image/icon">
+    
+    <script>
+      MathJax = {
+        tex: {
+          inlineMath: [["$", "$"], ["\\(", "\\)"]]
+        },
+        processEscapes: true,
+        svg: {
+          fontCache: "global"
+        }
+      };
+    </script>
+    <script id="MathJax-script" async src="../js/mathjax/es5/tex-mml-chtml.js">
+    </script>
+
+  <script src="../js/library.js"></script>
+  <script src="../js/flexsearch.bundle.js"></script>
+  <script src="../js/search-autocomplete.js"></script>
+    <script src="../js/obfuscate.js"></script>
+    <script src="../js/entries.js"></script>
+</head>
+
+  <body class="mathjax_ignore">
+    <aside><div id="menu-toggle">
+  <input id="toggle" type="checkbox">
+  <label for="toggle">
+    <span>menu</span>
+    <img src="../images/menu.svg" alt="Menu">
+  </label>
+  <a href="../" class="logo-link">
+    <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+  </a>
+  <nav id="menu">
+    <div>
+      <a href="../" class="logo-link">
+        <img src="../images/afp.png" alt="Logo of the Archive of Formal Proofs" class="logo">
+      </a>
+      <ul>
+          <li >
+            <a href="../">Home</a>
+          </li>
+          <li >
+            <a href="../topics/">Topics</a>
+          </li>
+          <li >
+            <a href="../download/">Download</a>
+          </li>
+          <li >
+            <a href="../help/">Help</a>
+          </li>
+          <li >
+            <a href="../submission/">Submission</a>
+          </li>
+          <li >
+            <a href="../statistics/">Statistics</a>
+          </li>
+          <li >
+            <a href="../about/">About</a>
+          </li>
+      </ul>
+    </div>
+  </nav>
+</div>
+    </aside>
+
+    <div class="content entries"><header>
+    <form autocomplete="off" action="../search/">
+      <div class="form-container">
+        <input id="search-input" name="s" type="search" size="31" maxlength="255" value=""
+               aria-label="Search the AFP" list="autocomplete"><button id="search-button" type="submit">
+          <img src="../images/search.svg" alt="Search">
+        </button>
+        <datalist id="autocomplete"></datalist>
+      </div>
+    </form>
+  <h1>
+    <span class='first'>S</span>trong <span class='first'>N</span>ormalization for <span class='first'>C</span>hurch-<span class='first'>S</span>tyle <span class='first'>S</span>ystem <span class='first'>F</span>
+  </h1>
+  <div>
+      <p><a href="../authors/ramos/">Arthur Freitas Ramos</a> <a class="obfuscated" data="eyJ1c2VyIjpbImFyZnJlaXRhIl0sImhvc3QiOlsibWljcm9zb2Z0IiwiY29tIl19">📧</a>, <a href="../authors/hulak/">David Barros Hulak</a> <a class="obfuscated" data="eyJ1c2VyIjpbImRiaHVsYWsiXSwiaG9zdCI6WyJnbWFpbCIsImNvbSJdfQ==">📧</a> and <a href="../authors/queiroz/">Ruy Jose Guerra Barretto de Queiroz</a> <a class="obfuscated" data="eyJ1c2VyIjpbInJ1eSJdLCJob3N0IjpbImNpbiIsInVmcGUiLCJiciJdfQ==">📧</a>
+      </p>
+      <p class="date">September 2, 2026</p>
+  </div>
+</header>
+      <div>
+  <main>
+
+    <h3>Abstract</h3>
+    <div class="abstract mathjax_process">This entry formalizes strong normalization for Church-style System F with explicit type abstraction and type application. Types and terms use de Bruijn indices; the reduction relation contains both term-\(\beta\) and type-\(\beta\) steps and is closed under all term contexts. The proof combines Girard-style reducibility candidates for an untyped lambda-calculus erasure with an explicit type-syntax measure that reflects the erased normalization result back to the full calculus. The final theorem states that every well-typed System F term is strongly normalizing, so the usual closed-term result is an immediate instance.</div>
+
+    <h3>License</h3>
+    <div>
+        <a href="https://isa-afp.org/LICENSE">BSD License</a>
+    </div>
+      <h3>Note</h3>
+      <p><em>AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.</em></p>
+      <h3>Topics</h3>
+      <ul>
+          <li><a href="../topics/computer-science/programming-languages/lambda-calculi/">Computer science/Programming languages/Lambda calculi</a></li>
+          <li><a href="../topics/computer-science/programming-languages/type-systems/">Computer science/Programming languages/Type systems</a></li>
+          <li><a href="../topics/logic/general-logic/mechanization-of-proofs/">Logic/General logic/Mechanization of proofs</a></li>
+      </ul>
+      <h3>Related publications</h3>
+      <ul>
+        <li>Altenkirch, T. A formalization of the strong normalization proof for System F in LEGO. Typed Lambda Calculi and Applications, 13–28. https://doi.org/10.1007/bfb0037095
+</li>
+        <li>Donnelly, K., & Xi, H. (2007). A Formalization of Strong Normalization for Simply-Typed Lambda-Calculus and System F. Electronic Notes in Theoretical Computer Science, 174(5), 109–125. <a href="https://doi.org/10.1016/j.entcs.2007.01.021">https://doi.org/10.1016/j.entcs.2007.01.021</a>
+</li>
+        <li>Popescu, A., Gunter, E. L., & Osborn, C. J. (2010). Strong Normalization for System F by HOAS on Top of FOAS. 2010 25th Annual IEEE Symposium on Logic in Computer Science, 31–40. https://doi.org/10.1109/lics.2010.48
+</li>
+        <li>Stefan Berghofer, POPLmark Challenge Via de Bruijn Indices, Archive of Formal Proofs (2007): https://isa-afp.org/entries/POPLmark-deBruijn.html</li>
+        <li>Stefan Berghofer, Strong Normalization for Simply-Typed Lambda Calculus, Isabelle/HOL HOL-Proofs-Lambda library: https://isabelle.in.tum.de/library/HOL/HOL-Proofs-Lambda/document.pdf</li>
+      </ul>
+      <h3>Session System_F_Normalization</h3>
+      <ul>
+          <li><a href="../thys/System_F_Normalization/System_F.html">System_F</a></li>
+          <li><a href="../thys/System_F_Normalization/System_F_Subject_Reduction.html">System_F_Subject_Reduction</a></li>
+          <li><a href="../thys/System_F_Normalization/System_F_Untyped.html">System_F_Untyped</a></li>
+          <li><a href="../thys/System_F_Normalization/System_F_Erasure.html">System_F_Erasure</a></li>
+          <li><a href="../thys/System_F_Normalization/System_F_Normalization.html">System_F_Normalization</a></li>
+      </ul>
+
+    <div class="flex-wrap">
+    </div>
+  </main>
+
+  <nav class="links">
+    <a class="popup-button" href="#cite-popup">Cite</a>
+    <a class="popup-button" href="#download-popup">Download</a>
+    <h4>PDFs</h4>
+    <a href="https://isa-afp.org/browser_info/current/AFP/System_F_Normalization/outline.pdf">Proof outline</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/System_F_Normalization/document.pdf">Proof document</a>
+    <a href="https://isa-afp.org/browser_info/current/AFP/System_F_Normalization/session_graph.pdf">Dependencies</a>
+  </nav>
+
+  <div id="cite-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Cite</h2>
+      <a class="close" href="#">&times;</a>
+      <div>
+        <p style="display:none;" id="bibtex-filename">System_F_Normalization-AFP</p>
+        <pre id="copy-text">@article{System_F_Normalization-AFP,
+  author  = {Arthur Freitas Ramos and David Barros Hulak and Ruy Jose Guerra Barretto de Queiroz},
+  title   = {Strong Normalization for Church-Style System F},
+  journal = {Archive of Formal Proofs},
+  month   = {September},
+  year    = {2026},
+  note    = {\url{https://isa-afp.org/entries/System_F_Normalization.html},
+             Formal proof development},
+  ISSN    = {2150-914x},
+}</pre>
+        <button id="copy-bibtex">Copy</button> <a id="download-bibtex">Download</a>
+      </div>
+    </div>
+  </div>
+
+  <div id="download-popup" class="overlay">
+    <a class="cancel" href="#"></a>
+    <div class="popup">
+      <h2>Download</h2>
+      <a class="close" href="#">&times;</a>
+      <a href="https://isa-afp.org/release/afp-System_F_Normalization-current.tar.gz" download>
+        Download latest</a>
+    </div>
+  </div>
+      </div>
+    </div>
+  </body>
+</html>

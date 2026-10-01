@@ -1,0 +1,65 @@
+title = "Multitape Alphabet Enlargement"
+date = 2026-07-14
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+<p>Machine-checked Isabelle/HOL proof of the linear speedup theorem for multitape Turing machines, in deterministic and nondeterministic form, via the alphabet-enlargement construction. The theorem originates with Hartmanis and Stearns; the textbook proof followed here, together with its nondeterministic corollary, is due to Hopcroft and Ullman.</p>
+
+<p>Given a machine \\(M\\) and block size \\(c\\), the enlarged machine \\(M' = \\mathrm{alphabet\\_enlarge}\\, M\\), over alphabet \\(\\Sigma_M^c \\cup \\{\\Box, \\rhd\\}\\), simulates \\(c\\) steps of \\(M\\) per step, reading its input in blocks of \\(c\\) symbols; a wrapping step folds the block encoding back in so results compare languages over \\(M\\)'s original alphabet.</p>
+
+<p>The session <tt>Multitape_Alphabet_Enlargement</tt> shows that \\(M'\\) accepts the encoded input iff \\(M\\) accepts \\(w\\), and that if \\(M\\) accepts \\(w\\) in time \\(T(n)\\) then \\(M'\\) does so in time \\(2\\lceil n/c\\rceil + 8\\lceil T(n)/c\\rceil + 4\\), with no determinism hypothesis. Wrapping this yields the Hopcroft–Ullman speedup corollaries, proved twice: for deterministic machines, where the result stays deterministic, and with no determinism hypothesis, giving \\(\\mathrm{NTIME}(cn) = \\mathrm{NTIME}((1+\\varepsilon)n)\\) and \\(\\mathrm{NTIME}(T(n)) = \\mathrm{NTIME}(c \\cdot T(n))\\), corollaries Hopcroft and Ullman state without proof. For a linear bound \\(T(n) \\le d_0 n\\) and \\(\\varepsilon = 1/q\\), a machine \\(M''\\) with \\(L(M'') = L(M)\\) runs in time \\((1+\\varepsilon)|w| + K\\), \\(K = 28 + 8d_0\\), matching Hopcroft–Ullman's \\((1+\\varepsilon)n\\); for super-linear \\(T\\), \\(M''\\) runs in time \\(\\varepsilon\\,T(|w|) + K\\). \\(K\\) is provably necessary: the clean bound \\((1+\\varepsilon)|w|\\) holds only once \\(|w|\\) passes the explicit threshold \\(q(q+1)K\\), witnessed by a minimal counterexample.</p>
+
+<p>This session depends on <tt>Multitape_TM_Substrate</tt> and <tt>HOL-Library</tt>.</p>
+
+<p>The Claude family of AI models, via Claude Code, was used for proof engineering.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI was used for proof engineering and to write descriptions of the results, together with human design, steering, and review.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.salamon]
+email = "salamon_email"
+
+[authors.wehar]
+email = "wehar_email"
+
+[contributors]
+
+[notify]
+salamon = "salamon_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

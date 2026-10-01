@@ -1,0 +1,1424 @@
+%
+\begin{isabellebody}%
+\setisabellecontext{AlphabetReduction{\isacharunderscore}{\kern0pt}Delta}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isakeywordONE{theory}\isamarkupfalse%
+\ AlphabetReduction{\isacharunderscore}{\kern0pt}Delta\isanewline
+\ \ \isakeywordTWO{imports}\ AlphabetReduction{\isacharunderscore}{\kern0pt}Stage\isanewline
+\isakeywordTWO{begin}%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\isatagdocument
+%
+\isamarkupsubsection{Substep transition relations%
+}
+\isamarkuptrue%
+%
+\endisatagdocument
+{\isafolddocument}%
+%
+\isadelimdocument
+%
+\endisadelimdocument
+%
+\begin{isamarkuptext}%
+The output machine's \isa{{\isasymdelta}{\isacharprime}{\kern0pt}} is defined as a
+  union of five per-substep transition relations, mirroring
+  AE's \isa{alphabet{\isacharunderscore}{\kern0pt}enlarge{\isacharunderscore}{\kern0pt}delta} shape.  Each substep
+  relation is a set of substrate-shape 5-tuples
+  \isa{{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ stg{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}q{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ stg{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}} where
+  \isa{q} ranges over \isa{Q{\isacharunderscore}{\kern0pt}tm\ M}, \isa{stg}
+  over \isa{{\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage}, \isa{a} /
+  \isa{a{\isacharprime}{\kern0pt}} over \isa{nat\ {\isasymRightarrow}\ sym{\isadigit{4}}}, and
+  \isa{d} over \isa{nat\ {\isasymRightarrow}\ dir}.  The five substep
+  relations are defined below, one per simulation phase.
+
+  No validation cluster: AR's language theorem is quantified
+  over encoder-image inputs only, so non-canonical sym4 inputs
+  are outside the theorem's scope and M''s behaviour on them is
+  unconstrained.
+
+  The union is intersected with two global restrictions:
+  LE-preservation (no transition forges \isa{LE{\isadigit{4}}} out of
+  a non-\isa{LE{\isadigit{4}}} cell, matching the substrate's
+  \isa{{\isasymdelta}LE} invariant) and
+  \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage}-membership on both source and
+  target stages (matching the non-product \isa{Q{\isacharprime}{\kern0pt}} shape).
+  Throughout, \isa{b} abbreviates \isa{block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}} (the per-symbol cell width).%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}read\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}read\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ %
+\isamarkupcmt{LE-arm, non-last tape: head at position 0
+       reads \isa{LE{\isadigit{4}}}, sets \isa{buf\ tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ le{\isacharunderscore}{\kern0pt}tm\ M}
+       directly (no accumulator needed for the single
+       LE-cell), advances \isa{R} on \isa{tk} to
+       position 1, and transitions to the next tape's read.
+       \isa{posk\ tk} stays \isa{AR{\isacharunderscore}{\kern0pt}AtLE}
+       throughout this substep — \isa{SimAdvance} will
+       update it later when the head leaves the LE region.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}succ\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ le{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isasymnot}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{LE-arm, last tape: same single-substep
+       LE-read, transitions to \isa{AR{\isacharunderscore}{\kern0pt}SimCompute}
+       instead of the next tape.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimCompute{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ le{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm look-back step 1
+       (\isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}): head at \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}}
+       moves \isa{L} on \isa{tk} to
+       \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}}.  The cell at
+       \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}} is some \isa{BIT{\isadigit{0}}} /
+       \isa{BIT{\isadigit{1}}} / \isa{BLANK{\isadigit{4}}} (not
+       \isa{LE{\isadigit{4}}}; enforced as a \isa{{\isasymdelta}LE}
+       precondition).  Buf, posk, dvec unchanged; substep
+       transitions to \isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{1}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}AtFirstProper{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}L\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm look-back step 2
+       (\isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{1}}}): head at \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}}
+       reads the cell there; if \isa{LE{\isadigit{4}}}, the head was
+       at \isa{sim{\isacharunderscore}{\kern0pt}pos\ {\isadigit{1}}\ {\isacharequal}{\kern0pt}\ {\isadigit{1}}} in the previous step so
+       refine \isa{posk\ tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFirstProper};
+       otherwise refine to \isa{AR{\isacharunderscore}{\kern0pt}AtFurtherProper}.
+       Reset \isa{buf\ tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isasymGamma}\ bl\ {\isadigit{0}}}
+       (the partial-decoded ``\isa{{\isadigit{0}}} bits read so far''
+       symbol) to prepare for the per-bit accumulator below.
+       \isa{R}-move back to \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}};
+       \isa{{\isasymdelta}LE} with \isa{a\ tk\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}} is
+       fine because the direction is \isa{R}.
+       Transitions to \isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ {\isacharparenleft}{\kern0pt}Suc\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ dvec{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ posk{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ if\ a\ tk\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\ then\ AR{\isacharunderscore}{\kern0pt}AtFirstProper\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}AtFirstProper{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm per-bit stepping
+       (\isa{{\isadigit{2}}\ {\isasymle}\ i\ {\isasymle}\ b}): head at
+       \isa{sim{\isacharunderscore}{\kern0pt}pos{\isacharparenleft}{\kern0pt}p{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharminus}{\kern0pt}\ {\isadigit{2}}{\isacharparenright}{\kern0pt}}, read cell, accumulate
+       \isa{bit{\isacharunderscore}{\kern0pt}value} into the partial-decoded
+       \isa{buf\ tk} via the \isa{gamma{\isacharunderscore}{\kern0pt}enum}
+       /\isa{gamma{\isacharunderscore}{\kern0pt}unenum} roundtrip
+       \isa{partial{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isasymcdot}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}a\ tk{\isacharparenright}{\kern0pt}}, \isa{buf{\isacharprime}{\kern0pt}\ tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ partial{\isacharprime}{\kern0pt}}.  \isa{R}-move on
+       \isa{tk}.  Transitions to \isa{i\ {\isacharplus}{\kern0pt}\ {\isadigit{1}}}
+       within \isa{AR{\isacharunderscore}{\kern0pt}SimRead}; the next per-bit
+       substep continues the accumulator chain.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ i{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}a\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}AtFirstProper{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isadigit{2}}\ {\isasymle}\ i\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isasymle}\ Suc\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm per-bit boundary
+       (\isa{i\ {\isacharequal}{\kern0pt}\ Suc\ {\isacharparenleft}{\kern0pt}b{\isacharparenright}{\kern0pt}}), non-last tape:
+       same accumulator step as above on the last bit
+       (\isa{j\ {\isacharequal}{\kern0pt}\ b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}}), \isa{buf{\isacharprime}{\kern0pt}\ tk} holds the
+       fully-decoded \isa{M}-symbol (\isa{{\isasymin}\ {\isasymGamma}} for valid encoder images; falls back to
+       \isa{bl{\isacharunderscore}{\kern0pt}tm\ M} for non-encoder inputs), then
+       transitions to the same phase on \isa{k{\isacharunderscore}{\kern0pt}succ\ tk}
+       with bit-counter reset to \isa{{\isadigit{0}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}succ\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}a\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isasymnot}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}AtFirstProper{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ i\ {\isacharequal}{\kern0pt}\ Suc\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm per-bit boundary, last tape: same
+       last-bit accumulator step, transitions to
+       \isa{AR{\isacharunderscore}{\kern0pt}SimCompute} with current-tape reset to
+       \isa{k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimCompute{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ buf{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}unenum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ gamma{\isacharunderscore}{\kern0pt}enum\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharplus}{\kern0pt}\ bit{\isacharunderscore}{\kern0pt}value\ {\isacharparenleft}{\kern0pt}a\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}AtFirstProper{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtFurtherProper{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ i\ {\isacharequal}{\kern0pt}\ Suc\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}compute\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}compute\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimCompute{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}d{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ buf\ q{\isacharprime}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}a{\isacharprime}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}d\ tk\ i\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}d{\isacharparenright}{\kern0pt}\ {\isasymin}\ delta{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ %
+\isamarkupcmt{One \isa{{\isasymdelta}{\isacharprime}{\kern0pt}}-tuple per \isa{M}'s
+     \isa{{\isasymdelta}}-tuple.  Matches the source-stage \isa{buf}
+     field (the decoded per-tape symbol vector, produced by
+     \isa{AR{\isacharunderscore}{\kern0pt}SimRead}) against the M-side read symbol
+     vector of the \isa{M}-\isa{{\isasymdelta}}-tuple
+     \isa{{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ q{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ m{\isacharunderscore}{\kern0pt}d{\isacharparenright}{\kern0pt}}, and threads the M-side
+     output: new M-state \isa{q{\isacharprime}{\kern0pt}}, write-back vector
+     \isa{m{\isacharunderscore}{\kern0pt}a{\isacharprime}{\kern0pt}} (next phase's per-tape symbols to encode),
+     and direction-vector \isa{m{\isacharunderscore}{\kern0pt}d} (consumed by
+     \isa{AR{\isacharunderscore}{\kern0pt}SimAdvance}).  The substrate-side read \isa{a}
+     and write \isa{a{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a} are unconstrained at this
+     substep (no head moves, no writes); direction is constant
+     \isa{N}.  The per-tape \isa{posk} carries
+     through unchanged (head positions don't change during
+     compute).  No halt-state shortcut: M-side halt detection
+     is centralised at \isa{ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}next}'s three-arm
+     dispatch.%
+}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}write\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}write\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ %
+\isamarkupcmt{LE-arm, non-last tape: \isa{posk\ tk\ {\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE}
+       means tape \isa{tk}'s head sits on the reduced boundary
+       (\isa{sim{\isacharunderscore}{\kern0pt}pos\ {\isadigit{0}}\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}), whose \isa{LE{\isadigit{4}}} cell need not be
+       rewritten (\isa{{\isasymdelta}LE} requires writing \isa{le}
+       back, which is exactly the present cell).  Keyed on the
+       position-kind flag, not on \isa{buf\ tk\ {\isacharequal}{\kern0pt}\ le{\isacharunderscore}{\kern0pt}tm\ M}, so a
+       source machine that writes \isa{le} off the boundary (a tape
+       cut) is handled by the proper arm below, as ordinary data.
+       Skip the per-tape write phase entirely: single substep with
+       all directions \isa{N}, transitioning to the same phase on
+       the next tape with bit-counter still at \isa{{\isadigit{0}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}succ\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isasymnot}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{LE-arm, last tape: transitions to
+       \isa{AR{\isacharunderscore}{\kern0pt}SimAdvance} with the current-tape index
+       reset to \isa{k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isacharequal}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm, back-walk phase
+       (\isa{{\isadigit{0}}\ {\isasymle}\ i\ {\isacharless}{\kern0pt}\ b}): head moves
+       \isa{L} on \isa{tk}, \isa{N}
+       elsewhere; no writes.  At \isa{i\ {\isacharequal}{\kern0pt}\ b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}} the
+       substep transitions to \isa{i\ {\isacharequal}{\kern0pt}\ b}, starting the
+       forward-write phase below.  Both phases share the
+       \isa{AR{\isacharunderscore}{\kern0pt}SimWrite} substep tag; the bit-counter
+       distinguishes them.  \isa{a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}}
+       enforced for \isa{{\isasymdelta}LE}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymnoteq}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isasymle}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}L\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm, forward-write stepping phase
+       (\isa{b\ {\isasymle}\ i\ {\isacharless}{\kern0pt}\ {\isadigit{2}}b\ {\isacharminus}{\kern0pt}\ {\isadigit{1}}}): write
+       \isa{write{\isacharunderscore}{\kern0pt}bit\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}i\ {\isacharminus}{\kern0pt}\ b{\isacharparenright}{\kern0pt}} at
+       \isa{tk}, \isa{R} on \isa{tk},
+       \isa{N} elsewhere.  All other tapes have their
+       cells preserved.  The bit-counter advances; the next
+       substep continues forward-write.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ a{\isacharprime}{\kern0pt}\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymnoteq}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isasymle}\ i\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ then\ write{\isacharunderscore}{\kern0pt}bit\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}i\ {\isacharminus}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ a\ kk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm, forward-write boundary
+       (\isa{Suc\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}b}), non-last tape: last cell of
+       \isa{cell{\isacharunderscore}{\kern0pt}repr\ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}} is written, head moves
+       \isa{R} on \isa{tk}, transitions to the
+       same phase on \isa{k{\isacharunderscore}{\kern0pt}succ\ tk} with bit-counter
+       reset.  Cells on other tapes preserved.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}succ\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ a{\isacharprime}{\kern0pt}\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymnoteq}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isasymnot}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ then\ write{\isacharunderscore}{\kern0pt}bit\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}i\ {\isacharminus}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ a\ kk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Proper-arm, forward-write boundary, last tape:
+       same last-cell write as above, transitions to
+       \isa{AR{\isacharunderscore}{\kern0pt}SimAdvance} with the current-tape index
+       reset to \isa{k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}}.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimWrite{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ a{\isacharprime}{\kern0pt}\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ posk\ tk\ {\isasymnoteq}\ AR{\isacharunderscore}{\kern0pt}AtLE\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ then\ write{\isacharunderscore}{\kern0pt}bit\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}buf\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}i\ {\isacharminus}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ else\ a\ kk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}R\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}advance\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}advance\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Stepping arm: head moves \isa{L} on tape
+       \isa{tk}, \isa{N} elsewhere; stays in
+       \isa{AR{\isacharunderscore}{\kern0pt}SimAdvance} with the bit-counter
+       advanced.  Active when \isa{Suc\ i} is strictly
+       below the per-tape displacement
+       \isa{ar{\isacharunderscore}{\kern0pt}disp\ b\ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}}; the
+       \isa{R}- and \isa{L}-from-\isa{AR{\isacharunderscore}{\kern0pt}AtLE}
+       cases have displacement \isa{{\isadigit{0}}}, so no stepping
+       tuple fires; for \isa{N}-from-\isa{AR{\isacharunderscore}{\kern0pt}AtLE}
+       the displacement is \isa{{\isadigit{1}}}, so stepping never
+       fires and the single substep goes through one of the
+       boundary arms.  The read symbol on \isa{tk} must
+       not be \isa{LE{\isadigit{4}}} (\isa{{\isasymdelta}LE}: an
+       \isa{L}-move from a tape reading \isa{LE{\isadigit{4}}}
+       is forbidden).%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ Suc\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharless}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}disp\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ then\ dir{\isachardot}{\kern0pt}L\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Boundary arm, non-last tape.  Two firing
+       sub-cases: the \isa{R}-direction case (zero
+       displacement, no \isa{L}-move; \isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}
+       and the entire direction vector is \isa{N}), and
+       the non-\isa{R} case at \isa{Suc\ i} equal to
+       the displacement (one last \isa{L}-move on
+       \isa{tk}; \isa{a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}} enforced for
+       \isa{{\isasymdelta}LE}).  Both sub-cases transition to
+       the same phase on the next tape \isa{k{\isacharunderscore}{\kern0pt}succ\ tk}
+       (bit-counter reset to \isa{{\isadigit{0}}}) with
+       \isa{posk\ tk} updated by \isa{ar{\isacharunderscore}{\kern0pt}newpos};
+       all other tapes' \isa{posk} entries are
+       preserved.%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}succ\ tk{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ posk{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}newpos\ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isasymnot}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}dvec\ tk\ {\isacharequal}{\kern0pt}\ dir{\isachardot}{\kern0pt}R\ {\isasymand}\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymor}\ {\isacharparenleft}{\kern0pt}dvec\ tk\ {\isasymnoteq}\ dir{\isachardot}{\kern0pt}R\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharequal}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}disp\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ {\isasymand}\ dvec\ tk\ {\isasymnoteq}\ dir{\isachardot}{\kern0pt}R\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ then\ dir{\isachardot}{\kern0pt}L\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ %
+\isamarkupcmt{Boundary arm, last tape.  Same firing
+       sub-cases as the non-last-tape arm; transitions to
+       \isa{AR{\isacharunderscore}{\kern0pt}SimNext} instead of advancing
+       \isa{tk}.  The current-tape field is reset to
+       \isa{k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}} (the first tape in the
+       enumeration; matches \isa{AR{\isacharunderscore}{\kern0pt}SimNext}'s starting
+       convention and the next \isa{AR{\isacharunderscore}{\kern0pt}SimRead}'s
+       initial tape).%
+}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimAdvance{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimNext{\isacharcomma}{\kern0pt}\ k{\isacharunderscore}{\kern0pt}unidx\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ posk{\isacharparenleft}{\kern0pt}tk\ {\isacharcolon}{\kern0pt}{\isacharequal}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}newpos\ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ is{\isacharunderscore}{\kern0pt}last{\isacharunderscore}{\kern0pt}k\ M\ tk\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}dvec\ tk\ {\isacharequal}{\kern0pt}\ dir{\isachardot}{\kern0pt}R\ {\isasymand}\ i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ {\isasymor}\ {\isacharparenleft}{\kern0pt}dvec\ tk\ {\isasymnoteq}\ dir{\isachardot}{\kern0pt}R\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ Suc\ i\ {\isacharequal}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}disp\ {\isacharparenleft}{\kern0pt}block{\isacharunderscore}{\kern0pt}width\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}dvec\ tk{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}posk\ tk{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}kk{\isachardot}{\kern0pt}\ if\ kk\ {\isacharequal}{\kern0pt}\ tk\ {\isasymand}\ dvec\ tk\ {\isasymnoteq}\ dir{\isachardot}{\kern0pt}R\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ then\ dir{\isachardot}{\kern0pt}L\ else\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}next\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}next\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimNext{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isasymin}\ Q{\isacharunderscore}{\kern0pt}tm\ M\ {\isasymand}\ q\ {\isasymnoteq}\ t{\isacharunderscore}{\kern0pt}tm\ M\ {\isasymand}\ q\ {\isasymnoteq}\ r{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimNext{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}HaltAccept{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isacharequal}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ {\isasymunion}\isanewline
+\ \ \ \ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}SimNext{\isacharcomma}{\kern0pt}\ tk{\isacharcomma}{\kern0pt}\ i{\isacharcomma}{\kern0pt}\ buf{\isacharcomma}{\kern0pt}\ dvec{\isacharcomma}{\kern0pt}\ posk{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}q{\isacharcomma}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}HaltReject{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}\ {\isacharbar}{\kern0pt}\isanewline
+\ \ \ \ \ q\ tk\ i\ buf\ dvec\ posk\ a\ d{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ q\ {\isacharequal}{\kern0pt}\ r{\isacharunderscore}{\kern0pt}tm\ M\isanewline
+\ \ \ \ \ \ \ {\isasymand}\ d\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\ \ %
+\isamarkupcmt{End-of-M-step handshake.  Three arms dispatch on the
+     M-state \isa{q}: non-terminal routes to
+     \isa{AR{\isacharunderscore}{\kern0pt}SimRead} for the next M-step (with bit-counter
+     and current-tape both reset to 0); \isa{q\ {\isacharequal}{\kern0pt}\ t{\isacharunderscore}{\kern0pt}tm\ M}
+     routes to the canonical accept stage; \isa{q\ {\isacharequal}{\kern0pt}\ r{\isacharunderscore}{\kern0pt}tm\ M}
+     routes to the canonical reject stage.  The non-terminal
+     arm preserves \isa{buf}, the direction-vector field
+     \isa{dvec} (residual from the just-completed M-step; no
+     longer consulted), and the per-tape position-kind
+     \isa{posk} (carries the head-region across M-steps so the
+     next \isa{AR{\isacharunderscore}{\kern0pt}SimRead}'s LE-vs-proper dispatch sees the
+     correct value).  The two terminal arms instead reset
+     \isa{buf} / \isa{dvec} / \isa{posk} to the canonical
+     halt values (\isa{{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharunderscore}{\kern0pt}tm\ M} / \isa{{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N} / \isa{{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE}), so the target stage
+     is exactly \isa{ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}} /
+     \isa{ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}} and the handshake lands
+     on \isa{M{\isacharprime}{\kern0pt}}'s halt state \isa{t{\isacharunderscore}{\kern0pt}tm\ M{\isacharprime}{\kern0pt}} / \isa{r{\isacharunderscore}{\kern0pt}tm\ M{\isacharprime}{\kern0pt}}.  \isa{Lang{\isacharunderscore}{\kern0pt}mttm} matches the full \isa{mt{\isacharunderscore}{\kern0pt}state}
+     (tape and heads free), so this canonical landing is what
+     makes \isa{M{\isacharprime}{\kern0pt}} acceptance / rejection detectable; the reset
+     is semantically free (the residual fields are never read
+     after halting).  The direction vector is all \isa{N}
+     (no head moves at the handshake); cell vectors
+     \isa{a{\isacharprime}{\kern0pt}\ {\isacharequal}{\kern0pt}\ a} (no writes), so LE-preservation passes
+     trivially.%
+}%
+\begin{isamarkuptext}%
+The output machine's full transition relation: union of
+  the five per-substep relations, intersected with three global
+  restrictions — \isa{{\isasymdelta}LE}-backward (no transition forges
+  \isa{LE{\isadigit{4}}} out of a non-\isa{LE{\isadigit{4}}} cell),
+  \isa{{\isasymdelta}LE}-forward (every transition reading \isa{LE{\isadigit{4}}}
+  on tape \isa{k} rewrites \isa{LE{\isadigit{4}}} back on the same tape
+  and moves \isa{N} or \isa{R}), and
+  \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage}-membership on both source and target
+  stages.  The two \isa{{\isasymdelta}LE} filters together discharge
+  the substrate's bidirectional \isa{{\isasymdelta}LE} invariant
+  uniformly — without per-arm \isa{a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}}
+  preconditions on every arm that performs a write distinct from
+  the read cell (proper-arm forward-write in particular).  The
+  per-arm \isa{a\ tk\ {\isasymnoteq}\ LE{\isadigit{4}}} constraints that do appear (in
+  look-back step 1, back-walk, and advance L-step) reflect the
+  simulation invariant rather than the bare \isa{{\isasymdelta}LE}
+  requirement: those arms move \isa{L} on the current tape,
+  which the substrate forbids from an \isa{LE{\isadigit{4}}} cell
+  regardless of write content.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ {\isasymtimes}\ {\isacharparenleft}{\kern0pt}nat\ {\isasymRightarrow}\ dir{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}\ set{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}read\ M\ {\isasymunion}\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}compute\ M\isanewline
+\ \ \ \ \ \ \ \ {\isasymunion}\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}write\ M\ {\isasymunion}\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}advance\ M\isanewline
+\ \ \ \ \ \ \ \ {\isasymunion}\ ar{\isacharunderscore}{\kern0pt}delta{\isacharunderscore}{\kern0pt}next\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isasyminter}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}s{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ s{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymforall}k{\isachardot}{\kern0pt}\ a{\isacharprime}{\kern0pt}\ k\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\ {\isasymlongrightarrow}\ a\ k\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isasyminter}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}s{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ s{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymforall}k{\isachardot}{\kern0pt}\ a\ k\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\ {\isasymlongrightarrow}\ a{\isacharprime}{\kern0pt}\ k\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}\ {\isasymand}\ d\ k\ {\isasymin}\ {\isacharbraceleft}{\kern0pt}dir{\isachardot}{\kern0pt}N{\isacharcomma}{\kern0pt}\ dir{\isachardot}{\kern0pt}R{\isacharbraceright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isasyminter}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}s{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ s{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}snd\ s{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}snd\ s{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isasyminter}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}s{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ s{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymforall}j\ {\isasymge}\ k{\isacharunderscore}{\kern0pt}tm\ M{\isachardot}{\kern0pt}\ a\ j\ {\isacharequal}{\kern0pt}\ BLANK{\isadigit{4}}\ {\isasymand}\ a{\isacharprime}{\kern0pt}\ j\ {\isacharequal}{\kern0pt}\ BLANK{\isadigit{4}}\ {\isasymand}\ d\ j\ {\isacharequal}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ {\isasyminter}\ {\isacharbraceleft}{\kern0pt}{\isacharparenleft}{\kern0pt}s{\isacharcomma}{\kern0pt}\ a{\isacharcomma}{\kern0pt}\ s{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ a{\isacharprime}{\kern0pt}{\isacharcomma}{\kern0pt}\ d{\isacharparenright}{\kern0pt}{\isachardot}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ ar{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}bounded\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}k{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}snd\ s{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ ar{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}bounded\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}k{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}snd\ s{\isacharprime}{\kern0pt}{\isacharparenright}{\kern0pt}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Initial / halt stages used to populate the output
+  machine's \isa{s{\isacharprime}{\kern0pt}} / \isa{t{\isacharprime}{\kern0pt}} / \isa{r{\isacharprime}{\kern0pt}}
+  components.  All three share the same shape: substep-counter
+  \isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}, current-tape \isa{{\isadigit{0}}}
+  placeholder (per-tape phase fields are inactive in
+  \isa{AR{\isacharunderscore}{\kern0pt}SimRead}'s initial entry and inactive in halt
+  states), per-tape \isa{buf} initialised to
+  \isa{bl} (any value in \isa{{\isasymGamma}\ {\isasymunion}\ {\isasymlbrace}bl{\isasymrbrace}} would
+  satisfy \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage}; \isa{bl} is the
+  canonical placeholder), per-tape direction-vector
+  \isa{dir{\isachardot}{\kern0pt}N} (irrelevant outside \isa{AR{\isacharunderscore}{\kern0pt}SimAdvance}),
+  per-tape position-kind \isa{AR{\isacharunderscore}{\kern0pt}AtLE} (the initial
+  head position is \isa{{\isadigit{0}}}; for halt states the field is
+  vestigial).  The three stages differ only in their
+  \isa{ar{\isacharunderscore}{\kern0pt}substep{\isacharunderscore}{\kern0pt}idx} tag.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ bl\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}SimRead{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ bl\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}HaltAccept{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+\isanewline
+\isakeywordONE{definition}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharprime}{\kern0pt}a\ {\isasymRightarrow}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isachardoublequoteclose}\ \isakeywordTWO{where}\isanewline
+\ \ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ bl\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ {\isacharparenleft}{\kern0pt}AR{\isacharunderscore}{\kern0pt}HaltReject{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isadigit{0}}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ bl{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ dir{\isachardot}{\kern0pt}N{\isacharparenright}{\kern0pt}{\isacharcomma}{\kern0pt}\ {\isacharparenleft}{\kern0pt}{\isasymlambda}{\isacharunderscore}{\kern0pt}{\isachardot}{\kern0pt}\ AR{\isacharunderscore}{\kern0pt}AtLE{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Positivity of the block width: \isa{b} is bounded below
+  by \isa{{\isadigit{1}}} via the \isa{max} on the right-hand side.  Used
+  below to discharge the \isa{i\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isasymcdot}\ b} conjunct of
+  \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage} at \isa{i\ {\isacharequal}{\kern0pt}\ {\isadigit{0}}}, and downstream by
+  the per-substep step-count lemmas.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}pos{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}{\isadigit{1}}\ {\isasymle}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{unfolding}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The three stage constants used to populate \isa{s{\isacharprime}{\kern0pt}},
+  \isa{t{\isacharprime}{\kern0pt}}, and \isa{r{\isacharprime}{\kern0pt}} all satisfy
+  \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}\ bl} for any \isa{{\isasymGamma}}
+  and \isa{bl}: the bit-counter is \isa{{\isadigit{0}}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isasymcdot}\ b}
+  (since \isa{b\ {\isasymge}\ {\isadigit{1}}}) and the buf field is constantly
+  \isa{bl\ {\isasymin}\ {\isasymGamma}\ {\isasymunion}\ {\isasymlbrace}bl{\isasymrbrace}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}init{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ bl{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isadigit{0}}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ nat{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}pos{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}accept{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ bl{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isadigit{0}}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ nat{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}pos{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}reject{\isacharcolon}{\kern0pt}\ {\isachardoublequoteopen}ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}\ bl\ {\isacharparenleft}{\kern0pt}ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ bl{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{proof}\isamarkupfalse%
+\ {\isacharminus}{\kern0pt}\isanewline
+\ \ \isakeywordONE{have}\isamarkupfalse%
+\ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isadigit{0}}\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ nat{\isacharparenright}{\kern0pt}\ {\isacharless}{\kern0pt}\ {\isadigit{2}}\ {\isacharasterisk}{\kern0pt}\ block{\isacharunderscore}{\kern0pt}width\ {\isasymGamma}{\isachardoublequoteclose}\ \isakeywordONE{using}\isamarkupfalse%
+\ block{\isacharunderscore}{\kern0pt}width{\isacharunderscore}{\kern0pt}pos{\isacharbrackleft}{\kern0pt}of\ {\isasymGamma}{\isacharbrackright}{\kern0pt}\ \isakeywordONE{by}\isamarkupfalse%
+\ linarith\isanewline
+\ \ \isakeywordTHREE{thus}\isamarkupfalse%
+\ {\isacharquery}{\kern0pt}thesis\isanewline
+\ \ \ \ \isakeywordONE{unfolding}\isamarkupfalse%
+\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}def\ \isakeywordONE{by}\isamarkupfalse%
+\ simp\isanewline
+\isakeywordONE{qed}\isamarkupfalse%
+%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+%
+\endisadelimproof
+%
+\begin{isamarkuptext}%
+The alphabet-reduction combinator.  Input: \isa{mttm} over
+\isa{{\isacharprime}{\kern0pt}a}, with tape alphabet \isa{{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ M} a finite subset of
+\isa{{\isacharprime}{\kern0pt}a} (via \isa{valid{\isacharunderscore}{\kern0pt}mttm}) of cardinality \isa{{\isasymge}\ {\isadigit{4}}}.
+Output: \isa{mttm} over \isa{sym{\isadigit{4}}}, with state set
+\isa{{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage}.  Tape count \isa{k{\isacharunderscore}{\kern0pt}tm\ M} is preserved.
+
+Output components:
+
+%
+\begin{itemize}%
+\item \isa{Q{\isacharprime}{\kern0pt}} = \isa{Q{\isacharunderscore}{\kern0pt}M\ {\isasymtimes}\ {\isasymlbrace}stg{\isachardot}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}{\isacharunderscore}{\kern0pt}M\ bl{\isacharunderscore}{\kern0pt}M\ stg{\isasymrbrace}}
+(the non-product Q-shape);
+
+\item \isa{{\isasymSigma}{\isacharprime}{\kern0pt}} = \isa{{\isasymlbrace}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isasymrbrace}}
+(the encoded input alphabet);
+
+\item \isa{{\isasymGamma}{\isacharprime}{\kern0pt}} = \isa{UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set}
+(all four cell shapes — BIT0, BIT1, BLANK4, LE4);
+
+\item \isa{bl{\isacharprime}{\kern0pt}} = \isa{BLANK{\isadigit{4}}}, \isa{le{\isacharprime}{\kern0pt}} = \isa{LE{\isadigit{4}}};
+
+\item \isa{{\isasymdelta}{\isacharprime}{\kern0pt}} = \isa{alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ M}
+(the five-substep union under the global LE-preservation
+and \isa{ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage} filters);
+
+\item \isa{s{\isacharprime}{\kern0pt}} = \isa{{\isacharparenleft}{\kern0pt}s{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}},
+\isa{t{\isacharprime}{\kern0pt}} = \isa{{\isacharparenleft}{\kern0pt}t{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}},
+\isa{r{\isacharprime}{\kern0pt}} = \isa{{\isacharparenleft}{\kern0pt}r{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}}
+(M's start / accept / reject states paired with the
+matching \isa{ar{\isacharunderscore}{\kern0pt}substep{\isacharunderscore}{\kern0pt}idx} tag).%
+\end{itemize}%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{definition}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q{\isacharcomma}{\kern0pt}\ {\isacharprime}{\kern0pt}a{\isacharparenright}{\kern0pt}\ mttm\isanewline
+\ \ \ \ {\isasymRightarrow}\ {\isacharparenleft}{\kern0pt}{\isacharprime}{\kern0pt}q\ {\isasymtimes}\ {\isacharprime}{\kern0pt}a\ ar{\isacharunderscore}{\kern0pt}stage{\isacharcomma}{\kern0pt}\ sym{\isadigit{4}}{\isacharparenright}{\kern0pt}\ mttm{\isachardoublequoteclose}\isanewline
+\ \ \isakeywordTWO{where}\isanewline
+\ \ \ \ {\isachardoublequoteopen}alphabet{\isacharunderscore}{\kern0pt}reduce\ M\ {\isacharequal}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}case\ M\ of\ MTTM\ Q{\isacharunderscore}{\kern0pt}M\ {\isacharunderscore}{\kern0pt}\ {\isasymGamma}{\isacharunderscore}{\kern0pt}M\ bl{\isacharunderscore}{\kern0pt}M\ {\isacharunderscore}{\kern0pt}\ {\isacharunderscore}{\kern0pt}\ s{\isacharunderscore}{\kern0pt}M\ t{\isacharunderscore}{\kern0pt}M\ r{\isacharunderscore}{\kern0pt}M\ k{\isacharunderscore}{\kern0pt}M\ {\isasymRightarrow}\isanewline
+\ \ \ \ \ \ \ \ \ \ MTTM\ {\isacharparenleft}{\kern0pt}Q{\isacharunderscore}{\kern0pt}M\ {\isasymtimes}\ {\isacharbraceleft}{\kern0pt}stg{\isachardot}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}valid{\isacharunderscore}{\kern0pt}stage\ {\isasymGamma}{\isacharunderscore}{\kern0pt}M\ bl{\isacharunderscore}{\kern0pt}M\ stg\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isasymand}\ ar{\isacharunderscore}{\kern0pt}stage{\isacharunderscore}{\kern0pt}bounded\ bl{\isacharunderscore}{\kern0pt}M\ k{\isacharunderscore}{\kern0pt}M\ stg{\isacharbraceright}{\kern0pt}{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ BLANK{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ LE{\isadigit{4}}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}s{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}t{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ {\isacharparenleft}{\kern0pt}r{\isacharunderscore}{\kern0pt}M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ bl{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}\isanewline
+\ \ \ \ \ \ \ \ \ \ \ \ \ \ \ k{\isacharunderscore}{\kern0pt}M{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}%
+\begin{isamarkuptext}%
+Projection-simp lemmas for the reduced machine: each
+  structural accessor reads straight off the \isa{MTTM} the
+  combinator builds.  Marked \isa{{\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}} so the language and
+  time proofs never re-derive them via \isa{cases\ M}; the
+  accept-state projection in particular is the bridge that makes
+  the simulation engine's terminal state syntactically equal to
+  \isa{t{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}}.%
+\end{isamarkuptext}\isamarkuptrue%
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}Sigma\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}Sigma{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharbraceleft}{\kern0pt}BIT{\isadigit{0}}{\isacharcomma}{\kern0pt}\ BIT{\isadigit{1}}{\isacharbraceright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}Gamma\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}{\isasymGamma}{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}UNIV\ {\isacharcolon}{\kern0pt}{\isacharcolon}{\kern0pt}\ sym{\isadigit{4}}\ set{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}bl\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}bl{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ BLANK{\isadigit{4}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}le\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}le{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ LE{\isadigit{4}}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}start\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}s{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}s{\isacharunderscore}{\kern0pt}tm\ M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}init{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}accept\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}t{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}t{\isacharunderscore}{\kern0pt}tm\ M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}accept{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}reject\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}r{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ {\isacharparenleft}{\kern0pt}r{\isacharunderscore}{\kern0pt}tm\ M{\isacharcomma}{\kern0pt}\ ar{\isacharunderscore}{\kern0pt}reject{\isacharunderscore}{\kern0pt}stage\ {\isacharparenleft}{\kern0pt}bl{\isacharunderscore}{\kern0pt}tm\ M{\isacharparenright}{\kern0pt}{\isacharparenright}{\kern0pt}{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+\isanewline
+\isakeywordONE{lemma}\isamarkupfalse%
+\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ {\isacharbrackleft}{\kern0pt}simp{\isacharbrackright}{\kern0pt}{\isacharcolon}{\kern0pt}\isanewline
+\ \ {\isachardoublequoteopen}delta{\isacharunderscore}{\kern0pt}tm\ {\isacharparenleft}{\kern0pt}alphabet{\isacharunderscore}{\kern0pt}reduce\ M{\isacharparenright}{\kern0pt}\ {\isacharequal}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}delta\ M{\isachardoublequoteclose}\isanewline
+%
+\isadelimproof
+\ \ %
+\endisadelimproof
+%
+\isatagproof
+\isakeywordONE{by}\isamarkupfalse%
+\ {\isacharparenleft}{\kern0pt}cases\ M{\isacharparenright}{\kern0pt}\ {\isacharparenleft}{\kern0pt}simp\ add{\isacharcolon}{\kern0pt}\ alphabet{\isacharunderscore}{\kern0pt}reduce{\isacharunderscore}{\kern0pt}def{\isacharparenright}{\kern0pt}%
+\endisatagproof
+{\isafoldproof}%
+%
+\isadelimproof
+\isanewline
+%
+\endisadelimproof
+%
+\isadelimtheory
+\isanewline
+%
+\endisadelimtheory
+%
+\isatagtheory
+\isakeywordTWO{end}\isamarkupfalse%
+%
+\endisatagtheory
+{\isafoldtheory}%
+%
+\isadelimtheory
+%
+\endisadelimtheory
+%
+\end{isabellebody}%
+\endinput
+%:%file=$AFP/Multitape_Alphabet_Reduction/AlphabetReduction_Delta.thy%:%
+%:%10=1%:%
+%:%11=1%:%
+%:%12=2%:%
+%:%13=3%:%
+%:%27=5%:%
+%:%39=7%:%
+%:%40=8%:%
+%:%41=9%:%
+%:%42=10%:%
+%:%43=11%:%
+%:%44=12%:%
+%:%45=13%:%
+%:%46=14%:%
+%:%47=15%:%
+%:%48=16%:%
+%:%49=17%:%
+%:%50=18%:%
+%:%51=19%:%
+%:%52=20%:%
+%:%53=21%:%
+%:%54=22%:%
+%:%55=23%:%
+%:%56=24%:%
+%:%57=25%:%
+%:%58=26%:%
+%:%59=27%:%
+%:%60=28%:%
+%:%61=29%:%
+%:%63=31%:%
+%:%64=31%:%
+%:%65=32%:%
+%:%70=37%:%
+%:%71=38%:%
+%:%73=39%:%
+%:%74=40%:%
+%:%75=41%:%
+%:%76=42%:%
+%:%77=43%:%
+%:%78=44%:%
+%:%79=45%:%
+%:%80=46%:%
+%:%81=46%:%
+%:%93=57%:%
+%:%94=58%:%
+%:%95=59%:%
+%:%96=59%:%
+%:%108=70%:%
+%:%109=71%:%
+%:%110=72%:%
+%:%111=73%:%
+%:%112=74%:%
+%:%113=75%:%
+%:%114=76%:%
+%:%115=77%:%
+%:%116=78%:%
+%:%117=78%:%
+%:%127=87%:%
+%:%128=88%:%
+%:%129=89%:%
+%:%130=90%:%
+%:%131=91%:%
+%:%132=92%:%
+%:%133=93%:%
+%:%134=94%:%
+%:%135=95%:%
+%:%136=96%:%
+%:%137=97%:%
+%:%138=98%:%
+%:%139=99%:%
+%:%140=99%:%
+%:%153=111%:%
+%:%154=112%:%
+%:%155=113%:%
+%:%156=114%:%
+%:%157=115%:%
+%:%158=116%:%
+%:%159=117%:%
+%:%159=118%:%
+%:%159=119%:%
+%:%160=120%:%
+%:%161=121%:%
+%:%162=122%:%
+%:%163=122%:%
+%:%178=136%:%
+%:%179=137%:%
+%:%180=138%:%
+%:%181=139%:%
+%:%182=140%:%
+%:%182=141%:%
+%:%183=142%:%
+%:%184=143%:%
+%:%185=144%:%
+%:%186=144%:%
+%:%201=158%:%
+%:%202=159%:%
+%:%203=160%:%
+%:%204=161%:%
+%:%205=161%:%
+%:%217=173%:%
+%:%218=174%:%
+%:%219=175%:%
+%:%220=175%:%
+%:%221=176%:%
+%:%226=181%:%
+%:%227=182%:%
+%:%232=187%:%
+%:%233=188%:%
+%:%234=188%:%
+%:%235=189%:%
+%:%236=190%:%
+%:%237=191%:%
+%:%238=192%:%
+%:%239=193%:%
+%:%240=194%:%
+%:%241=195%:%
+%:%242=196%:%
+%:%243=197%:%
+%:%244=198%:%
+%:%245=199%:%
+%:%246=200%:%
+%:%247=201%:%
+%:%248=202%:%
+%:%249=203%:%
+%:%250=204%:%
+%:%251=204%:%
+%:%252=205%:%
+%:%253=206%:%
+%:%254=206%:%
+%:%255=207%:%
+%:%260=212%:%
+%:%261=213%:%
+%:%263=214%:%
+%:%264=215%:%
+%:%265=216%:%
+%:%266=217%:%
+%:%267=218%:%
+%:%268=219%:%
+%:%269=220%:%
+%:%270=221%:%
+%:%271=222%:%
+%:%272=223%:%
+%:%273=224%:%
+%:%274=224%:%
+%:%284=233%:%
+%:%285=234%:%
+%:%286=235%:%
+%:%287=235%:%
+%:%297=244%:%
+%:%298=245%:%
+%:%299=246%:%
+%:%300=247%:%
+%:%301=248%:%
+%:%302=249%:%
+%:%303=250%:%
+%:%304=251%:%
+%:%305=252%:%
+%:%306=252%:%
+%:%317=262%:%
+%:%318=263%:%
+%:%319=264%:%
+%:%320=265%:%
+%:%321=266%:%
+%:%322=267%:%
+%:%323=268%:%
+%:%324=268%:%
+%:%340=283%:%
+%:%341=284%:%
+%:%342=285%:%
+%:%343=286%:%
+%:%344=287%:%
+%:%345=288%:%
+%:%346=288%:%
+%:%362=303%:%
+%:%363=304%:%
+%:%364=305%:%
+%:%365=306%:%
+%:%366=306%:%
+%:%379=319%:%
+%:%380=320%:%
+%:%381=321%:%
+%:%382=321%:%
+%:%383=322%:%
+%:%388=327%:%
+%:%389=328%:%
+%:%391=329%:%
+%:%392=330%:%
+%:%393=331%:%
+%:%394=332%:%
+%:%395=333%:%
+%:%396=334%:%
+%:%397=335%:%
+%:%398=336%:%
+%:%399=337%:%
+%:%400=338%:%
+%:%401=339%:%
+%:%402=340%:%
+%:%403=341%:%
+%:%404=342%:%
+%:%405=343%:%
+%:%406=343%:%
+%:%416=352%:%
+%:%417=353%:%
+%:%418=354%:%
+%:%419=355%:%
+%:%420=356%:%
+%:%421=357%:%
+%:%422=358%:%
+%:%423=359%:%
+%:%424=360%:%
+%:%425=361%:%
+%:%426=362%:%
+%:%427=363%:%
+%:%428=364%:%
+%:%429=364%:%
+%:%445=379%:%
+%:%446=380%:%
+%:%447=381%:%
+%:%448=382%:%
+%:%449=383%:%
+%:%450=384%:%
+%:%451=385%:%
+%:%452=386%:%
+%:%453=386%:%
+%:%466=399%:%
+%:%467=400%:%
+%:%468=401%:%
+%:%469=401%:%
+%:%470=402%:%
+%:%475=407%:%
+%:%476=408%:%
+%:%495=427%:%
+%:%496=428%:%
+%:%497=428%:%
+%:%498=429%:%
+%:%499=430%:%
+%:%500=431%:%
+%:%501=432%:%
+%:%502=433%:%
+%:%503=434%:%
+%:%504=435%:%
+%:%505=436%:%
+%:%506=437%:%
+%:%507=438%:%
+%:%508=439%:%
+%:%509=440%:%
+%:%510=441%:%
+%:%510=442%:%
+%:%511=443%:%
+%:%512=444%:%
+%:%513=445%:%
+%:%513=446%:%
+%:%514=447%:%
+%:%515=448%:%
+%:%516=449%:%
+%:%517=450%:%
+%:%518=451%:%
+%:%519=452%:%
+%:%520=453%:%
+%:%523=455%:%
+%:%524=456%:%
+%:%525=457%:%
+%:%526=458%:%
+%:%527=459%:%
+%:%528=460%:%
+%:%529=461%:%
+%:%530=462%:%
+%:%531=463%:%
+%:%532=464%:%
+%:%533=465%:%
+%:%534=466%:%
+%:%535=467%:%
+%:%536=468%:%
+%:%537=469%:%
+%:%538=470%:%
+%:%539=471%:%
+%:%540=472%:%
+%:%541=473%:%
+%:%543=475%:%
+%:%544=475%:%
+%:%545=476%:%
+%:%550=481%:%
+%:%551=482%:%
+%:%568=500%:%
+%:%569=501%:%
+%:%570=502%:%
+%:%571=503%:%
+%:%572=504%:%
+%:%573=505%:%
+%:%574=506%:%
+%:%575=507%:%
+%:%576=508%:%
+%:%577=509%:%
+%:%578=510%:%
+%:%579=511%:%
+%:%580=512%:%
+%:%581=513%:%
+%:%582=514%:%
+%:%584=516%:%
+%:%585=516%:%
+%:%586=517%:%
+%:%587=518%:%
+%:%588=519%:%
+%:%589=520%:%
+%:%590=521%:%
+%:%591=521%:%
+%:%592=522%:%
+%:%593=523%:%
+%:%594=524%:%
+%:%595=525%:%
+%:%596=526%:%
+%:%597=526%:%
+%:%598=527%:%
+%:%599=528%:%
+%:%602=531%:%
+%:%603=532%:%
+%:%604=533%:%
+%:%605=534%:%
+%:%606=535%:%
+%:%608=537%:%
+%:%609=537%:%
+%:%612=538%:%
+%:%616=538%:%
+%:%617=538%:%
+%:%618=538%:%
+%:%627=540%:%
+%:%628=541%:%
+%:%629=542%:%
+%:%630=543%:%
+%:%631=544%:%
+%:%632=545%:%
+%:%634=547%:%
+%:%635=547%:%
+%:%642=548%:%
+%:%643=548%:%
+%:%644=549%:%
+%:%645=549%:%
+%:%646=549%:%
+%:%647=549%:%
+%:%648=550%:%
+%:%649=550%:%
+%:%650=551%:%
+%:%651=551%:%
+%:%652=551%:%
+%:%653=552%:%
+%:%659=552%:%
+%:%662=553%:%
+%:%663=554%:%
+%:%664=554%:%
+%:%671=555%:%
+%:%672=555%:%
+%:%673=556%:%
+%:%674=556%:%
+%:%675=556%:%
+%:%676=556%:%
+%:%677=557%:%
+%:%678=557%:%
+%:%679=558%:%
+%:%680=558%:%
+%:%681=558%:%
+%:%682=559%:%
+%:%688=559%:%
+%:%691=560%:%
+%:%692=561%:%
+%:%693=561%:%
+%:%700=562%:%
+%:%701=562%:%
+%:%702=563%:%
+%:%703=563%:%
+%:%704=563%:%
+%:%705=563%:%
+%:%706=564%:%
+%:%707=564%:%
+%:%708=565%:%
+%:%709=565%:%
+%:%710=565%:%
+%:%711=566%:%
+%:%721=569%:%
+%:%722=570%:%
+%:%723=571%:%
+%:%724=572%:%
+%:%725=573%:%
+%:%727=575%:%
+%:%731=576%:%
+%:%732=577%:%
+%:%734=578%:%
+%:%735=579%:%
+%:%737=580%:%
+%:%738=581%:%
+%:%740=582%:%
+%:%742=583%:%
+%:%743=584%:%
+%:%744=585%:%
+%:%746=586%:%
+%:%747=587%:%
+%:%748=588%:%
+%:%749=589%:%
+%:%750=590%:%
+%:%753=592%:%
+%:%754=592%:%
+%:%755=593%:%
+%:%756=594%:%
+%:%757=595%:%
+%:%758=596%:%
+%:%772=610%:%
+%:%773=611%:%
+%:%774=612%:%
+%:%775=613%:%
+%:%776=614%:%
+%:%777=615%:%
+%:%778=616%:%
+%:%780=618%:%
+%:%781=618%:%
+%:%782=619%:%
+%:%785=620%:%
+%:%789=620%:%
+%:%790=620%:%
+%:%795=620%:%
+%:%798=621%:%
+%:%799=622%:%
+%:%800=622%:%
+%:%801=623%:%
+%:%804=624%:%
+%:%808=624%:%
+%:%809=624%:%
+%:%814=624%:%
+%:%817=625%:%
+%:%818=626%:%
+%:%819=626%:%
+%:%820=627%:%
+%:%823=628%:%
+%:%827=628%:%
+%:%828=628%:%
+%:%833=628%:%
+%:%836=629%:%
+%:%837=630%:%
+%:%838=630%:%
+%:%839=631%:%
+%:%842=632%:%
+%:%846=632%:%
+%:%847=632%:%
+%:%852=632%:%
+%:%855=633%:%
+%:%856=634%:%
+%:%857=634%:%
+%:%858=635%:%
+%:%861=636%:%
+%:%865=636%:%
+%:%866=636%:%
+%:%871=636%:%
+%:%874=637%:%
+%:%875=638%:%
+%:%876=638%:%
+%:%877=639%:%
+%:%880=640%:%
+%:%884=640%:%
+%:%885=640%:%
+%:%890=640%:%
+%:%893=641%:%
+%:%894=642%:%
+%:%895=642%:%
+%:%896=643%:%
+%:%899=644%:%
+%:%903=644%:%
+%:%904=644%:%
+%:%909=644%:%
+%:%912=645%:%
+%:%913=646%:%
+%:%914=646%:%
+%:%915=647%:%
+%:%918=648%:%
+%:%922=648%:%
+%:%923=648%:%
+%:%928=648%:%
+%:%933=649%:%
+%:%938=650%:%

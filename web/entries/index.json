@@ -1,5 +1,287 @@
 [
  {
+  "abstract": "This entry formalises the complexity analysis of set operations on strongly joinable trees as defined by Blelloch, Ferizovic and Sun. It is proved that union, intersection, and difference run in time $O(m \\log(n/m + 1))$ for input sets of size $m$ and $n$ where $m \\le n$.",
+  "authors": [
+   "Marco Haucke"
+  ],
+  "date": "2026-09-24",
+  "link": "../entries/Joinable_BST_Work_Bounds.html",
+  "permalink": "https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html",
+  "related": [
+   {
+    "doi": "10.1145/3512769"
+   }
+  ],
+  "shortname": "Joinable_BST_Work_Bounds",
+  "title": "Work Bounds for Strongly Joinable Balanced Binary Search Trees",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes the Teichmüller-Tukey lemma in Isabelle/HOL: every nonempty family of sets of finite character contains a member that is maximal under inclusion. The development follows the direct choice-function construction of Sun and Yu, originally presented in Morse-Kelley set theory and verified in Coq.",
+  "authors": [
+   "Vithor Lindermann Kraisch",
+   "Luiz Gustavo Cordeiro"
+  ],
+  "date": "2026-09-21",
+  "link": "../entries/Teichmuller_Tukey_Lemma.html",
+  "permalink": "https://isa-afp.org/entries/Teichmuller_Tukey_Lemma.html",
+  "related": [
+   {
+    "doi": "10.48550/arXiv.1906.03930"
+   }
+  ],
+  "shortname": "Teichmuller_Tukey_Lemma",
+  "title": "The Teichmüller-Tukey Lemma",
+  "topic_links": [
+   "../topics/logic/set-theory/"
+  ],
+  "topics": [
+   "Logic/Set theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes the classical Földes–Hammer theorem characterizing finite split graphs as exactly the graphs with no induced copy of \\(2K_2\\), \\(C_4\\), or \\(C_5\\). It builds on the AFP session Undirected_Graph_Theory.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-09-11",
+  "link": "../entries/Foldes_Hammer.html",
+  "permalink": "https://isa-afp.org/entries/Foldes_Hammer.html",
+  "related": [],
+  "shortname": "Foldes_Hammer",
+  "title": "The Földes–Hammer Characterization of Split Graphs",
+  "topic_links": [
+   "../topics/mathematics/graph-theory/"
+  ],
+  "topics": [
+   "Mathematics/Graph theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Product trees are a simple data structure that, broadly speaking, allows dealing with the product of a large number of (typically coprime) integers, or more generally elements of a Euclidean ring.\nThis is particularly useful for efficient simultaneous modular reduction, i.e. computing $x\\mathbin{\\text{mod}} m_i$ for a large number of moduli $m_i$ at the same time for a fixed $x$, and the inverse operation thereof, i.e. modular reconstruction (also known as \u0026ldquo;Chinese Remaindering\u0026rdquo;).\nThe algorithms formalised are adapted from the book \u0026ldquo;Modern Computer Algebra\u0026rdquo; by von zur Gathen and Gerhard.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-09-04",
+  "link": "../entries/CRT_Product_Tree.html",
+  "permalink": "https://isa-afp.org/entries/CRT_Product_Tree.html",
+  "related": [],
+  "shortname": "CRT_Product_Tree",
+  "title": "Fast Chinese Remaindering via Product Trees",
+  "topic_links": [
+   "../topics/mathematics/algebra/"
+  ],
+  "topics": [
+   "Mathematics/Algebra"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes strong normalization for Church-style System F with explicit type abstraction and type application. Types and terms use de Bruijn indices; the reduction relation contains both term-\\(\\beta\\) and type-\\(\\beta\\) steps and is closed under all term contexts. The proof combines Girard-style reducibility candidates for an untyped lambda-calculus erasure with an explicit type-syntax measure that reflects the erased normalization result back to the full calculus. The final theorem states that every well-typed System F term is strongly normalizing, so the usual closed-term result is an immediate instance.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-09-02",
+  "link": "../entries/System_F_Normalization.html",
+  "permalink": "https://isa-afp.org/entries/System_F_Normalization.html",
+  "related": [
+   {
+    "doi": "10.1007/BFB0037095"
+   },
+   {
+    "doi": "10.1016/j.entcs.2007.01.021"
+   },
+   {
+    "doi": "10.1109/LICS.2010.48"
+   },
+   {
+    "html": "Stefan Berghofer, POPLmark Challenge Via de Bruijn Indices, Archive of Formal Proofs (2007): https://isa-afp.org/entries/POPLmark-deBruijn.html"
+   },
+   {
+    "html": "Stefan Berghofer, Strong Normalization for Simply-Typed Lambda Calculus, Isabelle/HOL HOL-Proofs-Lambda library: https://isabelle.in.tum.de/library/HOL/HOL-Proofs-Lambda/document.pdf"
+   }
+  ],
+  "shortname": "System_F_Normalization",
+  "title": "Strong Normalization for Church-Style System F",
+  "topic_links": [
+   "../topics/computer-science/programming-languages/lambda-calculi/",
+   "../topics/computer-science/programming-languages/type-systems/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Computer science/Programming languages/Lambda calculi",
+   "Computer science/Programming languages/Type systems",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Formalization of Greibach’s hardest context-free language theorem: There is a “hardest” context-free language $L_0$ such that every context-free language is an inverse homomorphic image of $L_0$.",
+  "authors": [
+   "Tobias Nipkow"
+  ],
+  "date": "2026-08-25",
+  "link": "../entries/Greibach_Hardest.html",
+  "permalink": "https://isa-afp.org/entries/Greibach_Hardest.html",
+  "related": [
+   {
+    "doi": "10.1137/0202025"
+   }
+  ],
+  "shortname": "Greibach_Hardest",
+  "title": "Greibach’s Hardest Context-Free Language",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "A deterministic context-free language (DCFL) is a language accepted by a deterministic pushdown automaton (DPDA). This entry proves that the deterministic context-free languages are closed under complementation. The proof follows the one in the book by Hopcroft and Ullman (1979).",
+  "authors": [
+   "Kaan Taskin",
+   "Tobias Nipkow"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/DPDA_Complement_HU.html",
+  "permalink": "https://isa-afp.org/entries/DPDA_Complement_HU.html",
+  "related": [],
+  "shortname": "DPDA_Complement_HU",
+  "title": "Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Napoleon's theorem states that, for a non-degenerate triangle, the centres of the equilateral triangles constructed externally on its three sides form an equilateral triangle. We formalize this construction and conclusion using complex coordinates, including the exterior-side condition and both orientations of the 60-degree rotation.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/Napoleon.html",
+  "permalink": "https://isa-afp.org/entries/Napoleon.html",
+  "related": [],
+  "shortname": "Napoleon",
+  "title": "Napoleon's Theorem",
+  "topic_links": [
+   "../topics/mathematics/geometry/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Mathematics/Geometry",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes that there are exactly five Platonic solids: the tetrahedron, cube, octahedron, dodecahedron, and icosahedron. A Platonic solid is a convex polyhedron whose faces are congruent regular polygons, with the same number of edges meeting at each vertex. Euler's polyhedron formula is used to show that there are at most five Platonic solids, and each of the five, defined as the convex hull of its vertices, is then shown to satisfy the required properties. The formal proof is computational (slow!) and is ported from John Harrison's formalization in HOL Light.",
+  "authors": [
+   "Evan Finken"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/Platonic_Solids.html",
+  "permalink": "https://isa-afp.org/entries/Platonic_Solids.html",
+  "related": [],
+  "shortname": "Platonic_Solids",
+  "title": "The Five Platonic Solids",
+  "topic_links": [
+   "../topics/mathematics/geometry/",
+   "../topics/computer-science/algorithms/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry",
+   "Computer science/Algorithms/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry shows an important basic fact in complex analysis, namely that a complex-valued function $f$ holomorphic on an open annulus $\\{z \\mid 0\\leq r \u003c \\Vert z - z_0\\Vert \\leq R\\}$ has a (generalised) Laurent series expansion of the form \\[f(z) = \\sum_{n=-\\infty}^\\infty a_n (z - z_0)^n\\] that is valid on the entire annulus.\nAn important special case that is also developed is $r = 0$, i.e. the local behaviour of a function around an isolated singularity. For non-essential singularities, this reduces to the well-known simpler Laurent series expansions from HOL-Complex_Analysis of the form $\\sum_{n=n_0}^\\infty a_n (z-z_0)^n$. ",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-08-22",
+  "link": "../entries/Laurent_Annulus.html",
+  "permalink": "https://isa-afp.org/entries/Laurent_Annulus.html",
+  "related": [],
+  "shortname": "Laurent_Annulus",
+  "title": "Laurent Series Expansions on an Annulus",
+  "topic_links": [
+   "../topics/mathematics/analysis/"
+  ],
+  "topics": [
+   "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We formalize Miquel's theorem, also known as the pivot theorem, in Isabelle/HOL. Let \\(ABC\\) be a triangle in the Euclidean plane and let \\(P\\), \\(Q\\), \\(R\\) be points on the side lines \\(BC\\), \\(CA\\), \\(AB\\) respectively. Then the circumcircles of the three triangles \\(AQR\\), \\(BRP\\), \\(CPQ\\) pass through a common point \\(M\\), the Miquel point of the configuration.\nThe development uses complex coordinates.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-08-11",
+  "link": "../entries/Miquel.html",
+  "permalink": "https://isa-afp.org/entries/Miquel.html",
+  "related": [],
+  "shortname": "Miquel",
+  "title": "Miquel's Theorem in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We formalize a trace-based Rely-Guarantee semantics based on the work of Xu et al. The foundation includes an abstract Sequential/While/Parallel programming language equipped with operational semantics designed for concurrent reasoning. Upon this, we build a reasoning infrastructure that includes Rely-Guarantee inversion rules, alongside abstract definitions and standard soundness proofs for both unary and binary settings.",
+  "authors": [
+   "Marialena Hadjikosti",
+   "Andrei Popescu",
+   "Jamie Wright"
+  ],
+  "date": "2026-08-11",
+  "link": "../entries/Trace_Based_Rely_Guarantee.html",
+  "permalink": "https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html",
+  "related": [
+   {
+    "doi": "10.1007/978-3-032-22720-1_9"
+   }
+  ],
+  "shortname": "Trace_Based_Rely_Guarantee",
+  "title": "Trace Based Semantics for Rely Guarantee",
+  "topic_links": [
+   "../topics/computer-science/concurrency/",
+   "../topics/computer-science/semantics-and-reasoning/"
+  ],
+  "topics": [
+   "Computer science/Concurrency",
+   "Computer science/Semantics and reasoning"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry presents a minimal, machine-checked deep embedding of classical higher-order logic (HOL) in Isabelle/HOL, following the article Higher-Order Semantics and Extensionality by Benzmüller, Brown and Kohlhase (Journal of Symbolic Logic 69(4), 2004; henceforth BKK). Throughout, HOL means Church's simple theory of types: it is the embedded object logic, while Isabelle/HOL serves as the ambient meta-logic. The language is formalised in a locally nameless representation, which makes BKK's convention of identifying α-equivalent terms literally true and eliminates capture-avoiding substitution and renaming machinery altogether. The semantics is rendered abstractly, following BKK: applicative structures, Σ-evaluations (D, @, E) subject to BKK's four conditions on the evaluation function, Σ-models (D, @, E, υ), and the class Mβfb of Σ-Henkin models (BKK's property q is automatic here, since primitive equality is part of the signature). Standard models arise as the full special case, and the familiar recursive denotation over frames enters only as the canonical way of constructing concrete models.\nOn this basis we prove the natural-deduction calculus NK of BKK sound (including BKK's evaluation-variant argument) and complete in the sense of Henkin, via BKK's abstract-consistency and model-existence method, with the term model realised as a term evaluation. Completeness is established in a form stronger than BKK's: it holds at every infinite value carrier, for every signature with infinitely many parameters, and for open formulas. Consistency follows by exhibiting a concrete Σ-standard model over finite domains. The signature includes BKK's optional primitive equality and — going beyond BKK, following Andrews' General Models, Descriptions, and Choice in Type Theory (1972) — typed description operators. As an illustration, Cantor's theorem is derived inside NK, in surjective and injective form and at every type. To the best of our knowledge, this is the first machine-checked completeness proof for a deep embedding of HOL in HOL. This contribution is part of the LogiKEy project.\n",
   "authors": [
    "Christoph Benzmüller",
@@ -178,6 +460,86 @@
   ],
   "topics": [
    "Logic/Rewriting"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Machine-checked Isabelle/HOL proof of the linear speedup theorem for multitape Turing machines, in deterministic and nondeterministic form, via the alphabet-enlargement construction. The theorem originates with Hartmanis and Stearns; the textbook proof followed here, together with its nondeterministic corollary, is due to Hopcroft and Ullman.\nGiven a machine \\(M\\) and block size \\(c\\), the enlarged machine \\(M' = \\mathrm{alphabet\\_enlarge}\\, M\\), over alphabet \\(\\Sigma_M^c \\cup \\{\\Box, \\rhd\\}\\), simulates \\(c\\) steps of \\(M\\) per step, reading its input in blocks of \\(c\\) symbols; a wrapping step folds the block encoding back in so results compare languages over \\(M\\)'s original alphabet.\nThe session Multitape_Alphabet_Enlargement shows that \\(M'\\) accepts the encoded input iff \\(M\\) accepts \\(w\\), and that if \\(M\\) accepts \\(w\\) in time \\(T(n)\\) then \\(M'\\) does so in time \\(2\\lceil n/c\\rceil + 8\\lceil T(n)/c\\rceil + 4\\), with no determinism hypothesis. Wrapping this yields the Hopcroft–Ullman speedup corollaries, proved twice: for deterministic machines, where the result stays deterministic, and with no determinism hypothesis, giving \\(\\mathrm{NTIME}(cn) = \\mathrm{NTIME}((1+\\varepsilon)n)\\) and \\(\\mathrm{NTIME}(T(n)) = \\mathrm{NTIME}(c \\cdot T(n))\\), corollaries Hopcroft and Ullman state without proof. For a linear bound \\(T(n) \\le d_0 n\\) and \\(\\varepsilon = 1/q\\), a machine \\(M''\\) with \\(L(M'') = L(M)\\) runs in time \\((1+\\varepsilon)|w| + K\\), \\(K = 28 + 8d_0\\), matching Hopcroft–Ullman's \\((1+\\varepsilon)n\\); for super-linear \\(T\\), \\(M''\\) runs in time \\(\\varepsilon\\,T(|w|) + K\\). \\(K\\) is provably necessary: the clean bound \\((1+\\varepsilon)|w|\\) holds only once \\(|w|\\) passes the explicit threshold \\(q(q+1)K\\), witnessed by a minimal counterexample.\nThis session depends on Multitape_TM_Substrate and HOL-Library.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Enlargement.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Enlargement",
+  "title": "Multitape Alphabet Enlargement",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalises, in Isabelle/HOL, a reduction of an arbitrary finite tape alphabet on a nondeterministic multitape Turing machine to a fixed four-element alphabet \\(\\mathrm{sym4} = \\{\\mathrm{BLANK4}, \\mathrm{LE4}, \\mathrm{BIT0}, \\mathrm{BIT1}\\}\\) (a blank, a left-end marker, and the two bits \\(0\\) and \\(1\\)) while preserving the accepted language and the tape count, and determinism in the deterministic special case.\nGiven a well-formed machine \\(M\\) with tape alphabet \\(\\Gamma_M\\) of at least four symbols, the operation \\(\\mathrm{alphabet\\_reduce}\\,M\\) simulates \\(M\\) over \\(\\mathrm{sym4}\\) under a fixed per-symbol binary encoding, spelling each \\(\\Gamma_M\\)-symbol as a block of \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\) bits. If \\(M\\) accepts an input \\(w\\) within \\(T(|w|)\\) steps, the reduced machine accepts the correspondingly encoded input within \\((6k + 1)\\,b\\,T(|w|)\\) steps, where \\(k\\) is the number of tapes of \\(M\\); this is a single constant factor multiplying the running time, with no additive or lower-order term, fixed entirely by \\(M\\) (linearly in the tape count, logarithmically in the alphabet size), and independent of the input. A looser existential bound of the standard affine form \\(d\\,b\\,T(|w|) + e\\,b\\,|w| + f\\) follows as a corollary.\nThis mechanises the folklore alphabet-homomorphism construction stated, but not costed, by Balcázar, Díaz, and Gabarró, giving it an explicit, machine-checked constant. The development builds on the sibling Multitape_TM_Substrate entry and HOL-Library.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Reduction.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Reduction",
+  "title": "Multitape Alphabet Reduction",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry proves, in Isabelle/HOL, that the two multitape tape-alphabet transformations compose as machines, in both orders, with the accepted language preserved and the composed running time bounded by an explicit affine function of the source machine's running time.\nAlphabet enlargement (the Hartmanis–Stearns / Hopcroft–Ullman linear-speedup construction, packing \\(c\\) contiguous tape cells into one block) and alphabet reduction (the folklore per-symbol binary re-encoding of an arbitrary finite tape alphabet onto a fixed four-symbol alphabet, set within the wider machine-simulation landscape by van Emde Boas and Papadimitriou) are developed independently in the sibling sessions Multitape_Alphabet_Enlargement and Multitape_Alphabet_Reduction over the shared substrate Multitape_TM_Substrate. This session, Multitape_Alphabet_Roundtrip, composes them.\nFor a well-formed source machine \\(M\\) with \\(|\\Gamma_M| \\geq 4\\), and for each order, the entry establishes language preservation (an equivalence modulo the composed input re-encoding) and a composed linear-time bound with explicit constants. Writing \\(k\\) for the source tape count and \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\), reduce-then-enlarge runs in time \\(8(6k + 1)\\,b\\,T(|w|) + 2\\,b\\,|w| + 4\\), and enlarge-then-reduce in \\(8(6k + 1)\\,b'\\,T(|w| + c - 1) + 2(6k + 1)\\,b'\\,|w| + 4(6k + 1)\\,b'\\), where \\(c\\) is the block size and \\(b'\\) the block width of the enlarged alphabet; each bound also has an existential-shape corollary \\(\\exists A, B, C.\\ \\mathrm{time} \\leq A\\,T(|w|) + B\\,|w| + C\\). These composed constants are established here, not inherited from a prior result.\nNothing is re-proved: each headline chains the two sibling sessions' existing theorems. The explicit constants expose an order asymmetry hidden under \\(O(\\cdot)\\): the enlargement's block-speedup factor \\(c\\) cancels when the alphabet is reduced first, but survives when it is enlarged first.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_Alphabet_Roundtrip.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html",
+  "related": [],
+  "shortname": "Multitape_Alphabet_Roundtrip",
+  "title": "Multitape Alphabet Roundtrip",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalises nondeterministic multitape Turing machines in Isabelle/HOL, depending only on HOL-Library.\nA machine's transition is a relation rather than a function: it may allow several moves at each step, so a machine can follow many different computations on one input (the machine is nondeterministic), and it accepts when at least one computation reaches an accepting state. Deterministic machines, which have a single move everywhere, are the special case. The number of tapes is ordinary data rather than fixed in the machine's type, so a single theorem can speak about machines with any number of tapes.\nEach tape carries a marker at its left end, and the model allows a machine to move that marker to the right, discarding a stretch of tape it can never return to. We prove that this relocation preserves the accepted language: a run before the move reaches an accepting state exactly when the matching run after it does.\nThe formalisation adapts Dalvit and Thiemann's multitape Turing machine development, the AFP entry Multitape_To_Singletape_TM, extending it in two ways: the number of tapes is part of a machine's data rather than fixed in its type, and a machine is itself an ordinary value that theorems can range over, rather than a fixed locale context.\nThe Claude family of AI models, via Claude Code, was used for proof engineering.\n",
+  "authors": [
+   "András Z. Salamon",
+   "Michael Wehar"
+  ],
+  "date": "2026-07-14",
+  "link": "../entries/Multitape_TM_Substrate.html",
+  "permalink": "https://isa-afp.org/entries/Multitape_TM_Substrate.html",
+  "related": [],
+  "shortname": "Multitape_TM_Substrate",
+  "title": "Multitape Turing Machine Substrate",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
   ],
   "year": "2026"
  },
@@ -434,6 +796,27 @@
   "topics": [
    "Computer science/Algorithms/Optimization",
    "Mathematics/Analysis"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We formalise the classical theorem of algebraic topology that the fundamental group of the circle is isomorphic to the additive group of the integers, $\\pi_1(S^1) \\cong \\mathbb{Z}$.  The circle is modelled as the unit sphere in the complex plane with basepoint $1$, and the carrier of the fundamental group is the set of path-homotopy classes of loops based at $1$, with concatenation as the group operation. The group laws are obtained from the homotopy groupoid laws of the Isabelle Analysis library.  The isomorphism with $\\mathbb{Z}$ is given by the degree map, sending a homotopy class to the winding number about the origin of any representative loop. That this is a bijective group homomorphism follows from the winding-number classification of loops in the punctured plane, together with a radial retraction onto the circle. The entry is self-contained on top of the Isabelle distribution.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-02",
+  "link": "../entries/Fundamental_Group_Circle.html",
+  "permalink": "https://isa-afp.org/entries/Fundamental_Group_Circle.html",
+  "related": [],
+  "shortname": "Fundamental_Group_Circle",
+  "title": "The Fundamental Group of the Circle",
+  "topic_links": [
+   "../topics/mathematics/topology/"
+  ],
+  "topics": [
+   "Mathematics/Topology"
   ],
   "year": "2026"
  },

@@ -1,0 +1,47 @@
+title = "The Fundamental Group of the Circle"
+date = 2026-07-02
+topics = [
+  "Mathematics/Topology",
+]
+abstract = """
+We formalise the classical theorem of algebraic topology that the fundamental group of the circle is isomorphic to the additive group of the integers, $\\pi_1(S^1) \\cong \\mathbb{Z}$.
+
+The circle is modelled as the unit sphere in the complex plane with basepoint $1$, and the carrier of the fundamental group is the set of path-homotopy classes of loops based at $1$, with concatenation as the group operation. The group laws are obtained from the homotopy groupoid laws of the Isabelle Analysis library.
+
+The isomorphism with $\\mathbb{Z}$ is given by the degree map, sending a homotopy class to the winding number about the origin of any representative loop. That this is a bijective group homomorphism follows from the winding-number classification of loops in the punctured plane, together with a radial retraction onto the circle. The entry is self-contained on top of the Isabelle distribution."""
+license = "bsd"
+note = ""
+creation_note = """
+Opus 4.8 was used to help with proof engineering
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

@@ -4,6 +4,14 @@
     <title>Computer science/Concurrency</title>
     <link>https://isa-afp.org/topics/computer-science/concurrency/</link>
     <description>AFP entries in Concurrency</description><item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Dynamic Pushdown Networks</title>
   <link>https://isa-afp.org/entries/Dynamic_Pushdown_Networks.html</link>
   <pubDate>Tue, 23 Dec 2025 00:00:00 +0000</pubDate>

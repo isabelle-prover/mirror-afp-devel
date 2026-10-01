@@ -4,6 +4,14 @@
     <title>Computer science/Semantics and reasoning</title>
     <link>https://isa-afp.org/topics/computer-science/semantics-and-reasoning/</link>
     <description>AFP entries in Semantics and reasoning</description><item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
   <title>Monadic Second-Order Logic in HOL: Deep and Shallow Embeddings with Automated Faithfulness (Isabelle/HOL dataset)</title>
   <link>https://isa-afp.org/entries/MSOinHOL.html</link>
   <pubDate>Mon, 13 Jul 2026 00:00:00 +0000</pubDate>

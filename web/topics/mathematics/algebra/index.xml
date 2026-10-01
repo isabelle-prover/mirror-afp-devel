@@ -4,6 +4,13 @@
     <title>Mathematics/Algebra</title>
     <link>https://isa-afp.org/topics/mathematics/algebra/</link>
     <description>AFP entries in Algebra</description><item>
+  <title>Fast Chinese Remaindering via Product Trees</title>
+  <link>https://isa-afp.org/entries/CRT_Product_Tree.html</link>
+  <pubDate>Fri, 04 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Fast Chinese Remaindering via Product Trees in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>
   <link>https://isa-afp.org/entries/Jacobian_Counterexample.html</link>
   <pubDate>Mon, 20 Jul 2026 00:00:00 +0000</pubDate>

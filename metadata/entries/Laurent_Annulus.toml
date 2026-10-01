@@ -1,0 +1,35 @@
+title = "Laurent Series Expansions on an Annulus"
+date = 2026-08-22
+topics = [
+  "Mathematics/Analysis",
+]
+abstract = """
+<p>This entry shows an important basic fact in complex analysis, namely that a complex-valued function $f$ holomorphic on an open annulus 
+$\\{z \\mid 0\\leq r < \\Vert z - z_0\\Vert \\leq R\\}$ has a (generalised) Laurent series expansion of the form
+  \\[f(z) = \\sum_{n=-\\infty}^\\infty a_n (z - z_0)^n\\]
+that is valid on the entire annulus.</p>
+<p>An important special case that is also developed is $r = 0$, i.e. the local behaviour of a function around an isolated singularity.
+For non-essential singularities, this reduces to the well-known simpler Laurent series expansions from <tt>HOL-Complex_Analysis</tt> of
+  the form $\\sum_{n=n_0}^\\infty a_n (z-z_0)^n$.
+</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

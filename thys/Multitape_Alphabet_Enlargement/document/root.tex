@@ -1,0 +1,511 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{literal}
+
+% Provide any Isabelle symbols not defined by isabellesym.sty.
+\providecommand{\isasymto}{\ensuremath{\to}}
+\providecommand{\isasymrightarrow}{\ensuremath{\rightarrow}}
+\providecommand{\isasymsubseteq}{\ensuremath{\subseteq}}
+\providecommand{\isasymmp}{\ensuremath{\mp}}
+\providecommand{\isasympm}{\ensuremath{\pm}}
+\providecommand{\isasymne}{\ensuremath{\neq}}
+
+% Session / entry names — single source of truth in sessionnames.tex (canonical
+% at t/document/, symlinked here and dereferenced into a real copy at release).
+\input{sessionnames}
+
+\begin{document}
+
+% \sloppy: raise the line-breaking tolerance so LaTeX rearranges breaks
+% around the long unbreakable \isa{} identifier tokens (in text blocks and
+% proof displays) rather than letting them overrun the right page edge.
+% Verified to clear every Overfull \hbox >= 20pt in this document.
+\sloppy
+
+\title{Multitape Alphabet Enlargement and\\
+       the Linear Speedup Theorem\\[6pt]
+       \large Formal Proof in Isabelle/HOL}
+\author{Andr\'as Z.~Salamon \and Michael Wehar}
+\maketitle
+
+\begin{abstract}
+Machine-checked formal proof in Isabelle/HOL of the linear
+speedup theorem for multitape Turing machines, in both its
+deterministic and nondeterministic forms, via the
+alphabet-enlargement construction.  The theorem is originally
+due to Hartmanis and Stearns~\cite{Hartmanis1965:computational};
+the textbook proof followed here is by Hopcroft and
+Ullman~\cite[Theorems 12.3 and 12.4]{Hopcroft1979:introduction}
+and its nondeterministic corollary.
+
+Given a multitape Turing machine $M$ with alphabet $\Sigma_M$
+and a chosen block size $c$, we build an enlarged machine
+$M' = \mathrm{alphabet\_enlarge}\, M$.  Its alphabet is
+$\Sigma_M^c \cup \{\Box, \rhd\}$ (with a fresh blank and left-end
+marker), and it simulates $c$ steps of $M$ at a time, reading its
+input in blocks of $c$ symbols.  A separate wrapping step folds the
+block-encoder into the machine, so that the textbook statements
+compare languages over $M$'s original alphabet.
+
+This session (\sessAE) establishes the following
+headline theorems:
+
+\begin{itemize}
+\item \emph{Time bound}: if $M$ accepts $w$ in time $T(n)$, then
+  $M'$ accepts $\mathrm{encode\_input}\, bl_M\, w$ in time
+  $2 \lceil n/c \rceil + 8 \lceil T(n)/c \rceil + 4$ (theorem
+  \texttt{alphabet\_enlarge\_time\_explicit}).  Both the input length
+  and the running time are divided by the group size $c$.
+\item \emph{Language biconditional}:
+  $\mathrm{encode\_input}\, bl_M\, w \in L(M') \iff w \in L(M)$ for every
+  well-formed $M$, with no determinism hypothesis.
+\item \emph{Determinism-free building block}: for an arbitrary,
+  possibly nondeterministic, well-formed $M$, the language
+  biconditional and the time bound hold together
+  (\texttt{alphabet\_enlarge\_nae}), with no $\mathrm{det\_mttm}$
+  hypothesis.  This is the raw (encoded-input) form over the
+  enlarged alphabet; wrapping it in the inline encoder yields the
+  same-alphabet speedup corollaries below, each proved in a
+  deterministic and a nondeterministic version.
+\item \emph{HU 12.4 (linear-$T$ case)}: for a linear time bound
+  $T(n) \leq d_0 n$ and any rational $\varepsilon = 1/q > 0$, there exists a
+  multitape $M''$ over the original alphabet with $L(M'') = L(M)$ running in
+  time $(1 + \varepsilon)|w| + K$ (exactly $|w| + |w| \,\mathrm{div}\, q + K$)
+  --- matching Hopcroft and Ullman's $(1 + \varepsilon)n$, with the additive
+  constant now an explicit closed expression $K = 28 + 8 d_0$ --- once the
+  block size $c$ is taken large enough (it grows with $q$ and the slope
+  $d_0$).  It is proved both in a deterministic version ($M$ deterministic
+  $\Rightarrow$ $M''$ deterministic) and a nondeterministic version (no
+  determinism hypothesis); the latter is the Hopcroft--Ullman corollary
+  $\mathrm{NTIME}(cn) = \mathrm{NTIME}((1+\varepsilon)n)$, stated there
+  without proof.
+\item \emph{HU 12.3 (super-linear-$T$ case)}: for $T$ satisfying
+  the growth hypothesis
+  $\forall d. \exists N. \forall n \geq N.\, d \cdot n \leq T(n)$,
+  $M''$ runs in time $\varepsilon\, T(|w|) + K$ for
+  $|w| \geq N_0$ (the exact integer bound is
+  $T(|w|) \,\mathrm{div}\, q + K \leq \varepsilon\, T(|w|) + K$; the
+  linear-in-$|w|$ overhead is absorbed into $T(|w|)/(2q)$ via the growth
+  hypothesis).  Again this is proved both
+  in a deterministic and a nondeterministic version, with the latter giving
+  $\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c \cdot T(n))$ for any
+  $c > 0$.
+\item \emph{Time-complexity convention}: both linear-$T$ headlines are
+  additionally restated in Hopcroft and Ullman's $\max(n + 1, \cdot)$ time
+  convention, in \emph{two} forms --- an all-inputs form keeping the
+  explicit constant ($\ldots + K$), and a constant-free form
+  $(1 + \varepsilon)|w|$ (exactly $|w| + |w|\,\mathrm{div}\,q$) valid once
+  $|w|$ passes the closed threshold $q(q + 1)K$.  The clean constant-free
+  bound cannot hold on \emph{all} inputs, so the residual $K$ is provably
+  necessary: a minimal counterexample (\texttt{clean\_convention\_unattainable},
+  proved in the substrate entry \sessMTTM) accepts its language yet exceeds
+  the convention floor on its shortest input.
+\end{itemize}
+
+The language equivalence, the time bound, and the combined building
+block above all hold for nondeterministic machines as well as
+deterministic ones (they assume no determinism).  Each
+Hopcroft--Ullman speedup corollary is proved twice: once for
+deterministic machines, where the result is also shown to stay
+deterministic, as in the classical statements, and once with no
+determinism assumption, giving the corollary that Hopcroft and Ullman
+state but do not prove.
+
+The nondeterministic multitape substrate lives in
+the sibling \sessMTTM{} session; this session depends
+on \sessMTTM{} and \texttt{HOL-Library}.
+\end{abstract}
+
+\input{acknowledgement}
+
+\tableofcontents
+
+\newpage
+
+\section{Overview}
+
+\subsection{High-level overview}
+
+In one sentence: this session proves the \emph{linear speedup
+theorem} for multitape Turing machines, in both its deterministic and
+nondeterministic forms.  The theorem says that any machine can be made
+to run a constant factor faster.  The idea is to enlarge the machine's
+tape alphabet so that a fixed number $c$ of the original cells is
+packed into one ``block'', and then to simulate $c$ of the original
+steps at a time.
+
+Two constructions do the work.  The first,
+$M' = \mathrm{alphabet\_enlarge}\, M$, rebuilds $M$ so that it works
+over the block alphabet and simulates $c$ steps of $M$ in each of its
+own steps.  Its input must be presented in the same blocked form.  The
+second, $M'' = \mathrm{encoding\_wrap}(M', \ldots)$, folds the
+block-encoder into the machine, so that the textbook statements can be
+made over $M$'s original alphabet, with no encoding visible from
+outside.
+
+The headline results are a time bound and a language equivalence for
+$M'$ (packaged together, with no determinism assumption, as
+$\mathrm{alphabet\_enlarge\_nae}$), together with the two textbook
+corollaries over the original alphabet: Hopcroft and Ullman's
+Theorem~12.4 (the linear-time case) and Theorem~12.3 (the super-linear
+case).  Each corollary is proved twice: once for deterministic
+machines (the \texttt{\_dae} version, which also shows the result
+stays deterministic, as in the classical statements) and once with no
+determinism assumption (the \texttt{\_nae} version).
+
+Three points help a first-time reader.  First, as in the sibling
+\sessAR{} session, a machine here may be nondeterministic by default,
+since its transition is a relation.  The \texttt{\_nae} theorems are
+therefore genuine statements about nondeterministic machines; they are
+the $\mathrm{NTIME}$ corollaries
+($\mathrm{NTIME}(cn) = \mathrm{NTIME}((1+\varepsilon)n)$ and
+$\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c\,T(n))$) that Hopcroft and
+Ullman state without proof.  Second, because the alphabet grows, the
+plain machine $M'$ reads its input in blocked form
+$\mathrm{encode\_input}\, bl_M\, w$; the wrapped machine $M''$ hides
+that encoding, which is why the corollaries can be stated over the
+original alphabet.  Third, the block size $c$ can be any fixed number;
+the speedup factor is $1 + \varepsilon$ with $\varepsilon = 1/q$, and
+each corollary holds once $c$ is large enough relative to $q$.
+
+Every theorem is stated for an arbitrary machine $M$, so each is a
+genuine ``for all $M$'' result.  The sibling entry \sessAR{} goes the
+other way: it \emph{reduces} the alphabet to a fixed four-symbol set.
+
+\input{glossary}
+
+\paragraph{Alphabet-enlargement vocabulary.}
+\emph{Alphabet enlargement} is our name for the block
+construction; in the classical literature it is the alphabet-growing
+half of the Hartmanis--Stearns tape-compression / linear-speedup
+theorem and carries no standard short name of its own.
+\begin{description}
+\item[$c = |{'c}|$] the \emph{group size}: the number of original
+  cells packed into one block, equal to
+  $\mathrm{card}\,(\mathrm{UNIV} :: {'c}\ \mathrm{set})$ for a type
+  parameter ${'c} :: \mathrm{enum}$.
+\item[$M' = \mathrm{alphabet\_enlarge}\, M$] the enlarged machine,
+  over the block alphabet ${'c} \to {'a}$, with state type
+  ${'q} \times ({'a},{'c})\ \mathrm{ae\_stage}$; it simulates $c$
+  steps of $M$ per $M'$-stage following Hopcroft--Ullman's
+  eight-substep scheme.
+\item[$\mathrm{ae\_stage}$] the per-state bookkeeping carried by $M'$
+  (validation / simulation substep tag, per-tape buffers, head
+  destinations).
+\item[$\mathrm{encode\_input}\, bl\, w$] the input encoding: it groups
+  $w$ into consecutive blocks of $c$ symbols, each packed as a function
+  ${'c} \to {'a}$ holding those $c$ symbols, padding the final block
+  with the blank $bl$.  The result is
+  a list of $\lceil |w| / c \rceil$ blocks.
+\item[$M''$, the wrapped machine]
+  $\mathrm{encoding\_wrap}\, M'\, (\mathrm{ae\_pack}\, bl_M)\, c\,
+  \Sigma_M$: the raw machine $M'$ with an inline block-encoder, on the
+  faithful $k$-tape plant-$\rhd$ construction (reusing the spent input
+  tape rather than prepending a fresh one), over the original-alphabet
+  symbols $\mathrm{Raw}\,\Sigma_M$ (plus the encoded working symbols
+  $\mathrm{Enc}\,\Gamma_M$); $\mathrm{ae\_pack}$ is the per-block pack
+  function matching $\mathrm{encode\_input}$.
+\item[$\texttt{Lang\_user\_wrap}\, M''$] the user-facing language of a
+  wrapped machine, over the \emph{original} alphabet:
+  $\{w \mid \mathrm{map}\ \mathrm{Raw}\ w \in L(M'')\}$.
+\item[\texttt{accepts\_in\_time\_user\_wrap}\,$M''\,w\,t$] the
+  corresponding user-facing timed acceptance,
+  $\texttt{accepts\_in\_time\_mttm}\, M''\, (\mathrm{map}\
+  \mathrm{Raw}\ w)\, t$.
+\end{description}
+
+Theorem-name suffixes: \texttt{\_nae} marks the determinism-free
+(``nondeterministic alphabet enlargement'') version, \texttt{\_dae}
+the deterministic specialisation that additionally preserves
+determinism.
+
+\paragraph{The slowdown constant.}
+The scheme formalised here is Hopcroft and Ullman's eight-substep
+simulation~\cite[Theorems 12.3 and 12.4]{Hopcroft1979:introduction} (already
+in their 1969 text~\cite[\S7.1]{Hopcroft1969:formal}), whose per-group cost
+is the factor $8$ in the time bound above.  The precise constant is a matter
+of presentation, not of the theorem: Balc\'azar, D\'iaz, and
+Gabarr\'o~\cite{Balcazar1988:structural} and
+Papadimitriou~\cite{Papadimitriou1994:computational} give a factor-$6$
+simulation, while van Emde Boas's survey~\cite{vanEmdeBoas1990:machine} reads
+the original Hartmanis--Stearns theorem~\cite{Hartmanis1965:computational} as
+intending an amortised, non-oblivious simulation that reaches
+$(1 + \varepsilon)$ directly rather than through any fixed multiplicative
+constant.  Whichever the constant, the group size $c$ divides it away, so we
+formalise the scheme cleanest to verify rather than the one with the
+smallest factor.
+
+\paragraph{Related AFP developments.}
+To our knowledge the Hartmanis--Stearns linear speedup theorem has not been
+formalised in any proof assistant, so this entry has no direct predecessor;
+the neighbouring Isabelle/HOL developments prove different theorems.
+Balbach's \texttt{Cook\_Levin}~\cite{Balbach2023:Cook} shares the model ---
+multitape machines with the tape count a value --- and, like this entry,
+states a machine's language and its running-time bound as separate theorems,
+but treats deterministic polynomial-time reductions for
+$\mathrm{NP}$-completeness, not a speedup.  Xu, Zhang, Urban, and Joosten's
+\texttt{Universal\_Turing\_Machine}~\cite{Xu2019:universal} is a single-tape
+universal machine over a fixed binary alphabet for computability, with no
+timing analysis.  The substrate itself descends from Dalvit and Thiemann's
+\texttt{Multitape\_To\_Singletape\_TM}~\cite{Dalvit2022:verified}, but makes
+the number of tapes a machine's \emph{data} rather than a type parameter, so a
+single speedup theorem here ranges over machines of every tape count.
+
+\subsection{Scope and limitations}
+
+Three caveats orient a reader deciding whether these results apply.
+\begin{itemize}
+\item \emph{Original-alphabet statements need the wrap.}  The raw
+  enlarged machine $M'$ works on block-encoded input
+  ($\mathrm{encode\_input}\, bl_M\, w$); the same-alphabet corollaries
+  hold for the \emph{wrapped} machine $M''$, which folds the encoder
+  in.  Statements about $M'$ alone carry the visible encoding.
+\item \emph{The corollaries need a large enough group.}  The speedup
+  factor is $1 + \varepsilon$ with $\varepsilon = 1/q$, and each
+  corollary holds only once the group size $c$ is large enough
+  relative to $q$ ($q\,(3 + 8 d_0) \leq c$ for the linear
+  case, $16 q \leq c$ for the super-linear case).
+\item \emph{The super-linear case needs a growth hypothesis.}
+  HU~12.3 assumes
+  $\forall d.\ \exists N.\ \forall n \geq N.\ d\,n \leq T(n)$ and holds
+  for inputs $|w| \geq N_0$; the linear case HU~12.4 instead assumes
+  $T(n) \leq d_0 n + b$.
+\end{itemize}
+
+\subsection{The Hopcroft--Ullman statements}
+
+So a reader can check this session against the textbook results it
+claims, we reproduce the source statements verbatim from Hopcroft and
+Ullman~\cite[\S12.2, pp.~290--291]{Hopcroft1979:introduction}, with the
+two conventions needed to read them.
+
+\paragraph{Two reading conventions.}
+First, in these quoted statements $c$ is Hopcroft and Ullman's
+\emph{time-complexity coefficient}; it is \emph{unrelated} to our group
+size $c$ (the enlargement block size of the vocabulary above).  Second,
+they use the convention that $cT(n)$ abbreviates
+$\max(n + 1, \lceil cT(n) \rceil)$: the $n + 1$ floor is the cost of
+reading the input and reaching the blank past its end, and it is what
+lets the bound hold for \emph{all} $n$ --- the finitely many short
+inputs are recognised by finite control in $n + 1$ moves, and only the
+long inputs run the simulation.
+
+\paragraph{Theorem 12.3 (linear speed-up).}
+\begin{quote}
+If $L$ is accepted by a $k$-tape $T(n)$ time-bounded Turing machine
+$M_1$, then $L$ is accepted by a $k$-tape $cT(n)$ time-bounded TM $M_2$
+for any $c > 0$, provided that $k > 1$ and
+$\inf_{n \to \infty} T(n)/n = \infty$.
+\end{quote}
+
+\paragraph{Theorem 12.4 (linear-$T$ case).}
+\begin{quote}
+If $L$ is accepted by a $k$-tape $cn$ time-bounded TM, for $k > 1$ and
+for some constant $c$, then for every $\varepsilon > 0$, $L$ is accepted
+by a $k$-tape $(1 + \varepsilon)n$ time-bounded TM.
+\end{quote}
+
+\paragraph{Corollaries (p.~291).}
+\begin{quote}
+\emph{To Theorem 12.3:} if $\inf_{n \to \infty} T(n)/n = \infty$ and
+$c > 0$, then $\mathrm{DTIME}(T(n)) = \mathrm{DTIME}(cT(n))$.
+
+\smallskip\noindent
+\emph{To Theorem 12.4:} if $T(n) = cn$ for some $c > 1$, then
+$\mathrm{DTIME}(T(n)) = \mathrm{DTIME}((1 + \varepsilon)n)$ for any
+$\varepsilon > 0$.
+
+\smallskip\noindent
+\emph{Of Theorems 12.3 and 12.4:}
+\textbf{(a)} if $\inf_{n \to \infty} T(n)/n = \infty$, then
+$\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(cT(n))$ for any $c > 0$;
+\textbf{(b)} if $T(n) = cn$ for some constant $c$, then
+$\mathrm{NTIME}(T(n)) = \mathrm{NTIME}((1 + \varepsilon)n)$ for any
+$\varepsilon > 0$.
+\end{quote}
+
+\paragraph{Correspondence.}
+The session's four headline theorems formalise these results over the
+value-level substrate:
+\begin{description}
+\item[\texttt{linear\_speedup\_HU\_12\_3\_dae}] Theorem 12.3, the
+  deterministic linear speed-up (super-linear $T$).
+\item[\texttt{linear\_speedup\_HU\_12\_3\_nae}] Corollary (a), its
+  nondeterministic form.
+\item[\texttt{linear\_speedup\_HU\_12\_4\_dae}] Theorem 12.4, the
+  deterministic linear-$T$ speed-up.
+\item[\texttt{linear\_speedup\_HU\_12\_4\_nae}] Corollary (b), its
+  nondeterministic form.
+\end{description}
+The \texttt{DTIME}/\texttt{NTIME} corollaries are the complexity-class
+readings of the deterministic and nondeterministic forms respectively.
+The precise formal statements of all four --- read against the
+$\max(n + 1, \lceil \cdot \rceil)$ convention above --- follow next.
+
+\subsection{Details of theorem statements}
+
+We first state the three properties of the raw enlarged machine $M'$,
+then their determinism-free bundle, then the two textbook corollaries
+over the original alphabet.  The only hypothesis on $M$ for the raw
+results is \texttt{well\_formed\_mttm}: the time and language
+results carry \emph{no} determinism hypothesis, and the deterministic
+corollaries add \texttt{det\_mttm}.
+
+\paragraph{\texttt{alphabet\_enlarge\_wf}.}
+\[
+  \mathrm{valid\_mttm}\, M \ \Longrightarrow\ \mathrm{valid\_mttm}\, M'.
+\]
+The enlarged machine is again a legal machine.  Unlike reduction, no
+alphabet-size side condition is needed: enlargement always yields a
+well-typed block machine.
+
+\paragraph{\texttt{alphabet\_enlarge\_language}.}
+\[
+  \begin{aligned}
+    &\mathrm{well\_formed\_mttm}\, M \ \Longrightarrow\
+      \forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
+    &\quad \bigl(\mathrm{encode\_input}\, bl_M\, w \in L(M')\bigr)
+      = \bigl(w \in L(M)\bigr).
+  \end{aligned}
+\]
+The language biconditional for the raw machine, with no determinism
+hypothesis: $M'$ accepts the block-encoding of $w$ exactly when $M$
+accepts $w$.
+
+\paragraph{\texttt{alphabet\_enlarge\_time\_explicit} and
+  \texttt{alphabet\_enlarge\_time}.}
+Under $\mathrm{well\_formed\_mttm}\, M$, for every input word $w$:
+\[
+  \begin{aligned}
+    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \mathrm{accepts\_in\_time\_mttm}\, M'\,
+      (\mathrm{encode\_input}\, bl_M\, w)\, \\
+    &\qquad \bigl(2\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + 4\bigr).
+  \end{aligned}
+\]
+The $\lceil\,\cdot\,/c\rceil$ factors are the source of the speedup:
+both the input length and the running time are divided by the group
+size $c$.  The coefficients $2$, $8$, $4$ are absolute constants (the
+$8$ counts the eight substeps simulated per group); none of them
+depends on $M$, on $w$, or even on $c$.  The explicit-constant
+statement is \texttt{alphabet\_enlarge\_time\_explicit}; the
+\texttt{obtains}-corollary \texttt{alphabet\_enlarge\_time} repackages
+it existentially as
+$\exists \alpha, f.\ \alpha\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + f$,
+instantiated at $\alpha = 2$, $f = 4$.
+
+\paragraph{\texttt{alphabet\_enlarge\_nae}.}
+The determinism-free building block: under
+$\mathrm{well\_formed\_mttm}\, M$ alone, the language biconditional
+\emph{and} the same time bound hold together, packaged existentially
+($\exists \alpha, f$, with the witnesses $\alpha = 2$, $f = 4$).  This
+is the raw, encoded-input ``Form~2'' statement over the enlarged
+alphabet; wrapping it in the inline encoder yields the same-alphabet
+corollaries below.
+
+\paragraph{\texttt{linear\_speedup\_HU\_12\_4\_nae} /
+\texttt{\_dae} (linear-$T$ case).}
+Assume $\mathrm{well\_formed\_mttm}\, M$, a linear time bound
+$T(n) \leq d_0 n + b$, and $q > 0$, $c > 0$.  Then $M''$ is valid,
+$\texttt{Lang\_user\_wrap}\, M'' = L(M)$
+(same language, \emph{over the original alphabet}), and, provided
+$c$ is large enough ($q\,(3 + 8 d_0) \leq c$), for every
+$w$,
+\[
+  \begin{aligned}
+    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \texttt{accepts\_in\_time\_user\_wrap}\, M''\, w\, \\
+    &\qquad \bigl(|w| + |w| \,\mathrm{div}\, q + K\bigr), \\
+    &\qquad\quad K = 28 + 8 d_0 + 8 b .
+  \end{aligned}
+\]
+The additive constant $K$ is a \emph{literal} closed expression in the
+input machine's linear-bound constants $d_0, b$; an earlier form left both
+$K$ and a wrap constant $\alpha$ existential, and threading $\alpha = 2$ up
+the raw chain removed them, leaving the side condition
+$q\,(3 + 8 d_0) \leq c$ free of $\alpha$.  The running time is
+$|w|\,(1 + 1/q) + K = (1+\varepsilon)\,|w| + K$
+with $\varepsilon = 1/q$, the classical linear speedup.  The
+\texttt{\_dae} version adds the hypothesis $\mathrm{det\_mttm}\, M$ and
+the extra conclusion $\mathrm{det\_mttm}\, M''$ (determinism
+preserved); the \texttt{\_nae} version drops both and is the
+Hopcroft--Ullman corollary
+$\mathrm{NTIME}(cn) = \mathrm{NTIME}((1+\varepsilon)n)$.
+
+\paragraph{\texttt{linear\_speedup\_HU\_12\_3\_nae} /
+\texttt{\_dae} (super-linear-$T$ case).}
+Assume $\mathrm{well\_formed\_mttm}\, M$, the growth hypothesis
+$\forall d.\ \exists N.\ \forall n \geq N.\ d\,n \leq T(n)$, $q > 0$,
+and $16 q \leq c$.  Then there are constants $K, N_0$ with $M''$
+valid, $\texttt{Lang\_user\_wrap}\, M'' = L(M)$, and for every $w$ with
+$|w| \geq N_0$,
+\[
+  \begin{aligned}
+    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \texttt{accepts\_in\_time\_user\_wrap}\, M''\, w\,
+      \bigl(T(|w|) \,\mathrm{div}\, q + K\bigr).
+  \end{aligned}
+\]
+For super-linear $T$ the growth hypothesis absorbs the linear-in-$|w|$
+overhead into $T(|w|)/(2q)$, leaving running time $T(|w|)/q + K$, a
+speedup by an arbitrary factor $q$.  As before, the \texttt{\_dae}
+version adds $\mathrm{det\_mttm}$ preservation, and the \texttt{\_nae}
+version is the corollary
+$\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c\,T(n))$ for any $c > 0$.
+
+\paragraph{Convention restatements
+(\texttt{linear\_speedup\_HU\_12\_4\_nae\_conv} /
+\texttt{\_eventual}, and the \texttt{\_dae} pair).}
+The four headlines above bound each accepting run by a per-input additive
+constant $K$.  Read in Hopcroft and Ullman's $\max(n + 1, \cdot)$ time
+convention --- here $\max(n + 2, \cdot)$, since the substrate reads the
+left endmarker before the first input symbol --- the linear-$T$ case has
+two honest forms.  The \texttt{\_conv} form keeps the constant and holds
+for \emph{all} inputs: $M''$ accepts every $w \in L(M)$ within
+$\max(|w| + 2,\ |w| + |w|\,\mathrm{div}\,q + K)$, with the same literal
+$K = 28 + 8 d_0 + 8 b$.  The \texttt{\_eventual} form drops the constant
+entirely --- $M''$ then runs in exactly $|w| + |w|\,\mathrm{div}\,q$ ---
+but only once $|w|$ exceeds the closed threshold $q(q + 1)K$ (proved by
+running the raw bound one denominator tighter, at $q + 1$, then absorbing
+$K$ into the extra $\mathrm{div}$-slack).  The clean constant-free bound on
+\emph{all} inputs is provably unattainable: the substrate entry \sessMTTM{}
+proves \texttt{clean\_convention\_unattainable}, exhibiting a valid
+deterministic machine that accepts its language yet needs three steps on
+the empty input --- one past the floor $2$ --- so no
+$|w| + |w|\,\mathrm{div}\,q$ convention bound can hold there, for any $q$.
+This is why the residual $K$ is kept rather than folded into a smaller
+$\varepsilon$: closing the finitely many small inputs would require a
+non-effective finite-exceptions table (\texttt{time\_cleanup} in
+\sessMTTM) that the speedup construction does not build.  So the textbook's
+clean $(1 + \varepsilon)n$ reading of 12.4 holds for the constructed
+machine only with the explicit residual $K$, or only past the threshold;
+the class equality $\mathrm{DTIME}(cn) = \mathrm{DTIME}((1 + \varepsilon)n)$
+survives, but is recovered only through that non-effective table.  The
+superlinear case carries no such caveat: there the growth of $T$ dominates
+the finite-control cleanup, so the convention forms
+\texttt{linear\_speedup\_HU\_12\_3\_nae\_conv} and \texttt{\_dae\_conv} are
+already clean, with no residual constant.
+
+\newpage
+
+% Isabelle's auto-generated session.tex contains the correct
+% \input{} sequence in declaration order from this session's ROOT
+% `theories` block.  Self-scoped: documents only Multitape_Alphabet_Enlargement's
+% own theories (the parent Multitape_TM_Substrate is documented separately).
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Luiz Gustavo Cordeiro</title>
+    <link>https://isa-afp.org/authors/cordeiro/</link>
+    <description>AFP entries of Luiz Gustavo Cordeiro</description><item>
+  <title>The Teichmüller-Tukey Lemma</title>
+  <link>https://isa-afp.org/entries/Teichmuller_Tukey_Lemma.html</link>
+  <pubDate>Mon, 21 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Teichmüller-Tukey Lemma in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+
+  </channel>
+</rss>

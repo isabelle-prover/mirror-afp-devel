@@ -1,0 +1,15 @@
+chapter AFP
+
+session Multitape_Alphabet_Roundtrip = Multitape_TM_Substrate +
+  description "Round-trip composition of the alphabet transformations."
+  options [timeout = 300]
+  sessions
+    Multitape_Alphabet_Enlargement
+    Multitape_Alphabet_Reduction
+  theories
+    AlphabetRoundtrip
+  document_files
+    "root.tex"
+    "root.bib"
+    "acknowledgement.tex"
+    "sessionnames.tex"

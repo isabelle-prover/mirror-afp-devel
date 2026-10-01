@@ -4,6 +4,95 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html</link>
+  <pubDate>Thu, 24 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Work Bounds for Strongly Joinable Balanced Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The Teichmüller-Tukey Lemma</title>
+  <link>https://isa-afp.org/entries/Teichmuller_Tukey_Lemma.html</link>
+  <pubDate>Mon, 21 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Teichmüller-Tukey Lemma in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+<item>
+  <title>The Földes–Hammer Characterization of Split Graphs</title>
+  <link>https://isa-afp.org/entries/Foldes_Hammer.html</link>
+  <pubDate>Fri, 11 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Földes–Hammer Characterization of Split Graphs in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Fast Chinese Remaindering via Product Trees</title>
+  <link>https://isa-afp.org/entries/CRT_Product_Tree.html</link>
+  <pubDate>Fri, 04 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Fast Chinese Remaindering via Product Trees in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Greibach’s Hardest Context-Free Language</title>
+  <link>https://isa-afp.org/entries/Greibach_Hardest.html</link>
+  <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Greibach’s Hardest Context-Free Language in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>The Five Platonic Solids</title>
+  <link>https://isa-afp.org/entries/Platonic_Solids.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Five Platonic Solids in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)</title>
+  <link>https://isa-afp.org/entries/DPDA_Complement_HU.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman) in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Laurent Series Expansions on an Annulus</title>
+  <link>https://isa-afp.org/entries/Laurent_Annulus.html</link>
+  <pubDate>Sat, 22 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Laurent Series Expansions on an Annulus in the AFP</description>
+    <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>Trace Based Semantics for Rely Guarantee</title>
+  <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Trace Based Semantics for Rely Guarantee in the AFP</description>
+    <category>Computer science/Concurrency</category>
+    <category>Computer science/Semantics and reasoning</category>
+</item>
+<item>
+  <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Miquel.html</link>
+  <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Miquel&#39;s Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>A deep embedding of HOL in HOL: soundness, completeness, consistency</title>
   <link>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</link>
   <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>
@@ -49,6 +138,34 @@
   <pubDate>Fri, 17 Jul 2026 00:00:00 +0000</pubDate>
   <description>Termination Restricted to Right-Forward Closures in the AFP</description>
     <category>Logic/Rewriting</category>
+</item>
+<item>
+  <title>Multitape Turing Machine Substrate</title>
+  <link>https://isa-afp.org/entries/Multitape_TM_Substrate.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Turing Machine Substrate in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Roundtrip</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Roundtrip.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Roundtrip in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Reduction</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Reduction.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Reduction in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Multitape Alphabet Enlargement</title>
+  <link>https://isa-afp.org/entries/Multitape_Alphabet_Enlargement.html</link>
+  <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
+  <description>Multitape Alphabet Enlargement in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
 </item>
 <item>
   <title>Checking Equality-Saturation Merge and Extraction Certificates</title>
@@ -145,6 +262,13 @@
   <description>First-Order Methods for Smooth Convex Optimization in Isabelle/HOL in the AFP</description>
     <category>Computer science/Algorithms/Optimization</category>
     <category>Mathematics/Analysis</category>
+</item>
+<item>
+  <title>The Fundamental Group of the Circle</title>
+  <link>https://isa-afp.org/entries/Fundamental_Group_Circle.html</link>
+  <pubDate>Thu, 02 Jul 2026 00:00:00 +0000</pubDate>
+  <description>The Fundamental Group of the Circle in the AFP</description>
+    <category>Mathematics/Topology</category>
 </item>
 <item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>

@@ -1,0 +1,9 @@
+chapter AFP
+
+session Miquel = Simson +
+  options [timeout = 600]
+  theories
+    Miquel
+  document_files
+    "root.tex"
+    "root.bib"

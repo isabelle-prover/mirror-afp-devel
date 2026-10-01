@@ -1,0 +1,35 @@
+title = "Miquel's Theorem in Isabelle/HOL"
+date = 2026-08-11
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = "We formalize Miquel's theorem, also known as the pivot theorem, in Isabelle/HOL. Let \\(ABC\\) be a triangle in the Euclidean plane and let \\(P\\), \\(Q\\), \\(R\\) be points on the side lines \\(BC\\), \\(CA\\), \\(AB\\) respectively. Then the circumcircles of the three triangles \\(AQR\\), \\(BRP\\), \\(CPQ\\) pass through a common point \\(M\\), the <em>Miquel point</em> of the configuration.<br><br>The development uses complex coordinates."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

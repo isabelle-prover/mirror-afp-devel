@@ -1,0 +1,33 @@
+title = "Greibach’s Hardest Context-Free Language"
+date = 2026-08-25
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = "Formalization of Greibach’s hardest context-free language theorem: There is a “hardest” context-free language $L_0$ such that every context-free language is an inverse homomorphic image of $L_0$."
+license = "bsd"
+note = ""
+creation_note = """
+Claude was used to produce the initial version of the theory based on Greibach's paper.
+
+
+"""
+
+[authors]
+
+[authors.nipkow]
+email = "nipkow_email"
+
+[contributors]
+
+[notify]
+nipkow = "nipkow_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1137/0202025",
+]
+pubs = []

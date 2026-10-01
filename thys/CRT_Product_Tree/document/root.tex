@@ -1,0 +1,45 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsfonts, amsmath, amssymb}
+
+% this should be the last package used
+\usepackage{pdfsetup}
+\usepackage[shortcuts]{extdash}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{rm}
+
+
+\begin{document}
+
+\title{Fast Chinese Remaindering via Product Trees}
+\author{Manuel Eberl}
+\maketitle
+
+\begin{abstract}
+Product trees are a simple data structure that, broadly speaking, allows dealing with the product
+of a large number of (typically coprime) integers, or more generally elements of a Euclidean ring.
+
+This is particularly useful for efficient simultaneous 
+modular reduction, i.e.\ computing $x\mathbin{\text{mod}} m_i$ for a large number of moduli $m_i$ at the
+same time for a fixed $x$, and the inverse operation thereof, i.e.\ modular reconstruction 
+(also known as ``Chinese Remaindering'').
+
+The algorithms formalised are adapted from the book ``Modern Computer Algebra'' by von zur
+Gathen and Gerhard~\cite[Chapter 10]{gathen}.
+\end{abstract}
+
+\tableofcontents
+
+\newpage
+\parindent 0pt\parskip 0.5ex
+
+\input{session}
+
+\raggedright
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+

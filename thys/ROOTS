@@ -195,6 +195,7 @@ Count_Complex_Roots
 Countable_Multiset
 Countable_Sums_and_Discrete_Distributions
 Coupledsim_Contrasim
+CRT_Product_Tree
 CryptHOL
 CryptoBasedCompositionalProperties
 Crypto_Standards
@@ -204,6 +205,7 @@ CubicalCategories
 DCR-ExecutionEquivalence
 DFS_Framework
 DOM_Components
+DPDA_Complement_HU
 DPRM_Theorem
 DPT-SAT-Solver
 DP_QBS
@@ -327,6 +329,7 @@ Flow_Networks
 Floyd_Warshall
 Flyspeck-Tame
 FocusStreamsCaseStudies
+Foldes_Hammer
 Forcing
 Formal_Puiseux_Series
 Formal_SSA
@@ -340,6 +343,7 @@ Frequency_Moments
 Fresh_Identifiers
 FunWithFunctions
 FunWithTilings
+Fundamental_Group_Circle
 Functional-Automata
 Functional_Ordered_Resolution_Prover
 Furstenberg_Topology
@@ -378,6 +382,7 @@ Graph_Saturation
 Graph_Theory
 Gray_Codes
 Green
+Greibach_Hardest
 Greibach_Normal_Form
 Groebner_Bases
 Groebner_Macaulay
@@ -474,6 +479,7 @@ Jinja
 JinjaDCI
 JinjaThreads
 JiveDataStoreModel
+Joinable_BST_Work_Bounds
 Jordan_Hoelder
 Jordan_Normal_Form
 KAD
@@ -522,6 +528,7 @@ Laplace_Transform
 Latin_Square
 LatticeProperties
 Launchbury
+Laurent_Annulus
 Laws_of_Large_Numbers
 Lazy-Lists-II
 Lazy_Case
@@ -589,6 +596,7 @@ MiniSail
 Minimal_SSA
 Minkowskis_Theorem
 Minsky_Machines
+Miquel
 Mission_Time_LTL
 Mission_Time_LTL_Formula_Progression
 Mission_Time_LTL_Language_Partition
@@ -609,6 +617,10 @@ Multi_Party_Computation
 Multirelations
 Multirelations_Heterogeneous
 Multiset_Ordering_NPC
+Multitape_Alphabet_Enlargement
+Multitape_Alphabet_Reduction
+Multitape_Alphabet_Roundtrip
+Multitape_TM_Substrate
 Multitape_To_Singletape_TM
 Munta_Certificate_Checker
 Munta_Model_Checker
@@ -617,6 +629,7 @@ NREST
 Nagata-Factoriality
 Name_Carrying_Type_Inference
 Nano_JSON
+Napoleon
 Nash_Equilibrium
 Nash_Williams
 Nat-Interval-Logic
@@ -690,6 +703,7 @@ Pi_Irrational
 Pi_Transcendental
 Picks_Theorem
 Planarity_Certificates
+Platonic_Solids
 Pluennecke_Ruzsa_Inequality
 Poincare_Bendixson
 Poincare_Disc
@@ -924,6 +938,7 @@ Swap_Distance
 Symmetric_Polynomials
 Syntax_Independent_Logic
 Synthetic_Completeness
+System_F_Normalization
 Szemeredi_Regularity
 Szpilrajn
 Tabulation_Hashing
@@ -932,6 +947,7 @@ TLA
 Tail_Recursive_Functions
 Tarskis_Geometry
 Taylor_Models
+Teichmuller_Tukey_Lemma
 Theta_Functions
 Three_Circles
 Three_Squares
@@ -941,6 +957,7 @@ Topological_Groups
 Topological_Semantics
 Topology
 TortoiseHare
+Trace_Based_Rely_Guarantee
 Transcendence_Series_Hancl_Rucki
 Transformer_Semantics
 Transition_Systems_and_Automata

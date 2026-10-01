@@ -1,0 +1,31 @@
+title = "The Földes–Hammer Characterization of Split Graphs"
+date = 2026-09-11
+topics = [
+  "Mathematics/Graph theory",
+]
+abstract = "This entry formalizes the classical Földes–Hammer theorem characterizing finite split graphs as exactly the graphs with no induced copy of \\(2K_2\\), \\(C_4\\), or \\(C_5\\). It builds on the AFP session <code>Undirected_Graph_Theory</code>."
+license = "bsd"
+note = ""
+creation_note = "Codex with gpt 5.5 on xhigh reasoning was used to help with proof engineering."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+
+[authors.queiroz]
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

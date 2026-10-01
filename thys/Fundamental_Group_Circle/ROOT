@@ -1,0 +1,11 @@
+chapter AFP
+
+session Fundamental_Group_Circle = "HOL-Complex_Analysis" +
+  options [timeout = 600]
+  sessions
+    "HOL-Algebra"
+  theories
+    Fundamental_Group_Circle
+  document_files
+    "root.tex"
+    "root.bib"

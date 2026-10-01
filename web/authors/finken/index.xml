@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Evan Finken</title>
+    <link>https://isa-afp.org/authors/finken/</link>
+    <description>AFP entries of Evan Finken</description><item>
+  <title>The Five Platonic Solids</title>
+  <link>https://isa-afp.org/entries/Platonic_Solids.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Five Platonic Solids in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+
+  </channel>
+</rss>

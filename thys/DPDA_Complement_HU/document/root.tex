@@ -1,0 +1,32 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{literal}
+
+\begin{document}
+
+\title{Deterministic Context-Free Languages are Closed Under
+  Complementation (Hopcroft and Ullman)}
+\author{Kaan Taskin and Tobias Nipkow}
+\maketitle
+
+\begin{abstract}
+A deterministic context-free language (DCFL) is a language accepted by a deterministic pushdown automaton (DPDA).
+This entry proves that the deterministic context-free languages are closed under complementation.
+The proof follows the one in the book by Hopcroft and Ullman (1979) \cite{HopcroftU79}.
+\end{abstract}
+
+\tableofcontents
+
+% include generated text of all theories
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

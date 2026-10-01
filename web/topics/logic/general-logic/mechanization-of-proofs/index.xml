@@ -4,6 +4,23 @@
     <title>Logic/General logic/Mechanization of proofs</title>
     <link>https://isa-afp.org/topics/logic/general-logic/mechanization-of-proofs/</link>
     <description>AFP entries in Mechanization of proofs</description><item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>A deep embedding of HOL in HOL: soundness, completeness, consistency</title>
   <link>https://isa-afp.org/entries/HOL_in_HOL_Deep.html</link>
   <pubDate>Wed, 05 Aug 2026 00:00:00 +0000</pubDate>

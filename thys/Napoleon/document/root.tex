@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Napoleon's Theorem in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+We formalize Napoleon's theorem in Isabelle/HOL.  Given a nondegenerate
+Euclidean triangle, equilateral triangles constructed externally on its three
+sides have centres that form an equilateral triangle.  The construction is
+represented in complex coordinates, and both orientations of the equilateral
+rotation are covered by one parametrized development.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+Napoleon's theorem is a classical triangle-geometry result
+\cite{honsberger1995episodes}: the three
+equilateral triangles erected on the sides of an arbitrary triangle determine
+three centres which themselves are the vertices of an equilateral triangle.
+The orientation of the erected triangles matters.  A coordinate
+formalization must therefore distinguish the two rotations through
+\(\pm\pi/3\), and it must make explicit which orientation gives the external
+construction.
+
+The exterior condition is part of the formal specification.  For a directed
+side \(ab\), the signed side orientation of a point \(x\) is
+\(\operatorname{Im}((x-a)/(b-a))\).  An apex is external precisely when its
+side orientation has strictly opposite sign to that of the third vertex.
+
+The formalization uses the complex plane.  If \(s\) is either
+\(\operatorname{cis}(\pi/3)\) or \(\operatorname{cis}(-\pi/3)\), the apex on the
+directed side from \(x\) to \(y\) is
+\[
+  E_s(x,y)=x+s(y-x).
+\]
+The centre of the corresponding equilateral triangle is the average of its
+three vertices.  The published AFP development of Morley's theorem
+\cite{morleyAFP} supplies
+the equilateral-triangle characterization used by the present entry; the
+present theory adds the cyclic centre calculation specific to Napoleon's
+configuration.
+
+\section{Definitions and construction correctness}
+
+The theory defines the oriented apex and the centre of an equilateral triangle
+on a directed side.  For distinct endpoints, the rotation characterization
+immediately proves the two equal-length equations that certify the
+construction as equilateral.  Keeping the rotation parameter explicit avoids
+duplicating the proof for clockwise and counterclockwise constructions.
+The predicate \texttt{external\_side} states that two points lie strictly on
+opposite sides of the directed line.  The theorem
+\texttt{napoleon\_external\_construction} proves this predicate for all three
+cyclic sides, in addition to the six equal-distance facts for the constructed
+equilateral triangles.
+
+\section{The centre calculation}
+
+Let \(N_{AB}\), \(N_{BC}\), and \(N_{CA}\) denote the three centres.  The
+complex rotation parameter satisfies
+\[
+  s^2=s-1,
+\]
+and the cyclic differences simplify to
+\[
+  N_{CA}-N_{AB}=(1-s)(N_{BC}-N_{AB}).
+\]
+Since \(1-s\) is the opposite \(\pm\pi/3\) rotation, the two vectors from
+\(N_{AB}\) to the other two centres have equal lengths and meet at an
+equilateral angle.  The final theorem is stated through the corresponding
+pairwise-distance characterization.  The final bundled corollary
+\texttt{napoleon\_external\_theorem} packages this centre conclusion together
+with all three external equilateral constructions under the non-collinearity
+assumption, so the formal statement mirrors the complete English theorem.
+
+\section{Formalization notes}
+
+The entry imports the released \texttt{Morley\_Theorem} session rather than
+duplicating its complex equilateral infrastructure.  The \texttt{napoleon\_centre}
+is the arithmetic mean of the three vertices, hence the centroid; on an
+equilateral triangle this agrees with the circumcenter, incenter, and
+orthocenter.  The source theory is kept as a single top-level AFP theory, with
+the document containing the mathematical explanation and proof sketch.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

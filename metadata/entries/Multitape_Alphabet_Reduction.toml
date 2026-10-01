@@ -1,0 +1,61 @@
+title = "Multitape Alphabet Reduction"
+date = 2026-07-14
+topics = [
+  "Computer science/Automata and formal languages",
+]
+abstract = """
+<p>This entry formalises, in Isabelle/HOL, a reduction of an arbitrary finite tape alphabet on a nondeterministic multitape Turing machine to a fixed four-element alphabet \\(\\mathrm{sym4} = \\{\\mathrm{BLANK4}, \\mathrm{LE4}, \\mathrm{BIT0}, \\mathrm{BIT1}\\}\\) (a blank, a left-end marker, and the two bits \\(0\\) and \\(1\\)) while preserving the accepted language and the tape count, and determinism in the deterministic special case.</p>
+
+<p>Given a well-formed machine \\(M\\) with tape alphabet \\(\\Gamma_M\\) of at least four symbols, the operation \\(\\mathrm{alphabet\\_reduce}\\,M\\) simulates \\(M\\) over \\(\\mathrm{sym4}\\) under a fixed per-symbol binary encoding, spelling each \\(\\Gamma_M\\)-symbol as a block of \\(b = \\lceil \\log_2 |\\Gamma_M| \\rceil\\) bits. If \\(M\\) accepts an input \\(w\\) within \\(T(|w|)\\) steps, the reduced machine accepts the correspondingly encoded input within \\((6k + 1)\\,b\\,T(|w|)\\) steps, where \\(k\\) is the number of tapes of \\(M\\); this is a single constant factor multiplying the running time, with no additive or lower-order term, fixed entirely by \\(M\\) (linearly in the tape count, logarithmically in the alphabet size), and independent of the input. A looser existential bound of the standard affine form \\(d\\,b\\,T(|w|) + e\\,b\\,|w| + f\\) follows as a corollary.</p>
+
+<p>This mechanises the folklore alphabet-homomorphism construction stated, but not costed, by Balcázar, Díaz, and Gabarró, giving it an explicit, machine-checked constant. The development builds on the sibling <tt>Multitape_TM_Substrate</tt> entry and <tt>HOL-Library</tt>.</p>
+
+<p>The Claude family of AI models, via Claude Code, was used for proof engineering.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Generative AI was used for proof engineering and to write descriptions of the results, together with human design, steering, and review.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.salamon]
+email = "salamon_email"
+
+[authors.wehar]
+email = "wehar_email"
+
+[contributors]
+
+[notify]
+salamon = "salamon_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []
