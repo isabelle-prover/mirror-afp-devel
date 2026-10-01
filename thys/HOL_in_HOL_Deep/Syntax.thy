@@ -10,8 +10,9 @@ text \<open>BKK's language of classical higher-order logic --- HOL, by which we 
   and parameters carry their type.  BKK take alphabetic variants to be identical (BKK
   Section 2.1); locally nameless makes that literally true --- \<open>\<alpha>\<close>-equivalent terms are
   @{emph \<open>equal\<close>}.  Binders bind indices and substitution replaces only free names, so
-  capture cannot arise: explicit \<open>\<alpha>\<close>-conversion and bound-variable renaming disappear,
-  while substitution itself (opening, \<open>fsub\<close>, \<open>msub\<close>) of course remains.
+  capture cannot arise for locally closed substituends, the only ones used: explicit
+  \<open>\<alpha>\<close>-conversion and bound-variable renaming disappear, while substitution itself
+  (opening, \<open>fsub\<close>, \<open>msub\<close>) of course remains.
   As in BKK, non-logical constants are @{emph \<open>parameters\<close>} with names drawn from a type \<open>'p\<close>, and
   we include BKK's optional primitive equality \<open>Eq \<sigma>\<close> (BKK Section 2.1, Remark 7.9),
   alongside the always-expressible defined Leibniz equality (BKK Section 2.2).
@@ -22,9 +23,9 @@ text \<open>BKK's language of classical higher-order logic --- HOL, by which we 
   singletons: the rule \<open>NK(\<iota>)\<close> of the calculus and the model condition \<open>gm_descB\<close>, both
   schematic in the type \<open>\<sigma>\<close>.  (The \<open>\<iota>\<close> in the rule's name is Andrews' symbol for
   description, not the type \<open>\<iota>\<close> of individuals.)  Definitions and lemmas below that carry
-  no BKK reference are locally-nameless infrastructure: opening, closing, freshness,
-  renaming.  They have no counterpart in the paper, where identification of alphabetic
-  variants is handled informally (BKK Section 2.1).\<close>
+  no BKK reference are infrastructure of the formalisation: opening, closing, freshness,
+  parameter renaming, countability.  They have no counterpart in the paper, where the
+  identification of alphabetic variants is handled informally (BKK Section 2.1).\<close>
 
 subsection \<open>Types and terms\<close>
 
@@ -115,12 +116,6 @@ primrec fsub :: "nat \<Rightarrow> ty \<Rightarrow> 'p tm \<Rightarrow> 'p tm \<
   | "fsub x \<sigma> u (s \<^bold>\<cdot> t) = (fsub x \<sigma> u s) \<^bold>\<cdot> (fsub x \<sigma> u t)"
   | "fsub x \<sigma> u (\<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> b) = \<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> (fsub x \<sigma> u b)"
 
-text \<open>Substitution notation: \<open>b\<^bold>[u\<^bold>/x\<^bsub>\<sigma>\<^esub>\<^bold>]\<close> substitutes \<open>u\<close> for the free variable \<open>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<close> in \<open>b\<close>.\<close>
-
-syntax "_fsub" :: "logic \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic \<Rightarrow> logic"  (\<open>_\<^bold>[_\<^bold>'/_\<^bsub>_\<^esub>\<^bold>]\<close> [1000, 0, 0, 0] 1000)
-syntax_consts "_fsub" == "fsub"
-translations "b\<^bold>[u\<^bold>/x\<^bsub>\<sigma>\<^esub>\<^bold>]" \<rightleftharpoons> "CONST fsub x \<sigma> u b"
-
 subsection \<open>Free variables and parameters\<close>
 
 primrec fvs :: "'p tm \<Rightarrow> nat set" where
@@ -142,8 +137,8 @@ text \<open>Renaming parameters.  Eigen-parameters (BKK's \<open>w\<^bsub>\<alph
 
 lemma prn_opn: "prn \<rho> (opn k u t) = opn k (prn \<rho> u) (prn \<rho> t)"
   by (induction t arbitrary: k) auto
-text \<open>Statement preserved verbatim from the published version of this entry (compatibility
-  export).\<close>
+text \<open>The next lemma, \<open>pars_prn\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export).\<close>
 
 lemma pars_prn: "pars (prn \<rho> t) = \<rho> ` pars t" by (simp add: tm.set_map)
 lemma prn_prn: "prn f (prn g t) = prn (\<lambda>p. f (g p)) t" by (induction t) auto
@@ -168,8 +163,8 @@ lemma prn_occ [simp]: "occ (prn f t) = occ t" by (induction t) auto
 
 subsection \<open>A fresh free variable exists\<close>
 
-text \<open>A deterministic fresh name for a finite set (used for the abstraction case of the
-  denotation).\<close>
+text \<open>A deterministic fresh name for a finite set, used wherever a concrete fresh name is
+  needed: in the abstraction case of the denotation and in several proofs.\<close>
 
 definition fresh :: "nat set \<Rightarrow> nat" where "fresh S \<equiv> LEAST n. n \<notin> S"
 
@@ -178,8 +173,8 @@ lemma fresh_notin: "finite S \<Longrightarrow> fresh S \<notin> S"
 
 subsection \<open>Basic laws of opening and substitution\<close>
 
-text \<open>Free variables of a substitution.  (A name may occur at several types, so \<open>x\<close> is only
-  removed under the safe over-approximation.)\<close>
+text \<open>Free variables of a substitution: an over-approximation, since the name \<open>x\<close> may still
+  occur at another type.\<close>
 
 lemma fvs_fsub: "fvs (fsub x \<sigma> u t) \<subseteq> fvs t \<union> fvs u" by (induction t) auto
 lemma fvs_opn: "fvs (opn k u t) \<subseteq> fvs t \<union> fvs u" by (induction t arbitrary: k) auto
@@ -193,8 +188,8 @@ subsection \<open>Local closure\<close>
 text \<open>A term is @{emph \<open>locally closed\<close>} if every bound index is captured by an enclosing
   binder.  As is standard for the locally-nameless representation, the \<open>Abs\<close> rule uses a
   @{emph \<open>cofinite\<close>} quantifier: opening the body with a fresh free variable is locally closed.
-  A locally closed term denotes exactly an \<open>\<alpha>\<close>-equivalence class of BKK's named terms
-  (BKK Section 2.1).\<close>
+  A locally closed term corresponds to an \<open>\<alpha>\<close>-equivalence class of raw named terms
+  (BKK Section 2.1); well-formedness is imposed separately below.\<close>
 
 inductive lc :: "'p tm \<Rightarrow> bool" where
     lc_Fre [intro]: "lc (n\<^sup>f\<^bsub>\<sigma>\<^esub>)"
@@ -207,8 +202,8 @@ inductive lc :: "'p tm \<Rightarrow> bool" where
   | lc_App [intro]: "lc s \<Longrightarrow> lc t \<Longrightarrow> lc (s \<^bold>\<cdot> t)"
   | lc_Abs: "finite L \<Longrightarrow> (\<And>x. x \<notin> L \<Longrightarrow> lc (b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)) \<Longrightarrow> lc (\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)"
 
-text \<open>If opening at \<open>j\<close> is already fixed by a later opening at \<open>i \<noteq> j\<close>, then opening
-  at \<open>i\<close> alone was already the identity.\<close>
+text \<open>The abstraction case of the next lemma: if the body opened at \<open>j\<close> is left unchanged
+  by opening at \<open>i \<noteq> j\<close>, then the body itself is left unchanged by opening at \<open>i\<close>.\<close>
 
 lemma opn_core: "i \<noteq> j \<Longrightarrow> opn j v t = opn i u (opn j v t) \<Longrightarrow> opn i u t = t"
   by (induct t arbitrary: i j; auto split: if_splits) (metis nat.inject)
@@ -313,8 +308,8 @@ text \<open>Opening a well-typed abstraction with a well-typed argument stays we
 lemma wff_opn: "wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b) \<Longrightarrow> wff\<^bsub>\<sigma>\<^esub>(a) \<Longrightarrow> wff\<^bsub>\<tau>\<^esub>(b\<^bold>\<langle>a\<^bold>\<rangle>)" 
   by (metis finite_fvs fresh_notin fsub_intro wff_Abs_open wff_fsub)
 
-text \<open>Parameter renaming leaves the typing unchanged (there is no BKK counterpart: parameter
-  renaming is part of the locally-nameless infrastructure).\<close>
+text \<open>Parameter renaming leaves the typing unchanged (no BKK counterpart: renaming serves the
+  eigen-parameter bookkeeping of the calculus).\<close>
 
 lemma wff_prn[intro!]: "wff\<^bsub>\<sigma>\<^esub>(t) \<Longrightarrow> wff\<^bsub>\<sigma>\<^esub>(prn \<rho> t)"
 proof (induction \<sigma> t rule: wff.induct)
@@ -325,7 +320,7 @@ qed (auto intro: wff.intros)
 subsection \<open>Turning one parameter into a free variable\<close>
 
 text \<open>\<open>pvar w \<sigma> x t\<close> replaces every occurrence of the parameter \<open>w\<close> at type \<open>\<sigma>\<close> by the free
-  variable \<open>x\<close>.  This realizes the evaluation variant of BKK's proof of Theorem 7.3 (case
+  variable \<open>x\<close>.  This realises the evaluation variant of BKK's proof of Theorem 7.3 (case
   \<open>NK(\<Pi>I)\<close>): from an evaluation \<open>\<E>\<close> ``one can define another evaluation function \<open>\<E>'\<close> such
   that \<open>\<E>'(w) \<equiv> a\<close> and \<open>\<E>'(A) \<equiv> \<E>(A)\<close> if \<open>w\<close> does not occur in \<open>A\<close>''.\<close>
 
@@ -410,11 +405,11 @@ text \<open>Following BKK (BKK Section 2.2), everything beyond the primitive con
   their \<open>A \<^bold>\<supset> B \<equiv> (\<^bold>\<not>A) \<^bold>\<or> B\<close>.  For falsity we deviate mildly from BKK, who use
   \<open>F\<^bsub>\<o>\<^esub> \<equiv> \<^bold>\<not>\<^bold>\<forall>P\<^bsub>\<o>\<^esub>. P \<^bold>\<or> \<^bold>\<not>P\<close> (BKK Lemma 3.43, footnote 11): our \<open>\<^bold>\<bottom>\<close> is \<open>\<^bold>\<forall>X\<^bsub>\<o>\<^esub>. X\<close> and \<open>\<^bold>\<top> \<equiv> \<^bold>\<not>\<^bold>\<bottom>\<close>.
   The two choices are interderivable in \<open>NK\<^sub>\<beta>\<close> (cf.\ BKK Remark 7.2) and both falsa are
-  unsatisfied in every \<open>\<Sigma>\<close>-model, so every use below is invariant under the exchange.
+  unsatisfied in every \<open>\<Sigma>\<close>-model; we use our form throughout.
   Leibniz equality --- always expressible, alongside the primitive \<open>Eq \<alpha>\<close> of the signature ---
   is BKK's Leibniz combinator \<open>Q\<^bsub>\<alpha>\<^esub> \<equiv> \<lambda>X\<^bsub>\<alpha>\<^esub> Y\<^bsub>\<alpha>\<^esub>. \<^bold>\<forall>P\<^bsub>\<alpha>\<^bold>\<Rightarrow>\<o>\<^esub>. P X \<^bold>\<supset> P Y\<close> (BKK Section 2.2,
   the Leibniz formula for equality).  Because bound variables are de Bruijn indices, \<open>Leib \<alpha>\<close> is
-  a genuinely @{emph \<open>closed\<close>} term: BKK's reserved bound names \<open>X, Y, P\<close> are simply the indices
+  a @{emph \<open>closed\<close>} term: BKK's reserved bound names \<open>X, Y, P\<close> are simply the indices
   \<open>2, 1, 0\<close>.\<close>
 
 
@@ -449,10 +444,29 @@ lemma opn_FalseB [simp]: "opn k u (\<^bold>\<bottom> :: 'p tm) = \<^bold>\<botto
 lemma opn_Leib [simp]: "opn k u (Leib \<alpha> :: 'p tm) = Leib \<alpha>"
   by (simp add: Leib_def)
 
+subsection \<open>Free-variable substitution distributes over the defined layer\<close>
+
+lemma fsub_Forall [simp]: "fsub x \<sigma> u (\<^bold>\<Pi>\<^bsub>\<tau>\<^esub> b) = \<^bold>\<Pi>\<^bsub>\<tau>\<^esub> (fsub x \<sigma> u b)"
+  by (simp add: Forall_def)
+lemma fsub_ImpB [simp]: "fsub x \<sigma> u (\<phi> \<^bold>\<supset> \<psi>) = (fsub x \<sigma> u \<phi>) \<^bold>\<supset> (fsub x \<sigma> u \<psi>)"
+  by (simp add: ImpB_def)
+lemma fsub_FalseB [simp]: "fsub x \<sigma> u (\<^bold>\<bottom> :: 'p tm) = \<^bold>\<bottom>"
+  by (simp add: FalseB_def)
+lemma fsub_TrueB [simp]: "fsub x \<sigma> u (\<^bold>\<top> :: 'p tm) = \<^bold>\<top>"
+  by (simp add: TrueB_def)
+lemma fsub_AndB [simp]: "fsub x \<sigma> u (A \<^bold>\<and> B) = (fsub x \<sigma> u A) \<^bold>\<and> (fsub x \<sigma> u B)"
+  by (simp add: AndB_def)
+
+text \<open>Substituting for a variable that does not occur is the identity.\<close>
+
+lemma fsub_notin: "x \<notin> fvs t \<Longrightarrow> fsub x \<sigma> u t = t"
+  by (induction t) auto
+
 subsection \<open>A convenient abstraction-typing rule\<close>
 
-text \<open>For the closed defined terms, opening the body with @{emph \<open>any\<close>} free variable is
-  well-typed, so the cofinite side-condition collapses to a universal one.\<close>
+text \<open>If opening the body with @{emph \<open>every\<close>} free variable is well-typed, the cofinite
+  side-condition of \<open>wff_Abs\<close> is met.  This is the form used for the closed defined
+  terms below.\<close>
 
 lemma wff_AbsI: "(\<And>x. wff\<^bsub>\<tau>\<^esub>(b\<^bold>\<langle>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>)) \<Longrightarrow> wff\<^bsub>\<sigma>\<^bold>\<Rightarrow>\<tau>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> b)"
   by (auto intro: wff_Abs)
@@ -481,7 +495,7 @@ lemma wff_LeibE [intro]: "wff\<^bsub>\<alpha>\<^esub>(A) \<Longrightarrow> wff\<
 lemma wff_AndB [intro]: "wff\<^bsub>\<o>\<^esub>(A) \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B) \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(A \<^bold>\<and> B)"
   by (auto simp: AndB_def)
 
-subsection \<open>Free variables and local closure of the defined layer\<close>
+subsection \<open>Free variables and parameters of the defined layer\<close>
 
 lemma fvs_defs [simp]: "fvs (\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> b) = fvs b" "fvs (\<^bold>\<bottom> :: 'p tm) = {}" "fvs (\<^bold>\<top> :: 'p tm) = {}"
   "fvs (\<phi> \<^bold>\<supset> \<psi>) = fvs \<phi> \<union> fvs \<psi>" "fvs (Leib \<alpha> :: 'p tm) = {}"
@@ -536,8 +550,10 @@ abbreviation ExistsB :: "ty \<Rightarrow> 'p tm \<Rightarrow> 'p tm"  (\<open>\<
 subsection \<open>Named binders for the defined quantifiers\<close>
 
 text \<open>Named-binder input syntax for the defined quantifiers: \<open>clos k x \<sigma> t\<close> abstracts the
-  free variable \<open>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<close> to the de Bruijn index \<open>k\<close> (the converse of \<open>opn\<close>), so that
-  \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> and \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> bind an ordinary named variable.\<close>
+  free variable \<open>x\<^sup>f\<^bsub>\<sigma>\<^esub>\<close> to the de Bruijn index \<open>k\<close>, so that
+  \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> and \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>. \<phi>\<close> bind an ordinary named variable.  We call this operation
+  @{emph \<open>closing\<close>} the variable \<open>x\<close>; it is the converse of opening (\<open>opn\<close>) and is not to be
+  confused with a @{emph \<open>closed\<close>} term, one without free variables.\<close>
 
 primrec clos :: "nat \<Rightarrow> nat \<Rightarrow> ty \<Rightarrow> 'p tm \<Rightarrow> 'p tm" where
   "clos k x \<sigma> (Bnd i) = Bnd i"
@@ -582,6 +598,25 @@ lemma finite_occ: "finite (occ t)"
 
 lemma occ_fsub_closed: "occ u = {} \<Longrightarrow> occ (fsub x \<sigma> u t) = occ t - {(x, \<sigma>)}"
   by (induction t) auto
+
+text \<open>Closing (\<open>clos\<close>) a variable that does not occur in the term is the identity.  Closing a
+  variable \<open>y\<close> commutes with the substitution \<open>fsub\<close> of a term \<open>u\<close> for a different variable
+  \<open>x\<close>, provided \<open>y\<close> does not occur in \<open>u\<close>; hence \<open>fsub\<close> passes through the named binders.\<close>
+
+lemma clos_notin: "x \<notin> fvs t \<Longrightarrow> clos k x \<sigma> t = t"
+  by (induction t arbitrary: k) auto
+
+lemma fsub_clos:
+  "(x, \<sigma>) \<noteq> (y, \<tau>) \<Longrightarrow> y \<notin> fvs u \<Longrightarrow> fsub x \<sigma> u (clos k y \<tau> b) = clos k y \<tau> (fsub x \<sigma> u b)"
+  by (induction b arbitrary: k) (auto simp: clos_notin)
+
+lemma fsub_AllN:
+  "(x, \<sigma>) \<noteq> (y, \<tau>) \<Longrightarrow> y \<notin> fvs u \<Longrightarrow> fsub x \<sigma> u (\<^bold>\<Pi>y\<^bsub>\<tau>\<^esub>. b) = \<^bold>\<Pi>y\<^bsub>\<tau>\<^esub>. (fsub x \<sigma> u b)"
+  by (simp add: AllN_def fsub_clos)
+
+lemma fsub_ExN:
+  "(x, \<sigma>) \<noteq> (y, \<tau>) \<Longrightarrow> y \<notin> fvs u \<Longrightarrow> fsub x \<sigma> u (\<^bold>\<exists>y\<^bsub>\<tau>\<^esub>. b) = \<^bold>\<exists>y\<^bsub>\<tau>\<^esub>. (fsub x \<sigma> u b)"
+  by (simp add: ExN_def fsub_clos)
 
 lemma wff_LamN_clos:
   assumes "wff\<^bsub>\<o>\<^esub>(b)"
@@ -636,7 +671,7 @@ subsection \<open>Simultaneous substitution\<close>
 text \<open>Simultaneous substitution of a term for every free variable --- the general form of
   which \<open>fsub\<close> is the single-variable and \<open>vpar\<close> (below) the variable-to-parameter instance,
   and the analogue of the closing substitution \<open>\<sigma>\<close> in BKK's term evaluation (BKK Definition
-  3.35).  For closed replacements it commutes with opening --- the locally-nameless analogue
+  3.35).  For locally closed replacements it commutes with opening --- the locally-nameless analogue
   of BKK's parallel substitution, with no binder renaming.\<close>
 
 primrec msub :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm) \<Rightarrow> 'p tm \<Rightarrow> 'p tm" where
@@ -650,13 +685,6 @@ primrec msub :: "(nat \<Rightarrow> ty \<Rightarrow> 'p tm) \<Rightarrow> 'p tm 
   | "msub \<rho> (Eq \<tau>) = Eq \<tau>"
   | "msub \<rho> (s \<^bold>\<cdot> t) = (msub \<rho> s) \<^bold>\<cdot> (msub \<rho> t)"
   | "msub \<rho> (\<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> b) = \<^bold>\<Lambda>\<^bsub>\<tau>\<^esub> (msub \<rho> b)"
-
-text \<open>Parallel-substitution notation: \<open>u\<^bold>\<lbrakk>\<rho>\<^bold>\<rbrakk>\<close> applies the substitution \<open>\<rho>\<close>
-  to every free variable of \<open>u\<close>.\<close>
-
-syntax "_msub" :: "logic \<Rightarrow> logic \<Rightarrow> logic"  (\<open>_\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<close> [1000, 0] 1000)
-syntax_consts "_msub" == "msub"
-translations "u\<^bold>\<lbrakk>\<rho>\<^bold>\<rbrakk>" \<rightleftharpoons> "CONST msub \<rho> u"
 
 lemma msub_opn: "(\<And>n \<tau>. lc (\<rho> n \<tau>)) \<Longrightarrow> msub \<rho> (opn k u t) = opn k (msub \<rho> u) (msub \<rho> t)"
   by (induction t arbitrary: k) auto
@@ -776,8 +804,7 @@ definition \<X> :: nat where "\<X> = 2"
 definition \<I> :: nat where "\<I> = 3"
 definition \<H> :: nat where "\<H> = 4"
 
-text \<open>Closing shrinks the free variables; the named binders and the defined conjunction
-  stay well-typed.\<close>
+text \<open>Closing removes free occurrences of the closed name.\<close>
 
 lemma fvs_clos: "fvs (clos k v \<sigma> b) \<subseteq> fvs b"
   by (induction b arbitrary: k) auto

@@ -262,7 +262,7 @@ lemma Cons_less_Conss1 [simp]:
   "x#xs [\<sqsubset>\<^bsub>subtype P\<^esub>] y#ys = (x \<sqsubset>\<^bsub>subtype P\<^esub> y \<and> xs [\<sqsubseteq>\<^bsub>subtype P\<^esub>] ys \<or> x = y \<and> xs [\<sqsubset>\<^bsub>subtype P\<^esub>] ys)"
   apply (unfold lesssub_def )
   apply auto
-  apply (simp add:lesssub_def lesub_def) \<comment>\<open>widen_refl, subtype_refl \<close>
+  apply (simp add:lesssub_def lesub_def) \<comment>\<open>\<open>widen_refl\<close>, \<open>subtype_refl\<close>\<close>
   done
 
 lemma Cons_less_Conss2 [simp]:
@@ -372,6 +372,6 @@ apply blast
 
 lemma acc_JVM [intro]:
   "wf_prog wf_mb P \<Longrightarrow> acc (JVM_SemiType.le P mxs mxl)"
-(*<*) by (unfold JVM_le_unfold) blast (*>*)  \<comment>\<open> use acc_listI1, acc_listI2 \<close>
+(*<*) by (unfold JVM_le_unfold) blast (*>*)  \<comment>\<open> use \<open>acc_listI1\<close>, \<open>acc_listI2\<close> \<close>
 
 end

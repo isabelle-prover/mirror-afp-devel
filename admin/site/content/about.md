@@ -26,8 +26,6 @@ The editors of the Archive of Formal Proofs are:
 * [Gerwin Klein](https://www.cse.unsw.edu.au/~kleing/), [Proofcraft](https://proofcraft.systems) & [UNSW Sydney](https://www.unsw.edu.au/)
 * [Peter Lammich](https://people.utwente.nl/p.lammich),
     [University of Twente](https://www.utwente.nl/en/)
-* [Andreas Lochbihler](http://www.andreas-lochbihler.de),
-    [Digital Asset](https://www.digitalasset.com)
 * [Tobias Nipkow](https://www.in.tum.de/~nipkow/), [Technical
   University of Munich](https://www.tum.de/en)
 * [Larry Paulson](https://www.cl.cam.ac.uk/users/lcp/), [University of Cambridge](https://www.cam.ac.uk/)

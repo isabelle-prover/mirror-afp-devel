@@ -45,8 +45,9 @@ text \<open>An applicative structure (BKK Definition 3.1) is a family of non-emp
   set-theoretic special case in which the function domains consist of actual functions;
   every frame is @{emph \<open>functional\<close>}: members of \<open>D\<^bsub>\<alpha>\<rightarrow>\<beta>\<^esub>\<close> that agree on all arguments
   are equal (Definition 3.5, Remark 3.6; property f of Definition 3.46).  Functionality
-  is the one consequence of being a frame that the proofs use, so the model class below
-  is delineated by it, and frames themselves are not needed.\<close>
+  is the one consequence of being a frame that the proofs use, so the abstract model
+  classes below are delineated by it; the frame-based construction of concrete models
+  follows later in this theory.\<close>
 
 locale app_struct = fixes Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
   assumes as_nonempty: "\<exists>a. Dm \<alpha> a" and as_appTy: "Dm (\<alpha> \<^bold>\<Rightarrow> \<beta>) f \<Longrightarrow> Dm \<alpha> a \<Longrightarrow> Dm \<beta> (Ap f a)"
@@ -59,7 +60,7 @@ definition asg :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> bool" w
 lemma asg_upd: "asg \<xi> \<Longrightarrow> Dm \<sigma> d \<Longrightarrow> asg (\<xi>(x\<^bsub>\<sigma>\<^esub> := d))"
     by (auto simp: asg_def upd_def)
 
-text \<open>Functionality: property f of BKK Definition 3.5.\<close>
+text \<open>Functionality (BKK Definition 3.5), later property f of BKK Definition 3.46.\<close>
 
 definition functional :: bool where
   "functional \<equiv> \<forall>\<alpha> \<beta> f g. Dm (\<alpha> \<^bold>\<Rightarrow> \<beta>) f \<longrightarrow> Dm (\<alpha> \<^bold>\<Rightarrow> \<beta>) g \<longrightarrow>
@@ -74,7 +75,7 @@ text \<open>An evaluation function \<open>E\<close> maps assignments to typed fu
   assignment on variables, (2) it is homomorphic for application, (3) it depends only
   on the assignment's values at the free variables (coincidence), and (4) it respects
   \<open>\<beta>\<close>-conversion (BKK state this via \<open>\<beta>\<close>-normal forms; over our typed \<open>\<beta>\<close>-equality
-  \<open>\<approx>\<^bsub>\<tau>\<^esub>\<close> of Section 1 the two formulations coincide, cf.\ BKK Remark 3.19).
+  \<open>\<approx>\<^bsub>\<tau>\<^esub>\<close> of theory \<open>Syntax\<close> the two formulations coincide, cf.\ BKK Remark 3.19).
   In addition \<open>E\<close> is typed: well-formed formulae of type \<open>\<tau>\<close> denote in \<open>D\<^bsub>\<tau>\<^esub>\<close>.\<close>
 
 locale sigma_eval = app_struct Dm Ap for Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u" +
@@ -88,7 +89,7 @@ locale sigma_eval = app_struct Dm Ap for Dm :: "ty \<Rightarrow> 'u \<Rightarrow
 begin
 
 text \<open>The derived \<open>\<beta>\<close>-application law: the denotation of an abstraction is determined
-  applicatively by the openings of its body (from conditions (1), (2), (4) and coincidence;
+  applicatively by the openings of its body (from conditions (1)--(4);
   the vehicle for all abstraction reasoning below).  In the sharpened form the fresh-name
   condition only concerns the typed occurrence \<open>(x, \<sigma>)\<close>, not the bare name (a name may
   occur at several types).\<close>
@@ -126,8 +127,8 @@ text \<open>A \<open>\<Sigma>\<close>-valuation is a (total) function \<open>\<u
   Following BKK Definition 3.41 (and Remark 3.42) we include primitive equality
   \<open>L\<^sup>\<alpha>\<^sub>=(E(=\<^sub>\<alpha>))\<close>, and --- extending BKK Definition 3.41, whose \<open>\<Sigma>\<close>-models have no
   description operator --- a description property for \<open>E(\<iota>\<^sub>\<alpha>)\<close>, matching \<open>NK(\<iota>)\<close>.  Since the logical
-  constants are closed, their denotations are assignment-independent (coincidence);
-  we fix a canonical assignment to name them.\<close>
+  constants are closed, their denotations are assignment-independent (coincidence), so
+  the conditions are stated for an arbitrary assignment.\<close>
 
 locale sigma_model = sigma_eval Dm Ap Ee for
   Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u" and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" +
@@ -152,13 +153,12 @@ end
 
 subsection \<open>The model class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> (BKK Definition 3.49)\<close>
 
-text \<open>BKK's completeness class for \<open>NK\<close> is \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close>: \<open>\<Sigma>\<close>-models satisfying properties
-  q, f and b (with primitive equality, property q holds automatically, BKK
-  Definition 3.49 --- the q-witness at type \<open>\<alpha>\<close> is the denotation \<open>E(=\<^bsub>\<alpha>\<^esub>)\<close>,
-  cf.\ the satisfaction lemma for Leibniz equality; with property b the
-  valuation is two-valued on \<open>D\<^bsub>\<o>\<^esub>\<close>).  This class
-  coincides with the \<open>\<Sigma>\<close>-Henkin models of BKK Definition 3.50 up to isomorphism
-  (BKK Lemma 3.67 and Theorem 3.68).\<close>
+text \<open>BKK's completeness class for \<open>NK\<close> is \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close>: \<open>\<Sigma>\<close>-models with properties q, f
+  and b (BKK Definitions 3.46 and 3.49).  With primitive equality, property q holds
+  automatically: its witness at type \<open>\<alpha>\<close> is the denotation \<open>E(=\<^bsub>\<alpha>\<^esub>)\<close> (see \<open>sat_Leib\<close>
+  below).  With property b the valuation is two-valued on \<open>D\<^bsub>\<o>\<^esub>\<close>.  By BKK Lemma 3.67
+  and Theorem 3.68, \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> is, up to isomorphism, the class of \<open>\<Sigma>\<close>-Henkin models of
+  BKK Definition 3.50; we call its members Henkin models.\<close>
 
 locale bkk_model = sigma_model Dm Ap Ee vl
   for Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
@@ -205,7 +205,7 @@ end
 
 subsection \<open>Model-relative truth and validity at a carrier\<close>
 
-text \<open>Truth of \<open>A\<close> in a model \<open>\<langle>D,@,E,\<upsilon>\<rangle>\<close> under an assignment, and validity over
+text \<open>Truth of \<open>A\<close> under the evaluation \<open>Ee\<close> and valuation \<open>vl\<close> of a model, at an assignment, and validity over
   @{emph \<open>all\<close>} models of the class \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> at a given value carrier \<open>'u\<close> --- the
   carrier appears explicitly in the notation \<open>\<Turnstile>('u) A\<close>.\<close>
 
@@ -499,8 +499,8 @@ text \<open>BKK's soundness and completeness theorems (BKK Theorem 7.3, Corollar
   ``has enough members that any well-formed formula can be evaluated'' (BKK
   Section 2.3.1).  We therefore require the \<open>\<lambda>\<close>-conditions --- \<open>\<lambda>\<close>-comprehension \<open>gm_lamTy\<close> and
   the \<open>\<beta>\<close>-condition \<open>gm_beta\<close> of the \<open>\<Sigma>\<close>-evaluation (BKK Definition 3.18) --- only for the
-  functions that are @{emph \<open>denotations of \<open>\<lambda>\<close>-terms\<close>}; equivalently, every wff denotes.
-  A term model cannot be full: with property b the domain \<open>\<D>\<^bsub>\<iota>\<^bold>\<Rightarrow>\<o>\<^esub>\<close> of a full frame over
+  functions that are @{emph \<open>denotations of \<open>\<lambda>\<close>-terms\<close>}, so that every wff denotes.
+  A term model need not be full: with property b the domain \<open>\<D>\<^bsub>\<iota>\<^bold>\<Rightarrow>\<o>\<^esub>\<close> of a full frame over
   infinite \<open>\<D>\<^bsub>\<iota>\<^esub>\<close> would be uncountable, whereas the term model over a countable signature
   is countable.
   (BKK avoid Andrews' term @{emph \<open>general models\<close>} for this notion; we keep it in the locale name
@@ -585,7 +585,7 @@ proof -
   finally show ?thesis.
 qed
 
-text \<open>\<open>\<beta>\<close>-convertible terms denote the same object under any total assignment
+text \<open>\<open>\<beta>\<close>-convertible terms denote the same object under any domain-respecting assignment
   (BKK Remark 3.19); the abstraction-congruence case uses functionality (property f).\<close>
 
 lemma beq_den: "s \<approx>\<^bsub>\<rho>\<^esub> t \<Longrightarrow> \<forall>n \<tau>. \<D>\<^bsub>\<tau>\<^esub> (\<xi> n \<tau>) \<Longrightarrow> \<lparr>s\<rparr>\<^bsub>\<xi>\<^esub> = \<lparr>t\<rparr>\<^bsub>\<xi>\<^esub>"
@@ -873,6 +873,92 @@ qed
 
 end
 
+subsection \<open>Transport of consequence along renamings and closures\<close>
+
+text \<open>On the semantic side, maps of parameter names need @{emph \<open>no\<close>} injectivity:
+  any \<open>h :: 'p \<Rightarrow> 'q\<close> turns a model for \<open>'q\<close> into a model for \<open>'p\<close> by
+  evaluating through \<open>prn h\<close> --- the value conditions \<open>vl\<^sub>\<not>, \<dots>, vl\<^sub>\<iota>\<close> only
+  inspect \<open>Ee\<close> at the logical constants, which \<open>prn\<close> fixes.\<close>
+
+lemma bkk_model_reduct:
+  fixes Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and h :: "'p \<Rightarrow> 'q"
+  assumes "bkk_model Dm Ap Ee vl"
+  shows "bkk_model Dm Ap (\<lambda>\<xi> t. Ee \<xi> (prn h t)) vl"
+proof -
+  interpret bkk_model Dm Ap Ee vl by (rule assms)
+  show ?thesis
+  proof (unfold_locales, goal_cases)
+    case 3 thus ?case using ev_app by fastforce
+    next case 4 thus ?case by (metis ev_coin prn_occ wff_prn)
+    next case 5 thus ?case using ev_beta by blast
+  qed(auto simp: vl_eq vl_pi vl_dis vl_neg vl_iota ev_var ev_type wff_prn prop_f prop_b)
+qed
+
+text \<open>The next lemma, \<open>bkk_valid_map\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export); it is the empty-context instance of \<open>bkk_consequence_map\<close>
+  below.\<close>
+
+lemma bkk_valid_map:
+  fixes h :: "'p \<Rightarrow> 'q"
+  assumes v: "\<Turnstile>('u) (A :: 'p tm)"
+    shows "\<Turnstile>('u) (prn h A :: 'q tm)"
+  unfolding bkk_valid_def rel_truth_def
+  by (metis bkk_model_reduct bkk_valid_def rel_truth_def v)
+
+text \<open>Semantic consequence transports along an @{emph \<open>arbitrary\<close>} map of parameter names:
+  the reduct of a \<open>'q\<close>-model is a \<open>'p\<close>-model, and it satisfies a hypothesis iff the original
+  satisfies its renaming.\<close>
+
+lemma bkk_consequence_map:
+  fixes h :: "'p \<Rightarrow> 'q"
+  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)"
+    shows "prn h ` \<Phi> \<Turnstile>('u) (prn h A :: 'q tm)"
+  unfolding bkk_consequence_def rel_truth_def
+proof (intro allI impI)
+  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'q tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
+  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
+     and sat: "\<forall>B'\<in>prn h ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
+  have bm': "bkk_model Dm Ap (\<lambda>\<xi> t. Ee \<xi> (prn h t)) vl" by (rule bkk_model_reduct[OF bm])
+  have "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee \<xi> (prn h B))" using sat w\<Phi> by blast
+  thus "vl (Ee \<xi> (prn h A))"
+    using v bm' xi unfolding bkk_consequence_def rel_truth_def by blast
+qed
+
+text \<open>Semantic consequence transports along the simultaneous closure, exactly as it does
+  along parameter renamings (@{thm [source] bkk_consequence_map}): every assignment for the
+  closed image induces, via the parameter values, an assignment for the originals.\<close>
+
+lemma bkk_consequence_vpar:
+  assumes v: "\<Phi> \<Turnstile>('u) (A :: 'p tm)"
+      and w\<Phi>: "\<And>B. B \<in> \<Phi> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B)" and wA: "wff\<^bsub>\<o>\<^esub>(A)"
+    shows "vpar UNIV \<pi> ` \<Phi> \<Turnstile>('u) vpar UNIV \<pi> A"
+  unfolding bkk_consequence_def rel_truth_def
+proof (intro allI impI)
+  fix Dm Ap and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" and vl :: "'u \<Rightarrow> bool" and \<xi>
+  assume bm: "bkk_model Dm Ap Ee vl" and xi: "app_struct.asg Dm \<xi>"
+     and sat: "\<forall>B'\<in>vpar UNIV \<pi> ` \<Phi>. wff \<o> B' \<and> vl (Ee \<xi> B')"
+  interpret M: bkk_model Dm Ap Ee vl by (rule bm)
+  have asg': "app_struct.asg Dm (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>))"
+    using M.ev_type[OF wff_Par xi] by (simp add: M.asg_def)
+  have evA: "Ee \<xi> (vpar UNIV \<pi> A) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A"
+    using M.ev_vpar[where S = UNIV, OF wA xi] by simp
+  have sat': "\<forall>B\<in>\<Phi>. wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
+  proof
+    fix B assume B: "B \<in> \<Phi>"
+    have wB: "wff\<^bsub>\<o>\<^esub>(B)" using w\<Phi> B by blast
+    have "Ee \<xi> (vpar UNIV \<pi> B) = Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B"
+      using M.ev_vpar[where S = UNIV, OF wB xi] by simp
+    moreover have "vpar UNIV \<pi> B \<in> vpar UNIV \<pi> ` \<Phi>" using B by blast
+    ultimately show "wff \<o> B \<and> vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) B)"
+      using sat wB by auto
+  qed
+  have "vl (Ee (\<lambda>n \<sigma>. Ee \<xi> ((\<pi> n \<sigma>)\<^sup>p\<^bsub>\<sigma>\<^esub>)) A)"
+    by (rule v[unfolded bkk_consequence_def rel_truth_def, rule_format,
+               OF bm asg' sat'[rule_format]])
+  thus "vl (Ee \<xi> (vpar UNIV \<pi> A))" by (simp add: evA)
+qed
+
 subsection \<open>The valuation locale\<close>
 
 text \<open>The \<open>valuation\<close> locale axiomatises what a term model provides: a carrier \<open>'u\<close> with an
@@ -932,8 +1018,8 @@ lemma rep_of_spec:
   by (smt (verit, del_insts) assms rep_of_def someI_ex v_dom valuation.vresp_def
       valuation_axioms)
 
-text \<open>The valuation respects \<open>\<beta>\<close>-conversion under closing substitutions (BKK's quotient
-  of the term structure by \<open>\<beta>\<close>, Section 6).\<close>
+text \<open>The valuation respects \<open>\<beta>\<close>-conversion under closing substitutions: \<open>\<beta>\<close>-equal closed
+  terms are identified in the quotient (BKK Section 6).\<close>
 
 lemma beq_V: "s \<approx>\<^bsub>\<rho>'\<^esub> t \<Longrightarrow> (\<And>n \<tau>. cwff \<tau> (\<rho> n \<tau>)) \<Longrightarrow> \<V> (msub \<rho> s) = \<V> (msub \<rho> t)"
 proof (induction arbitrary: \<rho> rule: beq.induct)
@@ -993,7 +1079,7 @@ qed auto
 
 text \<open>BKK's evaluation function for the term model.\<close>
 
-definition Ev :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" where "Ev \<xi> A = \<V> (msub (rep_of \<xi>) A)"
+definition Eval :: "(nat \<Rightarrow> ty \<Rightarrow> 'u) \<Rightarrow> 'p tm \<Rightarrow> 'u" where "Eval \<xi> A = \<V> (msub (rep_of \<xi>) A)"
 
 end
 
@@ -1007,37 +1093,37 @@ next case 2 thus ?case  using cwff_App v_dom valuation.v_app
     valuation_axioms by fastforce 
 qed
 
-sublocale valuation \<subseteq> bkkM: bkk_model Dv Vap Ev "\<lambda>a. a = \<V> \<^bold>\<top>"
+sublocale valuation \<subseteq> bkkM: bkk_model Dv Vap Eval "\<lambda>a. a = \<V> \<^bold>\<top>"
 proof (unfold_locales, goal_cases)
   case 1 thus ?case
-    by (metis Ev_def bkkA.asg_def cwff_msub rep_of_spec v_domI vresp_def)
+    by (metis Eval_def bkkA.asg_def cwff_msub rep_of_spec v_domI vresp_def)
 next case 2 thus ?case
-  using Ev_def bkkA.asg_def rep_of_spec vresp_def by (metis msub.simps(2))
+  using Eval_def bkkA.asg_def rep_of_spec vresp_def by (metis msub.simps(2))
 next case 3 thus ?case
-  by (metis Ev_def bkkA.asg_def cwff_msub msub.simps(9) rep_of_spec v_app vresp_def)
+  by (metis Eval_def bkkA.asg_def cwff_msub msub.simps(9) rep_of_spec v_app vresp_def)
 next case (4 \<tau> A \<xi> \<xi>') 
   hence "rep_of \<xi> n \<sigma> = rep_of \<xi>' n \<sigma>" if "(n, \<sigma>) \<in> occ A" for n \<sigma>
     using that by (auto simp: rep_of_def)
-  thus ?case unfolding Ev_def by (simp cong: msub_cong)
-next case 5 thus ?case using Ev_def beq_V bkkA.asg_def rep_of_spec vresp_def by metis
-next case 6 thus ?case by (metis Ev_def cwff_Neg msub.simps(4) v_TF v_app v_dom v_neg)
+  thus ?case unfolding Eval_def by (simp cong: msub_cong)
+next case 5 thus ?case using Eval_def beq_V bkkA.asg_def rep_of_spec vresp_def by metis
+next case 6 thus ?case by (metis Eval_def cwff_Neg msub.simps(4) v_TF v_app v_dom v_neg)
 next case (7 \<xi> a b) 
   then obtain \<phi> \<psi> where ab: "a = \<V> \<phi>" "b = \<V> \<psi>" and c: "cwff \<o> \<phi>" "cwff \<o> \<psi>"
     using v_dom by blast
-  have e: "Ev \<xi> Dis = \<V> Dis" by (simp add: Ev_def)
+  have e: "Eval \<xi> Dis = \<V> Dis" by (simp add: Eval_def)
   show ?case unfolding e ab using v_TF
     by (metis c(1,2) cwff_App cwff_Dis v_app v_dis)
 next case (8 \<xi> \<sigma> f) 
   then obtain g where fg: "f = \<V> g" and cg: "cwff (\<sigma> \<^bold>\<Rightarrow> \<o>) g"
       using v_dom by blast
-  have e: "Ev \<xi> (Pi \<sigma>) = \<V> (Pi \<sigma>)" by (simp add: Ev_def)
+  have e: "Eval \<xi> (Pi \<sigma>) = \<V> (Pi \<sigma>)" by (simp add: Eval_def)
   have q: "(\<forall>d. \<D>\<^bsub>\<sigma>\<^esub> d \<longrightarrow> \<V> g \<^bold>@ d = \<V> \<^bold>\<top>) = (\<forall>a. cwff \<sigma> a \<longrightarrow> \<V> g \<^bold>@ \<V> a = \<V> \<^bold>\<top>)"
     using v_dom by metis
   show ?case unfolding e fg using v_TF
       by (auto simp: v_app[OF cwff_Pi cg, symmetric] v_pi[OF cg] q)
-next case 9 thus ?case using Ev_def v_dom v_eq by fastforce
+next case 9 thus ?case using Eval_def v_dom v_eq by fastforce
 next case 10 thus ?case
-  by (smt (verit, best) Ev_def cwff_Iota msub.simps(7) v_app v_desc v_dom)
+  by (smt (verit, best) Eval_def cwff_Iota msub.simps(7) v_app v_desc v_dom)
 next case 11 thus ?case by (smt (verit, ccfv_threshold) bkkA.functional_def v_dom v_ext)
 next case 12 thus ?case by (metis v_bool v_dom)
 qed
@@ -1082,9 +1168,9 @@ text \<open>As in @{locale general_model}, membership of the truth values follow
 lemma Tv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Tv" and Fv_dom [simp]: "\<D>\<^bsub>\<o>\<^esub> Fv"
     by (simp_all add: boolean)
 
-text \<open>In a full frame every domain is inhabited --- the interpretation \<open>Jv\<close> of a parameter
-  provides a witness at every type.  BKK build non-emptiness into the applicative structure
-  (BKK Definition 3.1).\<close>
+text \<open>Every domain is inhabited, as in @{locale general_model}: the interpretation \<open>Jv\<close> of a
+  parameter provides a witness at every type.  BKK build non-emptiness into the applicative
+  structure (BKK Definition 3.1).\<close>
 
 lemma dom_nonempty: "\<exists>d. \<D>\<^bsub>\<tau>\<^esub> d" by (metis Jv_dom)
 
@@ -1142,7 +1228,7 @@ text \<open>A \<open>\<Sigma>\<close>-standard model need not be @{emph \<open>g
 locale lambda_universe =
   fixes Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
     and Lm :: "ty \<Rightarrow> ('u \<Rightarrow> 'u) \<Rightarrow> 'u" and Tv Fv :: 'u and Jv :: "'p \<Rightarrow> ty \<Rightarrow> 'u"
-  assumes beta: "\<lbrakk>\<And>d. Dm \<sigma> d \<Longrightarrow> Dm \<tau> (h d); Dm \<sigma> a\<rbrakk> \<Longrightarrow> Ap (Lm \<sigma> h) a = h a"
+  assumes beta_Lm: "\<lbrakk>\<And>d. Dm \<sigma> d \<Longrightarrow> Dm \<tau> (h d); Dm \<sigma> a\<rbrakk> \<Longrightarrow> Ap (Lm \<sigma> h) a = h a"
     and Lm_dom: "(\<And>d. Dm \<sigma> d \<Longrightarrow> Dm \<tau> (h d)) \<Longrightarrow> Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) (Lm \<sigma> h)"
     and Ap_dom: "\<lbrakk>Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) f; Dm \<sigma> a\<rbrakk> \<Longrightarrow> Dm \<tau> (Ap f a)"
     and funct: "\<lbrakk>Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) g; Dm (\<sigma> \<^bold>\<Rightarrow> \<tau>) k; \<And>a. Dm \<sigma> a \<Longrightarrow> Ap g a = Ap k a\<rbrakk> \<Longrightarrow> g = k"
@@ -1172,26 +1258,26 @@ lemma Piv_dom: "Dm ((\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> 
 lemma Ev_dom: "Dm (\<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>) (Ev \<sigma>)" unfolding Ev_def by (intro Lm_dom) simp
 
 lemma Ngv_app: "Dm \<o> a \<Longrightarrow> Ap Ngv a = (if a = Tv then Fv else Tv)"
-  unfolding Ngv_def by (rule beta[where \<tau> = \<o>]) simp_all
+  unfolding Ngv_def by (rule beta_Lm[where \<tau> = \<o>]) simp_all
 lemma Piv_app: "Dm (\<sigma> \<^bold>\<Rightarrow> \<o>) f \<Longrightarrow> Ap (Piv \<sigma>) f = (if \<forall>d. Dm \<sigma> d \<longrightarrow> Ap f d = Tv then Tv else Fv)"
-  unfolding Piv_def by (rule beta[where \<tau> = \<o>]) simp_all
+  unfolding Piv_def by (rule beta_Lm[where \<tau> = \<o>]) simp_all
 lemma Dsv_app: "\<lbrakk>Dm \<o> a; Dm \<o> b\<rbrakk> \<Longrightarrow> Ap (Ap Dsv a) b = (if a = Tv \<or> b = Tv then Tv else Fv)"
 proof -
   assume a: "Dm \<o> a" and b: "Dm \<o> b"
   have "Ap Dsv a = Lm \<o> (\<lambda>b. if a = Tv \<or> b = Tv then Tv else Fv)"
-    unfolding Dsv_def by (auto intro!: beta[where \<tau> = "\<o> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
+    unfolding Dsv_def by (auto intro!: beta_Lm[where \<tau> = "\<o> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
   moreover have "Ap (Lm \<o> (\<lambda>b. if a = Tv \<or> b = Tv then Tv else Fv)) b
                = (if a = Tv \<or> b = Tv then Tv else Fv)"
-    by (rule beta[where \<tau> = \<o>, OF _ b]) simp
+    by (rule beta_Lm[where \<tau> = \<o>, OF _ b]) simp
   ultimately show ?thesis by simp
 qed
 lemma Ev_app: "\<lbrakk>Dm \<sigma> a; Dm \<sigma> b\<rbrakk> \<Longrightarrow> Ap (Ap (Ev \<sigma>) a) b = (if a = b then Tv else Fv)"
 proof -
   assume a: "Dm \<sigma> a" and b: "Dm \<sigma> b"
   have "Ap (Ev \<sigma>) a = Lm \<sigma> (\<lambda>b. if a = b then Tv else Fv)"
-    unfolding Ev_def by (auto intro!: beta[where \<tau> = "\<sigma> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
+    unfolding Ev_def by (auto intro!: beta_Lm[where \<tau> = "\<sigma> \<^bold>\<Rightarrow> \<o>", OF _ a] Lm_dom)
   moreover have "Ap (Lm \<sigma> (\<lambda>b. if a = b then Tv else Fv)) b = (if a = b then Tv else Fv)"
-    by (rule beta[where \<tau> = \<o>, OF _ b]) simp
+    by (rule beta_Lm[where \<tau> = \<o>, OF _ b]) simp
   ultimately show ?thesis by simp
 qed
 
@@ -1215,7 +1301,7 @@ proof -
       = (if \<exists>a'. Dm \<sigma> a' \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a'))
          then THE a'. Dm \<sigma> a' \<and> (\<forall>b. Dm \<sigma> b \<longrightarrow> (Ap f b = Tv) = (b = a'))
          else Jv undefined \<sigma>)"
-    unfolding Iv_def by (rule beta[OF Iv_body_dom f])
+    unfolding Iv_def by (rule beta_Lm[OF Iv_body_dom f])
   ultimately show ?thesis
     by (metis a s)
 qed
@@ -1231,7 +1317,7 @@ proof unfold_locales
   show "\<And>\<sigma> a b. Dm \<sigma> a \<Longrightarrow> Dm \<sigma> b \<Longrightarrow> (Ap (Ap (Ev \<sigma>) a) b = Tv) = (a = b)"
     using Ev_app TF by auto
 qed(auto intro: Iv_app_desc funct Jv_dom Ev_dom Iv_dom Piv_dom Lm_dom Ap_dom
-                beta Ngv_dom Dsv_dom
+                beta_Lm Ngv_dom Dsv_dom
          simp: TF boolean)
 
 end

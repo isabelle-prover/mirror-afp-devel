@@ -7,15 +7,16 @@ section \<open>The natural-deduction calculus NK\<close>
 text \<open>We formalise the calculus \<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> of BKK (BKK Definition 7.1, Figures 6 and 7) --- the base
   system \<open>NK\<^sub>\<beta>\<close> together with the extensional rules \<open>NK(f)\<close> and \<open>NK(b)\<close> --- extended by BKK's
   rules \<open>NK(=\<^sub>r)\<close> and \<open>NK(=\<^sub>l)\<close> for the primitive equality of our signature (BKK Figure 9,
-  Remark 7.9) and by the description rule \<open>NK(\<iota>)\<close>, a premise-free axiom scheme describing
-  Leibniz singletons (beyond BKK, following Andrews 1972, their reference [3]).  BKK prove
+  Remark 7.9) and by the description rule \<open>NK(\<iota>)\<close>, an axiom scheme whose only premise is
+  well-formedness, describing Leibniz singletons (beyond BKK, following Andrews 1972, their reference [3]).  BKK prove
   \<open>NK\<^sub>\<beta>\<^sub>f\<^sub>b\<close> sound and complete for the class of \<open>\<Sigma>\<close>-Henkin models \<open>\<M>\<^bsub>\<beta>fb\<^esub>\<close> (BKK Theorem 7.3,
   Theorem 7.6, Corollary 7.7), and sketch the extension by primitive equality in Remark 7.9; we
   prove the fully extended calculus sound and complete for the correspondingly enriched class (with
-  primitive equality and description, Section 2).  The provability judgement \<open>\<Phi> \<turnstile> A\<close> relates a set
+  primitive equality and description, theory \<open>Semantics\<close>).  The provability judgement \<open>\<Phi> \<turnstile> A\<close> relates a set
   \<open>\<Phi>\<close> of formulas to a formula \<open>A\<close>; the rules impose well-formedness where they need it, and
-  closedness is nowhere required.  Eigenvariables are @{emph \<open>parameters\<close>} (BKK's \<open>w\<^bsub>\<alpha>\<^esub>\<close>),
-  which --- unlike the free variables used only during evaluation --- never occur bound.\<close>
+  closedness is nowhere required.  The eigenvariables of \<open>NK(\<Pi>I)\<close> are @{emph \<open>parameters\<close>}
+  (BKK's \<open>w\<^bsub>\<alpha>\<^esub>\<close>), called eigen-parameters below; unlike the free variables used only
+  during evaluation, they never occur bound.\<close>
 
 subsection \<open>Discharging well-formedness side conditions\<close>
 
@@ -72,8 +73,8 @@ lemma bprov_wff: "\<Phi> \<turnstile> C \<Longrightarrow> (\<And> A . A \<in> \<
   by (induct rule: bprov.induct) (auto intro: wff_Pi wff_App wff_Iota simp: beq_wffR)
 
 text \<open>Derivability is stable under injective parameter renaming --- injectivity keeps the
-  eigen-parameter side-conditions of \<open>NK(\<Pi>I)\<close>.  This lets us move eigen-parameters out of the
-  way, which is what makes weakening (and later, extension of consistent sets) admissible.\<close>
+  eigen-parameter side-conditions of \<open>NK(\<Pi>I)\<close>.  This lets us rename eigen-parameters apart,
+  which is what makes weakening (and later, extension of consistent sets) admissible.\<close>
 
 lemma bprov_rename: assumes \<pi>: "inj \<pi>" shows "\<Phi> \<turnstile> C \<Longrightarrow> prn \<pi> ` \<Phi> \<turnstile> prn \<pi> C"
 proof (induction rule: bprov.induct)
@@ -85,7 +86,7 @@ subsection \<open>Weakening\<close>
 
 text \<open>Weakening is admissible.  BKK leave this structural property implicit (their contexts
   are sets and the rules mention the context only via membership and extension); in the
-  formalisation the eigen-parameter condition of \<open>NK(\<Pi>I)\<close> makes it a genuine lemma.\<close>
+  formalisation the eigen-parameter condition of \<open>NK(\<Pi>I)\<close> makes it a lemma that has to be proved.\<close>
 
 text \<open>Transposing two parameters --- an involutive, injective renaming --- lets us shift an
   eigen-parameter to a fresh one when weakening the context.\<close>
@@ -94,8 +95,8 @@ definition swp :: "'p \<Rightarrow> 'p \<Rightarrow> 'p \<Rightarrow> 'p" where
   "swp a b = (\<lambda>x. if x = a then b else if x = b then a else x)"
 lemma swp_inj: "inj (swp a b)" by (auto simp: swp_def inj_def)
 lemma swp_swp [simp]: "swp a b (swp a b x) = x" by (auto simp: swp_def)
-text \<open>Statement preserved verbatim from the published version of this entry (compatibility
-  export).\<close>
+text \<open>The next lemma, \<open>swp_apply\<close>, keeps its statement from the initial release of this
+  entry (August 2026) (compatibility export).\<close>
 
 lemma swp_apply: "swp a b a = b" by (simp add: swp_def)
 lemma prn_swp_swp [simp]: "prn (swp a b) (prn (swp a b) t) = t" by (simp add: prn_prn)
@@ -103,8 +104,8 @@ lemma image_prn_swp_swp [simp]: "prn (swp a b) ` (prn (swp a b) ` S) = S"
   by (simp add: image_image)
 
 text \<open>\<open>freep\<close> is our rendering of BKK's @{emph \<open>sufficiently \<open>\<Sigma>\<close>-pure\<close>} (BKK Definition 6.3):
-  since a parameter name may be used at every type, infinitely many unused names provide, for
-  each type, a witness reservoir of the cardinality of the (countable) language.\<close>
+  since a parameter name may be used at every type, infinitely many unused names provide
+  fresh witnesses at every type.\<close>
 
 definition usedp :: "'p tm set \<Rightarrow> 'p set" where "usedp \<Phi> \<equiv> (\<Union>D \<in> \<Phi>. pars D)"
 definition freep :: "'p tm set \<Rightarrow> bool" where "freep \<Phi> \<equiv> infinite (- usedp \<Phi>)"
@@ -116,6 +117,8 @@ lemma infinite_inj_image: "inj f \<Longrightarrow> infinite A \<Longrightarrow> 
 lemma freep_add: "freep \<Phi> \<Longrightarrow> freep (insert A \<Phi>)"
   by (simp add: usedp_insert freep_def)
      (metis finite_pars Diff_eq Diff_infinite_finite inf.commute)
+lemma freep_un: "freep \<Phi> \<Longrightarrow> freep (\<Phi> \<union> {A})"
+  by (metis freep_add Un_insert_right sup_bot.right_neutral)
 lemma freep_un_finite: "freep S \<Longrightarrow> finite T \<Longrightarrow> freep (S \<union> T)"
 proof -
   assume "freep S" "finite T"
@@ -173,7 +176,8 @@ subsection \<open>Compactness\<close>
 
 text \<open>Every derivation uses only finitely many hypotheses --- BKK: ``since every \<open>NK\<^sup>*\<close>-proof is
   finite'' (used in the proof of BKK Corollary 7.8).  With set-based contexts this is again a
-  genuine lemma.\<close>
+  lemma that has to be proved, stated for an infinite parameter type (the sort constraint of
+  \<open>bprov_finite\<close>, needed for the weakening steps).\<close>
 
 text \<open>When the parameter type is infinite, every finite context leaves infinitely many
   parameters free.\<close>
@@ -240,8 +244,8 @@ text \<open>The calculus \<open>\<turnstile>\<close> manipulates its context as 
   @{thm [source] bprov_weaken}).  Derivability from a set of @{emph \<open>hypotheses\<close>} is
   therefore defined through finite sub-contexts, in the style of Andrews (2002): \<open>\<Phi> \<tturnstile> A\<close>
   holds when some finite part of \<open>\<Phi>\<close> derives \<open>A\<close>.  This relation is monotone without any
-  proviso and of finite character by construction, and on \<open>freep\<close> contexts --- in
-  particular on all finite ones --- it coincides with \<open>\<turnstile>\<close>.\<close>
+  proviso and of finite character by construction, and over an infinite parameter type it
+  coincides with \<open>\<turnstile>\<close> on \<open>freep\<close> contexts, in particular on all finite ones.\<close>
 
 definition fprov :: "'p tm set \<Rightarrow> 'p tm \<Rightarrow> bool"  (infix \<open>\<tturnstile>\<close> 40) where
   "\<Phi> \<tturnstile> A \<longleftrightarrow> (\<exists>\<Phi>\<^sub>0. finite \<Phi>\<^sub>0 \<and> \<Phi>\<^sub>0 \<subseteq> \<Phi> \<and> \<Phi>\<^sub>0 \<turnstile> A)"
@@ -270,19 +274,20 @@ lemma fprov_compact: "\<Phi> \<tturnstile> A \<longleftrightarrow> (\<exists>\<P
 
 subsection \<open>Consistency\<close>
 
-text \<open>A set of sentences is @{emph \<open>NK-consistent\<close>} (BKK Definition 7.4) if falsity is not derivable
-  from it.\<close>
+text \<open>A set of formulas is @{emph \<open>NK-consistent\<close>} (BKK Definition 7.4) if falsity is not
+  derivable from it.\<close>
 
 definition con :: "'p tm set \<Rightarrow> bool" where "con \<Phi> \<longleftrightarrow> \<not> (\<Phi> \<turnstile> \<^bold>\<bottom>)"
 lemma con_I: "(\<Phi> \<turnstile> \<^bold>\<bottom> \<Longrightarrow> False) \<Longrightarrow> con \<Phi>" by (auto simp: con_def)
 
-text \<open>Subsets of a consistent set are consistent (using weakening).\<close>
+text \<open>Subsets of a consistent set are consistent, provided the superset leaves infinitely many
+  parameters unused (by weakening).\<close>
 
 lemma con_mono: "con \<Psi> \<Longrightarrow> \<Phi> \<subseteq> \<Psi> \<Longrightarrow> freep \<Psi> \<Longrightarrow> con \<Phi>" unfolding con_def
     using bprov_weaken by blast
 
-text \<open>Consistency is of finite character (compactness, BKK Definition 6.1): a set is consistent
-  as soon as all its finite subsets are.\<close>
+text \<open>Consistency is of finite character (compactness, BKK Definition 6.1): over an infinite
+  parameter type, a set is consistent as soon as all its finite subsets are.\<close>
 
 lemma con_compact:
   "(\<And>\<Phi>\<^sub>0::'p::infinite tm set. finite \<Phi>\<^sub>0 \<Longrightarrow> \<Phi>\<^sub>0 \<subseteq> \<Phi> \<Longrightarrow> con \<Phi>\<^sub>0) \<Longrightarrow> con \<Phi>"
@@ -317,12 +322,9 @@ lemma con_not_both: "con \<Phi> \<Longrightarrow> A \<in> \<Phi> \<Longrightarro
 
 subsection \<open>Admissible rules\<close>
 
-lemma freep_un: "freep \<Phi> \<Longrightarrow> freep (\<Phi> \<union> {A})"
-  by (metis freep_add Un_insert_right sup_bot.right_neutral)
-
 text \<open>Double-negation elimination (derivable from the classical rule \<open>NK(Contr)\<close>).\<close>
 
-lemma dneg: "\<Phi> \<turnstile> \<^bold>\<not> (Neg \<^bold>\<cdot> X) \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(X) \<Longrightarrow> freep \<Phi> \<Longrightarrow> \<Phi> \<turnstile> X"
+lemma dneg: "\<Phi> \<turnstile> \<^bold>\<not> \<^bold>\<not> X \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(X) \<Longrightarrow> freep \<Phi> \<Longrightarrow> \<Phi> \<turnstile> X"
   by (metis (no_types, lifting) Contr Hyp NegE Un_insert_right bprov_weaken
             freep_add insertI1 subset_insertI sup_bot.right_neutral wff_FalseB)
 
@@ -403,10 +405,138 @@ text \<open>Universal instantiation directly at the \<open>\<beta>\<close>-reduc
 lemma PiE_open: "\<Phi> \<turnstile> \<^bold>\<Pi>\<^bsub>\<alpha>\<^esub> b \<Longrightarrow> wff\<^bsub>\<alpha> \<^bold>\<Rightarrow> \<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<alpha>\<^esub> b) \<Longrightarrow> wff\<^bsub>\<alpha>\<^esub>(A) \<Longrightarrow> \<Phi> \<turnstile> b\<^bold>\<langle>A\<^bold>\<rangle>"
   by (metis PiE_Forall beq.beta bprov.Beta)
 
+text \<open>The same rules for the named binders \<open>\<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>.\<close> and \<open>\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>.\<close>: instantiation and
+  elimination substitute for the named variable (instances of \<open>PiE_open\<close> and \<open>ExE\<close> via
+  \<open>opn_clos_sub\<close>), and introduction of \<open>\<^bold>\<exists>\<close> comes from an instance.\<close>
+
+lemma AllN_E:
+  assumes h: "\<Phi> \<turnstile> \<^bold>\<Pi>x\<^bsub>\<sigma>\<^esub>. b" and wb: "wff\<^bsub>\<o>\<^esub>(b)" and wA: "wff\<^bsub>\<sigma>\<^esub>(A)"
+  shows "\<Phi> \<turnstile> fsub x \<sigma> A b"
+proof -
+  have "\<Phi> \<turnstile> (clos 0 x \<sigma> b)\<^bold>\<langle>A\<^bold>\<rangle>"
+    using h unfolding AllN_def by (rule PiE_open[OF _ wff_LamN_clos[OF wb] wA])
+  thus ?thesis by (simp only: opn_clos_sub[OF opn_lc[OF wff_lc[OF wb]]])
+qed
+
+lemma ExN_I:
+  assumes h: "\<Phi> \<turnstile> fsub x \<sigma> A b" and wb: "wff\<^bsub>\<o>\<^esub>(b)" and wA: "wff\<^bsub>\<sigma>\<^esub>(A)" and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> \<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. b"
+proof -
+  let ?P = "\<^bold>\<Pi>\<^bsub>\<sigma>\<^esub> (\<^bold>\<not> (clos 0 x \<sigma> b))"
+  have e: "(\<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. b) = \<^bold>\<not> ?P" by (simp add: ExN_def)
+  have wL: "wff\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>(\<^bold>\<Lambda>\<^bsub>\<sigma>\<^esub> (\<^bold>\<not> (clos 0 x \<sigma> b)))"
+    using wff_LamN_clos[OF wff_Not[OF wb]] by simp
+  have wP: "wff\<^bsub>\<o>\<^esub>(?P)" unfolding Forall_def by (rule wff_App[OF wff_Pi wL])
+  have "\<Phi> \<union> {?P} \<turnstile> \<^bold>\<bottom>"
+  proof (rule bprov.NegE[OF _ _ wff_FalseB])
+    have "\<Phi> \<union> {?P} \<turnstile> (\<^bold>\<not> (clos 0 x \<sigma> b))\<^bold>\<langle>A\<^bold>\<rangle>"
+      by (rule PiE_open[OF _ wL wA]) (auto intro: bprov.Hyp)
+    thus "\<Phi> \<union> {?P} \<turnstile> \<^bold>\<not> (fsub x \<sigma> A b)"
+      by (simp add: opn_clos_sub[OF opn_lc[OF wff_lc[OF wb]]])
+    show "\<Phi> \<union> {?P} \<turnstile> fsub x \<sigma> A b"
+      by (rule bprov_weaken[OF h]) (auto simp: freep_add fp)
+  qed
+  thus ?thesis unfolding e by (rule bprov.NegI[OF _ wP])
+qed
+
+lemma ExN_E:
+  assumes ex: "\<Phi> \<turnstile> \<^bold>\<exists>x\<^bsub>\<sigma>\<^esub>. b" and step: "\<Phi> \<union> {fsub x \<sigma> (w\<^sup>p\<^bsub>\<sigma>\<^esub>) b} \<turnstile> C"
+    and wb: "wff\<^bsub>\<o>\<^esub>(b)" and wC: "wff\<^bsub>\<o>\<^esub>(C)" and wpb: "w \<notin> pars b" and wpC: "w \<notin> pars C"
+    and wp\<Phi>: "\<forall>D \<in> \<Phi>. w \<notin> pars D" and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> C"
+proof (rule ExE[OF _ _ wff_LamN_clos[OF wb] wC _ wpC wp\<Phi> fp])
+  show "\<Phi> \<turnstile> \<^bold>\<exists>\<^bsub>\<sigma>\<^esub> (clos 0 x \<sigma> b)" using ex by (simp add: ExN_def)
+  show "\<Phi> \<union> {(clos 0 x \<sigma> b)\<^bold>\<langle>w\<^sup>p\<^bsub>\<sigma>\<^esub>\<^bold>\<rangle>} \<turnstile> C"
+    using step by (simp add: opn_clos_sub[OF opn_lc[OF wff_lc[OF wb]]])
+  show "w \<notin> pars (clos 0 x \<sigma> b)" using wpb by simp
+qed
+
+text \<open>Cut: a hypothesis that is itself derivable can be discharged; iterated over a finite
+  set of derivable hypotheses.\<close>
+
+lemma bprov_cut:
+  assumes AC: "\<Phi> \<union> {A} \<turnstile> C" and A: "\<Phi> \<turnstile> A" and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wC: "wff\<^bsub>\<o>\<^esub>(C)"
+    and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> C"
+proof (rule bprov.Contr[OF _ wC])
+  have 1: "\<Phi> \<union> {\<^bold>\<not> C} \<union> {A} \<turnstile> \<^bold>\<bottom>"
+  proof (rule bprov.NegE[OF _ _ wff_FalseB])
+    show "\<Phi> \<union> {\<^bold>\<not> C} \<union> {A} \<turnstile> \<^bold>\<not> C" by (auto intro: bprov.Hyp)
+    show "\<Phi> \<union> {\<^bold>\<not> C} \<union> {A} \<turnstile> C" by (rule bprov_weaken[OF AC]) (auto simp: freep_add fp)
+  qed
+  have n: "\<Phi> \<union> {\<^bold>\<not> C} \<turnstile> \<^bold>\<not> A" by (rule bprov.NegI[OF 1 wA])
+  have p: "\<Phi> \<union> {\<^bold>\<not> C} \<turnstile> A" by (rule bprov_weaken[OF A]) (auto simp: freep_add fp)
+  show "\<Phi> \<union> {\<^bold>\<not> C} \<turnstile> \<^bold>\<bottom>" by (rule bprov.NegE[OF n p wff_FalseB])
+qed
+
+lemma bprov_cut_set:
+  assumes fin: "finite \<Lambda>"
+  shows "\<Phi> \<union> \<Lambda> \<turnstile> C \<Longrightarrow> (\<And>B. B \<in> \<Lambda> \<Longrightarrow> \<Phi> \<turnstile> B) \<Longrightarrow> (\<And>B. B \<in> \<Lambda> \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(B))
+         \<Longrightarrow> wff\<^bsub>\<o>\<^esub>(C) \<Longrightarrow> freep \<Phi> \<Longrightarrow> \<Phi> \<turnstile> C"
+  using fin
+proof (induction \<Lambda>)
+  case empty thus ?case by simp
+next
+  case (insert B \<Lambda>)
+  have fp': "freep (\<Phi> \<union> \<Lambda>)" by (rule freep_un_finite[OF insert.prems(5) insert.hyps(1)])
+  have wB: "wff\<^bsub>\<o>\<^esub>(B)" by (rule insert.prems(3)) simp
+  have dB: "\<Phi> \<turnstile> B" by (rule insert.prems(2)) simp
+  have AC: "\<Phi> \<union> \<Lambda> \<union> {B} \<turnstile> C" using insert.prems(1) by simp
+  have "\<Phi> \<union> \<Lambda> \<turnstile> B" by (rule bprov_weaken[OF dB _ fp']) auto
+  hence "\<Phi> \<union> \<Lambda> \<turnstile> C" by (rule bprov_cut[OF AC _ wB insert.prems(4) fp'])
+  thus ?case using insert.prems by (intro insert.IH) auto
+qed
+
+text \<open>Introduction and elimination for the defined conjunction \<open>\<^bold>\<and>\<close>.\<close>
+
+lemma AndI:
+  assumes A: "\<Phi> \<turnstile> A" and B: "\<Phi> \<turnstile> B" and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wB: "wff\<^bsub>\<o>\<^esub>(B)"
+    and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> A \<^bold>\<and> B"
+proof -
+  let ?D = "\<^bold>\<not> A \<^bold>\<or> \<^bold>\<not> B"
+  have wD: "wff\<^bsub>\<o>\<^esub>(?D)" by (rule wff_Or[OF wff_Not[OF wA] wff_Not[OF wB]])
+  have 1: "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<bottom>"
+  proof (rule bprov.NegE[OF _ _ wff_FalseB])
+    show "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<not> A" by (auto intro: bprov.Hyp)
+    show "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> A} \<turnstile> A" by (rule bprov_weaken[OF A]) (auto simp: freep_add fp)
+  qed
+  have 2: "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> B} \<turnstile> \<^bold>\<bottom>"
+  proof (rule bprov.NegE[OF _ _ wff_FalseB])
+    show "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> B} \<turnstile> \<^bold>\<not> B" by (auto intro: bprov.Hyp)
+    show "\<Phi> \<union> {?D} \<union> {\<^bold>\<not> B} \<turnstile> B" by (rule bprov_weaken[OF B]) (auto simp: freep_add fp)
+  qed
+  have "\<Phi> \<union> {?D} \<turnstile> \<^bold>\<bottom>"
+    by (rule bprov.DisE[OF _ 1 2 wff_Not[OF wA] wff_Not[OF wB]]) (auto intro: bprov.Hyp)
+  thus ?thesis unfolding AndB_def by (rule bprov.NegI[OF _ wD])
+qed
+
+lemma AndE1:
+  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<and> B" and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wB: "wff\<^bsub>\<o>\<^esub>(B)" and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> A"
+proof (rule bprov.Contr[OF _ wA])
+  have p: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<not> A \<^bold>\<or> \<^bold>\<not> B"
+    by (rule bprov.DisIL[OF _ wff_Not[OF wB]]) (auto intro: bprov.Hyp)
+  have n: "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<not> (\<^bold>\<not> A \<^bold>\<or> \<^bold>\<not> B)"
+    using AB unfolding AndB_def by (rule bprov_weaken) (auto simp: freep_add fp)
+  show "\<Phi> \<union> {\<^bold>\<not> A} \<turnstile> \<^bold>\<bottom>" by (rule bprov.NegE[OF n p wff_FalseB])
+qed
+
+lemma AndE2:
+  assumes AB: "\<Phi> \<turnstile> A \<^bold>\<and> B" and wA: "wff\<^bsub>\<o>\<^esub>(A)" and wB: "wff\<^bsub>\<o>\<^esub>(B)" and fp: "freep \<Phi>"
+  shows "\<Phi> \<turnstile> B"
+proof (rule bprov.Contr[OF _ wB])
+  have p: "\<Phi> \<union> {\<^bold>\<not> B} \<turnstile> \<^bold>\<not> A \<^bold>\<or> \<^bold>\<not> B"
+    by (rule bprov.DisIR[OF _ wff_Not[OF wA]]) (auto intro: bprov.Hyp)
+  have n: "\<Phi> \<union> {\<^bold>\<not> B} \<turnstile> \<^bold>\<not> (\<^bold>\<not> A \<^bold>\<or> \<^bold>\<not> B)"
+    using AB unfolding AndB_def by (rule bprov_weaken) (auto simp: freep_add fp)
+  show "\<Phi> \<union> {\<^bold>\<not> B} \<turnstile> \<^bold>\<bottom>" by (rule bprov.NegE[OF n p wff_FalseB])
+qed
+
 text \<open>Syntactic generalisation: a fresh parameter substituted for a free variable can
   be quantified away and re-instantiated, recovering the open formula (the rule chain
   \<open>NK(\<beta>)\<close>--\<open>NK(\<Pi>I)\<close>--\<open>NK(\<Pi>E)\<close>--\<open>NK(\<beta>)\<close>).  Statement preserved verbatim from the
-  published version of this entry (compatibility export, relocated from \<open>Completeness\<close>);
+  initial release of this entry, August 2026 (compatibility export, relocated from \<open>Completeness\<close>);
   the completeness proof now uses the simultaneous variable-for-parameter substitution of
   \<open>Completeness\<close> instead.\<close>
 
@@ -680,6 +810,24 @@ lemma leib_reduce_right: "\<Phi> \<turnstile> A \<^bold>\<doteq>\<^bsub>\<o>\<^e
   by (metis beq.appR bprov.Beta wff_App wff_Leib)
 
 text \<open>For @{emph \<open>primitive\<close>} equality the same facts are available through the translation
-  (\<open>NK(=\<^sub>l)\<close> in, \<open>leib_to_peq\<close> out).\<close>
+  (\<open>NK(=\<^sub>l)\<close> in, \<open>leib_to_peq\<close> out); symmetry, and symmetry of a negated equation, are
+  the two instances used in \<open>NK_Infinity\<close>.\<close>
+
+lemma peq_sym:
+  assumes AB: "\<Phi> \<turnstile> A \<^bold>=\<^bsub>\<alpha>\<^esub> B" and fp: "freep \<Phi>" and wA: "wff\<^bsub>\<alpha>\<^esub>(A)" and wB: "wff\<^bsub>\<alpha>\<^esub>(B)"
+  shows "\<Phi> \<turnstile> B \<^bold>=\<^bsub>\<alpha>\<^esub> A"
+  by (rule leib_to_peq[OF leib_sym[OF bprov.EqL[OF AB] fp wA wB] fp wB wA])
+
+lemma peq_neg_sym:
+  assumes nAB: "\<Phi> \<turnstile> \<^bold>\<not> (A \<^bold>=\<^bsub>\<alpha>\<^esub> B)" and fp: "freep \<Phi>" and wA: "wff\<^bsub>\<alpha>\<^esub>(A)" and wB: "wff\<^bsub>\<alpha>\<^esub>(B)"
+  shows "\<Phi> \<turnstile> \<^bold>\<not> (B \<^bold>=\<^bsub>\<alpha>\<^esub> A)"
+proof (rule bprov.NegI[OF _ wff_PEq[OF wB wA]])
+  have fp': "freep (\<Phi> \<union> {B \<^bold>=\<^bsub>\<alpha>\<^esub> A})" by (rule freep_un[OF fp])
+  have p: "\<Phi> \<union> {B \<^bold>=\<^bsub>\<alpha>\<^esub> A} \<turnstile> A \<^bold>=\<^bsub>\<alpha>\<^esub> B"
+    by (rule peq_sym[OF _ fp' wB wA]) (auto intro: bprov.Hyp)
+  have n: "\<Phi> \<union> {B \<^bold>=\<^bsub>\<alpha>\<^esub> A} \<turnstile> \<^bold>\<not> (A \<^bold>=\<^bsub>\<alpha>\<^esub> B)"
+    by (rule bprov_weaken[OF nAB]) (auto simp: freep_add fp)
+  show "\<Phi> \<union> {B \<^bold>=\<^bsub>\<alpha>\<^esub> A} \<turnstile> \<^bold>\<bottom>" by (rule bprov.NegE[OF n p wff_FalseB])
+qed
 
 end

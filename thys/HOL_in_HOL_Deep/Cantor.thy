@@ -5,15 +5,14 @@ begin
 
 section \<open>Example: Cantor's theorem\<close>
 
-text \<open>Can Cantor's theorem be proved inside \<open>NK\<close> itself? Yes --- in both forms, at every type
+text \<open>Cantor's theorem is derived inside \<open>NK\<close> itself, in both forms and at every type
   \<open>\<sigma>\<close>: there is no surjection from \<open>\<sigma>\<close> onto \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close>, and no injection from \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close> into
-  \<open>\<sigma>\<close>.  Both are derived @{emph \<open>inside the calculus\<close>}: genuine \<open>NK\<close>-derivations via the diagonal
-  predicate (for the injective version via the description operator \<open>NK(\<iota>)\<close>, following
-  Andrews 1972).  The Cantor sentences are stated as in the @{emph \<open>Stanford
-  Encyclopedia of Philosophy\<close>} entry on Church's type theory (Benzm\"uller and
-  Andrews 2024), generalised from \<open>\<iota>\<close> to every type \<open>\<sigma>\<close>.\<close>
+  \<open>\<sigma>\<close>.  Both derivations go through the diagonal predicate; the injective one forms it
+  with the description operator, by the rule \<open>NK(\<iota>)\<close>, following Andrews \<^cite>\<open>Andrews72\<close>.
+  The Cantor sentences are stated as in the Stanford Encyclopedia entry on Church's type
+  theory \<^cite>\<open>SEPChurchTT\<close>, generalised from \<open>\<iota>\<close> to every type \<open>\<sigma>\<close>.\<close>
 
-subsection \<open>The defined existential quantifier, and the Cantor sentences\<close>
+subsection \<open>The Cantor sentences\<close>
 
 text \<open>The Cantor sentences: no surjection
   \<open>\<G> : \<sigma> \<^bold>\<Rightarrow> \<sigma> \<^bold>\<Rightarrow> \<o>\<close> onto \<open>\<sigma> \<^bold>\<Rightarrow> \<o>\<close>, and no injection \<open>\<I> : (\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<close>.  The
@@ -133,7 +132,7 @@ proof -
   have 4: "{?S, ?Sg, ?E} \<turnstile> ?\<phi> \<^bold>\<doteq>\<^bsub>\<o>\<^esub> (\<^bold>\<not> ?\<phi>)"  \<comment> \<open>\<open>NK(\<beta>)\<close> on (2) by (3)\<close>
     by (rule leib_reduce_right[OF 2 3]) (auto intro!: wff_App wff_Par)
   have 5: "{?S, ?Sg, ?E} \<turnstile> \<^bold>\<bottom>"
-    \<comment> \<open>\<open>?\<phi> \<^bold>\<doteq> \<^bold>\<not> ?\<phi>\<close> is contradictory --- \<open>NK(\<Pi>E)\<close>, \<open>NK(\<not>E)\<close>, tertium non datur\<close>
+    \<comment> \<open>\<open>?\<phi> \<^bold>\<doteq> \<^bold>\<not> ?\<phi>\<close> is contradictory --- \<open>NK(\<Pi>E)\<close>, \<open>NK(\<not>E)\<close>, excluded middle\<close>
     by (rule leib_neg_contra[OF 4 fp2]) (auto intro!: wff_App wff_Par)
   have 6: "{?S, ?Sg} \<turnstile> ?Sg"  \<comment> \<open>\<open>NK(Hyp)\<close>\<close>
     by (auto intro: bprov.Hyp)
@@ -141,7 +140,7 @@ proof -
     \<comment> \<open>\<open>NK(\<Pi>E)\<close>: instantiate the surjectivity of \<open>g\<close> at the diagonal \<open>?F\<close>\<close>
     using PiE_open[OF 6 wff_inst_body wF]
     by (simp add: opn_lc[OF lcF])
-  have 8: "{?S, ?Sg} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>\<open>NK(\<exists>E)\<close>, discharging the witness \<open>a\<close>\<close>
+  have 8: "{?S, ?Sg} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>derived rule \<open>ExE\<close>, discharging the witness \<open>a\<close>\<close>
     by (rule ExE[where w = a, OF 7 _
           wff_wit_body[OF wF lcF] wff_FalseB])
       (use 5 ag in \<open>auto simp: opn_lc[OF lcF] insert_commute
@@ -150,7 +149,7 @@ proof -
       ((Bnd (Suc (Suc 0)) \<^bold>\<cdot> Bnd 0) \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> Bnd (Suc 0))))"
     \<comment> \<open>\<open>NK(Hyp)\<close>, in locally-nameless normal form\<close>
     by (subst surj_norm[symmetric]) (auto intro: bprov.Hyp)
-  have 10: "{?S} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>\<open>NK(\<exists>E)\<close>, discharging the witness \<open>g\<close>\<close>
+  have 10: "{?S} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>derived rule \<open>ExE\<close>, discharging the witness \<open>g\<close>\<close>
     by (rule ExE[where w = g, OF 9 _ wff_surj_body wff_FalseB])
       (use 8 in \<open>auto simp: insert_commute intro!: freep_finite\<close>)
   show ?thesis  \<comment> \<open>\<open>NK(\<not>I)\<close> discharges the assumed surjection\<close>
@@ -187,13 +186,14 @@ proof -
   let ?S = "\<^bold>\<exists>\<I>\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub>. \<^bold>\<Pi>\<F>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>. \<^bold>\<Pi>\<H>\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>.
      (((\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>) \<^bold>=\<^bsub>\<sigma>\<^esub> (\<I>\<^sup>f\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> \<^bold>\<cdot> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>))
       \<^bold>\<supset> (\<F>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<^bold>=\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub> \<H>\<^sup>f\<^bsub>\<sigma> \<^bold>\<Rightarrow> \<o>\<^esub>)) :: 'p tm"
-  \<comment> \<open>The same narrative as for the surjective theorem, with the diagonal
+  \<comment> \<open>The same structure as for the surjective theorem, with the diagonal
     formed through the description operator: steps (1)-(2) instantiate the
     assumed injectivity; step (3) shows that, by injectivity, the singleton
     predicate \<open>\<^bold>\<Lambda>H. i \<^bold>\<cdot> H \<^bold>\<doteq> a\<close> of the image point \<open>a = i \<^bold>\<cdot> ?G\<close> is the
     Leibniz singleton of the diagonal \<open>?G = \<^bold>\<Lambda>x. \<^bold>\<not> (\<^bold>\<iota>(\<^bold>\<Lambda>H. i \<^bold>\<cdot> H \<^bold>\<doteq> x) \<^bold>\<cdot> x)\<close>,
-    so \<open>NK(\<iota>)\<close> describes it to \<open>?G\<close> itself (step (4)) --- description inverts
-    \<open>i\<close>; steps (5)-(6) derive the diagonal contradiction \<open>?\<psi> \<^bold>\<doteq> \<^bold>\<not> ?\<psi>\<close>;
+    so that by \<open>NK(\<iota>)\<close> its description is \<open>?G\<close> itself (step (4)): description
+    recovers \<open>?G\<close> from its image under \<open>i\<close>; step (5) \<open>\<beta>\<close>-reduces the diagonal at
+    \<open>a\<close>, step (6) derives the contradiction \<open>?\<psi> \<^bold>\<doteq> \<^bold>\<not> ?\<psi>\<close> and closes the context;
     steps (7)-(8) and \<open>NK(\<not>I)\<close> discharge the assumption.\<close>
   obtain i h :: 'p where hi: "h \<noteq> i"
     by (metis (full_types) ex_new_if_finite finite.emptyI
@@ -281,7 +281,7 @@ proof -
     have wih: "wff\<^bsub>\<sigma>\<^esub>(?iP \<^bold>\<cdot> ?hP)" by (auto intro!: wff_App wff_Par)
     have dir1: "?\<Gamma> \<union> {?PX \<^bold>\<cdot> ?hP} \<turnstile> ?LG \<^bold>\<cdot> ?hP"
       \<comment> \<open>if \<open>h\<close> is in the singleton then \<open>i \<^bold>\<cdot> h \<^bold>= i \<^bold>\<cdot> ?G\<close>, so \<open>h \<^bold>= ?G\<close>
-        by the injectivity instance (2) and \<open>NK(\<supset>E)\<close>\<close>
+        by the injectivity instance (2) and \<open>bprov_ImpE\<close>\<close>
     proof -
       let ?\<Delta> = "?\<Gamma> \<union> {?PX \<^bold>\<cdot> ?hP}"
       have fp\<Delta>: "freep ?\<Delta>" by (intro freep_finite) simp
@@ -331,14 +331,14 @@ proof -
     using beq.beta[OF wG wa] by (simp add: opn_lc[OF lca])
   have 6: "?\<Gamma> \<turnstile> \<^bold>\<bottom>"
     \<comment> \<open>apply (4) at \<open>?a\<close>, \<open>\<beta>\<close>-reduce by (5): \<open>?\<psi> \<^bold>\<doteq> \<^bold>\<not> ?\<psi>\<close>, contradictory
-      --- \<open>NK(\<Pi>E)\<close>, \<open>NK(\<not>E)\<close>, tertium non datur\<close>
+      --- \<open>NK(\<Pi>E)\<close>, \<open>NK(\<not>E)\<close>, excluded middle\<close>
     by (rule leib_neg_contra[OF bprov.Beta[OF beq.appR[OF 5
           wff_App[OF wff_Leib w\<psi>]]
           leib_cong1[OF 4 fp\<Gamma> wIo wG wa]] fp\<Gamma> w\<psi>])
   have 7: "{?S} \<turnstile> \<^bold>\<exists>\<^bsub>(\<sigma> \<^bold>\<Rightarrow> \<o>) \<^bold>\<Rightarrow> \<sigma>\<^esub> ?IBb"
     \<comment> \<open>\<open>NK(Hyp)\<close>, in locally-nameless normal form\<close>
     by (subst inj_norm[symmetric]) (auto intro: bprov.Hyp)
-  have 8: "{?S} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>\<open>NK(\<exists>E)\<close>, discharging the witness \<open>i\<close>\<close>
+  have 8: "{?S} \<turnstile> \<^bold>\<bottom>"  \<comment> \<open>derived rule \<open>ExE\<close>, discharging the witness \<open>i\<close>\<close>
   proof (rule ExE[where w = i, OF 7 _ wIBb wff_FalseB], goal_cases)
     case 1 show ?case using 6 by (simp add: insert_commute)
     next case 2 show ?case
