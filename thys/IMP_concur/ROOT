@@ -1,0 +1,10 @@
+chapter AFP
+
+session IMP_concur = "HOL-CSPM" +
+  options [timeout=300]
+  theories
+    "IMP_concur"
+    "CIL"
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,95 @@
+\documentclass[11pt,a4paper]{book}
+\usepackage{isabelle,isabellesym}
+\usepackage{graphicx}
+\graphicspath{document}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+\usepackage{pifont}
+
+\usepackage{latexsym}
+\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage[greek,english]{babel}
+  %option greek for \<euro>
+  %option english (default language) for \<guillemotleft>, \<guillemotright>
+
+%\usepackage[latin1]{inputenc}
+  %for \<onesuperior>, \<onequarter>, \<twosuperior>, \<onehalf>,
+  %\<threesuperior>, \<threequarters>, \<degree>
+
+%\usepackage[only,bigsqcap]{stmaryrd}
+  %for \<Sqinter>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<cent>, \<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{$IMP_{concur}$ - A Semantics for a Language with Concurrency based on HOL-CSP}
+\author{Burkhart Wolff}
+
+\maketitle
+
+\chapter*{Abstract}
+The theory $IMP_{concur}$  provides a  
+programming-language aspect to HOL-CSP. It extends the well-known 
+imperative language \verb+IMP+ originated by Glenn Winskell by concurrent
+primitives like \verb+lock+ and \verb+unlock+ for semaphores, thread-local and
+system global program variables and the notion of threads that run in interleaving
+semantics. Threads can be parametric and used to construct concurrent process
+architectures.
+
+Representing $IMP_{concur}$ semantics can be done
+by a straight-forward translation into HOL-CSP; thus, $IMP_{concur}$ can be seen as
+a thin layer on top of the theory of Concurrent Sequential Processes 
+of Hoare, Brookes and Roscoe in its formalization HOL-CSP in Isabelle/HOL.
+
+Notwithstanding its simplicity, $IMP_{concur}$ covers many aspects of concurrency, 
+non-termination, divergence, synchronization, states and race-conditions.
+We believe that $IMP_{concur}$ may be relevant for readers interested in the
+link between programming languages and process algebras. Resulting new ways to 
+concurrent program verification are an interesting object for future study.
+We also present a language extension for dynamic reconfigurations of thread-
+architectures. 
+
+This session is complemented by a syntactic frontend for $IMP_{concur}$, called $CIL$,
+which has been authored by Mathilde Needham and Zineddine Kermadj on their 
+internship project in summer 2025.
+
+\tableofcontents
+
+\pagebreak
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+% generated text of all theories
+\input{session}
+
+% optional bibliography
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
+\endinput
+%:%file=$AFP/IMP_concur/document/root.tex%:%
