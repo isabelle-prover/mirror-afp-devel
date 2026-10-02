@@ -95,6 +95,8 @@ object AFP_Publish {
     val exclude = List("etc/build.props")
 
     if (!skip_checks) {
+      if (AFP_System.afp_version == "devel") error("Publishing from devel is not allowed.")
+
       progress.echo("Checking sync with " + AFP_System.afp_name)
 
       val changed = context.repository.status(relative_args(include))
