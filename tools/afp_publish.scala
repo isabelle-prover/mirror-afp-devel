@@ -100,7 +100,7 @@ object AFP_Publish {
       val changed = context.repository.status(relative_args(include))
       if (changed.nonEmpty) error("Commit changes first.")
 
-      val outgoing = context.repository.command("outgoing", args = "-q").check.out_lines
+      val outgoing = context.repository.command("outgoing", args = "-q").out_lines
       if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
     }
 
