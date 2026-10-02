@@ -1,0 +1,12 @@
+chapter AFP
+
+session HOL_in_HOL_Deep_Infinity_ZFC = HOL_in_HOL_Deep +
+  options [timeout = 300]
+  sessions
+    ZFC_in_HOL
+  theories
+    HOL_Universe
+    HOL_in_HOL_Deep_Infinity_ZFC
+  document_files
+    "root.tex"
+    "root.bib"

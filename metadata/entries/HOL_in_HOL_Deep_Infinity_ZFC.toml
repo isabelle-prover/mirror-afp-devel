@@ -1,0 +1,53 @@
+title = "HOL in HOL over a set-theoretic universe: consistency of NK with infinity and choice"
+date = 2026-09-10
+topics = [
+  "Logic/General logic/Mechanization of proofs",
+  "Logic/Set theory",
+  "Logic/General logic",
+]
+abstract = """
+<p>This companion to the entry <a href=\"https://isa-afp.org/entries/HOL_in_HOL_Deep.html\"><em>A deep embedding of HOL in HOL</em></a> certifies the natural-deduction calculus NK of that entry consistent with a genuine Dedekind-style <em>axiom</em> of infinity — an injective, non-surjective self-map of the individuals — and, because its standard model has full function spaces, with the relational axiom of <em>choice</em> as well. Such an axiom has <em>no</em> finite models, so the compactness argument of the main entry — which lifts arbitrarily large <em>finite</em> models to an infinity <em>scheme</em> — does not apply: a genuinely <em>infinite</em> model is required. We construct one over Paulson's <a href=\"https://isa-afp.org/entries/ZFC_in_HOL.html\">ZFC_in_HOL</a>: the individuals are interpreted as the finite ordinals ω, with full function spaces at every type, yielding a <em>standard</em> Σ-model of NK over the set-theoretic universe V. As this meta-theory is stronger and non-conservative, the guarantee is <em>relative</em> consistency at ZF strength; the machine-checked formalisation lives in Isabelle/HOL with Paulson's ZFC_in_HOL (the ZF reading is metatheoretic, made precise in the introduction). Because NK already provides extensionality and typed description (after Andrews), this certifies the consistency of <em>full</em> classical higher-order logic in Church's sense, choice included as a separate relational scheme.</p>
+
+<p>The infinity axiom and the weaker infinity <em>scheme</em> of the main entry turn out to be logically independent. That the scheme does not entail the axiom is shown in the main entry; the present entry settles the other direction, since the axiom does not entail any of the scheme's individual inequalities: its set-theoretic model interprets all individual constants alike, so those inequalities fail while the axiom holds. Neither sentence, then, implies the other.</p>
+
+<p>The plain-HOL results — soundness, Henkin completeness, and finite-model consistency, including the compactness route to the infinity scheme — are proved in the main entry and imported here <em>unchanged</em>. What the present entry <em>adds</em> is the set-theoretic route to axioms that plain HOL alone cannot model.</p> 
+
+<p>This contribution is part of the <a href=\"https://logikey.org\">LogiKEy</a> project.</p>"""
+license = "bsd"
+note = ""
+creation_note = """
+Parts of this formalisation and its documentation were drafted interactively with a generative AI assistant (Anthropic's Claude), used under continuous human direction. All proofs are machine-checked by Isabelle; the entire development, including all comments and references, was subsequently reviewed, revised and simplified by the authors, who take full responsibility for its content.
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.benzmueller]
+email = "benzmueller_email"
+
+[authors.kirchner]
+email = "kirchner_email"
+
+[contributors]
+
+[notify]
+benzmueller = "benzmueller_email"
+kirchner = "kirchner_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.2178/jsl/1102022211",
+]
+pubs = [
+  "https://isa-afp.org/entries/HOL_in_HOL_Deep.html",
+]
