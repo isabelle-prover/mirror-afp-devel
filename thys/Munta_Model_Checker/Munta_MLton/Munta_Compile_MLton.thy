@@ -79,13 +79,10 @@ compile_generated_files "code/Simple_Model_Checker.ML" (in Simple_Network_Langua
           "mv code/Simple_Model_Checker.ML Simple_Model_Checker.ML"
       val _ =
         exec \<open>Compilation\<close>
-          (\<^cancel>\<open>\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_OPTIONS\<close> ^\<close>
-           \<^verbatim>\<open>"$ISABELLE_MLTON" \<close> ^
+          (\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_NATIVE_OPTIONS \<close> ^
             \<comment> \<open>these additional settings have been copied from the AFP entry \<open>PAC_Checker\<close>\<close>
             \<comment> \<open>they bring down \<open>benchmarks/PM_all_6.muntax\<close> from 1000 s to 180 s on an M1 Mac\<close>
              "-const 'MLton.safe false' -verbose 1 -inline 700 -cc-opt -O3 " ^
-            \<comment> \<open>this one from \<open>PAC_Checker\<close> does not work on ARM64 though\<close>
-            \<^cancel>\<open>"-codegen native " ^\<close>
             \<comment> \<open>these used to be the only setting for Munta\<close>
             "-default-type int64 " ^
             "-output munta " ^
