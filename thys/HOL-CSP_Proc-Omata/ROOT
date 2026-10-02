@@ -35,7 +35,7 @@
 
 session "HOL-CSP_Proc-Omata" (AFP) = "HOL-CSP_PTick" +
   description \<open>HOL-CSP_Proc-Omata: A Bridge between CSP Processes and Functional Automata\<close>
-  options [timeout = 1200, document = pdf, document_output = "output"]
+  options [timeout = 1200]
   theories
     Introduction
   
