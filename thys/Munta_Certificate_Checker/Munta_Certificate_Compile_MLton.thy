@@ -62,11 +62,9 @@ compile_generated_files "code/Certificate.ML" (in Simple_Network_Language_Certif
       val _ =
         \<comment> \<open>Efficient settings for ARM64 machines\<close>
         exec \<open>Compilation\<close>
-          (\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_OPTIONS\<close> ^
+          (\<^verbatim>\<open>"$ISABELLE_MLTON" $ISABELLE_MLTON_OPTIONS $ISABELLE_MLTON_NATIVE_OPTIONS\<close> ^
             \<comment> \<open>these additional settings have been copied from the AFP entry \<open>PAC_Checker\<close>\<close>
             " -const 'MLton.safe false' -verbose 1 -inline 700 -cc-opt -O3 " ^
-            \<comment> \<open>this one does not work on ARM64 though\<close>
-            \<^cancel>\<open>"-codegen native " ^\<close>
             \<comment> \<open>these used to be the defaults for Munta\<close>
             "-default-type int64 " ^
             "-output muntac " ^
