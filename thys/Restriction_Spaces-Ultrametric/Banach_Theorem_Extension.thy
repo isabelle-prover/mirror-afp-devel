@@ -346,8 +346,6 @@ theorem Banach_fix_type : \<open>contraction f \<Longrightarrow> \<exists>!x. f 
   by (elim contractionE)
     (metis banach_fix_type contraction_withD1 contraction_withD2 contraction_withD3)
 
-find_theorems name:anach name:"fix" 
-
 theorem Banach_fix:
   \<open>contraction_on f s \<Longrightarrow> \<exists>!x. x \<in> s \<and> f x = x\<close> if \<open>complete s\<close> \<open>s \<noteq> {}\<close> \<open>f ` s \<subseteq> s\<close>
 proof (elim contraction_onE, intro Banach_fix[OF \<open>complete s\<close> \<open>s \<noteq> {}\<close> _ _ \<open>f ` s \<subseteq> s\<close>] ballI)
