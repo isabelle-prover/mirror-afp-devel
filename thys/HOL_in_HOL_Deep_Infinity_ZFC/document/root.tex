@@ -1,0 +1,233 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{pdfsetup}
+% a wider text block: the deep embedding's statements and proofs need the line length
+\usepackage[a4paper,textwidth=460pt,textheight=650pt]{geometry}
+\urlstyle{rm}\isabellestyle{it}
+% suppress "theory ... imports ... begin" headers and trailing "end"s
+\isadroptag{theory}
+\hyphenation{Benz-m\"ul-ler Kohl-hase Kirch-ner Isa-belle Paul-son}
+\emergencystretch=5em % let TeX stretch otherwise-overfull lines rather than overrun the margin
+\begin{document}
+\title{HOL in HOL over a set-theoretic universe:\\
+  consistency of $\mathrm{NK}$ with infinity and choice}
+\author{Christoph Benzm\"uller \and Daniel Kirchner}
+\maketitle
+\begin{abstract}
+This companion to the entry \emph{A deep embedding of HOL in HOL}
+(\texttt{HOL\_in\_HOL\_Deep})~\cite{HOLinHOLDeep} certifies the
+natural-deduction calculus $\mathrm{NK}$ of that entry consistent with a
+genuine Dedekind-style \emph{axiom} of infinity---an injective,
+non-surjective self-map of the individuals---and, because its standard model
+has full function spaces, with the relational axiom of \emph{choice} as
+well.  Such an axiom has \emph{no} finite models, so the compactness
+argument of the main entry---which lifts arbitrarily large \emph{finite}
+models to an infinity \emph{scheme}---does not apply: a genuinely
+\emph{infinite} model is required.  We construct one over Paulson's
+\texttt{ZFC\_in\_HOL}~\cite{ZFCinHOL}: the individuals are interpreted as the
+finite ordinals $\omega$, with full function spaces at every type, yielding a
+\emph{standard} $\Sigma$-model of $\mathrm{NK}$ over the set-theoretic
+universe $V$.  As this meta-theory is stronger and non-conservative, the
+guarantee is \emph{relative} consistency at $\mathrm{ZF}$ strength; the
+machine-checked formalisation lives in Isabelle/HOL with Paulson's
+\texttt{ZFC\_in\_HOL} (the $\mathrm{ZF}$ reading is metatheoretic, made
+precise in the introduction).  Because $\mathrm{NK}$ already provides
+extensionality and typed description (after Andrews), this certifies the
+consistency of \emph{full} classical higher-order logic in Church's
+sense, choice included as a separate relational scheme.
+
+The infinity axiom and the weaker infinity \emph{scheme} of the main
+entry turn out to be logically independent.  That the scheme does not
+entail the axiom is shown in the main entry; the present entry settles
+the other direction, since the axiom does not entail any of the scheme's
+individual inequalities: its set-theoretic model interprets all
+individual constants alike, so those inequalities fail while the axiom
+holds.  Neither sentence, then, implies the other.
+
+The plain-HOL results---soundness, Henkin completeness, and
+finite-model consistency, including the compactness route to the
+infinity scheme---are proved in the main entry~\cite{HOLinHOLDeep} and
+imported here \emph{unchanged}.  What the present entry \emph{adds} is
+the set-theoretic route to axioms that plain HOL alone cannot model.
+\end{abstract}
+
+\medskip\noindent
+This contribution is part of the LogiKEy project
+(\url{https://logikey.org}).
+
+\paragraph{Use of generative AI.}
+Parts of this formalisation and its documentation were drafted with a
+generative AI assistant (Anthropic's Claude) under continuous human
+direction.  All proofs are machine-checked by Isabelle; the entire
+development, including all comments and references, was reviewed, revised
+and simplified by the authors, who take full responsibility for its content.
+
+\setcounter{tocdepth}{1}
+\tableofcontents
+\newpage
+
+\section{Introduction}
+
+\paragraph{Two entries, and where each result is proved.}
+This is the second of two Archive of Formal Proofs entries on a deep
+embedding of classical higher-order logic---Church's simple theory of
+types, following Benzm\"uller, Brown and Kohlhase~\cite{BBK04}---inside
+Isabelle/HOL.  The first entry, \emph{A deep embedding of HOL in HOL}
+(\texttt{HOL\_in\_HOL\_Deep})~\cite{HOLinHOLDeep}, stays \emph{entirely within
+plain Isabelle/HOL, with no set-theoretic universe}.  There the
+natural-deduction calculus $\mathrm{NK}$ is proved sound, Henkin-complete and
+consistent; consistency comes from a concrete finite standard model, and, by
+compactness over arbitrarily large \emph{finite} models, $\mathrm{NK}$ is
+shown consistent even with an infinity \emph{scheme} $\{c_i \neq c_j \mid i
+\neq j\}$---still without ever constructing an infinite model.  The present
+entry adds one result that plain HOL cannot reach: the consistency of
+$\mathrm{NK}$ with a genuine Dedekind-style \emph{axiom} of infinity, and
+with the axiom of \emph{choice}.  It imports the first entry unchanged and
+supplies the set-theoretic model that this result needs.
+
+We are careful throughout---here, in the theory comments, and in both
+abstracts---to say which of two tiers a statement belongs to: what holds in
+plain HOL, and what needs the set-theoretic universe.  Within this entry the
+split is visible in the theory structure itself.  The set-theory-free half,
+theory \texttt{HOL\_Universe}, imports only the first entry and never
+\texttt{ZFC\_in\_HOL}.  It contains the choice scheme with its satisfaction
+condition (the infinity axiom and its satisfaction are inherited from the
+first entry), the abstract relative-consistency theorem, the completeness
+results, and two universe interfaces: the locale \texttt{hol\_universe}, and
+the (at most as strong) Harrison-style axiom \texttt{harrison\_universe},
+after Harrison's self-verification of HOL Light~\cite{Harrison06}, from which
+\texttt{hol\_universe} is in turn \emph{constructed}.  The set-theoretic
+universe itself appears only in the second theory, which instantiates both
+interfaces with Paulson's set-theoretic universe~$V$ (the type of all sets of
+\texttt{ZFC\_in\_HOL}, introduced below).
+
+\paragraph{Why the meta-theory must be strengthened.}
+A single Dedekind-style axiom of infinity has \emph{no} finite models, by the
+pigeonhole principle.  So the route of the first entry---compactness over
+finite models---yields nothing here, and a genuinely \emph{infinite} model is
+required.  We do not try to build one inside plain HOL, for two reasons.
+First, no type that plain HOL can construct is large enough to carry a
+universe of full function spaces: by Cantor's theorem each such type is
+outgrown by the tower of function spaces built over it, and that no other
+plain-HOL route succeeds follows from G\"odel's second theorem (discussed
+below).  Second, the term-model construction of the completeness proof would
+be circular for a single sentence.  Instead we borrow a ready-made, stronger
+meta-theory: Paulson's \texttt{ZFC\_in\_HOL}~\cite{ZFCinHOL}, which
+axiomatises a Zermelo--Fraenkel universe as a type $V$.  This is \emph{not} a
+conservative extension of HOL---$V$ is postulated by axioms, and $\mathrm{ZF}$
+is proof-theoretically stronger than plain HOL---so what we obtain is a
+\emph{relative} consistency result: $\mathrm{NK}$ with infinity is consistent
+\emph{relative to} $\mathrm{ZF}$.  (The formalisation rests on the full
+\texttt{ZFC\_in\_HOL}, whose set-theoretic choice axiom we never invoke
+essentially; that the
+construction in fact needs only $\mathrm{ZF}$ strength---indeed less---is made
+precise in \emph{How little of $\mathrm{ZF}$ is used} below.  This is why we
+write $\mathrm{ZF}$, not $\mathrm{ZFC}$.)  This pins down exactly where set theory is
+used, namely only to certify consistency (an axiom without finite models has
+no finite consistency witness).  The model that realises the consistency is,
+by contrast, a \emph{countable} Henkin model built in plain HOL, by the
+(ZFC-free) model-existence half of the first entry.  For that single axiom
+the stronger meta-theory supplies the consistency premise and nothing else.
+
+\paragraph{Choice, and full HOL.}
+The same standard model settles more.  Because its function spaces are
+\emph{full}, it validates every instance of the relational axiom of
+\emph{choice}: the required choice function is simply the set-theoretic
+$\lambda$-abstraction of a meta-level Hilbert choice.  Hence $\mathrm{NK}$
+with the Dedekind axiom of infinity \emph{and} choice is consistent relative
+to $\mathrm{ZF}$.  Since $\mathrm{NK}$ already carries extensionality and
+typed description, this is the consistency of full classical higher-order
+logic in the sense of Church.  To be precise, by \emph{full classical HOL in
+the sense of Church} we mean exactly this system: Church's monomorphic simple
+theory of types~\cite{Church40}---the calculus $\mathrm{NK}$ with Boolean and
+functional extensionality and typed description, extended by the Dedekind
+axiom of infinity and the relational axiom of choice.  It is \emph{not} the
+polymorphic Isabelle/HOL of the meta-level, which goes beyond Church's system
+with type variables, type definitions and overloading.
+
+\paragraph{Two tiers of consistency, and G\"odel's second theorem.}
+Write \emph{O-HOL} for the embedded object logic (whose calculus is
+$\mathrm{NK}$) and \emph{M-HOL} for the meta-logic Isabelle/HOL in which it
+lives; the two must be kept apart.  The first entry proves
+$\text{M-HOL}\vdash\mathrm{con}(\text{O-HOL})$: the bare object logic is
+consistent, and this is shown in plain HOL with \emph{no} set universe.  (With
+a single individual every domain is finite, so M-HOL exhibits a model
+directly; and O-HOL, having finite models, lacks the arithmetic strength that
+G\"odel's second theorem presupposes.)  The present entry adds the
+\emph{full} logic:
+$\text{M-HOL}+V\vdash\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$,
+that is, M-HOL extended by the set universe $V$ proves full classical HOL
+consistent.  This is as close as one can come to a self-standing
+$\vdash\mathrm{con}(\text{HOL})$, and it is emphatically \emph{not} the object
+logic proving its own consistency.
+
+That the meta-logic here cannot be plain M-HOL either is a
+\emph{metatheoretic} observation, outside the machine-checked development.
+With infinity and choice, O-HOL is itself Church's simple type theory with
+infinity and choice, and this interprets the M-HOL core (its individuals
+becoming an infinite type, its function types the function types).  So the two
+share their proof-theoretic strength: by the classical analysis both are
+equiconsistent with a Zermelo-style set theory~\cite{Mathias01}.  (Here
+``M-HOL'' means the HOL \emph{core}, whose definitional and overloading
+apparatus is separately known consistent~\cite{KuncarPopescu19}.)  Were plain
+M-HOL to prove $\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$, it
+would thereby prove its own consistency, which G\"odel's second
+incompleteness theorem forbids; so the step up to the set universe $V$ is
+\emph{necessary}, not a convenience.  The same obstacle, and the same step to
+a stronger meta-theory, appears in Harrison's self-verification of HOL
+Light~\cite{Harrison06} and its successors~\cite{Kumar16}.  Throughout it is
+M-HOL reasoning \emph{about} O-HOL, one level up---a difference of role, not
+of logical power: the object logic is in no way the weaker system.  The
+certificate is tied to exactly the axioms modelled here.  Extending O-HOL
+with a further axiom stays legitimate, but the machine-checked guarantee does
+not extend automatically: one must exhibit a model of the new axiom, and if
+the extension reaches the consistency strength of $\text{M-HOL}+V$, certifying
+it needs a yet stronger meta-theory---again by G\"odel's second theorem.
+
+\paragraph{How little of $\mathrm{ZF}$ is used.}
+A closer look pins down the exact surplus over plain HOL.  The object-side
+argument is carrier-generic and uses no set theory at all: full HOL is
+consistent as soon as \emph{some} standard $\Sigma$-frame has
+Dedekind-infinite individuals (an injective, non-surjective self-map).  Plain
+HOL has infinity already; what it lacks is a single type gathering the full
+function spaces over an infinite base (a model formalised in HOL keeps all its
+domains inside one carrier type)---by Cantor these outgrow every type it
+can construct---and that is the whole reason for a stronger universe.  Choice
+is \emph{not} part of this surplus: the same full model validates it for free,
+so the price of full HOL over plain HOL is the axiom of infinity alone.  Nor
+need that universe be full $\mathrm{ZF}$.  It is enough to assume full
+function spaces, booleans, extensionality, infinitely many individuals and a
+domain-respecting parameter interpretation---no replacement and no
+ordinals---and from these the logical constants (negation, disjunction,
+quantification, equality and description) are \emph{constructed} rather than
+assumed.  Every domain then has bounded rank, and this is machine-checked:
+the domain of individuals sits at rank $\omega$, and each function-space layer
+adds only finitely much, so $\mathrm{rank}(D_\sigma) < \omega+\omega$ for
+every type $\sigma$, and every domain is an element of the \emph{set}
+$V_{\omega\cdot 2}$.  Two things should be kept apart here.  What is
+\emph{machine-checked} is precisely this rank bound together with
+$\text{Isabelle/HOL}+\texttt{ZFC\_in\_HOL}\vdash
+\mathrm{con}(\text{O-HOL}+\text{infinity}+\text{choice})$.  That the same
+consistency follows from far less than $\mathrm{ZF}$ is a
+\emph{metatheoretic} reading of that proof, read off from the ranks of the
+objects it constructs: a single derivation mentions only finitely many
+types, so its refutation is validated using only sets of bounded
+rank---comfortably within Zermelo set theory, and without ever forming
+$V_{\omega\cdot 2}$ as a completed set (which would already call on a trace
+of replacement).  This reading is not itself a formalised
+relative-consistency theorem.  Under it the relative consistency factors as
+$\mathrm{con}(\mathrm{ZF}) \Rightarrow \mathrm{con}(\text{weak universe})
+\Rightarrow \mathrm{con}(\text{full HOL})$; the first implication also
+absorbs the choice that the meta-theory uses throughout---by G\"odel's
+constructible universe $L$ at $\mathrm{ZF}$ strength, while at Zermelo
+strength the corresponding elimination of choice without replacement is
+genuinely delicate (see Mathias~\cite{Mathias01}).  The surplus strength of
+\texttt{ZFC\_in\_HOL}---which \emph{exceeds} $\mathrm{ZF}$, as it proves
+$\mathrm{con}(\mathrm{ZFC})$---is never used.
+
+\input{session}
+\bibliographystyle{abbrv}
+\bibliography{root}
+\end{document}

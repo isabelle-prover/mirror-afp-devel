@@ -4,6 +4,15 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>HOL in HOL over a set-theoretic universe: consistency of NK with infinity and choice</title>
+  <link>https://isa-afp.org/entries/HOL_in_HOL_Deep_Infinity_ZFC.html</link>
+  <pubDate>Thu, 10 Sep 2026 00:00:00 +0000</pubDate>
+  <description>HOL in HOL over a set-theoretic universe: consistency of NK with infinity and choice in the AFP</description>
+    <category>Logic/General logic/Mechanization of proofs</category>
+    <category>Logic/Set theory</category>
+    <category>Logic/General logic</category>
+</item>
+<item>
   <title>IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP</title>
   <link>https://isa-afp.org/entries/IMP_concur.html</link>
   <pubDate>Mon, 31 Aug 2026 00:00:00 +0000</pubDate>
