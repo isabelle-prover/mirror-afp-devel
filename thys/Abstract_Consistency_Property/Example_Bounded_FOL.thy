@@ -226,7 +226,7 @@ interpretation B: Beta psub params_fm \<open>\<lambda>_. True\<close> beta_class
 interpretation G: Gamma map_tm psub params_fm \<open>\<lambda>_. True\<close> gamma_class
 proof
   show \<open>\<And>ps F qs t A. ps \<leadsto>\<^sub>\<gamma> (F, qs) \<Longrightarrow> t \<in> F A \<Longrightarrow> \<exists>B \<subseteq> A. finite B \<and> t \<in> F B\<close>
-    by (elim gamma_class.cases) (auto simp: terms_source)  
+    by (elim gamma_class.cases) (auto simp: terms_source)
 qed (fastforce simp: terms_def elim: gamma_class.cases)+
 
 interpretation D: Delta psub params_fm \<open>\<lambda>_. True\<close> \<delta>
@@ -256,12 +256,12 @@ qed simp
 
 abbreviation canonical :: \<open>('f, 'p) fm set \<Rightarrow> ('f tm, 'f, 'p) model\<close> where
   \<open>canonical H \<equiv>
-  Model (terms H) (\<lambda>n. \<^bold>#n \<in>? terms H) (\<lambda>f ts. \<^bold>\<circle>f ts \<in>? terms H) (\<lambda>P ts. \<^bold>\<cdot>P ts \<in> H)\<close>
+      Model (terms H) (\<lambda>n. \<^bold>#n \<in>? terms H) (\<lambda>f ts. \<^bold>\<circle>f ts \<in>? terms H) (\<lambda>P ts. \<^bold>\<cdot>P ts \<in> H)\<close>
 
 lemma wf_canonical:
   assumes \<open>terms H \<noteq> {}\<close>
   shows \<open>wf_model (canonical H)\<close>
-  using assms guard_in by (metis (no_types, lifting) wf_model.simps)
+  using assms by (simp add: guard_in)
 
 lemma canonical_tm_id [simp]:
   \<open>t \<in> terms H \<Longrightarrow> \<lblot>(\<lambda>n. \<^bold>#n \<in>? terms H, \<lambda>P ts. \<^bold>\<circle>P ts \<in>? terms H)\<rblot> t = t\<close>
@@ -497,7 +497,7 @@ next
     \<open>t \<in> F S\<close> \<open>S' \<subseteq> set (qs t) \<union> S\<close> \<open>finite S'\<close>
   then show \<open>\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'\<close>
   proof cases
-  case (CAllP p)
+    case (CAllP p)
     let ?S = \<open>{\<^bold>\<forall>p} \<union> (S' - set (qs t))\<close>
     have \<open>?S \<subseteq> S\<close> \<open>finite ?S\<close>
       using CAllP * by fastforce+
@@ -518,7 +518,7 @@ proof safe
   assume *: \<open>p \<in> S\<close> \<open>P.enough_new S\<close>
     \<open>\<forall>S'\<subseteq>S. finite S' \<longrightarrow> (\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S')\<close>
   then show \<open>\<exists>x. True \<and> set (\<delta> p x) \<union> S \<in> {S. P.enough_new S \<and>
-    (\<forall>S'\<subseteq>S. finite S' \<longrightarrow> (\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'))}\<close>
+      (\<forall>S'\<subseteq>S. finite S' \<longrightarrow> (\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'))}\<close>
   proof (induct p _ rule: \<delta>.induct)
     case (1 p _)
     then have P: \<open>\<forall>x. set (\<delta> (\<^bold>\<not> \<^bold>\<forall> p) x) \<union> S \<in> {S. P.enough_new S}\<close>
@@ -529,10 +529,10 @@ proof safe
       assume \<open>\<nexists>x. True \<and> set (\<delta> (\<^bold>\<not> \<^bold>\<forall> p) x) \<union> S \<in> {S. P.enough_new S \<and> (\<forall>S'\<subseteq>S. finite S' \<longrightarrow> (\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'))}\<close>
       then have \<open>\<forall>x. \<exists>S' \<subseteq> {\<^bold>\<not> \<langle>\<^bold>\<star>x\<rangle>p} \<union> S. finite S' \<and> \<not>(\<exists>(U :: 'a set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S')\<close>
         using P by simp
-     moreover obtain x where x: \<open>x \<notin> P.params S\<close>
-       using \<open>P.enough_new S\<close> unfolding P.enough_new_def
-       by (metis Diff_eq_empty_iff card_of_ordLeq_finite finite.emptyI inf_univ subsetI)
-     ultimately obtain S' where
+      moreover obtain x where x: \<open>x \<notin> P.params S\<close>
+        using \<open>P.enough_new S\<close> unfolding P.enough_new_def
+        by (metis Diff_eq_empty_iff card_of_ordLeq_finite finite.emptyI inf_univ subsetI)
+      ultimately obtain S' where
         S': \<open>S' \<subseteq> {\<^bold>\<not> \<langle>\<^bold>\<star>x\<rangle>p} \<union> S\<close> \<open>finite S'\<close> \<open>\<forall>(U :: 'a set) E F G. wf_model (Model U E F G) \<longrightarrow> \<not> Model U E F G \<TTurnstile> S'\<close>
         using 1 by meson
 
@@ -546,7 +546,7 @@ proof safe
         using * by meson
       then obtain z where z: \<open>z \<in> U\<close> \<open>\<not> Model U (z \<then> E) F G \<Turnstile> p\<close>
         by auto
- 
+
       let ?F = \<open>F(x := \<lambda>_. z)\<close>
       have \<open>\<not> Model U (?F x [] \<then> E) ?F G \<Turnstile> p\<close>
         using M x z ** by auto
@@ -590,7 +590,7 @@ next
   moreover have P: \<open>P.enough_new ?S\<close>
     using assms by (metis List.set_insert empty_set params_left)
   ultimately have *: \<open>?S \<in> {S :: ('f, 'p) fm set. P.enough_new S \<and>
-    (\<forall>S' \<subseteq> S. finite S' \<longrightarrow> (\<exists>(U :: 'f tm set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'))}\<close>
+      (\<forall>S' \<subseteq> S. finite S' \<longrightarrow> (\<exists>(U :: 'f tm set) E F G. wf_model (Model U E F G) \<and> Model U E F G \<TTurnstile> S'))}\<close>
     by fast
 
   have **: \<open>terms ?S \<noteq> {}\<close>
@@ -748,7 +748,7 @@ proof (rule ccontr)
   ultimately have *: \<open>\<forall>p \<in> ?S. ?M \<Turnstile> p\<close>
     using model_existence ne by blast
   then have \<open>?M \<Turnstile> p\<close>
-    using mod[OF wf] by fast 
+    using mod[OF wf] by fast
   then show False
     using * by simp
 qed
@@ -922,7 +922,7 @@ qed
 sublocale DB: Derivational_Beta psub params_fm \<open>\<lambda>_. True\<close> beta_class \<open>\<lambda>A. \<not> \<turnstile> A\<close>
 proof
   fix A and ps qs :: \<open>('f, 'p) fm list\<close>
-  assume \<open>ps \<leadsto>\<^sub>\<beta> qs\<close> and *: \<open>set ps \<subseteq> A\<close> \<open>\<not> \<turnstile> A\<close> 
+  assume \<open>ps \<leadsto>\<^sub>\<beta> qs\<close> and *: \<open>set ps \<subseteq> A\<close> \<open>\<not> \<turnstile> A\<close>
   then show \<open>\<exists>q \<in> set qs. \<not> \<turnstile> {q} \<union> A\<close>
   proof cases
     case (CImpP p q)
@@ -973,7 +973,7 @@ theorem strong_completeness:
   shows \<open>\<turnstile> {\<^bold>\<not> with_subterm p} \<union> A\<close>
 proof (rule ccontr)
   assume *: \<open>\<not> \<turnstile> {\<^bold>\<not> with_subterm p} \<union> A\<close>
-  
+
   let ?S = \<open>set [\<^bold>\<not> with_subterm p] \<union> A\<close>
   let ?C = \<open>{A. P.enough_new A \<and> \<not> \<turnstile> A}\<close>
   let ?M = \<open>canonical (mk_mcs ?C ?S)\<close>
@@ -994,11 +994,217 @@ proof (rule ccontr)
   ultimately have *: \<open>\<forall>p \<in> ?S. ?M \<Turnstile> p\<close>
     using model_existence ne by blast
   then have \<open>?M \<Turnstile> p\<close>
-    using mod[OF wf] by fast 
+    using mod[OF wf] by fast
   then show False
     using * by simp
 qed
 
 end
+
+section \<open>Cardinalities\<close>
+
+datatype marker = VarM | FunM | TmM | PreM | FlsM | ImpM | UniM
+
+type_synonym ('f, 'p) enc = \<open>('f + 'p) + marker \<times> nat\<close>
+
+abbreviation \<open>FUNS f \<equiv> Inl (Inl f)\<close>
+abbreviation \<open>PRES p \<equiv> Inl (Inr p)\<close>
+
+abbreviation \<open>VAR n \<equiv> Inr (VarM, n)\<close>
+abbreviation \<open>FUN n \<equiv> Inr (FunM, n)\<close>
+abbreviation \<open>TM n \<equiv> Inr (TmM, n)\<close>
+
+abbreviation \<open>PRE n \<equiv> Inr (PreM, n)\<close>
+abbreviation \<open>FLS \<equiv> Inr (FlsM, 0)\<close>
+abbreviation \<open>IMP n \<equiv> Inr (ImpM, n)\<close>
+abbreviation \<open>UNI \<equiv> Inr (UniM, 0)\<close>
+
+primrec
+  encode_tm :: \<open>'f tm \<Rightarrow> ('f, 'p) enc list\<close> and
+  encode_tms :: \<open>'f tm list \<Rightarrow> ('f, 'p) enc list\<close> where
+  \<open>encode_tm (\<^bold>#n) = [VAR n]\<close> |
+  \<open>encode_tm (\<^bold>\<circle>f ts) = FUN (length ts) # FUNS f # encode_tms ts\<close> |
+  \<open>encode_tms [] = []\<close> |
+  \<open>encode_tms (t # ts) = TM (length (encode_tm t)) # encode_tm t @ encode_tms ts\<close>
+
+lemma encode_tm_ne [simp]: \<open>encode_tm t \<noteq> []\<close>
+  by (induct t) auto
+
+lemma inj_encode_tm':
+  \<open>(encode_tm t :: ('f, 'p) enc list) = encode_tm s \<Longrightarrow> t = s\<close>
+  \<open>(encode_tms ts :: ('f, 'p) enc list) = encode_tms ss \<Longrightarrow> ts = ss\<close>
+proof (induct t and ts arbitrary: s and ss rule: encode_tm.induct encode_tms.induct)
+  case (Var n)
+  then show ?case
+    by (cases s) auto
+next
+  case (Fun f fts)
+  then show ?case
+    by (cases s) auto
+next
+  case Nil_tm
+  then show ?case
+    by (cases ss) auto
+next
+  case (Cons_tm t ts)
+  then show ?case
+    by (cases ss) auto
+qed
+
+lemma inj_encode_tm: \<open>inj encode_tm\<close>
+  unfolding inj_def using inj_encode_tm' by blast
+
+primrec encode_fm :: \<open>('f, 'p) fm \<Rightarrow> ('f, 'p) enc list\<close> where
+  \<open>encode_fm (\<^bold>\<cdot>P ts) = PRE (length ts) # PRES P # encode_tms ts\<close> |
+  \<open>encode_fm \<^bold>\<bottom> = [FLS]\<close> |
+  \<open>encode_fm (p \<^bold>\<longrightarrow> q) =
+    IMP (length (encode_fm p)) # encode_fm p @ encode_fm q\<close> |
+  \<open>encode_fm (\<^bold>\<forall>p) = UNI # encode_fm p\<close>
+
+lemma encode_fm_ne [simp]: \<open>encode_fm p \<noteq> []\<close>
+  by (induct p) auto
+
+lemma inj_encode_fm': \<open>encode_fm p = encode_fm q \<Longrightarrow> p = q\<close>
+proof (induct p arbitrary: q)
+  case Pre
+  then show ?case
+    by (cases q) (auto simp: inj_encode_tm')
+next
+  case Fls
+  then show ?case
+    by (cases q) auto
+next
+  case Imp
+  then show ?case
+    by (cases q) auto
+next
+  case Uni
+  then show ?case
+    by (cases q) auto
+qed
+
+lemma inj_encode_fm: \<open>inj encode_fm\<close>
+  unfolding inj_def using inj_encode_fm' by blast
+
+lemma finite_marker: \<open>finite (UNIV :: marker set)\<close>
+proof -
+  have \<open>p \<in> {VarM, FunM, TmM, FlsM, PreM, ImpM, UniM}\<close> for p
+    by (cases p) auto
+  then show ?thesis
+    by (meson ex_new_if_finite finite.emptyI finite_insert)
+qed
+
+lemma card_of_params_marker_lists:
+  assumes \<open>infinite (UNIV :: 'i set)\<close> \<open>|UNIV :: 'm set| \<le>o |UNIV :: nat set|\<close>
+  shows \<open>|UNIV :: ('i + 'm \<times> nat) list set| \<le>o |UNIV :: 'i set|\<close>
+proof -
+  have \<open>(UNIV :: 'm set) \<noteq> {}\<close>
+    by simp
+  then have \<open>|UNIV :: 'm set| *c |UNIV :: nat set| \<le>o |UNIV :: nat set|\<close>
+    using assms(2) by (simp add: cinfinite_def cprod_cinfinite_bound ordLess_imp_ordLeq)
+  then have \<open>|UNIV :: ('m \<times> nat) set| \<le>o |UNIV :: nat set|\<close>
+    unfolding cprod_def by simp
+  moreover have \<open>|UNIV :: nat set| \<le>o |UNIV :: 'i set|\<close>
+    using assms infinite_iff_card_of_nat by blast
+  ultimately have \<open>|UNIV :: ('m \<times> nat) set| \<le>o |UNIV :: 'i set|\<close>
+    using ordLeq_transitive by blast
+  moreover have \<open>Cinfinite |UNIV :: 'i set|\<close>
+    using assms by (simp add: cinfinite_def)
+  ultimately have \<open>|UNIV :: 'i set| +c |UNIV :: ('m \<times> nat) set| =o |UNIV :: 'i set|\<close>
+    using csum_absorb1 by blast
+  then have \<open>|UNIV :: ('i + 'm \<times> nat) set| =o |UNIV :: 'i set|\<close>
+    unfolding csum_def by simp
+  then have \<open>|UNIV :: ('i + 'm \<times> nat) set| \<le>o |UNIV :: 'i set|\<close>
+    using ordIso_iff_ordLeq by blast
+  moreover have \<open>infinite (UNIV :: ('i + 'm \<times> nat) set)\<close>
+    using assms by simp
+  then have \<open>|UNIV :: ('i + 'm \<times> nat) list set| =o |UNIV :: ('i + 'm \<times> nat) set|\<close>
+    by (metis card_of_lists_infinite lists_UNIV)
+  ultimately have \<open>|UNIV :: ('i + 'm \<times> nat) list set| \<le>o |UNIV :: 'i set|\<close>
+    using ordIso_ordLeq_trans by blast
+  then show ?thesis
+    using ordLeq_transitive by blast
+qed
+
+lemma card_of_fm:
+  assumes \<open>infinite (UNIV :: 'f set)\<close>
+  shows \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV :: 'f set| +c |UNIV :: 'p set|\<close>
+proof -
+  have \<open>|UNIV :: marker set| \<le>o |UNIV :: nat set|\<close>
+    using finite_marker finite_iff_ordLess_natLeq infinite_UNIV_nat
+      infinite_iff_natLeq_ordLeq ordLess_imp_ordLeq ordLess_ordLeq_trans by meson
+  moreover have \<open>infinite (UNIV :: ('f + 'p) set)\<close>
+    using assms by simp
+  ultimately have \<open>|UNIV :: ('f, 'p) enc list set| \<le>o |UNIV :: ('f + 'p) set|\<close>
+    using card_of_params_marker_lists by blast
+  moreover have \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV :: ('f, 'p) enc list set|\<close>
+    using card_of_ordLeq inj_encode_fm by blast
+  ultimately have \<open>|UNIV :: ('f, 'p) fm set| \<le>o |UNIV :: ('f + 'p) set|\<close>
+    using ordLeq_transitive by blast
+  then show ?thesis
+    unfolding csum_def by simp
+qed
+
+lemma card_of_fm_pair:
+  assumes \<open>infinite (UNIV :: 'a set)\<close>
+  shows \<open>|UNIV :: ('a, 'a) fm set| \<le>o |UNIV :: 'a set|\<close>
+  using assms Cnotzero_UNIV Field_card_of card_of_fm card_of_least card_of_well_order_on
+    csum_absorb1 ordLeq_ordIso_trans unfolding cinfinite_def by metis
+
+lemma star[iff]: \<open>(case t of Fun a l \<Rightarrow> (case l of [] \<Rightarrow> T a| _ # _ \<Rightarrow> False) | Var _ \<Rightarrow> False) =
+    (\<exists>a. t = \<^bold>\<star>a \<and> T a)\<close>
+proof (induct t)
+  case (Fun _ A)
+  then show ?case
+    by (induct A) simp_all
+qed simp
+
+lemma triv[iff]: \<open>a \<notin> P.params (set (p # A)) \<longleftrightarrow> (a \<notin> params_fm p \<and> (\<forall>p\<in>set A. a \<notin> params_fm p))\<close>
+  by simp
+
+primrec member where
+  \<open>member p [] = False\<close> |
+  \<open>member p (q # A) = (if p = q then True else member p A)\<close>
+
+lemma member [iff]: \<open>member p A \<longleftrightarrow> p \<in> set A\<close>
+  by (induct A) simp_all
+
+abbreviation \<open>fresh t A \<equiv> (case t of Fun a [] \<Rightarrow> a \<notin> P.params (set A) | _ \<Rightarrow> False)\<close>
+
+abbreviation \<open>known t A \<equiv> t \<in> terms (set A)\<close>
+
+abbreviation \<open>valid U p \<equiv> \<forall>E F G. (\<forall>n. E n \<in> U) \<and> (\<forall>f ts. F f ts \<in> U) \<longrightarrow> Model U E F G \<Turnstile> p\<close>
+
+proposition \<open>valid {} p\<close>
+  by simp
+
+inductive ND :: \<open>('f, 'p) fm list \<Rightarrow> ('f, 'p) fm \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<close> 50) where
+  Assm: \<open>A \<leadsto> p\<close> if \<open>member p A\<close> |
+  FlsE: \<open>A \<leadsto> \<^bold>\<bottom> \<Longrightarrow> A \<leadsto> p\<close> |
+  ImpI: \<open>p # A \<leadsto> q \<Longrightarrow> A \<leadsto> p \<^bold>\<longrightarrow> q\<close> |
+  ImpE: \<open>A \<leadsto> p \<^bold>\<longrightarrow> q \<Longrightarrow> A \<leadsto> p \<Longrightarrow> A \<leadsto> q\<close> |
+  UniI: \<open>A \<leadsto> \<langle>t\<rangle>p \<Longrightarrow> A \<leadsto> \<^bold>\<forall>p\<close> if \<open>fresh t (p # A)\<close> |
+  UniE: \<open>A \<leadsto> \<^bold>\<forall>p \<Longrightarrow> A \<leadsto> \<langle>t\<rangle>p\<close> if \<open>known t (p # A)\<close> |
+  ImpC: \<open>(p \<^bold>\<longrightarrow> q) # A \<leadsto> p \<Longrightarrow> A \<leadsto> p\<close>
+
+lemma (in Natural_Deduction) reduction[iff]: \<open>A \<turnstile> p \<longleftrightarrow> A \<leadsto> p\<close>
+proof
+  show \<open>A \<turnstile> p \<Longrightarrow> A \<leadsto> p\<close>
+    by (induct rule: ND_List.induct)
+      (auto simp: ND.Assm ND.UniE elim: ND.FlsE ND.ImpE ND.ImpC ND.UniE intro: ND.ImpI ND.UniI)
+next
+  show \<open>A \<leadsto> p \<Longrightarrow> A \<turnstile> p\<close>
+    by (induct rule: ND.induct) (auto elim: ND_List.Clas)
+qed
+
+theorem (in Natural_Deduction)
+  assumes \<open>[] \<leadsto> p\<close>
+  shows \<open>\<forall>U. valid U p\<close>
+  using assms by (simp add: soundness_nil)
+
+theorem (in Natural_Deduction)
+  fixes p :: \<open>(string, string) fm\<close>
+  shows \<open>[] \<leadsto> p \<longleftrightarrow> (\<forall>(U :: string tm set). valid U p)\<close>
+  using main card_of_fm_pair infinite_UNIV_listI by auto
 
 end

@@ -229,7 +229,7 @@ abbreviation params :: \<open>'fm set \<Rightarrow> 'x set\<close> where
 lemma infinite_params: \<open>infinite (U - params B) \<Longrightarrow> infinite (U - params (set ps \<union> B))\<close>
   using finite_params_fm by (metis List.finite_set UN_Un finite_UN_I infinite_Diff_fin_Un)
 
-lemma infinite_params_left: 
+lemma infinite_params_left:
   assumes \<open>infinite A\<close> \<open>|A| \<le>o |U - params S|\<close>
   shows \<open>|A| \<le>o |U - params (set ps \<union> S)|\<close>
 proof -
@@ -777,7 +777,7 @@ proof
     then have \<open>mk_mcs C S \<in> mk_alt_fin C\<close>
       using assms(2-3) Extend_in_C mk_alt_fin_finite_char mk_alt_fin_in by blast
     moreover have \<open>sat\<^sub>E (Cond P H) (mk_alt_fin C)\<close>
-      using \<open>prop\<^sub>A Ks (mk_alt_fin C)\<close> Cond K unfolding prop\<^sub>A_def by fast 
+      using \<open>prop\<^sub>A Ks (mk_alt_fin C)\<close> Cond K unfolding prop\<^sub>A_def by fast
     ultimately show ?thesis
       using K all_kinds Consistency_Kind.hintikka by meson
   next
@@ -971,7 +971,7 @@ next
   qed
 next
   fix C S
-  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close> 
+  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close>
   show \<open>sat\<^sub>H kind S\<close>
   proof safe
     fix ps qs q
@@ -1117,7 +1117,7 @@ next
   qed
 next
   fix C S
-  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close> 
+  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close>
   show \<open>sat\<^sub>H kind S\<close>
   proof safe
     fix ps qs q
@@ -1279,7 +1279,7 @@ next
   qed
 next
   fix C S
-  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close> 
+  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close>
   show \<open>sat\<^sub>H kind S\<close>
   proof safe
     fix ps qs
@@ -1309,7 +1309,7 @@ proof
     assume *: \<open>set ps \<subseteq> S\<close> \<open>ps \<leadsto>\<^sub>\<beta> qs\<close> \<open>\<turnstile> S\<close>
     then have \<open>\<exists>q \<in> set qs. \<turnstile> {q} \<union> S\<close>
       using consistent by blast
-    moreover assume \<open>enough_new S\<close> 
+    moreover assume \<open>enough_new S\<close>
     ultimately show \<open>\<exists>q\<in>set qs. insert q S \<in> {A. enough_new A \<and> \<turnstile> A}\<close>
       using infinite_params_left[OF inf] unfolding enough_new_def
       by (metis (no_types, lifting) empty_set insert_code(1) insert_is_Un mem_Collect_eq)
@@ -1443,12 +1443,12 @@ next
     assume *: \<open>set ps \<subseteq> S\<close> and **: \<open>ps \<leadsto>\<^sub>\<gamma> (F, qs)\<close> and t: \<open>t \<in> F S\<close>
 
     show \<open>set (qs t) \<union> S \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def 
+      unfolding mk_finite_char_def
     proof safe
       fix S'
       assume 1: \<open>S' \<subseteq> set (qs t) \<union> S\<close> and 2: \<open>finite S'\<close>
 
-      obtain A where A: \<open>A \<subseteq> S\<close> \<open>finite A\<close> \<open>S' \<subseteq> set (qs t) \<union> A\<close> 
+      obtain A where A: \<open>A \<subseteq> S\<close> \<open>finite A\<close> \<open>S' \<subseteq> set (qs t) \<union> A\<close>
         using 1 2 by (meson Diff_subset_conv equalityD2 finite_Diff)
 
       obtain B where B: \<open>B \<subseteq> S\<close> \<open>finite B\<close> \<open>t \<in> F B\<close>
@@ -1478,7 +1478,7 @@ next
   qed
 next
   fix C S
-  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close> 
+  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close>
   show \<open>sat\<^sub>H kind S\<close>
   proof safe
     fix ps F qs t
@@ -1841,12 +1841,12 @@ next
     assume *: \<open>set ps \<subseteq> S\<close> and **: \<open>ps \<leadsto>\<^sub>\<box> (F, qs)\<close>
 
     show \<open>set qs \<union> F S \<in> mk_finite_char C\<close>
-      unfolding mk_finite_char_def 
+      unfolding mk_finite_char_def
     proof safe
       fix S'
       assume 1: \<open>S' \<subseteq> set qs \<union> F S\<close> and 2: \<open>finite S'\<close>
 
-      obtain A where A: \<open>A \<subseteq> S\<close> \<open>finite A\<close> \<open>S' \<subseteq> set qs \<union> F A\<close> 
+      obtain A where A: \<open>A \<subseteq> S\<close> \<open>finite A\<close> \<open>S' \<subseteq> set qs \<union> F A\<close>
         using 1 2 ** modal_fin by (meson Diff_subset_conv finite_Diff)
 
       let ?S = \<open>set ps \<union> A\<close>
@@ -1871,7 +1871,7 @@ next
   qed
 next
   fix C S
-  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close> 
+  assume *: \<open>sat\<^sub>E kind C\<close> \<open>S \<in> C\<close> \<open>maximal C S\<close>
   then show \<open>sat\<^sub>H kind S\<close>
     using modal_hintikka by simp
 qed
