@@ -1,8 +1,12 @@
+
 chapter AFP
 
-session RG_Locks = HOL +
+session "RG_Locks" = HOL +
 
   options [
+    document = pdf,
+    document_output = "output",
+    document_variants = "outline=/proof,-ML",
     timeout = 300
   ]
 
@@ -15,11 +19,13 @@ session RG_Locks = HOL +
   theories
     "RG_Syntax_Extensions"
     "RG_Annotated_Commands"
+    "RG_Annotated_Methods"
     "RG_Examples_Reworked"
+    "Helpers_Lists_Option"
+    "Concurrent_Queue_Contract"
     "Lock_Abstract_Queue"
     "Lock_Ticket"
     "Lock_Circular_Buffer"
-    "Function_Supplementary"
 
   document_files
     "root.tex"

@@ -1,108 +1,288 @@
-(* Title:      	   Abstract Queue Lock
-   Author(s):     Robert Colvin, Scott Heiner, Peter Hoefner, Roger Su
-   License:       BSD 2-Clause
-   Maintainer(s): Roger Su <roger.c.su@proton.me>
-                  Peter Hoefner <peter@hoefner-online.de>
+
+(*
+Title:         Rely-Guarantee Verification of the Abstract Queue Lock
+Author(s):     Robert Colvin, Scott Heiner, Peter Hoefner, Roger Su
+Year:          2026
+License:       BSD 2-Clause
+Maintainer(s): Robert Colvin <r.colvin@uq.edu.au>
+               Peter Hoefner <peter@hoefner-online.de>
+               Roger Su <roger.c.su@proton.me>
 *)
 
 section \<open>Abstract Queue Lock\<close>
 
+text \<open>The specification and proof of the Abstract Queue Lock, using
+the new specification of the queue.\<close>
+
 theory Lock_Abstract_Queue
 
 imports
-  RG_Annotated_Commands
+  Concurrent_Queue_Contract
+  RG_Annotated_Methods
 
 begin
 
-text \<open>We identify each thread by a natural number.\<close>
-
 type_synonym thread_id = nat
-
-text \<open>The state of the Abstract Queue Lock consists of one single
-field, which is the list of threads.\<close>
 
 record queue_lock = queue :: "thread_id list"
 
-text \<open>The following abbreviation describes when an object is at the
-head of a list. Note that both clauses are needed to characterise the
-predicate faithfully, because the term @{term \<open>x = hd xs\<close>} (i.e.\
-@{term x} is the head of @{term xs}) does not imply that @{term \<open>x \<in> set xs\<close>}.\<close>
+abbreviation qlock_rely :: "thread_id \<Rightarrow> queue_lock rel" where
+  "qlock_rely i \<equiv> \<lbrace> queue_contract i \<ordmasculine>queue \<ordfeminine>queue \<rbrace>"
 
-abbreviation at_head :: "'a \<Rightarrow> 'a list \<Rightarrow> bool" where
-  "at_head x xs \<equiv> xs \<noteq> [] \<and> x = hd xs"
+(*------------------------------------------------------------------*)
+subsection \<open>No Annotations, Simpler Invariant\<close>
 
-text \<open>The contract of the Abstract Queue Lock consists of two clauses.
-The first states that a thread cannot be added to or removed from the
-queue by its environment. The second states that the head of the queue
-remains at the head after any environment-step.\<close>
+text \<open>This section's RG theorems are based on the original, non-annotated
+command-type, and are proved using the structured proof-style.
+They use a simpler invariant that requires only the distinctness of the
+queue, for a simpler global postcondition.\<close>
 
-abbreviation queue_contract :: "thread_id \<Rightarrow> queue_lock rel" where
-  "queue_contract i \<equiv> \<lbrace>
-    (i \<in> set \<ordmasculine>queue \<longleftrightarrow> i \<in> set \<ordfeminine>queue) \<and>
-    (at_head i \<ordmasculine>queue \<longrightarrow> at_head i \<ordfeminine>queue) \<rbrace>"
+lemma qlock_spin':
+ "rely: qlock_rely i         guar: for_others qlock_rely i
+   inv: \<lbrace> distinct \<acute>queue \<rbrace>  code:
+     { \<lbrace> i \<in> set \<acute>queue \<rbrace> }
+   WHILE hd \<acute>queue \<noteq> i DO SKIP OD
+     { \<lbrace> at_head i \<acute>queue \<rbrace> }"
+proof method_spinloop
+  case stable_post show ?case
+    apply clarsimp
+    by (metis (full_types) emptyE list.set(1) suffix_bot.extremum_uniqueI takeWhile_eq_Nil_iff)
+qed (fastforce+)
 
-text \<open>The RG sentence of the Release procedure is made into a separate
-lemma below.\<close>
+lemma qlock_rel':
+ "rely: qlock_rely i         guar: for_others qlock_rely i
+   inv: \<lbrace> distinct \<acute>queue \<rbrace>  code: 
+     { \<lbrace> at_head i \<acute>queue \<rbrace> }
+   \<acute>queue := tl \<acute>queue
+     { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }"
+proof method_basic_inv
+  case stab_pre show ?case using stable_at_head by fastforce
+  case est_inv  show ?case using distinct_tl    by fastforce
+  case est_post show ?case using at_head_tl     by fastforce
+next
+  case est_guar show ?case
+    apply clarsimp
+    by (smt (verit, best) prefix_order.dual_order.refl queue_contract_def queue_contract_tl suffix_tl tl_prefix_before tl_suffix_after)
+qed (fastforce+)
+
+theorem qlock_global':
+  assumes "0 < n"
+  shows "global_init: \<lbrace> \<acute>queue = [] \<rbrace>  global_rely: Id
+    \<parallel> i < n @
+  { \<lbrace> i \<notin> set \<acute>queue \<rbrace>, qlock_rely i }
+    WHILE True DO (
+      (\<acute>queue := \<acute>queue @ [i]) ;;
+      (WHILE hd \<acute>queue \<noteq> i DO SKIP OD) ;;
+      (\<acute>queue := tl \<acute>queue))
+    OD
+  \<sslash> \<lbrace> distinct \<acute>queue \<rbrace>
+  { for_others qlock_rely i, {} }
+  global_guar: UNIV  global_post: {}"
+proof method_multi_parallel_nobound
+  case post show ?case using assms by fast
+next
+  case body show ?case
+  proof (standard, method_loop)
+    case (loop_body i) show ?case
+    proof (rule Seq[where mid = "\<lbrace> at_head i \<acute>queue \<rbrace> \<inter> \<lbrace> distinct \<acute>queue \<rbrace>"], goal_cases ln1_ln2 ln3)
+      case ln1_ln2 show ?case
+      proof (rule Seq[where mid = "\<lbrace> i \<in> set \<acute>queue \<rbrace> \<inter> \<lbrace> distinct \<acute>queue \<rbrace>"], goal_cases ln1 ln2)
+        case ln1 show ?case by (method_basic, auto)
+        case ln2 show ?case using qlock_spin' by fast
+      qed
+      case ln3 show ?case using qlock_rel' by fast
+    qed
+  qed auto
+qed auto
+
+(*------------------------------------------------------------------*)
+subsection \<open>No Annotations, Refined Invariant\<close>
+
+text \<open>This section's RG theorems are still based on the non-annotated
+command-type, and are proved using the structured proof-style.
+They however use a more refined invariant that additionally stipulates
+that all queuing threads have IDs smaller than a constant.
+This is required to establish a more specific global postcondition.\<close>
+
+consts N :: nat
+
+abbreviation qlock_invar :: "queue_lock set" where
+  "qlock_invar \<equiv> \<lbrace> distinct \<acute>queue \<and> set \<acute>queue \<subseteq> {..< N} \<rbrace>"
+
+lemma qlock_spin:
+ "rely: qlock_rely i  guar: for_others qlock_rely i
+   inv: qlock_invar   code:
+     { \<lbrace> i \<in> set \<acute>queue \<rbrace> }
+   WHILE hd \<acute>queue \<noteq> i DO SKIP OD
+     { \<lbrace> at_head i \<acute>queue \<rbrace> }"
+proof method_spinloop
+  case stable_post show ?case
+    apply clarsimp
+    by (metis (full_types) emptyE list.set(1) suffix_bot.extremum_uniqueI takeWhile_eq_Nil_iff)
+qed (fastforce+)
 
 lemma qlock_rel:
- "rely: queue_contract t     guar: for_others queue_contract t
-  inv:  \<lbrace> distinct \<acute>queue \<rbrace>  code:
-    { \<lbrace> at_head t \<acute>queue \<rbrace> }
+ "rely: qlock_rely i  guar: for_others qlock_rely i
+   inv: qlock_invar   code:
+     { \<lbrace> at_head i \<acute>queue \<rbrace> }
   \<acute>queue := tl \<acute>queue
-    { \<lbrace> t \<notin> set \<acute>queue \<rbrace> }"
+     { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }"
 proof method_basic_inv
-  case est_guar
-  then show ?case
-    apply clarsimp
-    by (metis hd_Cons_tl list.set_sel(2) set_ConsD)
+  case stab_pre show ?case
+    using stable_at_head by fastforce
 next
-  case est_post
-  then show ?case
+  case est_inv show ?case
+    using distinct_tl apply clarsimp
+    by (smt (verit, best) Nil_tl distinct_tl dual_order.trans hd_Cons_tl set_subset_Cons)
+next
+  case est_post show ?case
+    using at_head_tl by fastforce
+next
+  case est_guar show ?case
     apply clarsimp
-    by (metis distinct.simps(2) list.collapse)
-qed (simp_all add: distinct_tl)
+    by (smt (verit, best) prefix_order.dual_order.refl queue_contract_def queue_contract_tl suffix_tl tl_prefix_before tl_suffix_after)
+qed (fastforce+)
 
-text \<open>The correctness of the Abstract Queue Lock is expressed by the
-following RG sentence, which describes a closed system of @{term n} 
-threads, each repeatedly calls Acquire and then Release in an infinite
-loop. We omit the critical section between Acquire and Release, as it
-does not access the lock.
+theorem qlock_local:
+  assumes "i < N" shows
+  "rely: qlock_rely i  guar: for_others qlock_rely i
+    inv: qlock_invar   code:
+      { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }
+  \<acute>queue := \<acute>queue @ [i] ;;
+   WHILE hd \<acute>queue \<noteq> i DO SKIP OD ;;
+  \<acute>queue := tl \<acute>queue
+      { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }"
+proof (rule Seq[where mid = "\<lbrace> at_head i \<acute>queue \<rbrace> \<inter> qlock_invar"],
+       rule Seq[where mid = "\<lbrace> i \<in> set \<acute>queue \<rbrace> \<inter> qlock_invar"],
+       goal_cases)
+  case 1 show ?case
+    apply method_basic
+    using assms by auto
+next
+  case 2 show ?case
+    apply method_spinloop
+    using stable_at_head by auto
+next
+  case 3 show ?case
+  proof method_basic
+    case stable_pre show ?case
+      using stable_at_head by auto
+  next
+    case establish_guar show ?case
+    proof (standard, standard)
+      fix s assume assm_s: "s \<in> \<lbrace> at_head i \<acute>queue \<rbrace> \<inter> qlock_invar"
+      show "(s, s\<lparr>queue := tl (queue s)\<rparr>) \<in> lift_guar qlock_invar (for_others qlock_rely i)"
+       (is "(?s, ?s') \<in> ?R")
+      proof -
+        have "(?s, ?s') \<in> for_others qlock_rely i"
+          using assm_s apply clarsimp
+          by (metis (mono_tags, lifting) Int_iff prefix_suffix_clause_def queue_contract_def queue_contract_tl)
+        moreover have "?s \<in> qlock_invar"
+          using assm_s by blast
+        moreover have "?s' \<in> qlock_invar"
+          using assm_s apply clarsimp
+          by (smt (verit, ccfv_SIG) distinct_tl order_trans set_mono_sublist sublist_tl)
+        ultimately have "(?s, ?s') \<in> Restr (for_others qlock_rely i) qlock_invar"
+          by blast
+        then show ?thesis using lift_guar_def by blast
+      qed
+    qed
+  next
+    case establish_post
+    then show ?case
+      using at_head_tl qlock_rel Basic_sat_implies_post_and_guar by fast
+  qed (force+)
+qed
 
-The Acquire procedure consists of two steps: enqueuing and spinning.
-The Release procedure consists of only the dequeuing step.
+theorem qlock_local_loop_empty:
+  assumes "i < N" shows
+  "rely: qlock_rely i  guar: for_others qlock_rely i
+    inv: qlock_invar   code:
+      { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }
+    WHILE True DO (
+      (\<acute>queue := \<acute>queue @ [i]) ;;
+      (WHILE hd \<acute>queue \<noteq> i DO SKIP OD) ;;
+      (\<acute>queue := tl \<acute>queue))
+    OD
+      { {} }"
+proof method_loop
+  case loop_body show ?case using assms qlock_local by force
+qed (fastforce+)
 
-Each thread can only be in the queue at most once, so the invariant
-requires the queue to be distinct.
-
-The queue is initially empty; hence the global precondition.
-Being a closed system, there is no external actor, so the rely is the
-identity relation, and the guarantee is the universal relation.
-The system executes continuously, as the outer infinite loop never
-terminates; hence, the global postcondition is the empty set.
-\<close>
+theorem qlock_local_loop_nonempty:
+  assumes "i < N" shows
+  "rely: qlock_rely i  guar: for_others qlock_rely i
+    inv: qlock_invar   code:
+      { \<lbrace> i \<notin> set \<acute>queue \<rbrace> }
+    WHILE True DO (
+      (\<acute>queue := \<acute>queue @ [i]) ;;
+      (WHILE hd \<acute>queue \<noteq> i DO SKIP OD) ;;
+      (\<acute>queue := tl \<acute>queue))
+    OD
+      { \<lbrace> \<acute>queue = [] \<rbrace> }"
+proof-
+  have "{} \<subseteq> \<lbrace> \<acute>queue = [] \<rbrace>"
+    by simp
+  then show ?thesis
+    using weaken_post assms qlock_local_loop_empty by fastforce
+qed
 
 theorem qlock_global:
-  assumes "0 < n"
-  shows "annotated
+  assumes "0 < N"
+  shows "global_init: \<lbrace> \<acute>queue = [] \<rbrace>  global_rely: Id
+    \<parallel> i < N @
+  { \<lbrace> i \<notin> set \<acute>queue \<rbrace>, qlock_rely i }
+    WHILE True DO (
+      (\<acute>queue := \<acute>queue @ [i]) ;;
+      (WHILE hd \<acute>queue \<noteq> i DO SKIP OD) ;;
+      (\<acute>queue := tl \<acute>queue))
+    OD
+  \<sslash> qlock_invar
+  { for_others qlock_rely i, \<lbrace> \<acute>queue = [] \<rbrace> }
+  global_guar: UNIV  global_post: \<lbrace> \<acute>queue = [] \<rbrace>"
+proof method_multi_parallel
+  case post show ?case using assms by blast
+  case body show ?case using qlock_local_loop_nonempty by blast
+qed auto
+
+(*------------------------------------------------------------------*)
+subsection \<open>Monolithic Theorem with Annotations\<close>
+
+text \<open>The main theorem can also be stated as a monolithic RG sentence
+on an annotated command, to be proved in the automated proof-style.
+In contrast to the previous section, this serves as an alternative way
+to state and prove the main RG theorem. Note that this theorem is based
+on the more refined invariant, but the proof here is not dependent on
+any lemma or theorem from the previous sections.\<close>
+
+theorem qlock_global_anno:
+  assumes "0 < N"
+  shows "valid_multipar: annotated
   global_init: \<lbrace> \<acute>queue = [] \<rbrace>  global_rely: Id
-    \<parallel> i < n @
-  { \<lbrace> i \<notin> set \<acute>queue \<rbrace>, queue_contract i }
+    \<parallel> i < N @
+  { \<lbrace> i \<notin> set \<acute>queue \<rbrace>, qlock_rely i }
 
-  WHILEa True DO
-    {stable_guard: \<lbrace> i \<notin> set \<acute>queue \<rbrace> }
-    NoAnno (\<acute>queue := \<acute>queue @ [i]) .;
-    { \<lbrace> i \<in> set \<acute>queue \<rbrace> }
-    NoAnno (WHILE hd \<acute>queue \<noteq> i DO SKIP OD) .;
-    { \<lbrace> at_head i \<acute>queue \<rbrace>}
-    NoAnno (\<acute>queue := tl \<acute>queue)
-  OD
+  FOREVER (
+    \<acute>queue := \<acute>queue @ [i] ..;
+      \<lbrace> i \<in> set \<acute>queue \<rbrace> 
+     SPIN hd \<acute>queue \<noteq> i  .;
+      {\<lbrace> at_head i \<acute>queue \<rbrace>}
+     (\<acute>queue := tl \<acute>queue)-
+  )
 
-  \<sslash> \<lbrace> distinct \<acute>queue \<rbrace> { for_others queue_contract i, {} }
-  global_guar: UNIV  global_post: {}"
-  apply rg_proof_expand
-     apply (method_basic; fastforce)
-    apply (method_spinloop; fastforce)
-   using qlock_rel apply fastforce
-  using assms by fastforce
+  \<sslash> qlock_invar
+  { for_others qlock_rely i, \<lbrace> i \<notin> set \<acute>queue \<rbrace> }
+  global_guar: UNIV  global_post: \<lbrace> \<acute>queue = [] \<rbrace>"
+  apply decompose_and_discharge
+          apply (smt (verit, best) emptyE empty_set mem_Collect_eq prod.sel(1) prod.sel(2) stable_from_def suffix_bot.extremum_uniqueI takeWhile_eq_Nil_iff)
+         using distinct_tl apply blast
+        apply (meson dual_order.trans set_mono_sublist sublist_tl)
+       apply (metis queue_contract_def queue_contract_tl)
+      apply (simp add: tl_prefix_before)
+     apply (simp add: tl_suffix_after)
+    apply (meson at_head_tl)
+   using assms apply blast
+  apply auto
+  using last_in_set by blast
 
 end

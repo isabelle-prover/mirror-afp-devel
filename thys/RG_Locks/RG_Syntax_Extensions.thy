@@ -1,52 +1,44 @@
-(* Title:       	 Syntax Extension for Rely-Guarantee
-   Author(s):     Robert Colvin, Scott Heiner, Peter Hoefner, Roger Su
-   License:       BSD 2-Clause
-   Maintainer(s): Roger Su <roger.c.su@proton.me>
-                  Peter Hoefner <peter@hoefner-online.de>
+
+(*
+Title: Rely-Guarantee Syntax Extensions
+Author(s):     Robert Colvin, Scott Heiner, Peter Hoefner, Roger Su
+Year:          2026
+License:       BSD 2-Clause
+Maintainer(s): Robert Colvin <r.colvin@uq.edu.au>
+               Peter Hoefner <peter@hoefner-online.de>
+               Roger Su <roger.c.su@proton.me>
 *)
 
-section \<open>Rely-Guarantee (RG) Syntax Extensions\<close>
+section \<open>Rely-Guarantee Syntax Extensions\<close>
 
-text \<open>The core extensions to the built-in RG library:
-improved syntax of RG sentences in the quintuple- and 
-keyword-styles, with data-invariants.
-
-Also: subgoal-generating methods for RG inference-rules that work
-with the structured proof-language, Isar.\<close>
+text \<open>This theory contains the improved syntax of rely-guarantee sentences,
+with support for quintuple-style, keyword-style, and data-invariants.
+It also includes subgoal-generating methods that work with the structured
+proof-language, Isar.\<close>
 
 theory RG_Syntax_Extensions
-
-imports
-  "HOL-Hoare_Parallel.RG_Syntax"
-  "HOL-Eisbach.Eisbach"
-
+imports "HOL-Hoare_Parallel.RG_Syntax" "HOL-Eisbach.Eisbach"
 begin
 
-text \<open>We begin with some basic notions that are used later on.\<close>
-
-text \<open>Notation for forward function-composition:
-defined in the built-in @{text \<open>Fun.thy\<close>} but disabled at the 
-end of that theory.
-%
-This operator is useful for modelling atomic primitives such as Swap
-and Fetch-And-Increment, and also useful when coupling concrete- and
-auxiliary-variable instructions.\<close>
+text \<open>First, we enable the notation for forward function-composition, which is
+used in the built-in @{text \<open>Fun.thy\<close>} but disabled at the end of that file.
+We also augment the simp-set with some related definitions from the built-in library.\<close>
 
 notation fcomp (infixl "\<circ>>" 60)
 
 lemmas definitions [simp] =
   stable_def Pre_def Rely_def Guar_def Post_def Com_def
 
-text \<open>In applications, guarantee-relations often stipulates that Thread
-@{text i} should ``preserve the rely-relations of all other threads''.
-This pattern is supported by the following higher-order function, where 
-@{text j} ranges through all the threads that are not @{text i}.\<close>
+text \<open>Guarantee-relations often simply stipulates that a thread @{text i} should
+``preserve the rely-relations of all other threads''. This pattern is supported
+by the following syntactic sugar, where @{text j} ranges through all the threads
+that are not @{text i}.\<close>
 
 abbreviation for_others :: "('index \<Rightarrow> 'state rel) \<Rightarrow> 'index \<Rightarrow> 'state rel" where
   "for_others R i \<equiv> \<Inter> j \<in> -{i}. R j"
 
-text \<open>Relies and guarantees often state that certain variables remain 
-unchanged. We support this pattern with the following syntactic sugars.\<close>
+text \<open>Relies and guarantees often state that certain variables remain unchanged.
+We support this pattern with the following syntactic sugars.\<close>
 
 abbreviation record_id :: "('record \<Rightarrow> 'field) \<Rightarrow> 'record rel"
   ("id'(_')" [75] 74) where
@@ -66,11 +58,9 @@ abbreviation record_ids_indexed ::
   ("ids'( _ @ _ ')") where
   "ids(cs @ self) \<equiv> \<Inter> c \<in> cs. id(c @ self)"
 
-text \<open>The following simple method performs an optional simplification-step, 
-and then tries to apply one of the RG rules, before attempting to discharge 
-each subgoal using @{text force}.
-%
-This method works well on simple RG sentences.\<close>
+text \<open>The following simple method performs an optional simplification-step, and
+then tries to apply one of the RG rules, before attempting to discharge each 
+subgoal using @{text force}. This method works well on simple RG sentences.\<close>
 
 method method_rg_try_each = 
   (clarsimp | simp)?,
@@ -84,24 +74,41 @@ method method_rg_try_each =
 (*============================================================================*)
 subsection \<open>Lifting of Invariants\<close>
 
-text \<open>There are different ways to combine the invariant with the rely
-or guarantee, as long as the invariant is preserved.
-%
-Here, a rely- or guarantee-relation @{term R} is combined with the 
-invariant @{term I} into @{term \<open>{(s,s'). (s \<in> I \<longrightarrow> s' \<in> I) \<and> R}\<close>}.\<close>
+text \<open>To incorporate the invariant in a rely-guarantee sentence,
+we need a way to combine the invariant, as a set,
+with the rely and guarantee, which are relations.\<close>
 
-definition pred_to_rel :: "'a set \<Rightarrow> 'a rel" where
-  "pred_to_rel P \<equiv> {(s,s') . s \<in> P \<longrightarrow> s' \<in> P}"
+definition lift_guar :: "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
+  "lift_guar P R \<equiv> Id \<union> Restr R P"
 
-definition invar_and_guar :: "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
-  "invar_and_guar I G \<equiv> G \<inter> pred_to_rel I" 
+definition lift_rely :: "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a rel" where
+  "lift_rely P R \<equiv> R \<inter> {(s,s'). s \<in> P \<longrightarrow> s' \<in> P }"
 
-lemmas simp_defs [simp] = pred_to_rel_def invar_and_guar_def
+lemmas simp_defs [simp] = lift_guar_def lift_rely_def
+
+text \<open>Some properties of these two lifting functions:
+Firstly, @{term lift_guar} is stronger than @{term lift_rely},
+provided that the relation @{term R} contains the identity-relation.
+Indeed, this assumption typically holds in RG reasoning when @{term R}
+is a rely- or guarantee-relation.\<close>
+
+lemma lift_guar_stronger_than_lift_rely:
+  "Id \<subseteq> R \<Longrightarrow> lift_guar I R \<subseteq> lift_rely I R"
+  by auto
+
+text \<open>Secondly, both @{term lift_guar} and @{term lift_rely} are `correct'
+in the context of RG reasoning, as the invariant is stable under both.\<close>
+
+lemma stable_both_lift:
+  shows "stable I (lift_guar I R)"
+    and "stable I (lift_rely I R)"
+  by auto
 
 (*============================================================================*)
 subsection \<open>RG Sentences\<close>
 
 text \<open>The quintuple-style of RG sentences.\<close>
+
 abbreviation rg_quint ::
   "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a com \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightarrow> bool"
   ("{_,_} _ {_,_}") where
@@ -109,13 +116,13 @@ abbreviation rg_quint ::
 
 text \<open>Quintuples with invariants.\<close>
 
-abbreviation rg_quint_invar :: 
+abbreviation rg_quintn_invar :: 
   "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a com \<Rightarrow> 'a set \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightarrow> bool" 
   ("{_,_} _ \<sslash> _ {_,_}") where
   "{P, R} C \<sslash> I {G, Q} \<equiv> \<turnstile> C sat [
     P \<inter> I, 
-    R \<inter> pred_to_rel I, 
-    invar_and_guar I G, 
+    lift_rely I R, 
+    lift_guar I G, 
     Q \<inter> I]"
 
 text \<open>The keyword-style of RG sentences.\<close>
@@ -132,8 +139,8 @@ abbreviation rg_keyword_invar ::
   ("rely:_ guar:_ inv:_ code: {_} _ {_}") where
   "rg_keyword_invar R G I P C Q \<equiv> \<turnstile> C sat [
     P \<inter> I, 
-    R \<inter> pred_to_rel I, 
-    invar_and_guar I G, 
+    lift_rely I R, 
+    lift_guar I G, 
     Q \<inter> I]"
 
 (*============================================================================*)
@@ -164,14 +171,14 @@ subsubsection \<open>Basic\<close>
 text \<open>A @{text Basic} instruction wraps a state-transformation function.\<close>
 
 theorem rg_basic_named[intro]:
-  assumes "stable P R"
-      and "stable Q R"
-      and "\<forall>s. s \<in> P \<longrightarrow> (s, s) \<in> G"
-      and "\<forall>s. s \<in> P \<longrightarrow> (s, f s) \<in> G"
-      and "P \<subseteq> \<lbrace> \<acute>f \<in> Q \<rbrace>" 
+  assumes stable_pre:     "stable P R"
+      and stable_post:    "stable Q R"
+      and guar_id:        "\<forall>s. s \<in> P \<longrightarrow> (s, s) \<in> G"
+      and establish_guar: "\<forall>s. s \<in> P \<longrightarrow> (s, f s) \<in> G"
+      and establish_post: "P \<subseteq> \<lbrace> \<acute>f \<in> Q \<rbrace>" 
     shows "{P, R} Basic f {G, Q}"
-  using assms apply -
-  by (rule Basic; fastforce)
+  apply (rule Basic)
+  using assms by auto
 
 method method_basic =
   rule rg_basic_named,
@@ -181,10 +188,10 @@ text \<open>The \emph{skip} command is a @{text Basic} instruction whose functio
 the identity.\<close>
 
 theorem rg_skip_named: 
-  assumes "stable P R"
-      and "stable Q R"
-      and "Id \<subseteq> G"
-      and "P \<subseteq> Q"
+  assumes stab_pre:  "stable P R"
+      and stab_post: "stable Q R"
+      and guar_id:   "Id \<subseteq> G"
+      and est_post:  "P \<subseteq> Q"
     shows "{P, R} SKIP {G, Q}"
   using assms by force
 
@@ -195,19 +202,33 @@ method method_skip =
 text \<open>An alternative version with an invariant subgoal.\<close>
 
 theorem rg_basic_inv[intro]:
-  assumes "stable (P \<inter> I) (R \<inter> pred_to_rel I)"
-      and "stable (Q \<inter> I) (R \<inter> pred_to_rel I)"
-      and "\<forall>s. s \<in> P \<inter> I \<longrightarrow> (s, s) \<in> G"
-      and "\<forall>s. s \<in> P \<inter> I \<longrightarrow> f s \<in> I"
-      and "\<forall>s. s \<in> P \<inter> I \<longrightarrow> f s \<in> Q"
-      and "\<forall>s. s \<in> P \<inter> I \<longrightarrow> (s, f s) \<in> G"
+  assumes stab_pre:  "stable (P \<inter> I) (lift_rely I R)"
+      and stab_post: "stable (Q \<inter> I) (lift_rely I R)"
+      and id_guar:   "\<forall>s. s \<in> P \<inter> I \<longrightarrow> (s, s) \<in> G"
+      and est_inv:   "\<forall>s. s \<in> P \<inter> I \<longrightarrow> f s \<in> I"
+      and est_post:  "\<forall>s. s \<in> P \<inter> I \<longrightarrow> f s \<in> Q"
+      and est_guar:  "\<forall>s. s \<in> P \<inter> I \<longrightarrow> (s, f s) \<in> G"
     shows "\<turnstile> (Basic f) sat [
       P \<inter> I, 
-      R \<inter> pred_to_rel I, 
-      invar_and_guar I G, 
+      lift_rely I R, 
+      lift_guar I G, 
       Q \<inter> I]"
-  using assms apply -
-  by (method_basic; fastforce)
+proof method_basic
+  case stable_pre
+  then show ?case using stab_pre by blast
+next
+  case stable_post
+  then show ?case using stab_post by blast
+next
+  case guar_id
+  then show ?case using id_guar by simp
+next
+  case establish_guar
+  then show ?case using est_inv est_guar by simp
+next
+  case establish_post
+  then show ?case using est_post est_inv by blast
+qed
 
 method method_basic_inv = rule rg_basic_inv,
   goal_cases stab_pre stab_post id_guar est_inv est_post est_guar
@@ -216,14 +237,14 @@ method method_basic_inv = rule rg_basic_inv,
 subsubsection \<open>Looping constructs\<close>
 
 theorem rg_general_loop_named[intro]:
-  assumes "stable P R"
-      and "stable Q R"
-      and "Id \<subseteq> G"
-      and "P \<inter> -b \<subseteq> Q"
-      and "{P \<inter> b, R} c {G, P}"
+  assumes stab_pre:  "stable P R"
+      and stab_post: "stable Q R"
+      and guar_id:   "Id \<subseteq> G"
+      and loop_exit: "P \<inter> -b \<subseteq> Q"
+      and loop_body: "{P \<inter> b, R} c {G, P}"
     shows "{P, R} While b c {G, Q}"
-  using assms apply -
-  by (rule While; fastforce)
+  apply (rule While)
+  using assms by force+
 
 method method_loop =
   rule rg_general_loop_named,
@@ -233,14 +254,13 @@ text \<open>A similar version but with the @{text loop_body} subgoal having a
 weakend precondition.\<close>
 
 theorem rg_general_loop_no_guard[intro]:
-  assumes "stable P R"
-      and "stable Q R"
-      and "Id \<subseteq> G"
-      and "P \<inter> -b \<subseteq> Q"
-      and "{P, R} c {G, P}"
+  assumes stab_pre:  "stable P R"
+      and stab_post: "stable Q R"
+      and guar_id:   "Id \<subseteq> G"
+      and loop_exit: "P \<inter> -b \<subseteq> Q"
+      and loop_body: "{P, R} c {G, P}"
     shows "{P, R} While b c {G, Q}"
-  apply(rule rg_general_loop_named)
-  by (fastforce intro!: assms Int_lower1 intro: strengthen_pre)+
+  by (meson assms strengthen_pre Int_lower1 rg_general_loop_named)
 
 method method_loop_no_guard = 
   rule rg_general_loop_no_guard,
@@ -250,27 +270,31 @@ text \<open>A \emph{spinloop} is a loop with an empty body. Such a loop repeated
 checks a property, and is a key construct in mutual exclusion algorithms.\<close>
 
 theorem rg_spinloop_named[intro]:
-  assumes "stable P R"
-      and "stable Q R"
-      and "Id \<subseteq> G"
-      and "P \<inter> -b \<subseteq> Q"
+  assumes stab_pre:  "stable P R"
+      and stab_post: "stable Q R"
+      and guar_id:   "Id \<subseteq> G"
+      and est_post:  "P \<inter> -b \<subseteq> Q"
     shows "{P, R} While b SKIP {G, Q}"
-  using assms
-  by (fastforce simp: rg_general_loop_no_guard rg_skip_named)
-
+  apply (rule While)
+  using stab_pre apply blast
+  using est_post apply blast
+  using stab_post apply blast
+  apply (metis dual_order.refl guar_id inf_le1 rg_skip_named stab_pre strengthen_pre)
+  using guar_id by blast
 
 method method_spinloop = 
   rule rg_spinloop_named,
   goal_cases stable_pre stable_post guar_id est_post
 
 theorem rg_infinite_loop:
-  assumes "stable P R"
-      and "Id \<subseteq> G"
-      and "{P, R} C {G, P}"
+  assumes stab_pre:  "stable P R"
+      and guar_id:   "Id \<subseteq> G"
+      and loop_body: "{P, R} C {G, P}"
     shows "{P, R} While UNIV C {G, Q}"
 proof -
   have "{P, R} While UNIV C {G, {}}"
-    using assms by (fastforce simp: rg_general_loop_no_guard)
+    apply (rule While)
+    using assms by force+
   thus ?thesis
     using weaken_post by fastforce
 qed
@@ -281,11 +305,11 @@ method method_infinite_loop =
   clarsimp+
 
 theorem rg_infinite_loop_syntax:
-  assumes "stable P R"
-      and "Id \<subseteq> G"
-      and "{P, R} C {G, P}"
+  assumes stab_pre:  "stable P R"
+      and guar_id:   "Id \<subseteq> G"
+      and loop_body: "{P, R} C {G, P}"
     shows "{P, R} WHILE True DO C OD {G, Q}"
-  using assms by (fastforce simp: rg_infinite_loop)
+  using assms by (simp, rule rg_infinite_loop)
 
 method method_infinite_loop_syntax =
   rule rg_infinite_loop_syntax,
@@ -295,16 +319,16 @@ text \<open>A \emph{repeat-loop} encodes the pattern where the loop body is exec
 before the first evaluation of the guard.\<close>
 
 theorem rg_repeat_loop[intro]:
-  assumes "stable P R"
-      and "stable Q R"
-      and "Id \<subseteq> G"
-      and "P \<inter> b \<subseteq> Q"
+  assumes stab_pre:  "stable P R"
+      and stab_post: "stable Q R"
+      and guar_id:   "Id \<subseteq> G"
+      and loop_exit: "P \<inter> b \<subseteq> Q"
       and loop_body: "{P, R} C {G, P}"
     shows "{P, R} C ;; While (-b) C {G, Q}"
-  using assms apply -
-  apply (rule Seq)
-   apply (force intro: loop_body)
-  by (method_loop_no_guard; fastforce)
+  apply (rule Seq[where ?mid = "P"])
+  using loop_body apply blast
+  apply (method_loop_no_guard)
+  using assms by auto
 
 method method_repeat_loop =
   rule rg_repeat_loop,
@@ -321,10 +345,14 @@ theorem rg_repeat_loop_mid[intro]:
       and loop_exit: "P \<inter> M \<inter> b \<subseteq> Q"
       and loop_body: "{P, R} C {G, P \<inter> M}"
     shows "{P, R} C ;; While (-b) C {G, Q}"
- using assms apply -
-  apply (rule Seq)
-   apply (fast intro: loop_body)
-  by (method_loop_no_guard; fast intro: loop_body strengthen_pre)
+  apply (rule Seq[where ?mid = "P \<inter> M"])
+  using loop_body apply blast
+  apply (method_loop_no_guard)
+  using stab_pre apply blast
+  using stab_post apply blast
+  using guar_id apply blast
+  using loop_exit apply blast
+  using loop_body strengthen_pre[of "P \<inter> M" P] by blast
 
 method method_repeat_loop_mid =
   rule rg_repeat_loop_mid,
@@ -345,8 +373,7 @@ theorem rg_repeat_loop_def[intro]:
       and loop_exit: "P \<inter> b \<subseteq> Q"
       and loop_body: "{P, R} C {G, P}"
     shows "{P, R} Repeat C b {G, Q}"
-  using assms 
-  by (fastforce simp: Repeat_def rg_repeat_loop)
+  by (metis assms Repeat_def rg_repeat_loop)
 
 method method_repeat_loop_def =
   rule rg_repeat_loop_def,
@@ -364,8 +391,8 @@ theorem rg_cond_named[intro]:
       and then_br:   "{P \<inter>  b, R} c1 {G, Q}"
       and else_br:   "{P \<inter> -b, R} c2 {G, Q}"
     shows "{P, R} Cond b c1 c2 {G, Q}"
-  using assms apply -
-  by (rule Cond; fastforce)
+  apply (rule Cond)
+  using assms by auto
 
 theorem rg_cond2_named[intro]:
   assumes stab_pre:  "stable P R"
@@ -374,9 +401,13 @@ theorem rg_cond2_named[intro]:
       and then_br:   "{P \<inter>  b, R} c1 {G, Q}"
       and else_br:   "P \<inter> -b \<subseteq> Q"
     shows "{P, R} Cond b c1 SKIP {G, Q}"
-  using assms apply -
-  by (rule rg_cond_named; fastforce simp: rg_skip_named strengthen_pre)
- 
+  apply (rule rg_cond_named)
+  using stab_pre apply blast
+  using stab_post apply blast
+  using guar_id apply blast
+  using then_br apply blast
+  by (meson dual_order.eq_iff else_br guar_id rg_skip_named stab_post strengthen_pre)
+
 method method_cond =
   (rule rg_cond2_named | rule rg_cond_named),
   goal_cases stab_pre stab_post guar_id then_br else_br
@@ -389,7 +420,7 @@ theorem rg_cond_no_post[intro]:
       and then_br: "{P \<inter> b, R} c1 {G, Q}"
       and else_br: "{P \<inter> -b, R} c2 {G, Q}"
     shows "{P, R} Cond b c1 c2 {G, Q}"
-  using assms by (fastforce simp: Cond subset_iff)
+  by (metis Cond IdI assms subsetD)
 
 theorem rg_cond_no_guard_no_post[intro]:
   assumes stable_pre: "stable P R"
@@ -397,8 +428,7 @@ theorem rg_cond_no_guard_no_post[intro]:
       and then_br: "{P, R} c1 {G, Q}"
       and else_br: "{P, R} c2 {G, Q}"
     shows "{P, R} Cond b c1 c2 {G, Q}"
-  using assms apply -
-  by (rule Cond; fastforce intro: strengthen_pre)
+  by (meson assms inf_sup_ord(1) rg_cond_no_post strengthen_pre)
 
 method method_cond_no_post =
   (rule rg_cond_no_post | rule rg_cond_no_guard_no_post),
@@ -428,35 +458,24 @@ abbreviation binary_parallel ::
           (C2, P2, R2, G2, Q2) 
       COEND SAT [P, R, G, Q]"
 
-abbreviation binary_parallel_invar :: 
-  "'a set \<Rightarrow> 'a rel \<Rightarrow> 'a com \<Rightarrow> 'a com \<Rightarrow> 'a set \<Rightarrow> 'a rel \<Rightarrow> 'a set \<Rightarrow> bool" 
- ("{_, _}  _ \<parallel>  _ \<sslash> _ {_, _}") where
-  "{P, R} C1 \<parallel> C2 \<sslash> I {G, Q} \<equiv>
-    \<exists> P1 P2 R1 R2 G1 G2 Q1 Q2. 
-      \<turnstile> COBEGIN 
-          (C1, P1, R1, G1, Q1) 
-          \<parallel> 
-          (C2, P2, R2, G2, Q2) 
-      COEND SAT [P \<inter> I, R \<inter> pred_to_rel I, invar_and_guar I G, Q \<inter> I]"
-
 (*----------------------------------------------------------------------------*)
 text \<open>Some helper lemmas for later.\<close>
 
 lemma simp_all_2:
   "(\<forall> i < Suc (Suc 0). P i) \<longleftrightarrow> P 0 \<and> P 1"
-  by (fastforce simp: less_Suc_eq)
+  using less_Suc_eq by fastforce
 
 lemma simp_gen_Un_2:
   "(\<Union> x \<in> \<lbrace>\<acute>(<) (Suc (Suc 0)) \<rbrace>. S x) = S 0 \<union> S 1"
-  by (fastforce simp: less_Suc_eq)
+  using less_Suc_eq by auto
 
 lemma simp_gen_Un_2_not0:
   "(\<Union> x \<in> \<lbrace>\<acute>(<) (Suc (Suc 0)) \<and> \<acute>(\<noteq>) (Suc 0) \<rbrace>. S x) = S 0"
-  by (fastforce simp: less_Suc_eq)
+  using less_Suc_eq by auto
 
 lemma simp_gen_Int_2:
   "(\<Inter> x \<in> \<lbrace>\<acute>(<) (Suc (Suc 0)) \<rbrace>. S x) = S 0 \<inter> S 1"
-  by (fastforce simp: less_Suc_eq)
+  using less_Suc_eq by auto
 
 theorem rg_binary_parallel:
   assumes "{P1, R1} (C1::'a com) {G1, Q1}"
@@ -472,9 +491,9 @@ theorem rg_binary_parallel:
        \<parallel> 
       (C2, P2, R2, G2, Q2) 
       COEND SAT [P, R, G, Q]"
-  using assms apply -
   apply (rule Parallel)
-  by (simp_all add: simp_all_2 simp_gen_Un_2 simp_gen_Int_2 simp_gen_Un_2_not0)
+  apply (simp_all add: simp_all_2 simp_gen_Un_2 simp_gen_Int_2 simp_gen_Un_2_not0)
+  using assms by force+
 
 theorem rg_binary_parallel_exists: 
   assumes "{P1, R1} (C1::'a com) {G1, Q1}"
@@ -486,21 +505,7 @@ theorem rg_binary_parallel_exists:
       and "G1 \<union> G2 \<subseteq> G"
       and "Q1 \<inter> Q2 \<subseteq> Q" 
     shows "{P, R} C1 \<parallel> C2 {G, Q}"
-  by (metis assms rg_binary_parallel)
-
-theorem rg_binary_parallel_invar_conseq: 
-  assumes C1: "{P1, R1} (C1::'a com) \<sslash> I {G1, Q1}"
-      and C2: "{P2, R2} (C2::'a com) \<sslash> I {G2, Q2}"
-      and "G1 \<subseteq> R2"
-      and "G2 \<subseteq> R1"
-      and "P \<subseteq> P1 \<inter> P2"
-      and "R \<subseteq> R1 \<inter> R2"
-      and "Q1 \<inter> Q2 \<subseteq> Q"
-      and "G1 \<union> G2 \<subseteq> G"
-    shows "{P, R} C1 \<parallel> C2 \<sslash> I {G, Q}"
-  using assms apply -
-  apply (rule rg_binary_parallel_exists)
-  by force+
+  by (meson rg_binary_parallel assms)
 
 (*============================================================================*)
 subsubsection \<open>Multi-Parallel\<close>
@@ -534,8 +539,8 @@ translations
    {P, R} c \<sslash> I {G, Q} global_guar: GG global_post: QQ"
   \<rightharpoonup> "\<turnstile> COBEGIN SCHEME [0 \<le> i < N] (c,
           P \<inter> I,
-          R \<inter> CONST pred_to_rel I,
-          CONST invar_and_guar I G,
+          CONST lift_rely I R,
+          CONST lift_guar I G,
           Q \<inter> I
         ) COEND
      SAT [Init, RR , GG, QQ]"
@@ -544,10 +549,10 @@ translations
 text \<open>The subgoal-generating method for multi-parallel.\<close>
 
 theorem rg_multi_parallel_subgoals:
-  assumes assm_guar_rely: "\<forall> i j. i \<noteq> j \<longrightarrow> i < N \<longrightarrow> j < N \<longrightarrow> G j \<subseteq> R i"
-      and assm_pre:  "\<forall> i < N. P' \<subseteq> P i"
-      and assm_rely: "\<forall> i < N. R' \<subseteq> R i"
-      and assm_guar: "\<forall> i < N. G i \<subseteq> G'"
+  assumes assm_guar_rely: "\<forall> i j. i \<noteq> j \<longrightarrow> i<N \<longrightarrow> j<N \<longrightarrow> G j \<subseteq> R i"
+      and assm_pre:  "\<forall> i<N. P' \<subseteq> P i"
+      and assm_rely: "\<forall> i<N. R' \<subseteq> R i"
+      and assm_guar: "\<forall> i<N. G i \<subseteq> G'"
       and assm_post: "(\<Inter> i \<in> { i. i < N }. Q i) \<subseteq> Q'"
       and assm_local: "\<forall> i<N. \<turnstile> C i sat [P i, R i, G i, Q i]"
     shows "\<turnstile> COBEGIN SCHEME [0 \<le> i < (N::nat)]
@@ -574,9 +579,13 @@ theorem rg_multi_parallel_nobound_subgoals:
     shows "\<turnstile> COBEGIN SCHEME [0 \<le> i < (N::nat)]
            (C i, P i, R i, G i, Q i)
            COEND SAT [P', R', G', Q']"
-  using assms apply -
-  apply (rule Parallel)
-  by (simp_all add: SUP_le_iff INT_greatest)
+proof (rule Parallel, goal_cases)
+  case 1 show ?case using assm_rely assm_guar_rely by (simp add: SUP_le_iff)
+  case 2 show ?case using assm_guar  by force
+  case 3 show ?case using assm_pre   by force
+  case 4 show ?case using assm_post  by force
+  case 5 show ?case using assm_local by force
+qed
 
 method method_multi_parallel_nobound =
   rule rg_multi_parallel_nobound_subgoals,
