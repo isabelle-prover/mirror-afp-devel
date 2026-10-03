@@ -151,8 +151,8 @@ lemma WTF_RF_recover:
         x'a \<or>\<^sub>A
        hn_ctxt monomial_assn xb x'a \<Longrightarrow>\<^sub>t
        hn_ctxt (monomial_assn) xb x'a\<close>
-  by (smt (z3) assn_aci(5) hn_ctxt_def invalid_assn_distrib invalid_pure_recover is_pure_conv
-    merge_thms(4) merge_true_star reorder_enttI safe_poly_vars(3) star_aci(2) star_aci(3))
+  by (metis Sepref_Constraints.CONSTRAINT_def entt_disjE entt_refl is_pure_conv prod_frame_merge recover_pure_aux
+      safe_poly_vars(2))
 
 lemma WTF_RF:
   \<open>hn_ctxt (invalid_assn monom_assn \<times>\<^sub>a invalid_assn int_assn) xb x'a *
