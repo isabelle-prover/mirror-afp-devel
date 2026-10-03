@@ -16,7 +16,7 @@ begin
 
 no_syntax
   "_Pi" :: "pttrn \<Rightarrow> 'a set \<Rightarrow> 'b set \<Rightarrow> ('a \<Rightarrow> 'b) set"
-    (\<open>(\<open>indent=3 notation=\<open>binder \<Pi>\<in>\<close>\<close>\<Pi> _\<in>_./ _)\<close> 10)
+  (\<open>(\<open>indent=3 notation=\<open>binder \<Pi>\<in>\<close>\<close>\<Pi> _\<in>_./ _)\<close> 10)
 
 section \<open>Syntax\<close>
 
@@ -102,7 +102,7 @@ lemma wf_modal: \<open>X \<in> \<Pi> M \<Longrightarrow> {w \<in> \<W> M. \<fora
 lemma wf_empty: \<open>{} \<in> \<Pi> M\<close>
   using wf wf_compl wf_inter unfolding wf_model_def wf_gframe_def unfolds by force
 
-lemma wf_univ: \<open>\<W> M \<in> \<Pi> M\<close>  
+lemma wf_univ: \<open>\<W> M \<in> \<Pi> M\<close>
   using wf wf_empty wf_compl by fastforce
 
 lemma wf_\<Pi>: \<open>P \<in> \<Pi> M \<Longrightarrow> P \<subseteq> \<W> M\<close>
@@ -413,7 +413,7 @@ lemma softqdf_add_env: \<open>softqdf q \<Longrightarrow> softqdf_sub (q \<then>
 lemma wf_env_add_nom: \<open>wf_env (Model W R PI N e V f) \<Longrightarrow> w \<in> W \<Longrightarrow>
     wf_env (\<lparr>\<W> = W, \<R> = R, \<Pi> = PI, \<N> = N, \<NN> = w \<then> e, \<V> = V, \<VV> = f\<rparr>)\<close>
   unfolding wf_env_def unfolds using range_add_env by meson
-  
+
 lemma wf_model_add_nom: \<open>wf_model (Model W R PI N e V f) \<Longrightarrow> w \<in> W \<Longrightarrow>
     wf_model (\<lparr>\<W> = W, \<R> = R, \<Pi> = PI, \<N> = N, \<NN> = w \<then> e, \<V> = V, \<VV> = f\<rparr>)\<close>
   using wf_env_add_nom unfolding wf_model_def wf_env_def wf_frame_def wf_gframe_def admissible_def unfolds by meson
@@ -640,8 +640,8 @@ next
 qed (simp_all add: worlds_def with_worlds_def split: tm.splits)
 
 lemma worlds_id_sub:
- assumes \<open>wf_model (Model W R PI N e V f)\<close>
- shows \<open>worlds (Model W R PI N e V f) (\<^bold>\<cdot> (\<^bold># n)) = f n\<close>
+  assumes \<open>wf_model (Model W R PI N e V f)\<close>
+  shows \<open>worlds (Model W R PI N e V f) (\<^bold>\<cdot> (\<^bold># n)) = f n\<close>
   using wf_\<VV>'[OF assms] unfolding worlds_def unfolds by auto
 
 lemma worlds_inst_single_pro:
@@ -687,7 +687,7 @@ inductive beta_class :: \<open>'x lbd list \<Rightarrow> 'x lbd list \<Rightarro
 inductive gamma_class_nom :: \<open>'x lbd list \<Rightarrow> ('x tm \<Rightarrow> _) \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<gamma>\<^sub>i\<close> 50) where
   CRefl: \<open>[] \<leadsto>\<^sub>\<gamma>\<^sub>i (\<lambda>i. [ (i, \<^bold>\<bullet>i) ])\<close>
 | CGloP: \<open>[ (i, \<^bold>A p) ] \<leadsto>\<^sub>\<gamma>\<^sub>i (\<lambda>k. [ (k, p) ])\<close>
-  
+
 inductive gamma_class_fm :: \<open>'x lbd list \<Rightarrow> ('x lbd set \<Rightarrow> 'x fm set) \<times> ('x fm \<Rightarrow> _) \<Rightarrow> bool\<close> (infix \<open>\<leadsto>\<^sub>\<gamma>\<^sub>p\<close> 50) where
   CAllP: \<open>[ (i, \<^bold>\<forall> p) ] \<leadsto>\<^sub>\<gamma>\<^sub>p (\<lambda>_. {q. softqdf q}, \<lambda>q. [ (i, \<langle>q\<rangle>\<^sub>p p) ])\<close>
 
@@ -736,7 +736,7 @@ interpretation Consistency_Kinds map_lbd symbols_lbd \<open>\<lambda>_. True\<cl
 
 interpretation Maximal_Consistency map_lbd symbols_lbd \<open>\<lambda>_. True\<close> Kinds
 proof
- have \<open>infinite (UNIV :: 'x fm set)\<close>
+  have \<open>infinite (UNIV :: 'x fm set)\<close>
     using infinite_UNIV_size[of \<open>\<lambda>p. p \<^bold>\<longrightarrow> p\<close>] by simp
   then show \<open>infinite (UNIV :: 'x lbd set)\<close>
     using finite_prod by blast
@@ -752,19 +752,19 @@ lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow
 
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> (i, \<^bold>\<not> (p \<^bold>\<and> q)) \<in> S \<Longrightarrow> {(i, \<^bold>\<not> p)} \<union> S \<in> C \<or> {(i, \<^bold>\<not> q)} \<union> S \<in> C\<close>
   using sat\<^sub>E[of B.kind] by (force intro: CConN)
-  
+
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> (i, \<^bold>\<box> p) \<in> S \<Longrightarrow> (i, \<^bold>\<diamond>(\<^bold>\<bullet>k)) \<in> S \<Longrightarrow> {(k, p)} \<union> S \<in> C\<close>
   using sat\<^sub>E[of A.kind] by (force intro: CBoxP)
 
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> (i, \<^bold>\<not> \<^bold>\<box>p) \<in> S \<Longrightarrow> \<exists>k. {(k, \<^bold>\<not> p), (i, \<^bold>\<diamond> (\<^bold>\<bullet>k))} \<union> S \<in> C\<close>
   using sat\<^sub>E[of D.kind] by fastforce
-  
+
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> { (i, \<^bold>\<bullet>i) } \<union> S \<in> C\<close>
   using sat\<^sub>E[of GI.kind] by (force intro: CRefl)
 
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> (i, \<^bold>A p) \<in> S \<Longrightarrow> { (k, p) } \<union> S \<in> C\<close>
   using sat\<^sub>E[of GI.kind] by (force intro: CGloP)
- 
+
 lemma \<open>P.prop\<^sub>E Kinds C \<Longrightarrow> S \<in> C \<Longrightarrow> (i, \<^bold>\<not> \<^bold>A p) \<in> S \<Longrightarrow> \<exists>k. { (k, \<^bold>\<not> p) } \<union> S \<in> C\<close>
   using sat\<^sub>E[of D.kind] by fastforce
 
@@ -818,7 +818,7 @@ lemma admit_B: \<open>B \<subseteq> admit F B\<close>
   unfolding admit_def by (meson le_sup_iff lfp_greatest)
 
 lemma admit_Pow: \<open>B \<subseteq> Pow (\<W> F) \<Longrightarrow> admit F B \<subseteq> Pow (\<W> F)\<close>
-  unfolding admit_def using admissible_Pow admissible_\<delta> lfp_lowerbound 
+  unfolding admit_def using admissible_Pow admissible_\<delta> lfp_lowerbound
   by (metis (no_types, lifting) order_class.order_eq_iff subset_Un_eq sup.absorb_iff1)
 
 lemma admissible_grow: \<open>admissible F B \<longleftrightarrow> grow F B B = B\<close>
@@ -874,19 +874,19 @@ lemma wf_cannonical_gframe: \<open>wf_gframe (canonical_gframe S)\<close>
   by (metis (mono_tags, lifting) frame.select_convs(1) range_val_ne subset_empty val_Pow)
 
 lemma admits_val: \<open>admits (canonical_frame S) (range (val S)) PI \<Longrightarrow> val S P \<in> PI\<close>
-  unfolding admits_def by blast 
+  unfolding admits_def by blast
 
 lemma admit_val: \<open>val S P \<in> admit (canonical_frame S) (range (val S))\<close>
   using admits_val admits_admit val_Pow by (simp add: admit_B range_subsetD)
- 
+
 lemma wf_canonical_env: \<open>wf_env (canonical S)\<close>
   unfolding wf_env_def canonical_def unfolds using admit_val by auto
 
 lemma wf_gframe_canonical: \<open>wf_gframe (gframe.truncate (canonical S))\<close>
   using wf_cannonical_gframe unfolding canonical_def unfolds .
- 
+
 lemma wf_canonical: \<open>wf_model (canonical S)\<close>
-  unfolding wf_model_def using wf_gframe_canonical wf_canonical_env by blast  
+  unfolding wf_model_def using wf_gframe_canonical wf_canonical_env by blast
 
 lemma admissible_sqdfs: \<open>admissible (canonical_frame S) (sqdfs (canonical S))\<close>
   using sqdfs_admissible[OF wf_canonical[of S]]
@@ -911,7 +911,7 @@ proof
     using sqdfs wf_canonical by blast
 next
   have \<open>grow (canonical_frame S) (range (val S)) (sqdfs (canonical S)) \<subseteq> sqdfs (canonical S)\<close>
-    using admissible_grow[of \<open>canonical_frame S\<close> \<open>sqdfs _\<close>] admits_canonical_sqdfs[of S] unfolding admits_def 
+    using admissible_grow[of \<open>canonical_frame S\<close> \<open>sqdfs _\<close>] admits_canonical_sqdfs[of S] unfolding admits_def
     by (metis (no_types, lifting) equalityE le_iff_sup)
   then have \<open>admit (canonical_frame S) (range (val S)) \<subseteq> sqdfs (canonical S)\<close>
     by (simp add: admit_def lfp_lowerbound)
@@ -948,7 +948,7 @@ lemma Nom_sym:
 lemma Nom_trans:
   assumes \<open>(i, \<^bold>\<bullet>j) \<in> S\<close> \<open>(j, \<^bold>\<bullet>k) \<in> S\<close>
   shows \<open>(i, \<^bold>\<bullet>k) \<in> S\<close>
-  using assms 
+  using assms
 proof -
   have \<open>(j, \<^bold>\<bullet>i) \<in> S\<close>
     using assms Nom_sym by blast
@@ -960,7 +960,7 @@ lemma equiv_nom_ne: \<open>{k. equiv_nom S i k} \<noteq> {}\<close>
   unfolding equiv_nom_def using Nom_refl by blast
 
 lemma equiv_nom_assign: \<open>equiv_nom S i ([i]\<^sub>S)\<close>
-  unfolding assign_def using equiv_nom_ne 
+  unfolding assign_def using equiv_nom_ne
   by (metis Field_card_of card_of_well_order_on mem_Collect_eq top.extremum wo_rel_def wo_rel.minim_in)
 
 lemma equiv_nom_Nom:
@@ -1148,7 +1148,7 @@ next
     qed
   next
     case (Dwn p)
-   then show ?thesis
+    then show ?thesis
     proof (safe del: notI)
       assume \<open>x = \<^bold>\<down> p\<close> \<open>(i, \<^bold>\<down> p) \<in> S\<close>
       then have \<open>(i, \<langle>i\<rangle>\<^sub>i p) \<in> S\<close>
@@ -1183,7 +1183,7 @@ next
         using All by (metis less_add_one measures_less qs_fm.simps(9) qs_fm_sub_pro softqdf_add_env)
       ultimately have *: \<open>softqdf q \<Longrightarrow> \<lbrakk>S, i\<rbrakk> \<Turnstile> \<langle>q\<rangle>\<^sub>p p\<close> for q
         using 2 by (meson in_measure)
-      
+
       moreover note wf_canonical[of S] assign_in_W[of i]
       ultimately have \<open>softqdf q \<Longrightarrow>
         ((canonical S)\<lparr>\<VV> := (worlds (canonical S) q \<then> \<VV> (canonical S))\<rparr>, [i]\<^sub>S) \<Turnstile> p\<close> for q
@@ -1296,7 +1296,7 @@ next
       using BoxI(5) unfolding wf_env_def wf_model_def unfolds by (auto split: tm.splits)
     ultimately have \<open>v \<in> W\<close>
       using BoxI(5) unfolding wf_model_def wf_gframe_def wf_frame_def unfolds by blast
- 
+
     let ?N = \<open>N(k := v)\<close>
     have \<open>\<forall>(i, p) \<in> A. (Model W R PI ?N e V f, case_tm e ?N i) \<Turnstile> p\<close>
       using BoxI by fastforce
@@ -1354,7 +1354,7 @@ next
     ultimately have \<open>(Model W R PI N e ?V f, case_tm e N i) \<Turnstile> \<langle>\<^bold>\<cdot> (\<^bold>\<circle> P)\<rangle>\<^sub>p p\<close>
       using AllI.hyps(2) by fast
     moreover have \<open>case_tm e N i \<in> W\<close>
-      using AllI.prems(2) unfolding wf_model_def wf_env_def unfolds by (auto split: tm.splits) 
+      using AllI.prems(2) unfolding wf_model_def wf_env_def unfolds by (auto split: tm.splits)
     ultimately have \<open>(Model W R PI N e ?V (worlds (Model W R PI N e ?V f) (\<^bold>\<cdot> (\<^bold>\<circle> P)) \<then> f), case_tm e N i) \<Turnstile> p\<close>
       using inst_single_worlds * by fastforce
     then have \<open>(Model W R PI N e ?V ({ w \<in> W. w \<in> X } \<then> f), case_tm e N i) \<Turnstile> p\<close>
@@ -1424,7 +1424,7 @@ lemma FlsE [dest]: \<open>A \<tturnstile> (i, \<^bold>\<bottom>) \<Longrightarro
 subsection \<open>Derivational Consistency\<close>
 
 lemma calculus_confl:
-  assumes \<open>ps \<leadsto>\<^sub>\<crossmark> qs\<close> \<open>set ps \<subseteq> A\<close> \<open>q \<in> set qs\<close> \<open>q \<in> A\<close> 
+  assumes \<open>ps \<leadsto>\<^sub>\<crossmark> qs\<close> \<open>set ps \<subseteq> A\<close> \<open>q \<in> set qs\<close> \<open>q \<in> A\<close>
   shows \<open>A \<tturnstile> (i, \<^bold>\<bottom>)\<close>
   using assms
 proof cases
@@ -1515,7 +1515,7 @@ lemma calculus_gammaI:
 proof cases
   case CRefl
   then show ?thesis
-    using CRefl assms(2-) Ref[of A k] 
+    using CRefl assms(2-) Ref[of A k]
     by (metis (mono_tags, lifting) AndD1 AndD2 NotE NotI empty_set list.simps(15))
 next
   case (CGloP i p)
@@ -1596,7 +1596,7 @@ interpretation DGP: Derivational_Gamma map_fm map_lbd symbols_lbd \<open>\<lambd
 
 interpretation DD: Derivational_Delta map_lbd symbols_lbd \<open>\<lambda>_. True\<close> \<delta> \<open>\<lambda>A. \<not> A \<tturnstile> (a, \<^bold>\<bottom>)\<close>
   by unfold_locales (meson calculus_\<delta>)
-  
+
 interpretation Derivational_Consistency map_lbd symbols_lbd \<open>\<lambda>_. True\<close> Kinds \<open>\<lambda>A. \<not> A \<tturnstile> (a, \<^bold>\<bottom>)\<close>
   using prop\<^sub>E_Kinds[OF DC.kind DA.kind DB.kind DGI.kind DGP.kind DD.kind] by unfold_locales
 
@@ -1765,7 +1765,7 @@ corollary soundness_list:
 corollary soundness_nil:
   \<open>[] \<turnstile> (\<^bold>\<circle>i, p) \<Longrightarrow> i \<notin> symbols_fm p \<Longrightarrow> wf_model M \<Longrightarrow> w \<in> \<W> M \<Longrightarrow> (M, w) \<Turnstile> p\<close>
   by (metis calculus_set empty_set soundness')
-  
+
 corollary \<open>\<not> ([] \<turnstile> (i, \<^bold>\<bottom>))\<close>
   by (metis equals0D no_bot set_empty2 soundness_list wf_canonical)
 
@@ -1814,7 +1814,7 @@ lemma bij_betw_arith_prog:
   shows   "bij_betw (\<lambda>n. a + int b * n) UNIV (arith_prog a b)"
 proof (rule bij_betwI[of _ _ _ "\<lambda>x. (x - a) div int b"], goal_cases)
   case 1
-  thus ?case 
+  thus ?case
     by (auto simp: arith_prog_def cong_add_lcancel_0 cong_mult_self_right mult_of_nat_commute)
 next
   case 4
@@ -1860,7 +1860,7 @@ proof -
       by (simp add: cong_sym_eq)
     hence "x \<in> arith_prog (a + int i) b"
       using \<open>b > 0\<close> by (auto simp: arith_prog_def)
-    moreover have "i < b" using \<open>b > 0\<close> 
+    moreover have "i < b" using \<open>b > 0\<close>
       by (auto simp: i_def nat_less_iff)
     ultimately show ?thesis using \<open>b > 0\<close>
       by (cases "i = 0") auto
@@ -1907,7 +1907,7 @@ lemma arith_prog_offset_in: \<open>k \<in> arith_prog a b \<Longrightarrow> arit
   unfolding arith_prog_def by (simp add: cong_def)
 
 lemma arith_prog_mod: \<open>arith_prog (a mod int b) b = arith_prog a b\<close>
-  unfolding arith_prog_def by auto                   
+  unfolding arith_prog_def by auto
 
 lemma mod_bounds: \<open>b > 0 \<Longrightarrow> a mod int b \<ge> 0 \<and> a mod int b < b\<close>
   by simp
@@ -1984,7 +1984,7 @@ lemma arith_inter:
 proof safe
   fix a
   assume a: \<open>a \<in> U\<close> \<open>a \<in> V\<close>
-  
+
   from a U obtain b where b: \<open>b \<in> B\<close> \<open>b > 0\<close> \<open>arith_prog a b \<subseteq> U\<close>
     unfolding arith_def by auto
   from a V obtain c where c: \<open>c \<in> C\<close> \<open>c > 0\<close> \<open>arith_prog a c \<subseteq> V\<close>
@@ -2162,7 +2162,7 @@ lemma Pss_union: \<open>X \<in> Pss \<Longrightarrow> Y \<in> Pss \<Longrightarr
 
 lemma Pss_inter: \<open>X \<in> Pss \<Longrightarrow> Y \<in> Pss \<Longrightarrow> X \<inter> Y \<in> Pss\<close>
   unfolding Pss_def by blast
-  
+
 lemma Pss_compl: \<open>X \<in> Pss \<Longrightarrow> - X \<in> Pss\<close>
   unfolding Pss_def by blast
 
@@ -2170,7 +2170,7 @@ definition my_gframe :: \<open>int gframe\<close> where
   \<open>my_gframe \<equiv> \<lparr> \<W> = UNIV, \<R> = \<lambda>x. UNIV, \<Pi> = Pss \<rparr>\<close>
 
 lemma wf_frame_mygframe: \<open>wf_frame (frame.truncate my_gframe)\<close>
-  unfolding wf_frame_def unfolds my_gframe_def by blast  
+  unfolding wf_frame_def unfolds my_gframe_def by blast
 
 lemma admissible_mygframe: \<open>admissible (frame.truncate my_gframe) (\<Pi> my_gframe)\<close>
   unfolding admissible_def unfolds my_gframe_def Pss_def
@@ -2233,7 +2233,7 @@ lemma not_nowhere_or_twice_singleton: \<open>\<not> (my_model, x) \<Turnstile> n
   using fin_arith_distinguish' by auto
 
 text \<open>So we cannot always eliminate a quantifier with a non-quantifier-free formula.\<close>
-  
+
 theorem counter:
   shows \<open>\<not> (my_model, x) \<Turnstile> \<^bold>\<forall> (nowhere_or_twice (\<^bold>\<cdot>(\<^bold>#0))) \<^bold>\<longrightarrow> nowhere_or_twice (singleton y)\<close>
   using nowhere_or_twice_admissible not_nowhere_or_twice_singleton

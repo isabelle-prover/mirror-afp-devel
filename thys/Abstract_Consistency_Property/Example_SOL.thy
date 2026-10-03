@@ -23,7 +23,7 @@ datatype (params_sym:'f) sym
 datatype (params_tm: 'f) tm
   = Var nat (\<open>\<^bold>#\<close>)
   | Fun \<open>'f sym\<close> \<open>'f tm list\<close> (\<open>\<^bold>\<circle>\<close>)
-  | Cst 'f (\<open>\<^bold>\<star>\<close>) 
+  | Cst 'f (\<open>\<^bold>\<star>\<close>)
 
 datatype (params_fm: 'f) fm
   = Falsity (\<open>\<^bold>\<bottom>\<close>)
@@ -201,11 +201,11 @@ lemma inst_tm_semantics_F [simp]: \<open>\<lblot>E, E\<^sub>F, C, F\<rblot> (\<l
   by (induct t) (auto cong: map_cong)
 
 lemma inst_fm_semantics_F [simp]:
-   \<open>(E, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> (\<langle>t/m\<rangle>\<^sub>F p) \<longleftrightarrow> (E, E\<^sub>F\<langle>m:\<lblot>E\<^sub>F, F\<rblot>\<^sub>2 t\<rangle>, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> p\<close>
+  \<open>(E, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> (\<langle>t/m\<rangle>\<^sub>F p) \<longleftrightarrow> (E, E\<^sub>F\<langle>m:\<lblot>E\<^sub>F, F\<rblot>\<^sub>2 t\<rangle>, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> p\<close>
   by (induct p arbitrary: E E\<^sub>P E\<^sub>F m t) (auto cong: map_cong)
 
 lemma inst_fm_semantics [simp]:
-   \<open>(E, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> (\<langle>t/m\<rangle>p) \<longleftrightarrow> (E\<langle>m:\<lblot>E, E\<^sub>F, C, F\<rblot> t\<rangle>, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> p\<close>
+  \<open>(E, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> (\<langle>t/m\<rangle>p) \<longleftrightarrow> (E\<langle>m:\<lblot>E, E\<^sub>F, C, F\<rblot> t\<rangle>, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> p\<close>
   by (induct p arbitrary: E E\<^sub>P E\<^sub>F m t) (auto cong: map_cong)
 
 lemma inst_fm_semantics_P [simp]: \<open>(E, E\<^sub>F, E\<^sub>P, C, F, G, PS, FS) \<Turnstile> (\<langle>P/m\<rangle>\<^sub>Pp) \<longleftrightarrow> (E, E\<^sub>F, E\<^sub>P\<langle>m:\<lblot>E\<^sub>P, G\<rblot>\<^sub>2 P\<rangle>, C, F, G, PS, FS) \<Turnstile> p\<close>
@@ -255,7 +255,7 @@ inductive gamma_class_F :: \<open>'f fm list \<Rightarrow> ('f sym \<Rightarrow>
   CAllFP: \<open>[ \<^bold>\<forall>\<^sub>F p ] \<leadsto>\<^sub>\<gamma>\<^sub>F (\<lambda>s. [ \<langle>s/0\<rangle>\<^sub>F p ])\<close>
 
 fun \<delta> :: \<open>'f fm \<Rightarrow> 'f \<Rightarrow> 'f fm list\<close> where
-  CAllN:   \<open>\<delta> (\<^bold>\<not> \<^bold>\<forall>p) x = [ \<^bold>\<not> \<langle>\<^bold>\<star>x/0\<rangle> p ]\<close> 
+  CAllN:   \<open>\<delta> (\<^bold>\<not> \<^bold>\<forall>p) x = [ \<^bold>\<not> \<langle>\<^bold>\<star>x/0\<rangle> p ]\<close>
 | CAll2PN: \<open>\<delta> (\<^bold>\<not> \<^bold>\<forall>\<^sub>P p) x = [ \<^bold>\<not> \<langle>\<^bold>\<circle>\<^sub>2 x/0\<rangle>\<^sub>P p ]\<close>
 | CAll2FN: \<open>\<delta> ( \<^bold>\<not> \<^bold>\<forall>\<^sub>F p ) x = [ \<^bold>\<not> \<langle>\<^bold>\<circle>\<^sub>2 x/0\<rangle>\<^sub>F p ]\<close>
 | NOMATCH: \<open>\<delta> _ _ = []\<close>
@@ -353,7 +353,7 @@ abbreviation (input) hmodel (\<open>\<lbrakk>_\<rbrakk>\<close>) where \<open>\<
 lemma semantics_tm_id [simp]: \<open>\<lblot>\<^bold>#, henv\<^sub>F , \<^bold>\<star> , \<lambda>f. \<^bold>\<circle> (\<^bold>\<circle>\<^sub>2 f) \<rblot> t = t\<close>
 proof (induct t)
   case (Var x)
-  then show ?case 
+  then show ?case
     by (auto cong: map_cong)
 next
   case (Fun x1a x2)
@@ -577,11 +577,11 @@ text \<open>Adapted from System Q1 by Smullyan in First-Order Logic (1968).\<clo
 
 inductive Axiomatic (\<open>\<turnstile> _\<close> [50] 50) where
   TA: \<open>tautology p \<Longrightarrow> \<turnstile> p\<close>
-| IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<langle>t/0\<rangle>p\<close> 
-| IA\<^sub>P: \<open>\<turnstile> \<^bold>\<forall>\<^sub>Pp \<^bold>\<longrightarrow> \<langle>s/0\<rangle>\<^sub>Pp\<close> 
-| IA\<^sub>F: \<open>\<turnstile> \<^bold>\<forall>\<^sub>Fp \<^bold>\<longrightarrow> \<langle>s/0\<rangle>\<^sub>Fp\<close> 
-| MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close> 
-| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close> 
+| IA: \<open>\<turnstile> \<^bold>\<forall>p \<^bold>\<longrightarrow> \<langle>t/0\<rangle>p\<close>
+| IA\<^sub>P: \<open>\<turnstile> \<^bold>\<forall>\<^sub>Pp \<^bold>\<longrightarrow> \<langle>s/0\<rangle>\<^sub>Pp\<close>
+| IA\<^sub>F: \<open>\<turnstile> \<^bold>\<forall>\<^sub>Fp \<^bold>\<longrightarrow> \<langle>s/0\<rangle>\<^sub>Fp\<close>
+| MP: \<open>\<turnstile> p \<^bold>\<longrightarrow> q \<Longrightarrow> \<turnstile> p \<Longrightarrow> \<turnstile> q\<close>
+| GR: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<star>a/0\<rangle>p \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>p\<close>
 | GR\<^sub>P: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<circle>\<^sub>2 a/0\<rangle>\<^sub>Pp \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>\<^sub>Pp\<close>
 | GR\<^sub>F: \<open>\<turnstile> q \<^bold>\<longrightarrow> \<langle>\<^bold>\<circle>\<^sub>2 a/0\<rangle>\<^sub>Fp \<Longrightarrow> a \<notin> params {p, q} \<Longrightarrow> \<turnstile> q \<^bold>\<longrightarrow> \<^bold>\<forall>\<^sub>Fp\<close>
 
@@ -604,7 +604,7 @@ theorem soundness:
 proof (induct p arbitrary: C F G PS FS rule: Axiomatic.induct)
   case (TA p)
   then show ?case
-    by simp 
+    by simp
 next
   case (IA p t)
   then show ?case
@@ -929,7 +929,7 @@ proof (rule ccontr)
     using assms(2) P.infinite_params_left unfolding P.enough_new_def
     by (metis Set_Diff_Un UN_Un card_of_diff inf_univ ordLeq_transitive)
   ultimately have *: \<open>\<forall>p \<in> ?S. ?M \<Turnstile> p\<close>
-    using model_existence by blast 
+    using model_existence by blast
   then have \<open>?M \<Turnstile> p\<close>
     using mod unfolding hdom\<^sub>F_def by auto
   then show False
@@ -1149,7 +1149,7 @@ proof (rule ccontr)
   ultimately have *: \<open>\<forall>p \<in> ?S. ?M \<Turnstile> p\<close>
     using model_existence by blast
   then have \<open>?M \<Turnstile> p\<close>
-    using mod[OF wf] by fast 
+    using mod[OF wf] by fast
   then show False
     using * by simp
 qed
