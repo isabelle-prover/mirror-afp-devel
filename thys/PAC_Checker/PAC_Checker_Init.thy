@@ -113,9 +113,10 @@ lemma merge_coeffs_alt_def:
   subgoal by (subst RECT_unfold, refine_mono) auto
   subgoal by (subst RECT_unfold, refine_mono) auto
   subgoal for x p y q
-    by (subst RECT_unfold, refine_mono)
-     (smt case_prod_conv list.simps(5) merge_coeffs.simps(3) nres_monad1
-      push_in_let_conv(2))
+    apply (subst RECT_unfold, refine_mono)
+    apply auto
+    apply (metis let_to_bind_conv)
+    done
   done
 
 lemma hn_invalid_recover:
