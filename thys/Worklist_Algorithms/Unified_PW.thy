@@ -225,7 +225,7 @@ context Search_Space_finite begin
     shows "pw_inv_frontier passed (wait - {#a#})"
     using assms unfolding pw_inv_frontier_def
     by simp
-      (smt UnCI UnE diff_single_trivial empty_mono insert_DiffM2 mset_cancel_elem(1)
+      (smt (cvc5) UnCI UnE diff_single_trivial empty_mono insert_DiffM2 mset_cancel_elem(1)
            subset_Collect_conv)
 
   private lemma aux3:

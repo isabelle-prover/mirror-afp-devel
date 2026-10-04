@@ -438,8 +438,11 @@ next
   then show ?case
     apply simp
     apply (intro rel_funI allI iffI impI)
-     apply (smt A_B.simulation_run rel_fun_def stream.rel_sel stream.sel(1) stream.sel(2))
-    by (smt (z3) B_A.simulation_run equiv'_rotate_1 rel_fun_def stream.rel_inject stream_all2_rotate_1)
+    using A_B.simulation_run
+     apply (smt (cvc5, dec_internal_enum_inst_sum) rel_funD stream.rel_sel stream.sel(1,2))
+    using B_A.simulation_run equiv'_rotate_1 stream_all2_rotate_1
+    apply (smt (cvc5, dec_internal_enum_inst_sum) rel_funD stream.rel_intros)
+    done
 next
   case (Until a22 b22) \<comment> \<open>F\<close>
   then show ?case

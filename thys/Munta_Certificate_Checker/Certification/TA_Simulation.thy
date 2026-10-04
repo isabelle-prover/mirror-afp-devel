@@ -371,7 +371,7 @@ lemma constraints_of_clk_set:
   unfolding
     Timed_Automata.clkp_set_def Timed_Automata.collect_clki_def Timed_Automata.collect_clkt_def
   unfolding collect_clock_pairs_def
-  by auto (smt UnCI Union_iff constraint_pair.simps fst_conv image_eqI mem_Collect_eq)+
+  by auto (smt (cvc5, dec_internal_enum_inst_sum) UnCI Un_iff UnionI constraint_pair.simps image_iff img_fst mem_Collect_eq)+
 
 lemma constraint_simulation:
   assumes "g \<in> constraints_of A l" "(l, v) \<preceq> (l', v')" "v \<turnstile>\<^sub>a g"
@@ -1174,7 +1174,7 @@ proof -
     qed
     include no_library_syntax
     have 3: thesis if "a = Le x" "b = \<infinity>" for x :: 't
-      by (smt (z3) 3(2) Le_le_LtI Lt_le_LeI add.inverse_inverse any_le_inf intro neg_0_less_iff_less
+      by (smt (cvc5) 3(2) Le_le_LtI Lt_le_LeI add.inverse_inverse any_le_inf intro neg_0_less_iff_less
           non_trivial_neg not_less order_trans sum_gt_neutral_dest that(2))
     have 4: thesis if "a = Lt x" "b = \<infinity>" for x :: 't
       by (metis that \<open>0 < a + b\<close> add.inverse_inverse dbm_less_eq_simps(2) dbm_less_simps(2) intro leI
@@ -1188,7 +1188,7 @@ proof -
       apply safe
       subgoal for d
         by (cases "d \<ge> 0", cases "d = 0")
-           (smt intro Le_le_LtI Lt_le_LeI
+           (smt (cvc5) intro Le_le_LtI Lt_le_LeI
              add.inverse_inverse not_less neg_less_0_iff_less dense order_trans)+
       done
     have 7: thesis if "0 < x + y" "0 < y" "a = Le x" "b = Le y" for x y
@@ -1331,7 +1331,7 @@ next
     by (metis FW_canonical' FW_valid_preservation FW_zone_equiv_spec
         dbm_non_empty_diag valid_dbm.simps)
   with assms(2) have "dbm_nonneg n M'"
-    by - (rule dbm_nonnegI; smt \<open>Z' \<noteq> {}\<close> dbm_less_eq_simps(2) dbm_non_empty_diag neutral)
+    by - (rule dbm_nonnegI; smt (cvc5) \<open>Z' \<noteq> {}\<close> dbm_less_eq_simps(2) dbm_non_empty_diag neutral)
   let ?M = "FW M' n"
   from * \<open>dbm_nonneg n M'\<close> show ?thesis
     apply (intro that[of ?M] conjI)
@@ -1421,11 +1421,11 @@ definition apx where
 
 lemma apx_widens:
   "[M]\<^bsub>v,n\<^esub> \<subseteq> apx l ([M]\<^bsub>v,n\<^esub>)" if "canonical_dbm M"
-  by (smt (z3) apx_def extra_widens someI_ex that)
+  by (smt (cvc5) apx_def extra_widens someI_ex that)
 
 lemma apx_abs:
   "apx l ([M]\<^bsub>v,n\<^esub>) \<subseteq> \<alpha> l ([M]\<^bsub>v,n\<^esub>)" if "canonical_dbm M"
-  by (smt (z3) apx_def extra_\<alpha> someI_ex that)
+  by (smt (cvc5) apx_def extra_\<alpha> someI_ex that)
 
 lemma \<alpha>_V:
   "\<alpha> l Z \<subseteq> V" if "Z \<subseteq> V"
@@ -1457,7 +1457,7 @@ qed
 lemma apx_ex:
   assumes "canonical_dbm M"
   shows "\<exists>M'. apx l ([M]\<^bsub>v,n\<^esub>) = [extra l M']\<^bsub>v,n\<^esub> \<and> canonical_dbm M'"
-  using assms unfolding apx_def by (smt (z3) someI_ex)
+  using assms unfolding apx_def by (smt (cvc5) someI_ex)
 
 lemma vabstr'_apx:
   assumes "vabstr' Z M" "Z \<subseteq> V"

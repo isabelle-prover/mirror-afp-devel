@@ -1233,7 +1233,7 @@ proof -
   then have "g = conv_cc ?g \<and> g' = renum_cconstraint ?g"
     using assms
     by (simp add: comp_def renum_cconstraint_def map_cconstraint_def)
-       (induction rule: list_induct2; simp; elim conjE renum_acconstraint_eq_convD; smt someI)
+       (induction rule: list_induct2; simp; elim conjE renum_acconstraint_eq_convD; smt (cvc5) someI)
   then show ?thesis
     by (blast intro: that)
 qed

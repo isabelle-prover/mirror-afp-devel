@@ -3861,8 +3861,8 @@ begin
 
 lemma start_inv':
   "[(curry init_dbm :: real DBM)]\<^bsub>v,n\<^esub> \<subseteq> {u. u \<turnstile> inv_of (conv_A A) l\<^sub>0}"
-  using start_inv unfolding conv_A_def
-  by (smt (z3) case_prod_conv comp_apply inv_of_def prod.collapse snd_conv subset_Collect_conv)
+  using start_inv
+  by (auto simp add: conv_A_def inv_of_def case_prod_beta subset_Collect_conv)
 
 lemma start_vals:
   "u \<turnstile> inv_of (conv_A A) l\<^sub>0" if "\<forall> c \<in> {1..n}. u c = 0"

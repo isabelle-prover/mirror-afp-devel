@@ -166,9 +166,9 @@ next
         by auto
       then have **: "{xa \<in> A. ordX xa \<le> ordX ?a \<and> xa \<noteq> x \<and> xa \<notin> F} =
             {xa \<in> A. ordX xa \<le> ordX a \<and> xa \<noteq> x \<and> xa \<notin> F} \<union> {?a}"
-        using a
-        by auto
-           (smt \<open>inj_on ordX A\<close> inj_on_eq_iff le_eq_less_or_eq le_trans mem_Collect_eq not_le)
+        using a apply auto
+        using that(2) apply (meson dual_order.trans inj_on_eq_iff leI order_le_imp_less_or_eq)
+        done
       have "?a \<notin> {xa \<in> A. ordX xa \<le> ordX a \<and> xa \<noteq> x \<and> xa \<notin> F}"
         using a(1) by auto
       then have "card {xa \<in> A. ordX xa \<le> ordX ?a \<and> xa \<noteq> x \<and> xa \<notin> F} = n"
@@ -202,9 +202,10 @@ qed
 lemma bij_betw_relI:
   assumes "\<And>x y z. x \<in> A \<Longrightarrow> y \<in> B \<Longrightarrow> z \<in> B \<Longrightarrow> R x y \<Longrightarrow> R x z \<Longrightarrow> y = z"
       and "\<And>x y z. x \<in> A \<Longrightarrow> y \<in> A \<Longrightarrow> z \<in> B \<Longrightarrow> R x z \<Longrightarrow> R y z \<Longrightarrow> x = y"
-      and "\<And>x. x \<in> A \<Longrightarrow> \<exists>y \<in> B. R x y" "\<And>y. y \<in> B \<Longrightarrow> \<exists>x \<in> A. R x y"
+      and "\<And>x. x \<in> A \<Longrightarrow> \<exists>y \<in> B. R x y"
+      and "\<And>y. y \<in> B \<Longrightarrow> \<exists>x \<in> A. R x y"
   shows "bij_betw (\<lambda>a. SOME b. R a b \<and> b \<in> B) A B"
-  by (rule bij_betwI'; smt assms someI)
+  by (rule bij_betwI'; smt (cvc5) someI assms)
 
 lemma bijective_embedding:
   fixes f :: "'a \<Rightarrow> 'b"
@@ -315,8 +316,9 @@ proof -
     apply (intro exI[of _ "\<lambda>a. SOME b. R a b \<and> b \<in> B"] conjI)
      apply (rule bij_betw_relI)
         apply assumption+
-      apply (smt R_A R_B)+
-    using assms(3) by (subst R_def) (simp, blast)
+      apply (use R_B in blast)
+     apply (use R_A in blast)
+    using assms(3) by (subst R_def) auto
 qed
 
 end
