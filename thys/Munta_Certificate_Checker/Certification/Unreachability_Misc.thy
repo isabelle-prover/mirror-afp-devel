@@ -805,7 +805,7 @@ proof -
     apply standard
          apply (use SE_I SE_same_loc SE_subsumes in
           \<open>auto 4 3 dest!: P'_P simp: list_ex_iff Ball_def_raw Bex_def_raw\<close>)
-    apply (smt case_prodE fst_conv)
+    apply (smt (cvc5) case_prodE fst_conv)
     done
   then show ?thesis
     unfolding check_buechi_def check_invariant_buechi_spec_def check_buechi_spec'_def
@@ -1091,7 +1091,7 @@ theorem copy_list_refine:
     apply standard
     apply sep_auto
       (* Frame *)
-    by (smt (z3) assn_times_comm ent_refl ent_star_mono hn_ctxt_def invalidate_clone star_aci(3))
+    by (smt (cvc5) assn_times_comm ent_refl ent_star_mono hn_ctxt_def invalidate_clone star_aci(3))
 
      apply (sep_auto; fail)
     apply (sep_auto simp: pure_def; fail)

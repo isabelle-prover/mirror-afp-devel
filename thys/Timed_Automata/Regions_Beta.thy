@@ -600,7 +600,8 @@ lemma normalized'_normalized:
   shows "normalized M"
   using assms unfolding normalized'_def normalized
   apply auto
-   apply (smt Lt_le_LeI neutral of_nat_0_le_iff Le_le_LeI)+
+   apply (metis Lt_le_LeI neg_le_0_iff_le neutral of_nat_0_le_iff)
+  apply (metis dbm_less_eq_simps(1) neutral of_nat_0_le_iff)
   done
 
 lemma normalized_normalized':
@@ -913,8 +914,10 @@ proof goal_cases
             "M (v c1) (v c2) \<ge> Lt (- k c2) \<or> M (v c1) (v c2) = \<infinity> \<or> v c1 = v c2"
           unfolding normalized'_def by fastforce
         ultimately show ?thesis
-          by - (safe, rule dbm_entry_val_mono1[folded less_eq], auto,
-                smt *(3,4) int_le_real_less of_int_1 of_nat_0_le_iff)
+          apply safe
+            apply (rule dbm_entry_val_mono1[folded less_eq])
+             apply auto
+          using B(6) clock_numbering(1) by fastforce
         next
           case (Const' c)
           with C B(5) \<open>c1 \<in> X\<close> \<open>c2 \<in> X\<close> have "M (v c1) (v c2) \<ge> Le c" by auto
@@ -1233,8 +1236,14 @@ proof goal_cases
           with v_v' X have "M (v x) (v y) \<le> Le (k x) \<or> M (v x) (v y) = \<infinity>  \<or> v x = v y" by auto
           moreover from 15 * ** have "u x - u y > k x" by auto
           ultimately show ?case
-             unfolding less_eq dbm_le_def using ***
-             by (cases "M (v x) (v y)", auto) (smt X(1) X(2) of_nat_0_le_iff v_v')+
+            unfolding less_eq dbm_le_def using ***
+            apply (cases "M (v x) (v y)")
+              apply auto
+            using Beta_Regions'_axioms X(2) clock_numbering(1)
+             apply (metis Beta_Regions'.clock_numbering(3) diff_self nless_le of_nat_0_le_iff order_less_imp_not_less)
+            using Beta_Regions'_axioms X(1,2)
+            apply (metis Beta_Regions'.v_v' eq_iff_diff_eq_0 of_nat_less_0_iff)
+            done
         next
           case (16 d)
           have "M (v x) (v y) \<le> Le ((k o v') (v x)) \<or> M (v x) (v y) = \<infinity> \<or> v x = v y"
@@ -1243,7 +1252,13 @@ proof goal_cases
           moreover from 16 * ** have "u x - u y > k x" by auto
           ultimately show ?case
             unfolding less_eq dbm_le_def using ***
-            by (cases "M (v x) (v y)", auto) (smt X(1) X(2) of_nat_0_le_iff v_v')+
+            apply (cases "M (v x) (v y)")
+              apply auto
+            using Beta_Regions'_axioms X(1,2)
+             apply (metis Beta_Regions'.v_v' eq_iff_diff_eq_0 of_nat_less_0_iff)
+            using Beta_Regions'_axioms X(1,2)
+            apply (metis Beta_Regions'.v_v' diff_self of_nat_less_0_iff)
+            done
         next
           case 17 with ** *** show ?case unfolding less_eq dbm_le_def by (cases "M (v x) (v y)", auto)
         next
@@ -1505,14 +1520,16 @@ proof -
         let ?d = "if d \<le> 0 then -d + 1 else d"
         from Le INF canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d]
           clock_numbering(1)
-        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") (auto simp: any_le_inf, smt)
+        have "\<exists>u. u \<in> [M]\<^bsub>v,n\<^esub> \<and> u c = - ?d" by (fastforce simp: any_le_inf)
+        then obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by auto
         from that[OF this] show thesis by auto
       next
         case (Lt d)
         let ?d = "if d \<le> 0 then -d + 1 else d"
         from Lt INF canonical_saturated_2[where v = v, OF _ _ \<open>cycle_free _ _\<close> assms(2) c(3), of ?d]
           clock_numbering(1)
-        obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by (cases "d < 0") (auto simp: any_le_inf, smt)
+        have "\<exists>u. u \<in> [M]\<^bsub>v,n\<^esub> \<and> u c = - ?d" by (fastforce simp: any_le_inf)
+        then obtain u where "u \<in> [M]\<^bsub>v,n\<^esub>" "u c = - ?d" by auto
         from that[OF this] show thesis by auto
       next
         case INF

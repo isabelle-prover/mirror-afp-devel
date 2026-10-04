@@ -53,7 +53,7 @@ lemma add_pw_unified_spec_ref:
     using prems
     by (auto 4 5 simp: filter_mset_eq_empty_iff intro: trans elim!: subset_mset.ord_le_eq_trans)
       (* s/h *)
-  by (clarsimp, smt UnE mem_Collect_eq subsetCE)
+  by (clarsimp, smt (verit) UnE mem_Collect_eq subsetCE)
 
 lemma add_pw_ref:
   "add_pw passed wait a \<le> \<Down> Id (add_pw_unified_spec passed wait a)"
