@@ -105,7 +105,7 @@ qed
 corollary deadlock_free_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>\<lbrakk>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P; \<And>r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<Longrightarrow> deadlock_free (Q r)\<rbrakk>
    \<Longrightarrow> deadlock_free (P \<^bold>;\<^sub>\<checkmark> Q)\<close>
-  by (simp add: AfterExt.deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S ticks_of_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+  by (simp add: deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S ticks_of_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
     (meson deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_implies_div_free)
 
 

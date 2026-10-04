@@ -141,6 +141,11 @@ lemma After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP: \<open>STOP after\<^sub>\<chec
   and After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT : \<open>\<bottom> after\<^sub>\<checkmark> e = (case e of ev x \<Rightarrow> \<bottom> | \<checkmark>(r) \<Rightarrow> \<Omega> \<bottom> r)\<close>
   by (simp_all add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_def After_STOP After_SKIP After_BOT split: event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.split)
 
+corollary After_Guard :
+  \<open>(b \<^bold>& P) after\<^sub>\<checkmark> e = (  if b then P after\<^sub>\<checkmark> e
+                       else case e of ev a \<Rightarrow> \<Psi> STOP a | \<checkmark>(r) \<Rightarrow> \<Omega> STOP r)\<close>
+  by (simp add: After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP Guard_def)
+
 
 lemma After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_BOT_iff:
   \<open>P after\<^sub>\<checkmark> e = \<bottom> \<longleftrightarrow> 

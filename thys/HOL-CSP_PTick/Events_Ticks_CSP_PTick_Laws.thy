@@ -491,6 +491,44 @@ proof (rule trans[OF Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictabl
 qed
 
 
+corollary Sync_is_restrictable_on_minimal_events_of :
+  \<open>P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> (\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q))\<rbrakk> Q\<close>
+  by (metis Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_minimal_events_of Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_is_Sync)
+
+corollary Sync_is_restrictable_on_superset_minimal_events_of :
+  \<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P) \<union> \<alpha>\<^sub>m\<^sub>i\<^sub>n(Q) \<subseteq> A \<Longrightarrow> P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> A\<rbrakk> Q\<close>
+  by (metis Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_superset_minimal_events_of Sync\<^sub>C\<^sub>l\<^sub>a\<^sub>s\<^sub>s\<^sub>i\<^sub>c_is_Sync)
+
+
+
+corollary MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_superset_minimal_events_of :
+  \<open>(\<Union>l \<in> set L. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P l)) \<subseteq> A \<Longrightarrow> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l = \<^bold>\<lbrakk>S \<inter> A\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l\<close>
+proof (induct L rule: induct_list012)
+  case 1 show ?case by simp
+next
+  case (2 l0) show ?case by simp
+next
+  case (3 l0 l1 L)
+  from "3.prems" show ?case
+    by (simp, subst "3.hyps"(2))
+      (auto intro!: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_superset_minimal_events_of
+        dest!: minimal_events_of_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_subset[THEN set_mp])+
+qed
+
+corollary MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_minimal_events_of :
+  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l = \<^bold>\<lbrakk>S \<inter> (\<Union>l \<in> set L. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P l))\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l\<close>
+  using MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_restrictable_on_superset_minimal_events_of by blast
+
+
+corollary MultiSync_is_restrictable_on_superset_minimal_events_of:
+  \<open>(\<Union>m \<in> set_mset M. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P m)) \<subseteq> B \<Longrightarrow> \<^bold>\<lbrakk>A\<^bold>\<rbrakk> m \<in># M. P m = \<^bold>\<lbrakk>A \<inter> B\<^bold>\<rbrakk> m \<in># M. P m\<close>
+  by (induct M rule: induct_subset_mset_empty_single)
+    (auto intro!: Sync_is_restrictable_on_superset_minimal_events_of
+      dest!: minimal_events_of_MultiSync_subset[THEN set_mp])
+
+corollary MultiSync_is_restrictable_on_minimal_events_of:
+  \<open>\<^bold>\<lbrakk>A\<^bold>\<rbrakk> m \<in># M. P m = \<^bold>\<lbrakk>A \<inter> ((\<Union>m \<in> set_mset M. \<alpha>\<^sub>m\<^sub>i\<^sub>n(P m)))\<^bold>\<rbrakk> m \<in># M. P m\<close>
+  by (metis MultiSync_is_restrictable_on_superset_minimal_events_of subsetI)
 
 
 (*<*)

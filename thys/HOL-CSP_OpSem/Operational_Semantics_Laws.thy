@@ -118,16 +118,23 @@ text \<open>From idempotence, commutativity and \<^term>\<open>\<bottom>\<close>
       we get the following free of charge.\<close>
 
 lemma \<tau>_trans_eq: \<open>P \<leadsto>\<^sub>\<tau> P\<close>
-  and \<tau>_trans_NdetR: \<open>P \<sqinter> Q \<leadsto>\<^sub>\<tau> Q\<close>
-  and BOT_\<tau>_trans_anything: \<open>\<bottom> \<leadsto>\<^sub>\<tau> P\<close>
-    apply (metis Ndet_id \<tau>_trans_NdetL)
-   apply (metis Ndet_commute \<tau>_trans_NdetL)
+  by (metis Ndet_id \<tau>_trans_NdetL)
+
+lemma \<tau>_trans_NdetR: \<open>P \<sqinter> Q \<leadsto>\<^sub>\<tau> Q\<close>
+  by (metis Ndet_commute \<tau>_trans_NdetL)
+
+lemma BOT_\<tau>_trans_anything: \<open>\<bottom> \<leadsto>\<^sub>\<tau> P\<close>
   by (metis Ndet_BOT \<tau>_trans_NdetL)
+
 
 lemma BOT_ev_trans_anything: \<open>\<bottom> \<leadsto>\<^bsub>e\<^esub> P\<close>
   and BOT_tick_trans: \<open>\<bottom> \<leadsto>\<^sub>\<checkmark>\<^bsub>r\<^esub> \<Omega> \<bottom> r\<close>
   by (simp_all add: ev_trans_def tick_trans_def
       After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT \<tau>_trans_eq BOT_\<tau>_trans_anything)
+
+
+lemma \<tau>_trans_Guard :
+  \<open>P \<leadsto>\<^sub>\<tau> P' \<Longrightarrow> b \<Longrightarrow> b \<^bold>& P \<leadsto>\<^sub>\<tau> b \<^bold>& P'\<close> by simp
 
 
 

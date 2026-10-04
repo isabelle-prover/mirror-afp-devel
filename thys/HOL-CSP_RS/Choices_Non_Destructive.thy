@@ -42,6 +42,11 @@ begin
 
 subsection \<open>Equality\<close>
 
+lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Guard :
+  \<open>b \<^bold>& P \<down> n = (if n = 0 then \<bottom> else b \<^bold>& (P \<down> n))\<close>
+  by (simp add: Guard_def)
+
+
 lemma restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Ndet : \<open>P \<sqinter> Q \<down> n = (P \<down> n) \<sqinter> (Q \<down> n)\<close>
   by (auto simp add: Process_eq_spec Ndet_projs restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_projs)
 
@@ -98,6 +103,9 @@ corollary restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Sliding: \
 
 
 subsection \<open>Non Destructiveness\<close>
+
+lemma Guard_non_destuctive : \<open>non_destructive (\<lambda>P. b \<^bold>& P)\<close>
+  by (simp add: Guard_def non_destructiveI)
 
 lemma GlobalNdet_non_destructive : \<open>non_destructive (\<lambda>P. \<sqinter>a \<in> A. P a)\<close>
   by (auto intro: non_destructiveI

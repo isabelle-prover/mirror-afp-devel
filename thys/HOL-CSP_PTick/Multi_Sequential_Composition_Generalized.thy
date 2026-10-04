@@ -50,7 +50,7 @@ fun MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :: \<open>['b list, 'b \<Ri
 
 syntax  "_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" ::
   \<open>[pttrn, 'b list, 'b \<Rightarrow> 'r \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3SEQ\<^sub>\<checkmark> _ \<in>@ _./ _)\<close> [78,78,77] 77)
+  (\<open>(3SEQ\<^sub>\<checkmark> ((_)/ \<in>@ (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" \<rightleftharpoons> MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 translations  "SEQ\<^sub>\<checkmark> p \<in>@ L. P" \<rightleftharpoons> "CONST MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k L (\<lambda>p. P)"
 
@@ -92,6 +92,12 @@ lemma MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_const [simp] :
   by (induct L rule: rev_induct) (auto simp add: MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc)
 
 
+lemma Guard_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>b \<^bold>& (SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r =
+   (if L = [] \<and> \<not> b then STOP else (SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. b \<^bold>& P l r)) r)\<close>
+  by (induct L arbitrary: r rule: induct_list012) (simp_all add: Guard_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+
+
 
 subsection \<open>Behaviour with binary version\<close>
 
@@ -115,6 +121,11 @@ lemma MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP_absorb:
   \<open>P a = (\<lambda>r. STOP) \<Longrightarrow> SEQ\<^sub>\<checkmark> l \<in>@ (L1 @ [a] @ L2). P l =
                         (\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ L1. P l) r \<^bold>; STOP)\<close>
   by (simp add: MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_append)
+
+lemma finite_ticks_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[finite_ticks_simps] :
+  \<open>(\<And>l r. l \<in> set L \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(P l r)) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>((SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r)\<close>
+  by (induct L arbitrary: r)
+    (auto simp add: finite_ticks_SKIP intro: finite_ticks_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
 lemma is_ticks_length_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>((SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r)\<close>

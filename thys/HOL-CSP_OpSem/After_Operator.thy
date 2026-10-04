@@ -200,11 +200,94 @@ lemmas monos_After = mono_After mono_After_FD mono_After_DT
   mono_After_F mono_After_D mono_After_T
 
 
+lemma (in After) Process_eq_AfterI : \<open>P = Q\<close>
+  if \<open>P = \<bottom> \<longleftrightarrow> Q = \<bottom>\<close> \<open>P \<noteq> \<bottom> \<Longrightarrow> Q \<noteq> \<bottom> \<Longrightarrow> P\<^sup>0 = Q\<^sup>0\<close> \<open>P \<noteq> \<bottom> \<Longrightarrow> Q \<noteq> \<bottom> \<Longrightarrow> \<R> P = \<R> Q\<close>
+    \<open>\<And>a. P \<noteq> \<bottom> \<Longrightarrow> Q \<noteq> \<bottom> \<Longrightarrow> P\<^sup>0 = Q\<^sup>0 \<Longrightarrow> ev a \<in> P\<^sup>0 \<Longrightarrow> P after a = Q after a\<close>
+proof (rule FD_antisym)
+  { fix P Q
+    assume \<open>P = \<bottom> \<longleftrightarrow> Q = \<bottom>\<close> \<open>P\<^sup>0 = Q\<^sup>0\<close> \<open>\<R> P = \<R> Q\<close>
+      and * : \<open>\<And>a. P\<^sup>0 = Q\<^sup>0 \<Longrightarrow> ev a \<in> P\<^sup>0 \<Longrightarrow> P after a = Q after a\<close>
+    have \<open>P \<sqsubseteq>\<^sub>F\<^sub>D Q\<close>
+    proof (rule failure_divergence_refine_optimizedI)
+      show \<open>t \<in> \<D> P\<close> if \<open>t \<in> \<D> Q\<close> for t
+      proof (cases t)
+        assume \<open>t = []\<close>
+        with \<open>t \<in> \<D> Q\<close> \<open>P = \<bottom> \<longleftrightarrow> Q = \<bottom>\<close> show \<open>t \<in> \<D> P\<close> by (simp add: BOT_iff_Nil_D)
+      next
+        show \<open>t \<in> \<D> P\<close> if \<open>t = e # t'\<close> for e t'
+        proof (cases e)
+          fix a assume \<open>e = ev a\<close>
+          with \<open>P\<^sup>0 = Q\<^sup>0\<close> \<open>t \<in> \<D> Q\<close> have \<open>ev a \<in> P\<^sup>0\<close> \<open>ev a \<in> Q\<^sup>0\<close>
+            by (auto dest!: D_T simp add: \<open>t = e # t'\<close> intro: initials_memI)
+          from \<open>t \<in> \<D> Q\<close> have \<open>t' \<in> \<D> (Q after a)\<close>
+            by (auto simp add: After_projs \<open>ev a \<in> Q\<^sup>0\<close> \<open>t = e # t'\<close> \<open>e = ev a\<close>)
+          moreover have \<open>Q after a = P after a\<close>
+            by (metis \<open>P\<^sup>0 = Q\<^sup>0\<close> \<open>ev a \<in> P\<^sup>0\<close> "*")
+          ultimately show \<open>t \<in> \<D> P\<close>
+            by (simp add: \<open>t = e # t'\<close> \<open>e = ev a\<close> After_projs \<open>ev a \<in> P\<^sup>0\<close>)
+        next
+          fix r assume \<open>e = \<checkmark>(r)\<close>
+          with \<open>t \<in> \<D> Q\<close> \<open>t = e # t'\<close> have \<open>t = [\<checkmark>(r)]\<close>
+            by (metis D_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff)
+          with \<open>t \<in> \<D> Q\<close> \<open>P = \<bottom> \<longleftrightarrow> Q = \<bottom>\<close> show \<open>t \<in> \<D> P\<close> by (metis BOT_iff_tick_D)
+        qed
+      qed
+    next
+      show \<open>(t, X) \<in> \<F> P\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
+      proof (cases t)
+        from \<open>\<R> P = \<R> Q\<close> \<open>(t, X) \<in> \<F> Q\<close> show \<open>t = [] \<Longrightarrow> (t, X) \<in> \<F> P\<close>
+          by (auto simp add: Refusals_def_bis)
+      next
+        show \<open>(t, X) \<in> \<F> P\<close> if \<open>t = e # t'\<close> for e t'
+        proof (cases e)
+          fix a assume \<open>e = ev a\<close>
+          with \<open>P\<^sup>0 = Q\<^sup>0\<close> \<open>(t, X) \<in> \<F> Q\<close> have \<open>ev a \<in> P\<^sup>0\<close> \<open>ev a \<in> Q\<^sup>0\<close>
+            by (auto dest!: F_T simp add: \<open>t = e # t'\<close> intro: initials_memI)
+          from \<open>(t, X) \<in> \<F> Q\<close> have \<open>(t', X) \<in> \<F> (Q after a)\<close>
+            by (auto simp add: After_projs \<open>ev a \<in> Q\<^sup>0\<close> \<open>t = e # t'\<close> \<open>e = ev a\<close>)
+          moreover have \<open>Q after a = P after a\<close>
+            by (metis \<open>P\<^sup>0 = Q\<^sup>0\<close> \<open>ev a \<in> P\<^sup>0\<close> "*")
+          ultimately show \<open>(t, X) \<in> \<F> P\<close>
+            by (simp add: \<open>t = e # t'\<close> \<open>e = ev a\<close> After_projs \<open>ev a \<in> P\<^sup>0\<close>)
+        next
+          fix r assume \<open>e = \<checkmark>(r)\<close>
+          with \<open>(t, X) \<in> \<F> Q\<close> \<open>t = e # t'\<close> have \<open>t = [\<checkmark>(r)]\<close>
+            by (metis F_imp_ftF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) ftF_Cons_iff)
+          with \<open>(t, X) \<in> \<F> Q\<close> have \<open>\<checkmark>(r) \<in> P\<^sup>0\<close>
+            by (auto dest!: F_T simp add: \<open>P\<^sup>0 = Q\<^sup>0\<close> intro: initials_memI)
+          hence \<open>(t, UNIV) \<in> \<F> P\<close>
+            by (metis \<open>t = [\<checkmark>(r)]\<close> append_Nil initials_def mem_Collect_eq tick_T_F)
+          thus \<open>(t, X) \<in> \<F> P\<close> using is_processT4 by blast
+        qed
+      qed
+    qed
+  }
+  from this[of P Q] this[of Q P] that show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D Q\<close> \<open>Q \<sqsubseteq>\<^sub>F\<^sub>D P\<close> by auto
+qed
+
+
+
+section \<open>Events and Ticks\<close>
+
+lemma (in After)
+  minimal_events_of_After_subset : \<open>ev a \<in> P\<^sup>0 \<Longrightarrow> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P after a) \<subseteq> \<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>
+  and strict_events_of_After_subset : \<open>ev a \<in> P\<^sup>0 \<Longrightarrow> \<^bold>\<alpha>(P after a) \<subseteq> \<^bold>\<alpha>(P)\<close>
+  and events_of_After_subset : \<open>ev a \<in> P\<^sup>0 \<Longrightarrow> \<alpha>(P after a) \<subseteq> \<alpha>(P)\<close>
+  and strict_ticks_of_After_subset : \<open>ev a \<in> P\<^sup>0 \<Longrightarrow> \<^bold>\<checkmark>\<^bold>s(P after a) \<subseteq> \<^bold>\<checkmark>\<^bold>s(P)\<close>
+  and ticks_of_After_subset : \<open>ev a \<in> P\<^sup>0 \<Longrightarrow> \<checkmark>s(P after a) \<subseteq> \<checkmark>s(P)\<close>
+  by (auto simp add: minimal_events_of_def strict_events_of_def events_of_def
+      strict_ticks_of_def ticks_of_def After_projs)
+    (metis append_Cons)+
+
+
 
 section \<open>Behaviour of @{const [source] After} with \<^const>\<open>STOP\<close>, \<^const>\<open>SKIP\<close> and \<^term>\<open>\<bottom>\<close>\<close>
 
 lemma After_STOP : \<open>STOP after a = \<Psi> STOP a\<close>
   by (simp add: Process_eq_spec After_projs)
+
+corollary After_Guard : \<open>(b \<^bold>& P) after a = (if b then P after a else \<Psi> STOP a)\<close>
+  by (simp add : Guard_def After_STOP)
 
 lemma After_SKIP : \<open>SKIP r after a = \<Psi> (SKIP r) a\<close>
   by (simp add: Process_eq_spec After_projs)

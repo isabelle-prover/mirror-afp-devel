@@ -200,6 +200,27 @@ next
   qed
 qed
 
+
+
+section \<open>The Guard Operator\<close>
+
+text \<open>New in Isabelle26.\<close>
+
+definition Guard :: \<open>bool \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<close> (infixl \<open>\<^bold>&\<close> 84)
+  where \<open>b \<^bold>& P \<equiv> if b then P else STOP\<close>
+
+
+lemma Guard_True  [simp] : \<open>True \<^bold>& P = P\<close>
+  and Guard_False [simp] : \<open>False \<^bold>& P = STOP\<close>
+  and Guard_STOP  [simp] : \<open>b \<^bold>& STOP = STOP\<close>
+  and Guard_Guard [simp] : \<open>b \<^bold>& (b' \<^bold>& P) = (b \<and> b') \<^bold>& P\<close>
+  by (simp_all add: Guard_def)
+
+
+lemma Guard_cont [simp] : \<open>cont P \<Longrightarrow> cont (\<lambda>x. b \<^bold>& P x)\<close>
+  by (simp add: Guard_def)
+
+
 (*<*)
 end
   (*>*)

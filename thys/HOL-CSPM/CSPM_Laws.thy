@@ -145,7 +145,7 @@ qed
 
 
 
-subsection \<open>Laws for Sync\<close>
+section \<open>Laws for Sync\<close>
 
 lemma Sync_GlobalNdet_cartprod:
   \<open>(\<sqinter> (a, b) \<in> A \<times> B. (P a \<lbrakk>S\<rbrakk> Q b)) = 
@@ -204,7 +204,7 @@ lemma \<open>A \<noteq> {} \<Longrightarrow> B \<noteq> {} \<Longrightarrow> (\<
 
 
 
-subsection \<open>GlobalDet, GlobalNdet and write0\<close>
+section \<open>GlobalDet, GlobalNdet and write0\<close>
 
 lemma GlobalDet_write0_is_GlobalNdet_write0:
   \<open>(\<box> p \<in> A. (a \<rightarrow> P p)) = \<sqinter> p \<in> A. (a \<rightarrow> P p)\<close> (is \<open>?lhs = ?rhs\<close>)
@@ -1400,6 +1400,44 @@ proof -
     qed
   qed
 qed
+
+
+
+section \<open>Results on Guard\<close>
+
+lemma Guard_Interrupt : \<open>b \<^bold>& (P \<triangle> Q) = b \<^bold>& P \<triangle> b \<^bold>& Q\<close>
+  by (simp add: Guard_def )
+
+lemma Guard_Throw : \<open>b \<^bold>& (P \<Theta> a\<in>A. Q a) = b \<^bold>& P \<Theta> a\<in>A. b \<^bold>& Q a\<close>
+  by (simp add: Guard_def)
+
+
+lemma Guard_MultiSeq :
+  \<open>b \<^bold>& (SEQ l \<in>@ L. P l) = (if L = [] \<and> \<not> b then STOP else SEQ l \<in>@ L. b \<^bold>& P l)\<close>
+  by (induct L rule: rev_induct) (simp_all add: Guard_Seq)
+
+lemma Guard_MultiSync :
+  \<open>b \<^bold>& (\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. P m) = \<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. b \<^bold>& P m\<close>
+  by (induct M rule: induct_subset_mset_empty_single) (simp_all add: Guard_Sync)
+
+
+lemma Guard_GlobalDet : \<open>b \<^bold>& (\<box>a \<in> A. P a) = \<box>a \<in>{a \<in> A. b}. P a\<close>
+  by (cases b) simp_all
+
+lemma GlobalDet_Guard :
+  \<open>\<box>a \<in> A. b a \<^bold>& P a = \<box>a \<in> {a \<in> A. b a}. P a\<close>
+proof -
+  have \<open>{a \<in> A. b a} \<union> {a \<in> A. \<not> b a} = A\<close> by blast
+  hence \<open>\<box>a\<in>A. b a \<^bold>& P a = (\<box>a\<in>{a \<in> A. b a}. b a \<^bold>& P a) \<box> (\<box>a\<in>{a \<in> A. \<not> b a}. b a \<^bold>& P a)\<close>
+    by (simp add: GlobalDet_factorization_union)
+  also have \<open>\<box>a \<in> {a \<in> A. b a}. b a \<^bold>& P a = \<box>a \<in> {a \<in> A. b a}. P a\<close>
+    by (auto intro: mono_GlobalDet_eq)
+  also have \<open>\<box>a \<in> {a \<in> A. \<not> b a}. b a \<^bold>& P a = STOP\<close>
+    by (simp add: GlobalDet_is_STOP_iff)
+  finally show \<open>\<box>a \<in> A. b a \<^bold>& P a = \<box>a \<in> {a \<in> A. b a}. P a\<close> by simp
+qed
+
+
 
 (*<*)
 end 

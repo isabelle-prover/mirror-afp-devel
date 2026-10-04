@@ -810,7 +810,8 @@ lemma Spec_with_crash_trace:
    @ ev crash #
    [ev (getUsedThreads {T0}), ev (invRead (T1,K0)), ev (doRead (T1,K0,V0)), ev (resRead (T1,V0))]
    \<in> \<T> Spec_with_crash\<close>
-proof (subst Spec_with_crash_rec, rule Throw_Non_Destructive.T_ThrowI_exc)
+  sledgehammer
+proof (subst Spec_with_crash_rec, rule T_ThrowI2)
   show \<open>[ev (getUsedThreads {}), ev (invUpdate (T0,K0,V0)), ev (doUpdate (T0,K0,V0)), ev (resUpdate T0)]
         @ [ev crash] \<in> \<T> (AllMapThreads ||| (crash \<rightarrow> Skip))\<close>
     by (rule T_SyncI[OF AllMapThreads_trace1 T_write0I[OF Nil_elem_T]]) auto
@@ -853,14 +854,8 @@ proof -
 qed
 
 lemma crash_Spec_with_crash: \<open>[ev crash] \<in> \<T> Spec_with_crash\<close>
-proof -
-  have \<open>[] @ ev crash # [] \<in> \<T> Spec_with_crash\<close>
-  proof (subst Spec_with_crash_rec, rule Throw_Non_Destructive.T_ThrowI_exc)
-    show \<open>[] @ [ev crash] \<in> \<T> (AllMapThreads ||| (crash \<rightarrow> Skip))\<close>
-      by (simp, rule T_SyncI_right, rule T_write0I, rule Nil_elem_T, auto)
-  qed simp_all
-  thus ?thesis by simp
-qed
+  by (subst Spec_with_crash_rec, subst AllMapThreads_rec)
+    (simp add: read_Sync_write0_indep Throw_Det Throw_write0 T_Det T_write0)
 
 
 section\<open>Assertions\<close> 

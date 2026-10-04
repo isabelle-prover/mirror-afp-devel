@@ -56,13 +56,11 @@ fun MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ::
   |     \<open>MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k S [l] P = RenamingTick (P l) (\<lambda>r. [r])\<close>
   |     \<open>MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k S (l # m # L) P = P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k S (m # L) P\<close>
 
-
 syntax "_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" ::
-  \<open>[pttrn, 'a set, 'b list, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>\<lbrakk>_\<^bold>\<rbrakk>\<^sub>\<checkmark> _ \<in>@ _./ _)\<close> [78,78,78,77] 77)
+  \<open>['a set, pttrn, 'b list, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  (\<open>(3\<^bold>\<lbrakk>(_)\<^bold>\<rbrakk>\<^sub>\<checkmark> ((_)/ \<in>@ (_))./ (_))\<close> [55,78,55,77] 77)
 syntax_consts "_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" \<rightleftharpoons> MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 translations "\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P" \<rightleftharpoons> "CONST MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k S L (\<lambda>l. P)"
-
 
 
 text \<open>Special case of \<^term>\<open>MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k S P\<close> when \<^term>\<open>S = {}\<close>.\<close>
@@ -73,7 +71,7 @@ abbreviation MultiInter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ::
 
 syntax "_MultiInter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" ::
   \<open>[pttrn, 'b list, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>|\<^bold>|\<^bold>|\<^sub>\<checkmark> _\<in>@_./ _)\<close> [78,78,77] 77)
+  (\<open>(3\<^bold>|\<^bold>|\<^bold>|\<^sub>\<checkmark> ((_)/ \<in>@ (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiInter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" \<rightleftharpoons> MultiInter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 translations "\<^bold>|\<^bold>|\<^bold>|\<^sub>\<checkmark> l \<in>@ L. P" \<rightleftharpoons> "CONST MultiInter\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k L (\<lambda>l. P)"
 
@@ -87,13 +85,20 @@ abbreviation MultiPar\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k ::
 
 syntax "_MultiPar\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" ::
   \<open>[pttrn, 'b list, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>|\<^bold>|\<^sub>\<checkmark> _\<in>@_./ _)\<close> [78,78,77] 77)
+  (\<open>(3\<^bold>|\<^bold>|\<^sub>\<checkmark> ((_)/ \<in>@ (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiPar\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k" \<rightleftharpoons> MultiPar\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k
 translations "\<^bold>|\<^bold>|\<^sub>\<checkmark> l \<in>@ L. P" \<rightleftharpoons> "CONST MultiPar\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k L (\<lambda>l. P)"
 
 
 
 subsection \<open>First properties\<close>
+
+lemma finite_ticks_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [finite_ticks_simps] :
+  \<open>(\<And>l. l \<in> set L \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(P l)) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l\<in>@L. P l)\<close>
+  by (induct L rule: induct_list012)
+    (auto simp add: finite_ticks_simps
+      intro!: inj_imp_finitary inj_onI finite_ticks_Renaming)
+
 
 lemma is_ticks_length_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [is_ticks_length_intro] :
   \<open>length\<^sub>\<checkmark>\<^bsub>length L\<^esub>(\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l)\<close>
@@ -103,7 +108,7 @@ lemma is_ticks_length_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [is_tick
 
 
 lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Cons :
-  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ (l # L). P m =
+  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ l # L. P m =
    (  if L = [] then RenamingTick (P l) (\<lambda>r. [r])
     else P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L. P m)\<close>
   by (cases L) simp_all
@@ -142,9 +147,15 @@ lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_BOT_absorb:
   using MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_BOT_iff by blast
 
 
-lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP_id :
-  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> r \<in>@ L. SKIP r = (if L = [] then STOP else SKIP L)\<close>
+lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP :
+  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. SKIP (f l) = (if L = [] then STOP else SKIP [f l. l \<leftarrow> L])\<close>
   by (induct L rule: induct_list012) simp_all
+
+
+lemma Guard_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>b \<^bold>& (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l) = (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. b \<^bold>& P l)\<close>
+  by (induct L rule: induct_list012)
+    (simp_all add: Guard_Renaming Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Guard_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
 
 
 
@@ -152,7 +163,7 @@ subsection \<open>Behaviour with binary version\<close>
 
 lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_append :
   \<open>L1 \<noteq> [] \<Longrightarrow> L2 \<noteq> [] \<Longrightarrow>
-   \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (L1 @ L2). P l =
+   \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1 @ L2. P l =
    \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1. P l \<^bsub>length L1\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length L2\<^esub> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L2. P l\<close>
 proof (induct L1 rule: list_nonempty_induct)
   case (single l) thus ?case
@@ -160,9 +171,9 @@ proof (induct L1 rule: list_nonempty_induct)
 next
   let ?RT = \<open>\<lambda>P. RenamingTick P (\<lambda>r. [r])\<close>
   case (cons l L1)
-  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ ((l # L1) @ L2). P l = P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (L1 @ L2). P l\<close>
+  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ l # L1 @ L2. P l = P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1 @ L2. P l\<close>
     by (simp add: MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Cons \<open>L1 \<noteq> []\<close>)
-  also have \<open>\<dots> = ?RT (P l) \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length (L1 @ L2)\<^esub> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (L1 @ L2). P l\<close>
+  also have \<open>\<dots> = ?RT (P l) \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length (L1 @ L2)\<^esub> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1 @ L2. P l\<close>
     by (intro Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s is_ticks_length_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
   also have \<open>\<dots> = ?RT (P l) \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length L1 + length L2\<^esub>
                   (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1. P l \<^bsub>length L1\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length L2\<^esub> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L2. P l)\<close>
@@ -173,7 +184,7 @@ next
   also have \<open>?RT (P l) \<^bsub>Suc 0\<^esub>\<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^bsub>length L1\<^esub> \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1. P l =
              P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L1. P l\<close>
     by (intro Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_to_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s[symmetric] is_ticks_length_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
-  also have \<open>\<dots> = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l # L1). P l\<close>
+  also have \<open>\<dots> = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ l # L1. P l\<close>
     by (simp add: MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Cons \<open>L1 \<noteq> []\<close>)
   finally show ?case by simp
 qed
@@ -187,9 +198,9 @@ lemma inj_on_mapping_over_MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k:
    \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ map f L. P (inv_into (set L) f l)\<close>
 proof (induct L rule: induct_list012)
   case (3 l' l'' L)
-  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l' # l'' # L). P l =
-        P l' \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l'' # L). P l\<close> by simp
-  also have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (l'' # L). P l =
+  have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ l' # l'' # L. P l =
+        P l' \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ l'' # L. P l\<close> by simp
+  also have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ l'' # L. P l =
              \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ map f (l'' # L). P (inv_into (set (l'' # L)) f l)\<close>
     by (metis "3.hyps"(2) "3.prems" inj_on_insert list.simps(15))
   also have \<open>\<dots> = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ map f (l'' # L). P (inv_into (set (l' # l'' # L)) f l)\<close>
@@ -206,7 +217,7 @@ subsection \<open>Permuting the Sequence\<close>
 subsubsection \<open>A particular Case\<close>
 
 lemma MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc :
-  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ (L @ [l]). P m =
+  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L @ [l]. P m =
    (  if L = [] then RenamingTick (P l) (\<lambda>r. [r])
     else \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L. P m \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t P l)\<close>
   by (simp add: MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_append)
@@ -218,7 +229,7 @@ At the beginning, we wanted to prove the following property.
 \<close>
 
 theorem MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_rev :
-  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (rev L). P l = RenamingTick (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l) rev\<close>
+  \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ rev L. P l = RenamingTick (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l) rev\<close>
 proof (induct L)
   case Nil show ?case by simp
 next
@@ -229,7 +240,7 @@ next
     show \<open>L = [] \<Longrightarrow> ?case\<close> by (simp add: comp_def flip: Renaming_comp id_def)
   next
     assume \<open>L \<noteq> []\<close>
-    have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ (rev (l # L)). P m = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ (rev L). P m \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t P l\<close>
+    have \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ rev (l # L). P m = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ rev L. P m \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t P l\<close>
       by (simp add: MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_snoc \<open>L \<noteq> []\<close>)
     also have \<open>\<dots> = ?RT (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L. P m) rev \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t P l\<close>
       by (simp only: Cons.hyps)
@@ -249,7 +260,7 @@ next
         by (subst Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_dual, unfold_locales)
           (auto simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
     qed
-    also have \<open>P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L. P m = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ (l # L). P m\<close>
+    also have \<open>P l \<lbrakk>S\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ L. P m = \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> m \<in>@ l # L. P m\<close>
       by (simp add: MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Cons \<open>L \<noteq> []\<close>)
     finally show ?case .
   qed
@@ -1095,10 +1106,10 @@ next
   have \<open>?\<tau> i j permutes {..<length L}\<close>
     by (meson permutes_swap_id swap.hyps(1, 2))
   hence \<open>\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ ?pl (f \<circ> ?\<tau> i j) L. P l =
-         \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (?pl (?\<tau> i j) (?pl f L)). P l\<close>
+         \<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ ?pl (?\<tau> i j) (?pl f L). P l\<close>
     by (simp add: permute_list_compose)
 
-  also have \<open>\<dots> = ?RT (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ (?pl f L). P l) (?pl (?\<tau> i j))\<close>
+  also have \<open>\<dots> = ?RT (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ ?pl f L. P l) (?pl (?\<tau> i j))\<close>
     by (metis MultiSync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_permute_list_transpose atLeast0LessThan
         atLeastLessThan_iff length_permute_list swap.hyps(1,2))
   also have \<open>\<dots> = ?RT (?RT (\<^bold>\<lbrakk>S\<^bold>\<rbrakk>\<^sub>\<checkmark> l \<in>@ L. P l) (?pl f)) (?pl (?\<tau> i j))\<close>

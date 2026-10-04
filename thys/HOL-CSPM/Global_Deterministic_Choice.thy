@@ -152,10 +152,11 @@ qed
 
 
 syntax "_GlobalDet" :: \<open>[pttrn,'b set,('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<box>((_)/\<in>(_))./ (_))\<close> [78,78,77] 77)
+  (\<open>(3\<box>((_)/ \<in> (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_GlobalDet" \<rightleftharpoons> GlobalDet
 translations  "\<box> p \<in> A. P " \<rightleftharpoons> "CONST GlobalDet A (\<lambda>p. P)"
 
+term \<open>\<sqinter>a \<in> A \<union> B. \<box>c \<in> C \<inter> D. P a c\<close>
 
 
 subsection \<open>The projections\<close>
@@ -286,6 +287,11 @@ lemma GlobalDet_is_BOT_iff : \<open>(\<box>a\<in>A. P a) = \<bottom> \<longleftr
 
 lemma GlobalDet_BOT [simp] : \<open>a \<in> A \<Longrightarrow> P a = \<bottom> \<Longrightarrow> (\<box>a\<in>A. P a) = \<bottom>\<close>
   by (auto simp add: GlobalDet_is_BOT_iff)
+
+
+lemma GlobalDet_is_STOP_iff :
+  \<open>\<box>a \<in> A. P a = STOP \<longleftrightarrow> (\<forall>a \<in> A. P a = STOP)\<close>
+  by (force simp add: STOP_iff_T T_GlobalDet)
 
 
 subsection \<open>Behaviour of \<^const>\<open>GlobalDet\<close> with \<^const>\<open>Det\<close>\<close>

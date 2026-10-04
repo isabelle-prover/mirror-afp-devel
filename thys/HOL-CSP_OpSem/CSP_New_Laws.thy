@@ -50,20 +50,7 @@ begin
 
 section \<open>Powerful Results about \<^const>\<open>Sync\<close>\<close>
 
-lemma add_complementary_events_of_in_failure:
-  \<open>(t, X) \<in> \<F> P \<Longrightarrow> (t, X \<union> ev ` (- \<alpha>(P))) \<in> \<F> P\<close>
-  by (erule is_processT5) (auto simp add: events_of_def, metis F_T in_set_conv_decomp)
-
-lemma add_complementary_initials_in_refusal: \<open>X \<in> \<R> P \<Longrightarrow> X \<union> - P\<^sup>0 \<in> \<R> P\<close>
-  unfolding Refusals_iff by (erule is_processT5) (auto simp add: initials_def F_T)
-
-lemma TickRightSync: 
-  \<open>\<checkmark>(r) \<in> S \<Longrightarrow> ftF u \<Longrightarrow> t setinterleaves ((u, [\<checkmark>(r)]), S) \<Longrightarrow> t = u \<and> last u = \<checkmark>(r)\<close>
-  by (simp add: TickLeftSync setinterleaving_dual)
-
-  
-
-theorem Sync_is_Sync_restricted_superset_events:
+theorem Sync_is_restrictable_on_superset_events_of:
   fixes S A :: \<open>'a set\<close> and P Q :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   assumes superset : \<open>\<alpha>(P) \<union> \<alpha>(Q) \<subseteq> A\<close>
   defines \<open>S' \<equiv> S \<inter> A\<close>
@@ -216,10 +203,14 @@ next
       qed
     qed
   
-    from add_complementary_events_of_in_failure[OF assms(1)]
-    have \<open>(rev s_P, ?X_P') \<in> \<F> P\<close> .
-    moreover from add_complementary_events_of_in_failure[OF assms(2)]
-    have \<open>(rev s_Q, ?X_Q') \<in> \<F> Q\<close> .
+    from add_Compl_minimal_events_of_Compl_strict_events_of_in_F[OF assms(1)]
+    have \<open>(rev s_P, ?X_P') \<in> \<F> P\<close>
+      by (metis Compl_anti_mono Un_mono Un_upper1 image_mono is_processT4
+          minimal_events_of_subset_events_of sup.right_idem)
+    moreover from add_Compl_minimal_events_of_Compl_strict_events_of_in_F[OF assms(2)]
+    have \<open>(rev s_Q, ?X_Q') \<in> \<F> Q\<close>
+      by (metis Compl_anti_mono Un_mono Un_upper1 image_mono is_processT4
+          minimal_events_of_subset_events_of sup.right_idem)
     ultimately have \<open>(s, (?X_P' \<union> ?X_Q') \<inter> ?S \<union> ?X_P' \<inter> ?X_Q') \<in> \<F> (P \<lbrakk>S\<rbrakk> Q)\<close>
       using assms_3_bis by (simp add: F_Sync) blast
     moreover have \<open>X \<subseteq> (?X_P' \<union> ?X_Q') \<inter> ?S \<union> ?X_P' \<inter> ?X_Q'\<close>
@@ -364,10 +355,14 @@ next
       qed
     qed
   
-    from add_complementary_events_of_in_failure[OF assms(1)]
-    have \<open>(rev s_P, ?X_P') \<in> \<F> P\<close> .
-    moreover from add_complementary_events_of_in_failure[OF assms(2)]
-    have \<open>(rev s_Q, ?X_Q') \<in> \<F> Q\<close> .
+    from add_Compl_minimal_events_of_Compl_strict_events_of_in_F[OF assms(1)]
+    have \<open>(rev s_P, ?X_P') \<in> \<F> P\<close>
+      by (metis Compl_anti_mono Un_mono Un_upper1 image_mono is_processT4
+          minimal_events_of_subset_events_of sup.right_idem)
+    moreover from add_Compl_minimal_events_of_Compl_strict_events_of_in_F[OF assms(2)]
+    have \<open>(rev s_Q, ?X_Q') \<in> \<F> Q\<close>
+      by (metis Compl_anti_mono Un_mono Un_upper1 image_mono is_processT4
+          minimal_events_of_subset_events_of sup.right_idem)
     ultimately have \<open>(s, (?X_P' \<union> ?X_Q') \<inter> ?S' \<union> ?X_P' \<inter> ?X_Q') \<in> \<F> (P \<lbrakk>S'\<rbrakk> Q)\<close>
       using assms_3_bis by (simp add: F_Sync) blast
     moreover from superset have \<open>X \<subseteq> (?X_P' \<union> ?X_Q') \<inter> ?S' \<union> ?X_P' \<inter> ?X_Q'\<close>
@@ -376,27 +371,38 @@ next
   qed
 qed
 
-corollary Sync_is_Sync_restricted_events : \<open>P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> (\<alpha>(P) \<union> \<alpha>(Q))\<rbrakk> Q\<close>
-  by (simp add: Sync_is_Sync_restricted_superset_events)
+corollary Sync_is_restrictable_on_events_of : \<open>P \<lbrakk>S\<rbrakk> Q = P \<lbrakk>S \<inter> (\<alpha>(P) \<union> \<alpha>(Q))\<rbrakk> Q\<close>
+  by (simp add: Sync_is_restrictable_on_superset_events_of)
 
 text \<open>This version is closer to the intuition that we may have, but the first one would be more
 useful if we don't want to compute the events of a process but know a superset approximation.\<close>
 
 
+corollary MultiSync_is_restrictable_on_superset_events_of:
+  \<open>(\<Union>m \<in> set_mset M. \<alpha>(P m)) \<subseteq> B \<Longrightarrow> \<^bold>\<lbrakk>A\<^bold>\<rbrakk> m \<in># M. P m = \<^bold>\<lbrakk>A \<inter> B\<^bold>\<rbrakk> m \<in># M. P m\<close>
+  by (induct M rule: induct_subset_mset_empty_single)
+    (auto intro!: Sync_is_restrictable_on_superset_events_of
+      dest: events_of_MultiSync_subset[THEN set_mp])
+
+corollary MultiSync_is_restrictable_on_events_of:
+  \<open>\<^bold>\<lbrakk>A\<^bold>\<rbrakk> m \<in># M. P m = \<^bold>\<lbrakk>A \<inter> ((\<Union>m \<in> set_mset M. \<alpha>(P m)))\<^bold>\<rbrakk> m \<in># M. P m\<close>
+  by (metis MultiSync_is_restrictable_on_superset_events_of subsetI)
+
+
 (* lemma Sync_with_SKIP_eq_itself_if_disjoint_events:
   \<open>\<alpha>(P) \<inter> S = {} \<Longrightarrow> P \<lbrakk>S\<rbrakk> SKIP r = P\<close>
   oops
-  by (metis Int_commute Inter_SKIP Sync_is_Sync_restricted_events events_Inter)
+  by (metis Int_commute Inter_SKIP Sync_is_restrictable_on_events_of events_Inter)
 
 lemma Sync_with_STOP_eq_itself_Seq_STOP_if_disjoint_events:
   \<open>\<alpha>(P) \<inter> S = {} \<Longrightarrow> P \<lbrakk>S\<rbrakk> STOP = P \<^bold>; (\<lambda>r. STOP)\<close>
   oops
-  by (metis Int_Un_eq(3) Int_commute Inter_STOP_Seq_STOP Sync_is_Sync_restricted_events events_STOP) *)
+  by (metis Int_Un_eq(3) Int_commute Inter_STOP_Seq_STOP Sync_is_restrictable_on_events_of events_STOP) *)
 
 
 corollary \<open>deadlock_free P \<Longrightarrow> deadlock_free Q \<Longrightarrow>
            S \<inter> (\<alpha>(P) \<union> \<alpha>(Q)) = {} \<Longrightarrow> deadlock_free (P \<lbrakk>S\<rbrakk> Q)\<close>
-  by (subst Sync_is_Sync_restricted_events) (simp add: Inter_deadlock_free)
+  by (subst Sync_is_restrictable_on_events_of) (simp add: Inter_deadlock_free)
     (* but we already had this with data_independence_deadlock_free_Sync *)
 
 
@@ -1091,121 +1097,14 @@ theorem Hiding_is_Hiding_restricted_superset_events:
   assumes superset : \<open>\<alpha>(P) \<subseteq> A\<close>
   defines \<open>S' \<equiv> S \<inter> A\<close>
   shows \<open>P \ S = P \ S'\<close>
-proof -
-  have set_trace_subset : \<open>t \<in> \<T> P \<Longrightarrow> set t \<subseteq> range tick \<union> ev ` \<alpha>(P)\<close> for t
-    by (simp add: events_of_def subset_iff image_iff) (metis event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
-  moreover from superset
-  have \<open>set t \<subseteq> range tick \<union> ev ` \<alpha>(P) \<Longrightarrow>
-        trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for t :: \<open>('a, 'r) trace\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-    by (induct t) (auto simp add: S'_def image_iff subset_iff)
-  ultimately have same_trace_hide :
-    \<open>t \<in> \<T> P \<Longrightarrow> trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for t by blast
-
-  have \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow> seqRun t x i \<in> \<T> P\<close> for x t S i by simp
-  from this[THEN set_trace_subset]
-  have \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow> x i \<in> ev ` \<alpha>(P)\<close> for x t S i
-    by (simp add: seqRun_def subset_iff image_iff)
-      (metis atLeastLessThan_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) le0 lessI)
-  moreover have \<open>isInfHidden_seqRun_strong x P S t \<Longrightarrow>
-                 trace_hide t (ev ` S) = trace_hide t (ev ` S')\<close> for x t
-    by (metis same_trace_hide seqRun_0)
-  ultimately have IH_strong_iff :
-    \<open>isInfHidden_seqRun_strong x P S t \<longleftrightarrow> isInfHidden_seqRun_strong x P S' t\<close> for x t
-    by (safe, auto simp add: S'_def)
-      (metis (no_types, lifting) ext S'_def lessI same_trace_hide trace_hide_seqRun_eq_iff)
-
-  show \<open>P \ S = P \ S'\<close>
-  proof (subst Process_eq_spec_optimized, safe)
-    show \<open>t \<in> \<D> (P \ S) \<Longrightarrow> t \<in> \<D> (P \ S')\<close> for t
-    proof (elim D_Hiding_seqRunE disjE exE)
-      fix u v assume \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S) @ v\<close> \<open>u \<in> \<D> P\<close>
-      from \<open>u \<in> \<D> P\<close> D_T same_trace_hide
-      have \<open>trace_hide u (ev ` S) = trace_hide u (ev ` S')\<close> by blast
-      with \<open>ftF v\<close> \<open>tF u\<close> \<open>u \<in> \<D> P\<close> \<open>t = trace_hide u (ev ` S) @ v\<close>
-      show \<open>t \<in> \<D> (P \ S')\<close> unfolding D_Hiding by blast
-    next
-      fix u v x assume \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S) @ v\<close>
-        and IH_strong : \<open>isInfHidden_seqRun_strong x P S u\<close>
-      have \<open>trace_hide u (ev ` S) = trace_hide u (ev ` S')\<close>
-        by (metis IH_strong same_trace_hide seqRun_0)
-      moreover from IH_strong have \<open>isInfHidden_seqRun_strong x P S' u\<close>
-        by (simp add: IH_strong_iff)
-      ultimately show \<open>t \<in> \<D> (P \ S')\<close>
-        using \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S) @ v\<close>
-        by (blast intro: D_Hiding_seqRunI)
-    qed
-  next
-    show \<open>t \<in> \<D> (P \ S') \<Longrightarrow> t \<in> \<D> (P \ S)\<close> for t
-    proof (elim D_Hiding_seqRunE disjE exE)
-      fix u v assume \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S') @ v\<close> \<open>u \<in> \<D> P\<close>
-      from \<open>u \<in> \<D> P\<close> D_T same_trace_hide
-      have \<open>trace_hide u (ev ` S') = trace_hide u (ev ` S)\<close> by metis
-      with \<open>ftF v\<close> \<open>tF u\<close> \<open>u \<in> \<D> P\<close> \<open>t = trace_hide u (ev ` S') @ v\<close>
-      show \<open>t \<in> \<D> (P \ S)\<close> unfolding D_Hiding by blast
-    next
-      fix u v x assume \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S') @ v\<close>
-        and IH_strong : \<open>isInfHidden_seqRun_strong x P S' u\<close>
-      have \<open>trace_hide u (ev ` S') = trace_hide u (ev ` S)\<close>
-        by (metis IH_strong same_trace_hide seqRun_0)
-      moreover from IH_strong have \<open>isInfHidden_seqRun_strong x P S u\<close>
-        by (simp flip: IH_strong_iff)
-      ultimately show \<open>t \<in> \<D> (P \ S)\<close>
-        using \<open>ftF v\<close> \<open>tF u\<close> \<open>t = trace_hide u (ev ` S') @ v\<close>
-        by (blast intro: D_Hiding_seqRunI)
-    qed
-  next
-    fix t X assume same_div : \<open>\<D> (P \ S) = \<D> (P \ S')\<close>
-    assume \<open>(t, X) \<in> \<F> (P \ S)\<close>
-    then consider \<open>t \<in> \<D> (P \ S)\<close>
-      | u where \<open>t = trace_hide u (ev ` S)\<close> \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>
-      unfolding F_Hiding D_Hiding by blast
-    thus \<open>(t, X) \<in> \<F> (P \ S')\<close>
-    proof cases
-      from same_div D_F show \<open>t \<in> \<D> (P \ S) \<Longrightarrow> (t, X) \<in> \<F> (P \ S')\<close> by blast
-    next
-      fix u assume \<open>t = trace_hide u (ev ` S)\<close> \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>
-      with F_T same_trace_hide have \<open>t = trace_hide u (ev ` S')\<close> by blast
-      moreover have \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>
-      proof (rule is_processT4)
-        show \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close> by (fact \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>)
-      next
-        show \<open>X \<union> ev ` S' \<subseteq> X \<union> ev ` S\<close> unfolding S'_def by blast
-      qed
-      ultimately show \<open>(t, X) \<in> \<F> (P \ S')\<close> unfolding F_Hiding by blast
-    qed
-  next
-    fix t X assume same_div : \<open>\<D> (P \ S) = \<D> (P \ S')\<close>
-    assume \<open>(t, X) \<in> \<F> (P \ S')\<close>
-    then consider \<open>t \<in> \<D> (P \ S')\<close>
-      | u where \<open>t = trace_hide u (ev ` S')\<close> \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>
-      unfolding F_Hiding D_Hiding by blast
-    thus \<open>(t, X) \<in> \<F> (P \ S)\<close>
-    proof cases
-      from same_div D_F show \<open>t \<in> \<D> (P \ S') \<Longrightarrow> (t, X) \<in> \<F> (P \ S)\<close> by blast
-    next
-      fix u assume \<open>t = trace_hide u (ev ` S')\<close> \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>
-      with F_T same_trace_hide have \<open>t = trace_hide u (ev ` S)\<close> by metis
-      moreover have \<open>(u, X \<union> ev ` S) \<in> \<F> P\<close>
-      proof (rule is_processT4[OF add_complementary_events_of_in_failure])
-        show \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close> by (fact \<open>(u, X \<union> ev ` S') \<in> \<F> P\<close>)
-      next
-        from superset show \<open>X \<union> ev ` S \<subseteq> X \<union> ev ` S' \<union> ev ` (- \<alpha>(P))\<close>
-          unfolding S'_def by blast
-      qed
-      ultimately show \<open>(t, X) \<in> \<F> (P \ S)\<close> unfolding F_Hiding by blast
-    qed
-  qed
-qed
-
-
+  oops
+  \<comment> \<open>Removed in Isabelle26, since
+  @{thm [source] Hiding_is_restrictable_on_superset_minimal_events_of} is stronger.\<close>
 
 
 corollary Hiding_is_Hiding_restricted_events : \<open>P \ S = P \ S \<inter> \<alpha>(P)\<close>
-  by (simp add: Hiding_is_Hiding_restricted_superset_events)
-
-text \<open>This version is closer to the intuition that we may have, but the first one would be more
-useful if we don't want to compute the events of a process but know a superset approximation.\<close>
-
+  oops
+  \<comment> \<open>Same with @{thm [source] Hiding_is_restrictable_on_minimal_events_of}\<close>
 
 
 (*<*)

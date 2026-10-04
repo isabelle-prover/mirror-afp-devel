@@ -318,6 +318,31 @@ lemma \<open>Renaming (P \<^bold>;\<^sub>\<checkmark> Q) f g = Renaming P f g \<
   by (subst inj_on_Renaming_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[where g = g]) (auto intro: inj_onI)
 
 
+\<comment>\<open>New in Isabelle26.\<close>
+corollary Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_on_RenamingTick :
+  \<open>RenamingTick P g \<^bold>;\<^sub>\<checkmark> Q = P \<^bold>;\<^sub>\<checkmark> (\<lambda>r. Q (g r))\<close> if \<open>inj_on g \<^bold>\<checkmark>\<^bold>s(P)\<close>
+proof -
+  from inj_on_Renaming_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[OF that, where g' = id and f = id and Q = \<open>\<lambda>r. Q (g r)\<close>]
+  have \<open>P \<^bold>;\<^sub>\<checkmark> (\<lambda>r. Q (g r)) = RenamingTick P g \<^bold>;\<^sub>\<checkmark> (\<lambda>g_r. Q (g (THE r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<and> g_r = g r)))\<close> by simp
+  also have \<open>\<dots> = RenamingTick P g \<^bold>;\<^sub>\<checkmark> Q\<close>
+  proof (rule mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_eq[OF refl arg_cong[where f = Q]])
+    show \<open>g_r \<in> \<^bold>\<checkmark>\<^bold>s(RenamingTick P g) \<Longrightarrow> g (THE r. r \<in> \<^bold>\<checkmark>\<^bold>s(P) \<and> g_r = g r) = g_r\<close> for g_r
+      by (simp add: strict_ticks_of_RenamingTick image_iff)
+        (metis (mono_tags, lifting) inj_on_eq_iff that the_equality)
+  qed
+  finally show \<open>RenamingTick P g \<^bold>;\<^sub>\<checkmark> Q = P \<^bold>;\<^sub>\<checkmark> (\<lambda>r. Q (g r))\<close> ..
+qed
+
+
+\<comment>\<open>New in Isabelle26.\<close>
+corollary Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_RenamingTick_permute_list :
+  \<open>length\<^sub>\<checkmark>\<^bsub>n\<^esub>(P) \<Longrightarrow> f permutes {..<n} \<Longrightarrow>
+   RenamingTick P (permute_list f) \<^bold>;\<^sub>\<checkmark> Q = P \<^bold>;\<^sub>\<checkmark> (\<lambda>r. Q (permute_list f r))\<close>
+  by (intro Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_inj_on_RenamingTick inj_onI)
+    (metis is_ticks_lengthD permute_list_compose permute_list_id permutes_inv permutes_inv_o(1))
+
+
+
 lemma TickSwap_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [simp] :
   \<open>TickSwap (P \<^bold>;\<^sub>\<checkmark> Q) = TickSwap P \<^bold>;\<^sub>\<checkmark> (\<lambda>(s, r). TickSwap (Q (r, s)))\<close> (is \<open>?lhs = ?rhs\<close>)
 proof -
@@ -832,9 +857,17 @@ next
   qed
 qed
 
+(* 
+Hiding_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Hiding (\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r \ S) = SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. P l r \ S)
+ *)
+corollary Hiding_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Hiding :
+  \<open>(SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r \ S \<sqsubseteq>\<^sub>F\<^sub>D (SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. P l r \ S)) r\<close>
+  by (induct L arbitrary: r rule: induct_list012)
+    (auto intro: trans_FD[OF Hiding_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Hiding] mono_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_FD)
 
 
-text \<open>If we assume \<^term>\<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>, we can recover the equality.\<close>
+
+text \<open>If we assume \<^term>\<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>, we can recover the equality (new in Isabelle26).\<close>
 
 theorem finite_ticks_Hiding_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
   \<open>(P \<^bold>;\<^sub>\<checkmark> Q) \ S = (P \ S) \<^bold>;\<^sub>\<checkmark> (\<lambda>r. Q r \ S)\<close> (is \<open>?lhs = ?rhs\<close>) if \<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>
@@ -1134,6 +1167,39 @@ qed
 corollary Hiding_Seq_unit : \<open>P \<^bold>; Q \ S = (P \ S) \<^bold>; (Q \ S)\<close> for P :: \<open>'a process\<close>
   by (simp flip: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_const add: finite_ticks_Hiding_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k finite_ticks_simps)
 
+
+corollary finite_ticks_Hiding_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>(\<And>l r. l \<in> set (butlast L) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(P l r)) \<Longrightarrow>
+   (\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ L. P l) r \ S) = SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. P l r \ S)\<close>
+proof (induct L rule: induct_list012)
+  case 1 show ?case by simp
+next
+  case 2 show ?case by simp
+next
+  case (3 l0 l1 L)
+  have \<open>(\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ (l0 # l1 # L). P l) r \ S) =
+        (\<lambda>r. (P l0 r \ S) \<^bold>;\<^sub>\<checkmark> (\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ (l1 # L). P l) r \ S))\<close>
+    by (subst MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Cons, subst finite_ticks_Hiding_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k)
+      (simp_all add: "3.prems")
+  also have \<open>(\<lambda>r. (SEQ\<^sub>\<checkmark> l \<in>@ (l1 # L). P l) r \ S) = SEQ\<^sub>\<checkmark> l \<in>@ (l1 # L). (\<lambda>r. P l r \ S)\<close>
+    by (rule "3.hyps"(2)) (simp add: "3.prems")
+  finally show ?case by simp
+qed
+
+corollary Hiding_MultiSeq_unit :
+  \<open>(SEQ l \<in>@ L. P l) \ S = SEQ l \<in>@ L. (P l \ S)\<close>
+  (is \<open>?lhs = ?rhs\<close>) for P :: \<open>'b \<Rightarrow> 'a process\<close>
+using  finite_ticks_Hiding_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[of L \<open>\<lambda>l r. P l\<close>, simplified]
+proof (cases \<open>L = []\<close>)
+  show \<open>L = [] \<Longrightarrow> ?lhs = ?rhs\<close> by simp
+next
+  assume \<open>L \<noteq> []\<close>
+  hence \<open>?lhs = (SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. P l)) () \ S\<close> by simp
+  also have \<open>\<dots> = (SEQ\<^sub>\<checkmark> l \<in>@ L. (\<lambda>r. P l \ S)) ()\<close>
+    by (rule finite_ticks_Hiding_MultiSeq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k[THEN fun_cong]) (simp add: finite_ticks_simps)
+  also have \<open>\<dots> = ?rhs\<close> by simp
+  finally show \<open>?lhs = ?rhs\<close> .
+qed
 
 
 section \<open>Hiding and Synchronization Product\<close>
@@ -2528,7 +2594,6 @@ qed
 corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Skip_Sync\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t_distrib_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_right :
   \<open>Skip \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q) = ((P \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t Skip) \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> (Skip \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t Q))\<close>
   by (metis Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_Skip_distrib_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_left RenamingTick_id Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_commute)
-
 
 
 

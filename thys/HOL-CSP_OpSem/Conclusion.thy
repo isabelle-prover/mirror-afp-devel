@@ -100,7 +100,7 @@ text \<open>Finally, we discovered that the @{const [source] After.After} operat
       example prove the following theorem:
 
       \begin{center}  
-      @{thm [mode = Rule] AfterExt.data_independence_deadlock_free_Sync_bis}
+      @{thm [mode = Rule] data_independence_deadlock_free_Sync_bis}
       \end{center}\<close>
 
 (*<*)

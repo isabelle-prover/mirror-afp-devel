@@ -103,6 +103,7 @@ translations "\<sqinter>a \<in> A \<rightarrow> P" \<rightleftharpoons> "CONST M
 
 
 
+
 lemma F_Mndetprefix:
   \<open>\<F> (\<sqinter>a \<in> A \<rightarrow> P a) = (if A = {} then {(s, X). s = []} else \<Union>x\<in>A. \<F> (x \<rightarrow> P x))\<close>
   by (simp add: Failures.rep_eq FAILURES_def STOP.rep_eq Mndetprefix.rep_eq)

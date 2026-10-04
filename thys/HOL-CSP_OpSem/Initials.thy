@@ -136,6 +136,10 @@ lemma anti_mono_initials_DT: \<open>P \<sqsubseteq>\<^sub>D\<^sub>T Q \<Longrigh
   by (simp add: anti_mono_initials_T leDT_imp_leT)
 
 
+lemma add_Compl_initials_in_R : \<open>X \<in> \<R> P \<Longrightarrow> X \<union> - P\<^sup>0 \<in> \<R> P\<close>
+  unfolding Refusals_iff by (erule is_processT5) (auto simp add: initials_def F_T)
+
+
 section \<open>Behaviour of \<^const>\<open>initials\<close> with \<^const>\<open>STOP\<close>, \<^const>\<open>SKIP\<close> and \<^term>\<open>\<bottom>\<close>\<close>
 
 lemma initials_STOP [simp] : \<open>STOP\<^sup>0 = {}\<close>
@@ -207,6 +211,48 @@ next
     by (metis anti_mono_initials_FD initials_SKIPS)
 qed
 
+lemma SKIPS_FD_iff :
+  \<open>P = SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0}\<close> if \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+proof (rule FD_antisym)
+  show \<open>P \<sqsubseteq>\<^sub>F\<^sub>D SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0}\<close>
+  proof (cases \<open>{r. \<checkmark>(r) \<in> P\<^sup>0} = {}\<close>)
+    from \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close> show \<open>{r. \<checkmark>(r) \<in> P\<^sup>0} = {} \<Longrightarrow> P \<sqsubseteq>\<^sub>F\<^sub>D SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0}\<close>
+      by (auto dest!: anti_mono_initials_FD simp add: subset_iff image_iff)
+        (metis STOP_FD_iff all_not_in_conv initials_empty_iff_STOP)
+  next
+    show \<open>{r. \<checkmark>(r) \<in> P\<^sup>0} \<noteq> {} \<Longrightarrow> P \<sqsubseteq>\<^sub>F\<^sub>D SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0}\<close>
+      by (auto intro: initial_ticks_iff_FD_SKIPS[THEN iffD1])
+  qed
+next
+  show \<open>SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0} \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+  proof (rule failure_divergence_refineI_D\<^sub>m\<^sub>i\<^sub>n_version)
+    from \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close> show \<open>t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P \<Longrightarrow> t \<in> \<D> (SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0})\<close> for t
+      by (auto dest: D\<^sub>m\<^sub>i\<^sub>n_D simp add: refine_defs D_SKIPS)
+  next
+    fix t X assume \<open>(t, X) \<in> \<F> P\<close>
+    with \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close> consider \<open>t = []\<close> | r where \<open>t = [\<checkmark>(r)]\<close>
+      by (auto simp add: refine_defs SKIPS_projs split: if_split_asm)
+    thus \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0})\<close>
+    proof cases
+      assume \<open>t = []\<close>
+      with \<open>(t, X) \<in> \<F> P\<close> add_Compl_initials_in_R
+      have \<open>(t, X \<union> - P\<^sup>0) \<in> \<F> P\<close> by (auto simp add: Refusals_iff)
+      moreover from anti_mono_initials_FD \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+      have \<open>\<forall>r. \<checkmark>(r) \<in> P\<^sup>0 \<longrightarrow> \<checkmark>(r) \<in> X \<Longrightarrow> X \<union> - P\<^sup>0 = UNIV\<close> by force
+      ultimately have \<open>\<forall>r. \<checkmark>(r) \<in> P\<^sup>0 \<longrightarrow> \<checkmark>(r) \<in> X \<Longrightarrow> R = {}\<close>
+        using \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+        by (fastforce simp add: \<open>t = []\<close> refine_defs subset_iff SKIPS_projs split: if_split_asm)
+      with \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close> \<open>SKIPS R \<sqsubseteq>\<^sub>F\<^sub>D P\<close>[THEN anti_mono_initials_FD] 
+      show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0})\<close>
+        by (auto simp add: \<open>t = []\<close> refine_defs F_SKIPS)
+    next
+      fix r assume \<open>t = [\<checkmark>(r)]\<close>
+      with \<open>(t, X) \<in> \<F> P\<close> show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> P\<^sup>0})\<close>
+        by (auto simp add: SKIPS_projs intro: F_T initials_memI)
+    qed
+  qed
+qed
+
 
 
 text \<open>We also obtain characterizations for \<^term>\<open>P \<^bold>; Q = \<bottom>\<close>.\<close>
@@ -225,14 +271,18 @@ lemma Seq_is_BOT_iff : \<open>P \<^bold>; Q = \<bottom> \<longleftrightarrow> P 
 
 section \<open>Behaviour of \<^const>\<open>initials\<close> with Operators of \<^session>\<open>HOL-CSP\<close>\<close>
 
+lemma initials_Guard : \<open>(b \<^bold>& P)\<^sup>0 = (if b then P\<^sup>0 else {})\<close>
+  by (simp add: Guard_def)
+
 lemma initials_Mprefix :     \<open>(\<box>a \<in> A \<rightarrow> P a)\<^sup>0 = ev ` A\<close>
   and initials_Mndetprefix : \<open>(\<sqinter>a \<in> A \<rightarrow> P a)\<^sup>0 = ev ` A\<close>
   and initials_write0 :      \<open>(a \<rightarrow> Q)\<^sup>0        = {ev a}\<close>
-  and initials_write :       \<open>(c\<^bold>!a \<rightarrow> Q)\<^sup>0     = {ev (c a)}\<close>
-  and initials_read :        \<open>(c\<^bold>?a\<in>A \<rightarrow> P a)\<^sup>0 = ev ` c ` A\<close>
-  and initials_ndet_write :  \<open>(c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a)\<^sup>0 = ev ` c ` A\<close>
-  by (auto simp: initials_def T_Mndetprefix write0_def
-      write_def T_Mprefix read_def ndet_write_def)
+  by (auto simp: initials_def T_Mndetprefix T_write0 T_Mprefix)
+
+lemma initials_write :      \<open>(c\<^bold>!a \<rightarrow> Q)\<^sup>0     = {ev (c a)}\<close>
+  and initials_read :       \<open>(c\<^bold>?a\<in>A \<rightarrow> P a)\<^sup>0 = ev ` c ` A\<close>
+  and initials_ndet_write : \<open>(c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a)\<^sup>0 = ev ` c ` A\<close>
+  by (auto simp: initials_def T_write T_read T_ndet_write)
 
 
 text \<open>As discussed earlier, \<^const>\<open>initials\<close> behaves very well

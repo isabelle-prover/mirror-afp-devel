@@ -130,7 +130,9 @@ Roscoe's Book\<^cite>\<open>"roscoe:csp:1998"\<close>. It contains a number of n
 \<^enum> since Isabelle-2025, new support for read \<^term>\<open>c\<^bold>?a\<in>A \<rightarrow> P a\<close> and non deterministic write
   \<^term>\<open>c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a\<close> has been added. Also, sliding choice has been added and new algebraic
   laws involving this operator (see @{thm Hiding_Mprefix_non_disjoint}) have been proven.
-\<^enum> TODO : since Isabelle-2026, Guard, Dmin and minimal\_events\_of  .
+\<^enum> since Isabelle-2026, the Guard operator \<^term>\<open>b \<^bold>& P\<close> has been added, and two new concepts about
+  a process \<^term>\<open>P\<close> are introduced, its minimal divergences \<^term>\<open>\<D>\<^sub>m\<^sub>i\<^sub>n P\<close> and its minimal
+  alphabet (or minimal events) \<^term>\<open>\<alpha>\<^sub>m\<^sub>i\<^sub>n(P)\<close>.
 \<close>
 
 (*<*)

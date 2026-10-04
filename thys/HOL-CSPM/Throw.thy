@@ -182,9 +182,10 @@ qed
 text \<open>We add some syntactic sugar.\<close>
 
 syntax "_Throw" :: \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, pttrn, 'a set, 'a \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>((_) \<Theta> (_\<in>_)./ (_))\<close> [78,78,78,77] 77)
+  (\<open>(((_) \<Theta> (_) \<in> (_))./ (_))\<close> [78,78,55,77] 77)
 syntax_consts "_Throw" \<rightleftharpoons> Throw
 translations "P \<Theta> a \<in> A. Q" \<rightleftharpoons> "CONST Throw P A (\<lambda>a. Q)"
+
 
 (* abbreviation Throw_without_free_var ::
   \<open>[('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a set, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> (\<open>((_) \<Theta> (_)/ (_))\<close> [73, 0, 73] 72)
@@ -285,11 +286,6 @@ qed
 
 
 subsection \<open>Monotony\<close>
-
-(* TODO: move this and use it somewhere else ? *)
-lemma min_elems_Un_subset:
-  \<open>min_elems (A \<union> B) \<subseteq> min_elems A \<union> (min_elems B - A)\<close>
-  by (auto simp add: min_elems_def subset_iff)
 
 lemma mono_Throw[simp] : \<open>P \<Theta> a \<in> A. Q a \<sqsubseteq> P' \<Theta> a \<in> A. Q' a\<close> 
   if \<open>P \<sqsubseteq> P'\<close> and \<open>\<And>a. a \<in> A \<Longrightarrow> a \<in> \<alpha>(P) \<Longrightarrow> Q a \<sqsubseteq> Q' a\<close>

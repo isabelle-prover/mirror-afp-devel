@@ -110,9 +110,12 @@ qed
 
 
 syntax "_GlobalNdet" :: \<open>[pttrn,'b set,('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<sqinter>((_)/\<in>(_))./ (_))\<close> [78,78,77] 77)
+  (\<open>(3\<sqinter>((_)/ \<in> (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_GlobalNdet" == GlobalNdet
 translations  "\<sqinter> a \<in> A. P " \<rightleftharpoons> "CONST GlobalNdet A (\<lambda>a. P)"
+
+term \<open>\<sqinter>a \<in> A \<union> B. P a\<close>
+
 
 text\<open>Note that the global non deterministic choice @{term [eta_contract = false] \<open>\<sqinter> a \<in> A. P a\<close>}
      is different from the multiple non deterministic prefix choice which guarantees continuity 
@@ -269,7 +272,7 @@ section \<open>Link with \<^const>\<open>Mndetprefix\<close>\<close>
 text \<open>This is a trick to make proof of \<^const>\<open>Mndetprefix\<close> using
       \<^const>\<open>GlobalNdet\<close> as it has an easier denotational definition.\<close>
 
-lemma Mndetprefix_GlobalNdet: \<open>\<sqinter> a \<in> A \<rightarrow> P a = \<sqinter> a \<in> A. a \<rightarrow> P a\<close>
+lemma Mndetprefix_GlobalNdet: \<open>(\<sqinter> a \<in> A \<rightarrow> P a) = \<sqinter> a \<in> A. a \<rightarrow> P a\<close>
   by (cases \<open>A = {}\<close>; subst Process_eq_spec_optimized) 
     (simp_all add: F_Mndetprefix D_Mndetprefix F_GlobalNdet D_GlobalNdet)
 

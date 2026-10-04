@@ -182,6 +182,12 @@ lemma D\<^sub>m\<^sub>i\<^sub>n_write0 : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (a 
   and D\<^sub>m\<^sub>i\<^sub>n_write  : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (c\<^bold>!a \<rightarrow> P) = {ev (c a) # t |t. t \<in> \<D>\<^sub>m\<^sub>i\<^sub>n P}\<close>
   by (simp_all add: write_def write0_def D\<^sub>m\<^sub>i\<^sub>n_Mprefix) 
 
+corollary write0_eq_write0_conv : \<open>a \<rightarrow> P = b \<rightarrow> Q \<longleftrightarrow> a = b \<and> P = Q\<close>
+  by (auto simp add: Process_eq_spec write0_projs)
+
+corollary write_eq_write_conv : \<open>c\<^bold>!a \<rightarrow> P = c\<^bold>!b \<rightarrow> Q \<longleftrightarrow> c a = c b \<and> P = Q\<close>
+  by (simp add: write_is_write0 write0_eq_write0_conv)
+
 
 
 
@@ -573,15 +579,14 @@ proof -
 qed
 
 lemma Hiding_read_subset :
-  \<open>c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A \<inter> S). (P (inv_into A c a) \ S)\<close>
-  if \<open>inj_on c A\<close> and \<open>c ` A \<subseteq> S\<close>
+  \<open>c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A). (P (inv_into A c a) \ S)\<close> if \<open>c ` A \<subseteq> S\<close>
 proof (cases \<open>A = {}\<close>)
-  show \<open>A = {} \<Longrightarrow> c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A \<inter> S). (P (inv_into A c a) \ S)\<close>
+  show \<open>A = {} \<Longrightarrow> c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A). (P (inv_into A c a) \ S)\<close>
     by (auto simp add: Process_eq_spec GlobalNdet_projs F_Hiding_seqRun D_Hiding_seqRun read_def Mprefix_projs)
 next
   assume \<open>A \<noteq> {}\<close>
-  with \<open>c ` A \<subseteq> S\<close> have \<open>c ` A \<inter> S \<noteq> {}\<close> \<open>c ` A - S = {}\<close> by auto
-  show \<open>c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A \<inter> S). (P (inv_into A c a) \ S)\<close>
+  with \<open>c ` A \<subseteq> S\<close> have \<open>c ` A \<inter> S = c ` A\<close> \<open>c ` A \<inter> S \<noteq> {}\<close> \<open>c ` A - S = {}\<close> by auto
+  from this(1) show \<open>c\<^bold>?a\<in>A \<rightarrow> P a \ S = \<sqinter>a\<in>(c ` A). (P (inv_into A c a) \ S)\<close>
     by (simp add: read_def Hiding_Mprefix_non_disjoint[OF \<open>c ` A \<inter> S \<noteq> {}\<close>] \<open>c ` A - S = {}\<close>
         Process_eq_spec Sliding_projs GlobalNdet_projs Mprefix_projs)
 qed

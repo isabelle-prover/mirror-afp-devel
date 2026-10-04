@@ -96,6 +96,12 @@ corollary ndet_write_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<
 
 subsection \<open>Choices\<close>
 
+lemma Guard_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset] :
+  \<open>non_destructive f \<Longrightarrow> non_destructive (\<lambda>x. b \<^bold>& f x)\<close>
+  \<open>constructive f \<Longrightarrow> constructive (\<lambda>x. b \<^bold>& f x)\<close>
+  by (auto intro!: non_destructiveI constructiveI
+      simp add: restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Guard dest!: non_destructiveD constructiveD)
+
 lemma GlobalNdet_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset] :
   \<open>(\<And>a. a \<in> A \<Longrightarrow> non_destructive (f a)) \<Longrightarrow> non_destructive (\<lambda>x. \<sqinter>a \<in> A. f a x)\<close>
   \<open>(\<And>a. a \<in> A \<Longrightarrow> constructive (f a)) \<Longrightarrow> constructive (\<lambda>x. \<sqinter>a \<in> A. f a x)\<close>
@@ -200,20 +206,57 @@ corollary MultiSync_non_destructive : \<open>non_destructive (\<lambda>P. \<^bol
 
 subsection \<open>Throw\<close>
 
+lemma Throw_constructive_continuation :
+  \<open>(\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)) \<Longrightarrow> constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
+  if \<open>constructive f\<close> and \<open>\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)\<close>
+proof -
+  let ?g = \<open>\<lambda>a x. if a \<in> A then g a x else STOP\<close>
+  have * : \<open>f x \<Theta> a \<in> A. g a x = f x \<Theta> a \<in> A. ?g a x\<close> for x
+    by (auto intro: mono_Throw_eq)
+  have ndg : \<open>non_destructive (?g a)\<close> for a by (auto intro: that(2))
+  show \<open>constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
+  proof (subst "*", rule constructiveI)
+    fix n and x y assume \<open>x \<down> n = y \<down> n\<close>
+      and \<open>f x \<Theta> a \<in> A. ?g a x \<noteq> f y \<Theta> a \<in> A. ?g a y\<close>
+    have \<open>(f x \<Theta> a \<in> A. ?g a x) \<down> Suc n = (f y \<Theta> a \<in> A. ?g a x) \<down> Suc n\<close>
+      by (auto intro!: non_destructiveD[OF Throw_non_destructive,
+            of \<open>(f x, \<lambda>a. ?g a x)\<close> _ \<open>(f y, \<lambda>a. ?g a x)\<close>, simplified]
+          constructiveD[OF that(1) \<open>x \<down> n = y \<down> n\<close>] simp add: restriction_prod_def)
+    also have \<open>\<dots> = (f y \<Theta> a \<in> A. ?g a y) \<down> Suc n\<close>
+      by (auto intro!: constructiveD[OF ThrowR_constructive]
+          non_destructiveD[OF that(2)] \<open>x \<down> n = y \<down> n\<close> simp add: restriction_fun_def)
+    finally show \<open>(f x \<Theta> a \<in> A. ?g a x) \<down> Suc n = (f y \<Theta> a \<in> A. ?g a y) \<down> Suc n\<close> .
+  qed
+qed
+
+
+
 lemma Throw_restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [restriction_shift_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_simpset] :
   \<open>non_destructive f \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)) \<Longrightarrow> non_destructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
-  \<open>constructive f \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> constructive (g a)) \<Longrightarrow> constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
+  \<open>constructive f \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)) \<Longrightarrow> constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
 proof -
-  have * : \<open>f x \<Theta> a \<in> A. g a x = f x \<Theta> a \<in> A. (if a \<in> A then g a x else STOP)\<close> for x
+  let ?g = \<open>\<lambda>a x. if a \<in> A then g a x else STOP\<close>
+  have * : \<open>f x \<Theta> a \<in> A. g a x = f x \<Theta> a \<in> A. ?g a x\<close> for x
     by (auto intro: mono_Throw_eq)
 
   show \<open>non_destructive f \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)) \<Longrightarrow> non_destructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
     by (subst "*", erule non_destructive_comp_non_destructive
         [OF Throw_non_destructive non_destructive_prod_codomain, simplified]) auto
 
-  show \<open>constructive f \<Longrightarrow> (\<And>a. a \<in> A \<Longrightarrow> constructive (g a)) \<Longrightarrow> constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
-    by (subst "*", erule non_destructive_comp_constructive
-        [OF Throw_non_destructive constructive_prod_codomain, simplified]) auto
+  show \<open>constructive (\<lambda>x. f x \<Theta> a \<in> A. g a x)\<close>
+    if \<open>constructive f\<close> \<open>\<And>a. a \<in> A \<Longrightarrow> non_destructive (g a)\<close>
+  proof (subst "*", rule constructiveI)
+    fix n and x y assume \<open>x \<down> n = y \<down> n\<close>
+      and \<open>f x \<Theta> a \<in> A. ?g a x \<noteq> f y \<Theta> a \<in> A. ?g a y\<close>
+    have \<open>(f x \<Theta> a \<in> A. ?g a x) \<down> Suc n = (f y \<Theta> a \<in> A. ?g a x) \<down> Suc n\<close>
+      by (auto intro!: non_destructiveD[OF Throw_non_destructive,
+            of \<open>(f x, \<lambda>a. ?g a x)\<close> _ \<open>(f y, \<lambda>a. ?g a x)\<close>, simplified]
+          constructiveD[OF that(1) \<open>x \<down> n = y \<down> n\<close>] simp add: restriction_prod_def)
+    also have \<open>\<dots> = (f y \<Theta> a \<in> A. ?g a y) \<down> Suc n\<close>
+      by (auto intro!: constructiveD[OF ThrowR_constructive]
+          non_destructiveD[OF that(2)] \<open>x \<down> n = y \<down> n\<close> simp add: restriction_fun_def)
+    finally show \<open>(f x \<Theta> a \<in> A. ?g a x) \<down> Suc n = (f y \<Theta> a \<in> A. ?g a y) \<down> Suc n\<close> .
+  qed
 qed
 
 
@@ -291,7 +334,7 @@ lemma Renaming_restriction_fix :
 proof (rule restriction_fix_unique[symmetric])
   show \<open>constructive ?\<phi>'\<close>
     by (simp add: comp_def constructiveD constructiveI
-                  restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Renaming \<open>constructive \<phi>\<close>)
+        restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Renaming \<open>constructive \<phi>\<close>)
 next
   from \<open>inj f\<close> \<open>inj g\<close>
   have \<open>inv f \<circ> f = id\<close> \<open>inv g \<circ> g = id\<close> unfolding inj_iff .

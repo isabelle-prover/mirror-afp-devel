@@ -342,6 +342,13 @@ lemma D\<^sub>m\<^sub>i\<^sub>n_SKIPS : \<open>\<D>\<^sub>m\<^sub>i\<^sub>n (SKI
 lemmas SKIPS_projs = F_SKIPS D_SKIPS T_SKIPS D\<^sub>m\<^sub>i\<^sub>n_SKIPS
 
 
+lemma inj_SKIPS : \<open>inj SKIPS\<close>
+  by (rule injI) (auto simp add: Process_eq_spec SKIPS_projs split: if_split_asm)
+
+lemma SKIPS_eq_SKIPS_iff [simp] : \<open>SKIPS R = SKIPS S \<longleftrightarrow> R = S\<close>
+  by (meson injD inj_SKIPS)
+
+
 
 subsubsection \<open>Laws\<close>
 
@@ -411,6 +418,14 @@ next
     by (simp add: SKIPS_projs F_Hiding_seqRun seqRun_def split: if_split_asm)
       (metis (no_types, lifting) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.simps(4) filter.simps(1,2) image_iff)
 qed
+
+
+lemma SKIPS_Ndet_SKIPS :
+  \<open>SKIPS R \<sqinter> SKIPS S = (if R = {} then SKIPS S \<sqinter> STOP else if S = {} then SKIPS R \<sqinter> STOP else SKIPS (R \<union> S))\<close>
+  by (auto simp add: Process_eq_spec Ndet_projs SKIPS_projs STOP_projs)
+
+lemma SKIPS_Det_SKIPS : \<open>SKIPS R \<box> SKIPS S = SKIPS (R \<union> S)\<close>
+  by (auto simp add: Process_eq_spec Det_projs SKIPS_projs STOP_projs)
 
 
 
@@ -1208,6 +1223,36 @@ lemma Sync_ac [ac_hol_csp] :
   \<open>(P \<lbrakk>A\<rbrakk> Q) \<lbrakk>A\<rbrakk> R = P \<lbrakk>A\<rbrakk> (Q \<lbrakk>A\<rbrakk> R)\<close>
   \<open>P \<lbrakk>A\<rbrakk> (Q \<lbrakk>A\<rbrakk> R) = Q \<lbrakk>A\<rbrakk> (P \<lbrakk>A\<rbrakk> R)\<close>
   by (simp add: Sync_commute, simp add: Sync_assoc, metis Sync_assoc Sync_commute)
+
+
+
+subsection \<open>The Laws of Guard\<close>
+
+text \<open>New in Isabelle26.\<close>
+
+lemma Guard_Ndet : \<open>b \<^bold>& (P \<sqinter> Q) = b \<^bold>& P \<sqinter> b \<^bold>& Q\<close>
+  and Guard_Det : \<open>b \<^bold>& (P \<box> Q) = b \<^bold>& P \<box> b \<^bold>& Q\<close>
+  and Det_GuardL : \<open>(b \<^bold>& P) \<box> Q = (if b then P \<box> Q else Q)\<close>
+  and Det_GuardR : \<open>P \<box> (b \<^bold>& Q) = (if b then P \<box> Q else P)\<close>
+  and Guard_Sliding : \<open>b \<^bold>& (P \<rhd> Q) = b \<^bold>& P \<rhd> b \<^bold>& Q\<close>
+  and Guard_Seq : \<open>b \<^bold>& (P \<^bold>; Q) = b \<^bold>& P \<^bold>; b \<^bold>& Q\<close>
+  and Guard_Sync : \<open>b \<^bold>& (P \<lbrakk>S\<rbrakk> Q) = b \<^bold>& P \<lbrakk>S\<rbrakk> b \<^bold>& Q\<close>
+  and Guard_Renaming : \<open>b \<^bold>& Renaming P f g = Renaming (b \<^bold>& P) f g\<close>
+  and Guard_Hiding : \<open>b \<^bold>& (P \ S) = b \<^bold>& P \ S\<close>
+  by (cases b; simp)+
+
+
+lemma Guard_GlobalNdet : \<open>b \<^bold>& (\<sqinter>a \<in> A. P a) = \<sqinter>a \<in>{a \<in> A. b}. P a\<close>
+  by (cases b) simp_all
+
+lemma Guard_Mprefix : \<open>b \<^bold>& (\<box>a\<in>A \<rightarrow> P a) = \<box>a\<in>{a \<in> A. b} \<rightarrow> P a\<close>
+  and Guard_Mndetprefix : \<open>b \<^bold>& (\<sqinter>a\<in>A \<rightarrow> P a) = \<sqinter>a\<in>{a \<in> A. b} \<rightarrow> P a\<close>
+  by (cases b; simp)+
+  
+
+lemma Guard_read : \<open>b \<^bold>& (c\<^bold>?a\<in>A \<rightarrow> P a) = c\<^bold>?a\<in>{a \<in> A. b} \<rightarrow> P a\<close>
+  and Guard_ndet_write : \<open>b \<^bold>& (c\<^bold>!\<^bold>!a\<in>A \<rightarrow> P a) = c\<^bold>!\<^bold>!a\<in>{a \<in> A. b} \<rightarrow> P a\<close>
+  by (cases b; simp add: read_def ndet_write_def comp_def)+
 
 
 (*<*)

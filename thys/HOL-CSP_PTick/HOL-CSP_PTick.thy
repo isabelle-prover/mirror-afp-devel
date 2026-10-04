@@ -34,7 +34,8 @@ chapter \<open>Conclusion\<close>
 
 (*<*)
 theory "HOL-CSP_PTick"
-  imports CSP_PTick_Laws CSP_PTick_Deadlock_Results
+  imports Synchronization_Product_Sequential_Composition
+    CSP_PTick_Deadlock_Results
     Sequential_Composition_Generalized_Non_Destructive
     Synchronization_Product_Generalized_Non_Destructive
     Operational_Semantics_CSP_PTick_Laws

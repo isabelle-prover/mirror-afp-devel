@@ -1239,6 +1239,38 @@ corollary SKIP_Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_SKIP [simp] :
   by (simp add: Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s.SKIP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIP Sync\<^sub>L\<^sub>i\<^sub>s\<^sub>t\<^sub>s_tj_def)
 
 
+corollary SKIPS_Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t SKIPS S = (if S = {} then STOP else SKIPS R)\<close>
+  by (simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_def)
+    (simp add: GlobalNdet_cartprod SKIPS_def)
+
+corollary SKIPS_Sync\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>u\<^sub>n\<^sub>i\<^sub>t SKIPS S = (if R = {} then STOP else SKIPS S)\<close>
+  by (simp add: Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>R\<^sub>u\<^sub>n\<^sub>i\<^sub>t_tj_dual_def)
+    (simp add: GlobalNdet_cartprod SKIPS_def)
+
+corollary SKIPS_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r SKIPS S = SKIPS (R \<times> S)\<close>
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r_tj_def) (simp add: SKIPS_def)
+
+corollary SKIPS_Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIPS S = SKIPS {[r, s] |r s. r \<in> R \<and> s \<in> S}\<close>
+  by (simp add: Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>P\<^sub>a\<^sub>i\<^sub>r\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+    (auto intro!: Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version dest!: D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset[THEN set_mp]
+      simp add: SKIPS_projs SKIP_projs GlobalNdet_projs split: if_split_asm)+
+
+corollary SKIPS_Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIPS S = SKIPS {r # s |r s. r \<in> R \<and> s \<in> S}\<close>
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_def)
+    (auto intro!: Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version dest!: D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset[THEN set_mp]
+      simp add: SKIPS_projs SKIP_projs GlobalNdet_projs split: if_split_asm)+
+
+corollary SKIPS_Sync\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t_SKIPS [simp] :
+  \<open>SKIPS R \<lbrakk>A\<rbrakk>\<^sub>\<checkmark>\<^sub>L\<^sub>l\<^sub>i\<^sub>s\<^sub>t SKIPS S = SKIPS {r @ [s] |r s. r \<in> R \<and> s \<in> S}\<close>
+  by (simp add: Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t.Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_comm_dual.SKIPS_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_SKIPS Sync\<^sub>R\<^sub>l\<^sub>i\<^sub>s\<^sub>t_tj_dual_def)
+    (auto intro!: Process_eqI_D\<^sub>m\<^sub>i\<^sub>n_version dest!: D\<^sub>m\<^sub>i\<^sub>n_GlobalNdet_subset[THEN set_mp]
+      simp add: SKIPS_projs SKIP_projs GlobalNdet_projs split: if_split_asm)+
+
 
 
 

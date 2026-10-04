@@ -643,6 +643,10 @@ lemma min_elems_Un_subset_Un_min_elems :
 lemma min_elems_idempotent : \<open>min_elems (min_elems A) = min_elems A\<close>
   unfolding min_elems_def by blast
 
+lemma min_elems_Un_subset:
+  \<open>min_elems (A \<union> B) \<subseteq> min_elems A \<union> (min_elems B - A)\<close>
+  by (auto simp add: min_elems_def subset_iff)
+
 
 lemma Nil_mem_min_elems : \<open>[] \<in> A \<Longrightarrow> [] \<in> min_elems A\<close>
   by (simp add: min_elems_def)

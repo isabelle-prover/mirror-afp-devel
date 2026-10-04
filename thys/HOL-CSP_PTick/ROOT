@@ -1,5 +1,3 @@
-chapter AFP
-
 (***********************************************************************************
  * Copyright (c) 2025 Université Paris-Saclay
  *
@@ -65,6 +63,7 @@ session "HOL-CSP_PTick" = "HOL-CSP_RS" +
   Multi_Synchronization_Product_Generalized
 
   Events_Ticks_CSP_PTick_Laws
+  Synchronization_Product_Sequential_Composition
   Sequential_Composition_Generalized_Cont
   Synchronization_Product_Generalized_Cont
 

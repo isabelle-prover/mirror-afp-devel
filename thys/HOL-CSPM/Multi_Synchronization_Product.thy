@@ -111,11 +111,10 @@ qed
 definition MultiSync :: \<open>['a set, 'b multiset, 'b \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
   where \<open>MultiSync S M P = MultiSync_list S (SOME L. mset L = M) P\<close> 
 
-syntax "_MultiSync" :: \<open>['a set,pttrn,'b multiset,('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>\<lbrakk>_\<^bold>\<rbrakk> _\<in>#_./ _)\<close> [78,78,78,77] 77)
+syntax "_MultiSync" :: \<open>['a set, pttrn, 'b multiset, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  (\<open>(3\<^bold>\<lbrakk>(_)\<^bold>\<rbrakk> ((_)/ \<in># (_))./ (_))\<close> [55,78,55,77] 77)
 syntax_consts "_MultiSync" \<rightleftharpoons> MultiSync
-translations "\<^bold>\<lbrakk>S\<^bold>\<rbrakk> p \<in># M. P " \<rightleftharpoons> "CONST MultiSync S M (\<lambda>p. P)"
-
+translations "\<^bold>\<lbrakk>S\<^bold>\<rbrakk> m \<in># M. P " \<rightleftharpoons> "CONST MultiSync S M (\<lambda>m. P)"
 
 
 
@@ -125,9 +124,9 @@ abbreviation MultiInter :: \<open>['b multiset, 'b \<Rightarrow> ('a, 'r) proces
   where \<open>MultiInter M P \<equiv> MultiSync {} M P\<close> 
 
 syntax "_MultiInter" :: \<open>[pttrn, 'b multiset, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>|\<^bold>|\<^bold>| _\<in>#_./ _)\<close> [78,78,77] 77)
+  (\<open>(3\<^bold>|\<^bold>|\<^bold>| ((_)/ \<in># (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiInter" \<rightleftharpoons> MultiInter
-translations "\<^bold>|\<^bold>|\<^bold>| p \<in># M. P" \<rightleftharpoons> "CONST MultiInter M (\<lambda>p. P)"
+translations "\<^bold>|\<^bold>|\<^bold>| m \<in># M. P" \<rightleftharpoons> "CONST MultiInter M (\<lambda>m. P)"
 
 
 
@@ -137,9 +136,9 @@ abbreviation MultiPar :: \<open>['b multiset, 'b \<Rightarrow> ('a, 'r) process\
   where \<open>MultiPar M P \<equiv> MultiSync UNIV M P\<close> 
 
 syntax "_MultiPar" :: \<open>[pttrn, 'b multiset, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3\<^bold>|\<^bold>| _\<in>#_./ _)\<close> [78,78,77] 77)
+  (\<open>(3\<^bold>|\<^bold>| ((_)/ \<in># (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiPar" \<rightleftharpoons> MultiPar
-translations "\<^bold>|\<^bold>| p \<in># M. P" \<rightleftharpoons> "CONST MultiPar M (\<lambda>p. P)"
+translations "\<^bold>|\<^bold>| m \<in># M. P" \<rightleftharpoons> "CONST MultiPar M (\<lambda>m. P)"
 
 
 

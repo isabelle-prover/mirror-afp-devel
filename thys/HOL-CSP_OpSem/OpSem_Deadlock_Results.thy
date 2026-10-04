@@ -589,78 +589,81 @@ next
   qed
 qed
 
+end
 
-
-context fixes P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> begin
 
 theorem deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S :
   \<open>deadlock_free P \<longleftrightarrow> \<checkmark>s(P) = {} \<and> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-proof (intro iffI conjI)
-  from deadlock_free_implies_non_terminating tF_traces_iff_empty_ticks_of
-  show \<open>deadlock_free P \<Longrightarrow> \<checkmark>s(P) = {}\<close> by fast
-next
-  show \<open>deadlock_free P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-    by (fact deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
-next
-  have \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F Q \<Longrightarrow> DF UNIV \<sqsubseteq>\<^sub>F Q\<close> if \<open>\<checkmark>s(P) = {}\<close> for Q
-  proof (unfold DF_def DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def, induct arbitrary: Q rule: cont_parallel_fix_ind)
-    show \<open>cont (\<lambda>x. (\<sqinter>a\<in>UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV)\<close> by simp
+proof -
+  interpret interp : AfterExt \<open>\<lambda>P a. STOP\<close>.
+  write interp.reachable_processes (\<open>\<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c\<close>)
+  show ?thesis
+  proof (intro iffI conjI)
+    from deadlock_free_implies_non_terminating tF_traces_iff_empty_ticks_of
+    show \<open>deadlock_free P \<Longrightarrow> \<checkmark>s(P) = {}\<close> by fast
   next
-    show \<open>cont (\<lambda>x. \<sqinter>a\<in>UNIV \<rightarrow> x)\<close> by simp
+    show \<open>deadlock_free P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
+      by (fact deadlock_free_imp_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S)
   next
-    show \<open>adm (\<lambda>x. \<forall>Q. Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<longrightarrow> fst x \<sqsubseteq>\<^sub>F Q \<longrightarrow> snd x \<sqsubseteq>\<^sub>F Q)\<close> by simp
-  next
-    show \<open>\<And>Q. \<bottom> \<sqsubseteq>\<^sub>F Q\<close> by simp
-  next
-    fix x y Q assume hyp : \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> x \<sqsubseteq>\<^sub>F Q \<Longrightarrow> y \<sqsubseteq>\<^sub>F Q\<close> for Q
-    assume \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
-    from \<open>\<checkmark>s(P) = {}\<close> \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> have \<open>\<checkmark>s(Q) = {}\<close>
-      using ticks_of_reachable_processes_subset by auto
-
-    from \<open>\<checkmark>s(Q) = {}\<close> initial_tick_imp_in_ticks_of have \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close> by force
-    moreover from \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
-    have \<open>Q\<^sup>0 \<noteq> {}\<close> by (auto simp add: initials_empty_iff_STOP Process_eq_spec failure_refine_def
-          F_Ndet F_Mndetprefix' F_SKIPS subset_iff F_STOP) 
-    ultimately have \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>
-      by (metis empty_Collect_eq equals0I event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
-    hence \<open>\<sqinter>a \<in> UNIV \<rightarrow> y \<sqsubseteq>\<^sub>F \<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> y\<close>
-      by (metis Mndetprefix_F_subset top_greatest)
-    moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F \<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a\<close>
-    proof (rule mono_Mndetprefix_F, clarify, rule hyp)
-      show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> Q after a \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> for a
-        by (simp add: \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> reachable_after)
+    have \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F Q \<Longrightarrow> DF UNIV \<sqsubseteq>\<^sub>F Q\<close> if \<open>\<checkmark>s(P) = {}\<close> for Q
+    proof (unfold DF_def DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def, induct arbitrary: Q rule: cont_parallel_fix_ind)
+      show \<open>cont (\<lambda>x. (\<sqinter>a\<in>UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV)\<close> by simp
     next
-      show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> x \<sqsubseteq>\<^sub>F Q after a\<close> for a
-        by (frule mono_After_F[OF _ \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>])
-          (simp add: After_Ndet initials_Mndetprefix image_iff After_Mndetprefix)
-    qed
-    moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F Q\<close>
-    proof (unfold failure_refine_def, safe)
-      show \<open>(t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a)\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
-      proof (cases t)
-        from initial_tick_imp_in_ticks_of \<open>\<checkmark>s(Q) = {}\<close> have \<open>range tick \<subseteq> - Q\<^sup>0\<close> by force
-        assume \<open>t = []\<close>
-        with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
-          by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
-        with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
-        show \<open>(t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a)\<close>
-          by (simp add: failure_refine_def F_Ndet F_SKIPS \<open>t = []\<close> F_Mndetprefix' subset_iff)
-            (meson Compl_iff UnI1 UnI2 \<open>range tick \<subseteq> - Q\<^sup>0\<close> list.distinct(1) range_subsetD)
+      show \<open>cont (\<lambda>x. \<sqinter>a\<in>UNIV \<rightarrow> x)\<close> by simp
+    next
+      show \<open>adm (\<lambda>x. \<forall>Q. Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<longrightarrow> fst x \<sqsubseteq>\<^sub>F Q \<longrightarrow> snd x \<sqsubseteq>\<^sub>F Q)\<close> by simp
+    next
+      show \<open>\<And>Q. \<bottom> \<sqsubseteq>\<^sub>F Q\<close> by simp
+    next
+      fix x y Q assume hyp : \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> x \<sqsubseteq>\<^sub>F Q \<Longrightarrow> y \<sqsubseteq>\<^sub>F Q\<close> for Q
+      assume \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
+      from \<open>\<checkmark>s(P) = {}\<close> \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> have \<open>\<checkmark>s(Q) = {}\<close>
+        by (metis AfterExt.ticks_of_reachable_processes_subset subset_empty)
+      from \<open>\<checkmark>s(Q) = {}\<close> initial_tick_imp_in_ticks_of have \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close> by force
+      moreover from \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
+      have \<open>Q\<^sup>0 \<noteq> {}\<close> by (auto simp add: initials_empty_iff_STOP Process_eq_spec failure_refine_def
+            F_Ndet F_Mndetprefix' F_SKIPS subset_iff F_STOP) 
+      ultimately have \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>
+        by (metis empty_Collect_eq equals0I event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
+      hence \<open>\<sqinter>a \<in> UNIV \<rightarrow> y \<sqsubseteq>\<^sub>F \<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> y\<close>
+        by (metis Mndetprefix_F_subset top_greatest)
+      moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F \<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a\<close>
+      proof (rule mono_Mndetprefix_F, clarify, rule hyp)
+        show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> interp.After Q a \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> for a
+          by (simp add: \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> interp.reachable_after)
       next
-        from \<open>(t, X) \<in> \<F> Q\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close> \<open>\<checkmark>s(Q) = {}\<close>
-        show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a)\<close> for e t'
-          by (simp add: failure_refine_def F_Ndet F_SKIPS F_Mndetprefix' F_After subset_iff)
-            (metis F_T empty_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust initial_tick_imp_in_ticks_of initials_memI)
+        show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> x \<sqsubseteq>\<^sub>F interp.After Q a\<close> for a
+          by (frule interp.mono_After_F[OF _ \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>])
+            (simp add: interp.After_Ndet initials_Mndetprefix image_iff interp.After_Mndetprefix)
       qed
+      moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F Q\<close>
+      proof (unfold failure_refine_def, safe)
+        show \<open>(t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a)\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
+        proof (cases t)
+          from initial_tick_imp_in_ticks_of \<open>\<checkmark>s(Q) = {}\<close> have \<open>range tick \<subseteq> - Q\<^sup>0\<close> by force
+          assume \<open>t = []\<close>
+          with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
+            by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
+          with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
+          show \<open>(t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a)\<close>
+            by (simp add: failure_refine_def F_Ndet F_SKIPS \<open>t = []\<close> F_Mndetprefix' subset_iff)
+              (meson Compl_iff UnI1 UnI2 \<open>range tick \<subseteq> - Q\<^sup>0\<close> list.distinct(1) range_subsetD)
+        next
+          from \<open>(t, X) \<in> \<F> Q\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close> \<open>\<checkmark>s(Q) = {}\<close>
+          show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a)\<close> for e t'
+            by (simp add: failure_refine_def F_Ndet F_SKIPS F_Mndetprefix' interp.F_After subset_iff)
+              (metis F_T empty_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust initial_tick_imp_in_ticks_of initials_memI)
+        qed
+      qed
+      ultimately show \<open>\<sqinter>a \<in> UNIV \<rightarrow> y \<sqsubseteq>\<^sub>F Q\<close> using trans_F by blast
     qed
-    ultimately show \<open>\<sqinter>a \<in> UNIV \<rightarrow> y \<sqsubseteq>\<^sub>F Q\<close> using trans_F by blast
+    thus \<open>\<checkmark>s(P) = {} \<and> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> deadlock_free P\<close>
+      by (simp add: interp.reachable_self deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def deadlock_free_F)
   qed
-  thus \<open>\<checkmark>s(P) = {} \<and> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> deadlock_free P\<close>
-    by (simp add: reachable_self deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def deadlock_free_F)
 qed
 
-end
 
+context AfterExt begin
 
 lemma reachable_processes_DF_UNIV_leF_imp_DF_events_of_leF :
   \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF UNIV \<sqsubseteq>\<^sub>F Q \<Longrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F Q\<close> for Q
@@ -789,21 +792,28 @@ next
   ultimately show \<open>SKIPS \<checkmark>s(P) \<sqinter> STOP \<sqinter> (\<box>a \<in> \<alpha>(P) \<rightarrow> y) \<sqsubseteq>\<^sub>F\<^sub>D Q\<close> by force
 qed
 
+end
 
-context fixes P :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close> begin
+
 
 theorem deadlock_free_iff_DF_events_of_leF :
   \<open>deadlock_free P \<longleftrightarrow> \<alpha>(P) \<noteq> {} \<and> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
-proof (intro iffI conjI)
-  show \<open>\<alpha>(P) \<noteq> {} \<and> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free P\<close>
-    by (meson DF_Univ_freeness deadlock_free_F order_refl trans_F)
-next
-  show \<open>deadlock_free P \<Longrightarrow> \<alpha>(P) \<noteq> {}\<close> by (simp add: nonempty_events_of_if_deadlock_free)
-next
-  show \<open>deadlock_free P \<Longrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
-    by (simp add: deadlock_free_F reachable_self
-        reachable_processes_DF_UNIV_leF_imp_DF_events_of_leF)
+proof -
+  interpret interp : AfterExt \<open>\<lambda>P a. STOP\<close>.
+  write interp.reachable_processes (\<open>\<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c\<close>)
+  show ?thesis
+  proof (intro iffI conjI)
+    show \<open>\<alpha>(P) \<noteq> {} \<and> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free P\<close>
+      by (meson DF_Univ_freeness deadlock_free_F order_refl trans_F)
+  next
+    show \<open>deadlock_free P \<Longrightarrow> \<alpha>(P) \<noteq> {}\<close> by (simp add: nonempty_events_of_if_deadlock_free)
+  next
+    show \<open>deadlock_free P \<Longrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
+      by (simp add: deadlock_free_F interp.reachable_self
+          interp.reachable_processes_DF_UNIV_leF_imp_DF_events_of_leF)
+  qed
 qed
+
 
 corollary deadlock_free_iff_DF_events_of_leFD :
   \<open>deadlock_free P \<longleftrightarrow> \<alpha>(P) \<noteq> {} \<and> DF \<alpha>(P) \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
@@ -825,14 +835,19 @@ corollary deadlock_free_iff_DF_strict_events_of_leFD :
 
 theorem lifelock_free_iff_CHAOS_events_of_leF :
   \<open>lifelock_free P \<longleftrightarrow> CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
-proof (intro iffI conjI)
-  show \<open>CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> lifelock_free P\<close>
-    by (meson CHAOS_subset_FD lifelock_free_def non_terminating_F
-        non_terminating_FD top_greatest trans_F)
-next
-  show \<open>lifelock_free P \<Longrightarrow> CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
-    by (simp add: leFD_imp_leF lifelock_free_def reachable_self
-        reachable_processes_CHAOS_UNIV_leF_imp_CHAOS_events_of_leF)
+proof -
+  interpret interp : AfterExt \<open>\<lambda>P a. STOP\<close>.
+  write interp.reachable_processes (\<open>\<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c\<close>)
+  show \<open>lifelock_free P \<longleftrightarrow> CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
+  proof (intro iffI conjI)
+    show \<open>CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> lifelock_free P\<close>
+      by (meson CHAOS_subset_FD lifelock_free_def non_terminating_F
+          non_terminating_FD top_greatest trans_F)
+  next
+    show \<open>lifelock_free P \<Longrightarrow> CHAOS \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close>
+      by (simp add: leFD_imp_leF lifelock_free_def interp.reachable_self
+          interp.reachable_processes_CHAOS_UNIV_leF_imp_CHAOS_events_of_leF)
+  qed
 qed
 
 corollary lifelock_free_iff_CHAOS_strict_events_of_leF :
@@ -858,14 +873,19 @@ corollary lifelock_free_iff_CHAOS_strict_events_of_leFD :
 
 theorem lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_events_of_ticks_of_FD :
   \<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-proof (intro iffI)
-  show \<open>CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-    by (metis events_of_is_strict_events_of_or_UNIV lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def
-        lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free ticks_of_is_strict_ticks_of_or_UNIV)
-next
-  show \<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
-    by (simp add: lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def reachable_self
-        reachable_processes_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_UNIV_UNIV_leF_imp_CHAOS_events_of_ticks_of_leFD)
+proof -
+  interpret interp : AfterExt \<open>\<lambda>P a. STOP\<close>.
+  write interp.reachable_processes (\<open>\<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c\<close>)
+  show ?thesis
+  proof (intro iffI)
+    show \<open>CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F\<^sub>D P \<Longrightarrow> lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
+      by (metis events_of_is_strict_events_of_or_UNIV lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def
+          lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_div_free ticks_of_is_strict_ticks_of_or_UNIV)
+  next
+    show \<open>lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F\<^sub>D P\<close>
+      by (simp add: lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def interp.reachable_self
+          interp.reachable_processes_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_UNIV_UNIV_leF_imp_CHAOS_events_of_ticks_of_leFD)
+  qed
 qed
 
 corollary lifelock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_CHAOS\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_strict_events_of_strict_ticks_of_FD :
@@ -882,148 +902,153 @@ theorem deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_iff_DF\<^sub>S\<^s
                                  else   if \<alpha>(P) = {} then SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P
                                       else DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P)\<close>
   (is \<open>_ \<longleftrightarrow> ?rhs\<close>)
-proof (split if_split, intro conjI impI)
-  from deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S nonempty_events_of_if_deadlock_free
-  show \<open>\<alpha>(P) = {} \<and> \<checkmark>s(P) = {} \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> False\<close> by blast
-next
-  assume \<open>\<not> (\<alpha>(P) = {} \<and> \<checkmark>s(P) = {})\<close>
-  show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow>
+proof -
+  interpret interp : AfterExt \<open>\<lambda>P a. STOP\<close>.
+  write interp.reachable_processes (\<open>\<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c\<close>)
+  show ?thesis
+  proof (split if_split, intro conjI impI)
+    from deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S nonempty_events_of_if_deadlock_free
+    show \<open>\<alpha>(P) = {} \<and> \<checkmark>s(P) = {} \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> False\<close> by blast
+  next
+    assume \<open>\<not> (\<alpha>(P) = {} \<and> \<checkmark>s(P) = {})\<close>
+    show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow>
         (  if \<checkmark>s(P) = {} then DF \<alpha>(P) \<sqsubseteq>\<^sub>F P
          else if \<alpha>(P) = {} then SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P else DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P)\<close>
-  proof (split if_split, intro conjI impI)
-    from \<open>\<not> (\<alpha>(P) = {} \<and> \<checkmark>s(P) = {})\<close> deadlock_free_iff_DF_events_of_leF
-      deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S 
-    show \<open>\<checkmark>s(P) = {} \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close> by blast
-  next
-    show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow>
-          (if \<alpha>(P) = {} then SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P else DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P)\<close> if \<open>\<checkmark>s(P) \<noteq> {}\<close>
     proof (split if_split, intro conjI impI)
-      assume \<open>\<alpha>(P) = {}\<close>
-      with initial_ev_imp_in_events_of have \<open>range ev \<subseteq> - P\<^sup>0\<close> by force
-      show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close>
-      proof (rule iffI)
-        show \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-          by (metis deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_SKIPS deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def \<open>\<checkmark>s(P) \<noteq> {}\<close> trans_F)
-      next
-        show \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close> if \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-        proof (unfold failure_refine_def, safe)
-          show \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close> if \<open>(t, X) \<in> \<F> P\<close> for t X
-          proof (cases t)
-            assume \<open>t = []\<close>
-            with \<open>(t, X) \<in> \<F> P\<close> have \<open>(t, X \<union> - P\<^sup>0) \<in> \<F> P\<close>
-              by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
-            with \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close> have \<open>(t, X \<union> - P\<^sup>0) \<in> \<F> (DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV)\<close>
-              by (auto simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def failure_refine_def)
-            with \<open>range ev \<subseteq> - P\<^sup>0\<close> \<open>\<checkmark>s(P) \<noteq> {}\<close> show \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close>
-              by (subst (asm) DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold)
-                (auto simp add: F_Ndet F_Mndetprefix' F_SKIPS \<open>t = []\<close>
-                  intro: initial_tick_imp_in_ticks_of)
-          next
-            fix e t' assume \<open>t = e # t'\<close>
-            with F_T \<open>(t, X) \<in> \<F> P\<close> \<open>\<alpha>(P) = {}\<close> obtain r where \<open>r \<in> \<checkmark>s(P)\<close> \<open>e = \<checkmark>(r)\<close> \<open>t' = []\<close>
-              by (metis F_imp_ftF empty_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust events_of_memI
-                  ftF_Cons_iff initial_tick_imp_in_ticks_of
-                  initials_memI is_ev_def list.set_intros(1))
-            thus \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close>
-              by (simp add: F_Mndetprefix' F_SKIPS \<open>\<checkmark>s(P) \<noteq> {}\<close> \<open>t = e # t'\<close>)
-          qed
-        qed
-      qed
+      from \<open>\<not> (\<alpha>(P) = {} \<and> \<checkmark>s(P) = {})\<close> deadlock_free_iff_DF_events_of_leF
+        deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S 
+      show \<open>\<checkmark>s(P) = {} \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> DF \<alpha>(P) \<sqsubseteq>\<^sub>F P\<close> by fast
     next
-      show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close> if \<open>\<alpha>(P) \<noteq> {}\<close>
-      proof (rule iffI)
-        show \<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
-          by (meson DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_subset \<open>\<checkmark>s(P) \<noteq> {}\<close> \<open>\<alpha>(P) \<noteq> {}\<close>
-              deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def leFD_imp_leF subset_UNIV that trans_F)
-      next
-        have \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F Q \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> for Q
-        proof (unfold DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def, induct arbitrary: Q rule: cont_parallel_fix_ind)
-          show \<open>cont (\<lambda>x. (\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV)\<close> by simp
+      show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow>
+          (if \<alpha>(P) = {} then SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P else DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P)\<close> if \<open>\<checkmark>s(P) \<noteq> {}\<close>
+      proof (split if_split, intro conjI impI)
+        assume \<open>\<alpha>(P) = {}\<close>
+        with initial_ev_imp_in_events_of have \<open>range ev \<subseteq> - P\<^sup>0\<close> by force
+        show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close>
+        proof (rule iffI)
+          show \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
+            by (metis deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_SKIPS deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def \<open>\<checkmark>s(P) \<noteq> {}\<close> trans_F)
         next
-          show \<open>cont (\<lambda>x. (\<sqinter>a \<in> \<alpha>(P) \<rightarrow> x) \<sqinter> SKIPS \<checkmark>s(P))\<close> by simp
-        next
-          show \<open>adm (\<lambda>x. \<forall>Q. Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<longrightarrow> fst x \<sqsubseteq>\<^sub>F Q \<longrightarrow> snd x \<sqsubseteq>\<^sub>F Q)\<close> by simp
-        next
-          show \<open>\<And>Q. \<bottom> \<sqsubseteq>\<^sub>F Q\<close> by simp
-        next
-          fix x y Q assume hyp : \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> x \<sqsubseteq>\<^sub>F Q \<Longrightarrow> y \<sqsubseteq>\<^sub>F Q\<close> for Q
-          assume \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> and \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
-          consider \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close>
-            | \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close>
-            | \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close> by blast
-
-          thus \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close>
-          proof cases
-            assume \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close>
-            hence \<open>Q\<^sup>0 = {}\<close> by (metis Collect_empty_eq all_not_in_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
-            hence \<open>Q = STOP\<close> by (simp add: initials_empty_iff_STOP)
-            with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> have False
-              by (auto simp add: failure_refine_def Process_eq_spec
-                  F_STOP F_Ndet F_Mndetprefix' F_SKIPS)
-            thus \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> ..
-          next
-            assume \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close>
-            have \<open>SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0} \<sqsubseteq>\<^sub>F Q\<close>
-            proof (unfold failure_refine_def, safe)
-              show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
-              proof (cases t)
-                assume \<open>t = []\<close>
-                with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
-                  by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
-                with \<open>t = []\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close>
-                show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close>
-                  by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS subset_iff)
-                    (metis Compl_iff Un_iff neq_Nil_conv)
-              next
-                from \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close>
-                  \<open>(t, X) \<in> \<F> Q\<close> F_T initials_memI
-                show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close> for e t'
-                  by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS) blast
-              qed
+          show \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close> if \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
+          proof (unfold failure_refine_def, safe)
+            show \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close> if \<open>(t, X) \<in> \<F> P\<close> for t X
+            proof (cases t)
+              assume \<open>t = []\<close>
+              with \<open>(t, X) \<in> \<F> P\<close> have \<open>(t, X \<union> - P\<^sup>0) \<in> \<F> P\<close>
+                by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
+              with \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close> have \<open>(t, X \<union> - P\<^sup>0) \<in> \<F> (DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV)\<close>
+                by (auto simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def failure_refine_def)
+              with \<open>range ev \<subseteq> - P\<^sup>0\<close> \<open>\<checkmark>s(P) \<noteq> {}\<close> show \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close>
+                by (subst (asm) DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_unfold)
+                  (auto simp add: F_Ndet F_Mndetprefix' F_SKIPS \<open>t = []\<close>
+                    intro: initial_tick_imp_in_ticks_of)
+            next
+              fix e t' assume \<open>t = e # t'\<close>
+              with F_T \<open>(t, X) \<in> \<F> P\<close> \<open>\<alpha>(P) = {}\<close> obtain r where \<open>r \<in> \<checkmark>s(P)\<close> \<open>e = \<checkmark>(r)\<close> \<open>t' = []\<close>
+                by (metis F_imp_ftF empty_iff event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust events_of_memI
+                    ftF_Cons_iff initial_tick_imp_in_ticks_of
+                    initials_memI is_ev_def list.set_intros(1))
+              thus \<open>(t, X) \<in> \<F> (SKIPS \<checkmark>s(P))\<close>
+                by (simp add: F_Mndetprefix' F_SKIPS \<open>\<checkmark>s(P) \<noteq> {}\<close> \<open>t = e # t'\<close>)
             qed
-            moreover from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close> initial_tick_imp_in_ticks_of
-              ticks_of_reachable_processes_subset
-            have \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0}\<close>
-              by (force simp add: SKIPS_F_SKIPS_iff \<open>\<checkmark>s(P) \<noteq> {}\<close>)
-            ultimately show \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close>
-              using Ndet_F_self_right trans_F by blast
-          next
-            assume \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>
-            from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> initial_tick_imp_in_ticks_of ticks_of_reachable_processes_subset
-            have \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close> by force
-            from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> events_of_reachable_processes_subset initial_ev_imp_in_events_of
-            have \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P)\<close>
-              by (force intro: mono_Ndet_F[OF Mndetprefix_F_subset[OF \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>] F_refl])
-            moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a) \<sqinter> SKIPS \<checkmark>s(P)\<close>
-            proof (rule mono_Ndet_F[OF mono_Mndetprefix_F F_refl], clarify)
-              show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> y \<sqsubseteq>\<^sub>F Q after a\<close> for a
-                by (frule mono_After_F[OF _ \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>])
-                  (simp add: After_Ndet initials_Mndetprefix image_iff
-                    After_Mndetprefix reachable_after \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> hyp)
-            qed
-            moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F Q\<close>
-            proof (unfold failure_refine_def, safe)
-              show \<open>(t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a) \<sqinter> SKIPS \<checkmark>s(P))\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
-              proof (cases t)
-                assume \<open>t = []\<close>
-                with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
-                  by (metis ComplD eq_Nil_appendI initials_memI' is_processT5_S7')
-                with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close>
-                show \<open>(t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a) \<sqinter> SKIPS \<checkmark>s(P))\<close>
-                  by (simp add: failure_refine_def F_Ndet F_Mndetprefix' \<open>t = []\<close> F_SKIPS \<open>\<checkmark>s(P) \<noteq> {}\<close> subset_iff)
-                    (meson ComplI UnI1 UnI2 list.distinct(1))
-              next
-                from \<open>(t, X) \<in> \<F> Q\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close>
-                show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> Q after a) \<sqinter> SKIPS \<checkmark>s(P))\<close> for e t'
-                  by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS F_After \<open>\<checkmark>s(P) \<noteq> {}\<close> subset_iff)
-                    (metis F_T initials_memI list.distinct(1) list.inject)
-              qed
-            qed
-            ultimately show \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> using trans_F by blast
           qed
         qed
-        thus \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close>
-          by (simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def reachable_self)
+      next
+        show \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<longleftrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close> if \<open>\<alpha>(P) \<noteq> {}\<close>
+        proof (rule iffI)
+          show \<open>DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P \<Longrightarrow> deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P\<close>
+            by (meson DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_subset \<open>\<checkmark>s(P) \<noteq> {}\<close> \<open>\<alpha>(P) \<noteq> {}\<close>
+                deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def leFD_imp_leF subset_UNIV that trans_F)
+        next
+          have \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S UNIV UNIV \<sqsubseteq>\<^sub>F Q \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> for Q
+          proof (unfold DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def, induct arbitrary: Q rule: cont_parallel_fix_ind)
+            show \<open>cont (\<lambda>x. (\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV)\<close> by simp
+          next
+            show \<open>cont (\<lambda>x. (\<sqinter>a \<in> \<alpha>(P) \<rightarrow> x) \<sqinter> SKIPS \<checkmark>s(P))\<close> by simp
+          next
+            show \<open>adm (\<lambda>x. \<forall>Q. Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<longrightarrow> fst x \<sqsubseteq>\<^sub>F Q \<longrightarrow> snd x \<sqsubseteq>\<^sub>F Q)\<close> by simp
+          next
+            show \<open>\<And>Q. \<bottom> \<sqsubseteq>\<^sub>F Q\<close> by simp
+          next
+            fix x y Q assume hyp : \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P \<Longrightarrow> x \<sqsubseteq>\<^sub>F Q \<Longrightarrow> y \<sqsubseteq>\<^sub>F Q\<close> for Q
+            assume \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> and \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>
+            consider \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close>
+              | \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close>
+              | \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close> by blast
+
+            thus \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close>
+            proof cases
+              assume \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} = {}\<close>
+              hence \<open>Q\<^sup>0 = {}\<close> by (metis Collect_empty_eq all_not_in_conv event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.exhaust)
+              hence \<open>Q = STOP\<close> by (simp add: initials_empty_iff_STOP)
+              with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> have False
+                by (auto simp add: failure_refine_def Process_eq_spec
+                    F_STOP F_Ndet F_Mndetprefix' F_SKIPS)
+              thus \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> ..
+            next
+              assume \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close>
+              have \<open>SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0} \<sqsubseteq>\<^sub>F Q\<close>
+              proof (unfold failure_refine_def, safe)
+                show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
+                proof (cases t)
+                  assume \<open>t = []\<close>
+                  with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
+                    by (metis ComplD initials_memI is_processT5_S7' self_append_conv2)
+                  with \<open>t = []\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close>
+                  show \<open>(t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close>
+                    by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS subset_iff)
+                      (metis Compl_iff Un_iff neq_Nil_conv)
+                next
+                  from \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{a. ev a \<in> Q\<^sup>0} = {}\<close>
+                    \<open>(t, X) \<in> \<F> Q\<close> F_T initials_memI
+                  show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> (SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0})\<close> for e t'
+                    by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS) blast
+                qed
+              qed
+              moreover from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<noteq> {}\<close> initial_tick_imp_in_ticks_of
+                interp.ticks_of_reachable_processes_subset
+              have \<open>SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F SKIPS {r. \<checkmark>(r) \<in> Q\<^sup>0}\<close>
+                by (force simp add: SKIPS_F_SKIPS_iff \<open>\<checkmark>s(P) \<noteq> {}\<close>)
+              ultimately show \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close>
+                using Ndet_F_self_right trans_F by blast
+            next
+              assume \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>
+              from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> initial_tick_imp_in_ticks_of interp.ticks_of_reachable_processes_subset
+              have \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close> by force
+              from \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> interp.events_of_reachable_processes_subset initial_ev_imp_in_events_of
+              have \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P)\<close>
+                by (force intro: mono_Ndet_F[OF Mndetprefix_F_subset[OF \<open>{a. ev a \<in> Q\<^sup>0} \<noteq> {}\<close>] F_refl])
+              moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F (\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a) \<sqinter> SKIPS \<checkmark>s(P)\<close>
+              proof (rule mono_Ndet_F[OF mono_Mndetprefix_F F_refl], clarify)
+                show \<open>ev a \<in> Q\<^sup>0 \<Longrightarrow> y \<sqsubseteq>\<^sub>F interp.After Q a\<close> for a
+                  by (frule interp.mono_After_F[OF _ \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close>])
+                    (simp add: interp.After_Ndet initials_Mndetprefix image_iff
+                      interp.After_Mndetprefix interp.reachable_after \<open>Q \<in> \<R>\<^sub>p\<^sub>r\<^sub>o\<^sub>c P\<close> hyp)
+              qed
+              moreover have \<open>\<dots> \<sqsubseteq>\<^sub>F Q\<close>
+              proof (unfold failure_refine_def, safe)
+                show \<open>(t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a) \<sqinter> SKIPS \<checkmark>s(P))\<close> if \<open>(t, X) \<in> \<F> Q\<close> for t X
+                proof (cases t)
+                  assume \<open>t = []\<close>
+                  with \<open>(t, X) \<in> \<F> Q\<close> have \<open>([], X \<union> - Q\<^sup>0) \<in> \<F> Q\<close>
+                    by (metis ComplD eq_Nil_appendI initials_memI' is_processT5_S7')
+                  with \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close>
+                  show \<open>(t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a) \<sqinter> SKIPS \<checkmark>s(P))\<close>
+                    by (simp add: failure_refine_def F_Ndet F_Mndetprefix' \<open>t = []\<close> F_SKIPS \<open>\<checkmark>s(P) \<noteq> {}\<close> subset_iff)
+                      (meson ComplI UnI1 UnI2 list.distinct(1))
+                next
+                  from \<open>(t, X) \<in> \<F> Q\<close> \<open>(\<sqinter>a \<in> UNIV \<rightarrow> x) \<sqinter> SKIPS UNIV \<sqsubseteq>\<^sub>F Q\<close> \<open>{r. \<checkmark>(r) \<in> Q\<^sup>0} \<subseteq> \<checkmark>s(P)\<close>
+                  show \<open>t = e # t' \<Longrightarrow> (t, X) \<in> \<F> ((\<sqinter>a \<in> {a. ev a \<in> Q\<^sup>0} \<rightarrow> interp.After Q a) \<sqinter> SKIPS \<checkmark>s(P))\<close> for e t'
+                    by (simp add: failure_refine_def F_Ndet F_Mndetprefix' F_SKIPS interp.F_After \<open>\<checkmark>s(P) \<noteq> {}\<close> subset_iff)
+                      (metis F_T initials_memI list.distinct(1) list.inject)
+                qed
+              qed
+              ultimately show \<open>(\<sqinter>a \<in> \<alpha>(P) \<rightarrow> y) \<sqinter> SKIPS \<checkmark>s(P) \<sqsubseteq>\<^sub>F Q\<close> using trans_F by blast
+            qed
+          qed
+          thus \<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S P \<Longrightarrow> DF\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S \<alpha>(P) \<checkmark>s(P) \<sqsubseteq>\<^sub>F P\<close>
+            by (simp add: deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_def interp.reachable_self)
+        qed
       qed
     qed
   qed
@@ -1071,14 +1096,13 @@ lemma deadlock_free_is_right:
 proof -
   from  deadlock_free_iff_empty_ticks_of_and_deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S
     deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_is_right tF_traces_iff_empty_ticks_of
-  show \<open>deadlock_free P \<longleftrightarrow> (\<forall>t \<in> \<T> P. tF t \<and> (t, UNIV) \<notin> \<F> P)\<close> by blast
+  show \<open>deadlock_free P \<longleftrightarrow> (\<forall>t \<in> \<T> P. tF t \<and> (t, UNIV) \<notin> \<F> P)\<close> by fast
   thus \<open>deadlock_free P \<longleftrightarrow> (\<forall>t \<in> \<T> P. tF t \<and> (t, ev ` UNIV) \<notin> \<F> P)\<close>
     by (auto intro: is_processT4)
-      (metis After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e.simps(1) deadlock_free_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_characterization
-        F_imp_R_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e deadlock_free_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_characterization)
+      (metis AfterExt.F_imp_R_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e AfterExt.deadlock_free_After\<^sub>t\<^sub>i\<^sub>c\<^sub>k_characterization
+        AfterExt.deadlock_free_After\<^sub>t\<^sub>r\<^sub>a\<^sub>c\<^sub>e_characterization Refusals_iff)
 qed
 
-end
 
 \<comment>\<open>We may probably prove \<^term>\<open>deadlock_free P \<longleftrightarrow> (\<forall>t \<in> \<T> P. tF t \<and> (t, ev ` \<alpha>(P)) \<notin> \<F> P)\<close>\<close>
 
@@ -1101,10 +1125,10 @@ proof -
 
   have \<open>ev a \<in> (P \<lbrakk>S\<rbrakk> Q)\<^sup>0 \<or> ev b \<in> (P \<lbrakk>S\<rbrakk> Q)\<^sup>0\<close>
     by (simp add: initials_Sync non_BOT image_iff)
-      (metis events_of_iff_reachable_ev reachable_ev.intros(1) 
+      (metis AfterExt.events_of_iff_reachable_ev AfterExt.reachable_ev.intros(1) 
         Int_iff initial empty_iff hyp insert_iff subset_singleton_iff)
   hence nonempty_events_Sync: \<open>\<alpha>(P \<lbrakk>S\<rbrakk> Q) \<noteq> {}\<close>
-    by (metis events_of_iff_reachable_ev empty_iff reachable_ev.intros(1))
+    by (metis AfterExt.events_of_iff_reachable_ev empty_iff AfterExt.reachable_ev.intros(1))
 
   have * : \<open>DF (\<alpha>(P) \<union> \<alpha>(Q)) \<sqsubseteq>\<^sub>F\<^sub>D DF \<alpha>(P) \<lbrakk>S\<rbrakk> DF \<alpha>(Q)\<close>
     by (simp add: DF_FD_DF_Sync_DF hyp nonempty_events)
@@ -1142,9 +1166,6 @@ next
   show \<open>\<not> deadlock_free (DF {0} \<lbrakk>{0, Suc 0}\<rbrakk> DF {Suc 0})\<close>
     by (simp add: non_deadlock_free_STOP)
 qed
-
-end
-
 
 
 \<comment> \<open>Think about a \<^const>\<open>deadlock_free\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<close> version.\<close>

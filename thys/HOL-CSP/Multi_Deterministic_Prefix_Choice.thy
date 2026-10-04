@@ -284,7 +284,7 @@ term \<open>c\<^bold>?x \<rightarrow> d\<^bold>?y \<rightarrow> P a y\<close>
 term \<open>c\<^bold>?x\<in>X \<rightarrow> P x\<close>
 term \<open>c\<^bold>?x\<^bold>|(x<0) \<rightarrow> P x\<close>
 
-term \<open>c\<^bold>?x \<rightarrow> d\<^bold>?y\<in>B \<rightarrow> e \<rightarrow> u\<^bold>?t\<^bold>|(t \<ge> 1) \<rightarrow> P a y\<close>
+term \<open>c\<^bold>?x \<rightarrow> d\<^bold>?y\<in>(B \<union> C) \<rightarrow> e \<rightarrow> u\<^bold>?t\<^bold>|(t \<ge> 1) \<rightarrow> P a y\<close>
 
 term \<open>(c \<circ> d)\<^bold>?a \<rightarrow> P a\<close>
 

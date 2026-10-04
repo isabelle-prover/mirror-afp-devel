@@ -34,7 +34,7 @@ chapter \<open>Finite Ticks Predicate\<close>
 
 (*<*)
 theory Finite_Ticks
-  imports "HOL-CSPM"
+  imports "HOL-CSP_RS"
 begin
   (*>*)
 
@@ -226,6 +226,67 @@ next
 next
   from \<open>\<And>y. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(y) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f y)\<close> show \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(x) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f x)\<close> for x .
 qed
+
+
+
+lemma restriction_adm_finite_ticks [finite_ticks_simps] :
+  \<open>adm\<^sub>\<down> (\<lambda>P :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. \<bbbF>\<^sub>\<checkmark>(P))\<close>
+proof (rule restriction_admI)
+  show \<open>\<bbbF>\<^sub>\<checkmark>(\<Sigma>)\<close> if \<open>\<sigma> \<midarrow>\<down>\<rightarrow> \<Sigma>\<close> \<open>\<And>n. \<bbbF>\<^sub>\<checkmark>(\<sigma> n)\<close> for \<sigma> and \<Sigma> :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  proof (rule finite_ticksI)
+    fix t assume \<open>t \<in> \<T> \<Sigma>\<close> \<open>t \<notin> \<D> \<Sigma>\<close>
+    from \<open>\<sigma> \<midarrow>\<down>\<rightarrow> \<Sigma>\<close> obtain n
+      where \<open>\<Sigma> \<down> Suc (Suc (length t)) = \<sigma> n \<down> Suc (Suc (length t))\<close> by (blast dest: restriction_tendstoD)
+    with \<open>t \<notin> \<D> \<Sigma>\<close> have \<open>t @ [\<checkmark>(r)] \<in> \<T> \<Sigma> \<longleftrightarrow> t @ [\<checkmark>(r)] \<in> \<T> (\<sigma> n) \<and> t \<notin> \<D> (\<sigma> n)\<close> for r
+      by (metis D_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_D T_restriction_process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_Suc_length_iff_T 
+          length_append_singleton restriction_related_pred)
+    with \<open>\<And>n. \<bbbF>\<^sub>\<checkmark>(\<sigma> n)\<close>[of n, THEN finite_ticksD]
+    show \<open>finite {r. t @ [\<checkmark>(r)] \<in> \<T> \<Sigma>}\<close> by simp
+  qed
+qed
+
+
+lemma finite_ticks_restriction_fix [finite_ticks_simps] :
+  \<open>\<bbbF>\<^sub>\<checkmark>(\<upsilon> X. f X)\<close> if \<open>constructive f\<close> and \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f)\<close>
+proof (induct rule: restriction_fix_ind)
+  show \<open>constructive f\<close> by (fact \<open>constructive f\<close>)
+next
+  show \<open>adm\<^sub>\<down> finite_ticks\<close> by (fact restriction_adm_finite_ticks)
+next
+  show \<open>\<bbbF>\<^sub>\<checkmark>(\<bottom>)\<close> by (fact finite_ticks_BOT)
+next
+  show \<open>\<bbbF>\<^sub>\<checkmark>(f X)\<close> if \<open>\<bbbF>\<^sub>\<checkmark>(X)\<close> for X
+    by (fact finite_ticks_funD[OF \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f)\<close> \<open>\<bbbF>\<^sub>\<checkmark>(X)\<close>])
+qed
+
+
+lemma restriction_adm_finite_ticks_fun [finite_ticks_fun_simps] :
+  \<open>adm\<^sub>\<down> (\<lambda>f :: ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('b, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f))\<close>
+proof (rule restriction_admI)
+  show \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<Sigma>)\<close> if \<open>\<sigma> \<midarrow>\<down>\<rightarrow> \<Sigma>\<close> \<open>\<And>n. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<sigma> n)\<close>
+    for \<sigma> and \<Sigma> :: \<open>('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k \<Rightarrow> ('b, 's) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
+  proof (rule finite_ticks_funI)
+    show \<open>\<bbbF>\<^sub>\<checkmark>(P) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(\<Sigma> P)\<close> for P
+      by (rule restriction_adm_finite_ticks
+          [THEN restriction_admD, OF \<open>\<sigma> \<midarrow>\<down>\<rightarrow> \<Sigma>\<close>[THEN restriction_tendsto_fun_imp]
+            \<open>\<And>n. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<sigma> n)\<close>[THEN finite_ticks_funD]])
+  qed
+qed
+
+
+
+lemma finite_ticks_fun_restriction_fix [finite_ticks_fun_simps] :
+  \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<upsilon> X. f X)\<close> if \<open>constructive f\<close> and \<open>\<And>x. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(x) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f x)\<close>
+proof (induct f rule: restriction_fix_ind)
+  from \<open>constructive f\<close> show \<open>constructive f\<close> .
+next
+  from restriction_adm_finite_ticks_fun show \<open>restriction_adm (\<lambda>f. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f))\<close> .
+next
+  from finite_ticks_fun_BOT show \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<bottom>)\<close> .
+next
+  from \<open>\<And>y. \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(y) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f y)\<close> show \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(x) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f x)\<close> for x .
+qed
+
 
 
 lemma finite_ticks_fun_id [finite_ticks_fun_simps] :

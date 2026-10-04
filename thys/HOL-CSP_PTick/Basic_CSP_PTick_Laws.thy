@@ -112,9 +112,16 @@ qed
 corollary STOP_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k [simp] : \<open>STOP \<^bold>;\<^sub>\<checkmark> P = STOP\<close>
   by (simp add: Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_is_STOP_iff T_STOP)
 
+corollary Guard_Seq\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k : \<open>b \<^bold>& (P \<^bold>;\<^sub>\<checkmark> Q) = b \<^bold>& P \<^bold>;\<^sub>\<checkmark> (\<lambda>r. b \<^bold>& Q r)\<close>
+  by (cases b) simp_all
+
 
 lemma (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) STOP_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k_STOP [simp] : \<open>STOP \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> STOP = STOP\<close>
   by (simp add: STOP_iff_T T_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k STOP_projs)
+
+corollary (in Synchro\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k) Guard_Sync\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k :
+  \<open>b \<^bold>& (P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> Q) = b \<^bold>& P \<lbrakk>S\<rbrakk>\<^sub>\<checkmark> b \<^bold>& Q\<close>
+  by (cases b) simp_all
 
 
 

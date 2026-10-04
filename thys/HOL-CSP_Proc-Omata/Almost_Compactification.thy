@@ -215,6 +215,10 @@ lemma SKIPS_Interrupt_is_SKIPS_Det :
   by (auto simp add: SKIPS_def Interrupt_distrib_GlobalNdet_right
       Det_distrib_GlobalNdet_right SKIP_Interrupt_is_SKIP_Det intro: mono_GlobalNdet_eq)
 
+corollary SKIPS_Interrupt_SKIPS : \<open>SKIPS R \<triangle> SKIPS S = SKIPS (R \<union> S)\<close>
+  by (simp add: SKIPS_Det_SKIPS SKIPS_Interrupt_is_SKIPS_Det)
+
+
 lemma Interrupt_P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S_nd :
   \<open>P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<llangle>A\<rrangle>\<^sub>n\<^sub>d \<sigma> \<triangle> Q =
    Q \<box> (if \<sigma> \<in> \<rho> A then SKIPS (\<omega> A \<sigma>) else \<box>a \<in> \<epsilon> A \<sigma> \<rightarrow> \<sqinter>\<sigma>' \<in> \<tau> A \<sigma> a. P\<^sub>S\<^sub>K\<^sub>I\<^sub>P\<^sub>S\<llangle>A\<rrangle>\<^sub>n\<^sub>d \<sigma>' \<triangle> Q)\<close>

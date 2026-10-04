@@ -79,7 +79,7 @@ lemma MultiSeq_elims :
 
 
 syntax  "_MultiSeq" :: \<open>[pttrn, 'b list, 'b \<Rightarrow> 'r \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'r] \<Rightarrow> ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k\<close>
-  (\<open>(3SEQ _\<in>@_./ _)\<close> [78,78,77] 77)
+  (\<open>(3SEQ ((_)/ \<in>@ (_))./ (_))\<close> [78,55,77] 77)
 syntax_consts "_MultiSeq" \<rightleftharpoons> MultiSeq
 translations  "SEQ p \<in>@ L. P" \<rightleftharpoons> "CONST MultiSeq L (\<lambda>p. P)"
 
@@ -89,7 +89,7 @@ subsection \<open>First Properties\<close>
 
 lemma \<open>SEQ p \<in>@ []. P p = SKIP undefined\<close> by (fact MultiSeq_Nil)
 
-lemma \<open>SEQ i \<in>@ (L @ [l]). P i = SEQ i \<in>@ L. P i \<^bold>; P l\<close> by (fact MultiSeq_snoc)
+lemma \<open>SEQ i \<in>@ L @ [l]. P i = SEQ i \<in>@ L. P i \<^bold>; P l\<close> by (fact MultiSeq_snoc)
 
 lemma MultiSeq_singl [simp] : \<open>SEQ l \<in>@ [l]. P l = P l\<close> by (simp add: MultiSeq_def)
 
@@ -123,7 +123,7 @@ lemma MultiSeq_cont[simp]:
 subsection \<open>Factorization of \<^const>\<open>Seq\<close> in front of \<^const>\<open>MultiSeq\<close>\<close>
 
 lemma MultiSeq_factorization_append:
-  \<open>L2 \<noteq> [] \<Longrightarrow> SEQ p \<in>@ L1. P p \<^bold>; SEQ p \<in>@ L2. P p = SEQ p \<in>@ (L1 @ L2). P p\<close>
+  \<open>L2 \<noteq> [] \<Longrightarrow> SEQ p \<in>@ L1. P p \<^bold>; SEQ p \<in>@ L2. P p = SEQ p \<in>@ L1 @ L2. P p\<close>
   by (induct L2 rule: rev_induct, simp_all)
     (metis (no_types, lifting) MultiSeq_singl MultiSeq_snoc
       Seq_assoc append_assoc append_self_conv2)
@@ -134,7 +134,7 @@ subsection \<open>\<^term>\<open>\<bottom>\<close> Absorbtion\<close>
 
 
 lemma MultiSeq_BOT_absorb:
-  \<open>SEQ z \<in>@ (L1 @ a # L2). P z = SEQ z \<in>@ L1. P z \<^bold>; \<bottom>\<close> if \<open>P a = \<bottom>\<close>
+  \<open>SEQ z \<in>@ L1 @ a # L2. P z = SEQ z \<in>@ L1. P z \<^bold>; \<bottom>\<close> if \<open>P a = \<bottom>\<close>
 proof (cases \<open>L2 = []\<close>)
   from \<open>P a = \<bottom>\<close> show \<open>L2 = [] \<Longrightarrow> MultiSeq (L1 @ a # L2) P = MultiSeq L1 P \<^bold>; \<bottom>\<close> by simp
 next
@@ -148,9 +148,9 @@ qed
 subsection \<open>First Properties\<close>
 
 lemma MultiSeq_SKIP_neutral:
-  \<open>SEQ z \<in>@ (L1 @ a # L2). P z =
+  \<open>SEQ z \<in>@ L1 @ a # L2. P z =
    (  if L2 = [] then SEQ z \<in>@ L1. P z \<^bold>; SKIP r
-    else SEQ z \<in>@ (L1 @ L2). P z)\<close> if \<open>P a = SKIP r\<close>
+    else SEQ z \<in>@ L1 @ L2. P z)\<close> if \<open>P a = SKIP r\<close>
 proof (split if_split, intro conjI impI)
   show \<open>L2 = [] \<Longrightarrow> MultiSeq (L1 @ a # L2) P = MultiSeq L1 P \<^bold>; SKIP r\<close>
     by (simp add: \<open>P a = SKIP r\<close>)
@@ -168,7 +168,7 @@ qed
 
 
 lemma MultiSeq_STOP_absorb:
-  \<open>SEQ z \<in>@ (L1 @ a # L2). P z = SEQ z \<in>@ L1. P z \<^bold>; STOP\<close> if \<open>P a = STOP\<close>
+  \<open>SEQ z \<in>@ L1 @ a # L2. P z = SEQ z \<in>@ L1. P z \<^bold>; STOP\<close> if \<open>P a = STOP\<close>
 proof (cases \<open>L2 = []\<close>)
   show \<open>L2 = [] \<Longrightarrow> MultiSeq (L1 @ a # L2) P = MultiSeq L1 P \<^bold>; STOP\<close>
     by (simp add: \<open>P a = STOP\<close>)
