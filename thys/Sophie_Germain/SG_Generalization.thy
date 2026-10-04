@@ -199,8 +199,8 @@ lemma non_consecutivity_condition_iff_enum_mod :
 proof (unfold Let_def, intro iffI conjI ballI)
   fix x y assume \<open>NC p q\<close> \<open>x \<in> {1..q - 1}\<close> \<open> y \<in> {1..q - 1}\<close>
   show \<open>x ^ p mod q \<noteq> (1 + y ^ p mod q) mod q\<close>
-  proof (rule ccontr)
-    assume \<open>\<not> x ^ p mod q \<noteq> (1 + y ^ p mod q) mod q\<close>
+  proof (rule notI)
+    assume \<open>x ^ p mod q = (1 + y ^ p mod q) mod q\<close>
     hence \<open>[x ^ p = 1 + y ^ p] (mod q)\<close>
       by (simp add: cong_def) presburger
     with \<open>NC p q\<close> have \<open>[x = 0] (mod q) \<or> [y = 0] (mod q)\<close>
@@ -242,8 +242,8 @@ next
 qed
 
 
-lemma auxiliary_prime_iff_enum_mod [code] :
-  \<comment> \<open>We will have a more optimized version later.\<close>
+lemma auxiliary_prime_iff_enum_mod :
+  \<comment> \<open>Could be declared [code], but we will have a more optimized version later.\<close>
   \<open>aux_prime p q \<longleftrightarrow>
    prime p \<and> prime q \<and>
    \<not> q dvd p \<and> p ^ ((q - 1) div gcd p (q - 1)) mod q \<noteq> 1 \<and>
@@ -261,11 +261,6 @@ next
     and \<open>\<not> prime p \<Longrightarrow> ?thesis\<close>
     by (simp_all add: auxiliary_prime_def)
 qed
-
-
-text \<open>We can for example compute pairs of auxiliary primes less than \<^term>\<open>110 :: nat\<close>.\<close>
-
-value \<open>[(p, q). p \<leftarrow> [1..110], q \<leftarrow> [1..110], aux_prime (nat p) (nat q)]\<close>
 
 
 lemma auxiliary_primeI' :
@@ -344,8 +339,8 @@ next
       by (simp flip: cong_int_iff)
         (meson cong_add cong_pow cong_refl cong_sym_eq cong_trans)
     moreover have \<open>[x' \<noteq> 0] (mod q)\<close>
-    proof (rule ccontr)
-      assume \<open>\<not> [x' \<noteq> 0] (mod q)\<close>
+    proof (rule notI)
+      assume \<open>[x' = 0] (mod q)\<close>
       with \<open>[x' = x] (mod q)\<close> have \<open>[x = 0] (mod q)\<close>
         by (metis cong_0_iff cong_dvd_iff int_dvd_int_iff)
       hence \<open>[4 * x = 0] (mod q)\<close>
@@ -356,8 +351,8 @@ next
       with \<open>\<not> (q = 3 \<or> q = 5)\<close> show False by blast
     qed
     moreover have \<open>[y' \<noteq> 0] (mod q)\<close>
-    proof (rule ccontr)
-      assume \<open>\<not> [y' \<noteq> 0] (mod q)\<close>
+    proof (rule notI)
+      assume \<open>[y' = 0] (mod q)\<close>
       with \<open>[y' = y] (mod q)\<close> have \<open>[y = 0] (mod q)\<close>
         by (metis cong_0_iff cong_dvd_iff int_dvd_int_iff)
       hence \<open>[4 * y = 0] (mod q)\<close>
@@ -466,7 +461,7 @@ lemma auxiliary_prime_iff_enum_mod_optimized [code] :
     (metis add_diff_cancel_right' auxiliary_prime_imp_less auxiliary_prime_of_2
       auxiliary_prime_pattern dvd_refl even_mult_iff mult_dvd_mono)
 
-value \<open>[(p, q). p \<leftarrow> [1..1000], q \<leftarrow> [1..110], aux_prime (nat p) (nat q)]\<close>
+value \<open>[(p, q). p \<leftarrow> [1..1000], q \<leftarrow> [1..150], aux_prime (nat p) (nat q)]\<close>
 
 
 
@@ -580,7 +575,7 @@ theorem Sophie_Germain_generalization :
   \<open>\<nexists>x y z :: int. x ^ p + y ^ p = z ^ p \<and>
                   [x \<noteq> 0] (mod p\<^sup>2) \<and> [y \<noteq> 0] (mod p\<^sup>2) \<and> [z \<noteq> 0] (mod p\<^sup>2)\<close>
   if odd_p : \<open>odd p\<close> and aux_prime : \<open>aux_prime p q\<close>
-proof (rule ccontr) \<comment> \<open>The proof is done by contradiction.\<close>
+proof (rule notI) \<comment> \<open>The proof is done by contradiction.\<close>
   from \<open>aux_prime p q\<close> have prime_p : \<open>prime p\<close>
     by (metis auxiliary_primeD(1))
   hence not_p_0 : \<open>p \<noteq> 0\<close> and prime_int_p : \<open>prime (int p)\<close> by simp_all
@@ -591,8 +586,8 @@ proof (rule ccontr) \<comment> \<open>The proof is done by contradiction.\<close
     by (simp add: numeral_eq_Suc)
       (metis Suc_le_eq dvd_refl le_antisym not_less_eq_eq prime_gt_Suc_0_nat)
 
-  assume \<open>\<not> (\<nexists>x y z. x ^ p + y ^ p = z ^ p \<and> [x \<noteq> 0] (mod int (p\<^sup>2)) \<and>
-                     [y \<noteq> 0] (mod int (p\<^sup>2)) \<and> [z \<noteq> 0] (mod (int p)\<^sup>2))\<close>
+  assume \<open>\<exists>x y z. x ^ p + y ^ p = z ^ p \<and> [x \<noteq> 0] (mod int (p\<^sup>2)) \<and>
+                  [y \<noteq> 0] (mod int (p\<^sup>2)) \<and> [z \<noteq> 0] (mod (int p)\<^sup>2)\<close>
   then obtain x y z :: int
     where fermat : \<open>x ^ p + y ^ p = z ^ p\<close>
       and not_cong_0 : \<open>[x \<noteq> 0] (mod p\<^sup>2)\<close> \<open>[y \<noteq> 0] (mod p\<^sup>2)\<close> \<open>[z \<noteq> 0] (mod p\<^sup>2)\<close> by auto
@@ -815,8 +810,8 @@ proof (rule ccontr) \<comment> \<open>The proof is done by contradiction.\<close
   from this[OF Ex_other_prime_factor[OF _ _ \<open>prime p\<close>]]
   have \<open>r dvd x + y \<Longrightarrow> r dvd S x y \<Longrightarrow> r = 0 \<or> (\<exists>k. r = p ^ k)\<close> for r :: nat by auto
   moreover have \<open>\<not> (p ^ k dvd x + y \<and> p ^ k dvd S x y)\<close> if \<open>1 < k\<close> for k
-  proof (rule ccontr)
-    assume \<open>\<not> (\<not> (p ^ k dvd x + y \<and> p ^ k dvd S x y))\<close>
+  proof (rule notI)
+    assume \<open>(p ^ k dvd x + y \<and> p ^ k dvd S x y)\<close>
     moreover from \<open>1 < k\<close> have \<open>p\<^sup>2 dvd p ^ k\<close>
       by (simp add: le_imp_power_dvd)
     ultimately have \<open>p\<^sup>2 dvd x + y\<close> \<open>p\<^sup>2 dvd S x y\<close>

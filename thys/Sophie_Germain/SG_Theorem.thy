@@ -131,12 +131,12 @@ subsection \<open>The Theorem\<close>
 theorem Sophie_Germain_theorem :
   \<open>\<nexists>x y z :: int. x ^ p + y ^ p = z ^ p \<and> [x \<noteq> 0] (mod p) \<and>
                   [y \<noteq> 0] (mod p) \<and> [z \<noteq> 0] (mod p)\<close> if SG : \<open>SG p\<close>
-proof (rule ccontr) \<comment> \<open>The proof is done by contradiction.\<close>
+proof (rule notI) \<comment> \<open>The proof is done by contradiction.\<close>
   from SophGer_primeD(1)[OF \<open>SG p\<close>] have odd_p : \<open>odd p\<close> .
   from SG_simps.pos[OF \<open>SG p\<close>] have pos_p : \<open>0 < p\<close> .
 
-  assume \<open>\<not> (\<nexists>x y z. x ^ p + y ^ p = z ^ p \<and> [x \<noteq> 0] (mod int p) \<and>
-                     [y \<noteq> 0] (mod int p) \<and> [z \<noteq> 0] (mod int p))\<close>
+  assume \<open>\<exists>x y z. x ^ p + y ^ p = z ^ p \<and> [x \<noteq> 0] (mod int p) \<and>
+                  [y \<noteq> 0] (mod int p) \<and> [z \<noteq> 0] (mod int p)\<close>
   then obtain x y z :: int
     where fermat : \<open>x ^ p + y ^ p = z ^ p\<close>
       and not_cong_0 : \<open>[x \<noteq> 0] (mod p)\<close> \<open>[y \<noteq> 0] (mod p)\<close> \<open>[z \<noteq> 0] (mod p)\<close> by blast

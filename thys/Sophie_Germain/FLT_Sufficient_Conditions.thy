@@ -158,8 +158,8 @@ corollary FLT_for_odd_prime_exponents_is_sufficient :
   and odd_prime_FLT :
   \<open>\<And>p. odd p \<Longrightarrow> prime p \<Longrightarrow>
         \<nexists>x y z :: int.  x \<noteq> 0 \<and> y \<noteq> 0 \<and> z \<noteq> 0 \<and> x ^ p + y ^ p = z ^ p\<close>
-proof (rule ccontr)
-  assume \<open>\<not> (\<nexists>x y z :: int. x \<noteq> 0 \<and> y \<noteq> 0 \<and> z \<noteq> 0 \<and> x ^ n + y ^ n = z ^ n)\<close>
+proof (rule notI)
+  assume \<open>\<exists>x y z :: int. x \<noteq> 0 \<and> y \<noteq> 0 \<and> z \<noteq> 0 \<and> x ^ n + y ^ n = z ^ n\<close>
   then obtain x y z :: int
     where \<open>x \<noteq> 0\<close> \<open>y \<noteq> 0\<close> \<open>z \<noteq> 0\<close> \<open>x ^ n + y ^ n = z ^ n\<close> by blast
   from odd_prime_or_four_factorE \<open>2 < n\<close>
