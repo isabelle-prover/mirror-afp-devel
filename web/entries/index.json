@@ -1,5 +1,73 @@
 [
  {
+  "abstract": "This entry formalises the complexity analysis of set operations on strongly joinable trees as defined by Blelloch, Ferizovic and Sun. It is proved that union, intersection, and difference run in time $O(m \\log(n/m + 1))$ for input sets of size $m$ and $n$ where $m \\le n$.",
+  "authors": [
+   "Marco Haucke"
+  ],
+  "date": "2026-09-24",
+  "link": "../entries/Joinable_BST_Work_Bounds.html",
+  "permalink": "https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html",
+  "related": [
+   {
+    "doi": "10.1145/3512769"
+   }
+  ],
+  "shortname": "Joinable_BST_Work_Bounds",
+  "title": "Work Bounds for Strongly Joinable Balanced Binary Search Trees",
+  "topic_links": [
+   "../topics/computer-science/data-structures/"
+  ],
+  "topics": [
+   "Computer science/Data structures"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes the Teichmüller-Tukey lemma in Isabelle/HOL: every nonempty family of sets of finite character contains a member that is maximal under inclusion. The development follows the direct choice-function construction of Sun and Yu, originally presented in Morse-Kelley set theory and verified in Coq.",
+  "authors": [
+   "Vithor Lindermann Kraisch",
+   "Luiz Gustavo Cordeiro"
+  ],
+  "date": "2026-09-21",
+  "link": "../entries/Teichmuller_Tukey_Lemma.html",
+  "permalink": "https://isa-afp.org/entries/Teichmuller_Tukey_Lemma.html",
+  "related": [
+   {
+    "doi": "10.48550/arXiv.1906.03930"
+   }
+  ],
+  "shortname": "Teichmuller_Tukey_Lemma",
+  "title": "The Teichmüller-Tukey Lemma",
+  "topic_links": [
+   "../topics/logic/set-theory/"
+  ],
+  "topics": [
+   "Logic/Set theory"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes the classical Földes–Hammer theorem characterizing finite split graphs as exactly the graphs with no induced copy of \\(2K_2\\), \\(C_4\\), or \\(C_5\\). It builds on the AFP session Undirected_Graph_Theory.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-09-11",
+  "link": "../entries/Foldes_Hammer.html",
+  "permalink": "https://isa-afp.org/entries/Foldes_Hammer.html",
+  "related": [],
+  "shortname": "Foldes_Hammer",
+  "title": "The Földes–Hammer Characterization of Split Graphs",
+  "topic_links": [
+   "../topics/mathematics/graph-theory/"
+  ],
+  "topics": [
+   "Mathematics/Graph theory"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This companion to the entry A deep embedding of HOL in HOL certifies the natural-deduction calculus NK of that entry consistent with a genuine Dedekind-style axiom of infinity — an injective, non-surjective self-map of the individuals — and, because its standard model has full function spaces, with the relational axiom of choice as well. Such an axiom has no finite models, so the compactness argument of the main entry — which lifts arbitrarily large finite models to an infinity scheme — does not apply: a genuinely infinite model is required. We construct one over Paulson's ZFC_in_HOL: the individuals are interpreted as the finite ordinals ω, with full function spaces at every type, yielding a standard Σ-model of NK over the set-theoretic universe V. As this meta-theory is stronger and non-conservative, the guarantee is relative consistency at ZF strength; the machine-checked formalisation lives in Isabelle/HOL with Paulson's ZFC_in_HOL (the ZF reading is metatheoretic, made precise in the introduction). Because NK already provides extensionality and typed description (after Andrews), this certifies the consistency of full classical higher-order logic in Church's sense, choice included as a separate relational scheme.\nThe infinity axiom and the weaker infinity scheme of the main entry turn out to be logically independent. That the scheme does not entail the axiom is shown in the main entry; the present entry settles the other direction, since the axiom does not entail any of the scheme's individual inequalities: its set-theoretic model interprets all individual constants alike, so those inequalities fail while the axiom holds. Neither sentence, then, implies the other.\nThe plain-HOL results — soundness, Henkin completeness, and finite-model consistency, including the compactness route to the infinity scheme — are proved in the main entry and imported here unchanged. What the present entry adds is the set-theoretic route to axioms that plain HOL alone cannot model.\nThis contribution is part of the LogiKEy project.\n",
   "authors": [
    "Christoph Benzmüller",
@@ -31,6 +99,66 @@
   "year": "2026"
  },
  {
+  "abstract": "Product trees are a simple data structure that, broadly speaking, allows dealing with the product of a large number of (typically coprime) integers, or more generally elements of a Euclidean ring.\nThis is particularly useful for efficient simultaneous modular reduction, i.e. computing $x\\mathbin{\\text{mod}} m_i$ for a large number of moduli $m_i$ at the same time for a fixed $x$, and the inverse operation thereof, i.e. modular reconstruction (also known as \u0026ldquo;Chinese Remaindering\u0026rdquo;).\nThe algorithms formalised are adapted from the book \u0026ldquo;Modern Computer Algebra\u0026rdquo; by von zur Gathen and Gerhard.\n",
+  "authors": [
+   "Manuel Eberl"
+  ],
+  "date": "2026-09-04",
+  "link": "../entries/CRT_Product_Tree.html",
+  "permalink": "https://isa-afp.org/entries/CRT_Product_Tree.html",
+  "related": [],
+  "shortname": "CRT_Product_Tree",
+  "title": "Fast Chinese Remaindering via Product Trees",
+  "topic_links": [
+   "../topics/mathematics/algebra/"
+  ],
+  "topics": [
+   "Mathematics/Algebra"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes strong normalization for Church-style System F with explicit type abstraction and type application. Types and terms use de Bruijn indices; the reduction relation contains both term-\\(\\beta\\) and type-\\(\\beta\\) steps and is closed under all term contexts. The proof combines Girard-style reducibility candidates for an untyped lambda-calculus erasure with an explicit type-syntax measure that reflects the erased normalization result back to the full calculus. The final theorem states that every well-typed System F term is strongly normalizing, so the usual closed-term result is an immediate instance.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-09-02",
+  "link": "../entries/System_F_Normalization.html",
+  "permalink": "https://isa-afp.org/entries/System_F_Normalization.html",
+  "related": [
+   {
+    "doi": "10.1007/BFB0037095"
+   },
+   {
+    "doi": "10.1016/j.entcs.2007.01.021"
+   },
+   {
+    "doi": "10.1109/LICS.2010.48"
+   },
+   {
+    "html": "Stefan Berghofer, POPLmark Challenge Via de Bruijn Indices, Archive of Formal Proofs (2007): https://isa-afp.org/entries/POPLmark-deBruijn.html"
+   },
+   {
+    "html": "Stefan Berghofer, Strong Normalization for Simply-Typed Lambda Calculus, Isabelle/HOL HOL-Proofs-Lambda library: https://isabelle.in.tum.de/library/HOL/HOL-Proofs-Lambda/document.pdf"
+   }
+  ],
+  "shortname": "System_F_Normalization",
+  "title": "Strong Normalization for Church-Style System F",
+  "topic_links": [
+   "../topics/computer-science/programming-languages/lambda-calculi/",
+   "../topics/computer-science/programming-languages/type-systems/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Computer science/Programming languages/Lambda calculi",
+   "Computer science/Programming languages/Type systems",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "The theory IMPconcur provides a programming-language aspect to HOL-CSP. It extends the well-known imperative language IMP originated by Glenn Winskell by concurrent primitives like lock and unlock for semaphores, thread-local and system global program variables and the notion of threads that run in interleaving semantics. Threads can be parametric and used to construct concurrent process architectures.  Representing IMPconcur semantics can be done by a straight-forward translation into HOL-CSP; thus, IMPconcur can be seen as a thin layer on top of the theory of Concurrent Sequential Processes of Hoare, Brookes and Roscoe in its formalization HOL-CSP in Isabelle/HOL.  Notwithstanding its simplicity, IMPconcur covers many aspects of concurrency, non-termination, divergence, synchronization, states and race-conditions. We believe that IMPconcur may be relevant for readers interested in the link between programming languages and process algebras. Resulting new ways to concurrent program verification are an interesting target for future study. We also present a language extension for dynamic reconfigurations of thread- architectures.  This session is complemented by a syntactic frontend for IMPconcur, called CIL, which has been authored by Mathilde Needham and Zineddine Kermadj on their internship project in summer 2025.",
   "authors": [
    "Burkhart Wolff"
@@ -56,6 +184,93 @@
    "Computer science/Concurrency",
    "Computer science/Concurrency/Process calculi",
    "Computer science/Programming languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Formalization of Greibach’s hardest context-free language theorem: There is a “hardest” context-free language $L_0$ such that every context-free language is an inverse homomorphic image of $L_0$.",
+  "authors": [
+   "Tobias Nipkow"
+  ],
+  "date": "2026-08-25",
+  "link": "../entries/Greibach_Hardest.html",
+  "permalink": "https://isa-afp.org/entries/Greibach_Hardest.html",
+  "related": [
+   {
+    "doi": "10.1137/0202025"
+   }
+  ],
+  "shortname": "Greibach_Hardest",
+  "title": "Greibach’s Hardest Context-Free Language",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "A deterministic context-free language (DCFL) is a language accepted by a deterministic pushdown automaton (DPDA). This entry proves that the deterministic context-free languages are closed under complementation. The proof follows the one in the book by Hopcroft and Ullman (1979).",
+  "authors": [
+   "Kaan Taskin",
+   "Tobias Nipkow"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/DPDA_Complement_HU.html",
+  "permalink": "https://isa-afp.org/entries/DPDA_Complement_HU.html",
+  "related": [],
+  "shortname": "DPDA_Complement_HU",
+  "title": "Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)",
+  "topic_links": [
+   "../topics/computer-science/automata-and-formal-languages/"
+  ],
+  "topics": [
+   "Computer science/Automata and formal languages"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "Napoleon's theorem states that, for a non-degenerate triangle, the centres of the equilateral triangles constructed externally on its three sides form an equilateral triangle. We formalize this construction and conclusion using complex coordinates, including the exterior-side condition and both orientations of the 60-degree rotation.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/Napoleon.html",
+  "permalink": "https://isa-afp.org/entries/Napoleon.html",
+  "related": [],
+  "shortname": "Napoleon",
+  "title": "Napoleon's Theorem",
+  "topic_links": [
+   "../topics/mathematics/geometry/",
+   "../topics/logic/general-logic/mechanization-of-proofs/"
+  ],
+  "topics": [
+   "Mathematics/Geometry",
+   "Logic/General logic/Mechanization of proofs"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry formalizes that there are exactly five Platonic solids: the tetrahedron, cube, octahedron, dodecahedron, and icosahedron. A Platonic solid is a convex polyhedron whose faces are congruent regular polygons, with the same number of edges meeting at each vertex. Euler's polyhedron formula is used to show that there are at most five Platonic solids, and each of the five, defined as the convex hull of its vertices, is then shown to satisfy the required properties. The formal proof is computational (slow!) and is ported from John Harrison's formalization in HOL Light.",
+  "authors": [
+   "Evan Finken"
+  ],
+  "date": "2026-08-24",
+  "link": "../entries/Platonic_Solids.html",
+  "permalink": "https://isa-afp.org/entries/Platonic_Solids.html",
+  "related": [],
+  "shortname": "Platonic_Solids",
+  "title": "The Five Platonic Solids",
+  "topic_links": [
+   "../topics/mathematics/geometry/",
+   "../topics/computer-science/algorithms/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry",
+   "Computer science/Algorithms/Geometry"
   ],
   "year": "2026"
  },
@@ -246,6 +461,35 @@
   "topics": [
    "Computer science/Algorithms/Graph",
    "Mathematics/Combinatorics"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "This entry develops the general Weierstrass equation \\[y^2 + a_1xy + a_3y = x^3 + a_2x^2 + a_4x + a_6.\\] over commutative rings and fields. It defines the standard invariants, proves \\(c_4^3 - c_6^2 = 1728\\Delta\\), formalizes the affine and projective equations and their singular points, and proves over every field that the projective cubic is geometrically nonsingular exactly when \\(\\Delta \\ne 0\\). Geometric singularities are taken over the algebraic closure, so the statement includes imperfect fields and characteristics \\(2\\) and \\(3\\). A final bridge specializes the development to the short equation and reuses the AFP Elliptic Curves Group Law entry. The definitions and invariant formulas follow the standard treatment in Silverman.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-07-21",
+  "link": "../entries/General_Weierstrass.html",
+  "permalink": "https://isa-afp.org/entries/General_Weierstrass.html",
+  "related": [
+   {
+    "doi": "10.1007/978-0-387-09494-6"
+   }
+  ],
+  "shortname": "General_Weierstrass",
+  "title": "General Weierstrass Equations",
+  "topic_links": [
+   "../topics/mathematics/algebra/",
+   "../topics/mathematics/geometry/",
+   "../topics/mathematics/number-theory/"
+  ],
+  "topics": [
+   "Mathematics/Algebra",
+   "Mathematics/Geometry",
+   "Mathematics/Number theory"
   ],
   "year": "2026"
  },

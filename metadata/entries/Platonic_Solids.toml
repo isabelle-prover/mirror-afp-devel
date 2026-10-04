@@ -1,0 +1,33 @@
+title = "The Five Platonic Solids"
+date = 2026-08-24
+topics = [
+  "Mathematics/Geometry",
+  "Computer science/Algorithms/Geometry",
+]
+abstract = "This entry formalizes that there are exactly five Platonic solids: the tetrahedron, cube, octahedron, dodecahedron, and icosahedron. A Platonic solid is a convex polyhedron whose faces are congruent regular polygons, with the same number of edges meeting at each vertex. Euler's polyhedron formula is used to show that there are at most five Platonic solids, and each of the five, defined as the convex hull of its vertices, is then shown to satisfy the required properties. The formal proof is computational (slow!) and is ported from John Harrison's formalization in HOL Light."
+license = "bsd"
+note = ""
+creation_note = """
+Large language models were used to explain the intermediate steps of the HOL Light formalization and to write parts of the more complicated proofs.
+
+
+
+"""
+
+[authors]
+
+[authors.finken]
+email = "finken_email"
+
+[contributors]
+
+[notify]
+finken = "finken_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

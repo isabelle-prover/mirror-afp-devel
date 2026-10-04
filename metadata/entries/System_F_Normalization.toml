@@ -1,0 +1,42 @@
+title = "Strong Normalization for Church-Style System F"
+date = 2026-09-02
+topics = [
+  "Computer science/Programming languages/Lambda calculi",
+  "Computer science/Programming languages/Type systems",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "This entry formalizes strong normalization for Church-style System F with explicit type abstraction and type application. Types and terms use de Bruijn indices; the reduction relation contains both term-\\(\\beta\\) and type-\\(\\beta\\) steps and is closed under all term contexts. The proof combines Girard-style reducibility candidates for an untyped lambda-calculus erasure with an explicit type-syntax measure that reflects the erased normalization result back to the full calculus. The final theorem states that every well-typed System F term is strongly normalizing, so the usual closed-term result is an immediate instance."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1007/BFB0037095",
+  "10.1016/j.entcs.2007.01.021",
+  "10.1109/LICS.2010.48",
+]
+pubs = [
+  "Stefan Berghofer, POPLmark Challenge Via de Bruijn Indices, Archive of Formal Proofs (2007): https://isa-afp.org/entries/POPLmark-deBruijn.html",
+  "Stefan Berghofer, Strong Normalization for Simply-Typed Lambda Calculus, Isabelle/HOL HOL-Proofs-Lambda library: https://isabelle.in.tum.de/library/HOL/HOL-Proofs-Lambda/document.pdf",
+]

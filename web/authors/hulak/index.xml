@@ -4,6 +4,30 @@
     <title>David Barros Hulak</title>
     <link>https://isa-afp.org/authors/hulak/</link>
     <description>AFP entries of David Barros Hulak</description><item>
+  <title>The Földes–Hammer Characterization of Split Graphs</title>
+  <link>https://isa-afp.org/entries/Foldes_Hammer.html</link>
+  <pubDate>Fri, 11 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Földes–Hammer Characterization of Split Graphs in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Miquel.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
@@ -24,6 +48,15 @@
   <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
     <category>Computer science/Algorithms/Graph</category>
     <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>General Weierstrass Equations</title>
+  <link>https://isa-afp.org/entries/General_Weierstrass.html</link>
+  <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+  <description>General Weierstrass Equations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
 </item>
 <item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>

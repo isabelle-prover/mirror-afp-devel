@@ -1,0 +1,37 @@
+title = "The Teichmüller-Tukey Lemma"
+date = 2026-09-21
+topics = [
+  "Logic/Set theory",
+]
+abstract = "This entry formalizes the Teichmüller-Tukey lemma in Isabelle/HOL: every nonempty family of sets of finite character contains a member that is maximal under inclusion. The development follows the direct choice-function construction of Sun and Yu, originally presented in Morse-Kelley set theory and verified in Coq."
+license = "bsd"
+note = ""
+creation_note = """
+Grammar check in texts and abstract; Help to compile and prepare the submission. Not used in the proofs.
+
+
+
+"""
+
+[authors]
+
+[authors.kraisch]
+email = "kraisch_email"
+
+[authors.cordeiro]
+email = "cordeiro_email"
+
+[contributors]
+
+[notify]
+kraisch = "kraisch_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.48550/arXiv.1906.03930",
+]
+pubs = []

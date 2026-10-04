@@ -1,0 +1,36 @@
+title = "Napoleon's Theorem"
+date = 2026-08-24
+topics = [
+  "Mathematics/Geometry",
+  "Logic/General logic/Mechanization of proofs",
+]
+abstract = "Napoleon's theorem states that, for a non-degenerate triangle, the centres of the equilateral triangles constructed externally on its three sides form an equilateral triangle. We formalize this construction and conclusion using complex coordinates, including the exterior-side condition and both orientations of the 60-degree rotation."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

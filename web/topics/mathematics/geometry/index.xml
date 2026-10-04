@@ -4,6 +4,22 @@
     <title>Mathematics/Geometry</title>
     <link>https://isa-afp.org/topics/mathematics/geometry/</link>
     <description>AFP entries in Geometry</description><item>
+  <title>The Five Platonic Solids</title>
+  <link>https://isa-afp.org/entries/Platonic_Solids.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Five Platonic Solids in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Miquel&#39;s Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Miquel.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
@@ -16,6 +32,15 @@
   <pubDate>Mon, 03 Aug 2026 00:00:00 +0000</pubDate>
   <description>The Wallace--Simson Line Theorem in Isabelle/HOL in the AFP</description>
     <category>Mathematics/Geometry</category>
+</item>
+<item>
+  <title>General Weierstrass Equations</title>
+  <link>https://isa-afp.org/entries/General_Weierstrass.html</link>
+  <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+  <description>General Weierstrass Equations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
 </item>
 <item>
   <title>Conway&#39;s Circle Theorem in Isabelle/HOL</title>

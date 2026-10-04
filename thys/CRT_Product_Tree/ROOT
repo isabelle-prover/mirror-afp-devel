@@ -1,0 +1,10 @@
+chapter AFP
+
+session CRT_Product_Tree (AFP) = "HOL-Number_Theory" +
+  options [timeout = 300]
+  theories
+    CRT_Product_Tree
+    CRT_Product_Tree_Benchmark
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,9 @@
+chapter AFP
+
+session Teichmuller_Tukey_Lemma = HOL +
+  options [timeout = 600]
+  theories
+    Teichmuller_Tukey_Lemma
+  document_files
+    "root.bib"
+    "root.tex"

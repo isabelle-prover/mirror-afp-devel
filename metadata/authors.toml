@@ -1593,6 +1593,24 @@ host = [
 [connor.homepages]
 connor_homepage = "https://liamoc.net"
 
+[cordeiro]
+name = "Luiz Gustavo Cordeiro"
+orcid = "0000-0002-5436-0250"
+
+[cordeiro.emails]
+
+[cordeiro.emails.cordeiro_email]
+user = [
+  "luiz",
+  "cordeiro",
+]
+host = [
+  "ufsc",
+  "br",
+]
+
+[cordeiro.homepages]
+
 [cordwell]
 name = "Katherine Kosaian"
 
@@ -2291,6 +2309,23 @@ host = [
 ]
 
 [fiedler.homepages]
+
+[finken]
+name = "Evan Finken"
+orcid = "0009-0007-7499-502X"
+
+[finken.emails]
+
+[finken.emails.finken_email]
+user = [
+  "evan",
+]
+host = [
+  "finken",
+  "name",
+]
+
+[finken.homepages]
 
 [fleuriot]
 name = "Jacques D. Fleuriot"
@@ -3067,6 +3102,23 @@ host = [
 
 [haslbeckm.homepages]
 haslbeckm_homepage = "http://in.tum.de/~haslbema/"
+
+[haucke]
+name = "Marco Haucke"
+
+[haucke.emails]
+
+[haucke.emails.haucke_email]
+user = [
+  "marco",
+  "haucke",
+]
+host = [
+  "tum",
+  "de",
+]
+
+[haucke.homepages]
 
 [havle]
 name = "Oto Havle"
@@ -4234,6 +4286,23 @@ host = [
 ]
 
 [koller.homepages]
+
+[kraisch]
+name = "Vithor Lindermann Kraisch"
+orcid = "0009-0005-9574-9069"
+
+[kraisch.emails]
+
+[kraisch.emails.kraisch_email]
+user = [
+  "vithorkr",
+]
+host = [
+  "gmail",
+  "com",
+]
+
+[kraisch.homepages]
 
 [krasnopol]
 name = "Florent Krasnopol"

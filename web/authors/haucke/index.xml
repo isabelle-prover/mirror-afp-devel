@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Marco Haucke</title>
+    <link>https://isa-afp.org/authors/haucke/</link>
+    <description>AFP entries of Marco Haucke</description><item>
+  <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html</link>
+  <pubDate>Thu, 24 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Work Bounds for Strongly Joinable Balanced Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+
+  </channel>
+</rss>

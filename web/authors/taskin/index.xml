@@ -4,6 +4,13 @@
     <title>Kaan Taskin</title>
     <link>https://isa-afp.org/authors/taskin/</link>
     <description>AFP entries of Kaan Taskin</description><item>
+  <title>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)</title>
+  <link>https://isa-afp.org/entries/DPDA_Complement_HU.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman) in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Pushdown Automata</title>
   <link>https://isa-afp.org/entries/Pushdown_Automata.html</link>
   <pubDate>Wed, 15 Oct 2025 00:00:00 +0000</pubDate>

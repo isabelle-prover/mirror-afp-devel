@@ -4,6 +4,27 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html</link>
+  <pubDate>Thu, 24 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Work Bounds for Strongly Joinable Balanced Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
+  <title>The Teichmüller-Tukey Lemma</title>
+  <link>https://isa-afp.org/entries/Teichmuller_Tukey_Lemma.html</link>
+  <pubDate>Mon, 21 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Teichmüller-Tukey Lemma in the AFP</description>
+    <category>Logic/Set theory</category>
+</item>
+<item>
+  <title>The Földes–Hammer Characterization of Split Graphs</title>
+  <link>https://isa-afp.org/entries/Foldes_Hammer.html</link>
+  <pubDate>Fri, 11 Sep 2026 00:00:00 +0000</pubDate>
+  <description>The Földes–Hammer Characterization of Split Graphs in the AFP</description>
+    <category>Mathematics/Graph theory</category>
+</item>
+<item>
   <title>HOL in HOL over a set-theoretic universe: consistency of NK with infinity and choice</title>
   <link>https://isa-afp.org/entries/HOL_in_HOL_Deep_Infinity_ZFC.html</link>
   <pubDate>Thu, 10 Sep 2026 00:00:00 +0000</pubDate>
@@ -11,6 +32,22 @@
     <category>Logic/General logic/Mechanization of proofs</category>
     <category>Logic/Set theory</category>
     <category>Logic/General logic</category>
+</item>
+<item>
+  <title>Fast Chinese Remaindering via Product Trees</title>
+  <link>https://isa-afp.org/entries/CRT_Product_Tree.html</link>
+  <pubDate>Fri, 04 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Fast Chinese Remaindering via Product Trees in the AFP</description>
+    <category>Mathematics/Algebra</category>
+</item>
+<item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
 </item>
 <item>
   <title>IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP</title>
@@ -21,6 +58,36 @@
     <category>Computer science/Concurrency</category>
     <category>Computer science/Concurrency/Process calculi</category>
     <category>Computer science/Programming languages</category>
+</item>
+<item>
+  <title>Greibach’s Hardest Context-Free Language</title>
+  <link>https://isa-afp.org/entries/Greibach_Hardest.html</link>
+  <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Greibach’s Hardest Context-Free Language in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>The Five Platonic Solids</title>
+  <link>https://isa-afp.org/entries/Platonic_Solids.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Five Platonic Solids in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Computer science/Algorithms/Geometry</category>
+</item>
+<item>
+  <title>Napoleon&#39;s Theorem</title>
+  <link>https://isa-afp.org/entries/Napoleon.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Napoleon&#39;s Theorem in the AFP</description>
+    <category>Mathematics/Geometry</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)</title>
+  <link>https://isa-afp.org/entries/DPDA_Complement_HU.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman) in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
 </item>
 <item>
   <title>Laurent Series Expansions on an Annulus</title>
@@ -81,6 +148,15 @@
   <description>A Formal Counterexample to the Cost-Preserving Single-Source Unsplittable Flow Conjecture in the AFP</description>
     <category>Computer science/Algorithms/Graph</category>
     <category>Mathematics/Combinatorics</category>
+</item>
+<item>
+  <title>General Weierstrass Equations</title>
+  <link>https://isa-afp.org/entries/General_Weierstrass.html</link>
+  <pubDate>Tue, 21 Jul 2026 00:00:00 +0000</pubDate>
+  <description>General Weierstrass Equations in the AFP</description>
+    <category>Mathematics/Algebra</category>
+    <category>Mathematics/Geometry</category>
+    <category>Mathematics/Number theory</category>
 </item>
 <item>
   <title>Formal Verification of an Explicit Counterexample to the Jacobian Conjecture</title>

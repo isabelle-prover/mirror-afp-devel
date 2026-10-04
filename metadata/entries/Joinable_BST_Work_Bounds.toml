@@ -1,0 +1,46 @@
+title = "Work Bounds for Strongly Joinable Balanced Binary Search Trees"
+date = 2026-09-24
+topics = [
+  "Computer science/Data structures",
+]
+abstract = "This entry formalises the complexity analysis of set operations on strongly joinable trees as defined by <a href=\"https://doi.org/10.1145/3512769\">Blelloch, Ferizovic and Sun</a>. It is proved that union, intersection, and difference run in time $O(m \\log(n/m + 1))$ for input sets of size $m$ and $n$ where $m \\le n$."
+license = "bsd"
+note = ""
+creation_note = """
+Claude Fable 5.1 (Anthropic) was used to derive the instantiation of the framework for red-black trees (theory StronglyJoinableRBT) and part of the appendix (theory Submodularity), as well as pointwise resolving of SMT steps/apply scripts.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+"""
+
+[authors]
+
+[authors.haucke]
+email = "haucke_email"
+
+[contributors]
+
+[notify]
+haucke = "haucke_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1145/3512769",
+]
+pubs = []

@@ -4,6 +4,15 @@
     <title>Computer science/Programming languages/Lambda calculi</title>
     <link>https://isa-afp.org/topics/computer-science/programming-languages/lambda-calculi/</link>
     <description>AFP entries in Lambda calculi</description><item>
+  <title>Strong Normalization for Church-Style System F</title>
+  <link>https://isa-afp.org/entries/System_F_Normalization.html</link>
+  <pubDate>Wed, 02 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Strong Normalization for Church-Style System F in the AFP</description>
+    <category>Computer science/Programming languages/Lambda calculi</category>
+    <category>Computer science/Programming languages/Type systems</category>
+    <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
   <title>Transport via Partial Galois Connections and Equivalences</title>
   <link>https://isa-afp.org/entries/Transport.html</link>
   <pubDate>Wed, 11 Oct 2023 00:00:00 +0000</pubDate>

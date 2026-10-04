@@ -1,0 +1,11 @@
+chapter AFP
+
+session Foldes_Hammer = "HOL-Library" +
+  options [timeout = 600]
+  sessions
+    Undirected_Graph_Theory
+  theories
+    Foldes_Hammer
+  document_files
+    "root.tex"
+    "root.bib"

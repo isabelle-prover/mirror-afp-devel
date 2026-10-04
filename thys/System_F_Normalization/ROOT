@@ -1,0 +1,13 @@
+chapter AFP
+
+session System_F_Normalization = HOL +
+    options [timeout = 900]
+    theories
+      System_F
+      System_F_Subject_Reduction
+      System_F_Untyped
+      System_F_Erasure
+      System_F_Normalization
+  document_files
+    "root.tex"
+    "root.bib"

@@ -1,0 +1,30 @@
+title = "Fast Chinese Remaindering via Product Trees"
+date = 2026-09-04
+topics = [
+  "Mathematics/Algebra",
+]
+abstract = """
+<p>Product trees are a simple data structure that, broadly speaking, allows dealing with the product of a large number of (typically coprime) integers, or more generally elements of a Euclidean ring.</p>
+<p>This is particularly useful for efficient simultaneous modular reduction, i.e. computing $x\\mathbin{\\text{mod}} m_i$ for a large number of moduli $m_i$ at the same time for a fixed $x$, and the inverse operation thereof, i.e. modular reconstruction (also known as &ldquo;Chinese Remaindering&rdquo;).</p>
+<p>The algorithms formalised are adapted from the book <em><a href=\"https://doi.org/10.1017/CBO9781139856065\">&ldquo;Modern Computer Algebra&rdquo;</a> by von zur Gathen and Gerhard.</p>"""
+license = "bsd"
+note = ""
+creation_note = ""
+
+[authors]
+
+[authors.eberl]
+email = "eberl_email"
+
+[contributors]
+
+[notify]
+eberl = "eberl_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = []
+pubs = []

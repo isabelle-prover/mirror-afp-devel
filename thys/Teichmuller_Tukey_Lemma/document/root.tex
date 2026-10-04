@@ -1,0 +1,42 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% This should be the last package used.
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Teichm\"uller--Tukey Lemma}
+\author{%
+  Vithor Lindermann Kraisch\\
+  \small Department of Mobility Engineering\\
+  \small Federal University of Santa Catarina, Joinville, Brazil
+  \and
+  Luiz Gustavo Cordeiro\\
+  \small Department of Mobility Engineering\\
+  \small Federal University of Santa Catarina, Joinville, Brazil}
+\maketitle
+
+\begin{abstract}
+  This entry formalizes the Teichm\"uller--Tukey lemma in Isabelle/HOL:
+  every nonempty family of sets of finite character has a member that is
+  maximal under inclusion.  Instead of deriving the result from Zorn's lemma,
+  which is already available in Isabelle/HOL, the development follows the
+  direct choice-function construction of Sun and Yu, originally formulated in
+  Morse--Kelley set theory and checked in Coq.  The Isabelle proof makes
+  explicit the choice argument that turns a fixed point of the construction
+  into a maximal member.
+\end{abstract}
+
+\tableofcontents
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

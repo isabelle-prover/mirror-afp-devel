@@ -1,0 +1,12 @@
+chapter AFP
+
+session DPDA_Complement_HU = Pushdown_Automata +
+  options [timeout=300]
+  sessions
+    Pushdown_Automata
+  theories
+    Det_Pushdown_Automata
+    DPDA_Complement_HU
+  document_files
+    "root.bib"
+    "root.tex"

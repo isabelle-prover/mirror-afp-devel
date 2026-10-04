@@ -1,0 +1,19 @@
+chapter AFP
+
+session General_Weierstrass = "HOL-Number_Theory" +
+  options [timeout = 1200]
+  sessions
+    "HOL-Decision_Procs"
+    Elliptic_Curves_Group_Law
+  theories
+    Weierstrass_Coefficients
+    Weierstrass_Invariants
+    Weierstrass_Affine_Curve
+    Weierstrass_Projective_Curve
+    Weierstrass_Singularities
+    Weierstrass_Discriminant_Criterion
+    Weierstrass_j_Invariant
+    Short_Weierstrass_Bridge
+  document_files
+    "root.tex"
+    "root.bib"

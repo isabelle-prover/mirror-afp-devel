@@ -4,6 +4,13 @@
     <title>Computer science/Data structures</title>
     <link>https://isa-afp.org/topics/computer-science/data-structures/</link>
     <description>AFP entries in Data structures</description><item>
+  <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees</title>
+  <link>https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html</link>
+  <pubDate>Thu, 24 Sep 2026 00:00:00 +0000</pubDate>
+  <description>Work Bounds for Strongly Joinable Balanced Binary Search Trees in the AFP</description>
+    <category>Computer science/Data structures</category>
+</item>
+<item>
   <title>Height Bounds for Height-Balanced Trees</title>
   <link>https://isa-afp.org/entries/Height_Balanced_Tree_Bounds.html</link>
   <pubDate>Tue, 07 Jul 2026 00:00:00 +0000</pubDate>

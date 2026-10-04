@@ -1,0 +1,103 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{pdfsetup}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{url}
+
+\isabellestyle{it}
+
+\begin{document}
+\title{Strong Normalization for Church-Style System F}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\tableofcontents
+
+\begin{abstract}
+This entry formalizes strong normalization for Church-style System F with
+explicit type abstraction and type application.  Types and terms use de Bruijn
+indices; the reduction relation contains both term-\(\beta\) and type-\(\beta\)
+steps and is closed under all term contexts.  The proof combines
+Girard-style reducibility candidates~\cite{Girard1972} for an untyped
+lambda-calculus erasure with an explicit type-syntax measure that reflects the
+erased normalization result back to the full calculus.  The final theorem
+states that every well-typed System F term is strongly normalizing, with the
+so the usual closed-term result is an immediate instance.
+\end{abstract}
+
+\section{Overview}
+
+System F extends the simply typed lambda calculus with universal types,
+polymorphic abstraction, and type instantiation.  The formalization represents
+these constructs explicitly:
+\[
+  \mathop{\mathrm{TmTAbs}}\,M
+  \qquad\text{and}\qquad
+  \mathop{\mathrm{TmTApp}}\,M\,A .
+\]
+Typing uses de Bruijn indices for both term and type binders.  The relation
+\(\longrightarrow_\beta\) includes ordinary term-\(\beta\), type-\(\beta\), and
+compatible-context rules.
+
+The semantic part interprets each type as a reducibility candidate in the
+untyped lambda calculus.  Universal types quantify over all candidates, so
+polymorphic instantiation is handled semantically rather than by collapsing
+all type variables to one simple type.  Erasure removes only type syntax and
+annotations.  Every full reduction step either produces an erased
+untyped-\(\beta\) step or leaves the erasure unchanged while decreasing the
+number of explicit type abstractions and applications.  A lexicographic
+reflection argument
+therefore yields strong normalization for the original System F term.
+
+The proof proceeds in three stages.  First, reducibility candidates establish
+strong normalization of the untyped erasure of every well-typed term.  Second,
+each System F reduction is shown either to induce an untyped \(\beta\)-step
+after erasure or to preserve the erasure while strictly decreasing the amount
+of explicit type syntax.  Finally, a lexicographic argument reflects strong
+normalization of the erasure back to the Church-style calculus.
+
+Earlier formalizations include Altenkirch's LEGO development~\cite{Altenkirch1993},
+the ATS/LF development of Donnelly and Xi~\cite{DonnellyXi2007}, and the
+Isabelle/HOL development of Popescu, Gunter, and Osborn~\cite{Popescu2010}.
+The latter formalization uses Curry-style terms and HOAS on top of FOAS.  The
+present entry instead treats Church-style syntax directly: term and type
+binders use de Bruijn indices, type-\(\beta\) is an explicit reduction rule,
+and the erasure proof reflects normalization with an explicit type-syntax
+measure.  This distinguishes the calculus, binding representation, and proof
+architecture without claiming novelty for the classical normalization theorem.
+
+We also considered basing the development on Berghofer's
+\texttt{StrongNorm} formalization in the Isabelle/HOL
+\texttt{HOL-Proofs-Lambda} library~\cite{BerghoferStrongNorm}.  That
+development provides a closely related de Bruijn treatment of strong
+normalization for the simply typed
+lambda calculus, including lifting, substitution, subject reduction, and an
+inductive characterization of terminating terms.  It has only term
+abstraction/application, simple arrow types, and term-\(\beta\), however; it
+does not cover polymorphic type abstraction/application, impredicative
+universal types, or type-\(\beta\) reduction.  The present entry therefore
+follows its de Bruijn and substitution discipline while developing a
+System-F-specific reducibility-candidate semantics and an erasure/reflection
+argument for explicit type reductions.  Berghofer's POPLmark AFP
+entry~\cite{BerghoferPOPLmark2007} is similarly valuable for the de Bruijn
+treatment of binding and substitution,
+but it formalizes the type-safety infrastructure for System \(F_{<:}\), not
+strong normalization.  We use these developments as methodological
+references rather than claiming to extend either source by direct import.
+
+The development also proves subject reduction independently of the
+normalization argument.  It is included both as a useful metatheorem and as
+an independent validation of the substitution infrastructure; the
+normalization proof does not invoke preservation.  Typed weakening and
+term/type substitution lemmas validate the de Bruijn operations at both
+term-\(\beta\) and type-\(\beta\) redexes, and the preservation theorem provides
+an independent consistency check on the operational semantics.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

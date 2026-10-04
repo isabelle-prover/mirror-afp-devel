@@ -1,0 +1,14 @@
+chapter AFP
+
+session Greibach_Hardest = Greibach_Normal_Form +
+  options [timeout=300]
+
+  sessions
+    Dyck_Language
+
+  theories
+    Greibach_Hardest
+
+  document_files
+    "root.bib"
+    "root.tex"

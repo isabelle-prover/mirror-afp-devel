@@ -1,0 +1,27 @@
+chapter AFP
+
+session Platonic_Solids = "HOL-Analysis" +
+  options [timeout = 1500]
+
+  sessions
+    Euler_Polyhedron_Formula
+    "HOL-Examples"
+    "HOL-Eisbach"
+    "HOL-Library"
+
+  theories
+    Convex_Euclidean_Space_More
+    Convex_More
+    Determinants_More
+    Polytope_More
+    Computation
+    Tetrahedron
+    Cube
+    Octahedron
+    Dodecahedron
+    Icosahedron
+    Platonic_Solids
+
+  document_files
+    "root.bib"
+    "root.tex"

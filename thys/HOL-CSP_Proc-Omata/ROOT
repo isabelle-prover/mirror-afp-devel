@@ -31,14 +31,14 @@
  * SPDX-License-Identifier: BSD-2-Clause
  ***********************************************************************************)
 
-
+chapter AFP
 
 session "HOL-CSP_Proc-Omata" (AFP) = "HOL-CSP_PTick" +
   description \<open>HOL-CSP_Proc-Omata: A Bridge between CSP Processes and Functional Automata\<close>
   options [timeout = 1200]
   theories
     Introduction
-  
+
     Deterministic_Processes
     Process_Normalization
     Process_Normalization_Properties

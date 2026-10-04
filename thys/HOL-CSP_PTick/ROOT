@@ -29,7 +29,7 @@
  * SPDX-License-Identifier: BSD-2-Clause
  ***********************************************************************************)
 
-
+chapter AFP
 
 session "HOL-CSP_PTick" = "HOL-CSP_RS" +
   description \<open>HOL-CSP_PTick: Parameterized Termination for
@@ -41,7 +41,7 @@ session "HOL-CSP_PTick" = "HOL-CSP_RS" +
 
   Sequential_Composition_Generalized
   Synchronization_Product_Generalized
-  
+
   CSP_PTick_Renaming
 
   Synchronization_Product_Generalized_Commutativity
@@ -74,7 +74,7 @@ session "HOL-CSP_PTick" = "HOL-CSP_RS" +
 
   CSP_PTick_Laws
   CSP_PTick_Deadlock_Results
-  
+
   "HOL-CSP_PTick" (global)
   CSP_PTick_Conclusion
 

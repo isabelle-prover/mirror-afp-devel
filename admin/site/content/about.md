@@ -20,10 +20,9 @@ Older versions of archive entries will remain available.
 
 The editors of the Archive of Formal Proofs are:
 
-* [Mohammad Abdulaziz](https://mabdula.github.io/), [King's College London](https://www.kcl.ac.uk/people/mohammad-abdulaziz)
-* [Jasmin Blanchette](https://www.tcs.ifi.lmu.de/staff/jasmin-blanchette), [Ludwig-Maximilians-Universität München](https://www.lmu.de/)
-* [Manuel Eberl](http://pruvisto.org/), [University of Innsbruck](https://www.uibk.ac.at/)
-* [Gerwin Klein](https://www.cse.unsw.edu.au/~kleing/), [Proofcraft](https://proofcraft.systems) & [UNSW Sydney](https://www.unsw.edu.au/)
+* [Mohammad Abdulaziz](https://mabdula.github.io/), [King's College London](https://www.kcl.ac.uk)
+* [Jasmin Blanchette](https://www.tcs.ifi.lmu.de/staff/jasmin-blanchette), [Ludwig-Maximilians-Universität München](https://www.lmu.de)
+* [Gerwin Klein](https://doclsf.de/), [Proofcraft](https://proofcraft.systems)
 * [Peter Lammich](https://people.utwente.nl/p.lammich),
     [University of Twente](https://www.utwente.nl/en/)
 * [Tobias Nipkow](https://www.in.tum.de/~nipkow/), [Technical

@@ -4,6 +4,20 @@
     <title>Computer science/Automata and formal languages</title>
     <link>https://isa-afp.org/topics/computer-science/automata-and-formal-languages/</link>
     <description>AFP entries in Automata and formal languages</description><item>
+  <title>Greibach’s Hardest Context-Free Language</title>
+  <link>https://isa-afp.org/entries/Greibach_Hardest.html</link>
+  <pubDate>Tue, 25 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Greibach’s Hardest Context-Free Language in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
+  <title>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman)</title>
+  <link>https://isa-afp.org/entries/DPDA_Complement_HU.html</link>
+  <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
+  <description>Deterministic Context-Free Languages are Closed Under   Complementation (Hopcroft and Ullman) in the AFP</description>
+    <category>Computer science/Automata and formal languages</category>
+</item>
+<item>
   <title>Multitape Turing Machine Substrate</title>
   <link>https://isa-afp.org/entries/Multitape_TM_Substrate.html</link>
   <pubDate>Tue, 14 Jul 2026 00:00:00 +0000</pubDate>
