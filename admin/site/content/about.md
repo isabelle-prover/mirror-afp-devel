@@ -22,7 +22,7 @@ The editors of the Archive of Formal Proofs are:
 
 * [Mohammad Abdulaziz](https://mabdula.github.io/), [King's College London](https://www.kcl.ac.uk)
 * [Jasmin Blanchette](https://www.tcs.ifi.lmu.de/staff/jasmin-blanchette), [Ludwig-Maximilians-University Munich](https://www.lmu.de)
-* [Gerwin Klein](https://www.cse.unsw.edu.au/~kleing/), [Proofcraft](https://proofcraft.systems) & [UNSW Sydney](https://www.unsw.edu.au/)
+* [Gerwin Klein](https://doclsf.de/), [Proofcraft](https://proofcraft.systems)
 * [Peter Lammich](https://people.utwente.nl/p.lammich),
     [University of Twente](https://www.utwente.nl/en/)
 * [Andreas Lochbihler](http://www.andreas-lochbihler.de),
