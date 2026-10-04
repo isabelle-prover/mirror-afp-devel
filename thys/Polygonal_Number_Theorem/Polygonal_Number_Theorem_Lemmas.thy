@@ -634,7 +634,7 @@ left_add_twice nat_arith.add2)
   from assms(6) have "12*a < 4*b^2+8*b+16" by auto
   hence "12*a-3*b^2 < b^2+8*b+16" by auto
   hence "12*a-3*b^2 < (b+4)^2" 
-    by (smt (z3) add.commute add.left_commute mult_2 numeral_Bit0 power2_eq_square power2_sum)
+    by (smt (cvc5) add.commute add.left_commute mult_2 numeral_Bit0 power2_eq_square power2_sum)
   hence mid_ineq:"sqrt(12*a-3*b^2) < b+4" 
     by (meson of_nat_0_le_iff of_nat_power_less_of_nat_cancel_iff real_less_lsqrt)
 

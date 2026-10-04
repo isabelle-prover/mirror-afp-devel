@@ -124,7 +124,7 @@ proof safe
   next
     case (parallel xs ys)
     then show ?case
-      by simp (smt (z3) Ball_set list.rel_eq list.rel_mono_strong)
+      by simp (smt (cvc5) Ball_set list.rel_eq list.rel_mono_strong)
   next case (nondet x y u v) then show ?case by simp
   next case (executable x y u v) then show ?case by simp
   next case (repeatable x y u v) then show ?case by simp

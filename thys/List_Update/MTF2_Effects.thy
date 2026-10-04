@@ -329,15 +329,15 @@ proof -
       apply(simp add: i j assms mtf2_forward_effect1' mtf2_forward_effect3' before_in_def)
       apply(rule j2)
      apply(cases j xs rule: splitit[where q=q and n=n])
-      apply (smt before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect3 nth_index set_mtf2)
+      apply (smt (cvc5) before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect3 nth_index set_mtf2)
       using assms(4,5) j apply simp
-      apply (smt Suc_leI before_in_def assms(1-3) i j le_less_trans lessI mtf2_forward_effect3 nth_index set_mtf2)
+      apply (smt (cvc5) Suc_leI before_in_def assms(1-3) i j le_less_trans lessI mtf2_forward_effect3 nth_index set_mtf2)
       apply (simp add: before_in_def i j)     
       apply(rule j2)
      apply(cases j xs rule: splitit[where q=q and n=n])
-      apply (smt before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect4 nth_index set_mtf2)
+      apply (smt (cvc5) before_in_def assms(1-3) i j le_less_trans mtf2_forward_effect1 mtf2_forward_effect4 nth_index set_mtf2)
       using assms(4-5) j apply simp
-      apply (smt before_in_def assms(1-3) i j le_less_trans less_imp_le_nat mtf2_forward_effect3 mtf2_forward_effect4 nth_index set_mtf2)
+      apply (smt (cvc5) before_in_def assms(1-3) i j le_less_trans less_imp_le_nat mtf2_forward_effect3 mtf2_forward_effect4 nth_index set_mtf2)
       apply (metis before_in_def assms(1-3) i j mtf2_forward_effect4 nth_index set_mtf2)     
       apply(rule j2)
      apply(rule i2) done

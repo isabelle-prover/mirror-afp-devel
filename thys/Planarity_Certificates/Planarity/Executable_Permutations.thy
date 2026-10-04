@@ -998,7 +998,7 @@ proof -
     ultimately have "sset xss = sset (remove1 ys yss)"
       using \<open>distincts yss\<close> \<open>sset (xs # xss) = sset yss\<close>
       apply (auto simp: distincts_distinct \<open>set ys = set xs\<close>[symmetric])
-      apply (smt Diff_insert_absorb \<open>ys \<in> set yss\<close> image_insert insert_Diff rev_image_eqI)
+      apply (smt (cvc5) Diff_insert_absorb \<open>ys \<in> set yss\<close> image_insert insert_Diff rev_image_eqI)
       by (metis \<open>ys \<in> set yss\<close> image_eqI insert_Diff insert_iff)
     then obtain yss' where "set yss' = set (remove1 ys yss) \<and> map set yss' = map set xss"
       using Cons by atomize_elim (auto simp: distincts_Cons distincts_remove1)

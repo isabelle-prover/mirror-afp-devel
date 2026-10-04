@@ -351,7 +351,7 @@ proof-
    assume "\<exists> xs ys. ys \<noteq> [[]] \<and> us = lbutlast (lappend xs ys) \<and> vs = lappend xs (lbutlast ys)"
    hence "us = vs"
    apply(coinduct rule: llist.coinduct)  
-   by (smt (z3) eq_LConsD lappend.disc_iff(2) lappend_code(2) lappend_eq_LNil_iff lappend_lnull1 
+   by (smt (cvc5) eq_LConsD lappend.disc_iff(2) lappend_code(2) lappend_eq_LNil_iff lappend_lnull1 
      lappend_snocL1_conv_LCons2 lbutlast_Cons lbutlast_singl lhd_LCons lhd_LCons_ltl lnull_def 
      lnull_lprefix lprefix_code(2) ltl_simps(1) ltl_simps(2) not_lnull_conv)
   }

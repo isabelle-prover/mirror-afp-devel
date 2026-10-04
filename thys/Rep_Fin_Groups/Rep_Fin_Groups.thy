@@ -1797,7 +1797,10 @@ lemma is_rcoset_replistD_cosets :
 lemma group_eq_subgrp_rcoset_un :
   "Subgroup H \<Longrightarrow> is_rcoset_replist H gs \<Longrightarrow> G = (\<Union>g\<in>set gs. H + {g})"
   using is_rcoset_replistD_set is_rcoset_replistD_cosets rcosets
-    by (auto, smt UN_E subsetCE, blast)
+  apply auto
+   apply (smt (cvc5, interleave) UN_iff subset_iff)
+  apply blast
+  done
 
 lemma is_rcoset_replist_imp_nrelated_nth :
   assumes "Subgroup H" "is_rcoset_replist H gs"

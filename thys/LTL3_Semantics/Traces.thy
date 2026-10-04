@@ -182,7 +182,7 @@ proof -
       apply clarsimp
       apply (rule conjI)      
        apply (simp add: add.commute itdrop_def less_diff_conv)
-      by (smt (z3) add.commute add_diff_cancel_left' add_diff_inverse_nat diff_is_0_eq' 
+      by (smt (verit) add.commute add_diff_cancel_left' add_diff_inverse_nat diff_is_0_eq' 
                    diff_right_commute itdrop_def linorder_not_less nat_less_le)
     then show \<open>\<exists>va. tdrop k (t \<frown> v) = tdrop k t \<frown> va\<close>
       by auto

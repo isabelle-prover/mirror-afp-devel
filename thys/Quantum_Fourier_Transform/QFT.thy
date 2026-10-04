@@ -3624,7 +3624,7 @@ proof
                 using dagger_def assms(1) gate_def by force
               also have "\<dots> = (U * (U\<^sup>\<dagger>)) $$ (0,0)" 
                 using times_mat_def assms(1) gate_carrier_mat sumof2
-                by (smt (z3) carrier_matD(2) dagger_def dim_col_mat(1) dim_row_of_dagger 
+                by (smt (cvc5) carrier_matD(2) dagger_def dim_col_mat(1) dim_row_of_dagger 
                     gate.dim_row index_matrix_prod pos2 power_one_right)
               also have "\<dots> = (1\<^sub>m 2) $$ (0,0)" using assms(1) gate_def unitary_def by auto
               also have "\<dots> = 1" by auto

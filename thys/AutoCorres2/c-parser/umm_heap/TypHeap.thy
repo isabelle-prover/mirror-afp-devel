@@ -2179,8 +2179,12 @@ lemma dom_tll_cons [simp]:
 
   subgoal using less_Suc_eq_0_disj by force
   subgoal using less_Suc_eq_0_disj Suc_mono of_nat_Suc
-    by (smt (z3) Groups.add_ac(2) Groups.add_ac(3) UnCI add.right_neutral 
-        mem_Collect_eq nth_Cons' nth_Cons_Suc semiring_1_class.of_nat_simps(1) subsetI)
+    apply auto
+       apply (use semiring_1_class.of_nat_0 in blast)
+      apply (metis of_nat_Suc)
+     apply (metis (no_types, lifting) nth_Cons_Suc of_nat_Suc)
+    apply (use of_nat_gt_0 in fastforce)
+    done
   done
  
 

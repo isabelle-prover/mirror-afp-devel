@@ -50,7 +50,8 @@ lemma into_Range: "f into Range f"
 text \<open>Easy direction.\<close>
 
 lemma ValD_imp_RangeValid: "\<Turnstile>\<^sup>d \<phi> \<Longrightarrow> \<Turnstile>\<^sup>r \<phi>"
-  unfolding RangeValid_def ValD_def using into_Range by smt
+  unfolding RangeValid_def ValD_def
+  using into_Range by auto (metis (mono_tags, lifting))
 
 text \<open>Truth preservation across a Tarski--Vaught-closed sub-pair
   @{text "(D0,E0)"}.\<close>
