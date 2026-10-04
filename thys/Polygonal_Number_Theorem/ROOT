@@ -2,13 +2,11 @@ chapter AFP
 
 session "Polygonal_Number_Theorem" = "Three_Squares" +
   options [timeout = 600]
-
   theories
     "Polygonal_Number_Theorem_Lemmas"
     "Polygonal_Number_Theorem_Gauss"
     "Polygonal_Number_Theorem_Cauchy"
     "Polygonal_Number_Theorem_Legendre"
-
   document_files
     "root.tex"
     "root.bib"
