@@ -1339,19 +1339,19 @@ lemma matrix_lemma:
 
 lemma matrix_by_cramer_lemma:
   fixes A :: "real^3^3"
-  assumes "det (vector[x1, y1, z1]::real^3^3) \<noteq> 0"
+  assumes "matrix_det (vector[x1, y1, z1]::real^3^3) \<noteq> 0"
   shows "(A *v x1 = x2 \<and> A *v y1 = y2 \<and> A *v z1 = z2) =
-         (A = (\<chi> m k. det ((\<chi> i j.
+         (A = (\<chi> m k. matrix_det ((\<chi> i j.
                            if j = k
                            then (vector [x2$m, y2$m, z2$m]::real^3)$i
                            else (vector [x1, y1, z1]::real^3^3)$i$j)
                           ::real^3^3) /
-                    det (vector [x1, y1, z1]::real^3^3)))"
+                    matrix_det (vector [x1, y1, z1]::real^3^3)))"
   unfolding matrix_lemma cramer[OF assms(1)]
   by (simp add: vec_eq_iff row_def forall_3)
 
 definition mk_matrix33 :: "(real^3) \<Rightarrow> (real^3) \<Rightarrow> (real^3) \<Rightarrow> (real^3) \<Rightarrow> (real^3) \<Rightarrow> (real^3) \<Rightarrow> real^3^3"
-  where "mk_matrix33 x1 y1 z1 x2 y2 z2 = (let d = det (vector[x1, y1, z1]::real^3^3) in vector [vector [
+  where "mk_matrix33 x1 y1 z1 x2 y2 z2 = (let d = matrix_det (vector[x1, y1, z1]::real^3^3) in vector [vector [
           (x2$1 * y1$2 * z1$3 +
            x1$2 * y1$3 * z2$1 +
            x1$3 * y2$1 * z1$2 -
@@ -1435,7 +1435,7 @@ lemma orthogonal_matrix33:
 lemma matrix_by_cramer:
   fixes A :: "real^3^3"
   assumes "A = mk_matrix33 x1 y1 z1 x2 y2 z2"
-  assumes "det (vector [x1, y1, z1]::real^3^3) \<noteq> 0"
+  assumes "matrix_det (vector [x1, y1, z1]::real^3^3) \<noteq> 0"
   shows "A *v x1 = x2" "A *v y1 = y2" "A *v z1 = z2"
   using assms(1) matrix_by_cramer_lemma[OF assms(2)]
   unfolding mk_matrix33_def Let_def
@@ -1446,7 +1446,7 @@ lemma matrix_by_cramer:
 lemma matrix_by_cramer_orthog:
   fixes x1 y1 z1 x2 y2 z2 :: "real^3"
   assumes "orthogonal_matrix (mk_matrix33 x1 y1 z1 x2 y2 z2)"
-  assumes "det (vector [x1, y1, z1]::real^3^3) \<noteq> 0"
+  assumes "matrix_det (vector [x1, y1, z1]::real^3^3) \<noteq> 0"
   shows "orthogonal_matrix (mk_matrix33 x1 y1 z1 x2 y2 z2) \<and>
          (*v) (mk_matrix33 x1 y1 z1 x2 y2 z2) ` {x1, y1, z1} = {x2, y2, z2}"
   using assms(1) matrix_by_cramer[OF _ assms(2)] by auto

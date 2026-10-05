@@ -47,7 +47,7 @@ proof -
   have "inverse \<phi> = 2 / (1 + sqrt 5)" by simp
   also have "... = (2 * (1 - sqrt 5)) / ((1 + sqrt 5) * (1 - sqrt 5))"
     by (metis mult.commute nonzero_mult_divide_mult_cancel_right2 numeral_eq_one_iff real_sqrt_eq_1_iff right_minus_eq
-        verit_eq_simplify(12))
+        num.simps(6))
   also have "... = (2 - 2 * sqrt 5) / (-4)"
     using square_diff_square_factored[of "1" "sqrt 5"] by auto
   finally have "inverse \<phi> = -1/2 + 1/2 * sqrt 5"

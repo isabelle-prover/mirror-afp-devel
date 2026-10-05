@@ -26,65 +26,6 @@ text \<open>
 abbreviation Cons_power :: "'a \<Rightarrow> nat \<Rightarrow> 'a list" (infixl "#^" 70) where
 "a #^ n \<equiv> replicate n a"
 
-(* TODO rm with next release; should all exist already *)
-lemma bal_stk_append_split:
-  assumes "bal_stk s (xs @ ys) = (t, [])"
-  obtains s' where "bal_stk s xs = (s', [])" and "bal_stk s' ys = (t, [])"
-  using assms by (auto simp: bal_stk_append split: prod.splits if_splits)
-lemma bal_stk_replicate_Open: "bal_stk s (Open a #^i) = (a#^i @ s, [])"
-  by (induction i arbitrary: s) (auto simp: replicate_append_same)
-lemma bal_stk_replicate_Close: "bal_stk (a#^i @ t) (Close a #^ i) = (t, [])"
-  by (induction i arbitrary: t) auto
-lemma bal_stk_replicate_Close_inv:
-  "bal_stk t (replicate i (Close a) @ rest) = (s, []) \<Longrightarrow>
-   \<exists>t'. t = replicate i a @ t' \<and> bal_stk t' rest = (s, [])"
-proof (induction i arbitrary: t)
-  case 0 thus ?case by auto
-next
-  case (Suc i)
-  from Suc.prems obtain b t1 where t: "t = b # t1" by (cases t) auto
-  with Suc.prems have "a = b" "bal_stk t1 (replicate i (Close a) @ rest) = (s, [])"
-    by (auto split: if_splits)
-  with Suc.IH obtain t' where "t1 = replicate i a @ t'" "bal_stk t' rest = (s, [])" by blast
-  with t \<open>a = b\<close> show ?case by auto
-qed
-lemmas derives_Nt_map_TmD = derives_start1
-lemma Lang_lfp_unfold:
-  "Lang_lfp P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang_lfp P) \<alpha>)"
-unfolding Lang_lfp_def
-using fun_cong[OF subst_lang_def[of P "lfp(subst_lang P)"], of A,symmetric]
-by (metis lfp_unfold[OF mono_if_omega_cont[OF omega_cont_Lang_lfp]])
-corollary Lang_unfold: "Lang P A = (\<Union>\<alpha> \<in> Rhss P A. inst_syms (Lang P) \<alpha>)"
-  by(fact Lang_lfp_unfold[unfolded Lang_lfp_eq_Lang])
-lemma concats_simps[simp]:
-  "concats [] = {[]}"
-  "concats (L#Ls) = L @@ concats Ls"
-  by(auto simp: concats_def)
-lemma concats_append[simp]: "concats (Ls1 @ Ls2) = concats Ls1 @@ concats Ls2"
-by (simp add: concats_def foldr_conc_conc)
-lemma inst_sym_simps[simp]:
-  "inst_sym L (Tm a) = {[a]}"
-  "inst_sym L (Nt A) = L A"
-by(auto simp: inst_sym_def)
-lemma inst_syms_Nil[simp]: "inst_syms L [] = {[]}"
-by(simp add: inst_syms_def)
-lemma inst_syms_Cons[simp]: "inst_syms L (s # \<beta>) = inst_sym L s @@ inst_syms L \<beta>"
-  by(simp add: inst_syms_def)
-lemma inst_syms_append[simp]: "inst_syms L (\<alpha> @ \<beta>) = inst_syms L \<alpha> @@ inst_syms L \<beta>"
-by(simp add: inst_syms_def)
-lemma Lang_I: "(A, \<alpha>) \<in> P \<Longrightarrow> w \<in> inst_syms (Lang P) \<alpha> \<Longrightarrow> w \<in> Lang P A"
-  by (subst Lang_unfold) (auto simp: Rhss_def)
-lemma Lang_subset_if:
-  assumes "\<And>A \<alpha>. (A,\<alpha>) \<in> P \<Longrightarrow> inst_syms R \<alpha> \<subseteq> R A"
-  shows "Lang P A \<subseteq> R A"
-proof -
-  have "subst_lang P R \<le> R"
-    using assms by (fastforce simp: subst_lang_def le_fun_def Rhss_def)
-  hence "lfp (subst_lang P) \<le> R" by (rule lfp_lowerbound)
-  hence "Lang_lfp P \<le> R" by (simp add: Lang_lfp_def)
-  thus ?thesis by (simp add: Lang_lfp_eq_Lang le_fun_def)
-qed
-
 subsection \<open>The hardest language \<open>L\<^sub>0\<close>\<close>
 
 subsubsection \<open>The terminal alphabet of \<open>L\<^sub>0\<close>\<close>
