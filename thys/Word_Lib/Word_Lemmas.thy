@@ -21,6 +21,8 @@ theory Word_Lemmas
 
 begin
 
+lemmas take_bit_Suc_numeral[simp] = take_bit_Suc[where a="numeral w" for w]
+
 context
   includes bit_operations_syntax
 begin
@@ -456,8 +458,8 @@ next
         by simp
       ultimately show ?thesis
         using \<open>y < LENGTH('a)\<close>
-        by (auto simp: drop_bit_eq_div word_less_nat_alt unat_div unat_word_ariths
-          shiftr_def shiftl_def)
+        by (auto simp add: drop_bit_eq_div word_less_nat_alt unat_div unat_word_ariths
+                           shiftr_def shiftl_def)
     next
       case False
       with \<open>y < n\<close> have *: \<open>unat x \<noteq> 2 ^ n div 2 ^ y\<close>
@@ -469,8 +471,9 @@ next
       also have \<open>\<dots> \<longleftrightarrow> unat x < 2 ^ n div 2 ^ y\<close>
         using * by (simp add: less_le)
       finally show ?thesis
-      using that \<open>x \<noteq> 0\<close> by (simp flip: push_bit_eq_mult drop_bit_eq_div
-        add: shiftr_def shiftl_def unat_drop_bit_eq word_less_iff_unsigned [where ?'a = nat])
+        using that \<open>x \<noteq> 0\<close>
+        by (simp flip: push_bit_eq_mult drop_bit_eq_div
+                 add: shiftr_def shiftl_def unat_drop_bit_eq word_less_iff_unsigned [where ?'a = nat])
     qed
   qed
 qed
@@ -645,8 +648,9 @@ lemma word_and_notzeroD:
 
 lemma shiftr_le_0:
   "unat (w::'a::len word) < 2 ^ n \<Longrightarrow> w >> n = (0::'a::len word)"
-  by (auto simp: take_bit_word_eq_self_iff word_less_nat_alt shiftr_def
-    simp flip: take_bit_eq_self_iff_drop_bit_eq_0 intro: ccontr)
+  by (auto simp add: take_bit_word_eq_self_iff word_less_nat_alt shiftr_def
+           simp flip: take_bit_eq_self_iff_drop_bit_eq_0
+           intro: ccontr)
 
 lemma of_nat_shiftl:
   "(of_nat x << n) = (of_nat (x * 2 ^ n) :: ('a::len) word)"
@@ -1495,8 +1499,10 @@ qed
 lemma scast_ucast_mask_compare:
   "scast (ucast w :: 'b::len word) = w
    \<longleftrightarrow> (w \<le> mask (LENGTH('b) - 1) \<or> NOT(mask (LENGTH('b) - 1)) \<le> w)"
-  apply (auto simp: Ball_def le_mask_high_bits neg_mask_le_high_bits scast_ucast_high_bits word_size)
-  by (metis decr_length_less_iff nless_le)
+  apply (clarsimp simp: le_mask_high_bits neg_mask_le_high_bits scast_ucast_high_bits word_size)
+  apply (rule iffI; clarsimp)
+   apply (rename_tac i j; case_tac "i = LENGTH('b) - 1"; case_tac "j = LENGTH('b) - 1")
+  by auto
 
 lemma ucast_less_shiftl_helper':
   "\<lbrakk> LENGTH('b) + (a::nat) < LENGTH('a); 2 ^ (LENGTH('b) + a) \<le> n\<rbrakk>
@@ -1761,6 +1767,28 @@ proof -
   then show ?thesis
     by (simp add: mask_eq_exp_minus_1 push_bit_eq_mult)
 qed
+
+lemma is_aligned_shiftr_add:
+ "\<lbrakk>is_aligned a n; is_aligned b m; b < 2^n; m \<le> n; n < LENGTH('a)\<rbrakk>
+  \<Longrightarrow> a + b >> m = (a >> m) + (b >> m)" for a :: "'a::len word"
+  apply(simp add: shiftr_div_2n_w word_size)
+  apply (rule word_unat_eq_iff[THEN iffD2])
+  apply (subst unat_plus_simple[THEN iffD1])
+   apply (subst shiftr_div_2n_w[symmetric])+
+   apply (rule is_aligned_no_wrap')
+    apply (rule is_aligned_shiftr[where n = "n - m"])
+    apply simp
+   apply (rule shiftr_less_t2n)
+   apply simp
+  apply (simp add:unat_div)
+  apply (subst unat_plus_simple[THEN iffD1])
+   apply (erule is_aligned_no_wrap')
+   apply simp
+  by (meson div_plus_div_distrib_dvd_left is_aligned_iff_dvd_nat is_aligned_weaken)
+
+lemma shiftr_eq_neg_mask_eq:
+  "a >> b = c >> b \<Longrightarrow> a AND NOT (mask b) = c AND NOT (mask b)" for a :: "'a::len word"
+  by word_eqI (metis less_eqE)
 
 end
 

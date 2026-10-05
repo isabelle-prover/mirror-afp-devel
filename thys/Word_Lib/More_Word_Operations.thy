@@ -701,6 +701,10 @@ lemma from_bool_eqI:
   unfolding from_bool_def
   by (auto split: bool.splits)
 
+lemma from_bool_odd_eq_and:
+  "from_bool (odd w) = w AND 1"
+  unfolding from_bool_def by (simp add: word_and_1 bit_0)
+
 lemma neg_mask_in_mask_range:
   assumes "is_aligned ptr bits"
   shows "(ptr' AND NOT(mask bits) = ptr) = (ptr' \<in> mask_range ptr bits)"

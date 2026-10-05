@@ -1,11 +1,7 @@
 (*
  * Copyright 2014, NICTA
  *
- * This software may be distributed and modified according to the terms of
- * the BSD 2-Clause license. Note that NO WARRANTY is provided.
- * See "LICENSE_BSD2.txt" for details.
- *
- * @TAG(NICTA_BSD)
+ * SPDX-License-Identifier: BSD-2-Clause
  *)
 
 section "64-Bit Machine Word Setup"
@@ -122,14 +118,21 @@ lemma word_ge_min:
   \<open>- (2 ^ (word_bits - 1)) \<le> sint x\<close> for x :: machine_word
   using sint_ge [of x] by (simp add: word_bits_def)
 
+(* We want the rhs unfolded here for later matching *)
 lemma word_rsplit_0:
-  "word_rsplit (0 :: machine_word) = replicate (word_bits div 8) (0 :: 8 word)"
+  "word_rsplit (0::machine_word) = [0, 0, 0, 0, 0, 0, 0, (0::8 word)]"
   by (simp add: word_rsplit_def bin_rsplit_def word_bits_def word_size_def Cons_replicate_eq)
 
 lemma x_less_2_0_1:
   fixes x :: machine_word
   shows "x < 2 \<Longrightarrow> x = 0 \<or> x = 1"
   by (rule x_less_2_0_1') auto
+
+lemma less_4_cases:
+  "(x::machine_word) < 4 \<Longrightarrow> x=0 \<or> x=1 \<or> x=2 \<or> x=3"
+  apply clarsimp
+  apply (drule word_less_cases, erule disjE, simp, simp)+
+  done
 
 end
 
