@@ -224,11 +224,6 @@ lemmas max_word_neq_0 = max_word_not_0
 
 lemmas word_le_p2m1 = word_up_bound[where ptr=w for w]
 
-lemma inj_ucast:
-  "\<lbrakk> uc = ucast; is_up uc \<rbrakk>
-   \<Longrightarrow> inj uc"
-  using down_ucast_inj is_up_down by blast
-
 lemma ucast_eq_0[OF refl]:
   "\<lbrakk> c = ucast; is_up c \<rbrakk>
    \<Longrightarrow> (c x = 0) = (x = 0)"
@@ -417,46 +412,6 @@ lemma scast_of_nat_small:
   by (metis One_nat_def id_apply int_eq_sint of_int_eq_id signed_of_nat)
 
 lemmas casts_of_nat_small = ucast_of_nat_small scast_of_nat_small
-
-\<comment>\<open>The conditions under which `takeWhile P xs = take n xs` and `dropWhile P xs = drop n xs`\<close>
-definition list_while_len where
-  "list_while_len P n xs \<equiv> (\<forall>i. i < n \<longrightarrow> i < length xs \<longrightarrow> P (xs ! i))
-                            \<and> (n < length xs \<longrightarrow> \<not> P (xs ! n))"
-
-lemma list_while_len_iff_takeWhile_eq_take:
-  "list_while_len P n xs \<longleftrightarrow> takeWhile P xs = take n xs"
-  unfolding list_while_len_def
-  apply (rule iffI[OF takeWhile_eq_take_P_nth], simp+)
-  apply (intro conjI allI impI)
-   apply (rule takeWhile_take_has_property_nth, clarsimp)
-  apply (drule_tac f=length in arg_cong, simp)
-  apply (induct xs arbitrary: n; clarsimp split: if_splits)
-  done
-
-lemma list_while_len_exists:
-  "\<exists>n. list_while_len P n xs"
-  apply (induction xs; simp add: list_while_len_def)
-  apply (erule exE)
-  subgoal for x xs n
-    apply (cases "P x")
-     apply (rule exI[where x="Suc n"], clarsimp)
-    subgoal for i by (cases i; simp)
-    subgoal by (rule exI[where x=0], simp)
-    done
-  done
-
-lemma takeWhile_truncate:
-  "length (takeWhile P xs) \<le> m
-   \<Longrightarrow> takeWhile P (take m xs) = takeWhile P xs"
-  apply (cut_tac list_while_len_exists[where P=P and xs=xs], clarsimp)
-  subgoal for n 
-    apply (cases "n \<le> m")
-     apply (subgoal_tac "list_while_len P n (take m xs)")
-      apply(simp add: list_while_len_iff_takeWhile_eq_take)
-     apply (clarsimp simp: list_while_len_def)
-    apply (simp add: list_while_len_iff_takeWhile_eq_take)
-    done
-  done
 
 lemma word_clz_shiftr_1:
   fixes z::"'a::len word"
@@ -650,14 +605,6 @@ lemma word_of_int_word_of_nat_eqD:
   "\<lbrakk> word_of_int x = (word_of_nat y :: 'a :: len word); 0 \<le> x; x < 2^LENGTH('a); y < 2^LENGTH('a) \<rbrakk>
    \<Longrightarrow> nat x = y"
   by (metis nat_eq_numeral_power_cancel_iff of_nat_inj word_of_int_nat zless2p zless_nat_conj)
-
-lemma ucast_down_0:
-  "\<lbrakk> UCAST('a::len \<rightarrow> 'b::len) x = 0; unat x < 2^LENGTH('b) \<rbrakk> \<Longrightarrow> x = 0"
-  by (metis Word.of_nat_unat unat_0 unat_eq_of_nat word_unat_eq_iff)
-
-lemma uint_minus_1_eq:
-  \<open>uint (- 1 :: 'a word) = 2 ^ LENGTH('a::len) - 1\<close>
-  by transfer (simp add: mask_eq_exp_minus_1)
 
 lemma FF_eq_minus_1:
   \<open>0xFF = (- 1 :: 8 word)\<close>
