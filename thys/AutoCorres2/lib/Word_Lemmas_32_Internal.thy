@@ -72,8 +72,7 @@ proof -
     done
 
   show ?thesis using two_power_increasing_less_1[where 'a=32 and n="sz + 3" and m=7]
-    apply (simp add: word_le_nat_alt sz power_add len2 field_simps bintrunc_Suc_numeral)
-    using le_trans take_bit_nat_less_eq_self by blast
+    by (simp add: word_le_nat_alt sz power_add len2 field_simps bintrunc_Suc_numeral)
 qed
 
 lemmas pre_helper2_32 = pre_helper2[where 'a=32, folded word_bits_def]

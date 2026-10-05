@@ -2006,8 +2006,7 @@ lemma nat_less_cases':
 
 lemma less_numeral_nat_iff_disj:
   "(n::nat) < numeral m \<longleftrightarrow> n = numeral m - 1 \<or> n < numeral m - 1"
-  apply clarsimp
-  using less_SucE numeral_eq_Suc by presburger
+  by (auto simp: numeral_eq_Suc less_Suc_eq)
 
 lemma filter_to_shorter_upto:
   "n \<le> m \<Longrightarrow> filter (\<lambda>x. x < n) [0 ..< m] = [0 ..< n]"
