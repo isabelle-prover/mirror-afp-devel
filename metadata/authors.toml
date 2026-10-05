@@ -4169,16 +4169,6 @@ host = [
   "au",
 ]
 
-[klein.emails.klein_email2]
-user = [
-  "gerwin",
-  "klein",
-]
-host = [
-  "proofcraft",
-  "systems",
-]
-
 [klein.emails.klein_email1]
 user = [
   "gerwin",
