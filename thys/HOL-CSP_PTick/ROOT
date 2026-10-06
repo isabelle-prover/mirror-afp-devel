@@ -31,8 +31,6 @@ chapter AFP
  * SPDX-License-Identifier: BSD-2-Clause
  ***********************************************************************************)
 
-chapter AFP
-
 session "HOL-CSP_PTick" = "HOL-CSP_RS" +
   description \<open>HOL-CSP_PTick: Parameterized Termination for
                Sequential Composition and Synchronization Product\<close>
