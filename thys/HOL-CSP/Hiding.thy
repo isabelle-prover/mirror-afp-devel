@@ -72,6 +72,19 @@ lemma trace_hide_ev_union [simp] :
     (blast intro: arg_cong[where f = \<open>\<lambda>S. trace_hide t S\<close>])
 
 
+lemma snoc_tick_eq_trace_hide_ftF_conv :
+  \<open>t @ [\<checkmark>(r)] = trace_hide u (ev ` A) \<longleftrightarrow>
+   (\<exists>u'. tF u' \<and> u = u' @ [\<checkmark>(r)] \<and> t = trace_hide u' (ev ` A))\<close>
+  (is \<open>?lhs \<longleftrightarrow> ?rhs\<close>) if \<open>ftF u\<close>
+proof (rule iffI)
+  show \<open>?rhs \<Longrightarrow> ?lhs\<close> by (auto split: if_split_asm)
+next
+  from \<open>ftF u\<close> show \<open>?lhs \<Longrightarrow> ?rhs\<close>
+    by (auto elim!: ftF_E split: if_split_asm)
+      (metis Hiding_tF event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.disc(2) tF_Cons_iff tF_append_iff)
+qed
+
+
 abbreviation isInfHiddenRun :: \<open>[nat \<Rightarrow> ('a, 'r) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k list, ('a, 'r) process\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k, 'a set] \<Rightarrow> bool\<close>
   where \<open>isInfHiddenRun f P A \<equiv> strict_mono f \<and> (\<forall>i. f i \<in> \<T> P) \<and> 
                                 (\<forall>i. trace_hide (f i) (ev ` A) = trace_hide (f 0) (ev ` A))\<close>

@@ -536,12 +536,165 @@ corollary \<open>\<bbbF>\<^sub>\<checkmark>(P) \<or> \<bbbF>\<^sub>\<checkmark>(
   and \<open>\<bbbF>\<^sub>\<checkmark>(P) \<or> \<bbbF>\<^sub>\<checkmark>(Q) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>(P ||| Q)\<close>
   by (fact finite_ticks_Sync)+
 
-(* 
+
+
 lemma finite_ticks_Hiding [finite_ticks_simps] :
   \<open>\<bbbF>\<^sub>\<checkmark>(P \ S)\<close> if \<open>finite S\<close> and \<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>
-  \<comment> \<open>Probably complicated proof.\<close>
-  oops
- *)
+proof (rule finite_ticksI)
+  let ?trH = \<open>\<lambda>t. trace_hide t (ev ` S)\<close>
+  fix t assume \<open>t \<in> \<T> (P \ S)\<close> \<open>t \<notin> \<D> (P \ S)\<close>
+  from \<open>t \<notin> \<D> (P \ S)\<close>
+  have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (P \ S)} =
+        {r. t @ [\<checkmark>(r)] \<in> \<T> (P \ S) - \<D> (P \ S)}\<close>
+    by (meson Diff_iff is_processT9)
+  also have \<open>\<dots> \<subseteq> {r. \<exists>u. t @ [\<checkmark>(r)] = ?trH u \<and> (u, ev ` S) \<in> \<F> P}\<close>
+    unfolding T_Hiding D_Hiding by blast
+  also have \<open>... = {r. \<exists>u. t = ?trH u \<and> (u @ [\<checkmark>(r)], ev ` S) \<in> \<F> P}\<close>
+    by (auto dest: snoc_tick_eq_trace_hide_ftF_conv[THEN iffD1, rotated] intro: F_imp_ftF)
+      (metis (no_types, lifting) event\<^sub>p\<^sub>t\<^sub>i\<^sub>c\<^sub>k.distinct(1) filter.simps filter_append imageE)
+  finally have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (P \ S)} \<subseteq> \<dots>\<close> .
+  moreover from \<open>t \<notin> \<D> (P \ S)\<close>
+  have \<open>{r. \<exists>u. t = ?trH u \<and> u \<in> \<D> P} = {}\<close>
+    by (auto intro: mem_D_imp_mem_D_Hiding)
+  ultimately have \<open>{r. t @ [\<checkmark>(r)] \<in> \<T> (P \ S)} \<subseteq>
+                   {r. \<exists>u. t = ?trH u \<and> (u @ [\<checkmark>(r)], ev ` S) \<in> \<F> P \<and> u \<notin> \<D> P}\<close>
+    by fast
+  also have \<open>\<dots> \<subseteq> (\<Union>u\<in>{u. t = ?trH u \<and> u \<in> \<T> P \<and> u \<notin> \<D> P}. {r. u @ [\<checkmark>(r)] \<in> \<T> P})\<close>
+    by (simp add: subset_iff) (use F_T is_processT3_TR_append in blast)
+  also have \<open>finite \<dots>\<close>
+  proof (rule finite_UN_I)
+    have $ : \<open>t' = ?trH t \<Longrightarrow> set (take i t') \<subseteq> set t' \<union> ev ` S\<close> for i t'
+      by (meson set_take_subset sup.coboundedI1)
+    show \<open>finite {u. t = ?trH u \<and> u \<in> \<T> P \<and> u \<notin> \<D> P}\<close>
+    proof (rule ccontr)
+      assume \<open>infinite {u. t = trace_hide u (ev ` S) \<and> u \<in> \<T> P \<and> u \<notin> \<D> P}\<close>
+      moreover have \<open>finite {v. \<exists>u\<in>{u. t = ?trH u \<and> u \<in> \<T> P \<and> u \<notin> \<D> P}. v = take i u}\<close> for i
+      proof (rule finite_subset)
+        show \<open>{v. \<exists>u\<in>{u. t = ?trH u \<and> u \<in> \<T> P \<and> u \<notin> \<D> P}. v = take i u} \<subseteq>
+              {take i w |w. t = ?trH w}\<close> by blast
+      next
+        show \<open>finite {take i w |w. t = ?trH w}\<close> for i
+        proof (induct i)
+          case 0 show ?case by simp
+        next
+          case (Suc i) show ?case
+          proof (rule finite_subset)
+            show \<open>{take (Suc i) w |w. t = ?trH w} \<subseteq>
+                  {take i w |w. t = ?trH w} \<union>
+                  (\<Union>e\<in>set t \<union> ev ` S. {take i w @ [e] |w. t = ?trH w})\<close>
+              (is \<open>?lhs \<subseteq> _ \<union> (\<Union>e\<in>?S1. ?S2 e)\<close>)
+            proof (intro subsetI)
+              fix t' assume \<open>t' \<in> ?lhs\<close>
+              then obtain w where "\<pounds>" : \<open>t' = take (Suc i) w\<close> \<open>t = ?trH w\<close> by blast
+              show \<open>t' \<in> {take i w |w. t = ?trH w} \<union> (\<Union>e\<in>?S1. ?S2 e)\<close>
+              proof (cases \<open>i < length t'\<close>)
+                assume \<open>i < length t'\<close>
+                with "\<pounds>"(1) take_Suc_conv_app_nth
+                have \<open>take (Suc i) t' = take i w @ [t' ! i]\<close> by auto
+                moreover from "\<pounds>" "$" \<open>i < length t'\<close> nth_mem have \<open>t' ! i \<in> ?S1\<close> by simp
+                ultimately have \<open>t' \<in> (\<Union>e\<in>?S1. ?S2 e)\<close>
+                  by (intro UN_I[of \<open>t' ! i\<close>], simp_all)
+                    (metis "\<pounds>" less_not_refl min.absorb2 not_le_imp_less take_take)
+                thus \<open>t' \<in> {take i w |w. t = ?trH w} \<union> (\<Union>e\<in>?S1. ?S2 e)\<close> by simp
+              next
+                assume \<open>\<not> i < length t'\<close>
+                hence \<open>take (Suc i) t' = take i t'\<close> by simp
+                with "\<pounds>" show \<open>t' \<in> {take i w |w. t = ?trH w} \<union> (\<Union>e\<in>?S1. ?S2 e)\<close> by auto
+              qed
+            qed
+          next
+            show \<open>finite ({take i w |w. t = ?trH w} \<union>
+                        (\<Union>e\<in>set t \<union> ev ` S.
+                             {take i w @ [e] |w. t = ?trH w}))\<close>
+            proof (rule finite_UnI)
+              show \<open>finite {take i w |w. t = ?trH w}\<close> by (fact Suc)
+            next
+              show \<open>finite (\<Union>e\<in>set t \<union> ev ` S. {take i w @ [e] |w. t = ?trH w})\<close>
+              proof (rule finite_UN_I)
+                show \<open>finite (set t \<union> ev ` S)\<close>
+                  by (simp add: \<open>finite S\<close>) \<comment>\<open>Here we use that \<^term>\<open>S\<close> is \<^const>\<open>finite\<close>.\<close>
+              next
+                fix e assume \<open>e \<in> set t \<union> ev ` S\<close>
+                have \<open>{take i w @ [e] |w. t = ?trH w} =
+                    (\<lambda>t'. t' @ [e]) ` {take i w |w. t = ?trH w}\<close> by auto
+                also have \<open>finite \<dots>\<close> by (rule finite_imageI) (fact Suc)
+                finally show \<open>finite {take i w @ [e] |w. t = ?trH w}\<close> .
+              qed
+            qed
+          qed
+        qed
+      qed
+      ultimately obtain f :: \<open>nat \<Rightarrow> _\<close>
+        where * : \<open>strict_mono f\<close> \<open>range f \<subseteq> {v. \<exists>u. t = ?trH u \<and> u \<in> \<T> P - \<D> P \<and> v \<le> u}\<close>
+        by (auto dest!: KoenigLemma)
+
+      let ?h = \<open>\<lambda>i. ?trH (f i)\<close>
+      let ?n = \<open>Max (length ` range ?h)\<close>
+      have h_le_t: \<open>?h i \<le> t\<close> for i
+        using "*"(2)[THEN set_mp, OF rangeI, of i] mono_trace_hide by blast
+      have n_mem:
+        \<open>?n \<in> length ` range ?h\<close>
+      proof (rule Max_in)
+        show \<open>finite (length ` range ?h)\<close>
+          by (rule finite_imageI)
+            (auto intro!: finite_subset[OF _ prefixes_fin[THEN conjunct1]] h_le_t)
+        qed blast
+      then obtain j where length_h_j : \<open>length (?h j) = ?n\<close>
+        by (metis (no_types, lifting) image_iff)
+      have \<open>?h i = ?h j\<close> if \<open>j \<le> i\<close> for i
+      proof -
+        have \<open>?h j \<le> ?h i\<close>
+          by (intro mono_trace_hide monoD[OF strict_mono_mono[OF "*"(1)] \<open>j \<le> i\<close>])
+        hence \<open>length (?h j) \<le> length (?h i)\<close> by (fact prefix_length_le)
+        moreover have \<open>length (?h i) \<le> ?n\<close>
+        proof (rule Max_ge)
+          show \<open>finite (length ` range ?h)\<close>
+            by (rule finite_imageI)
+              (auto intro!: finite_subset[OF _ prefixes_fin[THEN conjunct1]] h_le_t)
+        qed blast
+        ultimately have \<open>length (?h i) = length (?h j)\<close>
+          using length_h_j by linarith
+        with \<open>?h j \<le> ?h i\<close> show \<open>?h i = ?h j\<close>
+          unfolding less_eq_list_def
+          using \<open>length (?h j) \<le> length (?h i)\<close>
+          by (metis prefix_length_prefix prefix_order.dual_order.eq_iff)
+      qed
+      with h_le_t obtain t'
+        where ** : \<open>t' \<le> t\<close> \<open>\<forall>i \<ge> j. ?trH (f i) = t'\<close> by blast
+
+      define f' where \<open>f' = f \<circ> ((+) j)\<close>
+      have *** : \<open>isInfHiddenRun f' P S\<close> \<open>(f' 0) \<in> range f'\<close>
+      proof (intro conjI allI)
+        show \<open>strict_mono f'\<close>
+          by (simp add: "*"(1) f'_def strict_monoD strict_monoI)
+      next
+        show \<open>f' i \<in> \<T> P\<close> for i
+          using "*"(2)[THEN set_mp, OF rangeI, of \<open>j + i\<close>]
+          by (auto simp add: f'_def intro: is_processT3_TR)
+      next
+        show \<open>?trH (f' i) = ?trH (f' 0)\<close> for i
+          using "**"(2)[THEN spec, of \<open>j + i\<close>] "**"(2)[THEN spec, of j]
+          by (auto simp add: f'_def)
+      next
+        show \<open>f' 0 \<in> range f'\<close> by blast
+      qed
+      from tF_isInfHiddenRun[OF this(1)] have \<open>tF (f' 0)\<close> by blast
+      with "***" have \<open>?trH (f' 0) \<in> \<D> (P \ S)\<close>
+        by (simp add: D_Hiding)
+          (rule_tac x = \<open>f' 0\<close> in exI, rule_tac x = \<open>[]\<close> in exI, auto)
+      with \<open>tF (f' 0)\<close> \<open>?trH (f j) \<le> t\<close> \<open>t \<in> \<T> (P \ S)\<close>[THEN T_imp_ftF]
+      have \<open>t \<in> \<D> (P \ S)\<close>
+        by (auto simp add: f'_def Hiding_tF ftF_append_iff elim!: prefixE
+            intro: is_processT7 split: if_split_asm)
+      with \<open>t \<notin> \<D> (P \ S)\<close> show False ..
+    qed
+  next
+    show \<open>u \<in> {u. t = ?trH u \<and> u \<in> \<T> P \<and> u \<notin> \<D> P} \<Longrightarrow> finite {r. u @ [\<checkmark>(r)] \<in> \<T> P}\<close> for u
+      by (auto intro: finite_ticksD \<open>\<bbbF>\<^sub>\<checkmark>(P)\<close>)
+  qed
+  finally (finite_subset) show \<open>finite {r. t @ [\<checkmark>(r)] \<in> \<T> (P \ S)}\<close> .
+qed
+
 
 
 lemma finite_ticks_GlobalNdet [finite_ticks_simps] :
@@ -674,10 +827,9 @@ corollary \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f) \<Longrightar
   by (fact finite_ticks_fun_Sync)+
 
 
-(* lemma finite_ticks_fun_Hiding [finite_ticks_fun_simps] :
-  \<open>\<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<lambda>x. f x \ S)\<close>
+lemma finite_ticks_fun_Hiding [finite_ticks_fun_simps] :
+  \<open>finite S \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(f) \<Longrightarrow> \<bbbF>\<^sub>\<checkmark>\<^sub>\<Rightarrow>(\<lambda>x. f x \ S)\<close>
   by (simp add: finite_ticks_Hiding finite_ticks_fun_def)
- *)
 
 
 lemma finite_ticks_fun_GlobalNdet [finite_ticks_fun_simps] :
