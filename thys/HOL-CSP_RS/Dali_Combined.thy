@@ -810,7 +810,6 @@ lemma Spec_with_crash_trace:
    @ ev crash #
    [ev (getUsedThreads {T0}), ev (invRead (T1,K0)), ev (doRead (T1,K0,V0)), ev (resRead (T1,V0))]
    \<in> \<T> Spec_with_crash\<close>
-  sledgehammer
 proof (subst Spec_with_crash_rec, rule T_ThrowI2)
   show \<open>[ev (getUsedThreads {}), ev (invUpdate (T0,K0,V0)), ev (doUpdate (T0,K0,V0)), ev (resUpdate T0)]
         @ [ev crash] \<in> \<T> (AllMapThreads ||| (crash \<rightarrow> Skip))\<close>
