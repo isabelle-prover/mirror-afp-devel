@@ -36,7 +36,12 @@ fun ipt_chain_toSting where
 
 definition bench where
   "bench closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in
-      (length ((get_unfold f) def (map_of fw_in)), length (preprocess_keep_ifce (get_unfold f) closure ipassmt def fw_in), length fw, length (getParts fw), length (build_ip_partition parts_connection_ssh fw), length (build_ip_partition parts_connection_http fw))"
+      (length ((get_unfold f) def (map_of fw_in)),
+       length (preprocess_keep_ifce (get_unfold f) closure ipassmt def fw_in),
+       length fw,
+       length (getParts fw),
+       length (build_ip_partition parts_connection_ssh fw),
+       length (build_ip_partition parts_connection_http fw))"
 definition view where
   "view closure f ipassmt def fw_in \<equiv> let fw = preprocess (get_unfold f) closure ipassmt def fw_in in
       (''x'',
@@ -46,20 +51,43 @@ definition view where
        (access_matrix_pretty_ipv4 parts_connection_ssh fw),
        (access_matrix_pretty_ipv4 parts_connection_http fw))"
 
+definition bench_and_view where
+  "bench_and_view closure f ipassmt def fw_in \<equiv>
+    let
+      fw = preprocess (get_unfold f) closure ipassmt def fw_in;
+      preprocess = preprocess_keep_ifce (get_unfold f) closure ipassmt def fw_in;
+      parts = getParts fw;
+      bench =
+        (length ((get_unfold f) def (map_of fw_in)),
+         length preprocess,
+         length fw,
+         length parts,
+         length (build_ip_partition parts_connection_ssh fw),
+         length (build_ip_partition parts_connection_http fw));
+      view = (''x'',
+       map (simple_rule_iptables_save_toString (ipt_chain_toSting f)) preprocess,
+       map (simple_rule_iptables_save_toString (ipt_chain_toSting f)) fw,
+       map ipv4addr_wordinterval_toString parts,
+       (access_matrix_pretty_ipv4 parts_connection_ssh fw),
+       (access_matrix_pretty_ipv4 parts_connection_http fw))
+    in
+    (bench, view)"
+
+lemma "bench_and_view closure f ipassmt def fw_in =
+  (bench closure f ipassmt def fw_in, view closure f ipassmt def fw_in)"
+  by (simp add: bench_and_view_def bench_def view_def Let_def)
+
 
 (*Do we have code?*)
-export_code bench view checking SML
+export_code bench view bench_and_view checking SML
 
 context
 begin
   private  parse_iptables_save fw12 = config_memphis_testbed "iptables-save"
   thm fw12_def
 
-  value[code] "bench upper_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
-  value[code] "view upper_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
-
-  value[code] "bench lower_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
-  value[code] "view lower_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
+  value[code] "bench_and_view upper_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
+  value[code] "bench_and_view lower_closure FWD ipassmt_generic_ipv4 fw12_FORWARD_default_policy fw12"
 end
 
 context
@@ -68,11 +96,8 @@ begin
   private parse_iptables_save fwdocker = docker_topos "iptables-save.topos4.1"
   thm fwdocker_def
 
-  value[code] "bench upper_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
-  value[code] "view upper_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
-
-  value[code] "bench lower_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
-  value[code] "view lower_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
+  value[code] "bench_and_view upper_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
+  value[code] "bench_and_view lower_closure FWD ipassmt_generic_ipv4 fwdocker_FORWARD_default_policy fwdocker"
 end
 
 context
@@ -81,11 +106,8 @@ begin
 
  thm fw13_def
 
-  value[code] "bench upper_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
-  value[code] "view upper_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
-
-  value[code] "bench lower_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
-  value[code] "view lower_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
+  value[code] "bench_and_view upper_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
+  value[code] "bench_and_view lower_closure INP ipassmt_generic_ipv4 fw13_INPUT_default_policy fw13"
 end
 
 
@@ -119,11 +141,8 @@ begin
 
   value[code] "debug_ipassmt_ipv4 ipassmt_wg (upper_closure (unfold_ruleset_FORWARD fw_home_user_FORWARD_default_policy (map_of_string_ipv4 fw_home_user)))"
 
-  value[code] "bench upper_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
-  value[code] "view upper_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
-
-  value[code] "bench lower_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
-  value[code] "view lower_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
+  value[code] "bench_and_view upper_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
+  value[code] "bench_and_view lower_closure FWD ipassmt_wg fw_home_user_FORWARD_default_policy fw_home_user"
 end
 
 
@@ -151,29 +170,17 @@ context begin
 
  private parse_iptables_save fw1 = "configs_sqrl_shorewall" "2015_aug_iptables-save-spoofing-protection"
 
-  value[code] "bench upper_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
-  value[code] "view upper_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
+  value[code] "bench_and_view upper_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
+  value[code] "bench_and_view lower_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
 
-  value[code] "bench lower_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
-  value[code] "view lower_closure FWD ipassmt fw1_FORWARD_default_policy fw1"
-
-
-  value[code] "bench upper_closure INP ipassmt fw1_INPUT_default_policy fw1"
-  value[code] "view upper_closure INP ipassmt fw1_INPUT_default_policy fw1"
-
-  value[code] "bench lower_closure INP ipassmt fw1_INPUT_default_policy fw1"
-  value[code] "view lower_closure INP ipassmt fw1_INPUT_default_policy fw1"
+  value[code] "bench_and_view upper_closure INP ipassmt fw1_INPUT_default_policy fw1"
+  value[code] "bench_and_view lower_closure INP ipassmt fw1_INPUT_default_policy fw1"
 
  private parse_iptables_save fw2 = "configs_sqrl_shorewall" "2014_sep_iptables-saveakachan"
   value[code] "Semantics_Goto.rewrite_Goto fw2"
 
-
-  value[code] "bench upper_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
-  value[code] "view upper_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
-
-
-  value[code] "bench lower_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
-  value[code] "view lower_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
+  value[code] "bench_and_view upper_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
+  value[code] "bench_and_view lower_closure FWD ipassmt fw2_FORWARD_default_policy (Semantics_Goto.rewrite_Goto fw2)"
 end
 
 context
@@ -183,9 +190,7 @@ begin
   ]"
  private parse_iptables_save fw3 = "configs_synology_diskstation_ds414" "iptables-save_jun_2015_legacyifacerules"
 
-  value[code] "bench upper_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
-  value[code] "view upper_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
-
+  value[code] "bench_and_view upper_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
 
   definition web8080 where "web8080 = \<lparr>pc_iiface=''1'', pc_oiface=''1'', pc_proto=TCP,
                                pc_sport=10000, pc_dport=8080\<rparr>"
@@ -193,8 +198,7 @@ begin
   value[code] "let fw = preprocess (get_unfold INP) upper_closure ipassmt2 fw3_INPUT_default_policy fw3 in
                map ipv4addr_wordinterval_toString (build_ip_partition web8080 fw)"
 
-  value[code] "bench lower_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
-  value[code] "view lower_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
+  value[code] "bench_and_view lower_closure INP ipassmt2 fw3_INPUT_default_policy fw3"
 
 end
 
@@ -205,16 +209,14 @@ begin
  private parse_iptables_save fw4 = "configs_srvs_ufw" "server2-iptables-save"
  thm fw4_def
 
-  value[code] "bench upper_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
-  value[code] "view upper_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
+  value[code] "bench_and_view upper_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
 
   definition "mysql = \<lparr>pc_iiface=''1'', pc_oiface=''1'', pc_proto=TCP,
                                pc_sport=10000, pc_dport=3306\<rparr>"
   value[code] "let fw = preprocess (get_unfold INP) upper_closure ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4 in
              map ipv4addr_wordinterval_toString (build_ip_partition mysql fw)"
 
-  value[code] "bench lower_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
-  value[code] "view lower_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
+  value[code] "bench_and_view lower_closure INP ipassmt_generic_ipv4 fw4_INPUT_default_policy fw4"
 end
 
 context
@@ -222,11 +224,8 @@ begin
   private parse_iptables_save fw_worst = "worst_case" "iptables-save"
   thm fw_worst_def
 
-  value[code] "bench upper_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
-  value[code] "view upper_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
-
-  value[code] "bench lower_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
-  value[code] "view lower_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
+  value[code] "bench_and_view upper_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
+  value[code] "bench_and_view lower_closure FWD ipassmt_generic_ipv4 fw_worst_FORWARD_default_policy fw_worst"
 end
 
 
@@ -235,11 +234,8 @@ begin
   private parse_iptables_save fw5 = "linux.gda.pl" "firewallp.txt"
   thm fw5_def
 
-  value[code] "bench upper_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
-  value[code] "view upper_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
-
-  value[code] "bench lower_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
-  value[code] "view lower_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
+  value[code] "bench_and_view upper_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
+  value[code] "bench_and_view lower_closure FWD ipassmt_generic_ipv4 fw5_FORWARD_default_policy fw5"
 end
 
 
@@ -253,11 +249,8 @@ begin
   (Iface ''eth1'', [(ipv4addr_of_dotdecimal (192,168,2,0),24)])]"
 
 
-  value[code] "bench upper_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
-  value[code] "view upper_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
-
-  value[code] "bench lower_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
-  value[code] "view lower_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
+  value[code] "bench_and_view upper_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
+  value[code] "bench_and_view lower_closure FWD ipassmt6 fw6_FORWARD_default_policy fw6"
 end
 
 
@@ -274,11 +267,8 @@ begin
   (Iface ''br-lan'', [(ipv4addr_of_dotdecimal (192,168,1,0),24)])]"
 
 
-  value[code] "bench upper_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
-  value[code] "view upper_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
-
-  value[code] "bench lower_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
-  value[code] "view lower_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
+  value[code] "bench_and_view upper_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
+  value[code] "bench_and_view lower_closure FWD ipassmt7 fw7_FORWARD_default_policy fw7"
 end
 
 
@@ -289,11 +279,8 @@ begin
   private parse_iptables_save fw8 = "pastebin.com_bbWXHaTn" "iptables-save"
   thm fw8_def
 
-  value[code] "bench upper_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
-  value[code] "view upper_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
-
-  value[code] "bench lower_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
-  value[code] "view lower_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
+  value[code] "bench_and_view upper_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
+  value[code] "bench_and_view lower_closure FWD ipassmt_generic_ipv4 fw8_FORWARD_default_policy fw8"
 end
 
 
@@ -308,19 +295,13 @@ begin
   (Iface ''eth0'', [(ipv4addr_of_dotdecimal (192,168,13,0),24)]),
   (Iface ''ppp0'', all_but_those_ips [(ipv4addr_of_dotdecimal (192,168,13,0),24), (ipv4addr_of_dotdecimal (127,0,0,0),8)])]"
 
-  value[code] "bench upper_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
-  value[code] "view upper_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
+  value[code] "bench_and_view upper_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
 
   (*quite good results*)
-  value[code] "bench lower_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
-  value[code] "view lower_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
+  value[code] "bench_and_view lower_closure FWD ipassmt9 fw9_FORWARD_default_policy fw9"
 
-
-  value[code] "bench upper_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
-  value[code] "view upper_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
-
-  value[code] "bench lower_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
-  value[code] "view lower_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
+  value[code] "bench_and_view upper_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
+  value[code] "bench_and_view lower_closure INP ipassmt9 fw9_INPUT_default_policy fw9"
 end
 
 
@@ -330,11 +311,8 @@ begin
   private parse_iptables_save fw10 = "sargon" "iptables-save.txt"
   thm fw10_def
 
-  value[code] "bench upper_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
-  value[code] "view upper_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
-
-  value[code] "bench lower_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
-  value[code] "view lower_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
+  value[code] "bench_and_view upper_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
+  value[code] "bench_and_view lower_closure INP ipassmt_generic_ipv4 fw10_INPUT_default_policy fw10"
 end
 
 
@@ -343,11 +321,8 @@ begin
  private parse_iptables_save fw11 = "gopherproxy.meulie.net" "iptables-save"
  thm fw11_def
 
-  value[code] "bench upper_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
-  value[code] "view upper_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
-
-  value[code] "bench lower_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
-  value[code] "view lower_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
+  value[code] "bench_and_view upper_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
+  value[code] "bench_and_view lower_closure INP ipassmt_generic_ipv4 fw11_INPUT_default_policy fw11"
 
 end
 
@@ -360,17 +335,11 @@ begin
   (Iface ''eth0'', [(ipv4addr_of_dotdecimal (172,16,2,0),24)])
   ]"
 
-  value[code] "bench upper_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
-  value[code] "view upper_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
+  value[code] "bench_and_view upper_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
+  value[code] "bench_and_view lower_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
 
-  value[code] "bench lower_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
-  value[code] "view lower_closure INP ipassmt14 fw14_INPUT_default_policy fw14"
-
-  value[code] "bench upper_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
-  value[code] "view upper_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
-
-  value[code] "bench lower_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
-  value[code] "view lower_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
+  value[code] "bench_and_view upper_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
+  value[code] "bench_and_view lower_closure FWD ipassmt14 fw14_FORWARD_default_policy fw14"
 
 end
 
@@ -386,11 +355,8 @@ begin
   (Iface ''virbr0'', [(ipv4addr_of_dotdecimal (192,168,122,0),24)])
   ]"
 
-  value[code] "bench upper_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
-  value[code] "view upper_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
-
-  value[code] "bench lower_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
-  value[code] "view lower_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
+  value[code] "bench_and_view upper_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
+  value[code] "bench_and_view lower_closure INP ipassmt15 fw15_INPUT_default_policy fw15"
 
 
   definition srctcp137dst137 where "srctcp137dst137 = \<lparr>pc_iiface=''1'', pc_oiface=''1'', pc_proto=TCP,
