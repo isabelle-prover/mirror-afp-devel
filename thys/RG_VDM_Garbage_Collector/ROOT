@@ -1,0 +1,10 @@
+chapter AFP
+
+session RG_VDM_Garbage_Collector = HOL +
+  options [timeout = 600]
+  theories
+    RG_Garbage_Collector
+  document_files
+    "root.tex"
+    "root.bib"
+

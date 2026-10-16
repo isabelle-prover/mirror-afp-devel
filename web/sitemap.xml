@@ -3,10 +3,13 @@
   xmlns:xhtml="http://www.w3.org/1999/xhtml">
   <url>
     <loc>https://isa-afp.org/entries/index.json</loc>
-    <lastmod>2026-10-06T00:00:00+00:00</lastmod>
+    <lastmod>2026-10-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/</loc>
-    <lastmod>2026-10-06T00:00:00+00:00</lastmod>
+    <lastmod>2026-10-15T00:00:00+00:00</lastmod>
+  </url><url>
+    <loc>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</loc>
+    <lastmod>2026-10-15T00:00:00+00:00</lastmod>
   </url><url>
     <loc>https://isa-afp.org/entries/Steiner_Line_Theorem.html</loc>
     <lastmod>2026-10-06T00:00:00+00:00</lastmod>
@@ -19520,6 +19523,8 @@
   </url><url>
     <loc>https://isa-afp.org/authors/lauermann/</loc>
   </url><url>
+    <loc>https://isa-afp.org/authors/yatapanage/</loc>
+  </url><url>
     <loc>https://isa-afp.org/thys/No_Free_Lunch_ML/No_Free_Lunch_ML.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/No_FTL_observers_Gen_Rel/Affine.html</loc>
@@ -22591,6 +22596,8 @@
     <loc>https://isa-afp.org/thys/RG_Locks/RG_Examples_Reworked.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/RG_Locks/RG_Syntax_Extensions.html</loc>
+  </url><url>
+    <loc>https://isa-afp.org/thys/RG_VDM_Garbage_Collector/RG_Garbage_Collector.html</loc>
   </url><url>
     <loc>https://isa-afp.org/thys/Ribbon_Proofs/JHelper.html</loc>
   </url><url>

@@ -4,6 +4,13 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Rely-Guarantee Specification of a Concurrent Garbage Collector</title>
+  <link>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</link>
+  <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Specification of a Concurrent Garbage Collector in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
   <title>Steiner&#39;s Line Theorem in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Steiner_Line_Theorem.html</link>
   <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>

@@ -9379,6 +9379,25 @@ name = "Annie Yao"
 
 [yaoa.homepages]
 
+[yatapanage]
+name = "Nisansala P. Yatapanage"
+orcid = "0000-0002-0498-513X"
+
+[yatapanage.emails]
+
+[yatapanage.emails.yatapanage_email]
+user = [
+  "Nisansala",
+  "Yatapanage",
+]
+host = [
+  "anu",
+  "edu",
+  "au",
+]
+
+[yatapanage.homepages]
+
 [ye]
 name = "Lina Ye"
 
