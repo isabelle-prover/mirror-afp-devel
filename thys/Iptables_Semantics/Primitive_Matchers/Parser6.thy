@@ -21,7 +21,7 @@ fun split_at p xs = (takeWhile p xs, dropWhileInclusive p xs);
 \<close>
 
 ML_val\<open>
-split_at (fn x => x <> " ") (raw_explode "foo bar")
+split_at (fn x => x <> " ") (String.explode_str "foo bar")
 \<close>
 
 
@@ -85,7 +85,7 @@ local
                                           "\"" ^ implode quoted^"\"" :: rest end
    |  collapse_quotes (s::ss) = s :: collapse_quotes ss;
 in
-  val ipt_explode = raw_explode #> collapse_quotes;
+  val ipt_explode = String.explode_str #> collapse_quotes;
 end
 \<close>
 ML_val\<open>
@@ -101,7 +101,7 @@ ML_val\<open>
 fun finite_scan scan = Scan.error (Scan.finite Symbol.stopper (scan));
 finite_scan
      ((Scan.this_string "foo") --|
-      (Scan.ahead ($$ " " || Scan.one Symbol.is_eof))) (raw_explode "foo ");
+      (Scan.ahead ($$ " " || Scan.one Symbol.is_eof))) (String.explode_str "foo ");
 \<close>
 ML\<open>
 local
@@ -112,9 +112,9 @@ in
   fun look_ahead_token (scan : (string list -> 'a * string list)) s = (*TODO: why do I need to write the type?*)
           finite_scan (scan --| word_boundary_or_end) s;
 end;
-val _ = look_ahead_token (Scan.this_string "foo") (raw_explode "foo ");
-val _ = look_ahead_token (Scan.this_string "foo") (raw_explode "foo");
-val _ = (look_ahead_token (Scan.this_string "foo")) (raw_explode "fo")
+val _ = look_ahead_token (Scan.this_string "foo") (String.explode_str "foo ");
+val _ = look_ahead_token (Scan.this_string "foo") (String.explode_str "foo");
+val _ = (look_ahead_token (Scan.this_string "foo")) (String.explode_str "fo")
   handle Fail m => if m = "parse error: expected word boundary near `fo'" then ("", [])
                    else raise Fail "foo";
 \<close>*)

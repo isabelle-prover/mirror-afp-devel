@@ -44,7 +44,7 @@ val print_go_string =
           then error "non-ASCII byte in Go string literal"
           else c
         end;
-  in quote o translate_string char end;
+  in quote o String.translate_str char end;
 
 
 val block_enclose = Pretty.block_enclose o apply2 Pretty.unbreakable;

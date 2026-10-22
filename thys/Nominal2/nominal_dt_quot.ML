@@ -150,7 +150,7 @@ local
   val parser = Scan.repeat (exclude || any)
 in
   fun unraw_str s =
-    s |> raw_explode
+    s |> String.explode_str
       |> Scan.finite Symbol.stopper parser >> implode
       |> fst
 end

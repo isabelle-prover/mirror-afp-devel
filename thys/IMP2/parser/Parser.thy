@@ -151,7 +151,7 @@ subsection \<open>Parser for IMP Programs\<close>
 
       (* Caution: This must match the Isabelle function is_global! *)
       fun is_global "" = true
-        | is_global s = nth_string s 0 = "G"
+        | is_global s = String.nth_str s 0 = "G"
 
       val is_local = not o is_global              
       
