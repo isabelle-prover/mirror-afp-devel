@@ -1,0 +1,110 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+\usepackage{amssymb}
+\usepackage{amsmath}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy J. G. B. de Queiroz}
+\maketitle
+
+\begin{abstract}
+We formalize the classical Steiner deltoid construction in Isabelle/HOL using
+only the published Archive of Formal Proofs entry for the Wallace--Simson line.
+In unit-circumcircle coordinates, the deltoid has an explicit complex
+parametrisation.  We prove its derivative formula, characterize the stationary
+parameters by \(m^3=abc\), and certify them as ordinary cusps using the
+second and third derivatives.  We then prove an equality of sets between the
+appropriate Wallace--Simson line and the tangent line, for every parameter,
+including the cusp cases.
+
+The development uses complex coordinates and handles a vertex parameter by
+cycling to the alternate pair of feet.
+\end{abstract}
+
+\tableofcontents
+
+\section{Introduction}
+
+The Steiner deltoid is the envelope of the Wallace--Simson lines of a fixed
+triangle as the point on its circumcircle varies.  This classical relationship
+was treated early by Butchart~\cite{butchart1939} and given a later elementary
+proof by de Guzm{\'a}n~\cite{deguzman2001}; computational treatments of
+envelopes include~\cite{botana2004}.  The construction is especially
+transparent after placing the circumcentre at the origin and scaling the
+circumcircle to the unit circle.  If the vertex coordinates are
+$a,b,c$ and the moving point is $m$, the deltoid parametrisation is
+\[
+  d(m) = \frac{a+b+c}{2} + m + \frac{abc\,\overline m^{\,2}}{2}.
+\]
+
+The underlying Wallace--Simson theorem is the classical line theorem for the
+three perpendicular feet~\cite{wallace1798,coxeter1967}; its Isabelle/HOL
+formalization is available as the published AFP entry~\cite{simson-afp}.
+
+This entry deliberately depends only on the published AFP entry
+\emph{The Wallace--Simson Line Theorem in Isabelle/HOL}.  In particular, the
+perpendicular feet, circle identities, and line interface are imported from
+that entry rather than copied from a local development.
+
+\section{Formal setup}
+
+The definition \isa{steiner\_deltoid\_point} gives the displayed
+parametrisation, while \isa{steiner\_deltoid} collects its values as $m$ runs
+over the unit circle.  For differential statements, the theory introduces
+\isa{unit\_circle\_param} and the real curve
+\isa{steiner\_deltoid\_curve}.  Its derivative is
+\[
+  \gamma'(t)=i\,N(e^{it}),\qquad
+  N(m)=m-abc\,\overline m^{\,2}.
+\]
+The tangent direction is defined piecewise: it is \(iN(m)\) when $N(m)\ne0$,
+and $m$ when $N(m)=0$.  At a stationary parameter the second derivative is
+$-3m$, so this chosen direction is the same tangent direction.
+The proof uses the closed form for a perpendicular foot and the published
+identity for the difference of two feet on a common circle.
+
+\section{Main result}
+
+The derivative theorem gives
+\(\gamma'(t)=iN(e^{it})\).  On the unit circle, the normal vanishes exactly when
+\(m^3=abc\), and
+\isa{steiner\_deltoid\_stationary\_parameter\_is\_ordinary\_cusp} proves that
+the stationary parameters have nonzero, real-linearly independent second and
+third derivatives.  The development separately proves that these two
+derivatives are perpendicular, a stronger property in this particular curve.
+Thus the formal cusp claim uses the standard independence criterion rather
+than merely identifying zeros of the first derivative.
+
+The central theorem
+\isa{simson\_line\_eq\_steiner\_deltoid\_tangent\_at\_all} states the result as
+an equality of sets.  If \(m\ne b\), the line through the \(AB\) and \(BC\)
+feet is exactly the tangent at \(d(m)\); if \(m=b\), the line through the
+\(BC\) and \(CA\) feet is exactly that tangent.  The proof has separate
+regular and stationary branches.  In the regular branch the Simson direction
+is perpendicular to \(N(m)\); in the stationary branch the real ratio of the
+two feet differences shows that the line has direction \(m\), the direction
+of the first nonzero derivative.  The parameter-level theorem
+\isa{simson\_line\_eq\_steiner\_deltoid\_tangent\_all} transports this equality
+to the real parameter \(t\).
+
+At a stationary parameter, the theorem
+\isa{steiner\_deltoid\_cusp\_tangent\_is\_second\_derivative} explicitly
+identifies the piecewise-defined cusp tangent with the line in the direction
+of \(\gamma''(t)=-3m\).  The older foot-membership results are named
+\isa{simson\_line\_is\_tangent\_to\_steiner\_deltoid\_at\_regular} and
+\isa{simson\_line\_is\_tangent\_to\_steiner\_deltoid\_regular} to make their
+non-stationary hypotheses visible in the public API.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

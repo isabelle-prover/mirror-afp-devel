@@ -4,6 +4,13 @@
     <title>Mathematics/Geometry</title>
     <link>https://isa-afp.org/topics/mathematics/geometry/</link>
     <description>AFP entries in Geometry</description><item>
+  <title>Steiner&#39;s Line Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Steiner_Line_Theorem.html</link>
+  <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Steiner&#39;s Line Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>The Five Platonic Solids</title>
   <link>https://isa-afp.org/entries/Platonic_Solids.html</link>
   <pubDate>Mon, 24 Aug 2026 00:00:00 +0000</pubDate>
@@ -18,6 +25,13 @@
   <description>Napoleon&#39;s Theorem in the AFP</description>
     <category>Mathematics/Geometry</category>
     <category>Logic/General logic/Mechanization of proofs</category>
+</item>
+<item>
+  <title>The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Steiner_Deltoid.html</link>
+  <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
 </item>
 <item>
   <title>Miquel&#39;s Theorem in Isabelle/HOL</title>

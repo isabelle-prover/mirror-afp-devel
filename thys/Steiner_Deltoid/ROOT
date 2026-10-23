@@ -1,0 +1,9 @@
+chapter AFP
+
+session Steiner_Deltoid = Simson +
+  options [timeout = 600]
+  theories
+    Steiner_Deltoid
+  document_files
+    "root.tex"
+    "root.bib"

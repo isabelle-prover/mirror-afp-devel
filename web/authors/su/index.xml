@@ -4,6 +4,13 @@
     <title>Roger C. Su</title>
     <link>https://isa-afp.org/authors/su/</link>
     <description>AFP entries of Roger C. Su</description><item>
+  <title>Rely-Guarantee Specification of a Concurrent Garbage Collector</title>
+  <link>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</link>
+  <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Specification of a Concurrent Garbage Collector in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
   <title>Rely-Guarantee Extensions and Locks</title>
   <link>https://isa-afp.org/entries/RG_Locks.html</link>
   <pubDate>Fri, 21 Nov 2025 00:00:00 +0000</pubDate>

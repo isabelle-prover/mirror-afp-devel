@@ -100,10 +100,14 @@ object AFP_Publish {
       progress.echo("Checking sync with " + AFP_System.afp_name)
 
       val changed = context.repository.status(relative_args(include))
-      if (changed.nonEmpty) error("Commit changes first.")
+      if (changed.nonEmpty) {
+        error("Commit changes first. Changed:\n" + Library.indent_lines(2, cat_lines(changed)))
+      }
 
       val outgoing = context.repository.command("outgoing", args = "-q").out_lines
-      if (outgoing.nonEmpty) error("Push changes to Heptapod first.")
+      if (outgoing.nonEmpty) {
+        error("Push changes to Heptapod first:\n" + Library.indent_lines(2, cat_lines(outgoing)))
+      }
     }
 
     val files = Export_Files.init()

@@ -773,6 +773,7 @@ Quasi_Borel_Spaces
 Quaternions
 Query_Optimization
 Quick_Sort_Cost
+RG_VDM_Garbage_Collector
 RG_Locks
 RIPEMD-160-SPARK
 ROBDD
@@ -907,6 +908,8 @@ Stalnaker_Logic
 Standard_Borel_Spaces
 Statecharts
 Stateful_Protocol_Composition_and_Typing
+Steiner_Deltoid
+Steiner_Line_Theorem
 Stellar_Quorums
 Stern_Brocot
 Stewart_Apollonius

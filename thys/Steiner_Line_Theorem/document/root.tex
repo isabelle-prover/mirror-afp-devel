@@ -1,0 +1,65 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage{isabelle,isabellesym}
+\usepackage{amsmath,amssymb}
+\usepackage{url}
+\usepackage{pdfsetup}
+
+\urlstyle{rm}
+\isabellestyle{it}
+
+\begin{document}
+
+\title{Steiner's Line Theorem in Isabelle/HOL}
+\author{Arthur Freitas Ramos \and David Barros Hulak \and Ruy Jose Guerra Barretto de Queiroz}
+
+\maketitle
+
+\begin{abstract}
+We formalize Steiner's line theorem in Isabelle/HOL.  For a nondegenerate
+triangle and a point on its circumcircle, the reflections of that point in the
+three sidelines are collinear, and the resulting line passes through the
+orthocenter.  The development uses complex coordinates and imports the
+published Wallace--Simson line entry for its perpendicular-foot and
+collinearity infrastructure.
+\end{abstract}
+
+\section{Introduction}
+
+Steiner's line theorem is the reflection companion to the Wallace--Simson
+line theorem~\cite{CoxeterGreitzer1967}.  Its classical setting goes back to
+Steiner's work on triangle and circle geometry~\cite{Steiner1826}; a modern
+annotated account of related Steiner theorems is given by Ehrmann
+~\cite{Ehrmann2004}.  Let $ABC$ be a nondegenerate
+triangle and let $M$ lie on its circumcircle.  Reflect $M$ in the sidelines
+$BC$, $CA$, and $AB$.  The
+three reflected points lie on one line, called the Steiner line of (M) with
+respect to (ABC), and this line passes through the orthocenter of (ABC).
+
+The formalization imports the AFP entry \emph{The Wallace--Simson Line
+Theorem in Isabelle/HOL}~\cite{Simson-AFP}.  Each reflection is defined as
+twice the corresponding perpendicular foot minus (M), so the collinearity
+part is obtained by applying a homothety to the Simson line.  The
+orthocenter incidence is then proved by a direct complex-coordinate identity.
+
+\section{Main results}
+
+The theorem \isa{steiner\_line} proves collinearity of the three reflected
+points.  The stronger theorem \isa{steiner\_line\_through\_orthocenter}
+proves all three cyclic orthocenter/reflection collinearities.  This
+redundant-looking statement is intentional: if $M$ is a vertex, one pair of
+reflections can coincide, while another cyclic pair still determines the
+Steiner line.  The lemma \isa{orthocenter\_is\_orthocenter} verifies the
+geometric meaning of the coordinate definition: the three
+vertex-to-orthocenter displacements are perpendicular to the opposite
+sidelines.  Its algebraic statement only assumes the three common-circle
+conditions; the nondegenerate-triangle and positive-radius hypotheses are
+introduced by the main theorems.  The definitions
+\isa{steiner\_reflect} and \isa{orthocenter} expose the concrete
+complex-coordinate construction used by both results.
+
+\input{session}
+
+\bibliographystyle{abbrv}
+\bibliography{root}
+
+\end{document}

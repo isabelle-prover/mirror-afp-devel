@@ -4,6 +4,20 @@
     <title>Archive of Formal Proofs</title>
     <link>https://isa-afp.org/</link>
     <description>Formal developments in the AFP</description><item>
+  <title>Rely-Guarantee Specification of a Concurrent Garbage Collector</title>
+  <link>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</link>
+  <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Specification of a Concurrent Garbage Collector in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
+  <title>Steiner&#39;s Line Theorem in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Steiner_Line_Theorem.html</link>
+  <pubDate>Tue, 06 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Steiner&#39;s Line Theorem in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
   <title>Work Bounds for Strongly Joinable Balanced Binary Search Trees</title>
   <link>https://isa-afp.org/entries/Joinable_BST_Work_Bounds.html</link>
   <pubDate>Thu, 24 Sep 2026 00:00:00 +0000</pubDate>
@@ -97,6 +111,7 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
+<<<<<<< working copy
   <title>Actuarial Mathematics</title>
   <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
   <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
@@ -104,6 +119,16 @@
     <category>Mathematics/Games and economics</category>
 </item>
 <item>
+||||||| common ancestor
+=======
+  <title>The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL</title>
+  <link>https://isa-afp.org/entries/Steiner_Deltoid.html</link>
+  <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
+  <description>The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL in the AFP</description>
+    <category>Mathematics/Geometry</category>
+</item>
+<item>
+>>>>>>> merge rev
   <title>Trace Based Semantics for Rely Guarantee</title>
   <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>

@@ -1,0 +1,42 @@
+title = "Steiner's Line Theorem in Isabelle/HOL"
+date = 2026-10-06
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = "We formalize Steiner's line theorem in Isabelle/HOL. For a nondegenerate triangle and a point on its circumcircle, the reflections of that point in the three sidelines are collinear, and the resulting line passes through the orthocenter. The development uses complex coordinates and imports the published Wallace–Simson line entry for its perpendicular-foot and collinearity infrastructure."
+license = "bsd"
+note = ""
+creation_note = """
+AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle.
+
+
+
+"""
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.5948/UPO9780883859346",
+]
+pubs = []

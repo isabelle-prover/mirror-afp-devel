@@ -1,0 +1,37 @@
+title = "The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL"
+date = 2026-08-12
+topics = [
+  "Mathematics/Geometry",
+]
+abstract = "We formalize the classical Steiner deltoid construction in Isabelle/HOL using only the published Archive of Formal Proofs entry for the Wallace--Simson line. In unit-circumcircle coordinates, the deltoid has an explicit complex parametrisation. We prove its derivative formula, characterize the stationary parameters by \\(m^3=abc\\), and certify them as ordinary cusps using the second and third derivatives. We then prove an equality of sets between the appropriate Wallace--Simson line and the tangent line, for every parameter, including the cusp cases. The development uses complex coordinates and handles a vertex parameter by cycling to the alternate pair of feet."
+license = "bsd"
+note = ""
+creation_note = "AI assistance was used for proof engineering. The final definitions, statements, and proofs are checked by Isabelle."
+
+[authors]
+
+[authors.ramos]
+email = "ramos_email"
+
+[authors.hulak]
+email = "hulak_email"
+
+[authors.queiroz]
+email = "queiroz_email"
+
+[contributors]
+
+[notify]
+ramos = "ramos_email"
+hulak = "hulak_email"
+queiroz = "queiroz_email"
+
+[history]
+
+[extra]
+
+[related]
+dois = [
+  "10.1016/j.matcom.2004.05.004",
+]
+pubs = []

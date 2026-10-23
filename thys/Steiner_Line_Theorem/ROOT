@@ -1,0 +1,9 @@
+chapter AFP
+
+session Steiner_Line_Theorem = Simson +
+  options [document = pdf, timeout = 1200]
+  theories
+    Steiner
+  document_files
+    "root.tex"
+    "root.bib"

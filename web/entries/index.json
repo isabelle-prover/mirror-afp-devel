@@ -1,5 +1,54 @@
 [
  {
+  "abstract": "We specify a model of the Ben-Ari concurrent garbage collector in the rely-guarantee paradigm, and verify its correctness. The aim is to show that the algorithm can be verified with rely-guarantee without the use of shared auxiliary variables. The approach is to reason that a certain property is maintained by one component for all instances of a variable, and then instantiate it to the particular instance required by the rely of the other component.",
+  "authors": [
+   "Roger C. Su",
+   "Nisansala P. Yatapanage"
+  ],
+  "date": "2026-10-15",
+  "link": "../entries/RG_VDM_Garbage_Collector.html",
+  "permalink": "https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html",
+  "related": [
+   {
+    "html": "N. P. Yatapanage. \"The complexity of interference: When rely/guarantee does not work.\" To appear in the 12th International Symposium on Dependable Software Engineering: Theories, Tools and Applications (SETTA 2026). Preprint available at arXiv:2609.27392."
+   }
+  ],
+  "shortname": "RG_VDM_Garbage_Collector",
+  "title": "Rely-Guarantee Specification of a Concurrent Garbage Collector",
+  "topic_links": [
+   "../topics/computer-science/concurrency/"
+  ],
+  "topics": [
+   "Computer science/Concurrency"
+  ],
+  "year": "2026"
+ },
+ {
+  "abstract": "We formalize Steiner's line theorem in Isabelle/HOL. For a nondegenerate triangle and a point on its circumcircle, the reflections of that point in the three sidelines are collinear, and the resulting line passes through the orthocenter. The development uses complex coordinates and imports the published Wallace–Simson line entry for its perpendicular-foot and collinearity infrastructure.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-10-06",
+  "link": "../entries/Steiner_Line_Theorem.html",
+  "permalink": "https://isa-afp.org/entries/Steiner_Line_Theorem.html",
+  "related": [
+   {
+    "doi": "10.5948/UPO9780883859346"
+   }
+  ],
+  "shortname": "Steiner_Line_Theorem",
+  "title": "Steiner's Line Theorem in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
   "abstract": "This entry formalises the complexity analysis of set operations on strongly joinable trees as defined by Blelloch, Ferizovic and Sun. It is proved that union, intersection, and difference run in time $O(m \\log(n/m + 1))$ for input sets of size $m$ and $n$ where $m \\le n$.",
   "authors": [
    "Marco Haucke"
@@ -294,6 +343,7 @@
   "year": "2026"
  },
  {
+<<<<<<< working copy
   "abstract": "Actuarial Mathematics is a theory in applied mathematics. This is mainly used for determining the prices of insurance products and evaluating the liability of a company associated with insurance contracts. It is related to calculus, probability theory and financial theory, etc. In this entry, I formalize the very basic part of Actuarial Mathematics in Isabelle/HOL. It includes the theory of interest, survival model, and life table. The theory of interest deals with interest rates, present value factors, an annuity certain, etc. The survival model is a probabilistic model that represents human mortality. The life table is based on the survival model and used for practical calculations. I have already formalized the basic part of Actuarial Mathematics in Rocq (https://github.com/Yosuke-Ito-345/Actuary) in a purely axiomatic manner. In contrast, Isabelle formalization is based on probability theory, and the survival model is developed as generally as possible. Such rigorous and general formulation seems very rare; at least I cannot find any similar documentation on the web. This formalization in Isabelle is still at an early stage, and I cannot guarantee the backward compatibility in the future development. If you heavily depend on this entry, please let me know. (Updated August 20, 2026.) ",
   "authors": [
    "Yosuke Ito",
@@ -314,6 +364,34 @@
   "year": "2026"
  },
  {
+||||||| common ancestor
+=======
+  "abstract": "We formalize the classical Steiner deltoid construction in Isabelle/HOL using only the published Archive of Formal Proofs entry for the Wallace--Simson line. In unit-circumcircle coordinates, the deltoid has an explicit complex parametrisation. We prove its derivative formula, characterize the stationary parameters by \\(m^3=abc\\), and certify them as ordinary cusps using the second and third derivatives. We then prove an equality of sets between the appropriate Wallace--Simson line and the tangent line, for every parameter, including the cusp cases. The development uses complex coordinates and handles a vertex parameter by cycling to the alternate pair of feet.",
+  "authors": [
+   "Arthur Freitas Ramos",
+   "David Barros Hulak",
+   "Ruy Jose Guerra Barretto de Queiroz"
+  ],
+  "date": "2026-08-12",
+  "link": "../entries/Steiner_Deltoid.html",
+  "permalink": "https://isa-afp.org/entries/Steiner_Deltoid.html",
+  "related": [
+   {
+    "doi": "10.1016/j.matcom.2004.05.004"
+   }
+  ],
+  "shortname": "Steiner_Deltoid",
+  "title": "The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL",
+  "topic_links": [
+   "../topics/mathematics/geometry/"
+  ],
+  "topics": [
+   "Mathematics/Geometry"
+  ],
+  "year": "2026"
+ },
+ {
+>>>>>>> merge rev
   "abstract": "We formalize Miquel's theorem, also known as the pivot theorem, in Isabelle/HOL. Let \\(ABC\\) be a triangle in the Euclidean plane and let \\(P\\), \\(Q\\), \\(R\\) be points on the side lines \\(BC\\), \\(CA\\), \\(AB\\) respectively. Then the circumcircles of the three triangles \\(AQR\\), \\(BRP\\), \\(CPQ\\) pass through a common point \\(M\\), the Miquel point of the configuration.\nThe development uses complex coordinates.",
   "authors": [
    "Arthur Freitas Ramos",

@@ -1,0 +1,90 @@
+\documentclass[11pt,a4paper]{article}
+\usepackage[T1]{fontenc}
+\usepackage{isabelle,isabellesym}
+
+% further packages required for unusual symbols (see also
+% isabellesym.sty), use only when needed
+
+%\usepackage{amssymb}
+  %for \<leadsto>, \<box>, \<diamond>, \<sqsupset>, \<mho>, \<Join>,
+  %\<lhd>, \<lesssim>, \<greatersim>, \<lessapprox>, \<greaterapprox>,
+  %\<triangleq>, \<yen>, \<lozenge>
+
+%\usepackage{eurosym}
+  %for \<euro>
+
+%\usepackage[only,bigsqcap,bigparallel,fatsemi,interleave,sslash]{stmaryrd}
+  %for \<Sqinter>, \<Parallel>, \<Zsemi>, \<Parallel>, \<sslash>
+
+%\usepackage{eufrak}
+  %for \<AA> ... \<ZZ>, \<aa> ... \<zz> (also included in amssymb)
+
+%\usepackage{textcomp}
+  %for \<onequarter>, \<onehalf>, \<threequarters>, \<degree>, \<cent>,
+  %\<currency>
+
+% this should be the last package used
+\usepackage{pdfsetup}
+
+% urls in roman style, theory text in math-similar italics
+\urlstyle{rm}
+\isabellestyle{it}
+
+% for uniform font size
+%\renewcommand{\isastyle}{\isastyleminor}
+
+
+\begin{document}
+
+\title{Rely-Guarantee Specification of a Concurrent Garbage Collector}
+\author{Roger C. Su and Nisansala P. Yatapanage}
+\maketitle
+
+%---------------------------------------------------------------------
+\begin{abstract}
+We specify a model of the Ben-Ari concurrent garbage collector in the
+rely-guarantee paradigm, and verify its correctness. The aim is to show
+that the algorithm can be verified with rely-guarantee without the use of 
+shared auxiliary variables. The approach is to reason that a certain
+property is maintained by one component for all instances of a variable,
+and then instantiate it to the particular instance required by the rely
+of the other component.   
+\end{abstract}
+
+%---------------------------------------------------------------------
+\tableofcontents
+
+% sane default for proof documents
+\parindent 0pt\parskip 0.5ex
+
+%---------------------------------------------------------------------
+\section{Introduction}
+
+Jones and Yatapanage \cite{Jones-Yatapanage-19} showed that Ben-Ari's concurrent garbage collector \cite{BenAri-84} is difficult to specify in the rely-guarantee paradigm without shared auxiliary variables, which break compositionality.
+%
+This proof-development, which accompanies \cite{Yatapanage-26a,Yatapanage-26}, expands on an alternative approach briefly mentioned in 
+\cite{Jones-Yatapanage-19}. 
+%
+The idea is to maintain compositionality by using \emph{Holds For All} reasoning. The Mutator is shown to satisfy a certain property over all instances of a variable, without requiring any knowledge about which particular instance the Collector requires for its rely condition.
+The property is then instantiated to the required context. 
+
+The specification focusses on the Collector's Marking phase, which is where the interference from the Mutator manifests.
+It specifies and establishes (1) that the Mutator maintains the property required for the Collector's rely to hold, and (2) that the postcondition of the Collector's Marking phase is reached.
+
+Further details can be found in \cite{Yatapanage-26a,Yatapanage-26}.
+
+%---------------------------------------------------------------------
+% generated text of all theories
+\input{session}
+
+%---------------------------------------------------------------------
+% optional bibliography
+\bibliographystyle{alphaurl}
+\bibliography{root}
+
+\end{document}
+
+%%% Local Variables:
+%%% mode: latex
+%%% TeX-master: t
+%%% End:
