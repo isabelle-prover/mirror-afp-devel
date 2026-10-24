@@ -4,7 +4,13 @@
     <title>Computer science/Concurrency</title>
     <link>https://isa-afp.org/topics/computer-science/concurrency/</link>
     <description>AFP entries in Concurrency</description><item>
-<<<<<<< working copy
+  <title>Rely-Guarantee Specification of a Concurrent Garbage Collector</title>
+  <link>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</link>
+  <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
+  <description>Rely-Guarantee Specification of a Concurrent Garbage Collector in the AFP</description>
+    <category>Computer science/Concurrency</category>
+</item>
+<item>
   <title>IMP_concur - A Semantics for a Language with Concurrency based on HOL-CSP</title>
   <link>https://isa-afp.org/entries/IMP_concur.html</link>
   <pubDate>Mon, 31 Aug 2026 00:00:00 +0000</pubDate>
@@ -15,16 +21,6 @@
     <category>Computer science/Programming languages</category>
 </item>
 <item>
-||||||| common ancestor
-=======
-  <title>Rely-Guarantee Specification of a Concurrent Garbage Collector</title>
-  <link>https://isa-afp.org/entries/RG_VDM_Garbage_Collector.html</link>
-  <pubDate>Thu, 15 Oct 2026 00:00:00 +0000</pubDate>
-  <description>Rely-Guarantee Specification of a Concurrent Garbage Collector in the AFP</description>
-    <category>Computer science/Concurrency</category>
-</item>
-<item>
->>>>>>> merge rev
   <title>Trace Based Semantics for Rely Guarantee</title>
   <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>

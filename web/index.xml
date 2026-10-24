@@ -111,7 +111,6 @@
     <category>Mathematics/Analysis</category>
 </item>
 <item>
-<<<<<<< working copy
   <title>Actuarial Mathematics</title>
   <link>https://isa-afp.org/entries/Actuarial_Mathematics.html</link>
   <pubDate>Thu, 20 Aug 2026 00:00:00 +0000</pubDate>
@@ -119,8 +118,6 @@
     <category>Mathematics/Games and economics</category>
 </item>
 <item>
-||||||| common ancestor
-=======
   <title>The Steiner Deltoid as the Tangent Envelope of Wallace--Simson Lines in Isabelle/HOL</title>
   <link>https://isa-afp.org/entries/Steiner_Deltoid.html</link>
   <pubDate>Wed, 12 Aug 2026 00:00:00 +0000</pubDate>
@@ -128,7 +125,6 @@
     <category>Mathematics/Geometry</category>
 </item>
 <item>
->>>>>>> merge rev
   <title>Trace Based Semantics for Rely Guarantee</title>
   <link>https://isa-afp.org/entries/Trace_Based_Rely_Guarantee.html</link>
   <pubDate>Tue, 11 Aug 2026 00:00:00 +0000</pubDate>
