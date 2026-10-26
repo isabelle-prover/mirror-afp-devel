@@ -865,7 +865,7 @@ val check_closing_ml_invs =
 val output_name = Symbol.explode
                   #> map (fn s => if equal s Symbol.sub then "SUB" else s)
                   #> implode
-                  #> translate_string (fn "." => "DOT" | s => s)
+                  #> String.translate_str (fn "." => "DOT" | s => s)
                   #> Latex.output_name
 
 val ISA_prefix = "Isabelle_DOF_"
@@ -1257,7 +1257,7 @@ fun ML_isa_elaborate_generic (_:theory) isa_name ty term_option _ =
     | SOME term => Const (isa_name, ty) $ term
 
 (* Convert some excluded mixfix symbols that can appear in an inner syntax name. *)
-val clean_mixfix = translate_string
+val clean_mixfix = String.translate_str
   (fn "_" => "'_"
     | "'" => "''"
     | c => c);
@@ -3224,7 +3224,7 @@ val _ =
 
 
 
-val clean_mixfix_sub = translate_string
+val clean_mixfix_sub = String.translate_str
   (fn "\<^sub>_" => "_"
     | "\<^sub>'" => "'"
     | c =>  c);

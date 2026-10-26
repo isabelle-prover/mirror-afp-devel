@@ -50,7 +50,7 @@ struct
 open Dict_Construction_Util
 
 val mangle =
-  translate_string (fn x =>
+  String.translate_str (fn x =>
     if x = "." then
       "_"
     else if x = "_" then

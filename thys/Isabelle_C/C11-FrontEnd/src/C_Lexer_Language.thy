@@ -94,7 +94,7 @@ fun is_ascii_letdig s =
   Symbol.is_ascii_letter s orelse Symbol.is_ascii_digit s orelse is_ascii_quasi s;
 
 fun is_ascii_identifier s =
-  size s > 0 andalso forall_string is_ascii_letdig s;
+  size s > 0 andalso String.forall_str is_ascii_letdig s;
 
 val ascii_blank_no_line =
   [ ([" "], NONE)
@@ -587,7 +587,7 @@ val keywords3 =
   "unsigned",
   "void"];
 
-val lexicon = Scan.make_lexicon (map raw_explode keywords);
+val lexicon = Scan.make_lexicon (map String.explode_str keywords);
 
 
 
@@ -1009,7 +1009,7 @@ val scan_suffix_int =
 
 val scan_suffix_gnu_int0 = scan_suffix_gnu Flag_imag
 val scan_suffix_gnu_int = scan_full !!!
-                                    (member (op =) (raw_explode "uUlLij"))
+                                    (member (op =) (String.explode_str "uUlLij"))
                                     "Invalid integer constant suffix"
                                     (   scan_suffix_int @@@ opt scan_suffix_gnu_int0
                                      || scan_suffix_gnu_int0 @@@ opt scan_suffix_int)
@@ -1042,7 +1042,7 @@ val scan_exppart = scan_signpart "e" "E"
 val scan_suffix_float = $$$ "f" || $$$ "F" || $$$ "l" || $$$ "L"
 val scan_suffix_gnu_float0 = Scan.trace (scan_suffix_gnu ()) >> #2
 val scan_suffix_gnu_float = scan_full !!!
-                                      (member (op =) (raw_explode "fFlLij"))
+                                      (member (op =) (String.explode_str "fFlLij"))
                                       "Invalid float constant suffix"
                                       (   scan_suffix_float @@@ opt scan_suffix_gnu_float0
                                        || scan_suffix_gnu_float0 @@@ opt scan_suffix_float)
@@ -1067,7 +1067,7 @@ val scan_int = scan_inthex
             || scan_intdec
 
 val recover_int =
-     many1 (fn s => Symbol.is_ascii_hex s orelse member (op =) (raw_explode "xXuUlLij") s)
+     many1 (fn s => Symbol.is_ascii_hex s orelse member (op =) (String.explode_str "xXuUlLij") s)
 
 val scan_float = scan_floatdec
               || scan_floathex
@@ -1117,7 +1117,7 @@ fun scan_escape s0 =
         in [if x <= Char.maxOrd then Left (chr x, sym_pos l) else Right (Symbol_Pos.range l, x)] end
       val read_oct' = chr' read_oct
       val read_hex' = chr' read_hex
-  in one' (member (op =) (raw_explode (s0 ^ String.concat (map #1 escape_char))))
+  in one' (member (op =) (String.explode_str (s0 ^ String.concat (map #1 escape_char))))
      >> (fn i =>
           [Left (( case AList.lookup (op =) escape_char (Symbol_Pos.content i) of
                      NONE => s0
@@ -1522,7 +1522,7 @@ fun read_source' {language, symbols} scan source =
       else ();
   in
     Input.source_explode source
-    |> not symbols ? maps (fn (s, p) => raw_explode s |> map (rpair p))
+    |> not symbols ? maps (fn (s, p) => String.explode_str s |> map (rpair p))
     |> reader scan
   end;
 

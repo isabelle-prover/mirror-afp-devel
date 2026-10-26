@@ -1462,7 +1462,7 @@ local
     let
       (* from HOL strings to ML strings *)
       fun dest_nib c =    (* fixme authentic syntax *)
-        (case raw_explode c of
+        (case String.explode_str c of
           ["N", "i", "b", "b", "l", "e", h] =>
             if "0" <= h andalso h <= "9" then ord h - ord "0"
             else if "A" <= h andalso h <= "F" then ord h - ord "A" + 10

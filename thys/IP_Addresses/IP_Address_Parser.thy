@@ -34,7 +34,7 @@ in
 end;
 
 local
-  val (ip_term, rest) = "10.8.0.255" |> raw_explode |> Scan.finite Symbol.stopper (parser_ipv4 >> mk_ipv4addr);
+  val (ip_term, rest) = "10.8.0.255" |> String.explode_str |> Scan.finite Symbol.stopper (parser_ipv4 >> mk_ipv4addr);
 in
   val _ = if rest <> [] then raise Fail "did not parse everything" else writeln "parsed";
   val _ = if
@@ -94,7 +94,7 @@ in
 end;
 
 local
-  val parse_ipv6 = raw_explode
+  val parse_ipv6 = String.explode_str
                    #> Scan.finite Symbol.stopper (parser_ipv6 >> mk_ipv6addr);
   fun unit_test (ip_string, ip_result) = let
     val (ip_term, rest) = ip_string |> parse_ipv6;

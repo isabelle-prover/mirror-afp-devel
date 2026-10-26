@@ -17,7 +17,7 @@ setup \<open>
     (Scan.lift Parse.embedded)
     (fn _ => fn s =>
       Latex.string "\\begin{lstlisting}\n" @
-      Latex.string (cat_lines (trim (forall_string Symbol.is_space) (trim_split_lines s))) @
+      Latex.string (cat_lines (trim (String.forall_str Symbol.is_space) (trim_split_lines s))) @
       Latex.string "\n\\end{lstlisting}")
 \<close>
 (*>*)

@@ -77,11 +77,8 @@ begin
 
   private parse_iptables_save net_fw = "TUM_Net" "iptables-save-2015-05-15_15-23-41"
 
-  value[code] "bench upper_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
-  value[code] "view upper_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
-
-  value[code] "bench lower_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
-  value[code] "view lower_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
+  value[code] "bench_and_view upper_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
+  value[code] "bench_and_view lower_closure FWD ipassmt net_fw_FORWARD_default_policy net_fw"
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
           (build_ip_partition netbios fw)"
@@ -95,6 +92,7 @@ begin
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
      (access_matrix_pretty_ipv4 netbios fw)"
+
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw_FORWARD_default_policy net_fw in
     (access_matrix_pretty_ipv4 kerberos_adm_tcp fw)"
@@ -117,11 +115,8 @@ context
 begin
  private parse_iptables_save net_fw2 = "TUM_Net" "iptables-save-2015-09-03_15-56-50"
 
-  value[code] "bench upper_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
-  value[code] "view upper_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
-
-  value[code] "bench lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
-  value[code] "view lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
+  value[code] "bench_and_view upper_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
+  value[code] "bench_and_view lower_closure FWD ipassmt net_fw2_FORWARD_default_policy net_fw2"
 
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2_FORWARD_default_policy net_fw2 in
@@ -137,11 +132,8 @@ context
 begin
  private parse_iptables_save net_fw2013 = "TUM_Net" "iptables_20.10.2013"
 
-  value[code] "bench upper_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
-  value[code] "view upper_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
-
-  value[code] "bench lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
-  value[code] "view lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
+  value[code] "bench_and_view upper_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
+  value[code] "bench_and_view lower_closure FWD ipassmt net_fw2013_FORWARD_default_policy net_fw2013"
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2013_FORWARD_default_policy net_fw2013 in
      (access_matrix_pretty_ipv4 netbios fw)"
@@ -158,11 +150,8 @@ context
 begin
  private parse_iptables_save net_fw2014 = "TUM_Net" "iptables_25.07.2014"
 
-  value[code] "bench upper_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
-  value[code] "view upper_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
-
-  value[code] "bench lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
-  value[code] "view lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
+  value[code] "bench_and_view upper_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
+  value[code] "bench_and_view lower_closure FWD ipassmt net_fw2014_FORWARD_default_policy net_fw2014"
 
   value[code] "let fw = preprocess (get_unfold FWD) upper_closure ipassmt net_fw2014_FORWARD_default_policy net_fw2014 in
      (access_matrix_pretty_ipv4 netbios fw)"
