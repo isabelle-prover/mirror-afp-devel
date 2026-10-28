@@ -152,24 +152,24 @@ text \<open>The simulation relation, stage-granular, the AR analogue
     \<open>sim_pos b\<close> of \<open>M\<close>'s head.\<close>
 
 definition ar_simulates ::
-  "('q, 'a) mttm
-    \<Rightarrow> ('a, 'q) mt_config
-    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) mt_config
+  "('q, 'a) ktm
+    \<Rightarrow> ('a, 'q) ktc_config
+    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) ktc_config
     \<Rightarrow> bool" where
   "ar_simulates M cM cM' \<longleftrightarrow>
-     (let qM = mt_state cM; tsM = mt_tape cM; nM = mt_pos cM;
-          full = mt_state cM';
-          tsM' = mt_tape cM'; nM' = mt_pos cM' in
+     (let qM = ktc_state cM; tsM = ktc_tape cM; nM = ktc_pos cM;
+          full = ktc_state cM';
+          tsM' = ktc_tape cM'; nM' = ktc_pos cM' in
       (case full of (qM', stg) \<Rightarrow>
          (case stg of (idx, _, _, _, _, _) \<Rightarrow>
-            ((idx = AR_SimRead \<and> qM' \<notin> {t_tm M, r_tm M})
-               \<or> (qM' = t_tm M \<and> stg = ar_accept_stage (bl_tm M))
-               \<or> (qM' = r_tm M \<and> stg = ar_reject_stage (bl_tm M)))
+            ((idx = AR_SimRead \<and> qM' \<notin> {t_ktm M, r_ktm M})
+               \<or> (qM' = t_ktm M \<and> stg = ar_accept_stage (bl_ktm M))
+               \<or> (qM' = r_ktm M \<and> stg = ar_reject_stage (bl_ktm M)))
             \<and> qM = qM'
-            \<and> (\<forall>k < k_tm M. ar_tape_correspondence (\<Gamma>_tm M) (le_tm M) (bl_tm M)
+            \<and> (\<forall>k < k_ktm M. ar_tape_correspondence (\<Gamma>_ktm M) (le_ktm M) (bl_ktm M)
                        (tsM k) (tsM' k))
             \<and> (idx = AR_SimRead
-                 \<longrightarrow> (\<forall>k. nM' k = sim_pos (block_width (\<Gamma>_tm M)) (nM k))))))"
+                 \<longrightarrow> (\<forall>k. nM' k = sim_pos (block_width (\<Gamma>_ktm M)) (nM k))))))"
 
 text \<open>Companion invariant carried alongside \<open>ar_simulates\<close> (the AR
   analogue of AE's \<open>ae_buffer_in_gamma_block\<close>): at an
@@ -189,14 +189,14 @@ text \<open>Companion invariant carried alongside \<open>ar_simulates\<close> (t
   \<open>ar_simulates_forward_step\<close>.\<close>
 
 definition ar_posk_consistent ::
-  "('q, 'a) mttm
-    \<Rightarrow> ('a, 'q) mt_config
-    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) mt_config \<Rightarrow> bool" where
+  "('q, 'a) ktm
+    \<Rightarrow> ('a, 'q) ktc_config
+    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) ktc_config \<Rightarrow> bool" where
   "ar_posk_consistent M cM cM' \<longleftrightarrow>
-     (case mt_state cM' of (qM', stg) \<Rightarrow>
+     (case ktc_state cM' of (qM', stg) \<Rightarrow>
         (case stg of (idx, _, _, _, _, posk) \<Rightarrow>
            idx = AR_SimRead
-             \<longrightarrow> (\<forall>k. posk k = AR_AtLE \<longleftrightarrow> mt_pos cM k = 0)))"
+             \<longrightarrow> (\<forall>k. posk k = AR_AtLE \<longleftrightarrow> ktc_pos cM k = 0)))"
 
 text \<open>Second companion invariant, the boundary-shape companion (the
   buffer-in-\<open>\<Gamma>\<close> companion, plus
@@ -211,12 +211,12 @@ text \<open>Second companion invariant, the boundary-shape companion (the
   \<open>AR_SimRead\<close> boundary, the canonical entry shape \<open>tk =
   0\<close>, \<open>i = 0\<close>, \<open>\<forall>k. buf k \<in> \<Gamma> \<union>
   {bl}\<close>.  Vacuous off the boundary (the halt configs), where the
-  read phase never runs.  Under value-level tape count it carries two
-  further invariants the reverse walker's read-phase lift needs: the
+  read phase never runs.  It carries two further invariants that the
+  reverse direction needs for the read phase: the
   boundary stage is \<open>ar_stage_bounded\<close> (its \<open>buf\<close> /
-  \<open>dvec\<close> / \<open>posk\<close> tails freeze beyond \<open>k_tm M\<close>),
-  and the whole config is blank-tailed (\<open>\<forall>j \<ge> k_tm M.
-  mt_tape cM' j (mt_pos cM' j) = BLANK4\<close>) — the \<open>src0_b\<close> /
+  \<open>dvec\<close> / \<open>posk\<close> tails freeze beyond \<open>k_ktm M\<close>),
+  and the whole config is blank-tailed (\<open>\<forall>j \<ge> k_ktm M.
+  ktc_tape cM' j (ktc_pos cM' j) = BLANK4\<close>) — the \<open>src0_b\<close> /
   \<open>pad0_b\<close> facts the substrate's \<open>alphabet_reduce_delta\<close>
   support filter forces on every produced step.  Established at the
   initial config
@@ -230,16 +230,16 @@ text \<open>Second companion invariant, the boundary-shape companion (the
   should carry no forward-only boundary bookkeeping.\<close>
 
 definition ar_at_read_boundary ::
-  "('q, 'a) mttm
-    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) mt_config \<Rightarrow> bool" where
+  "('q, 'a) ktm
+    \<Rightarrow> (sym4, 'q \<times> 'a ar_stage) ktc_config \<Rightarrow> bool" where
   "ar_at_read_boundary M cM' \<longleftrightarrow>
-     (case mt_state cM' of (qM', stg) \<Rightarrow>
+     (case ktc_state cM' of (qM', stg) \<Rightarrow>
         (case stg of (idx, tk, i, buf, dvec, posk) \<Rightarrow>
            idx = AR_SimRead
              \<longrightarrow> (tk = 0 \<and> i = 0
-                  \<and> (\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M})
-                  \<and> ar_stage_bounded (bl_tm M) (k_tm M)
+                  \<and> (\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M})
+                  \<and> ar_stage_bounded (bl_ktm M) (k_ktm M)
                        (idx, tk, i, buf, dvec, posk))))
-     \<and> (\<forall>j \<ge> k_tm M. mt_tape cM' j (mt_pos cM' j) = BLANK4)"
+     \<and> (\<forall>j \<ge> k_ktm M. ktc_tape cM' j (ktc_pos cM' j) = BLANK4)"
 
 end

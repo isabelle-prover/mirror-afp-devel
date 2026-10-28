@@ -9,10 +9,10 @@ text \<open>The output machine's \<open>\<delta>'\<close> is defined as a
   AE's \<open>alphabet_enlarge_delta\<close> shape.  Each substep
   relation is a set of substrate-shape 5-tuples
   \<open>((q, stg), a, (q', stg'), a', d)\<close> where
-  \<open>q\<close> ranges over \<open>Q_tm M\<close>, \<open>stg\<close>
+  \<open>q\<close> ranges over \<open>Q_ktm M\<close>, \<open>stg\<close>
   over \<open>'a ar_stage\<close>, \<open>a\<close> /
   \<open>a'\<close> over \<open>nat \<Rightarrow> sym4\<close>, and
-  \<open>d\<close> over \<open>nat \<Rightarrow> dir\<close>.  The five substep
+  \<open>d\<close> over \<open>nat \<Rightarrow> move\<close>.  The five substep
   relations are defined below, one per simulation phase.
 
   No validation cluster: AR's language theorem is quantified
@@ -29,15 +29,15 @@ text \<open>The output machine's \<open>\<delta>'\<close> is defined as a
   Throughout, \<open>b\<close> abbreviates \<open>block_width \<Gamma>\<close> (the per-symbol cell width).\<close>
 
 definition ar_delta_read ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ar_delta_read M =
     \<comment> \<open>LE-arm, non-last tape: head at position 0
-       reads \<open>LE4\<close>, sets \<open>buf tk := le_tm M\<close>
+       reads \<open>LE4\<close>, sets \<open>buf tk := le_ktm M\<close>
        directly (no accumulator needed for the single
        LE-cell), advances \<open>R\<close> on \<open>tk\<close> to
        position 1, and transitions to the next tape's read.
@@ -46,26 +46,26 @@ definition ar_delta_read ::
        update it later when the head leaves the LE region.\<close>
     {((q, AR_SimRead, tk, 0, buf, dvec, posk), a,
        (q, AR_SimRead, k_succ tk, 0,
-        buf(tk := le_tm M), dvec, posk), a, d) |
+        buf(tk := le_ktm M), dvec, posk), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> \<not> is_last_k M tk
        \<and> posk tk = AR_AtLE
        \<and> a tk = LE4
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>LE-arm, last tape: same single-substep
        LE-read, transitions to \<open>AR_SimCompute\<close>
        instead of the next tape.\<close>
     {((q, AR_SimRead, tk, 0, buf, dvec, posk), a,
        (q, AR_SimCompute, k_unidx 0, 0,
-        buf(tk := le_tm M), dvec, posk), a, d) |
+        buf(tk := le_ktm M), dvec, posk), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> is_last_k M tk
        \<and> posk tk = AR_AtLE
        \<and> a tk = LE4
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm look-back step 1
        (\<open>i = 0\<close>): head at \<open>sim_pos(p)\<close>
@@ -79,10 +79,10 @@ definition ar_delta_read ::
     {((q, AR_SimRead, tk, 0, buf, dvec, posk), a,
        (q, AR_SimRead, tk, Suc 0, buf, dvec, posk), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}
        \<and> a tk \<noteq> LE4
-       \<and> d = (\<lambda>kk. if kk = tk then dir.L else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveL else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm look-back step 2
        (\<open>i = 1\<close>): head at \<open>sim_pos(p) - 1\<close>
@@ -99,14 +99,14 @@ definition ar_delta_read ::
        Transitions to \<open>i = 2\<close>.\<close>
     {((q, AR_SimRead, tk, Suc 0, buf, dvec, posk), a,
        (q, AR_SimRead, tk, Suc (Suc 0),
-        buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0),
+        buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0),
         dvec,
         posk(tk := if a tk = LE4 then AR_AtFirstProper
                                   else AR_AtFurtherProper)), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm per-bit stepping
        (\<open>2 \<le> i \<le> b\<close>): head at
@@ -122,16 +122,16 @@ definition ar_delta_read ::
        substep continues the accumulator chain.\<close>
     {((q, AR_SimRead, tk, i, buf, dvec, posk), a,
        (q, AR_SimRead, tk, Suc i,
-        buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
+        buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
                        + bit_value (a tk))),
         dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}
        \<and> 2 \<le> i
-       \<and> Suc i \<le> Suc (block_width (\<Gamma>_tm M))
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> Suc i \<le> Suc (block_width (\<Gamma>_ktm M))
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm per-bit boundary
        (\<open>i = Suc (b)\<close>), non-last tape:
@@ -139,21 +139,21 @@ definition ar_delta_read ::
        (\<open>j = b - 1\<close>), \<open>buf' tk\<close> holds the
        fully-decoded \<open>M\<close>-symbol (\<open>\<in>
        \<Gamma>\<close> for valid encoder images; falls back to
-       \<open>bl_tm M\<close> for non-encoder inputs), then
+       \<open>bl_ktm M\<close> for non-encoder inputs), then
        transitions to the same phase on \<open>k_succ tk\<close>
        with bit-counter reset to \<open>0\<close>.\<close>
     {((q, AR_SimRead, tk, i, buf, dvec, posk), a,
        (q, AR_SimRead, k_succ tk, 0,
-        buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
+        buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
                        + bit_value (a tk))),
         dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> \<not> is_last_k M tk
        \<and> posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}
-       \<and> i = Suc (block_width (\<Gamma>_tm M))
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> i = Suc (block_width (\<Gamma>_ktm M))
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm per-bit boundary, last tape: same
        last-bit accumulator step, transitions to
@@ -161,30 +161,30 @@ definition ar_delta_read ::
        \<open>k_unidx 0\<close>.\<close>
     {((q, AR_SimRead, tk, i, buf, dvec, posk), a,
        (q, AR_SimCompute, k_unidx 0, 0,
-        buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
+        buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
                        + bit_value (a tk))),
         dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> is_last_k M tk
        \<and> posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}
-       \<and> i = Suc (block_width (\<Gamma>_tm M))
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}"
+       \<and> i = Suc (block_width (\<Gamma>_ktm M))
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}"
 
 definition ar_delta_compute ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ar_delta_compute M =
     {((q, AR_SimCompute, tk, i, buf, dvec, posk), a,
        (q', AR_SimWrite, 0, 0, m_a', m_d, posk), a, d) |
      q buf q' m_a' m_d tk i dvec posk a d.
-       (q, buf, q', m_a', m_d) \<in> delta_tm M
-       \<and> d = (\<lambda>_. dir.N)}"
+       (q, buf, q', m_a', m_d) \<in> delta_ktm M
+       \<and> d = (\<lambda>_. MoveN)}"
   \<comment> \<open>One \<open>\<delta>'\<close>-tuple per \<open>M\<close>'s
      \<open>\<delta>\<close>-tuple.  Matches the source-stage \<open>buf\<close>
      field (the decoded per-tape symbol vector, produced by
@@ -204,19 +204,19 @@ definition ar_delta_compute ::
      dispatch.\<close>
 
 definition ar_delta_write ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ar_delta_write M =
     \<comment> \<open>LE-arm, non-last tape: \<open>posk tk = AR_AtLE\<close>
        means tape \<open>tk\<close>'s head sits on the reduced boundary
        (\<open>sim_pos 0 = 0\<close>), whose \<open>LE4\<close> cell need not be
        rewritten (\<open>\<delta>LE\<close> requires writing \<open>le\<close>
        back, which is exactly the present cell).  Keyed on the
-       position-kind flag, not on \<open>buf tk = le_tm M\<close>, so a
+       position-kind flag, not on \<open>buf tk = le_ktm M\<close>, so a
        source machine that writes \<open>le\<close> off the boundary (a tape
        cut) is handled by the proper arm below, as ordinary data.
        Skip the per-tape write phase entirely: single substep with
@@ -225,10 +225,10 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, 0, buf, dvec, posk), a,
        (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk = AR_AtLE
        \<and> \<not> is_last_k M tk
-       \<and> d = (\<lambda>_. dir.N)}
+       \<and> d = (\<lambda>_. MoveN)}
     \<union>
     \<comment> \<open>LE-arm, last tape: transitions to
        \<open>AR_SimAdvance\<close> with the current-tape index
@@ -236,10 +236,10 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, 0, buf, dvec, posk), a,
        (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk), a, d) |
      q tk buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk = AR_AtLE
        \<and> is_last_k M tk
-       \<and> d = (\<lambda>_. dir.N)}
+       \<and> d = (\<lambda>_. MoveN)}
     \<union>
     \<comment> \<open>Proper-arm, back-walk phase
        (\<open>0 \<le> i < b\<close>): head moves
@@ -253,11 +253,11 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, i, buf, dvec, posk), a,
        (q, AR_SimWrite, tk, Suc i, buf, dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<noteq> AR_AtLE
        \<and> a tk \<noteq> LE4
-       \<and> Suc i \<le> block_width (\<Gamma>_tm M)
-       \<and> d = (\<lambda>kk. if kk = tk then dir.L else dir.N)}
+       \<and> Suc i \<le> block_width (\<Gamma>_ktm M)
+       \<and> d = (\<lambda>kk. if kk = tk then MoveL else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm, forward-write stepping phase
        (\<open>b \<le> i < 2b - 1\<close>): write
@@ -269,16 +269,16 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, i, buf, dvec, posk), a,
        (q, AR_SimWrite, tk, Suc i, buf, dvec, posk), a', d) |
      q tk i buf dvec posk a a' d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<noteq> AR_AtLE
-       \<and> block_width (\<Gamma>_tm M) \<le> i
-       \<and> Suc i < 2 * block_width (\<Gamma>_tm M)
+       \<and> block_width (\<Gamma>_ktm M) \<le> i
+       \<and> Suc i < 2 * block_width (\<Gamma>_ktm M)
        \<and> a' = (\<lambda>kk. if kk = tk
-                       then write_bit (\<Gamma>_tm M) (bl_tm M)
+                       then write_bit (\<Gamma>_ktm M) (bl_ktm M)
                                        (buf tk)
-                                       (i - block_width (\<Gamma>_tm M))
+                                       (i - block_width (\<Gamma>_ktm M))
                        else a kk)
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm, forward-write boundary
        (\<open>Suc i = 2b\<close>), non-last tape: last cell of
@@ -289,16 +289,16 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, i, buf, dvec, posk), a,
        (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk), a', d) |
      q tk i buf dvec posk a a' d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<noteq> AR_AtLE
        \<and> \<not> is_last_k M tk
-       \<and> Suc i = 2 * block_width (\<Gamma>_tm M)
+       \<and> Suc i = 2 * block_width (\<Gamma>_ktm M)
        \<and> a' = (\<lambda>kk. if kk = tk
-                       then write_bit (\<Gamma>_tm M) (bl_tm M)
+                       then write_bit (\<Gamma>_ktm M) (bl_ktm M)
                                        (buf tk)
-                                       (i - block_width (\<Gamma>_tm M))
+                                       (i - block_width (\<Gamma>_ktm M))
                        else a kk)
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}
     \<union>
     \<comment> \<open>Proper-arm, forward-write boundary, last tape:
        same last-cell write as above, transitions to
@@ -307,24 +307,24 @@ definition ar_delta_write ::
     {((q, AR_SimWrite, tk, i, buf, dvec, posk), a,
        (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk), a', d) |
      q tk i buf dvec posk a a' d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> posk tk \<noteq> AR_AtLE
        \<and> is_last_k M tk
-       \<and> Suc i = 2 * block_width (\<Gamma>_tm M)
+       \<and> Suc i = 2 * block_width (\<Gamma>_ktm M)
        \<and> a' = (\<lambda>kk. if kk = tk
-                       then write_bit (\<Gamma>_tm M) (bl_tm M)
+                       then write_bit (\<Gamma>_ktm M) (bl_ktm M)
                                        (buf tk)
-                                       (i - block_width (\<Gamma>_tm M))
+                                       (i - block_width (\<Gamma>_ktm M))
                        else a kk)
-       \<and> d = (\<lambda>kk. if kk = tk then dir.R else dir.N)}"
+       \<and> d = (\<lambda>kk. if kk = tk then MoveR else MoveN)}"
 
 definition ar_delta_advance ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ar_delta_advance M =
     \<comment> \<open>Stepping arm: head moves \<open>L\<close> on tape
        \<open>tk\<close>, \<open>N\<close> elsewhere; stays in
@@ -344,10 +344,10 @@ definition ar_delta_advance ::
     {((q, AR_SimAdvance, tk, i, buf, dvec, posk), a,
        (q, AR_SimAdvance, tk, Suc i, buf, dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> a tk \<noteq> LE4
-       \<and> Suc i < ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk)
-       \<and> d = (\<lambda>kk. if kk = tk then dir.L else dir.N)}
+       \<and> Suc i < ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk)
+       \<and> d = (\<lambda>kk. if kk = tk then MoveL else MoveN)}
     \<union>
     \<comment> \<open>Boundary arm, non-last tape.  Two firing
        sub-cases: the \<open>R\<close>-direction case (zero
@@ -366,15 +366,15 @@ definition ar_delta_advance ::
        (q, AR_SimAdvance, k_succ tk, 0, buf, dvec,
         posk(tk := ar_newpos (dvec tk) (posk tk))), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> \<not> is_last_k M tk
-       \<and> ((dvec tk = dir.R \<and> i = 0)
-          \<or> (dvec tk \<noteq> dir.R
+       \<and> ((dvec tk = MoveR \<and> i = 0)
+          \<or> (dvec tk \<noteq> MoveR
               \<and> a tk \<noteq> LE4
-              \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M))
+              \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M))
                                   (dvec tk) (posk tk)))
-       \<and> d = (\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> dir.R
-                      then dir.L else dir.N)}
+       \<and> d = (\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> MoveR
+                      then MoveL else MoveN)}
     \<union>
     \<comment> \<open>Boundary arm, last tape.  Same firing
        sub-cases as the non-last-tape arm; transitions to
@@ -388,48 +388,48 @@ definition ar_delta_advance ::
        (q, AR_SimNext, k_unidx 0, 0, buf, dvec,
         posk(tk := ar_newpos (dvec tk) (posk tk))), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M
+       q \<in> Q_ktm M
        \<and> is_last_k M tk
-       \<and> ((dvec tk = dir.R \<and> i = 0)
-          \<or> (dvec tk \<noteq> dir.R
+       \<and> ((dvec tk = MoveR \<and> i = 0)
+          \<or> (dvec tk \<noteq> MoveR
               \<and> a tk \<noteq> LE4
-              \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M))
+              \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M))
                                   (dvec tk) (posk tk)))
-       \<and> d = (\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> dir.R
-                      then dir.L else dir.N)}"
+       \<and> d = (\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> MoveR
+                      then MoveL else MoveN)}"
 
 definition ar_delta_next ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ar_delta_next M =
     {((q, AR_SimNext, tk, i, buf, dvec, posk), a,
        (q, AR_SimRead, 0, 0, buf, dvec, posk), a, d) |
      q tk i buf dvec posk a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> d = (\<lambda>_. dir.N)}
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> d = (\<lambda>_. MoveN)}
     \<union>
     {((q, AR_SimNext, tk, i, buf, dvec, posk), a,
        (q, AR_HaltAccept, 0, 0,
-        (\<lambda>_. bl_tm M), (\<lambda>_. dir.N), (\<lambda>_. AR_AtLE)), a, d) |
+        (\<lambda>_. bl_ktm M), (\<lambda>_. MoveN), (\<lambda>_. AR_AtLE)), a, d) |
      q tk i buf dvec posk a d.
-       q = t_tm M
-       \<and> d = (\<lambda>_. dir.N)}
+       q = t_ktm M
+       \<and> d = (\<lambda>_. MoveN)}
     \<union>
     {((q, AR_SimNext, tk, i, buf, dvec, posk), a,
        (q, AR_HaltReject, 0, 0,
-        (\<lambda>_. bl_tm M), (\<lambda>_. dir.N), (\<lambda>_. AR_AtLE)), a, d) |
+        (\<lambda>_. bl_ktm M), (\<lambda>_. MoveN), (\<lambda>_. AR_AtLE)), a, d) |
      q tk i buf dvec posk a d.
-       q = r_tm M
-       \<and> d = (\<lambda>_. dir.N)}"
+       q = r_ktm M
+       \<and> d = (\<lambda>_. MoveN)}"
   \<comment> \<open>End-of-M-step handshake.  Three arms dispatch on the
      M-state \<open>q\<close>: non-terminal routes to
      \<open>AR_SimRead\<close> for the next M-step (with bit-counter
-     and current-tape both reset to 0); \<open>q = t_tm M\<close>
-     routes to the canonical accept stage; \<open>q = r_tm M\<close>
+     and current-tape both reset to 0); \<open>q = t_ktm M\<close>
+     routes to the canonical accept stage; \<open>q = r_ktm M\<close>
      routes to the canonical reject stage.  The non-terminal
      arm preserves \<open>buf\<close>, the direction-vector field
      \<open>dvec\<close> (residual from the just-completed M-step; no
@@ -438,12 +438,12 @@ definition ar_delta_next ::
      next \<open>AR_SimRead\<close>'s LE-vs-proper dispatch sees the
      correct value).  The two terminal arms instead reset
      \<open>buf\<close> / \<open>dvec\<close> / \<open>posk\<close> to the canonical
-     halt values (\<open>\<lambda>_. bl_tm M\<close> / \<open>\<lambda>_.
-     dir.N\<close> / \<open>\<lambda>_. AR_AtLE\<close>), so the target stage
-     is exactly \<open>ar_accept_stage (bl_tm M)\<close> /
-     \<open>ar_reject_stage (bl_tm M)\<close> and the handshake lands
-     on \<open>M'\<close>'s halt state \<open>t_tm M'\<close> / \<open>r_tm
-     M'\<close>.  \<open>Lang_mttm\<close> matches the full \<open>mt_state\<close>
+     halt values (\<open>\<lambda>_. bl_ktm M\<close> / \<open>\<lambda>_.
+     MoveN\<close> / \<open>\<lambda>_. AR_AtLE\<close>), so the target stage
+     is exactly \<open>ar_accept_stage (bl_ktm M)\<close> /
+     \<open>ar_reject_stage (bl_ktm M)\<close> and the handshake lands
+     on \<open>M'\<close>'s halt state \<open>t_ktm M'\<close> / \<open>r_ktm
+     M'\<close>.  \<open>Lang_ktm\<close> matches the full \<open>ktc_state\<close>
      (tape and heads free), so this canonical landing is what
      makes \<open>M'\<close> acceptance / rejection detectable; the reset
      is semantically free (the residual fields are never read
@@ -473,12 +473,12 @@ text \<open>The output machine's full transition relation: union of
   regardless of write content.\<close>
 
 definition alphabet_reduce_delta ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
         \<times> ('q \<times> 'a ar_stage)
         \<times> (nat \<Rightarrow> sym4)
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "alphabet_reduce_delta M =
      (ar_delta_read M \<union> ar_delta_compute M
         \<union> ar_delta_write M \<union> ar_delta_advance M
@@ -486,15 +486,15 @@ definition alphabet_reduce_delta ::
      \<inter> {(s, a, s', a', d).
            \<forall>k. a' k = LE4 \<longrightarrow> a k = LE4}
      \<inter> {(s, a, s', a', d).
-           \<forall>k. a k = LE4 \<longrightarrow> a' k = LE4 \<and> d k \<in> {dir.N, dir.R}}
+           \<forall>k. a k = LE4 \<longrightarrow> a' k = LE4 \<and> d k \<in> {MoveN, MoveR}}
      \<inter> {(s, a, s', a', d).
-           ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd s)
-           \<and> ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd s')}
+           ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd s)
+           \<and> ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd s')}
      \<inter> {(s, a, s', a', d).
-           \<forall>j \<ge> k_tm M. a j = BLANK4 \<and> a' j = BLANK4 \<and> d j = dir.N}
+           \<forall>j \<ge> k_ktm M. a j = BLANK4 \<and> a' j = BLANK4 \<and> d j = MoveN}
      \<inter> {(s, a, s', a', d).
-           ar_stage_bounded (bl_tm M) (k_tm M) (snd s)
-           \<and> ar_stage_bounded (bl_tm M) (k_tm M) (snd s')}"
+           ar_stage_bounded (bl_ktm M) (k_ktm M) (snd s)
+           \<and> ar_stage_bounded (bl_ktm M) (k_ktm M) (snd s')}"
 
 
 text \<open>Initial / halt stages used to populate the output
@@ -507,7 +507,7 @@ text \<open>Initial / halt stages used to populate the output
   \<open>bl\<close> (any value in \<open>\<Gamma> \<union> \<lbrace>bl\<rbrace>\<close> would
   satisfy \<open>ar_valid_stage\<close>; \<open>bl\<close> is the
   canonical placeholder), per-tape direction-vector
-  \<open>dir.N\<close> (irrelevant outside \<open>AR_SimAdvance\<close>),
+  \<open>MoveN\<close> (irrelevant outside \<open>AR_SimAdvance\<close>),
   per-tape position-kind \<open>AR_AtLE\<close> (the initial
   head position is \<open>0\<close>; for halt states the field is
   vestigial).  The three stages differ only in their
@@ -516,26 +516,17 @@ text \<open>Initial / halt stages used to populate the output
 definition ar_init_stage ::
   "'a \<Rightarrow> 'a ar_stage" where
   "ar_init_stage bl =
-     (AR_SimRead, 0, 0, (\<lambda>_. bl), (\<lambda>_. dir.N), (\<lambda>_. AR_AtLE))"
+     (AR_SimRead, 0, 0, (\<lambda>_. bl), (\<lambda>_. MoveN), (\<lambda>_. AR_AtLE))"
 
 definition ar_accept_stage ::
   "'a \<Rightarrow> 'a ar_stage" where
   "ar_accept_stage bl =
-     (AR_HaltAccept, 0, 0, (\<lambda>_. bl), (\<lambda>_. dir.N), (\<lambda>_. AR_AtLE))"
+     (AR_HaltAccept, 0, 0, (\<lambda>_. bl), (\<lambda>_. MoveN), (\<lambda>_. AR_AtLE))"
 
 definition ar_reject_stage ::
   "'a \<Rightarrow> 'a ar_stage" where
   "ar_reject_stage bl =
-     (AR_HaltReject, 0, 0, (\<lambda>_. bl), (\<lambda>_. dir.N), (\<lambda>_. AR_AtLE))"
-
-text \<open>Positivity of the block width: \<open>b\<close> is bounded below
-  by \<open>1\<close> via the \<open>max\<close> on the right-hand side.  Used
-  below to discharge the \<open>i < 2 \<cdot> b\<close> conjunct of
-  \<open>ar_valid_stage\<close> at \<open>i = 0\<close>, and downstream by
-  the per-substep step-count lemmas.\<close>
-
-lemma block_width_pos: "1 \<le> block_width \<Gamma>"
-  unfolding block_width_def by simp
+     (AR_HaltReject, 0, 0, (\<lambda>_. bl), (\<lambda>_. MoveN), (\<lambda>_. AR_AtLE))"
 
 text \<open>The three stage constants used to populate \<open>s'\<close>,
   \<open>t'\<close>, and \<open>r'\<close> all satisfy
@@ -566,11 +557,11 @@ proof -
 qed
 
 
-text \<open>The alphabet-reduction combinator.  Input: \<open>mttm\<close> over
-  \<open>'a\<close>, with tape alphabet \<open>\<Gamma>_tm M\<close> a finite subset of
-  \<open>'a\<close> (via \<open>valid_mttm\<close>) of cardinality \<open>\<ge> 4\<close>.
-  Output: \<open>mttm\<close> over \<open>sym4\<close>, with state set
-  \<open>'q \<times> 'a ar_stage\<close>.  Tape count \<open>k_tm M\<close> is preserved.
+text \<open>The alphabet-reduction combinator.  Input: \<open>ktm\<close> over
+  \<open>'a\<close>, with tape alphabet \<open>\<Gamma>_ktm M\<close> a finite subset of
+  \<open>'a\<close> (via \<open>valid_ktm\<close>) of cardinality \<open>\<ge> 4\<close>.
+  Output: \<open>ktm\<close> over \<open>sym4\<close>, with state set
+  \<open>'q \<times> 'a ar_stage\<close>.  Tape count \<open>k_ktm M\<close> is preserved.
 
   Output components:
   \<^item> \<open>Q'\<close> = \<open>Q_M \<times> \<lbrace>stg. ar_valid_stage \<Gamma>_M bl_M stg\<rbrace>\<close>
@@ -590,12 +581,12 @@ text \<open>The alphabet-reduction combinator.  Input: \<open>mttm\<close> over
     matching \<open>ar_substep_idx\<close> tag).\<close>
 
 definition alphabet_reduce ::
-  "('q, 'a) mttm
-    \<Rightarrow> ('q \<times> 'a ar_stage, sym4) mttm"
+  "('q, 'a) ktm
+    \<Rightarrow> ('q \<times> 'a ar_stage, sym4) ktm"
   where
     "alphabet_reduce M =
-       (case M of MTTM Q_M _ \<Gamma>_M bl_M _ _ s_M t_M r_M k_M \<Rightarrow>
-          MTTM (Q_M \<times> {stg. ar_valid_stage \<Gamma>_M bl_M stg
+       (case M of KTM Q_M _ \<Gamma>_M bl_M _ _ s_M t_M r_M k_M \<Rightarrow>
+          KTM (Q_M \<times> {stg. ar_valid_stage \<Gamma>_M bl_M stg
                               \<and> ar_stage_bounded bl_M k_M stg})
                {BIT0, BIT1}
                (UNIV :: sym4 set)
@@ -608,43 +599,43 @@ definition alphabet_reduce ::
                k_M)"
 
 text \<open>Projection-simp lemmas for the reduced machine: each
-  structural accessor reads straight off the \<open>MTTM\<close> the
+  structural accessor reads straight off the \<open>KTM\<close> the
   combinator builds.  Marked \<open>[simp]\<close> so the language and
   time proofs never re-derive them via \<open>cases M\<close>; the
   accept-state projection in particular is the bridge that makes
   the simulation engine's terminal state syntactically equal to
-  \<open>t_tm (alphabet_reduce M)\<close>.\<close>
+  \<open>t_ktm (alphabet_reduce M)\<close>.\<close>
 
 lemma alphabet_reduce_Sigma [simp]:
-  "Sigma_tm (alphabet_reduce M) = {BIT0, BIT1}"
+  "Sigma_ktm (alphabet_reduce M) = {BIT0, BIT1}"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_Gamma [simp]:
-  "\<Gamma>_tm (alphabet_reduce M) = (UNIV :: sym4 set)"
+  "\<Gamma>_ktm (alphabet_reduce M) = (UNIV :: sym4 set)"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_bl [simp]:
-  "bl_tm (alphabet_reduce M) = BLANK4"
+  "bl_ktm (alphabet_reduce M) = BLANK4"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_le [simp]:
-  "le_tm (alphabet_reduce M) = LE4"
+  "le_ktm (alphabet_reduce M) = LE4"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_start [simp]:
-  "s_tm (alphabet_reduce M) = (s_tm M, ar_init_stage (bl_tm M))"
+  "s_ktm (alphabet_reduce M) = (s_ktm M, ar_init_stage (bl_ktm M))"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_accept [simp]:
-  "t_tm (alphabet_reduce M) = (t_tm M, ar_accept_stage (bl_tm M))"
+  "t_ktm (alphabet_reduce M) = (t_ktm M, ar_accept_stage (bl_ktm M))"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_reject [simp]:
-  "r_tm (alphabet_reduce M) = (r_tm M, ar_reject_stage (bl_tm M))"
+  "r_ktm (alphabet_reduce M) = (r_ktm M, ar_reject_stage (bl_ktm M))"
   by (cases M) (simp add: alphabet_reduce_def)
 
 lemma alphabet_reduce_delta [simp]:
-  "delta_tm (alphabet_reduce M) = alphabet_reduce_delta M"
+  "delta_ktm (alphabet_reduce M) = alphabet_reduce_delta M"
   by (cases M) (simp add: alphabet_reduce_def)
 
 end

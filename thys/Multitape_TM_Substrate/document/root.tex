@@ -21,8 +21,7 @@
 \providecommand{\isasympm}{\ensuremath{\pm}}
 \providecommand{\isasymne}{\ensuremath{\neq}}
 
-% Session / entry names — single source of truth in sessionnames.tex (canonical
-% at t/document/, symlinked here and dereferenced into a real copy at release).
+% Session / entry names, defined in sessionnames.tex.
 \input{sessionnames}
 
 \begin{document}
@@ -62,10 +61,17 @@ run after it does.  This turns an assumption that
 such models usually leave implicit into a proved fact, and it gives a
 reusable tool for arguments that relocate or trim a tape.
 
+On top of the model, the entry provides the constructions that
+developments built on it share: facts about runs that each of them would
+otherwise re-prove, transport of a machine along injections on its states
+and alphabet, widening and exchanging tapes, running a machine as one
+factor of a composite, restoring the endmarker discipline, an interface
+for exact unary clocks, and running a machine alongside such a clock.
+
 This entry is the shared foundation for several companion developments:
-alphabet enlargement (\sessAE) and alphabet reduction (\sessAR), with
-tape reduction and a universal machine to follow.  It is also
-self-contained and usable on its own.
+alphabet enlargement (\sessAE) and alphabet reduction (\sessAR), tape
+reduction, and the time hierarchy theorems.  It is also self-contained
+and usable on its own.
 
 The model began as an adaptation of Dalvit and Thiemann's multitape
 Turing machine formalisation~\cite{Dalvit2022:verified} (the AFP entry
@@ -76,7 +82,10 @@ over, rather than a fixed context --- a locale --- inside which each
 theorem is proved.  Like their formalisation,
 a machine's transition is a relation, so machines may be
 nondeterministic; that sets both developments apart from the Archive's
-other Turing-machine entries, whose transitions are functions.
+other Turing-machine entries, whose transitions are functions.  The
+names differ from theirs (\texttt{ktm} for \texttt{mttm},
+\texttt{ktc\_config} for \texttt{mt\_config}, \texttt{move} for
+\texttt{dir}, and so on), so that a theory can import both entries.
 \end{abstract}
 
 \input{acknowledgement}
@@ -112,8 +121,9 @@ single machine as a background setting, and proves each theorem inside
 that setting, can still state facts that hold for every machine, but it
 cannot handle a machine as data in this way.
 
-The model and its predicates live in \texttt{Multitape\_Substrate.thy}.  Companion
-theories add the origin-float justification (\texttt{Multitape\_Origin\_Float.thy},
+The model and its predicates are defined in
+\texttt{Multitape\_Substrate\_Core.thy}, and \texttt{Multitape\_Substrate.thy}
+proves their basic metatheory.  Companion theories add the origin-float justification (\texttt{Multitape\_Origin\_Float.thy},
 described below) and the finite-control and time-bound convention layers
 the speedup entries reuse (\texttt{Multitape\_Finite\_Control.thy},
 \texttt{Multitape\_Finite\_Patch.thy}, \texttt{Multitape\_Time\_Convention.thy}).  The companion
@@ -131,11 +141,13 @@ timing analysis.  In neither may a machine take several moves at once,
 so nondeterminism has to be added on top rather than being built in.
 That is the main way this substrate differs from both.
 
+The constructions over the model are described in the last subsection of this overview.
+
 \subsection{Machines, configurations, and runs}
 
 \paragraph{Machines.}  A machine is a value of the datatype
-$\mathrm{mttm}$, the ten-component descriptor
-$\mathrm{MTTM}\ Q\ \Sigma\ \Gamma\ bl\ le\ \delta\ s\ t\ r\ k$: a state
+$\mathrm{ktm}$, the ten-component descriptor
+$\mathrm{KTM}\ Q\ \Sigma\ \Gamma\ bl\ le\ \delta\ s\ t\ r\ k$: a state
 set $Q$, an input alphabet $\Sigma$ and a tape alphabet $\Gamma$ (both
 ordinary \emph{value} sets over an element type ${'a}$), a blank $bl$
 and left-end marker $le$ (two special \emph{tape} symbols that validity
@@ -143,32 +155,32 @@ keeps in $\Gamma$ but not $\Sigma$, so both are usable on a tape yet
 never as input), a transition relation $\delta$, start,
 accept
 and reject states $s, t, r$, and a tape count $k :: \mathbb{N}$.  The
-components are read by the projections \texttt{Q\_tm},
-\texttt{Sigma\_tm}, \texttt{\isasymGamma\_tm}, \texttt{bl\_tm},
-\texttt{le\_tm}, \texttt{delta\_tm}, \texttt{s\_tm}, \texttt{t\_tm},
-\texttt{r\_tm}, \texttt{k\_tm}.
+components are read by the projections \texttt{Q\_ktm},
+\texttt{Sigma\_ktm}, \texttt{\isasymGamma\_ktm}, \texttt{bl\_ktm},
+\texttt{le\_ktm}, \texttt{delta\_ktm}, \texttt{s\_ktm}, \texttt{t\_ktm},
+\texttt{r\_ktm}, \texttt{k\_ktm}.
 
 \paragraph{Configurations.}  A configuration is a value of
-$\mathrm{mt\_config}$, written $\mathrm{Config}_{\mathrm{M}}\ q\ ts\ n$:
+$\mathrm{ktc\_config}$, written $\mathrm{Config}_{\mathrm{M}}\ q\ ts\ n$:
 the current state $q$, the tape contents $ts$ (a function
 $\mathbb{N} \to \mathbb{N} \to {'a}$ giving the symbol in cell $j$ of
 tape $i$ as $ts\,i\,j$), and the head positions $n$ (a function
 $\mathbb{N} \to \mathbb{N}$).  Tapes and cells are indexed by
 $\mathbb{N}$; in a valid run, every tape beyond the machine's count $k$
 stays blank.  The start configuration is
-$\mathrm{init\_config\_mttm}\, M\, w$: state $s$, tape $0$ holding the
+$\mathrm{init\_config\_ktm}\, M\, w$: state $s$, tape $0$ holding the
 endmarker $le$ at cell $0$ followed by the input word $w$, every other
 in-range tape holding just $le$, and all heads at cell $0$.
 
-\paragraph{The step relation.}  $\mathrm{mttm\_step}\, \delta$ is the
+\paragraph{The step relation.}  $\mathrm{ktm\_step}\, \delta$ is the
 one-step relation on configurations, parametrised by $\delta$ alone.
 From $\mathrm{Config}_{\mathrm{M}}\, q\, ts\, n$, let the
 \emph{read vector} $\lambda k.\ ts\,k\,(n\,k)$ collect the symbol under
 each head; if
-$\bigl(q,\ \lambda k.\ ts\,k\,(n\,k),\ q',\ a,\ dir\bigr) \in \delta$,
+$\bigl(q,\ \lambda k.\ ts\,k\,(n\,k),\ q',\ a,\ move\bigr) \in \delta$,
 the machine may step to $\mathrm{Config}_{\mathrm{M}}\, q'\, ts'\, n'$,
 where $ts'$ overwrites cell $n\,k$ of each tape $k$ with $a\,k$ and
-$n'$ moves each head by $dir\,k \in \{L, R, N\}$.  Because $\delta$ is
+$n'$ moves each head by $move\,k \in \{L, R, N\}$.  Because $\delta$ is
 a relation, several tuples may match one configuration.  That is exactly
 where nondeterminism enters.
 
@@ -176,7 +188,7 @@ where nondeterminism enters.
 the ones the transformation theorems carry as hypotheses and
 conclusions, are built on top:
 \begin{description}
-\item[$\mathrm{valid\_mttm}\, M$] \emph{``$M$ is a legal machine''.}
+\item[$\mathrm{valid\_ktm}\, M$] \emph{``$M$ is a legal machine''.}
   The structural invariant: $Q$ and $\Gamma$ finite,
   $\Sigma \subseteq \Gamma$, the states $s, t, r$ in $Q$, blank and
   endmarker tape-but-not-input symbols, $t \neq r$, $k > 0$, $\delta$
@@ -186,37 +198,37 @@ conclusions, are built on top:
   constrain how $le$ is \emph{written}; that is the separate
   $\mathrm{le\_unique}$ below, so a machine that plants a fresh $le$
   stays valid.
-\item[$\mathrm{well\_formed\_mttm}\, M$] \emph{a legal machine that also
-  starts cleanly and keeps its endmarker.}  $\mathrm{valid\_mttm}\, M$
+\item[$\mathrm{well\_formed\_ktm}\, M$] \emph{a legal machine that also
+  starts cleanly and keeps its endmarker.}  $\mathrm{valid\_ktm}\, M$
   plus non-degeneracy ($s \neq t$, $s \neq r$, $le \neq bl$) and the
-  endmarker write discipline $\mathrm{le\_unique}\, M$.  This is the
-  carrier by which the alphabet-transformation theorems obtain
-  LE-uniqueness of the machine they simulate.
+  endmarker write discipline $\mathrm{le\_unique}\, M$.  It is the
+  hypothesis through which the alphabet-transformation theorems learn
+  that the machine they simulate never writes a fresh endmarker.
 \item[$\mathrm{le\_unique}\, M$] \emph{the left endmarker is never
   freshly planted.}  A machine property in the same family as
-  $\mathrm{det\_mttm}$: no transition writes $le$ where it was not
+  $\mathrm{det\_ktm}$: no transition writes $le$ where it was not
   already reading it ($a'\, j = le \Rightarrow a\, j = le$ over
-  $\delta$).  Folded into $\mathrm{well\_formed\_mttm}$; the
-  origin-floating wrapper for the faithful $(1+\varepsilon)n$ speed-up
-  is the one construction that forgoes it (planting a fresh $le$),
-  hence is $\mathrm{valid\_mttm}$ but not
-  $\mathrm{well\_formed\_mttm}$.
-\item[$\mathrm{det\_mttm}\, M$] \emph{$M$ is deterministic.}  $\delta$
+  $\delta$).  Folded into $\mathrm{well\_formed\_ktm}$.  The machine
+  that achieves the $(1+\varepsilon)n$ speed-up in \sessAE{} is the
+  one construction that forgoes it: it writes a fresh $le$ past the
+  input it has consumed (see origin floating, below), so it is
+  $\mathrm{valid\_ktm}$ but not $\mathrm{well\_formed\_ktm}$.
+\item[$\mathrm{det\_ktm}\, M$] \emph{$M$ is deterministic.}  $\delta$
   is a partial function: each pair of a state and a read vector has at
-  most one successor triple $(q', a, dir)$.
-\item[$L(M) = \mathrm{Lang\_mttm}\, M$] \emph{the language $M$ accepts.}
+  most one successor triple $(q', a, move)$.
+\item[$L(M) = \mathrm{Lang\_ktm}\, M$] \emph{the language $M$ accepts.}
   The input words $w$ (with $\mathrm{set}\, w \subseteq \Sigma_M$) from
   which some run reaches an accepting configuration:
   \[
-    (\mathrm{init\_config\_mttm}\, M\, w,\ c)
-      \in (\mathrm{mttm\_step}\, \delta_M)^{*}
-    \quad\text{with}\quad \mathrm{mt\_state}\, c = t .
+    (\mathrm{init\_config\_ktm}\, M\, w,\ c)
+      \in (\mathrm{ktm\_step}\, \delta_M)^{*}
+    \quad\text{with}\quad \mathrm{ktc\_state}\, c = t .
   \]
   The reflexive-transitive closure makes acceptance \emph{existential}
   over runs.
-\item[$\mathrm{accepts\_in\_time\_mttm}\, M\, w\, m$] \emph{$M$ accepts
+\item[$\mathrm{accepts\_in\_time\_ktm}\, M\, w\, m$] \emph{$M$ accepts
   $w$ within $m$ steps.}  The time-bounded variant: some run of length
-  at most $m$ (an iterated step $(\mathrm{mttm\_step}\, \delta_M)^{\,n}$
+  at most $m$ (an iterated step $(\mathrm{ktm\_step}\, \delta_M)^{\,n}$
   with $n \leq m$) reaches the accept state.
 \end{description}
 These six are exactly the entries the \sessAE{} and \sessAR{}
@@ -227,8 +239,9 @@ definitions live here.
 
 This entry is \emph{foundational infrastructure}.  It fixes the machine
 model and its invariants and proves no complexity results about specific
-languages; those live in the companion entries.  It does prove two facts
-its companions rely on.  The first is the structural left-end-marker fact
+languages; those live in the companion entries.  Besides the constructions
+described below, two of the facts its companions rely on are worth singling
+out.  The first is the structural left-end-marker fact
 (origin floating, below).  The second is the shared time-bound convention
 vocabulary the linear-speedup entry consumes: the $\max(n + 2, \cdot)$
 ``convention'' predicate and its ``eventual'' companion, the
@@ -237,22 +250,25 @@ convention bound on all inputs, and a minimal counterexample
 \texttt{clean\_convention\_unattainable} showing that the clean
 constant-free convention form is \emph{not} attainable in general --- a
 valid machine can accept its language yet overshoot the convention floor
-on its shortest input, which is why the linear-speedup headline in
-\sessAE{} keeps an explicit residual constant.  Three modelling choices
+on its shortest input.  That is why the effective linear-speedup
+statements in \sessAE{} keep an explicit additive constant or hold only
+from a threshold on, and why its constant-free form for all inputs
+decides the short inputs from a finite table.  Three modelling choices
 are worth knowing before building on it.
 \begin{itemize}
 \item \emph{No separate input tape.}  The input word occupies tape
-  $0$, an ordinary work tape, so \texttt{valid\_mttm} requires
+  $0$, an ordinary work tape, so \texttt{valid\_ktm} requires
   $\Sigma \subseteq \Gamma$ (every input symbol is also a tape symbol)
   and a transformation may re-encode the input \emph{in place} rather
   than copy it to a fresh tape.
 \item \emph{One left-end marker, two rules.}  A single left-end marker
   $le$ obeys a \emph{read} rule: reading $le$ rewrites it and never
-  moves off the left edge.  This rule is part of \texttt{valid\_mttm}.
+  moves off the left edge.  This rule is part of \texttt{valid\_ktm}.
   The stronger \emph{write} rule $\mathrm{le\_unique}$ ($le$ is never
-  freshly planted) belongs instead to \texttt{well\_formed\_mttm}, so a
-  machine that plants a fresh $le$ is still valid.  The origin-floating
-  speed-up wrapper is exactly such a machine.
+  freshly planted) belongs instead to \texttt{well\_formed\_ktm}, so a
+  machine that plants a fresh $le$ is still valid.  The
+  $(1+\varepsilon)n$ speed-up machine of \sessAE{} is exactly such a
+  machine.
 \item \emph{One-way-infinite tapes.}  Cells are indexed by $\mathbb{N}$
   with the endmarker pinning cell $0$; every tape beyond the machine's
   count $k$ is frozen blank.
@@ -271,10 +287,10 @@ symbol at cell $p$ to cell $p + d$.  The theory then shows that a run and
 its shifted copy match step for step, in both directions and at every
 level:
 \begin{itemize}
-\item single steps --- $\mathrm{mttm\_step\_shift\_forward}$ and
-  $\mathrm{mttm\_step\_shift\_reverse}$;
-\item whole runs --- $\mathrm{mttm\_relpow\_shift\_forward}$ and
-  $\mathrm{mttm\_relpow\_shift\_reverse}$;
+\item single steps --- $\mathrm{ktm\_step\_shift\_forward}$ and
+  $\mathrm{ktm\_step\_shift\_reverse}$;
+\item whole runs --- $\mathrm{ktm\_relpow\_shift\_forward}$ and
+  $\mathrm{ktm\_relpow\_shift\_reverse}$;
 \item acceptance --- $\mathrm{shift\_reach\_state\_forward}$ and
   $\mathrm{shift\_reach\_state\_reverse}$: a run reaches a nominated state
   iff its shift does.
@@ -282,12 +298,85 @@ level:
 So placing a fresh marker neither gains nor loses behaviour.  Allowing
 the machine to write this marker is therefore sound, and an assumption
 that such a model would usually leave implicit becomes a theorem here.
-The faithful $(1+\varepsilon)n$ speed-up wrapper in \sessAE{} is the first
+The $(1+\varepsilon)n$ speed-up machine in \sessAE{} is the first
 user of these lemmas: it moves the marker to reclaim the space taken up
 by the consumed input.  The lemmas themselves are stated only in terms of
 a single step of the machine, independently of that use, so they serve as
 a reusable building block for any tape argument that relocates or trims a
 tape, such as simulating a two-dimensional tape on ordinary tapes.
+
+\subsection{Constructions over the model}
+
+Every development built on the substrate composes machines, and each
+composition changes the machine's type, its tape count, or its state
+space.  The later theories collect the constructions that recur, so that
+a development states its own construction and inherits the bookkeeping.
+None of them builds a machine for a particular language.
+\begin{description}
+\item[\texttt{Multitape\_Run\_Facts}] Facts about the step relation
+  and runs that mention no construction: acceptance and acceptance within
+  a time bound (\texttt{Lang\_ktm\_iff}) with their introduction and
+  elimination rules, the step relation under a
+  larger or a union of transition relations, the halting states as dead
+  ends, determinism lifted from transition tuples to runs, freezing a
+  tape, and bounds on head movement.
+\item[\texttt{Multitape\_Relabelling}] Transport of a machine along
+  an injection on states and an injection on the tape alphabet
+  (\texttt{relabel\_ktm}), which preserves the language up to the
+  alphabet map (\texttt{relabel\_lang}) and the time within which a word
+  is accepted (\texttt{relabel\_accepts\_in\_time} and its converse).
+  This is what lets machines of arbitrary types be collected in one
+  concrete type.  Two combinators on the tapes go with it: raising the
+  tape count (\texttt{widen\_tapes}), which preserves the language
+  (\texttt{widen\_lang}) and acceptance within a given time
+  (\texttt{widen\_accepts\_in\_time}), and exchanging two tapes
+  (\texttt{swap\_tapes}), whose runs are the original machine's runs
+  with the two tapes exchanged (\texttt{swap\_run} and
+  \texttt{swap\_run\_rev}).
+\item[\texttt{Multitape\_Embedding}] Running a machine as one factor
+  of a composite: a window of the composite's tapes and a region of its
+  states (\texttt{embed\_delta}, \texttt{tag\_delta}), and the
+  correspondences that read a factor's run as a run of the composite.
+\item[\texttt{Multitape\_Endmarker\_Normal}] Restoring the endmarker
+  write discipline $\mathrm{le\_unique}$ for any valid machine
+  (\texttt{endmarker\_normal}).  The construction lifts the tape alphabet
+  along \texttt{Some}, so the language is the original one mapped through
+  \texttt{Some} (\texttt{endmarker\_normal\_lang}), and a word is accepted
+  within the same time as before
+  (\texttt{endmarker\_normal\_accepts\_in\_time} and its
+  converse).
+\item[\texttt{Multitape\_Clock\_Interface}] Exact unary clocks: a
+  function $t$ is time-constructible when some well-formed deterministic
+  machine reaches its accepting state from the unary input of length $n$
+  in exactly $t(n)$ steps, with the facts about halting states and alarms
+  that a clocked construction needs.
+\item[\texttt{Multitape\_Clock\_Product}] A machine run alongside an
+  alarm clock (\texttt{clock\_product}): the two machines sit on disjoint
+  tapes, the composite writes the unary input for the clock and then
+  alternates their steps, and it stops as soon as either one halts, so
+  the clock bounds every run, accepting or not.  The theory proves the
+  composite valid, with the endmarker write discipline, and relates its
+  runs to the two factors' runs.
+\item[\texttt{Multitape\_One\_Tape\_Clocks}] Concrete deterministic unary
+  clocks shared by both hierarchy developments. The walk takes exactly
+  $n+2$ steps; the marking sweep takes exactly $2n^2+3n+2$ steps, including
+  two steps on empty input. Their transition systems and exact run proofs
+  supply witnesses for \texttt{time\_constructible}.
+\item[\texttt{Multitape\_Binary\_Codec}] A machine-free codec for
+  writing a natural number as a fixed-width block of binary digits, with
+  the two digit symbols as parameters (\texttt{nat\_to\_syms},
+  \texttt{syms\_to\_nat}), its round trip and injectivity on the
+  bounded range (\texttt{syms\_to\_nat\_nat\_to\_syms},
+  \texttt{nat\_to\_syms\_inj}), and the width that indexes a finite set,
+  $\lceil \log_2 |S| \rceil$ and at least one (\texttt{block\_width}).
+\item[\texttt{Multitape\_Enum\_Type}] Machine-free support for
+  applying a theorem quantified over enumerable types, such as the linear
+  speedup theorem of \sessAE: a local copy of $\{0,\ldots,K-1\}$ is an
+  instance of \texttt{enum}, so such a statement can be discharged with
+  the \texttt{HOL-Types\_To\_Sets} local typedef (applied by the theory
+  that uses it,
+  so this entry does not depend on that session).
+\end{description}
 
 \newpage
 

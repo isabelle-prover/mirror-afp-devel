@@ -148,18 +148,18 @@ proof -
     by (cases p; cases "fst p") auto
 qed
 
-subsubsection \<open>\<open>bp_advance\<close> commutation, totality, and LE-aware bounds\<close>
+subsubsection \<open>\<open>bp_advance\<close> commutation, totality, and bounds at the endmarker\<close>
 
 text \<open>\<open>bp_advance\<close>'s commutation with \<open>bp_linear\<close>: each
   successful R-move increments \<open>bp_linear\<close> by 1, each
   successful L-move decrements by 1, N is identity.\<close>
 
 lemma bp_advance_N_some:
-  "bp_advance p dir.N = Some p"
+  "bp_advance p MoveN = Some p"
   unfolding bp_advance_def by (cases p) simp
 
 lemma bp_advance_N_linear:
-  "bp_advance p dir.N = Some p \<and> bp_linear p = bp_linear p"
+  "bp_advance p MoveN = Some p \<and> bp_linear p = bp_linear p"
   using bp_advance_N_some by simp
 
 text \<open>The first / last enum element decode to indices 0 and
@@ -190,7 +190,7 @@ qed
 
 lemma bp_advance_R_linear:
   fixes p p' :: "('c :: enum) bp"
-  assumes "bp_advance p dir.R = Some p'"
+  assumes "bp_advance p MoveR = Some p'"
   shows "bp_linear p' = Suc (bp_linear p)"
 proof (cases "c_succ (snd p)")
   case (Some off')
@@ -226,7 +226,7 @@ qed
 
 lemma bp_advance_L_linear:
   fixes p p' :: "('c :: enum) bp"
-  assumes "bp_advance p dir.L = Some p'"
+  assumes "bp_advance p MoveL = Some p'"
   shows "Suc (bp_linear p') = bp_linear p"
 proof (cases "c_pred (snd p)")
   case (Some off')
@@ -277,7 +277,7 @@ text \<open>Head-stays-in-buffer: any \<open>R\<close>-move from a strict-interi
 lemma bp_advance_R_some:
   fixes p :: "('c :: enum) bp"
   assumes "bp_linear p < 3 * card (UNIV :: 'c set) - 1"
-  shows "\<exists>p'. bp_advance p dir.R = Some p'"
+  shows "\<exists>p'. bp_advance p MoveR = Some p'"
 proof (cases "c_succ (snd p)")
   case (Some off')
   thus ?thesis unfolding bp_advance_def by (cases p) simp
@@ -308,7 +308,7 @@ qed
 lemma bp_advance_L_some:
   fixes p :: "('c :: enum) bp"
   assumes "0 < bp_linear p"
-  shows "\<exists>p'. bp_advance p dir.L = Some p'"
+  shows "\<exists>p'. bp_advance p MoveL = Some p'"
 proof (cases "c_pred (snd p)")
   case (Some off')
   thus ?thesis unfolding bp_advance_def by (cases p) simp
@@ -354,11 +354,11 @@ text \<open>LE-aware totality of \<open>bp_advance_le\<close>: given the same
 lemma bp_advance_le_total:
   fixes le a :: 'a
     and p :: "('c :: enum) bp"
-    and d :: dir
+    and d :: move
   assumes bp_lt_max: "bp_linear p < 3 * card (UNIV :: 'c set) - 1"
       and bp_gt_zero: "0 < bp_linear p"
   shows "\<exists>p'. bp_advance_le le a p d = Some p'"
-proof (cases "a = le \<and> fst p = AE_Home \<and> d = dir.R")
+proof (cases "a = le \<and> fst p = AE_Home \<and> d = MoveR")
   case True
   hence "bp_advance_le le a p d = Some (AE_Right, c_first)"
     unfolding bp_advance_le_def by simp
@@ -369,15 +369,15 @@ next
     unfolding bp_advance_le_def by auto
   show ?thesis
   proof (cases d)
-    case N
+    case MoveN
     have "bp_advance_le le a p d = Some p"
-      using skip N bp_advance_N_some[of p] by simp
+      using skip MoveN bp_advance_N_some[of p] by simp
     thus ?thesis by blast
   next
-    case R
+    case MoveR
     thus ?thesis using skip bp_advance_R_some[OF bp_lt_max] by auto
   next
-    case L
+    case MoveL
     thus ?thesis using skip bp_advance_L_some[OF bp_gt_zero] by auto
   qed
 qed
@@ -404,14 +404,14 @@ text \<open>Single-step \<open>bp_linear\<close> preservation for
 lemma bp_advance_le_lin_bounded:
   fixes le a :: 'a
     and p p' :: "('c :: enum) bp"
-    and d :: dir and n :: nat
+    and d :: move and n :: nat
   assumes adv: "bp_advance_le le a p d = Some p'"
       and p_pos: "0 < bp_linear p"
       and p_upper: "bp_linear p < 2 * card (UNIV :: 'c set) + n"
       and p_lower: "card (UNIV :: 'c set) \<le> bp_linear p + n"
   shows "card (UNIV :: 'c set) \<le> bp_linear p' + Suc n
         \<and> bp_linear p' < 2 * card (UNIV :: 'c set) + Suc n"
-proof (cases "a = le \<and> fst p = AE_Home \<and> d = dir.R")
+proof (cases "a = le \<and> fst p = AE_Home \<and> d = MoveR")
   case True
   hence p'_eq: "p' = (AE_Right, c_first)"
     using adv unfolding bp_advance_le_def by simp
@@ -425,18 +425,18 @@ next
   with adv have adv_bp: "bp_advance p d = Some p'" by simp
   show ?thesis
   proof (cases d)
-    case N
-    have "bp_advance p dir.N = Some p" by (rule bp_advance_N_some)
-    with adv_bp N have "p' = p" by simp
+    case MoveN
+    have "bp_advance p MoveN = Some p" by (rule bp_advance_N_some)
+    with adv_bp MoveN have "p' = p" by simp
     hence "bp_linear p' = bp_linear p" by simp
     thus ?thesis using p_upper p_lower by linarith
   next
-    case R
+    case MoveR
     with adv_bp have "bp_linear p' = Suc (bp_linear p)"
       using bp_advance_R_linear by blast
     thus ?thesis using p_upper p_lower by linarith
   next
-    case L
+    case MoveL
     with adv_bp have "Suc (bp_linear p') = bp_linear p"
       using bp_advance_L_linear by blast
     thus ?thesis using p_upper p_lower p_pos by linarith
@@ -463,7 +463,6 @@ proof -
   let ?c = "card (UNIV :: 'c set)"
   let ?xs = "enum_class.enum :: 'c list"
   have idx_lt: "c_idx off < ?c" by (rule c_idx_lt_card)
-  have len_eq: "?c = length ?xs" by (rule card_eq_length_enum)
   have nth_off: "?xs ! c_idx off = off" by (rule c_idx_in_range(2))
   show ?thesis
   proof (cases b)
@@ -786,7 +785,6 @@ proof -
   obtain b off where bp_eq: "bp = (b, off)" by (cases bp)
   let ?c = "card (UNIV :: 'c set)"
   let ?xs = "enum_class.enum :: 'c list"
-  have idx_lt: "c_idx off < ?c" by (rule c_idx_lt_card)
   have len_eq: "length ?xs = ?c" by (rule card_eq_length_enum[symmetric])
   have c_idx_eq:
       "\<And>j. j < ?c \<Longrightarrow> c_idx ((?xs :: 'c list) ! j) = j"
@@ -809,7 +807,6 @@ proof -
       have idx_neq: "?xs ! i \<noteq> off"
       proof
         assume eq: "?xs ! i = off"
-        from True len_eq have i_in: "i < length ?xs" by simp
         have "c_idx (?xs ! i) = i" using c_idx_eq True by simp
         with eq have "c_idx off = i" by simp
         with neq lin_eq show False by simp

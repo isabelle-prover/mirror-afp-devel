@@ -2,7 +2,7 @@ theory Multitape_Substrate_Core
   imports "HOL-Library.FuncSet"
 begin
 
-section \<open>Substrate core (Dalvit--Thiemann definition surface)\<close>
+section \<open>Machines, configurations and runs (after Dalvit and Thiemann)\<close>
 
 text \<open>The \<^emph>\<open>definition surface\<close> of the substrate, deliberately isolated
   in this theory: the datatypes, selectors, step relation, and the validity /
@@ -10,18 +10,24 @@ text \<open>The \<^emph>\<open>definition surface\<close> of the substrate, deli
   of the development that corresponds to the Dalvit--Thiemann AFP entry
   \<open>Multitape_To_Singletape_TM\<close> (its files \<open>Multitape_TM\<close> and
   \<open>TM_Common\<close>, about 180 lines), kept small so a reader can diff it
-  directly against that source.  Every lemma --- the \<open>valid_mttm\<close>
+  directly against that source.  Every lemma --- the \<open>valid_ktm\<close>
   axiom-extraction toolkit, the validity-preservation and reachability
   results, and the displacement / left-endmarker tape tools, all
   \<^emph>\<open>our\<close> additions --- lives in the parent theory \<open>Multitape_Substrate\<close>,
   which imports this one.
 
-  The datatypes (\<open>mttm\<close>, \<open>mt_config\<close>, \<open>dir\<close>) and the step
+  The datatypes (\<open>ktm\<close>, \<open>ktc_config\<close>, \<open>move\<close>) and the step
   relation are adapted from that entry \<^cite>\<open>"Dalvit2022:verified"\<close>;
-  \<open>valid_mttm\<close> is a direct conjunction of the substrate's structural
+  \<open>valid_ktm\<close> is a direct conjunction of the substrate's structural
   axioms (no locale wrapping), tightened beyond the AFP entry's
   \<open>\<delta>LE\<close> axiom by an additional LE-write conjunct (see the
   validity predicate below).
+
+  The names are not the source's: its \<open>mttm\<close>, \<open>mt_config\<close>, \<open>dir\<close>,
+  the selectors \<open>Q_tm\<close>, \<open>\<Gamma>_tm\<close> and the predicates \<open>valid_mttm\<close>,
+  \<open>Lang_mttm\<close>, \<open>det_mttm\<close> are \<open>ktm\<close> (a \<open>k\<close>-tape machine),
+  \<open>ktc_config\<close>, \<open>move\<close>, \<open>Q_ktm\<close>, \<open>\<Gamma>_ktm\<close>, \<open>valid_ktm\<close>, \<open>Lang_ktm\<close> and
+  \<open>det_ktm\<close> here, so that a theory can import both developments.
 
   The number of tapes is a \<^emph>\<open>value\<close>: a machine carries its tape count
   as a \<open>nat\<close> field \<open>k\<close>, and head contents are a total function
@@ -32,41 +38,43 @@ text \<open>The \<^emph>\<open>definition surface\<close> of the substrate, deli
   arities a single HOL proposition.\<close>
 
 
-subsection \<open>TM-direction primitive (forked from AFP \<open>TM_Common\<close>)\<close>
+subsection \<open>Head movements (adapted from \<open>TM_Common\<close>)\<close>
 
-text \<open>Three-valued TM head movement: right (R), left (L), or
-  neutral / stay (N).  Used positionally as the fifth component
-  of every transition tuple; functions \<open>nat \<Rightarrow> dir\<close> encode the
-  per-tape head movement.\<close>
+text \<open>Three-valued TM head movement: right (\<open>MoveR\<close>), left (\<open>MoveL\<close>), or
+  neutral / stay (\<open>MoveN\<close>).  Used positionally as the fifth component
+  of every transition tuple; functions \<open>nat \<Rightarrow> move\<close> encode the
+  per-tape head movement.  The source's type \<open>dir\<close> has constructors
+  \<open>R\<close>, \<open>L\<close> and \<open>N\<close>; the names here differ so that both can be imported
+  together.\<close>
 
-datatype dir = R | L | N
+datatype move = MoveR | MoveL | MoveN
 
-fun go_dir :: "dir \<Rightarrow> nat \<Rightarrow> nat" where
-  "go_dir R n = Suc n"
-| "go_dir L n = n - 1"
-| "go_dir N n = n"
+fun go_move :: "move \<Rightarrow> nat \<Rightarrow> nat" where
+  "go_move MoveR n = Suc n"
+| "go_move MoveL n = n - 1"
+| "go_move MoveN n = n"
 
 
-subsection \<open>Multitape-TM datatypes (forked from AFP \<open>Multitape_TM\<close>)\<close>
+subsection \<open>Machines and configurations (adapted from \<open>Multitape_TM\<close>)\<close>
 
 text \<open>Multi-tape Turing-machine descriptor.  Ten components: state
   set \<open>Q\<close>, input alphabet \<open>\<Sigma>\<close>, tape alphabet \<open>\<Gamma>\<close>, blank symbol,
   left endmarker, transition relation \<open>\<delta>\<close>, start state, accept
   state, reject state, and tape count \<open>k\<close>.  The shape mirrors the
-  AFP source (the \<open>mttm\<close> type abbreviations are a conscious
+  AFP source (the \<open>ktm\<close> type abbreviations are a conscious
   near-copy), except the tape count, trapped in the AFP source's
   finite type parameter \<open>'k\<close>, is here the value-level \<open>nat\<close> field
   \<open>k\<close>; transition tuples index the tapes by \<open>nat\<close>, blank beyond \<open>k\<close>.
-  Only the \<open>Q_tm\<close> and \<open>\<Gamma>_tm\<close> accessors are record-style — the
+  Only the \<open>Q_ktm\<close> and \<open>\<Gamma>_ktm\<close> accessors are record-style — the
   others are positional with custom selectors below.\<close>
 
-datatype ('q, 'a) mttm = MTTM
-  (Q_tm: "'q set")        \<comment> \<open>Q — states\<close>
+datatype ('q, 'a) ktm = KTM
+  (Q_ktm: "'q set")        \<comment> \<open>Q — states\<close>
   "'a set"                \<comment> \<open>\<open>\<Sigma>\<close> — input alphabet\<close>
-  (\<Gamma>_tm: "'a set")        \<comment> \<open>\<open>\<Gamma>\<close> — tape alphabet\<close>
+  (\<Gamma>_ktm: "'a set")        \<comment> \<open>\<open>\<Gamma>\<close> — tape alphabet\<close>
   'a                      \<comment> \<open>blank\<close>
   'a                      \<comment> \<open>left endmarker\<close>
-  "('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> dir)) set"
+  "('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> move)) set"
                           \<comment> \<open>transitions \<open>\<delta>\<close>\<close>
   'q                      \<comment> \<open>start state\<close>
   'q                      \<comment> \<open>accept state\<close>
@@ -78,54 +86,46 @@ text \<open>Multitape-TM configuration: state, per-tape contents (each a
   Tapes and heads are indexed by \<open>nat\<close>; tapes beyond the machine's
   count \<open>k\<close> are all-blank in a valid configuration.\<close>
 
-datatype ('a, 'q) mt_config = Config\<^sub>M
-  (mt_state: 'q)
-  "nat \<Rightarrow> nat \<Rightarrow> 'a"
-  (mt_pos: "nat \<Rightarrow> nat")
+datatype ('a, 'q) ktc_config = KConfig
+  (ktc_state: 'q)
+  (ktc_tape: "nat \<Rightarrow> nat \<Rightarrow> 'a")
+  (ktc_pos: "nat \<Rightarrow> nat")
 
 
-subsection \<open>Substrate selectors\<close>
+subsection \<open>Component selectors\<close>
 
-text \<open>Positional selectors for the @{type mttm} datatype's
+text \<open>Positional selectors for the @{type ktm} datatype's
   components.  The datatype declares record-style accessors for
-  @{const Q_tm} and @{const \<Gamma>_tm} only; the others
+  @{const Q_ktm} and @{const \<Gamma>_ktm} only; the others
   (\<open>\<Sigma>\<close>, \<open>blank\<close>, \<open>LE\<close>, \<open>\<delta>\<close>, \<open>s\<close>, \<open>t\<close>, \<open>r\<close>, \<open>k\<close>) are positional.
   These selectors are simple positional pattern matches, named
-  on the \<open>*_tm\<close> convention to match @{const Q_tm} / @{const \<Gamma>_tm}.\<close>
+  on the \<open>*_ktm\<close> convention to match @{const Q_ktm} / @{const \<Gamma>_ktm}.\<close>
 
-fun bl_tm :: "('q, 'a) mttm \<Rightarrow> 'a" where
-  "bl_tm (MTTM _ _ _ bl _ _ _ _ _ _) = bl"
+fun bl_ktm :: "('q, 'a) ktm \<Rightarrow> 'a" where
+  "bl_ktm (KTM _ _ _ bl _ _ _ _ _ _) = bl"
 
-fun le_tm :: "('q, 'a) mttm \<Rightarrow> 'a" where
-  "le_tm (MTTM _ _ _ _ le _ _ _ _ _) = le"
+fun le_ktm :: "('q, 'a) ktm \<Rightarrow> 'a" where
+  "le_ktm (KTM _ _ _ _ le _ _ _ _ _) = le"
 
-fun delta_tm ::
-  "('q, 'a) mttm
-    \<Rightarrow> ('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> dir)) set" where
-  "delta_tm (MTTM _ _ _ _ _ \<delta> _ _ _ _) = \<delta>"
+fun delta_ktm ::
+  "('q, 'a) ktm
+    \<Rightarrow> ('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> move)) set" where
+  "delta_ktm (KTM _ _ _ _ _ \<delta> _ _ _ _) = \<delta>"
 
-fun s_tm :: "('q, 'a) mttm \<Rightarrow> 'q" where
-  "s_tm (MTTM _ _ _ _ _ _ s _ _ _) = s"
+fun s_ktm :: "('q, 'a) ktm \<Rightarrow> 'q" where
+  "s_ktm (KTM _ _ _ _ _ _ s _ _ _) = s"
 
-fun t_tm :: "('q, 'a) mttm \<Rightarrow> 'q" where
-  "t_tm (MTTM _ _ _ _ _ _ _ t _ _) = t"
+fun t_ktm :: "('q, 'a) ktm \<Rightarrow> 'q" where
+  "t_ktm (KTM _ _ _ _ _ _ _ t _ _) = t"
 
-fun r_tm :: "('q, 'a) mttm \<Rightarrow> 'q" where
-  "r_tm (MTTM _ _ _ _ _ _ _ _ r _) = r"
+fun r_ktm :: "('q, 'a) ktm \<Rightarrow> 'q" where
+  "r_ktm (KTM _ _ _ _ _ _ _ _ r _) = r"
 
-fun Sigma_tm :: "('q, 'a) mttm \<Rightarrow> 'a set" where
-  "Sigma_tm (MTTM _ \<Sigma> _ _ _ _ _ _ _ _) = \<Sigma>"
+fun Sigma_ktm :: "('q, 'a) ktm \<Rightarrow> 'a set" where
+  "Sigma_ktm (KTM _ \<Sigma> _ _ _ _ _ _ _ _) = \<Sigma>"
 
-fun k_tm :: "('q, 'a) mttm \<Rightarrow> nat" where
-  "k_tm (MTTM _ _ _ _ _ _ _ _ _ k) = k"
-
-text \<open>Tape-content selector for substrate configurations.  The
-  substrate datatype names @{const mt_state} and @{const mt_pos}
-  via record-style accessors but leaves the tape function
-  unnamed; we add it positionally for symmetry.\<close>
-
-fun mt_tape :: "('a, 'q) mt_config \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> 'a" where
-  "mt_tape (Config\<^sub>M _ ts _) = ts"
+fun k_ktm :: "('q, 'a) ktm \<Rightarrow> nat" where
+  "k_ktm (KTM _ _ _ _ _ _ _ _ _ k) = k"
 
 
 subsection \<open>Step relation\<close>
@@ -135,20 +135,20 @@ text \<open>Inductive characterisation of the multitape-TM step
   Body verbatim equivalent to the AFP source (only the tape index
   moves from the type \<open>'k\<close> to \<open>nat\<close>); functional layer, so
   downstream Hoare-triple proofs invoke
-  \<open>mttm_step.intros\<close> directly without any locale routing.\<close>
+  \<open>ktm_step.intros\<close> directly without any locale routing.\<close>
 
-inductive_set mttm_step ::
-  "('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> dir)) set
-    \<Rightarrow> ('a, 'q) mt_config rel"
+inductive_set ktm_step ::
+  "('q \<times> (nat \<Rightarrow> 'a) \<times> 'q \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> move)) set
+    \<Rightarrow> ('a, 'q) ktc_config rel"
   for \<delta>
 where
-  step: "(q, (\<lambda>k. ts k (n k)), q', a, dir) \<in> \<delta> \<Longrightarrow>
-   (Config\<^sub>M q ts n,
-    Config\<^sub>M q' (\<lambda>k. (ts k)(n k := a k)) (\<lambda>k. go_dir (dir k) (n k)))
-     \<in> mttm_step \<delta>"
+  step: "(q, (\<lambda>k. ts k (n k)), q', a, move) \<in> \<delta> \<Longrightarrow>
+   (KConfig q ts n,
+    KConfig q' (\<lambda>k. (ts k)(n k := a k)) (\<lambda>k. go_move (move k) (n k)))
+     \<in> ktm_step \<delta>"
 
 
-subsection \<open>Substrate validity (functional axiom bundle)\<close>
+subsection \<open>Machine validity\<close>
 
 text \<open>Functional bundle of the substrate's structural axioms.  This
   predicate enumerates the standard well-formedness conditions of
@@ -168,21 +168,22 @@ text \<open>Functional bundle of the substrate's structural axioms.  This
   the left endmarker on tape \<open>j\<close> only where it was already reading
   it — is \<^emph>\<open>not\<close> a validity requirement: it is factored out as the
   separate predicate \<open>le_unique\<close> (below), which well-formed machines
-  carry but a machine that deliberately plants a fresh \<open>le\<close> — the
-  origin-floating wrapper for the faithful Hopcroft--Ullman speed-up bound
-  \<^cite>\<open>\<open>Theorem 12.4\<close> in "Hopcroft1979:introduction"\<close> — may forgo
-  while staying valid.  Keeping the write direction out of validity is
-  exactly what lets that wrapper's output be a legal machine.
+  carry but a machine that deliberately writes a fresh \<open>le\<close> may forgo
+  while staying valid.  The machine for the Hopcroft--Ullman speed-up
+  bound \<^cite>\<open>\<open>Theorem 12.4\<close> in "Hopcroft1979:introduction"\<close> in the
+  alphabet-enlargement entry is one: it writes a fresh \<open>le\<close> past the
+  input it has consumed instead of rewinding over it, and keeping the
+  write direction out of validity is what makes it a legal machine.
 
   The support invariant — every transition is blank on reads and
   writes and stationary (\<open>N\<close>) on moves at every tape index \<open>j \<ge> k\<close>
   — is the value-level replacement for the AFP source's finite tape
   type: it confines a \<open>k\<close>-tape machine's transitions to tapes
   \<open>0 \<dots> k - 1\<close> and, with @{term \<Gamma>} finite, makes \<open>\<delta>\<close> finite
-  (@{text "valid_mttm_finite_delta"}).\<close>
+  (@{text "valid_ktm_finite_delta"}).\<close>
 
-fun valid_mttm :: "('q, 'a) mttm \<Rightarrow> bool" where
-  "valid_mttm (MTTM Q \<Sigma> \<Gamma> bl le \<delta> s t r k) =
+fun valid_ktm :: "('q, 'a) ktm \<Rightarrow> bool" where
+  "valid_ktm (KTM Q \<Sigma> \<Gamma> bl le \<delta> s t r k) =
      (finite Q \<and>
       finite \<Gamma> \<and>
       \<Sigma> \<subseteq> \<Gamma> \<and>
@@ -197,49 +198,47 @@ fun valid_mttm :: "('q, 'a) mttm \<Rightarrow> bool" where
       0 < k \<and>
       \<delta> \<subseteq> (Q - {t, r}) \<times> (UNIV \<rightarrow> \<Gamma>) \<times> Q \<times> (UNIV \<rightarrow> \<Gamma>) \<times> (UNIV \<rightarrow> UNIV) \<and>
       (\<forall>q a q' a' d j. (q, a, q', a', d) \<in> \<delta> \<longrightarrow> a j = le \<longrightarrow>
-                         a' j = le \<and> d j \<in> {dir.N, dir.R}) \<and>
+                         a' j = le \<and> d j \<in> {MoveN, MoveR}) \<and>
       (\<forall>q a q' a' d. (q, a, q', a', d) \<in> \<delta> \<longrightarrow>
-                       (\<forall>j \<ge> k. a j = bl \<and> a' j = bl \<and> d j = dir.N)))"
+                       (\<forall>j \<ge> k. a j = bl \<and> a' j = bl \<and> d j = MoveN)))"
 
 text \<open>The left-endmarker write discipline, as a standalone predicate:
-  a transition writes the left endmarker @{term "le_tm M"} on a tape
+  a transition writes the left endmarker @{term "le_ktm M"} on a tape
   only where it was already reading it — the endmarker is never freshly
-  planted.  This was formerly a clause of @{const valid_mttm}; it is
-  kept separate precisely so a machine that *does* plant a fresh \<open>le\<close> —
-  the origin-floating wrapper for the faithful Theorem 12.4 bound — is still
-  @{const valid_mttm}, while the alphabet-transformation chain, which
-  needs the property of the machine it simulates, carries it explicitly
-  (folded into \<open>well_formed_mttm\<close> and threaded to the simulation
-  lemmas through \<open>valid_mttm_deltaLE_no_write\<close>).\<close>
+  planted.  It is kept out of @{const valid_ktm} so that a machine that
+  \<^emph>\<open>does\<close> write a fresh \<open>le\<close>, such as the Theorem 12.4 speed-up machine,
+  is still @{const valid_ktm}, while the alphabet transformations, which
+  need the property of the machine they simulate, carry it explicitly
+  (folded into \<open>well_formed_ktm\<close> and threaded to the simulation
+  lemmas through \<open>valid_ktm_deltaLE_no_write\<close>).\<close>
 
-definition le_unique :: "('q, 'a) mttm \<Rightarrow> bool" where
+definition le_unique :: "('q, 'a) ktm \<Rightarrow> bool" where
   "le_unique M =
-     (\<forall>q a q' a' d j. (q, a, q', a', d) \<in> delta_tm M \<longrightarrow>
-                        a' j = le_tm M \<longrightarrow> a j = le_tm M)"
+     (\<forall>q a q' a' d j. (q, a, q', a', d) \<in> delta_ktm M \<longrightarrow>
+                        a' j = le_ktm M \<longrightarrow> a j = le_ktm M)"
 
-text \<open>Strengthening of @{const valid_mttm} with the three
+text \<open>Strengthening of @{const valid_ktm} with the three
   non-degeneracy conditions used by every linear-speedup-style
   theorem — distinct start / accept / reject states and distinct
   left-endmarker / blank tape symbols — plus the left-endmarker
   write discipline @{const le_unique}.  Bundles
-  @{term "valid_mttm M"}, @{term "s_tm M \<noteq> t_tm M"},
-  @{term "s_tm M \<noteq> r_tm M"}, @{term "le_tm M \<noteq> bl_tm M"}, and
+  @{term "valid_ktm M"}, @{term "s_ktm M \<noteq> t_ktm M"},
+  @{term "s_ktm M \<noteq> r_ktm M"}, @{term "le_ktm M \<noteq> bl_ktm M"}, and
   @{term "le_unique M"} into a single predicate so downstream
   statements need only one assumption clause instead of five.  Since
-  @{const le_unique} is no longer implied by @{const valid_mttm} — it is
-  exactly the clause the faithful-12.4 wrapper forgoes — it is
-  load-bearing here: \<open>well_formed_mttm\<close> is the
-  alphabet-transformation chain's carrier of LE-uniqueness, threaded to
-  the simulation lemmas that need it.\<close>
+  @{const valid_ktm} does not imply @{const le_unique}, this is where
+  the alphabet transformations get it from: \<open>well_formed_ktm\<close> is
+  the hypothesis through which they learn that the machine they
+  simulate never writes a fresh \<open>le\<close>.\<close>
 
-abbreviation well_formed_mttm
-  :: "('q, 'a) mttm \<Rightarrow> bool"
+abbreviation well_formed_ktm
+  :: "('q, 'a) ktm \<Rightarrow> bool"
 where
-  "well_formed_mttm M \<equiv>
-     valid_mttm M
-     \<and> s_tm M \<noteq> t_tm M
-     \<and> s_tm M \<noteq> r_tm M
-     \<and> le_tm M \<noteq> bl_tm M
+  "well_formed_ktm M \<equiv>
+     valid_ktm M
+     \<and> s_ktm M \<noteq> t_ktm M
+     \<and> s_ktm M \<noteq> r_ktm M
+     \<and> le_ktm M \<noteq> bl_ktm M
      \<and> le_unique M"
 
 
@@ -253,10 +252,10 @@ text \<open>Functional re-exposition of the substrate's per-configuration
   invariant — inactive tapes carry the blank symbol everywhere, not
   the left endmarker, since \<open>bl \<noteq> le\<close>).\<close>
 
-fun valid_config_mttm ::
-  "('q, 'a) mttm \<Rightarrow> ('a, 'q) mt_config \<Rightarrow> bool"
+fun valid_config_ktm ::
+  "('q, 'a) ktm \<Rightarrow> ('a, 'q) ktc_config \<Rightarrow> bool"
 where
-  "valid_config_mttm (MTTM Q _ \<Gamma> bl le _ _ _ _ k) (Config\<^sub>M q ts _) =
+  "valid_config_ktm (KTM Q _ \<Gamma> bl le _ _ _ _ k) (KConfig q ts _) =
      (q \<in> Q
       \<and> (\<forall>i. range (ts i) \<subseteq> \<Gamma>)
       \<and> (\<forall>i<k. ts i 0 = le)
@@ -268,11 +267,11 @@ text \<open>Functional initial configuration: take \<open>M\<close> as parameter
   endmarker at position 0 and, on the input tape \<open>0\<close>, the input
   \<open>w\<close>; inactive tapes (index \<open>i \<ge> k\<close>) are all-blank.\<close>
 
-fun init_config_mttm ::
-  "('q, 'a) mttm \<Rightarrow> 'a list \<Rightarrow> ('a, 'q) mt_config"
+fun init_config_ktm ::
+  "('q, 'a) ktm \<Rightarrow> 'a list \<Rightarrow> ('a, 'q) ktc_config"
 where
-  "init_config_mttm (MTTM _ _ _ bl le _ s _ _ k) w =
-     Config\<^sub>M s
+  "init_config_ktm (KTM _ _ _ bl le _ s _ _ k) w =
+     KConfig s
        (\<lambda>i n. if i < k
               then (if n = 0 then le
                     else if i = 0 \<and> n \<le> length w then w ! (n - 1)
@@ -283,39 +282,39 @@ where
 
 subsection \<open>Language and time-bound predicates\<close>
 
-text \<open>Functional analogues of the AFP's @{text "Lang_mttm"}
-  and @{text "det_mttm"} top-level wrappers, plus the
-  weak-acceptance predicate @{text "accepts_in_time_mttm"}.
-  @{text "Lang_mttm"} is the set of inputs over @{term "Sigma_tm M"}
+text \<open>Functional analogues of the AFP's @{text "Lang_ktm"}
+  and @{text "det_ktm"} top-level wrappers, plus the
+  weak-acceptance predicate @{text "accepts_in_time_ktm"}.
+  @{text "Lang_ktm"} is the set of inputs over @{term "Sigma_ktm M"}
   that drive @{term M} from its initial configuration to the accept
-  state @{term "t_tm M"}.  @{text "det_mttm"} says the transition
+  state @{term "t_ktm M"}.  @{text "det_ktm"} says the transition
   relation is single-valued: each source state together with the
   symbols read admits at most one outcome — one next state, one
   written-symbol tuple, one head-move tuple — so a configuration has
   at most one successor.  This is the determinism hypothesis on
   which the alphabet-enlargement reverse direction turns.  Bodies
-  routed through the functional @{const init_config_mttm} and
-  @{const mttm_step} rather than through locale-internal
+  routed through the functional @{const init_config_ktm} and
+  @{const ktm_step} rather than through locale-internal
   definitions.  Used by the AE / AR language- and time-preservation
   theorems.\<close>
 
-definition Lang_mttm :: "('q, 'a) mttm \<Rightarrow> 'a list set" where
-  "Lang_mttm M =
-     {w. set w \<subseteq> Sigma_tm M \<and>
-         (\<exists>w' n. (init_config_mttm M w, Config\<^sub>M (t_tm M) w' n)
-                    \<in> (mttm_step (delta_tm M))\<^sup>*)}"
+definition Lang_ktm :: "('q, 'a) ktm \<Rightarrow> 'a list set" where
+  "Lang_ktm M =
+     {w. set w \<subseteq> Sigma_ktm M \<and>
+         (\<exists>w' n. (init_config_ktm M w, KConfig (t_ktm M) w' n)
+                    \<in> (ktm_step (delta_ktm M))\<^sup>*)}"
 
-definition det_mttm :: "('q, 'a) mttm \<Rightarrow> bool" where
-  "det_mttm M =
+definition det_ktm :: "('q, 'a) ktm \<Rightarrow> bool" where
+  "det_ktm M =
      (\<forall>q a p\<^sub>1 b\<^sub>1 d\<^sub>1 p\<^sub>2 b\<^sub>2 d\<^sub>2.
-        (q, a, p\<^sub>1, b\<^sub>1, d\<^sub>1) \<in> delta_tm M \<longrightarrow>
-        (q, a, p\<^sub>2, b\<^sub>2, d\<^sub>2) \<in> delta_tm M \<longrightarrow>
+        (q, a, p\<^sub>1, b\<^sub>1, d\<^sub>1) \<in> delta_ktm M \<longrightarrow>
+        (q, a, p\<^sub>2, b\<^sub>2, d\<^sub>2) \<in> delta_ktm M \<longrightarrow>
         (p\<^sub>1, b\<^sub>1, d\<^sub>1) = (p\<^sub>2, b\<^sub>2, d\<^sub>2))"
 
 text \<open>Weak time-bounded acceptance: M accepts input @{term w} in
   time at most @{term t} iff some accepting path of length @{term
-  "n \<le> t"} exists from @{const init_config_mttm} to a config in
-  state @{term "t_tm M"}.  This matches the existential
+  "n \<le> t"} exists from @{const init_config_ktm} to a config in
+  state @{term "t_ktm M"}.  This matches the existential
   accepting-path shape that the alphabet-enlargement top-level
   theorems preserve.  Non-accepting paths are not constrained,
   in contrast to a universal worst-case bound that would
@@ -324,11 +323,11 @@ text \<open>Weak time-bounded acceptance: M accepts input @{term w} in
   Used by @{text "alphabet_enlarge_language"} and
   @{text "alphabet_enlarge_time"}.\<close>
 
-definition accepts_in_time_mttm ::
-  "('q, 'a) mttm \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> bool" where
-  "accepts_in_time_mttm M w t =
+definition accepts_in_time_ktm ::
+  "('q, 'a) ktm \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> bool" where
+  "accepts_in_time_ktm M w t =
      (\<exists>n cM_n. n \<le> t
-                \<and> (init_config_mttm M w, cM_n) \<in> (mttm_step (delta_tm M))^^n
-                \<and> mt_state cM_n = t_tm M)"
+                \<and> (init_config_ktm M w, cM_n) \<in> (ktm_step (delta_ktm M))^^n
+                \<and> ktc_state cM_n = t_ktm M)"
 
 end

@@ -21,7 +21,7 @@ text \<open>The alphabet-reduction combinator preserves determinism: if
   relation, so it is the sole place \<open>M\<close>-determinism enters; the
   other four are single-valued by pure case analysis on the bit-counter,
   the tape index, and the read cell (\<open>ar_delta_next\<close> additionally
-  needs \<open>t \<noteq> r\<close>, which \<open>valid_mttm\<close> supplies).  The five
+  needs \<open>t \<noteq> r\<close>, which \<open>valid_ktm\<close> supplies).  The five
   builders are keyed to disjoint source substep tags, so two transitions
   sharing a source land in the same builder; and intersection with the
   side conditions only shrinks the relation, so single-valuedness of the
@@ -42,7 +42,7 @@ lemma ar_delta_read_functional:
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
   using h1 unfolding ar_delta_read_def
   by (elim UnE;
-      use h2 block_width_pos[of "\<Gamma>_tm M"] in \<open>auto simp: ar_delta_read_def\<close>)
+      use h2 block_width_pos[of "\<Gamma>_ktm M"] in \<open>auto simp: ar_delta_read_def\<close>)
 
 lemma ar_delta_write_functional:
   assumes h1: "(s, a, s1, a1, d1) \<in> ar_delta_write M"
@@ -50,7 +50,7 @@ lemma ar_delta_write_functional:
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
   using h1 unfolding ar_delta_write_def
   by (elim UnE;
-      use h2 block_width_pos[of "\<Gamma>_tm M"] in \<open>auto simp: ar_delta_write_def\<close>)
+      use h2 block_width_pos[of "\<Gamma>_ktm M"] in \<open>auto simp: ar_delta_write_def\<close>)
 
 lemma ar_delta_advance_functional:
   assumes h1: "(s, a, s1, a1, d1) \<in> ar_delta_advance M"
@@ -58,10 +58,10 @@ lemma ar_delta_advance_functional:
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
   using h1 unfolding ar_delta_advance_def
   by (elim UnE;
-      use h2 block_width_pos[of "\<Gamma>_tm M"] in \<open>auto simp: ar_delta_advance_def\<close>)
+      use h2 block_width_pos[of "\<Gamma>_ktm M"] in \<open>auto simp: ar_delta_advance_def\<close>)
 
 lemma ar_delta_next_functional:
-  assumes tr: "t_tm M \<noteq> r_tm M"
+  assumes tr: "t_ktm M \<noteq> r_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> ar_delta_next M"
       and h2: "(s, a, s2, a2, d2) \<in> ar_delta_next M"
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
@@ -75,8 +75,8 @@ text \<open>The compute substep is the one place \<open>M\<close>'s transition
   here is exactly \<open>M\<close>-determinism transported through that match.\<close>
 
 lemma ar_delta_compute_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes det: "det_mttm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes det: "det_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> ar_delta_compute M"
       and h2: "(s, a, s2, a2, d2) \<in> ar_delta_compute M"
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
@@ -85,23 +85,23 @@ proof -
         sa:  "s = (qa, AR_SimCompute, tka, ia, buf, dveca, poska)"
     and s1a: "s1 = (qa', AR_SimWrite, 0, 0, m_aa', m_da, poska)"
     and a1a: "a1 = a"
-    and d1a: "d1 = (\<lambda>_. dir.N)"
-    and ma:  "(qa, buf, qa', m_aa', m_da) \<in> delta_tm M"
+    and d1a: "d1 = (\<lambda>_. MoveN)"
+    and ma:  "(qa, buf, qa', m_aa', m_da) \<in> delta_ktm M"
     unfolding ar_delta_compute_def by auto
   from h2 obtain qb bufb qb' m_ab' m_db tkb ib dvecb poskb where
         sb:  "s = (qb, AR_SimCompute, tkb, ib, bufb, dvecb, poskb)"
     and s2b: "s2 = (qb', AR_SimWrite, 0, 0, m_ab', m_db, poskb)"
     and a2b: "a2 = a"
-    and d2b: "d2 = (\<lambda>_. dir.N)"
-    and mb:  "(qb, bufb, qb', m_ab', m_db) \<in> delta_tm M"
+    and d2b: "d2 = (\<lambda>_. MoveN)"
+    and mb:  "(qb, bufb, qb', m_ab', m_db) \<in> delta_ktm M"
     unfolding ar_delta_compute_def by auto
   from sa sb have qeq: "qb = qa" and bufeq: "bufb = buf"
     and poskeq: "poskb = poska"
     by simp_all
-  have mb': "(qa, buf, qb', m_ab', m_db) \<in> delta_tm M"
+  have mb': "(qa, buf, qb', m_ab', m_db) \<in> delta_ktm M"
     using mb qeq bufeq by simp
   have "(qa', m_aa', m_da) = (qb', m_ab', m_db)"
-    using ma mb' det unfolding det_mttm_def by blast
+    using ma mb' det unfolding det_ktm_def by blast
   hence qe: "qa' = qb'" and mae: "m_aa' = m_ab'" and mde: "m_da = m_db"
     by simp_all
   show ?thesis
@@ -114,14 +114,14 @@ text \<open>Dispatch on the source substep tag: the five builders have
   single-valuedness applies.  The two halt tags carry no transition.\<close>
 
 lemma alphabet_reduce_delta_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes valM: "valid_mttm M"
-      and detM: "det_mttm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes valM: "valid_ktm M"
+      and detM: "det_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> alphabet_reduce_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_reduce_delta M"
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
 proof -
-  have tr: "t_tm M \<noteq> r_tm M" by (rule valid_mttm_t_neq_r[OF valM])
+  have tr: "t_ktm M \<noteq> r_ktm M" by (rule valid_ktm_t_neq_r[OF valM])
   from h1 have u1: "(s, a, s1, a1, d1) \<in>
       ar_delta_read M \<union> ar_delta_compute M \<union> ar_delta_write M
         \<union> ar_delta_advance M \<union> ar_delta_next M"
@@ -205,15 +205,15 @@ text \<open>Headline result: the alphabet-reduction combinator carries
   the picture for deterministic machines.\<close>
 
 theorem alphabet_reduce_det:
-  fixes M :: "('q, 'a) mttm"
-  assumes valM: "valid_mttm M"
-      and detM: "det_mttm M"
-  shows "det_mttm (alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) mttm)"
-  unfolding det_mttm_def
+  fixes M :: "('q, 'a) ktm"
+  assumes valM: "valid_ktm M"
+      and detM: "det_ktm M"
+  shows "det_ktm (alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) ktm)"
+  unfolding det_ktm_def
 proof (intro allI impI)
   fix q a p1 b1 dd1 p2 b2 dd2
-  assume "(q, a, p1, b1, dd1) \<in> delta_tm (alphabet_reduce M)"
-     and "(q, a, p2, b2, dd2) \<in> delta_tm (alphabet_reduce M)"
+  assume "(q, a, p1, b1, dd1) \<in> delta_ktm (alphabet_reduce M)"
+     and "(q, a, p2, b2, dd2) \<in> delta_ktm (alphabet_reduce M)"
   hence m1: "(q, a, p1, b1, dd1) \<in> alphabet_reduce_delta M"
     and m2: "(q, a, p2, b2, dd2) \<in> alphabet_reduce_delta M"
     by simp_all

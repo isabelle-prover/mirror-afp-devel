@@ -1,5 +1,6 @@
 theory AlphabetReduction_Codec
   imports "Multitape_TM_Substrate.Multitape_Substrate"
+    "Multitape_TM_Substrate.Multitape_Binary_Codec"
 begin
 
 section \<open>Alphabet reduction\<close>
@@ -43,21 +44,19 @@ qed
 
 subsection \<open>Per-symbol encoder helpers\<close>
 
-text \<open>The per-source-symbol block length: the number of \<open>sym4\<close>
-  cells that encode one \<open>\<Gamma>\<close>-symbol, and the slowdown factor of
-  the reduction.  At least \<open>1\<close> (to avoid degenerate empty
-  encodings even for trivial \<open>\<Gamma>\<close>), and otherwise
-  \<open>\<lceil>log\<^sub>2 (card \<Gamma>)\<rceil>\<close>, the fewest binary digits that
-  index all of \<open>\<Gamma>\<close>.  Defined combinatorially via \<open>LEAST\<close>
-  on the predicate \<open>card \<Gamma> \<le> 2 ^ n\<close>; existence of such an
-  \<open>n\<close> follows from \<open>card \<Gamma> \<le> 2 ^ card \<Gamma>\<close>
-  (HOL.Power.\<open>less_exp\<close>).
+text \<open>The binary codec is the substrate's
+  (\<open>Multitape_Binary_Codec\<close>), at the digits \<open>BIT0\<close> and \<open>BIT1\<close>.  The
+  per-source-symbol block length is its \<^const>\<open>block_width\<close> of \<open>\<Gamma>\<close>: the
+  number of \<open>sym4\<close> cells that encode one \<open>\<Gamma>\<close>-symbol, and so the slowdown
+  factor of the reduction, \<open>\<lceil>log\<^sub>2 (card \<Gamma>)\<rceil>\<close> and at least \<open>1\<close>.  It rises
+  in unit steps as \<open>card \<Gamma>\<close> passes a power of two, not smoothly with the
+  alphabet's size.
 
   \<^bold>\<open>What is counted.\<close>  The index space \<open>{..< card \<Gamma>}\<close>
   covers \<^emph>\<open>every\<close> symbol of \<open>\<Gamma>\<close>: the blank at index
   \<open>0\<close> (the anchor \<open>gamma_enum\<close> relies on --- see below), and
   the left endmarker \<open>le\<close> as an ordinary coded symbol, since
-  \<open>valid_mttm\<close> permits a machine to write \<open>le\<close> at any tape
+  \<open>valid_ktm\<close> permits a machine to write \<open>le\<close> at any tape
   position (its only special handling is the single \<open>LE4\<close> cell at
   position \<open>0\<close>).  So \<open>block_width\<close> is genuinely the width of
   this uniform code, not a loose bound on a smaller one --- but it is not
@@ -71,9 +70,6 @@ text \<open>The per-source-symbol block length: the number of \<open>sym4\<close
   marker block would reach \<open>\<lceil>log\<^sub>2 (card \<Gamma> - 2)\<rceil>\<close>
   --- but each costs a marker-detection branch in the read and write
   phases, so that constant-factor gain is deliberately not taken.\<close>
-
-definition block_width :: "'a set \<Rightarrow> nat" where
-  "block_width \<Gamma> = max 1 (LEAST n. card \<Gamma> \<le> 2 ^ n)"
 
 text \<open>A \<^emph>\<open>blank-anchored\<close> enumeration of \<open>\<Gamma>\<close> as a
   bijection to \<open>{..< card \<Gamma>}\<close> that additionally sends the
@@ -102,11 +98,8 @@ text \<open>Render a natural number as a fixed-length \<open>sym4\<close>
   the tail.  For \<open>n \<ge> 2 ^ b\<close> the high bits are dropped
   (only the low \<open>b\<close> bits are rendered).\<close>
 
-fun nat_to_bits :: "nat \<Rightarrow> nat \<Rightarrow> sym4 list" where
-  "nat_to_bits 0 _ = []"
-| "nat_to_bits (Suc k) n =
-     nat_to_bits k (n div 2)
-       @ [if n mod 2 = 0 then BIT0 else BIT1]"
+abbreviation nat_to_bits :: "nat \<Rightarrow> nat \<Rightarrow> sym4 list" where
+  "nat_to_bits \<equiv> nat_to_syms BIT0 BIT1"
 
 subsection \<open>Per-symbol encoder\<close>
 
@@ -136,31 +129,14 @@ definition encode_input_ar ::
 
 subsection \<open>Per-symbol encoder lemmas\<close>
 
-text \<open>The encoded list has length \<open>b\<close>, by induction
-  on the block width.  Total — no \<open>x \<in> \<Gamma>\<close> precondition is
-  needed.\<close>
-
-lemma length_nat_to_bits [simp]:
-  "length (nat_to_bits k n) = k"
-  by (induct k arbitrary: n) auto
-
 lemma length_encode_symbol [simp]:
   "length (encode_symbol \<Gamma> bl x) = block_width \<Gamma>"
   unfolding encode_symbol_def by simp
 
-text \<open>Every cell of an encoded symbol is in the bit alphabet
-  \<open>{BIT0, BIT1}\<close>.  In particular, the substrate-reserved
-  markers \<open>LE4\<close> and \<open>BLANK4\<close> never appear in an
-  encoder image.\<close>
-
-lemma set_nat_to_bits:
-  "set (nat_to_bits k n) \<subseteq> {BIT0, BIT1}"
-  by (induct k arbitrary: n) auto
-
 lemma encode_symbol_cell_domain:
   "set (encode_symbol \<Gamma> bl x) \<subseteq> {BIT0, BIT1}"
   unfolding encode_symbol_def
-  by (rule set_nat_to_bits)
+  by (rule set_nat_to_syms)
 
 text \<open>The enumeration \<open>gamma_enum \<Gamma> bl\<close> is a genuine bijection
   from \<open>\<Gamma>\<close> to \<open>{..< card \<Gamma>}\<close> whenever \<open>\<Gamma>\<close> is
@@ -245,111 +221,6 @@ proof -
   thus ?thesis by simp
 qed
 
-text \<open>The cardinality of \<open>\<Gamma>\<close> fits in \<open>b\<close> bits:
-  \<open>card \<Gamma> \<le> 2 ^ b\<close>.  This is the structural
-  bound that underwrites injectivity: every enumeration value
-  \<open>gamma_enum \<Gamma> bl x < card \<Gamma>\<close> for \<open>x \<in> \<Gamma>\<close> is in the
-  range where \<open>nat_to_bits\<close> is injective.\<close>
-
-lemma card_le_two_pow_block_width: "card \<Gamma> \<le> 2 ^ block_width \<Gamma>"
-proof -
-  have ex: "\<exists>n. card \<Gamma> \<le> 2 ^ n"
-    using less_exp[of "card \<Gamma>"] by (intro exI[of _ "card \<Gamma>"]) simp
-  let ?m = "LEAST n. card \<Gamma> \<le> 2 ^ n"
-  have m_bound: "card \<Gamma> \<le> 2 ^ ?m"
-    using LeastI_ex[OF ex] .
-  have "?m \<le> block_width \<Gamma>"
-    unfolding block_width_def by simp
-  hence "(2::nat) ^ ?m \<le> 2 ^ block_width \<Gamma>"
-    by (rule power_increasing) simp
-  with m_bound show ?thesis by linarith
-qed
-
-text \<open>Minimality (the lower edge): \<open>b\<close> is the \<^emph>\<open>smallest\<close> width
-  that indexes all of \<open>\<Gamma>\<close>, so once \<open>card \<Gamma> \<ge> 2\<close> one
-  bit fewer does not suffice --- \<open>2 ^ (b - 1) < card \<Gamma>\<close>.  With
-  \<open>card_le_two_pow_block_width\<close> this pins \<open>b\<close> to
-  \<open>\<lceil>log\<^sub>2 (card \<Gamma>)\<rceil>\<close> exactly: \<open>b\<close> is a \<^emph>\<open>step
-  function\<close> of \<open>card \<Gamma>\<close>, constant on each band
-  \<open>2 ^ (b - 1) < card \<Gamma> \<le> 2 ^ b\<close> and jumping by one as
-  \<open>card \<Gamma>\<close> crosses a power of two (\<open>4 \<rightarrow> 5\<close>,
-  \<open>8 \<rightarrow> 9\<close>, \<open>16 \<rightarrow> 17\<close>).  The slowdown factor therefore
-  rises in unit steps at the powers of two, not smoothly with alphabet
-  size.  This is minimality for the \<^emph>\<open>uniform\<close> code that indexes
-  every symbol of \<open>\<Gamma>\<close> with the blank at index \<open>0\<close>; the
-  \<^emph>\<open>coding\<close> minimum (the non-blank symbols alone) sits one digit
-  lower just past each power of two --- see \<open>block_width\<close>.\<close>
-
-lemma two_pow_block_width_pred_less_card:
-  assumes card2: "2 \<le> card \<Gamma>"
-  shows "2 ^ (block_width \<Gamma> - 1) < card \<Gamma>"
-proof -
-  have ex: "\<exists>n. card \<Gamma> \<le> 2 ^ n"
-    using less_exp[of "card \<Gamma>"] by (intro exI[of _ "card \<Gamma>"]) simp
-  let ?m = "LEAST n. card \<Gamma> \<le> 2 ^ n"
-  have notP0: "\<not> card \<Gamma> \<le> 2 ^ (0::nat)" using card2 by simp
-  have m_pos: "0 < ?m"
-  proof (rule ccontr)
-    assume "\<not> 0 < ?m"
-    then have "?m = 0" by simp
-    then have "card \<Gamma> \<le> 2 ^ (0::nat)" using LeastI_ex[OF ex] by simp
-    with notP0 show False by simp
-  qed
-  hence bw: "block_width \<Gamma> = ?m" unfolding block_width_def by simp
-  have "block_width \<Gamma> - 1 < ?m" using bw m_pos by simp
-  hence "\<not> card \<Gamma> \<le> 2 ^ (block_width \<Gamma> - 1)" by (rule not_less_Least)
-  thus ?thesis by simp
-qed
-
-text \<open>The bit-renderer is injective on inputs bounded by
-  \<open>2 ^ b\<close>: two values with the same \<open>b\<close>-bit
-  representation are equal.  Proven by induction on \<open>b\<close>:
-  the head of the bit list determines the high bit \<open>n div 2\<close>
-  (recursive case), and the tail single element determines the
-  low bit \<open>n mod 2\<close>; combining via
-  \<open>n = 2 \<cdot> (n div 2) + n mod 2\<close> gives equality.\<close>
-
-lemma nat_to_bits_inj_bounded:
-  assumes "n1 < 2 ^ k"
-      and "n2 < 2 ^ k"
-      and "nat_to_bits k n1 = nat_to_bits k n2"
-  shows "n1 = n2"
-  using assms
-proof (induct k arbitrary: n1 n2)
-  case 0
-  thus ?case by simp
-next
-  case (Suc k)
-  from \<open>nat_to_bits (Suc k) n1 = nat_to_bits (Suc k) n2\<close>
-  have eq:
-    "nat_to_bits k (n1 div 2)
-       @ [if n1 mod 2 = 0 then BIT0 else BIT1]
-     = nat_to_bits k (n2 div 2)
-       @ [if n2 mod 2 = 0 then BIT0 else BIT1]"
-    by simp
-  hence pref_eq:
-    "nat_to_bits k (n1 div 2) = nat_to_bits k (n2 div 2)"
-    and suf_eq:
-    "(if n1 mod 2 = 0 then BIT0 else BIT1)
-       = (if n2 mod 2 = 0 then BIT0 else BIT1)"
-    by simp_all
-  from suf_eq have mod_zero_iff:
-    "n1 mod 2 = 0 \<longleftrightarrow> n2 mod 2 = 0"
-    by (auto split: if_split_asm)
-  have "n1 mod 2 < 2" and "n2 mod 2 < 2" by simp_all
-  with mod_zero_iff have mod_eq: "n1 mod 2 = n2 mod 2"
-    by (cases "n1 mod 2 = 0"; cases "n2 mod 2 = 0") auto
-  from \<open>n1 < 2 ^ Suc k\<close> have lt1: "n1 div 2 < 2 ^ k" by simp
-  from \<open>n2 < 2 ^ Suc k\<close> have lt2: "n2 div 2 < 2 ^ k" by simp
-  from Suc.hyps[OF lt1 lt2 pref_eq]
-  have div_eq: "n1 div 2 = n2 div 2" .
-  have "n1 = 2 * (n1 div 2) + n1 mod 2" by simp
-  also from div_eq mod_eq have "\<dots> = 2 * (n2 div 2) + n2 mod 2"
-    by simp
-  also have "\<dots> = n2" by simp
-  finally show ?case .
-qed
-
 text \<open>Injectivity-on-\<open>\<Gamma>\<close>: distinct source symbols in \<open>\<Gamma>\<close>
   produce distinct encoder images.  This is the load-bearing
   property for language preservation: no two source symbols
@@ -374,8 +245,8 @@ proof -
     using gamma_enum_lt_card[OF \<open>finite \<Gamma>\<close> \<open>y \<in> \<Gamma>\<close>, of bl]
           card_le_two_pow_block_width[of \<Gamma>]
     by linarith
-  from nat_to_bits_inj_bounded[OF lt_x lt_y bits_eq]
-  have enum_eq: "gamma_enum \<Gamma> bl x = gamma_enum \<Gamma> bl y" .
+  have enum_eq: "gamma_enum \<Gamma> bl x = gamma_enum \<Gamma> bl y"
+    using nat_to_syms_inj[OF _ lt_x lt_y bits_eq] by simp
   have "inj_on (gamma_enum \<Gamma> bl) \<Gamma>"
     using gamma_enum_bij[OF \<open>finite \<Gamma>\<close>]
     by (simp add: bij_betw_def)
@@ -460,67 +331,16 @@ text \<open>Bit value of a \<open>sym4\<close> cell.  \<open>BIT1\<close> contri
   is performed separately by \<open>decode_symbol\<close>'s cell-domain
   test.\<close>
 
-fun bit_value :: "sym4 \<Rightarrow> nat" where
-  "bit_value BIT0 = 0"
-| "bit_value BIT1 = 1"
-| "bit_value LE4 = 0"
-| "bit_value BLANK4 = 0"
+abbreviation bit_value :: "sym4 \<Rightarrow> nat" where
+  "bit_value \<equiv> bit_of BIT1"
 
 text \<open>Read a \<open>sym4\<close> list as a binary number, MSB at the
   head (matches \<open>nat_to_bits\<close>'s output shape).  Each
   position contributes \<open>bit_value\<close> times the appropriate
   power of two.\<close>
 
-fun bits_to_nat :: "sym4 list \<Rightarrow> nat" where
-  "bits_to_nat [] = 0"
-| "bits_to_nat (b # bs) = bit_value b * 2 ^ length bs + bits_to_nat bs"
-
-text \<open>Snoc-form of \<open>bits_to_nat\<close>: appending a low bit
-  shifts the existing value left and adds the new bit.  This
-  is the inductive workhorse for the round-trip lemma — it
-  matches \<open>nat_to_bits\<close>'s recursive shape (which appends
-  the LSB at the tail).\<close>
-
-lemma bits_to_nat_snoc:
-  "bits_to_nat (xs @ [b]) = 2 * bits_to_nat xs + bit_value b"
-  by (induct xs) auto
-
-text \<open>Round-trip on bounded naturals: rendering \<open>n\<close> as
-  a \<open>b\<close>-bit list and reading it back recovers \<open>n\<close>,
-  provided \<open>n < 2 ^ b\<close>.  Proof by induction on \<open>b\<close>:
-  the snoc-form of \<open>bits_to_nat\<close> peels off the
-  trailing bit, the IH handles the prefix \<open>n div 2\<close>, and
-  \<open>n = 2 \<cdot> (n div 2) + n mod 2\<close> reassembles.\<close>
-
-lemma bit_value_low_bit:
-  "bit_value (if n mod 2 = 0 then BIT0 else BIT1) = n mod 2"
-  using mod_less_divisor[of 2 n] by (auto split: if_split)
-
-lemma bits_to_nat_nat_to_bits:
-  assumes "n < 2 ^ k"
-  shows "bits_to_nat (nat_to_bits k n) = n"
-  using assms
-proof (induct k arbitrary: n)
-  case 0
-  thus ?case by simp
-next
-  case (Suc k)
-  have lt: "n div 2 < 2 ^ k"
-    using \<open>n < 2 ^ Suc k\<close> by simp
-  have "bits_to_nat (nat_to_bits (Suc k) n)
-          = bits_to_nat
-              (nat_to_bits k (n div 2)
-                 @ [if n mod 2 = 0 then BIT0 else BIT1])"
-    by simp
-  also have "\<dots>
-          = 2 * bits_to_nat (nat_to_bits k (n div 2))
-              + bit_value (if n mod 2 = 0 then BIT0 else BIT1)"
-    by (rule bits_to_nat_snoc)
-  also have "\<dots> = 2 * (n div 2) + (n mod 2)"
-    using Suc.hyps[OF lt] bit_value_low_bit[of n] by simp
-  also have "\<dots> = n" by presburger
-  finally show ?case .
-qed
+abbreviation bits_to_nat :: "sym4 list \<Rightarrow> nat" where
+  "bits_to_nat \<equiv> syms_to_nat BIT1"
 
 subsection \<open>Per-symbol decoder\<close>
 
@@ -566,7 +386,7 @@ proof -
     by linarith
   have bn: "bits_to_nat ?ys = gamma_enum \<Gamma> bl x"
     unfolding encode_symbol_def
-    by (rule bits_to_nat_nat_to_bits[OF lt_x])
+    by (rule syms_to_nat_nat_to_syms[OF _ lt_x]) simp
   have lt_card: "bits_to_nat ?ys < card \<Gamma>"
     using bn gamma_enum_lt_card[OF \<open>finite \<Gamma>\<close> \<open>x \<in> \<Gamma>\<close>] by simp
   have inj: "inj_on (gamma_enum \<Gamma> bl) \<Gamma>"
@@ -589,7 +409,7 @@ text \<open>A total form of the symbol decoder, indexed by a
   \<open>buf\<close> as a partial-decoded \<open>'a\<close> value: at
   every per-bit substep before the boundary, the partial nat is
   strictly less than \<open>2 ^ (b - 1) < card \<Gamma>\<close>
-  (since \<open>b\<close> is the *least* \<open>n\<close>
+  (since \<open>b\<close> is the \<^emph>\<open>least\<close> \<open>n\<close>
   with \<open>card \<Gamma> \<le> 2 ^ n\<close>), so the fallback is
   never substantively reached for valid inputs; only the
   boundary substep can land out of range under
@@ -650,7 +470,7 @@ proof -
     using gamma_enum_lt_card[OF assms, of bl] card_le_two_pow_block_width[of \<Gamma>]
     by linarith
   show ?thesis
-    unfolding encode_symbol_def by (rule bits_to_nat_nat_to_bits[OF lt_x])
+    unfolding encode_symbol_def by (rule syms_to_nat_nat_to_syms[OF _ lt_x]) simp
 qed
 
 text \<open>The read-phase accumulator: one bit-cell folded into the
@@ -666,7 +486,7 @@ text \<open>Folding the accumulator from the seed \<open>gamma_unenum 0\<close>
   over a bit list whose value is in enumeration range yields exactly
   \<open>gamma_unenum (bits_to_nat ys)\<close>.  Proof by \<open>rev_induct\<close>:
   appending a low bit shifts the running value left and adds it
-  (\<open>bits_to_nat_snoc\<close>), the prefix value stays in range
+  (\<open>syms_to_nat_snoc\<close>), the prefix value stays in range
   (\<open>bits_to_nat zs \<le> bits_to_nat (zs @ [b])\<close>, no separate
   \<open>take\<close>-bound lemma needed), and the \<open>gamma_enum \<circ>
   gamma_unenum\<close> round-trip cancels at each step.\<close>
@@ -683,7 +503,7 @@ next
   case (snoc b zs)
   have set_zs: "set zs \<subseteq> {BIT0, BIT1}" using snoc.prems(1) by simp
   have snoc_eq: "bits_to_nat (zs @ [b]) = 2 * bits_to_nat zs + bit_value b"
-    by (rule bits_to_nat_snoc)
+    by (rule syms_to_nat_snoc)
   have bound_zs: "bits_to_nat zs < card \<Gamma>"
     using snoc.prems(2) snoc_eq by linarith
   have IH: "foldl (ar_acc \<Gamma> bl) (gamma_unenum \<Gamma> bl 0) zs

@@ -21,8 +21,7 @@
 \providecommand{\isasympm}{\ensuremath{\pm}}
 \providecommand{\isasymne}{\ensuremath{\neq}}
 
-% Session / entry names — single source of truth in sessionnames.tex (canonical
-% at t/document/, symlinked here and dereferenced into a real copy at release).
+% Session / entry names, defined in sessionnames.tex.
 \input{sessionnames}
 
 \begin{document}
@@ -66,31 +65,35 @@ headline theorems:
   $M'$ accepts $\mathrm{encode\_input}\, bl_M\, w$ in time
   $2 \lceil n/c \rceil + 8 \lceil T(n)/c \rceil + 4$ (theorem
   \texttt{alphabet\_enlarge\_time\_explicit}).  Both the input length
-  and the running time are divided by the group size $c$.
+  and the running time are divided by the group size $c$.  The same bound
+  holds for rejecting runs: if $M$ reaches its reject state on $w$ in time
+  $T(n)$, so does $M'$ on the encoded input
+  (\texttt{alphabet\_enlarge\_terminal\_time}).
 \item \emph{Language biconditional}:
   $\mathrm{encode\_input}\, bl_M\, w \in L(M') \iff w \in L(M)$ for every
   well-formed $M$, with no determinism hypothesis.
 \item \emph{Determinism-free building block}: for an arbitrary,
   possibly nondeterministic, well-formed $M$, the language
   biconditional and the time bound hold together
-  (\texttt{alphabet\_enlarge\_nae}), with no $\mathrm{det\_mttm}$
+  (\texttt{alphabet\_enlarge\_nae}), with no $\mathrm{det\_ktm}$
   hypothesis.  This is the raw (encoded-input) form over the
   enlarged alphabet; wrapping it in the inline encoder yields the
   same-alphabet speedup corollaries below, each proved in a
   deterministic and a nondeterministic version.
-\item \emph{HU 12.4 (linear-$T$ case)}: for a linear time bound
-  $T(n) \leq d_0 n$ and any rational $\varepsilon = 1/q > 0$, there exists a
+\item \emph{HU 12.4 (linear-$T$ case)}: for $M$ with $k \geq 2$ tapes, as
+  in Hopcroft and Ullman, a linear time bound $T(n) \leq d_0 n + b$, and any
+  $\varepsilon = 1/q$ with $q$ a positive integer, there exists a
   multitape $M''$ over the original alphabet with $L(M'') = L(M)$ running in
   time $(1 + \varepsilon)|w| + K$ (exactly $|w| + |w| \,\mathrm{div}\, q + K$)
   --- matching Hopcroft and Ullman's $(1 + \varepsilon)n$, with the additive
-  constant now an explicit closed expression $K = 28 + 8 d_0$ --- once the
+  constant now an explicit closed expression $K = 28 + 8 d_0 + 8 b$ --- once the
   block size $c$ is taken large enough (it grows with $q$ and the slope
   $d_0$).  It is proved both in a deterministic version ($M$ deterministic
   $\Rightarrow$ $M''$ deterministic) and a nondeterministic version (no
   determinism hypothesis); the latter is the Hopcroft--Ullman corollary
   $\mathrm{NTIME}(cn) = \mathrm{NTIME}((1+\varepsilon)n)$, stated there
   without proof.
-\item \emph{HU 12.3 (super-linear-$T$ case)}: for $T$ satisfying
+\item \emph{HU 12.3 (super-linear-$T$ case)}: for $k \geq 2$ and $T$ satisfying
   the growth hypothesis
   $\forall d. \exists N. \forall n \geq N.\, d \cdot n \leq T(n)$,
   $M''$ runs in time $\varepsilon\, T(|w|) + K$ for
@@ -102,15 +105,21 @@ headline theorems:
   $\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c \cdot T(n))$ for any
   $c > 0$.
 \item \emph{Time-complexity convention}: both linear-$T$ headlines are
-  additionally restated in Hopcroft and Ullman's $\max(n + 1, \cdot)$ time
-  convention, in \emph{two} forms --- an all-inputs form keeping the
-  explicit constant ($\ldots + K$), and a constant-free form
-  $(1 + \varepsilon)|w|$ (exactly $|w| + |w|\,\mathrm{div}\,q$) valid once
-  $|w|$ passes the closed threshold $q(q + 1)K$.  The clean constant-free
-  bound cannot hold on \emph{all} inputs, so the residual $K$ is provably
-  necessary: a minimal counterexample (\texttt{clean\_convention\_unattainable},
-  proved in the substrate entry \sessMTTM) accepts its language yet exceeds
-  the convention floor on its shortest input.
+  additionally restated in Hopcroft and Ullman's time convention ---
+  $\max(n + 2, \cdot)$ here, against their $\max(n + 1, \cdot)$, since the
+  substrate reads the left endmarker first --- in three forms, for different
+  uses.  The first holds on all inputs and keeps the explicit constant,
+  $|w| + |w|\,\mathrm{div}\,q + K$.  The \emph{eventual} form is about the
+  same machine and drops the constant, running in exactly
+  $|w| + |w|\,\mathrm{div}\,q$ once $|w|$ passes the closed threshold
+  $q(q + 1)K$; below it the machine does not meet that bound, and nothing
+  forces a valid machine to (the minimal counterexample
+  \texttt{clean\_convention\_unattainable}, proved in the substrate entry
+  \sessMTTM).  The \emph{table} form adds Hopcroft and Ullman's own device:
+  the encoder decides inputs up to the threshold from a finite table on its
+  end-of-input transition, within the floor, so the bound
+  $|w| + |w|\,\mathrm{div}\,q$ holds on all inputs.  The table exists but is
+  not computed, so the first two forms are the effective statements.
 \end{itemize}
 
 The language equivalence, the time bound, and the combined building
@@ -210,9 +219,11 @@ theorem and carries no standard short name of its own.
   a list of $\lceil |w| / c \rceil$ blocks.
 \item[$M''$, the wrapped machine]
   $\mathrm{encoding\_wrap}\, M'\, (\mathrm{ae\_pack}\, bl_M)\, c\,
-  \Sigma_M$: the raw machine $M'$ with an inline block-encoder, on the
-  faithful $k$-tape plant-$\rhd$ construction (reusing the spent input
-  tape rather than prepending a fresh one), over the original-alphabet
+  \Sigma_M$: the raw machine $M'$ with an inline block-encoder.  It keeps
+  $M$'s $k$ tapes: the encoder copies the input in blocks onto a second
+  tape, and the input tape then serves as one of $M'$'s work tapes, with
+  a fresh left-end marker $\rhd$ written past the consumed input instead
+  of a rewind.  It works over the original-alphabet
   symbols $\mathrm{Raw}\,\Sigma_M$ (plus the encoded working symbols
   $\mathrm{Enc}\,\Gamma_M$); $\mathrm{ae\_pack}$ is the per-block pack
   function matching $\mathrm{encode\_input}$.
@@ -221,7 +232,7 @@ theorem and carries no standard short name of its own.
   $\{w \mid \mathrm{map}\ \mathrm{Raw}\ w \in L(M'')\}$.
 \item[\texttt{accepts\_in\_time\_user\_wrap}\,$M''\,w\,t$] the
   corresponding user-facing timed acceptance,
-  $\texttt{accepts\_in\_time\_mttm}\, M''\, (\mathrm{map}\
+  $\texttt{accepts\_in\_time\_ktm}\, M''\, (\mathrm{map}\
   \mathrm{Raw}\ w)\, t$.
 \end{description}
 
@@ -244,7 +255,17 @@ intending an amortised, non-oblivious simulation that reaches
 $(1 + \varepsilon)$ directly rather than through any fixed multiplicative
 constant.  Whichever the constant, the group size $c$ divides it away, so we
 formalise the scheme cleanest to verify rather than the one with the
-smallest factor.
+smallest factor.  For deterministic machines the floor of $n$ is not
+reached:
+Rosenberg~\cite[Proposition~2]{Rosenberg1967:realtime} gives a language
+accepted in time $2n$, hence in time $(1 + \varepsilon)n$ for every
+$\varepsilon > 0$, that no deterministic real-time multitape machine
+accepts, so the $(1 + \varepsilon)n$ of Theorem~12.4 cannot in general be
+improved to $n$.  For nondeterministic machines it can, by a different
+argument: Book and Greibach~\cite{Book1970:quasi-realtime} show that
+nondeterministic linear time and real time have the same power.
+These are results about on-line machines with a separate input tape; the
+construction here makes no claim at the floor itself.
 
 \paragraph{Related AFP developments.}
 To our knowledge the Hartmanis--Stearns linear speedup theorem has not been
@@ -260,7 +281,7 @@ universal machine over a fixed binary alphabet for computability, with no
 timing analysis.  The substrate itself descends from Dalvit and Thiemann's
 \texttt{Multitape\_To\_Singletape\_TM}~\cite{Dalvit2022:verified}, but makes
 the number of tapes a machine's \emph{data} rather than a type parameter, so a
-single speedup theorem here ranges over machines of every tape count.
+single speedup theorem here ranges over machines of every tape count $k \geq 2$.
 
 \subsection{Scope and limitations}
 
@@ -337,7 +358,7 @@ $\varepsilon > 0$.
 
 \paragraph{Correspondence.}
 The session's four headline theorems formalise these results over the
-value-level substrate:
+substrate:
 \begin{description}
 \item[\texttt{linear\_speedup\_HU\_12\_3\_dae}] Theorem 12.3, the
   deterministic linear speed-up (super-linear $T$).
@@ -358,13 +379,13 @@ $\max(n + 1, \lceil \cdot \rceil)$ convention above --- follow next.
 We first state the three properties of the raw enlarged machine $M'$,
 then their determinism-free bundle, then the two textbook corollaries
 over the original alphabet.  The only hypothesis on $M$ for the raw
-results is \texttt{well\_formed\_mttm}: the time and language
+results is \texttt{well\_formed\_ktm}: the time and language
 results carry \emph{no} determinism hypothesis, and the deterministic
-corollaries add \texttt{det\_mttm}.
+corollaries add \texttt{det\_ktm}.
 
 \paragraph{\texttt{alphabet\_enlarge\_wf}.}
 \[
-  \mathrm{valid\_mttm}\, M \ \Longrightarrow\ \mathrm{valid\_mttm}\, M'.
+  \mathrm{valid\_ktm}\, M \ \Longrightarrow\ \mathrm{valid\_ktm}\, M'.
 \]
 The enlarged machine is again a legal machine.  Unlike reduction, no
 alphabet-size side condition is needed: enlargement always yields a
@@ -373,7 +394,7 @@ well-typed block machine.
 \paragraph{\texttt{alphabet\_enlarge\_language}.}
 \[
   \begin{aligned}
-    &\mathrm{well\_formed\_mttm}\, M \ \Longrightarrow\
+    &\mathrm{well\_formed\_ktm}\, M \ \Longrightarrow\
       \forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
     &\quad \bigl(\mathrm{encode\_input}\, bl_M\, w \in L(M')\bigr)
       = \bigl(w \in L(M)\bigr).
@@ -385,11 +406,11 @@ accepts $w$.
 
 \paragraph{\texttt{alphabet\_enlarge\_time\_explicit} and
   \texttt{alphabet\_enlarge\_time}.}
-Under $\mathrm{well\_formed\_mttm}\, M$, for every input word $w$:
+Under $\mathrm{well\_formed\_ktm}\, M$, for every input word $w$:
 \[
   \begin{aligned}
-    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
-    &\quad \mathrm{accepts\_in\_time\_mttm}\, M'\,
+    &\mathrm{accepts\_in\_time\_ktm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \mathrm{accepts\_in\_time\_ktm}\, M'\,
       (\mathrm{encode\_input}\, bl_M\, w)\, \\
     &\qquad \bigl(2\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + 4\bigr).
   \end{aligned}
@@ -405,18 +426,26 @@ it existentially as
 $\exists \alpha, f.\ \alpha\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + f$,
 instantiated at $\alpha = 2$, $f = 4$.
 
+Both are the accepting instance of
+\texttt{alphabet\_enlarge\_terminal\_time}, which bounds the time to reach
+either terminal state ($\mathrm{reaches\_state\_in\_time\_ktm}$): a run of
+$M$ that rejects within $T(|w|)$ steps is simulated by a rejecting run of
+$M'$ within the same bound.  The encoding wrap keeps this, since its reject
+state is the simulated machine's (\texttt{wrap\_reaches\_state}), so a
+bound on the time to reject, which a class of decided languages needs, can
+be had from the same simulation.
+
 \paragraph{\texttt{alphabet\_enlarge\_nae}.}
 The determinism-free building block: under
-$\mathrm{well\_formed\_mttm}\, M$ alone, the language biconditional
+$\mathrm{well\_formed\_ktm}\, M$ alone, the language biconditional
 \emph{and} the same time bound hold together, packaged existentially
 ($\exists \alpha, f$, with the witnesses $\alpha = 2$, $f = 4$).  This
-is the raw, encoded-input ``Form~2'' statement over the enlarged
-alphabet; wrapping it in the inline encoder yields the same-alphabet
+is the raw, encoded-input statement over the enlarged alphabet; wrapping it in the inline encoder yields the same-alphabet
 corollaries below.
 
 \paragraph{\texttt{linear\_speedup\_HU\_12\_4\_nae} /
 \texttt{\_dae} (linear-$T$ case).}
-Assume $\mathrm{well\_formed\_mttm}\, M$, a linear time bound
+Assume $\mathrm{well\_formed\_ktm}\, M$, $k \geq 2$, a linear time bound
 $T(n) \leq d_0 n + b$, and $q > 0$, $c > 0$.  Then $M''$ is valid,
 $\texttt{Lang\_user\_wrap}\, M'' = L(M)$
 (same language, \emph{over the original alphabet}), and, provided
@@ -424,35 +453,32 @@ $c$ is large enough ($q\,(3 + 8 d_0) \leq c$), for every
 $w$,
 \[
   \begin{aligned}
-    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\mathrm{accepts\_in\_time\_ktm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
     &\quad \texttt{accepts\_in\_time\_user\_wrap}\, M''\, w\, \\
     &\qquad \bigl(|w| + |w| \,\mathrm{div}\, q + K\bigr), \\
     &\qquad\quad K = 28 + 8 d_0 + 8 b .
   \end{aligned}
 \]
 The additive constant $K$ is a \emph{literal} closed expression in the
-input machine's linear-bound constants $d_0, b$; an earlier form left both
-$K$ and a wrap constant $\alpha$ existential, and threading $\alpha = 2$ up
-the raw chain removed them, leaving the side condition
-$q\,(3 + 8 d_0) \leq c$ free of $\alpha$.  The running time is
+input machine's linear-bound constants $d_0, b$.  The running time is
 $|w|\,(1 + 1/q) + K = (1+\varepsilon)\,|w| + K$
 with $\varepsilon = 1/q$, the classical linear speedup.  The
-\texttt{\_dae} version adds the hypothesis $\mathrm{det\_mttm}\, M$ and
-the extra conclusion $\mathrm{det\_mttm}\, M''$ (determinism
+\texttt{\_dae} version adds the hypothesis $\mathrm{det\_ktm}\, M$ and
+the extra conclusion $\mathrm{det\_ktm}\, M''$ (determinism
 preserved); the \texttt{\_nae} version drops both and is the
 Hopcroft--Ullman corollary
 $\mathrm{NTIME}(cn) = \mathrm{NTIME}((1+\varepsilon)n)$.
 
 \paragraph{\texttt{linear\_speedup\_HU\_12\_3\_nae} /
 \texttt{\_dae} (super-linear-$T$ case).}
-Assume $\mathrm{well\_formed\_mttm}\, M$, the growth hypothesis
+Assume $\mathrm{well\_formed\_ktm}\, M$, $k \geq 2$, the growth hypothesis
 $\forall d.\ \exists N.\ \forall n \geq N.\ d\,n \leq T(n)$, $q > 0$,
 and $16 q \leq c$.  Then there are constants $K, N_0$ with $M''$
 valid, $\texttt{Lang\_user\_wrap}\, M'' = L(M)$, and for every $w$ with
 $|w| \geq N_0$,
 \[
   \begin{aligned}
-    &\mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\mathrm{accepts\_in\_time\_ktm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
     &\quad \texttt{accepts\_in\_time\_user\_wrap}\, M''\, w\,
       \bigl(T(|w|) \,\mathrm{div}\, q + K\bigr).
   \end{aligned}
@@ -460,42 +486,88 @@ $|w| \geq N_0$,
 For super-linear $T$ the growth hypothesis absorbs the linear-in-$|w|$
 overhead into $T(|w|)/(2q)$, leaving running time $T(|w|)/q + K$, a
 speedup by an arbitrary factor $q$.  As before, the \texttt{\_dae}
-version adds $\mathrm{det\_mttm}$ preservation, and the \texttt{\_nae}
+version adds $\mathrm{det\_ktm}$ preservation, and the \texttt{\_nae}
 version is the corollary
 $\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c\,T(n))$ for any $c > 0$.
 
 \paragraph{Convention restatements
 (\texttt{linear\_speedup\_HU\_12\_4\_nae\_conv} /
-\texttt{\_eventual}, and the \texttt{\_dae} pair).}
-The four headlines above bound each accepting run by a per-input additive
-constant $K$.  Read in Hopcroft and Ullman's $\max(n + 1, \cdot)$ time
+\texttt{\_eventual} / \texttt{\_conv\_table}, and the \texttt{\_dae}
+versions).}
+The four headlines above bound each accepting run with an additive constant
+$K$ that depends on $M$'s time bound but not on the input.  Read in Hopcroft and Ullman's $\max(n + 1, \cdot)$ time
 convention --- here $\max(n + 2, \cdot)$, since the substrate reads the
 left endmarker before the first input symbol --- the linear-$T$ case has
-two honest forms.  The \texttt{\_conv} form keeps the constant and holds
-for \emph{all} inputs: $M''$ accepts every $w \in L(M)$ within
-$\max(|w| + 2,\ |w| + |w|\,\mathrm{div}\,q + K)$, with the same literal
-$K = 28 + 8 d_0 + 8 b$.  The \texttt{\_eventual} form drops the constant
-entirely --- $M''$ then runs in exactly $|w| + |w|\,\mathrm{div}\,q$ ---
-but only once $|w|$ exceeds the closed threshold $q(q + 1)K$ (proved by
-running the raw bound one denominator tighter, at $q + 1$, then absorbing
-$K$ into the extra $\mathrm{div}$-slack).  The clean constant-free bound on
-\emph{all} inputs is provably unattainable: the substrate entry \sessMTTM{}
-proves \texttt{clean\_convention\_unattainable}, exhibiting a valid
-deterministic machine that accepts its language yet needs three steps on
-the empty input --- one past the floor $2$ --- so no
-$|w| + |w|\,\mathrm{div}\,q$ convention bound can hold there, for any $q$.
-This is why the residual $K$ is kept rather than folded into a smaller
-$\varepsilon$: closing the finitely many small inputs would require a
-non-effective finite-exceptions table (\texttt{time\_cleanup} in
-\sessMTTM) that the speedup construction does not build.  So the textbook's
-clean $(1 + \varepsilon)n$ reading of 12.4 holds for the constructed
-machine only with the explicit residual $K$, or only past the threshold;
-the class equality $\mathrm{DTIME}(cn) = \mathrm{DTIME}((1 + \varepsilon)n)$
-survives, but is recovered only through that non-effective table.  The
-superlinear case carries no such caveat: there the growth of $T$ dominates
-the finite-control cleanup, so the convention forms
-\texttt{linear\_speedup\_HU\_12\_3\_nae\_conv} and \texttt{\_dae\_conv} are
-already clean, with no residual constant.
+three forms, which suit different uses.  The \texttt{\_conv} form is the
+raw bound restated: the wrap accepts every $w \in L(M)$ within
+$\max(|w| + 2,\ |w| + |w|\,\mathrm{div}\,q + K)$, provided
+$q(3 + 8 d_0) \leq c$, with every number explicit; it is the form to
+compose with other constructions.  The \texttt{\_eventual} form is
+about the wrap itself: it runs in exactly $|w| + |w|\,\mathrm{div}\,q$
+once $|w|$ reaches the closed threshold $q(q + 1)K$, with the same literal
+$K = 28 + 8 d_0 + 8 b$ (proved by running the raw bound one denominator
+tighter, at $q + 1$, then absorbing $K$ into the extra
+$\mathrm{div}$-slack).  Below the threshold the wrap alone cannot meet the
+bound: its setup phases overshoot the floor on tiny inputs, and nothing
+forces a valid machine to meet it --- the substrate entry \sessMTTM{} proves
+\texttt{clean\_convention\_unattainable}, a valid deterministic machine that
+accepts its language yet needs three steps on the empty input, one past the
+floor $2$.  The counterexample is about one machine, not a lower bound on
+its language.
+
+The \texttt{\_conv\_table} form drops the constant on \emph{all} inputs:
+$\mathrm{time\_bounded\_conv}\ P\ (\lambda n.\ n + n\,\mathrm{div}\,q)$, so
+$P$ accepts every $w \in L(M)$ within
+$\max(|w| + 2,\ |w| + |w|\,\mathrm{div}\,q)$.  The machine $P$ is the wrap
+with a \emph{first-block patch}
+(\texttt{wrap\_prefix\_patch}, theory \texttt{Wrap\_Prefix\_Patch}): while
+the encoder packs the first block of $c$ input symbols, a flag records that
+no block has yet been closed, and if the input ends inside that block the
+encoder's end-of-input transition goes straight to the verdict of a table
+of the words of length at most the threshold.  This is Hopcroft and
+Ullman's own device: their proof recognises short words in the finite
+control while the input is read~\cite[p.~291]{Hopcroft1979:introduction}.
+A short input is then decided in $|w| + 2$ steps, exactly the floor, and a
+long one runs as the wrap does.  An outer cleanup that rescans the input
+(\texttt{finite\_patch} in \sessMTTM) would not do: the rescan costs time
+proportional to the cutoff, which here grows with $q$.  The width
+hypothesis $q(q+1)K < c$ keeps the threshold inside the first block.  The
+table is $L(M)$ restricted to short words, a finite set, so the
+\texttt{\_conv\_table} forms assert that the machine exists rather than
+construct it; this is the form for class equalities, where existence is
+all that is needed, and the \texttt{\_conv} and \texttt{\_eventual} forms
+are the effective statements.  The patch preserves determinism, so
+\texttt{\_dae\_conv\_table} keeps $\mathrm{det\_ktm}$.
+The patch's correctness needs no determinism: the wrap is deterministic
+until it starts simulating $M$, which is enough to force its first block.
+
+The superlinear case has no threshold to handle inside the first block:
+the growth of $T$ dominates the cost of the outer cleanup, so the
+convention forms \texttt{linear\_speedup\_HU\_12\_3\_nae\_conv} and
+\texttt{\_dae\_conv} are clean over \texttt{finite\_patch}.
+
+\paragraph{Speedup above a linear band.}
+Theory \texttt{Wrap\_Band\_Speedup} states the first-block construction for
+an arbitrary time bound $t$ that lies, from some $N_0$ on, above the line
+$n + n\,\mathrm{div}\,q$ for a positive $q$.  If a well-formed machine $M$
+with at least two tapes accepts each word of its language within
+$a\,t(n) + e$ steps, for constants $a$ and $e$, then the patched wrap accepts
+the same language within the convention bound $\max(n + 2,\ t(n))$
+(\texttt{wrap\_prefix\_speedup\_band}).  The constant factor $a$ is absorbed
+by taking the group size large enough, as stated in that theorem; the short
+words decided from the table are those of length at most
+$\max(N_0,\ q(81 + 128 e))$, and the group size must exceed that length.
+The accompanying \texttt{wrap\_prefix\_speedup\_contract} gives validity, the
+language (each word mapped through $\mathrm{Raw}$) and, for deterministic
+$M$, determinism.
+
+Like the headlines, this theorem bounds accepting runs, which is what a
+language class needs.  Rejecting runs are carried over on long words, where
+the patched machine runs as the wrap does (\texttt{wrap\_reaches\_state}
+above), but not on short ones: there it stops with the table's verdict, so
+for a nondeterministic $M$ that both accepts and rejects a short word along
+different runs, the rejecting runs are not reproduced.  A bound on the time
+to reject therefore combines the two cases for the machine at hand.
 
 \newpage
 

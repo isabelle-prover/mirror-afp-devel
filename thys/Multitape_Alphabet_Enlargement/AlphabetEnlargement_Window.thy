@@ -28,14 +28,14 @@ lemma ae_window_invariant_step:
     and nM p_start :: nat
     and bp bp' :: "('c :: enum) bp"
     and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-    and d :: dir
+    and d :: move
   assumes wi:     "ae_window_invariant tM nM bp blocks p_start"
       and adv:    "bp_advance_le le (tM nM) bp d = Some bp'"
       and bp_lt:  "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
       and bp_pos: "0 < bp_linear bp"
       and no_le:  "tM nM \<noteq> le"
   shows "ae_window_invariant
-            (tM(nM := a')) (go_dir d nM)
+            (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') p_start"
 proof -
   let ?c = "card (UNIV :: 'c set)"
@@ -51,7 +51,7 @@ proof -
     \<open>bp_advance\<close>.\<close>
   have adv_plain: "bp_advance bp d = Some bp'"
   proof -
-    from no_le have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = dir.R)"
+    from no_le have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR)"
       by simp
     hence "bp_advance_le le (tM nM) bp d = bp_advance bp d"
       unfolding bp_advance_le_def by auto
@@ -61,27 +61,27 @@ proof -
     direction.  N keeps \<open>bp\<close>, R increments \<open>bp_linear\<close>, L
     decrements (needs \<open>nM \<ge> 1\<close>, supplied by
     \<open>p_start_ge\<close>).\<close>
-  have head_new: "go_dir d nM = p_start + bp_linear bp'"
+  have head_new: "go_move d nM = p_start + bp_linear bp'"
   proof (cases d)
-    case N
-    from adv_plain N have "Some bp' = Some bp"
+    case MoveN
+    from adv_plain MoveN have "Some bp' = Some bp"
       using bp_advance_N_some[of bp] by simp
     hence bp'_eq: "bp' = bp" by simp
-    show ?thesis using N bp'_eq head_corr by simp
+    show ?thesis using MoveN bp'_eq head_corr by simp
   next
-    case R
-    from adv_plain R have adv_R: "bp_advance bp dir.R = Some bp'" by simp
+    case MoveR
+    from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
     have lin_R: "bp_linear bp' = Suc (bp_linear bp)"
       by (rule bp_advance_R_linear[OF adv_R])
-    show ?thesis using R lin_R head_corr by simp
+    show ?thesis using MoveR lin_R head_corr by simp
   next
-    case L
-    from adv_plain L have adv_L: "bp_advance bp dir.L = Some bp'" by simp
+    case MoveL
+    from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
     have lin_L: "Suc (bp_linear bp') = bp_linear bp"
       by (rule bp_advance_L_linear[OF adv_L])
     have nM_form: "nM = Suc (p_start + bp_linear bp')"
       using head_corr lin_L by simp
-    show ?thesis using L nM_form by simp
+    show ?thesis using MoveL nM_form by simp
   qed
   \<comment> \<open>Window-content alignment: the only changed cell in the
     M-tape (\<open>nM\<close>) corresponds to the only changed buffer cell
@@ -237,9 +237,9 @@ text \<open>\<open>le1\<close>-regime window-invariant preservation under one
   head advance, the position bounds, and the substrate-derived
   facts on \<open>a'\<close> / \<open>d\<close>'s response to the read symbol's
   LE-status: when reading \<open>le\<close>, M writes \<open>le\<close> and moves
-  N or R (from \<open>valid_mttm_deltaLE\<close>); when reading
+  N or R (from \<open>valid_ktm_deltaLE\<close>); when reading
   non-\<open>le\<close>, M doesn't write \<open>le\<close> (from
-  \<open>valid_mttm_deltaLE_no_write\<close>'s contrapositive).  Also takes
+  \<open>valid_ktm_deltaLE_no_write\<close>'s contrapositive).  Also takes
   a no-LE-in-window precondition (from the IH-side
   \<open>no_le\<close> invariant restricted to the \<open>le1\<close> regime's
   window cells \<open>1..2c\<close>) which forces the LE-jump in
@@ -254,17 +254,17 @@ lemma ae_window_invariant_le1_step:
     and nM :: nat
     and bp bp' :: "('c :: enum) bp"
     and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-    and d :: dir
+    and d :: move
   assumes wi:        "ae_window_invariant_le1 tM nM bp blocks le"
       and adv:       "bp_advance_le le (tM nM) bp d = Some bp'"
       and bp_lt:     "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
       and bp_pos:    "0 < bp_linear bp"
-      and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {dir.N, dir.R}"
+      and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
       and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
       and no_le_win: "\<forall>i. 0 < i \<and> i \<le> 2 * card (UNIV :: 'c set)
                               \<longrightarrow> tM i \<noteq> le"
   shows "ae_window_invariant_le1
-            (tM(nM := a')) (go_dir d nM)
+            (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') le"
 proof -
   let ?c = "card (UNIV :: 'c set)"
@@ -289,9 +289,9 @@ proof -
   \<comment> \<open>LE-jump never fires in \<open>le1\<close>: at \<open>fst bp = AE_Home\<close>,
     \<open>nM\<close> lies in \<open>{1..c}\<close>, so \<open>tM nM \<noteq> le\<close> by
     \<open>no_le_win\<close>.\<close>
-  have not_le_jump: "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = dir.R)"
+  have not_le_jump: "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR)"
   proof
-    assume "tM nM = le \<and> fst bp = AE_Home \<and> d = dir.R"
+    assume "tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR"
     hence le_at: "tM nM = le" and fst_home: "fst bp = AE_Home" by auto
     have lin: "bp_linear bp = ?c + c_idx (snd bp)"
       using fst_home by (cases bp) simp
@@ -308,25 +308,25 @@ proof -
     with adv show ?thesis by simp
   qed
   \<comment> \<open>Algebraic post-step relation: \<open>Suc (bp_linear bp') =
-    go_dir d nM + c\<close>.  By the equivalence
+    go_move d nM + c\<close>.  By the equivalence
     \<open>bp_linear_le1_struct_iff\<close> this implies the structural
-    case-on-\<open>fst bp'\<close> at \<open>nM' = go_dir d nM\<close>.\<close>
-  have struct_new: "Suc (bp_linear bp') = go_dir d nM + ?c"
+    case-on-\<open>fst bp'\<close> at \<open>nM' = go_move d nM\<close>.\<close>
+  have struct_new: "Suc (bp_linear bp') = go_move d nM + ?c"
   proof (cases d)
-    case N
-    from adv_plain N have "Some bp' = Some bp"
+    case MoveN
+    from adv_plain MoveN have "Some bp' = Some bp"
       using bp_advance_N_some[of bp] by simp
     hence bp'_eq: "bp' = bp" by simp
-    show ?thesis using N bp'_eq struct_lin by simp
+    show ?thesis using MoveN bp'_eq struct_lin by simp
   next
-    case R
-    from adv_plain R have adv_R: "bp_advance bp dir.R = Some bp'" by simp
+    case MoveR
+    from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
     have lin_R: "bp_linear bp' = Suc (bp_linear bp)"
       by (rule bp_advance_R_linear[OF adv_R])
-    show ?thesis using R lin_R struct_lin by simp
+    show ?thesis using MoveR lin_R struct_lin by simp
   next
-    case L
-    from adv_plain L have adv_L: "bp_advance bp dir.L = Some bp'" by simp
+    case MoveL
+    from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
     have lin_L: "Suc (bp_linear bp') = bp_linear bp"
       by (rule bp_advance_L_linear[OF adv_L])
     have nM_pos: "0 < nM"
@@ -334,8 +334,8 @@ proof -
       assume "\<not> 0 < nM"
       hence "nM = 0" by simp
       hence "tM nM = le" using tM_0 by simp
-      with a_le have d_in: "d \<in> {dir.N, dir.R}" by blast
-      with L show False by simp
+      with a_le have d_in: "d \<in> {MoveN, MoveR}" by blast
+      with MoveL show False by simp
     qed
     obtain m where m_eq: "nM = Suc m" using nM_pos by (cases nM) auto
     have "Suc (Suc (bp_linear bp')) = Suc (bp_linear bp)"
@@ -343,16 +343,16 @@ proof -
     also have "... = nM + ?c" using struct_lin by simp
     also have "... = Suc (m + ?c)" using m_eq by simp
     finally have lhs_eq: "Suc (bp_linear bp') = m + ?c" by simp
-    have rhs_eq: "go_dir dir.L nM = m" using m_eq by simp
-    show ?thesis using L lhs_eq rhs_eq by simp
+    have rhs_eq: "go_move MoveL nM = m" using m_eq by simp
+    show ?thesis using MoveL lhs_eq rhs_eq by simp
   qed
   have struct_post:
       "(case fst bp' of
-          AE_Left  \<Rightarrow> snd bp' = c_last \<and> go_dir d nM = 0
-        | AE_Home  \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
-        | AE_Right \<Rightarrow> go_dir d nM = Suc (?c + c_idx (snd bp')))"
+          AE_Left  \<Rightarrow> snd bp' = c_last \<and> go_move d nM = 0
+        | AE_Home  \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+        | AE_Right \<Rightarrow> go_move d nM = Suc (?c + c_idx (snd bp')))"
     using struct_new
-          bp_linear_le1_struct_iff[where bp = bp' and nM = "go_dir d nM"]
+          bp_linear_le1_struct_iff[where bp = bp' and nM = "go_move d nM"]
     by blast
   \<comment> \<open>Window-content alignment over \<open>{1..2c} \<leftrightarrow> {c..3c-1}\<close>:
     the write lands at buffer index \<open>bp_linear bp\<close>; if that
@@ -483,7 +483,7 @@ text \<open>\<open>le0\<close>-regime window-invariant preservation under one
   Structurally the proof splits on \<open>fst bp\<close>: \<open>AE_Left\<close>
   is closed by contradiction with the invariant; \<open>AE_Home\<close>
   case-splits on \<open>d \<in> {N, R}\<close> (L forbidden by
-  \<open>valid_mttm_deltaLE\<close>); \<open>AE_Right\<close> falls through to the
+  \<open>valid_ktm_deltaLE\<close>); \<open>AE_Right\<close> falls through to the
   standard \<open>bp_advance\<close> with displacement \<open>\<pm>1/0\<close> and the
   no-LE precondition rules out the LE-jump.\<close>
 
@@ -493,17 +493,17 @@ lemma ae_window_invariant_le0_step:
     and nM :: nat
     and bp bp' :: "('c :: enum) bp"
     and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-    and d :: dir
+    and d :: move
   assumes wi:        "ae_window_invariant_le0 tM nM bp blocks le"
       and adv:       "bp_advance_le le (tM nM) bp d = Some bp'"
       and bp_lt:     "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
       and bp_pos:    "0 < bp_linear bp"
-      and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {dir.N, dir.R}"
+      and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
       and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
       and no_le_win: "\<forall>i. 0 < i \<and> i \<le> card (UNIV :: 'c set)
                               \<longrightarrow> tM i \<noteq> le"
   shows "ae_window_invariant_le0
-            (tM(nM := a')) (go_dir d nM)
+            (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') le"
 proof -
   let ?c = "card (UNIV :: 'c set)"
@@ -536,7 +536,7 @@ proof -
     from struct_pre bp_eq AE_Home have nM_zero: "nM = 0" by simp
     have tM_nM_le: "tM nM = le" using nM_zero tM_0 by simp
     from a_le tM_nM_le have a'_le: "a' = le"
-      and d_in: "d \<in> {dir.N, dir.R}" by auto
+      and d_in: "d \<in> {MoveN, MoveR}" by auto
     \<comment> \<open>Write-back: \<open>(LE_block le)(off := le) = LE_block le\<close>,
       so the home slot stays \<open>LE_block le\<close>.\<close>
     have wb_eq: "write_bp blocks bp a' = (l, h(off := a'), r)"
@@ -550,11 +550,10 @@ proof -
       using nM_zero tM_0 a'_le by auto
     show ?thesis
     proof (cases d)
-      case N
-      from adv N have "bp_advance_le le (tM nM) bp dir.N = Some bp'" by simp
+      case MoveN
+      from adv MoveN have "bp_advance_le le (tM nM) bp MoveN = Some bp'" by simp
       hence bp'_eq: "bp' = bp"
         unfolding bp_advance_le_def using bp_advance_N_some[of bp] by auto
-      have go_dir_N: "go_dir dir.N nM = nM" by simp
       show ?thesis
         unfolding ae_window_invariant_le0_def
       proof (intro conjI)
@@ -562,10 +561,10 @@ proof -
           using new_blocks by simp
         show "(tM(nM := a')) 0 = le" using tM_new tM_0 by simp
         show "(case fst bp' of
-                AE_Home  \<Rightarrow> go_dir d nM = 0
-              | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                AE_Home  \<Rightarrow> go_move d nM = 0
+              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
               | AE_Left  \<Rightarrow> False)"
-          using bp'_eq bp_eq b_home N nM_zero by simp
+          using bp'_eq bp_eq b_home MoveN nM_zero by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
                     = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
@@ -586,13 +585,13 @@ proof -
         qed
       qed
     next
-      case R
+      case MoveR
       \<comment> \<open>LE-jump fires: \<open>bp' = (AE_Right, c_first)\<close>,
-        \<open>go_dir R 0 = 1 = Suc (c_idx c_first)\<close>.\<close>
-      from adv R tM_nM_le b_home bp_eq
+        \<open>go_move MoveR 0 = 1 = Suc (c_idx c_first)\<close>.\<close>
+      from adv MoveR tM_nM_le b_home bp_eq
       have bp'_eq: "bp' = (AE_Right, c_first)"
         unfolding bp_advance_le_def by simp
-      have nM'_eq: "go_dir dir.R nM = 1" using nM_zero by simp
+      have nM'_eq: "go_move MoveR nM = 1" using nM_zero by simp
       have c_idx_first_eq: "c_idx (c_first :: 'c) = 0"
         by (rule c_idx_first)
       show ?thesis
@@ -602,10 +601,10 @@ proof -
           using new_blocks by simp
         show "(tM(nM := a')) 0 = le" using tM_new tM_0 by simp
         show "(case fst bp' of
-                AE_Home  \<Rightarrow> go_dir d nM = 0
-              | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                AE_Home  \<Rightarrow> go_move d nM = 0
+              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
               | AE_Left  \<Rightarrow> False)"
-          using bp'_eq R nM'_eq c_idx_first_eq by simp
+          using bp'_eq MoveR nM'_eq c_idx_first_eq by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
                     = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
@@ -624,7 +623,7 @@ proof -
         qed
       qed
     next
-      case L
+      case MoveL
       with d_in show ?thesis by simp
     qed
   next
@@ -634,13 +633,11 @@ proof -
     have nM_form: "nM = Suc (c_idx off)" by simp
     have idx_lt: "c_idx off < ?c" by (rule c_idx_lt_card)
     have nM_bd: "0 < nM \<and> nM \<le> ?c" using nM_form idx_lt by simp
-    have tM_nM_ne: "tM nM \<noteq> le" using nM_bd no_le_win by simp
-    have a'_ne: "a' \<noteq> le" using a_not_le tM_nM_ne by blast
     \<comment> \<open>LE-jump doesn't fire (\<open>fst bp = AE_Right \<noteq> AE_Home\<close>).
       So \<open>bp_advance_le = bp_advance\<close>.\<close>
     have adv_plain: "bp_advance bp d = Some bp'"
     proof -
-      have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = dir.R)"
+      have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR)"
         using bp_eq b_right by simp
       hence "bp_advance_le le (tM nM) bp d = bp_advance bp d"
         unfolding bp_advance_le_def by auto
@@ -661,8 +658,8 @@ proof -
       using bp_eq b_right by simp
     show ?thesis
     proof (cases d)
-      case N
-      from adv_plain N have "Some bp' = Some bp"
+      case MoveN
+      from adv_plain MoveN have "Some bp' = Some bp"
         using bp_advance_N_some[of bp] by simp
       hence bp'_eq: "bp' = bp" by simp
       show ?thesis
@@ -672,10 +669,10 @@ proof -
           by (rule new_h)
         show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
         show "(case fst bp' of
-                AE_Home  \<Rightarrow> go_dir d nM = 0
-              | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                AE_Home  \<Rightarrow> go_move d nM = 0
+              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
               | AE_Left  \<Rightarrow> False)"
-          using bp'_eq bp_eq b_right N nM_form by simp
+          using bp'_eq bp_eq b_right MoveN nM_form by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
                     = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
@@ -712,10 +709,8 @@ proof -
         qed
       qed
     next
-      case R
-      from adv_plain R have adv_R: "bp_advance bp dir.R = Some bp'" by simp
-      have lin_R: "bp_linear bp' = Suc (bp_linear bp)"
-        by (rule bp_advance_R_linear[OF adv_R])
+      case MoveR
+      from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
       \<comment> \<open>Either \<open>bp' = (AE_Right, ofs')\<close> with
         \<open>c_idx ofs' = Suc (c_idx off)\<close>, or \<open>bp' = None\<close>
         via the \<open>AE_Right\<close> R-boundary (\<open>c_succ off = None\<close>),
@@ -724,7 +719,7 @@ proof -
       obtain ofs' where c_succ_off: "c_succ off = Some ofs'"
       proof (cases "c_succ off")
         case None
-        have "bp_advance bp dir.R = None"
+        have "bp_advance bp MoveR = None"
           using bp_eq b_right None unfolding bp_advance_def by simp
         with adv_R show thesis by simp
       next
@@ -736,7 +731,7 @@ proof -
         unfolding bp_advance_def by simp
       have idx_succ: "c_idx ofs' = Suc (c_idx off)"
         by (rule c_succ_idx_some[OF c_succ_off])
-      have nM_succ: "go_dir dir.R nM = Suc (c_idx ofs')"
+      have nM_succ: "go_move MoveR nM = Suc (c_idx ofs')"
         using nM_form idx_succ by simp
       show ?thesis
         unfolding ae_window_invariant_le0_def
@@ -745,10 +740,10 @@ proof -
           by (rule new_h)
         show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
         show "(case fst bp' of
-                AE_Home  \<Rightarrow> go_dir d nM = 0
-              | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                AE_Home  \<Rightarrow> go_move d nM = 0
+              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
               | AE_Left  \<Rightarrow> False)"
-          using bp'_eq R nM_succ by simp
+          using bp'_eq MoveR nM_succ by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
                     = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
@@ -785,10 +780,8 @@ proof -
         qed
       qed
     next
-      case L
-      from adv_plain L have adv_L: "bp_advance bp dir.L = Some bp'" by simp
-      have lin_L: "Suc (bp_linear bp') = bp_linear bp"
-        by (rule bp_advance_L_linear[OF adv_L])
+      case MoveL
+      from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
       \<comment> \<open>Two sub-cases: \<open>c_pred off = Some ofs'\<close> gives
         \<open>bp' = (AE_Right, ofs')\<close>; \<open>c_pred off = None\<close>
         (\<open>off = c_first\<close>) gives \<open>bp' = (AE_Home, c_last)\<close>.\<close>
@@ -803,7 +796,7 @@ proof -
         obtain m where nM_eq: "nM = Suc m"
           using nM_bd by (cases nM) auto
         have m_eq: "m = c_idx off" using nM_form nM_eq by simp
-        have nM'_eq: "go_dir dir.L nM = Suc (c_idx ofs')"
+        have nM'_eq: "go_move MoveL nM = Suc (c_idx ofs')"
           using nM_eq m_eq idx_pred by simp
         show ?thesis
           unfolding ae_window_invariant_le0_def
@@ -812,10 +805,10 @@ proof -
             by (rule new_h)
           show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
           show "(case fst bp' of
-                  AE_Home  \<Rightarrow> go_dir d nM = 0
-                | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                  AE_Home  \<Rightarrow> go_move d nM = 0
+                | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
                 | AE_Left  \<Rightarrow> False)"
-            using bp'_eq L nM'_eq by simp
+            using bp'_eq MoveL nM'_eq by simp
           show "\<forall>i. i < ?c \<longrightarrow>
                     (tM(nM := a')) (Suc i)
                       = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
@@ -859,7 +852,7 @@ proof -
           using bp_eq b_right None adv_L
           unfolding bp_advance_def by simp
         have nM_one: "nM = 1" using nM_form idx_zero by simp
-        have nM'_eq: "go_dir dir.L nM = 0" using nM_one by simp
+        have nM'_eq: "go_move MoveL nM = 0" using nM_one by simp
         show ?thesis
           unfolding ae_window_invariant_le0_def
         proof (intro conjI)
@@ -867,10 +860,10 @@ proof -
             by (rule new_h)
           show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
           show "(case fst bp' of
-                  AE_Home  \<Rightarrow> go_dir d nM = 0
-                | AE_Right \<Rightarrow> go_dir d nM = Suc (c_idx (snd bp'))
+                  AE_Home  \<Rightarrow> go_move d nM = 0
+                | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
                 | AE_Left  \<Rightarrow> False)"
-            using bp'_eq L nM'_eq by simp
+            using bp'_eq MoveL nM'_eq by simp
           show "\<forall>i. i < ?c \<longrightarrow>
                     (tM(nM := a')) (Suc i)
                       = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"

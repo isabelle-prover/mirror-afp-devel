@@ -44,13 +44,6 @@ text \<open>The read/write tuple for a step reading symbol \<open>x\<close> on t
 definition fr_read :: "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)" where
   "fr_read bl le k x = (\<lambda>j. if j = 0 then x else if j < k then le else bl)"
 
-text \<open>The head-move tuple: tape \<open>0\<close> moves by \<open>d\<close>, every other tape
-  stays put.  This meets the support invariant (\<open>N\<close> beyond \<open>k\<close>) and,
-  paired with @{const fr_read}, the left-endmarker read discipline.\<close>
-
-definition fr_move :: "dir \<Rightarrow> (nat \<Rightarrow> dir)" where
-  "fr_move d = (\<lambda>j. if j = 0 then d else dir.N)"
-
 
 subsection \<open>Recogniser cutoff and transition relation\<close>
 
@@ -73,22 +66,22 @@ text \<open>The recogniser transition relation.  Five families, all with
 definition fr_delta ::
   "'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list set \<Rightarrow> nat \<Rightarrow> nat
      \<Rightarrow> ('a fr_state \<times> (nat \<Rightarrow> 'a) \<times> 'a fr_state
-          \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> dir)) set"
+          \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> move)) set"
 where
   "fr_delta Sg bl le F k N =
      { (FR_Scan [], fr_read bl le k le, FR_Scan [],
-        fr_read bl le k le, fr_move dir.R) }
+        fr_read bl le k le, move_one 0 MoveR) }
      \<union> { (FR_Scan u, fr_read bl le k x, FR_Scan (u @ [x]),
-          fr_read bl le k x, fr_move dir.R)
+          fr_read bl le k x, move_one 0 MoveR)
          | u x. set u \<subseteq> Sg \<and> length u < N \<and> x \<in> Sg }
      \<union> { (FR_Scan u, fr_read bl le k x, FR_Rej,
-          fr_read bl le k x, fr_move dir.N)
+          fr_read bl le k x, move_one 0 MoveN)
          | u x. set u \<subseteq> Sg \<and> length u = N \<and> x \<in> Sg }
      \<union> { (FR_Scan u, fr_read bl le k bl, FR_Acc,
-          fr_read bl le k bl, fr_move dir.N)
+          fr_read bl le k bl, move_one 0 MoveN)
          | u. set u \<subseteq> Sg \<and> length u \<le> N \<and> u \<in> F }
      \<union> { (FR_Scan u, fr_read bl le k bl, FR_Rej,
-          fr_read bl le k bl, fr_move dir.N)
+          fr_read bl le k bl, move_one 0 MoveN)
          | u. set u \<subseteq> Sg \<and> length u \<le> N \<and> u \<notin> F }"
 
 
@@ -102,10 +95,10 @@ text \<open>The finite recogniser over input alphabet \<open>Sg\<close>, tape al
 
 definition finite_recogniser ::
   "'a set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list set \<Rightarrow> nat
-     \<Rightarrow> ('a fr_state, 'a) mttm"
+     \<Rightarrow> ('a fr_state, 'a) ktm"
 where
   "finite_recogniser Sg Gamma bl le F k =
-     MTTM
+     KTM
        (FR_Scan ` {u. set u \<subseteq> Sg \<and> length u \<le> fr_N F} \<union> {FR_Acc, FR_Rej})
        Sg
        Gamma
@@ -120,45 +113,45 @@ where
 
 subsection \<open>Component accessors\<close>
 
-lemma finite_recogniser_k_tm:
-  "k_tm (finite_recogniser Sg Gamma bl le F k) = k"
+lemma finite_recogniser_k_ktm:
+  "k_ktm (finite_recogniser Sg Gamma bl le F k) = k"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_Sigma_tm:
-  "Sigma_tm (finite_recogniser Sg Gamma bl le F k) = Sg"
+lemma finite_recogniser_Sigma_ktm:
+  "Sigma_ktm (finite_recogniser Sg Gamma bl le F k) = Sg"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_Gamma_tm:
-  "\<Gamma>_tm (finite_recogniser Sg Gamma bl le F k) = Gamma"
+lemma finite_recogniser_Gamma_ktm:
+  "\<Gamma>_ktm (finite_recogniser Sg Gamma bl le F k) = Gamma"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_bl_tm:
-  "bl_tm (finite_recogniser Sg Gamma bl le F k) = bl"
+lemma finite_recogniser_bl_ktm:
+  "bl_ktm (finite_recogniser Sg Gamma bl le F k) = bl"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_le_tm:
-  "le_tm (finite_recogniser Sg Gamma bl le F k) = le"
+lemma finite_recogniser_le_ktm:
+  "le_ktm (finite_recogniser Sg Gamma bl le F k) = le"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_s_tm:
-  "s_tm (finite_recogniser Sg Gamma bl le F k) = FR_Scan []"
+lemma finite_recogniser_s_ktm:
+  "s_ktm (finite_recogniser Sg Gamma bl le F k) = FR_Scan []"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_t_tm:
-  "t_tm (finite_recogniser Sg Gamma bl le F k) = FR_Acc"
+lemma finite_recogniser_t_ktm:
+  "t_ktm (finite_recogniser Sg Gamma bl le F k) = FR_Acc"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_r_tm:
-  "r_tm (finite_recogniser Sg Gamma bl le F k) = FR_Rej"
+lemma finite_recogniser_r_ktm:
+  "r_ktm (finite_recogniser Sg Gamma bl le F k) = FR_Rej"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_Q_tm:
-  "Q_tm (finite_recogniser Sg Gamma bl le F k)
+lemma finite_recogniser_Q_ktm:
+  "Q_ktm (finite_recogniser Sg Gamma bl le F k)
      = FR_Scan ` {u. set u \<subseteq> Sg \<and> length u \<le> fr_N F} \<union> {FR_Acc, FR_Rej}"
   by (simp add: finite_recogniser_def)
 
-lemma finite_recogniser_delta_tm:
-  "delta_tm (finite_recogniser Sg Gamma bl le F k)
+lemma finite_recogniser_delta_ktm:
+  "delta_ktm (finite_recogniser Sg Gamma bl le F k)
      = fr_delta Sg bl le F k (fr_N F)"
   by (simp add: finite_recogniser_def)
 
@@ -192,15 +185,15 @@ lemma fr_delta_support:
   assumes "0 < k"
     and "(q, a, q', a', d) \<in> fr_delta Sg bl le F k N"
     and "k \<le> j"
-  shows "a j = bl \<and> a' j = bl \<and> d j = dir.N"
-  using assms by (auto simp: fr_delta_def fr_read_def fr_move_def)
+  shows "a j = bl \<and> a' j = bl \<and> d j = MoveN"
+  using assms by (auto simp: fr_delta_def fr_read_def move_one_def)
 
 text \<open>No recogniser transition ever moves left: the input tape moves
   \<open>R\<close> or stays, and every other tape stays put.\<close>
 
 lemma fr_delta_move_no_L:
-  "(q, a, q', a', d) \<in> fr_delta Sg bl le F k N \<Longrightarrow> d j \<in> {dir.N, dir.R}"
-  by (auto simp: fr_delta_def fr_move_def split: if_splits)
+  "(q, a, q', a', d) \<in> fr_delta Sg bl le F k N \<Longrightarrow> d j \<in> {MoveN, MoveR}"
+  by (auto simp: fr_delta_def move_one_def split: if_splits)
 
 text \<open>The left-endmarker read discipline: a transition reading \<open>le\<close> on
   tape \<open>j\<close> writes \<open>le\<close> back there (read-only) and moves only \<open>N\<close> or
@@ -210,7 +203,7 @@ text \<open>The left-endmarker read discipline: a transition reading \<open>le\<
 lemma fr_delta_LE:
   assumes "(q, a, q', a', d) \<in> fr_delta Sg bl le F k N"
     and "a j = le"
-  shows "a' j = le \<and> d j \<in> {dir.N, dir.R}"
+  shows "a' j = le \<and> d j \<in> {MoveN, MoveR}"
   using fr_delta_no_write[OF assms(1)] fr_delta_move_no_L[OF assms(1)] assms(2)
   by simp
 
@@ -231,7 +224,7 @@ lemma finite_recogniser_valid:
     and leG:  "le \<in> Gamma"
     and leS:  "le \<notin> Sg"
     and kpos: "0 < k"
-  shows "valid_mttm (finite_recogniser Sg Gamma bl le F k)"
+  shows "valid_ktm (finite_recogniser Sg Gamma bl le F k)"
 proof -
   have finSg: "finite Sg" using finite_subset[OF SgG finG] .
   have finP: "finite {u. set u \<subseteq> Sg \<and> length u \<le> fr_N F}"
@@ -250,20 +243,20 @@ proof -
     using SgG blG leG by (auto simp: Pi_iff)
   have LEc: "\<forall>q a q' a' d j.
       (q, a, q', a', d) \<in> fr_delta Sg bl le F k (fr_N F)
-        \<longrightarrow> a j = le \<longrightarrow> a' j = le \<and> d j \<in> {dir.N, dir.R}"
+        \<longrightarrow> a j = le \<longrightarrow> a' j = le \<and> d j \<in> {MoveN, MoveR}"
     by (auto dest: fr_delta_LE)
   have suppc: "\<forall>q a q' a' d.
       (q, a, q', a', d) \<in> fr_delta Sg bl le F k (fr_N F)
-        \<longrightarrow> (\<forall>j \<ge> k. a j = bl \<and> a' j = bl \<and> d j = dir.N)"
+        \<longrightarrow> (\<forall>j \<ge> k. a j = bl \<and> a' j = bl \<and> d j = MoveN)"
     by (auto dest: fr_delta_support[OF kpos])
   show ?thesis
-    unfolding finite_recogniser_def valid_mttm.simps
+    unfolding finite_recogniser_def valid_ktm.simps
     using finQ finG SgG blG blS leG leS kpos shape LEc suppc
     by (intro conjI) auto
 qed
 
 text \<open>The recogniser is well-formed in the strengthened sense
-  (@{const well_formed_mttm}): distinct start / accept / reject and
+  (@{const well_formed_ktm}): distinct start / accept / reject and
   distinct endmarker / blank, plus the left-endmarker write discipline
   --- the last free from read-only-ness.\<close>
 
@@ -276,18 +269,18 @@ lemma finite_recogniser_well_formed:
     and leS:  "le \<notin> Sg"
     and blle: "bl \<noteq> le"
     and kpos: "0 < k"
-  shows "well_formed_mttm (finite_recogniser Sg Gamma bl le F k)"
+  shows "well_formed_ktm (finite_recogniser Sg Gamma bl le F k)"
 proof -
   have lu: "le_unique (finite_recogniser Sg Gamma bl le F k)"
-    unfolding le_unique_def finite_recogniser_delta_tm
+    unfolding le_unique_def finite_recogniser_delta_ktm
     by (auto dest: fr_delta_no_write)
-  have vd: "valid_mttm (finite_recogniser Sg Gamma bl le F k)"
+  have vd: "valid_ktm (finite_recogniser Sg Gamma bl le F k)"
     by (rule finite_recogniser_valid[OF finG SgG blG blS leG leS kpos])
   show ?thesis
     using vd lu blle
-    by (auto simp: finite_recogniser_s_tm finite_recogniser_t_tm
-                   finite_recogniser_r_tm finite_recogniser_le_tm
-                   finite_recogniser_bl_tm)
+    by (auto simp: finite_recogniser_s_ktm finite_recogniser_t_ktm
+                   finite_recogniser_r_ktm finite_recogniser_le_ktm
+                   finite_recogniser_bl_ktm)
 qed
 
 
@@ -301,8 +294,8 @@ text \<open>The recogniser is deterministic.  The source state fixes the
 
 lemma finite_recogniser_det:
   assumes leS: "le \<notin> Sg" and blS: "bl \<notin> Sg" and blle: "bl \<noteq> le"
-  shows "det_mttm (finite_recogniser Sg Gamma bl le F k)"
-  unfolding det_mttm_def finite_recogniser_delta_tm fr_delta_def
+  shows "det_ktm (finite_recogniser Sg Gamma bl le F k)"
+  unfolding det_ktm_def finite_recogniser_delta_ktm fr_delta_def
   using leS blS blle by (auto dest: fr_read_inj)
 
 
@@ -314,10 +307,10 @@ text \<open>The configuration after the recogniser has read the left
   input head at position \<open>m + 1\<close>.\<close>
 
 definition fr_run_config ::
-  "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a, 'a fr_state) mt_config"
+  "'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> ('a, 'a fr_state) ktc_config"
 where
   "fr_run_config bl le k w m =
-     Config\<^sub>M (FR_Scan (take m w))
+     KConfig (FR_Scan (take m w))
        (\<lambda>i n. if i < k
               then (if n = 0 then le
                     else if i = 0 \<and> n \<le> length w then w ! (n - 1) else bl)
@@ -333,7 +326,7 @@ lemma fr_scan_step:
   assumes kpos: "0 < k" and mlt: "m < length w" and mN: "m < fr_N F"
     and wSg: "set w \<subseteq> Sg"
   shows "(fr_run_config bl le k w m, fr_run_config bl le k w (Suc m))
-           \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+           \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
 proof -
   let ?x = "w ! m"
   let ?ts = "\<lambda>i n. if i < k
@@ -353,41 +346,27 @@ proof -
       using kpos mlt by (cases "i = 0") (auto simp: fr_read_def)
   qed
   have tr: "(FR_Scan (take m w), fr_read bl le k ?x, FR_Scan (take (Suc m) w),
-             fr_read bl le k ?x, fr_move dir.R) \<in> fr_delta Sg bl le F k (fr_N F)"
+             fr_read bl le k ?x, move_one 0 MoveR) \<in> fr_delta Sg bl le F k (fr_N F)"
     unfolding fr_delta_def takeq using setu lenu mN xSg by auto
-  have src: "fr_run_config bl le k w m = Config\<^sub>M (FR_Scan (take m w)) ?ts ?nn"
+  have src: "fr_run_config bl le k w m = KConfig (FR_Scan (take m w)) ?ts ?nn"
     by (simp add: fr_run_config_def)
-  have step: "(Config\<^sub>M (FR_Scan (take m w)) ?ts ?nn,
-               Config\<^sub>M (FR_Scan (take (Suc m) w))
-                 (\<lambda>i. (?ts i)(?nn i := fr_read bl le k ?x i))
-                 (\<lambda>i. go_dir (fr_move dir.R i) (?nn i)))
-              \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-  proof (rule mttm_step.step)
-    show "(FR_Scan (take m w), \<lambda>i. ?ts i (?nn i), FR_Scan (take (Suc m) w),
-           fr_read bl le k ?x, fr_move dir.R) \<in> fr_delta Sg bl le F k (fr_N F)"
-      using tr by (simp add: read_eq)
-  qed
+  have step: "(KConfig (FR_Scan (take m w)) ?ts ?nn,
+               KConfig (FR_Scan (take (Suc m) w)) ?ts
+                 (\<lambda>i. go_move (move_one 0 MoveR i) (?nn i)))
+              \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+    by (rule ktm_step_read_only) (unfold read_eq, rule tr)
   have tgt: "fr_run_config bl le k w (Suc m)
-              = Config\<^sub>M (FR_Scan (take (Suc m) w))
-                  (\<lambda>i. (?ts i)(?nn i := fr_read bl le k ?x i))
-                  (\<lambda>i. go_dir (fr_move dir.R i) (?nn i))"
+              = KConfig (FR_Scan (take (Suc m) w)) ?ts
+                  (\<lambda>i. go_move (move_one 0 MoveR i) (?nn i))"
   proof -
-    have tape: "(\<lambda>i. (?ts i)(?nn i := fr_read bl le k ?x i)) = ?ts"
-    proof (rule ext)
-      fix i
-      have eq: "fr_read bl le k ?x i = ?ts i (?nn i)"
-        using kpos mlt by (cases "i = 0") (auto simp: fr_read_def)
-      show "(?ts i)(?nn i := fr_read bl le k ?x i) = ?ts i"
-        unfolding eq by (rule fun_upd_triv)
-    qed
-    have head: "(\<lambda>i. go_dir (fr_move dir.R i) (?nn i))
+    have head: "(\<lambda>i. go_move (move_one 0 MoveR i) (?nn i))
                   = (\<lambda>i::nat. if i = 0 then Suc m + 1 else 0)"
     proof (rule ext)
-      fix i show "go_dir (fr_move dir.R i) (?nn i) = (if i = 0 then Suc m + 1 else 0)"
-        by (cases "i = 0") (simp_all add: fr_move_def)
+      fix i show "go_move (move_one 0 MoveR i) (?nn i) = (if i = 0 then Suc m + 1 else 0)"
+        by (cases "i = 0") (simp_all add: move_one_def)
     qed
     show ?thesis
-      by (simp add: fr_run_config_def tape head)
+      by (simp add: fr_run_config_def head)
   qed
   show ?thesis unfolding src tgt by (rule step)
 qed
@@ -409,9 +388,9 @@ text \<open>The start step: from the initial configuration, reading the left
 
 lemma fr_le_step:
   assumes kpos: "0 < k"
-  shows "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w,
+  shows "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w,
           fr_run_config bl le k w 0)
-           \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+           \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
 proof -
   let ?ts = "\<lambda>i n. if i < k
                     then (if n = 0 then le
@@ -423,41 +402,27 @@ proof -
       using kpos by (cases "i = 0") (auto simp: fr_read_def)
   qed
   have tr: "(FR_Scan [], fr_read bl le k le, FR_Scan [],
-             fr_read bl le k le, fr_move dir.R) \<in> fr_delta Sg bl le F k (fr_N F)"
+             fr_read bl le k le, move_one 0 MoveR) \<in> fr_delta Sg bl le F k (fr_N F)"
     unfolding fr_delta_def by auto
-  have init_eq: "init_config_mttm (finite_recogniser Sg Gamma bl le F k) w
-                   = Config\<^sub>M (FR_Scan []) ?ts (\<lambda>_. 0)"
+  have init_eq: "init_config_ktm (finite_recogniser Sg Gamma bl le F k) w
+                   = KConfig (FR_Scan []) ?ts (\<lambda>_. 0)"
     by (simp add: finite_recogniser_def)
-  have step: "(Config\<^sub>M (FR_Scan []) ?ts (\<lambda>_. 0),
-               Config\<^sub>M (FR_Scan [])
-                 (\<lambda>i. (?ts i)((\<lambda>_. 0) i := fr_read bl le k le i))
-                 (\<lambda>i. go_dir (fr_move dir.R i) ((\<lambda>_. 0) i)))
-              \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-  proof (rule mttm_step.step)
-    show "(FR_Scan [], \<lambda>i. ?ts i ((\<lambda>_. 0) i), FR_Scan [],
-           fr_read bl le k le, fr_move dir.R) \<in> fr_delta Sg bl le F k (fr_N F)"
-      using tr by (simp add: read_eq)
-  qed
+  have step: "(KConfig (FR_Scan []) ?ts (\<lambda>_. 0),
+               KConfig (FR_Scan []) ?ts
+                 (\<lambda>i. go_move (move_one 0 MoveR i) ((\<lambda>_. 0) i)))
+              \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+    by (rule ktm_step_read_only) (unfold read_eq, rule tr)
   have tgt: "fr_run_config bl le k w 0
-              = Config\<^sub>M (FR_Scan [])
-                  (\<lambda>i. (?ts i)((\<lambda>_. 0) i := fr_read bl le k le i))
-                  (\<lambda>i. go_dir (fr_move dir.R i) ((\<lambda>_. 0) i))"
+              = KConfig (FR_Scan []) ?ts
+                  (\<lambda>i. go_move (move_one 0 MoveR i) ((\<lambda>_. 0) i))"
   proof -
-    have tape: "(\<lambda>i. (?ts i)((\<lambda>_. 0) i := fr_read bl le k le i)) = ?ts"
-    proof (rule ext)
-      fix i
-      have eq: "fr_read bl le k le i = ?ts i ((\<lambda>_. 0) i)"
-        using kpos by (cases "i = 0") (auto simp: fr_read_def)
-      show "(?ts i)((\<lambda>_. 0) i := fr_read bl le k le i) = ?ts i"
-        unfolding eq by (rule fun_upd_triv)
-    qed
-    have head: "(\<lambda>i. go_dir (fr_move dir.R i) ((\<lambda>_. 0) i))
+    have head: "(\<lambda>i. go_move (move_one 0 MoveR i) ((\<lambda>_. 0) i))
                   = (\<lambda>i::nat. if i = 0 then 0 + 1 else 0)"
     proof (rule ext)
-      fix i show "go_dir (fr_move dir.R i) ((\<lambda>_. 0) i) = (if i = 0 then 0 + 1 else 0)"
-        by (cases "i = 0") (simp_all add: fr_move_def)
+      fix i show "go_move (move_one 0 MoveR i) ((\<lambda>_. 0) i) = (if i = 0 then 0 + 1 else 0)"
+        by (cases "i = 0") (simp_all add: move_one_def)
     qed
-    show ?thesis by (simp add: fr_run_config_def tape head)
+    show ?thesis by (simp add: fr_run_config_def head)
   qed
   show ?thesis unfolding init_eq tgt by (rule step)
 qed
@@ -468,13 +433,13 @@ text \<open>The accept step: from the fully-scanned configuration (prefix
 lemma fr_accept_step:
   assumes wF: "w \<in> F" and wSg: "set w \<subseteq> Sg" and finF: "finite F"
   shows "(fr_run_config bl le k w (length w),
-          Config\<^sub>M FR_Acc
+          KConfig FR_Acc
             (\<lambda>i n. if i < k
                    then (if n = 0 then le
                          else if i = 0 \<and> n \<le> length w then w ! (n - 1) else bl)
                    else bl)
             (\<lambda>i::nat. if i = 0 then length w + 1 else 0))
-           \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+           \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
 proof -
   let ?ts = "\<lambda>i n. if i < k
                     then (if n = 0 then le
@@ -488,32 +453,18 @@ proof -
       by (cases "i = 0") (auto simp: fr_read_def)
   qed
   have tr: "(FR_Scan w, fr_read bl le k bl, FR_Acc,
-             fr_read bl le k bl, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
+             fr_read bl le k bl, move_one 0 MoveN) \<in> fr_delta Sg bl le F k (fr_N F)"
     unfolding fr_delta_def using wSg lenN wF by auto
-  have src: "fr_run_config bl le k w (length w) = Config\<^sub>M (FR_Scan w) ?ts ?nn"
+  have src: "fr_run_config bl le k w (length w) = KConfig (FR_Scan w) ?ts ?nn"
     by (simp add: fr_run_config_def)
-  have step: "(Config\<^sub>M (FR_Scan w) ?ts ?nn,
-               Config\<^sub>M FR_Acc
-                 (\<lambda>i. (?ts i)(?nn i := fr_read bl le k bl i))
-                 (\<lambda>i. go_dir (fr_move dir.N i) (?nn i)))
-              \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-  proof (rule mttm_step.step)
-    show "(FR_Scan w, \<lambda>i. ?ts i (?nn i), FR_Acc,
-           fr_read bl le k bl, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
-      using tr by (simp add: read_eq)
-  qed
-  have tape: "(\<lambda>i. (?ts i)(?nn i := fr_read bl le k bl i)) = ?ts"
-  proof (rule ext)
-    fix i
-    have eq: "fr_read bl le k bl i = ?ts i (?nn i)"
-      by (cases "i = 0") (auto simp: fr_read_def)
-    show "(?ts i)(?nn i := fr_read bl le k bl i) = ?ts i"
-      unfolding eq by (rule fun_upd_triv)
-  qed
-  have head: "(\<lambda>i. go_dir (fr_move dir.N i) (?nn i)) = ?nn"
-    by (rule ext) (simp add: fr_move_def)
+  have step: "(KConfig (FR_Scan w) ?ts ?nn,
+               KConfig FR_Acc ?ts (\<lambda>i. go_move (move_one 0 MoveN i) (?nn i)))
+              \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+    by (rule ktm_step_read_only) (unfold read_eq, rule tr)
+  have head: "(\<lambda>i. go_move (move_one 0 MoveN i) (?nn i)) = ?nn"
+    by (rule ext) (simp add: move_one_def)
   show ?thesis
-    unfolding src using step by (simp add: tape head)
+    unfolding src using step by (simp add: head)
 qed
 
 text \<open>The scan phase: iterating the scan step reads all of \<open>w\<close>,
@@ -524,19 +475,19 @@ text \<open>The scan phase: iterating the scan step reads all of \<open>w\<close
 lemma fr_scan_chain:
   assumes kpos: "0 < k" and wF: "w \<in> F" and wSg: "set w \<subseteq> Sg" and finF: "finite F"
   shows "(fr_run_config bl le k w 0, fr_run_config bl le k w (length w))
-           \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w)"
+           \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w)"
 proof -
   have lenN: "length w \<le> fr_N F" using fr_length_le_N[OF wF finF] .
   have "\<exists>c'. (fr_run_config bl le k w 0, c')
-               \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w)
+               \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w)
              \<and> c' = fr_run_config bl le k w (length w)"
   proof (rule relpow_invariant_chain[where P = "\<lambda>i c. c = fr_run_config bl le k w i"])
     fix i c assume ilt: "i < length w" and Pi: "c = fr_run_config bl le k w i"
     have iN: "i < fr_N F" using ilt lenN by linarith
     have "(fr_run_config bl le k w i, fr_run_config bl le k w (Suc i))
-            \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+            \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
       by (rule fr_scan_step[OF kpos ilt iN wSg])
-    thus "\<exists>c'. (c, c') \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))
+    thus "\<exists>c'. (c, c') \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))
                 \<and> c' = fr_run_config bl le k w (Suc i)"
       using Pi by blast
   next
@@ -552,13 +503,13 @@ text \<open>The full accepting run: for a member \<open>w\<close>, the recognise
 
 lemma fr_accepting_run:
   assumes kpos: "0 < k" and wF: "w \<in> F" and wSg: "set w \<subseteq> Sg" and finF: "finite F"
-  shows "\<exists>c. (init_config_mttm (finite_recogniser Sg Gamma bl le F k) w, c)
-               \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)
-             \<and> mt_state c = FR_Acc"
+  shows "\<exists>c. (init_config_ktm (finite_recogniser Sg Gamma bl le F k) w, c)
+               \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)
+             \<and> ktc_state c = FR_Acc"
 proof -
-  let ?R = "mttm_step (fr_delta Sg bl le F k (fr_N F))"
-  let ?init = "init_config_mttm (finite_recogniser Sg Gamma bl le F k) w"
-  let ?acc = "Config\<^sub>M FR_Acc
+  let ?R = "ktm_step (fr_delta Sg bl le F k (fr_N F))"
+  let ?init = "init_config_ktm (finite_recogniser Sg Gamma bl le F k) w"
+  let ?acc = "KConfig FR_Acc
                 (\<lambda>i n. if i < k
                        then (if n = 0 then le
                              else if i = 0 \<and> n \<le> length w then w ! (n - 1) else bl)
@@ -571,11 +522,11 @@ proof -
   have ac: "(fr_run_config bl le k w (length w), ?acc) \<in> ?R ^^ 1"
     using fr_accept_step[OF wF wSg finF] by simp
   have t1: "(?init, fr_run_config bl le k w (length w)) \<in> ?R ^^ (1 + length w)"
-    by (rule relpow_transI[OF le1 sc])
+    by (rule relpow_trans[OF le1 sc])
   have t2: "(?init, ?acc) \<in> ?R ^^ (1 + length w + 1)"
-    by (rule relpow_transI[OF t1 ac])
+    by (rule relpow_trans[OF t1 ac])
   have "(?init, ?acc) \<in> ?R ^^ (length w + 2)" using t2 by (simp add: add.commute)
-  moreover have "mt_state ?acc = FR_Acc" by simp
+  moreover have "ktc_state ?acc = FR_Acc" by simp
   ultimately show ?thesis by blast
 qed
 
@@ -585,14 +536,14 @@ text \<open>Consequently a member is accepted within \<open>length w + 2\<close>
 
 lemma finite_recogniser_accepts:
   assumes kpos: "0 < k" and wF: "w \<in> F" and wSg: "set w \<subseteq> Sg" and finF: "finite F"
-  shows "accepts_in_time_mttm (finite_recogniser Sg Gamma bl le F k) w (length w + 2)"
+  shows "accepts_in_time_ktm (finite_recogniser Sg Gamma bl le F k) w (length w + 2)"
 proof -
-  obtain c where c: "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w, c)
-                        \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)"
-             and cst: "mt_state c = FR_Acc"
+  obtain c where c: "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w, c)
+                        \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)"
+             and cst: "ktc_state c = FR_Acc"
     using fr_accepting_run[OF kpos wF wSg finF] by blast
   show ?thesis
-    unfolding accepts_in_time_mttm_def finite_recogniser_delta_tm finite_recogniser_t_tm
+    unfolding accepts_in_time_ktm_def finite_recogniser_delta_ktm finite_recogniser_t_ktm
     using c cst by blast
 qed
 
@@ -601,23 +552,23 @@ text \<open>Completeness half of the language characterisation: every member
 
 lemma finite_recogniser_lang_complete:
   assumes kpos: "0 < k" and Fsub: "\<forall>w\<in>F. set w \<subseteq> Sg" and finF: "finite F"
-  shows "F \<subseteq> Lang_mttm (finite_recogniser Sg Gamma bl le F k)"
+  shows "F \<subseteq> Lang_ktm (finite_recogniser Sg Gamma bl le F k)"
 proof
   fix w assume wF: "w \<in> F"
   have wSg: "set w \<subseteq> Sg" using Fsub wF by blast
-  obtain c where c: "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w, c)
-                        \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)"
-             and cst: "mt_state c = FR_Acc"
+  obtain c where c: "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w, c)
+                        \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F))) ^^ (length w + 2)"
+             and cst: "ktc_state c = FR_Acc"
     using fr_accepting_run[OF kpos wF wSg finF] by blast
-  obtain w' n where c_eq: "c = Config\<^sub>M FR_Acc w' n"
+  obtain w' n where c_eq: "c = KConfig FR_Acc w' n"
     using cst by (cases c) auto
-  have reach: "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w,
-                Config\<^sub>M FR_Acc w' n)
-                 \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
+  have reach: "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w,
+                KConfig FR_Acc w' n)
+                 \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
     using c c_eq by (metis relpow_imp_rtrancl)
-  show "w \<in> Lang_mttm (finite_recogniser Sg Gamma bl le F k)"
-    unfolding Lang_mttm_def finite_recogniser_Sigma_tm finite_recogniser_t_tm
-              finite_recogniser_delta_tm
+  show "w \<in> Lang_ktm (finite_recogniser Sg Gamma bl le F k)"
+    unfolding Lang_ktm_def finite_recogniser_Sigma_ktm finite_recogniser_t_ktm
+              finite_recogniser_delta_ktm
     using wSg reach by blast
 qed
 
@@ -632,13 +583,13 @@ lemma fr_delta_src_scan:
   by (auto simp: fr_delta_def)
 
 lemma fr_step_src_scan:
-  assumes "(c, c') \<in> mttm_step (fr_delta Sg bl le F k N)"
-  shows "\<exists>u. mt_state c = FR_Scan u"
+  assumes "(c, c') \<in> ktm_step (fr_delta Sg bl le F k N)"
+  shows "\<exists>u. ktc_state c = FR_Scan u"
 proof -
   from assms obtain q ts n q' a d where
-      c_eq: "c = Config\<^sub>M q ts n"
+      c_eq: "c = KConfig q ts n"
     and tr: "(q, \<lambda>k. ts k (n k), q', a, d) \<in> fr_delta Sg bl le F k N"
-    by (auto elim: mttm_step.cases)
+    by (auto elim: ktm_step.cases)
   from fr_delta_src_scan[OF tr] obtain u where "q = FR_Scan u" by blast
   thus ?thesis using c_eq by auto
 qed
@@ -650,7 +601,7 @@ lemma fr_overflow_step:
   assumes kpos: "0 < k" and mlt: "m < length w" and mN: "m = fr_N F"
     and wSg: "set w \<subseteq> Sg"
   shows "\<exists>c'. (fr_run_config bl le k w m, c')
-               \<in> mttm_step (fr_delta Sg bl le F k (fr_N F)) \<and> mt_state c' = FR_Rej"
+               \<in> ktm_step (fr_delta Sg bl le F k (fr_N F)) \<and> ktc_state c' = FR_Rej"
 proof -
   let ?x = "w ! m"
   let ?ts = "\<lambda>i n. if i < k
@@ -658,9 +609,7 @@ proof -
                           else if i = 0 \<and> n \<le> length w then w ! (n - 1) else bl)
                     else bl"
   let ?nn = "\<lambda>i::nat. if i = 0 then m + 1 else 0"
-  let ?tgt = "Config\<^sub>M FR_Rej
-                (\<lambda>i. (?ts i)(?nn i := fr_read bl le k ?x i))
-                (\<lambda>i. go_dir (fr_move dir.N i) (?nn i))"
+  let ?tgt = "KConfig FR_Rej ?ts (\<lambda>i. go_move (move_one 0 MoveN i) (?nn i))"
   have xSg: "?x \<in> Sg" using nth_mem[OF mlt] wSg by blast
   have lenu: "length (take m w) = m" using mlt by simp
   have setu: "set (take m w) \<subseteq> Sg"
@@ -671,20 +620,15 @@ proof -
       using kpos mlt by (cases "i = 0") (auto simp: fr_read_def)
   qed
   have tr: "(FR_Scan (take m w), fr_read bl le k ?x, FR_Rej,
-             fr_read bl le k ?x, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
+             fr_read bl le k ?x, move_one 0 MoveN) \<in> fr_delta Sg bl le F k (fr_N F)"
     unfolding fr_delta_def using setu lenu mN xSg by auto
-  have src: "fr_run_config bl le k w m = Config\<^sub>M (FR_Scan (take m w)) ?ts ?nn"
+  have src: "fr_run_config bl le k w m = KConfig (FR_Scan (take m w)) ?ts ?nn"
     by (simp add: fr_run_config_def)
   have step: "(fr_run_config bl le k w m, ?tgt)
-                \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-    unfolding src
-  proof (rule mttm_step.step)
-    show "(FR_Scan (take m w), \<lambda>i. ?ts i (?nn i), FR_Rej,
-           fr_read bl le k ?x, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
-      using tr by (simp add: read_eq)
-  qed
+                \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+    unfolding src by (rule ktm_step_read_only) (unfold read_eq, rule tr)
   have "(fr_run_config bl le k w m, ?tgt)
-          \<in> mttm_step (fr_delta Sg bl le F k (fr_N F)) \<and> mt_state ?tgt = FR_Rej"
+          \<in> ktm_step (fr_delta Sg bl le F k (fr_N F)) \<and> ktc_state ?tgt = FR_Rej"
     using step by simp
   thus ?thesis by blast
 qed
@@ -695,36 +639,29 @@ text \<open>The end-reject step: reading the end-of-input blank on a
 lemma fr_reject_step:
   assumes wnF: "w \<notin> F" and wSg: "set w \<subseteq> Sg" and lenN: "length w \<le> fr_N F"
   shows "\<exists>c'. (fr_run_config bl le k w (length w), c')
-               \<in> mttm_step (fr_delta Sg bl le F k (fr_N F)) \<and> mt_state c' = FR_Rej"
+               \<in> ktm_step (fr_delta Sg bl le F k (fr_N F)) \<and> ktc_state c' = FR_Rej"
 proof -
   let ?ts = "\<lambda>i n. if i < k
                     then (if n = 0 then le
                           else if i = 0 \<and> n \<le> length w then w ! (n - 1) else bl)
                     else bl"
   let ?nn = "\<lambda>i::nat. if i = 0 then length w + 1 else 0"
-  let ?tgt = "Config\<^sub>M FR_Rej
-                (\<lambda>i. (?ts i)(?nn i := fr_read bl le k bl i))
-                (\<lambda>i. go_dir (fr_move dir.N i) (?nn i))"
+  let ?tgt = "KConfig FR_Rej ?ts (\<lambda>i. go_move (move_one 0 MoveN i) (?nn i))"
   have read_eq: "(\<lambda>i. ?ts i (?nn i)) = fr_read bl le k bl"
   proof (rule ext)
     fix i show "?ts i (?nn i) = fr_read bl le k bl i"
       by (cases "i = 0") (auto simp: fr_read_def)
   qed
   have tr: "(FR_Scan w, fr_read bl le k bl, FR_Rej,
-             fr_read bl le k bl, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
+             fr_read bl le k bl, move_one 0 MoveN) \<in> fr_delta Sg bl le F k (fr_N F)"
     unfolding fr_delta_def using wSg lenN wnF by auto
-  have src: "fr_run_config bl le k w (length w) = Config\<^sub>M (FR_Scan w) ?ts ?nn"
+  have src: "fr_run_config bl le k w (length w) = KConfig (FR_Scan w) ?ts ?nn"
     by (simp add: fr_run_config_def)
   have step: "(fr_run_config bl le k w (length w), ?tgt)
-                \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-    unfolding src
-  proof (rule mttm_step.step)
-    show "(FR_Scan w, \<lambda>i. ?ts i (?nn i), FR_Rej,
-           fr_read bl le k bl, fr_move dir.N) \<in> fr_delta Sg bl le F k (fr_N F)"
-      using tr by (simp add: read_eq)
-  qed
+                \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+    unfolding src by (rule ktm_step_read_only) (unfold read_eq, rule tr)
   have "(fr_run_config bl le k w (length w), ?tgt)
-          \<in> mttm_step (fr_delta Sg bl le F k (fr_N F)) \<and> mt_state ?tgt = FR_Rej"
+          \<in> ktm_step (fr_delta Sg bl le F k (fr_N F)) \<and> ktc_state ?tgt = FR_Rej"
     using step by simp
   thus ?thesis by blast
 qed
@@ -736,17 +673,17 @@ text \<open>The reachability invariant: from the initial configuration on an
 
 definition fr_inv ::
   "'a set \<Rightarrow> 'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a list set \<Rightarrow> nat \<Rightarrow> 'a list
-     \<Rightarrow> ('a, 'a fr_state) mt_config \<Rightarrow> bool"
+     \<Rightarrow> ('a, 'a fr_state) ktc_config \<Rightarrow> bool"
 where
   "fr_inv Sg Gamma bl le F k w c \<longleftrightarrow>
      (\<exists>m. m \<le> length w \<and> m \<le> fr_N F \<and> c = fr_run_config bl le k w m)
-     \<or> c = init_config_mttm (finite_recogniser Sg Gamma bl le F k) w
-     \<or> mt_state c = FR_Rej
-     \<or> (mt_state c = FR_Acc \<and> w \<in> F)"
+     \<or> c = init_config_ktm (finite_recogniser Sg Gamma bl le F k) w
+     \<or> ktc_state c = FR_Rej
+     \<or> (ktc_state c = FR_Acc \<and> w \<in> F)"
 
 text \<open>Closure of the invariant under a step.  Each canonical
   configuration has a single successor (determinism, via
-  @{thm[source] mttm_step_functional}), given by the matching step
+  @{thm[source] ktm_step_functional}), given by the matching step
   lemma; the two halting states are sinks
   (@{thm[source] fr_step_src_scan}).\<close>
 
@@ -754,7 +691,7 @@ lemma fr_inv_closed:
   assumes leS: "le \<notin> Sg" and blS: "bl \<notin> Sg" and blle: "bl \<noteq> le"
     and kpos: "0 < k" and finF: "finite F" and wSg: "set w \<subseteq> Sg"
     and inv: "fr_inv Sg Gamma bl le F k w c"
-    and step: "(c, c') \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+    and step: "(c, c') \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
   shows "fr_inv Sg Gamma bl le F k w c'"
 proof -
   have fdet: "\<forall>q a p\<^sub>1 b\<^sub>1 d\<^sub>1 p\<^sub>2 b\<^sub>2 d\<^sub>2.
@@ -762,7 +699,7 @@ proof -
         \<longrightarrow> (q, a, p\<^sub>2, b\<^sub>2, d\<^sub>2) \<in> fr_delta Sg bl le F k (fr_N F)
         \<longrightarrow> (p\<^sub>1, b\<^sub>1, d\<^sub>1) = (p\<^sub>2, b\<^sub>2, d\<^sub>2)"
     using finite_recogniser_det[OF leS blS blle]
-    unfolding det_mttm_def finite_recogniser_delta_tm by blast
+    unfolding det_ktm_def finite_recogniser_delta_ktm by blast
   from inv[unfolded fr_inv_def] show ?thesis
   proof (elim disjE)
     assume "\<exists>m. m \<le> length w \<and> m \<le> fr_N F \<and> c = fr_run_config bl le k w m"
@@ -775,10 +712,10 @@ proof -
       proof (cases "m < fr_N F")
         case True
         have s: "(c, fr_run_config bl le k w (Suc m))
-                   \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+                   \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
           using fr_scan_step[OF kpos \<open>m < length w\<close> True wSg] c_eq by simp
         have "c' = fr_run_config bl le k w (Suc m)"
-          using mttm_step_functional[OF fdet step s] .
+          using ktm_step_functional[OF fdet step s] .
         moreover have "Suc m \<le> length w" using \<open>m < length w\<close> by simp
         moreover have "Suc m \<le> fr_N F" using True by simp
         ultimately show ?thesis unfolding fr_inv_def by blast
@@ -786,10 +723,10 @@ proof -
         case False
         hence mEq: "m = fr_N F" using mN by simp
         obtain d where d: "(fr_run_config bl le k w m, d)
-                             \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-          and dst: "mt_state d = FR_Rej"
+                             \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+          and dst: "ktc_state d = FR_Rej"
           using fr_overflow_step[OF kpos \<open>m < length w\<close> mEq wSg] by blast
-        have "c' = d" using mttm_step_functional[OF fdet step] d c_eq by simp
+        have "c' = d" using ktm_step_functional[OF fdet step] d c_eq by simp
         thus ?thesis unfolding fr_inv_def using dst by simp
       qed
     next
@@ -799,61 +736,61 @@ proof -
       show ?thesis
       proof (cases "w \<in> F")
         case True
-        have acc: "(c, Config\<^sub>M FR_Acc
+        have acc: "(c, KConfig FR_Acc
                        (\<lambda>i n. if i < k
                               then (if n = 0 then le
                                     else if i = 0 \<and> n \<le> length w
                                          then w ! (n - 1) else bl)
                               else bl)
                        (\<lambda>i::nat. if i = 0 then length w + 1 else 0))
-                     \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+                     \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
           using fr_accept_step[OF True wSg finF] c_eq mEq by simp
-        have "c' = Config\<^sub>M FR_Acc
+        have "c' = KConfig FR_Acc
                      (\<lambda>i n. if i < k
                             then (if n = 0 then le
                                   else if i = 0 \<and> n \<le> length w
                                        then w ! (n - 1) else bl)
                             else bl)
                      (\<lambda>i::nat. if i = 0 then length w + 1 else 0)"
-          using mttm_step_functional[OF fdet step acc] .
+          using ktm_step_functional[OF fdet step acc] .
         thus ?thesis unfolding fr_inv_def using True by simp
       next
         case False
         obtain d where d: "(fr_run_config bl le k w (length w), d)
-                             \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
-          and dst: "mt_state d = FR_Rej"
+                             \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
+          and dst: "ktc_state d = FR_Rej"
           using fr_reject_step[OF False wSg lenN] by blast
-        have "(c, d) \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+        have "(c, d) \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
           using d c_eq mEq by simp
-        hence "c' = d" using mttm_step_functional[OF fdet step] by blast
+        hence "c' = d" using ktm_step_functional[OF fdet step] by blast
         thus ?thesis unfolding fr_inv_def using dst by simp
       qed
     qed
   next
-    assume ini: "c = init_config_mttm (finite_recogniser Sg Gamma bl le F k) w"
+    assume ini: "c = init_config_ktm (finite_recogniser Sg Gamma bl le F k) w"
     have s: "(c, fr_run_config bl le k w 0)
-               \<in> mttm_step (fr_delta Sg bl le F k (fr_N F))"
+               \<in> ktm_step (fr_delta Sg bl le F k (fr_N F))"
       using fr_le_step[OF kpos] ini by simp
     have "c' = fr_run_config bl le k w 0"
-      using mttm_step_functional[OF fdet step s] .
+      using ktm_step_functional[OF fdet step s] .
     thus ?thesis unfolding fr_inv_def by auto
   next
-    assume "mt_state c = FR_Rej"
+    assume "ktc_state c = FR_Rej"
     thus ?thesis using fr_step_src_scan[OF step] by auto
   next
-    assume "mt_state c = FR_Acc \<and> w \<in> F"
+    assume "ktc_state c = FR_Acc \<and> w \<in> F"
     thus ?thesis using fr_step_src_scan[OF step] by auto
   qed
 qed
 
 text \<open>State of the two canonical non-halting configurations.\<close>
 
-lemma mt_state_fr_run_config:
-  "mt_state (fr_run_config bl le k w m) = FR_Scan (take m w)"
+lemma ktc_state_fr_run_config:
+  "ktc_state (fr_run_config bl le k w m) = FR_Scan (take m w)"
   by (simp add: fr_run_config_def)
 
-lemma mt_state_init_finite_recogniser:
-  "mt_state (init_config_mttm (finite_recogniser Sg Gamma bl le F k) w) = FR_Scan []"
+lemma ktc_state_init_finite_recogniser:
+  "ktc_state (init_config_ktm (finite_recogniser Sg Gamma bl le F k) w) = FR_Scan []"
   by (simp add: finite_recogniser_def)
 
 text \<open>The invariant holds at every reachable configuration
@@ -863,8 +800,8 @@ text \<open>The invariant holds at every reachable configuration
 lemma fr_inv_reach:
   assumes leS: "le \<notin> Sg" and blS: "bl \<notin> Sg" and blle: "bl \<noteq> le"
     and kpos: "0 < k" and finF: "finite F" and wSg: "set w \<subseteq> Sg"
-    and reach: "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w, c)
-                  \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
+    and reach: "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w, c)
+                  \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
   shows "fr_inv Sg Gamma bl le F k w c"
   using reach
 proof (induction rule: rtrancl_induct)
@@ -880,10 +817,10 @@ text \<open>An accepting reachable configuration certifies membership: the
   other invariant disjuncts have a non-accept state.\<close>
 
 lemma fr_inv_acc_imp_mem:
-  assumes "fr_inv Sg Gamma bl le F k w c" and "mt_state c = FR_Acc"
+  assumes "fr_inv Sg Gamma bl le F k w c" and "ktc_state c = FR_Acc"
   shows "w \<in> F"
   using assms unfolding fr_inv_def
-  by (auto simp: mt_state_fr_run_config mt_state_init_finite_recogniser)
+  by (auto simp: ktc_state_fr_run_config ktc_state_init_finite_recogniser finite_recogniser_s_ktm)
 
 text \<open>Soundness half of the language characterisation: only members
   are accepted.\<close>
@@ -891,20 +828,20 @@ text \<open>Soundness half of the language characterisation: only members
 lemma finite_recogniser_lang_sound:
   assumes leS: "le \<notin> Sg" and blS: "bl \<notin> Sg" and blle: "bl \<noteq> le"
     and kpos: "0 < k" and finF: "finite F"
-  shows "Lang_mttm (finite_recogniser Sg Gamma bl le F k) \<subseteq> F"
+  shows "Lang_ktm (finite_recogniser Sg Gamma bl le F k) \<subseteq> F"
 proof
-  fix w assume wL: "w \<in> Lang_mttm (finite_recogniser Sg Gamma bl le F k)"
-  from wL[unfolded Lang_mttm_def finite_recogniser_Sigma_tm finite_recogniser_t_tm]
+  fix w assume wL: "w \<in> Lang_ktm (finite_recogniser Sg Gamma bl le F k)"
+  from wL[unfolded Lang_ktm_def finite_recogniser_Sigma_ktm finite_recogniser_t_ktm]
   obtain w' n where wSg: "set w \<subseteq> Sg"
-    and r: "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w,
-             Config\<^sub>M FR_Acc w' n)
-              \<in> (mttm_step (delta_tm (finite_recogniser Sg Gamma bl le F k)))\<^sup>*"
+    and r: "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w,
+             KConfig FR_Acc w' n)
+              \<in> (ktm_step (delta_ktm (finite_recogniser Sg Gamma bl le F k)))\<^sup>*"
     by auto
-  have r': "(init_config_mttm (finite_recogniser Sg Gamma bl le F k) w,
-             Config\<^sub>M FR_Acc w' n)
-              \<in> (mttm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
-    using r by (simp add: finite_recogniser_delta_tm)
-  have inv: "fr_inv Sg Gamma bl le F k w (Config\<^sub>M FR_Acc w' n)"
+  have r': "(init_config_ktm (finite_recogniser Sg Gamma bl le F k) w,
+             KConfig FR_Acc w' n)
+              \<in> (ktm_step (fr_delta Sg bl le F k (fr_N F)))\<^sup>*"
+    using r by (simp add: finite_recogniser_delta_ktm)
+  have inv: "fr_inv Sg Gamma bl le F k w (KConfig FR_Acc w' n)"
     by (rule fr_inv_reach[OF leS blS blle kpos finF wSg r'])
   show "w \<in> F" using fr_inv_acc_imp_mem[OF inv] by simp
 qed
@@ -915,7 +852,7 @@ text \<open>The language characterisation: the recogniser decides exactly
 theorem finite_recogniser_language:
   assumes leS: "le \<notin> Sg" and blS: "bl \<notin> Sg" and blle: "bl \<noteq> le"
     and kpos: "0 < k" and finF: "finite F" and Fsub: "\<forall>w\<in>F. set w \<subseteq> Sg"
-  shows "Lang_mttm (finite_recogniser Sg Gamma bl le F k) = F"
+  shows "Lang_ktm (finite_recogniser Sg Gamma bl le F k) = F"
   using finite_recogniser_lang_complete[OF kpos Fsub finF]
         finite_recogniser_lang_sound[OF leS blS blle kpos finF]
   by blast

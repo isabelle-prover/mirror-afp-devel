@@ -11,8 +11,8 @@ text \<open>Substep counter / phase indicator for the output machine's
   \<open>AR_SimAdvance\<close> / \<open>AR_SimNext\<close> mark the five
   phases of one M-step simulation; \<open>AR_HaltAccept\<close> and
   \<open>AR_HaltReject\<close> are the AR-specific terminal states
-  that map to the substrate's \<open>t_tm M''\<close> and
-  \<open>r_tm M''\<close>.  No validation sub-tags: AR's language
+  that map to the substrate's \<open>t_ktm M''\<close> and
+  \<open>r_ktm M''\<close>.  No validation sub-tags: AR's language
   theorem is quantified over encoder-image inputs only, and
   AR's per-tape \<open>buf\<close> field is populated on-the-fly
   during read substeps (no buffer-initialisation prelude to
@@ -70,7 +70,7 @@ text \<open>Stage bookkeeping carried in the output machine's state
   counter (\<open>nat\<close>), per-tape symbol buf
   (\<open>nat \<Rightarrow> 'a\<close>: holds the decoded value after read, the
   symbol-to-encode during write), direction-vector
-  (\<open>nat \<Rightarrow> dir\<close>: emitted by \<open>AR_SimCompute\<close>,
+  (\<open>nat \<Rightarrow> move\<close>: emitted by \<open>AR_SimCompute\<close>,
   consumed by \<open>AR_SimAdvance\<close>), and per-tape position-kind
   (\<open>nat \<Rightarrow> ar_pos_kind\<close>: read by SimRead/SimWrite for
   LE/proper dispatch, updated by SimAdvance per the direction).
@@ -85,7 +85,7 @@ type_synonym 'a ar_stage =
    \<times> nat
    \<times> nat
    \<times> (nat \<Rightarrow> 'a)
-   \<times> (nat \<Rightarrow> dir)
+   \<times> (nat \<Rightarrow> move)
    \<times> (nat \<Rightarrow> ar_pos_kind)"
 
 text \<open>State-level stage validity: the \<open>nat \<Rightarrow> 'a\<close> buf
@@ -117,7 +117,7 @@ definition ar_valid_stage ::
 text \<open>Tape count bound: the value-level isolation of the tape-count fact.
   The per-tape function fields freeze to their initial values beyond the
   active tape count \<open>K\<close> (\<open>buf \<rightarrow> bl\<close>,
-  \<open>dvec \<rightarrow> dir.N\<close>,
+  \<open>dvec \<rightarrow> MoveN\<close>,
   \<open>posk \<rightarrow> AR_AtLE\<close>), and the current-tape scalar
   \<open>tk\<close> stays \<open>\<le> K\<close>.  Kept \<^emph>\<open>separate\<close> from
   \<open>ar_valid_stage\<close> (the per-step content invariant threaded through
@@ -135,7 +135,7 @@ definition ar_stage_bounded ::
      (case stg of (_, tk, _, buf, dvec, posk) \<Rightarrow>
         tk < K
         \<and> (\<forall>j\<ge>K. buf j = bl)
-        \<and> (\<forall>j\<ge>K. dvec j = dir.N)
+        \<and> (\<forall>j\<ge>K. dvec j = MoveN)
         \<and> (\<forall>j\<ge>K. posk j = AR_AtLE))"
 
 lemma finite_ar_valid_stages:
@@ -151,16 +151,16 @@ proof -
      beyond \<open>K\<close>.\<close>
   let ?bufs = "{buf :: nat \<Rightarrow> 'a.
                   (\<forall>j. buf j \<in> ?B) \<and> (\<forall>j\<ge>K. buf j = bl)}"
-  let ?dvecs = "{dvec :: nat \<Rightarrow> dir.
-                  (\<forall>j. dvec j \<in> (UNIV :: dir set))
-                  \<and> (\<forall>j\<ge>K. dvec j = dir.N)}"
+  let ?dvecs = "{dvec :: nat \<Rightarrow> move.
+                  (\<forall>j. dvec j \<in> (UNIV :: move set))
+                  \<and> (\<forall>j\<ge>K. dvec j = MoveN)}"
   let ?posks = "{posk :: nat \<Rightarrow> ar_pos_kind.
                   (\<forall>j. posk j \<in> (UNIV :: ar_pos_kind set))
                   \<and> (\<forall>j\<ge>K. posk j = AR_AtLE)}"
   have fbufs: "finite ?bufs"
     using finite_tail_const_funcs[OF fB, of K bl] .
   have fdvecs: "finite ?dvecs"
-    using finite_tail_const_funcs[OF finite_UNIV_dir, of K dir.N] .
+    using finite_tail_const_funcs[OF finite_UNIV_move, of K MoveN] .
   have fposks: "finite ?posks"
     using finite_tail_const_funcs[OF finite_UNIV, of K AR_AtLE] .
   let ?ENV = "(UNIV :: ar_substep_idx set) \<times> {..K} \<times> {..<2 * block_width \<Gamma>}
@@ -179,7 +179,7 @@ subsection \<open>Per-tape enumeration helpers\<close>
 
 text \<open>Per-tape walk helpers.  Under value-level tape count a tape index
   is a natural number directly (tape \<open>kk\<close> sits at position
-  \<open>kk\<close>, the active tapes being \<open>{..< k_tm M}\<close>), so the abstract
+  \<open>kk\<close>, the active tapes being \<open>{..< k_ktm M}\<close>), so the abstract
   enumeration of the old \<open>'k\<close> tape-index type collapses: \<open>k_idx\<close>
   and \<open>k_unidx\<close> are the identity and \<open>k_succ\<close> is \<open>Suc\<close>.
   They are retained as thin wrappers through the tape count migration (inlined
@@ -187,7 +187,7 @@ text \<open>Per-tape walk helpers.  Under value-level tape count a tape index
   per-tape substep relations (\<open>ar_delta_read\<close>, \<open>ar_delta_write\<close>,
   \<open>ar_delta_advance\<close>) walk tapes in order, processing tape
   \<open>kk\<close>, advancing to \<open>k_succ kk\<close>, and leaving the phase when
-  \<open>is_last_k M kk\<close> (\<open>Suc kk = k_tm M\<close>) fires.\<close>
+  \<open>is_last_k M kk\<close> (\<open>Suc kk = k_ktm M\<close>) fires.\<close>
 
 definition k_idx :: "nat \<Rightarrow> nat" where
   "k_idx kk = kk"
@@ -198,14 +198,14 @@ definition k_unidx :: "nat \<Rightarrow> nat" where
 definition k_succ :: "nat \<Rightarrow> nat" where
   "k_succ kk = Suc kk"
 
-definition is_last_k :: "('q, 'a) mttm \<Rightarrow> nat \<Rightarrow> bool" where
-  "is_last_k M kk \<longleftrightarrow> Suc kk = k_tm M"
+definition is_last_k :: "('q, 'a) ktm \<Rightarrow> nat \<Rightarrow> bool" where
+  "is_last_k M kk \<longleftrightarrow> Suc kk = k_ktm M"
 
 text \<open>Navigation facts the per-phase tape walks consume.  Under the
   identity collapse these are immediate: \<open>k_idx\<close> and \<open>k_unidx\<close>
   fix \<open>0\<close> and \<open>k_idx\<close> is injective, the successor of
   \<open>k_unidx j\<close> is \<open>k_unidx (Suc j)\<close>, and
-  \<open>is_last_k M (k_unidx j)\<close> reduces to \<open>Suc j = k_tm M\<close>.
+  \<open>is_last_k M (k_unidx j)\<close> reduces to \<open>Suc j = k_ktm M\<close>.
   The bounded hypotheses are retained so existing call sites keep their
   shape across the migration.\<close>
 
@@ -219,18 +219,18 @@ lemma k_idx_inj: "inj_on k_idx UNIV"
   by (simp add: k_idx_def inj_on_def)
 
 lemma k_idx_unidx:
-  assumes "j < k_tm M"
+  assumes "j < k_ktm M"
   shows "k_idx (k_unidx j) = j"
   by (simp add: k_idx_def k_unidx_def)
 
 lemma k_succ_unidx:
-  assumes "Suc j < k_tm M"
+  assumes "Suc j < k_ktm M"
   shows "k_succ (k_unidx j) = k_unidx (Suc j)"
   by (simp add: k_succ_def k_unidx_def)
 
 lemma is_last_k_unidx:
-  assumes "j < k_tm M"
-  shows "is_last_k M (k_unidx j) \<longleftrightarrow> Suc j = k_tm M"
+  assumes "j < k_ktm M"
+  shows "is_last_k M (k_unidx j) \<longleftrightarrow> Suc j = k_ktm M"
   by (simp add: is_last_k_def k_unidx_def)
 
 
@@ -255,14 +255,14 @@ text \<open>Displacement of an \<open>AR_SimAdvance\<close> walk on one
   exclude that case naturally (no stepping arm is satisfied, no
   boundary condition fires).\<close>
 
-fun ar_disp :: "nat \<Rightarrow> dir \<Rightarrow> ar_pos_kind \<Rightarrow> nat" where
-  "ar_disp _ dir.R _                  = 0"
-| "ar_disp _ dir.N AR_AtLE            = 1"
-| "ar_disp k dir.N AR_AtFirstProper   = k"
-| "ar_disp k dir.N AR_AtFurtherProper = k"
-| "ar_disp _ dir.L AR_AtLE            = 0"
-| "ar_disp k dir.L AR_AtFirstProper   = Suc k"
-| "ar_disp k dir.L AR_AtFurtherProper = 2 * k"
+fun ar_disp :: "nat \<Rightarrow> move \<Rightarrow> ar_pos_kind \<Rightarrow> nat" where
+  "ar_disp _ MoveR _                  = 0"
+| "ar_disp _ MoveN AR_AtLE            = 1"
+| "ar_disp k MoveN AR_AtFirstProper   = k"
+| "ar_disp k MoveN AR_AtFurtherProper = k"
+| "ar_disp _ MoveL AR_AtLE            = 0"
+| "ar_disp k MoveL AR_AtFirstProper   = Suc k"
+| "ar_disp k MoveL AR_AtFurtherProper = 2 * k"
 
 text \<open>Per-tape position-kind transition under
   \<open>AR_SimAdvance\<close>, dispatched on (direction,
@@ -286,16 +286,16 @@ text \<open>Per-tape position-kind transition under
   \<open>AR_AtLE\<close> below keeps \<open>ar_newpos\<close>
   total.\<close>
 
-fun ar_newpos :: "dir \<Rightarrow> ar_pos_kind \<Rightarrow> ar_pos_kind" where
-  "ar_newpos dir.R AR_AtLE            = AR_AtFirstProper"
-| "ar_newpos dir.R AR_AtFirstProper   = AR_AtFurtherProper"
-| "ar_newpos dir.R AR_AtFurtherProper = AR_AtFurtherProper"
-| "ar_newpos dir.N AR_AtLE            = AR_AtLE"
-| "ar_newpos dir.N AR_AtFirstProper   = AR_AtFirstProper"
-| "ar_newpos dir.N AR_AtFurtherProper = AR_AtFurtherProper"
-| "ar_newpos dir.L AR_AtLE            = AR_AtLE"
-| "ar_newpos dir.L AR_AtFirstProper   = AR_AtLE"
-| "ar_newpos dir.L AR_AtFurtherProper = AR_AtFurtherProper"
+fun ar_newpos :: "move \<Rightarrow> ar_pos_kind \<Rightarrow> ar_pos_kind" where
+  "ar_newpos MoveR AR_AtLE            = AR_AtFirstProper"
+| "ar_newpos MoveR AR_AtFirstProper   = AR_AtFurtherProper"
+| "ar_newpos MoveR AR_AtFurtherProper = AR_AtFurtherProper"
+| "ar_newpos MoveN AR_AtLE            = AR_AtLE"
+| "ar_newpos MoveN AR_AtFirstProper   = AR_AtFirstProper"
+| "ar_newpos MoveN AR_AtFurtherProper = AR_AtFurtherProper"
+| "ar_newpos MoveL AR_AtLE            = AR_AtLE"
+| "ar_newpos MoveL AR_AtFirstProper   = AR_AtLE"
+| "ar_newpos MoveL AR_AtFurtherProper = AR_AtFurtherProper"
 
 text \<open>The cell-level write image for a per-tape symbol in
   the proper region.  Returns the \<open>j\<close>-th sym4 cell
@@ -305,10 +305,10 @@ text \<open>The cell-level write image for a per-tape symbol in
   \<open>j\<close>-th bit of \<open>encode_symbol \<Gamma> bl x\<close>
   otherwise.  Used by \<open>ar_delta_write\<close>'s proper-arm
   forward-write phase to emit one cell per substep.  The
-  \<open>le_tm M\<close> case is excluded — \<open>ar_delta_write\<close>'s
+  \<open>le_ktm M\<close> case is excluded — \<open>ar_delta_write\<close>'s
   LE-arm short-circuits writes for that symbol, so the head
   never enters the forward-write phase with
-  \<open>buf tk = le_tm M\<close>.\<close>
+  \<open>buf tk = le_ktm M\<close>.\<close>
 
 definition write_bit ::
   "'a set \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> nat \<Rightarrow> sym4" where

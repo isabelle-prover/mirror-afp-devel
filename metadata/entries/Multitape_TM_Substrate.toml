@@ -10,9 +10,11 @@ abstract = """
 
 <p>Each tape carries a marker at its left end, and the model allows a machine to move that marker to the right, discarding a stretch of tape it can never return to. We prove that this relocation preserves the accepted language: a run before the move reaches an accepting state exactly when the matching run after it does.</p>
 
-<p>The formalisation adapts Dalvit and Thiemann's multitape Turing machine development, the AFP entry <tt>Multitape_To_Singletape_TM</tt>, extending it in two ways: the number of tapes is part of a machine's data rather than fixed in its type, and a machine is itself an ordinary value that theorems can range over, rather than a fixed locale context.</p>
+<p>On top of the model, the entry provides the constructions that developments built on it share: facts about runs, renaming a machine's states and alphabet, widening and exchanging tapes, running a machine as one factor of a composite, restoring the endmarker discipline, exact unary clocks, and the product of a machine with a clock that stops it.</p>
 
-<p>The Claude family of AI models, via Claude Code, was used for proof engineering.</p>"""
+<p>The formalisation adapts Dalvit and Thiemann's multitape Turing machine development, the AFP entry <tt>Multitape_To_Singletape_TM</tt>. Beyond the tape count, it differs in making a machine an ordinary value that theorems can range over, rather than a fixed locale context. Its names differ from theirs (<tt>ktm</tt> for <tt>mttm</tt>, <tt>move</tt> for <tt>dir</tt>, and so on), so a theory can import both entries.</p>
+
+<p>The Claude family of AI models, via Claude Code, was used for proof engineering; OpenAI Codex was used in collecting the constructions over the model.</p>"""
 license = "bsd"
 note = ""
 creation_note = """
@@ -58,6 +60,15 @@ email = "wehar_email"
 salamon = "salamon_email"
 
 [history]
+2026-10-28 = """
+Added theories of constructions shared by the entries built on the
+substrate: facts about runs, relabelling, tape embedding, endmarker
+normalisation, exact unary clocks and a machine/clock product, a binary
+codec, and enum instances for finite index types.  Renamed the model so
+that it can be imported beside Multitape_To_Singletape_TM (mttm becomes
+ktm, dir becomes move, the mt_ prefix becomes ktc_).  Removed lemmas that
+duplicated HOL or each other.  Updated abstract.
+"""
 
 [extra]
 

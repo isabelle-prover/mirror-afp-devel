@@ -168,8 +168,6 @@ lemma ceil_div_k_plus_c_minus_1:
   shows "(k + c - 1) div c = 1"
 proof -
   have lo: "k + c - 1 \<ge> c" using assms by simp
-  have hi: "k + c - 1 < c + c"
-    using assms by linarith
   have "(k + c - 1) div c = ((k + c - 1) - c) div c + 1"
     using lo assms by (auto simp: le_div_geq)
   also have "(k + c - 1) - c = k - 1" by simp
@@ -285,7 +283,6 @@ proof -
   have nth0_at: "\<And>x :: 'c. (?lhs ! 0) x = f x"
   proof -
     fix x :: 'c
-    have idx_lt_xs: "c_idx x < length ?xs" using c_idx_in_range(1) .
     have nth_step: "(?lhs ! 0) x =
                        (let j = 0 * ?c + c_idx x
                           in if j < length ?w then ?w ! j else bl)"
@@ -458,7 +455,6 @@ proof -
       show ?thesis
       proof (rule ext)
         fix x :: 'c
-        have idx_lt_c: "c_idx x < ?c" using c_idx_lt_card .
         have j_ge_u1: "length u1 \<le> i * ?c + c_idx x"
           using i_mul n_eq n_le_i by simp
         have j_diff: "i * ?c + c_idx x - length u1 = i' * ?c + c_idx x"
@@ -527,7 +523,7 @@ proof -
 qed
 
 text \<open>If a snoc-list is well-formed, every cell of the prefix is
-  pure: well-formedness allows the *last* cell to be padded, but
+  pure: well-formedness allows the \<^emph>\<open>last\<close> cell to be padded, but
   the prefix's last cell is no longer last after the snoc, so it
   must be pure.  Bridges the \<open>rev_induct\<close> step in
   \<open>encode_decode_round_trip\<close>: the IH applies to the prefix only
@@ -559,188 +555,125 @@ text \<open>Encoder image lies inside \<open>gamma_block (\<Sigma>_M \<union> {b
   blank \<open>bl_M\<close>.\<close>
 
 lemma encode_input_in_gamma_block:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and u :: "'a list"
-  assumes u_sub: "set u \<subseteq> Sigma_tm M"
-  shows "set (encode_input (bl_tm M) u :: ('c :: enum \<Rightarrow> 'a) list)
-           \<subseteq> gamma_block (Sigma_tm M \<union> {bl_tm M})"
+  assumes u_sub: "set u \<subseteq> Sigma_ktm M"
+  shows "set (encode_input (bl_ktm M) u :: ('c :: enum \<Rightarrow> 'a) list)
+           \<subseteq> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
 proof
   fix f :: "'c \<Rightarrow> 'a"
-  assume f_in: "f \<in> set (encode_input (bl_tm M) u :: ('c \<Rightarrow> 'a) list)"
+  assume f_in: "f \<in> set (encode_input (bl_ktm M) u :: ('c \<Rightarrow> 'a) list)"
   let ?c = "card (UNIV :: 'c set)"
   from f_in obtain i where
     i_lt: "i < (length u + ?c - 1) div ?c"
     and f_eq: "f = (\<lambda>x. let j = i * ?c + c_idx x in
-                          if j < length u then u ! j else bl_tm M)"
+                          if j < length u then u ! j else bl_ktm M)"
     unfolding encode_input_def Let_def by auto
-  have "range f \<subseteq> Sigma_tm M \<union> {bl_tm M}"
+  have "range f \<subseteq> Sigma_ktm M \<union> {bl_ktm M}"
   proof
     fix v
     assume "v \<in> range f"
     then obtain x :: 'c where v_eq: "v = f x" by auto
-    show "v \<in> Sigma_tm M \<union> {bl_tm M}"
+    show "v \<in> Sigma_ktm M \<union> {bl_ktm M}"
     proof (cases "i * ?c + c_idx x < length u")
       case True
       hence fx: "f x = u ! (i * ?c + c_idx x)"
         using f_eq by (simp add: Let_def)
       have "u ! (i * ?c + c_idx x) \<in> set u" using True by simp
-      hence "u ! (i * ?c + c_idx x) \<in> Sigma_tm M" using u_sub by auto
+      hence "u ! (i * ?c + c_idx x) \<in> Sigma_ktm M" using u_sub by auto
       thus ?thesis using v_eq fx by auto
     next
       case False
-      hence "f x = bl_tm M" using f_eq by (simp add: Let_def)
+      hence "f x = bl_ktm M" using f_eq by (simp add: Let_def)
       thus ?thesis using v_eq by auto
     qed
   qed
-  thus "f \<in> gamma_block (Sigma_tm M \<union> {bl_tm M})"
+  thus "f \<in> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
     unfolding gamma_block_def by simp
 qed
 
-text \<open>The all-blank block never appears in \<open>encode_input
-  bl_M u\<close>: the cell at the canonical zero offset (\<open>c_idx x = 0\<close>)
-  always lies in the input range and so is in \<open>\<Sigma>_M\<close>, not
-  \<open>bl_M\<close>.  Discharges the \<open>bl_block bl_M \<notin> set w\<close>
-  hypothesis for upstream call sites that feed an encoded word
-  into the noncanonical / steps-bound lemmas.\<close>
+text \<open>A constant block whose symbol is not in the input is not among the
+  encoded blocks: every block holds an input symbol in its first cell,
+  because each block starts inside the input.  The blank and endmarker
+  blocks below are its two instances.\<close>
+
+lemma encode_input_no_const_block:
+  fixes u :: "'a list"
+  assumes z_notin: "z \<notin> set u"
+  shows "(\<lambda>_. z) \<notin> set (encode_input b u :: ('c :: enum \<Rightarrow> 'a) list)"
+proof
+  let ?c = "card (UNIV :: 'c set)"
+  let ?N = "(length u + ?c - 1) div ?c"
+  let ?xs = "enum_class.enum :: 'c list"
+  let ?x0 = "?xs ! 0"
+  assume z_in: "(\<lambda>_. z) \<in> set (encode_input b u :: ('c \<Rightarrow> 'a) list)"
+  from z_in obtain i where
+    i_lt: "i < ?N"
+    and f_eq: "((\<lambda>_. z) :: 'c \<Rightarrow> 'a)
+                  = (\<lambda>x. let j = i * ?c + c_idx x in
+                          if j < length u then u ! j else b)"
+    unfolding encode_input_def Let_def by auto
+  have c_pos: "0 < ?c"
+  proof -
+    have "(c_first :: 'c) \<in> UNIV" by simp
+    thus ?thesis by (simp add: card_gt_0_iff)
+  qed
+  have N_pos: "0 < ?N" using i_lt by simp
+  have u_nonempty: "0 < length u"
+  proof (rule ccontr)
+    assume "\<not> 0 < length u"
+    hence "length u = 0" by simp
+    hence "?N = (?c - 1) div ?c" by simp
+    also have "\<dots> = 0" using c_pos by simp
+    finally have "?N = 0" .
+    thus False using N_pos by simp
+  qed
+  have N_times_c_le: "?N * ?c \<le> length u + ?c - 1"
+    using c_pos by (metis div_times_less_eq_dividend)
+  have ic_lt: "i * ?c < length u"
+  proof -
+    have suc_le: "Suc i \<le> ?N" using i_lt by simp
+    have "Suc i * ?c \<le> ?N * ?c" by (rule mult_le_mono1[OF suc_le])
+    hence "i * ?c + ?c \<le> ?N * ?c" by simp
+    also have "\<dots> \<le> length u + ?c - 1" by (rule N_times_c_le)
+    finally have "i * ?c + ?c \<le> length u + ?c - 1" .
+    thus ?thesis using c_pos u_nonempty by linarith
+  qed
+  have len_xs_eq: "length ?xs = ?c"
+    using card_eq_length_enum[where 'c = 'c] by simp
+  have len_xs: "0 < length ?xs" using c_pos len_xs_eq by simp
+  have x0_idx: "c_idx ?x0 = 0"
+    using c_idx_enum_nth[OF len_xs] .
+  have eval_f: "(\<lambda>x. let j = i * ?c + c_idx x in
+                       if j < length u then u ! j else b) ?x0
+                  = u ! (i * ?c)"
+    using ic_lt x0_idx by (simp add: Let_def)
+  have "u ! (i * ?c) \<in> set u" using ic_lt by simp
+  hence "u ! (i * ?c) \<noteq> z" using z_notin by auto
+  thus False using f_eq eval_f by metis
+qed
 
 lemma encode_input_no_bl_block:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and u :: "'a list"
-  assumes vM: "valid_mttm M"
-      and u_sub: "set u \<subseteq> Sigma_tm M"
-  shows "bl_block (bl_tm M)
-           \<notin> set (encode_input (bl_tm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
-proof
-  let ?c = "card (UNIV :: 'c set)"
-  let ?N = "(length u + ?c - 1) div ?c"
-  let ?xs = "enum_class.enum :: 'c list"
-  let ?x0 = "?xs ! 0"
-  assume bl_in: "bl_block (bl_tm M)
-                   \<in> set (encode_input (bl_tm M) u :: ('c \<Rightarrow> 'a) list)"
-  from bl_in obtain i where
-    i_lt: "i < ?N"
-    and f_eq: "(bl_block (bl_tm M) :: 'c \<Rightarrow> 'a)
-                  = (\<lambda>x. let j = i * ?c + c_idx x in
-                          if j < length u then u ! j else bl_tm M)"
-    unfolding encode_input_def Let_def by auto
-  have c_pos: "0 < ?c"
-  proof -
-    have "(c_first :: 'c) \<in> UNIV" by simp
-    thus ?thesis by (simp add: card_gt_0_iff)
-  qed
-  have N_pos: "0 < ?N" using i_lt by simp
-  have u_nonempty: "0 < length u"
-  proof (rule ccontr)
-    assume "\<not> 0 < length u"
-    hence "length u = 0" by simp
-    hence "?N = (?c - 1) div ?c" by simp
-    also have "\<dots> = 0" using c_pos by simp
-    finally have "?N = 0" .
-    thus False using N_pos by simp
-  qed
-  have N_times_c_le: "?N * ?c \<le> length u + ?c - 1"
-    using c_pos by (metis div_times_less_eq_dividend)
-  have ic_lt: "i * ?c < length u"
-  proof -
-    have suc_le: "Suc i \<le> ?N" using i_lt by simp
-    have "Suc i * ?c \<le> ?N * ?c" by (rule mult_le_mono1[OF suc_le])
-    hence "i * ?c + ?c \<le> ?N * ?c" by simp
-    also have "\<dots> \<le> length u + ?c - 1" by (rule N_times_c_le)
-    finally have "i * ?c + ?c \<le> length u + ?c - 1" .
-    thus ?thesis using c_pos u_nonempty by linarith
-  qed
-  have len_xs_eq: "length ?xs = ?c"
-    using card_eq_length_enum[where 'c = 'c] by simp
-  have len_xs: "0 < length ?xs" using c_pos len_xs_eq by simp
-  have x0_idx: "c_idx ?x0 = 0"
-    using c_idx_enum_nth[OF len_xs] .
-  have eval_f: "(\<lambda>x. let j = i * ?c + c_idx x in
-                       if j < length u then u ! j else bl_tm M) ?x0
-                  = u ! (i * ?c)"
-    using ic_lt x0_idx by (simp add: Let_def)
-  have eval_bl: "(bl_block (bl_tm M) :: 'c \<Rightarrow> 'a) ?x0 = bl_tm M"
-    unfolding bl_block_def by simp
-  have "u ! (i * ?c) \<in> set u" using ic_lt by simp
-  hence "u ! (i * ?c) \<in> Sigma_tm M" using u_sub by auto
-  hence "u ! (i * ?c) \<noteq> bl_tm M"
-    using bl_tm_notin_Sigma_tm[OF vM] by auto
-  thus False using f_eq eval_f eval_bl by metis
-qed
-
-text \<open>Encoder output excludes the LE-block.  Mirror of
-  \<open>encode_input_no_bl_block\<close>: the first filled position
-  \<open>i \<cdot> c\<close> of any block-index \<open>i < \<lceil>|u|/c\<rceil>\<close> is
-  strictly less than \<open>|u|\<close>, so the block's value at
-  \<open>c_first\<close> equals \<open>u ! (i \<cdot> c) \<in> \<Sigma>_M\<close>; since
-  \<open>le_tm M \<notin> \<Sigma>_tm M\<close> (substrate's \<open>valid_mttm_LE_not_Sigma\<close>),
-  that value differs from \<open>le_tm M\<close>, so the block is not the
-  constant-\<open>le\<close> function.  Used by \<open>alphabet_enlarge_language\<close>
-  to show \<open>set (encode_input ...) \<subseteq> Sigma_tm
-  (alphabet_enlarge M)\<close>.\<close>
+  assumes vM: "valid_ktm M"
+      and u_sub: "set u \<subseteq> Sigma_ktm M"
+  shows "bl_block (bl_ktm M)
+           \<notin> set (encode_input (bl_ktm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
+  unfolding bl_block_def
+  by (rule encode_input_no_const_block)
+     (use u_sub valid_ktm_blank_not_Sigma [OF vM] in blast)
 
 lemma encode_input_no_LE_block:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and u :: "'a list"
-  assumes vM: "valid_mttm M"
-      and u_sub: "set u \<subseteq> Sigma_tm M"
-  shows "LE_block (le_tm M)
-           \<notin> set (encode_input (bl_tm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
-proof
-  let ?c = "card (UNIV :: 'c set)"
-  let ?N = "(length u + ?c - 1) div ?c"
-  let ?xs = "enum_class.enum :: 'c list"
-  let ?x0 = "?xs ! 0"
-  assume LE_in: "LE_block (le_tm M)
-                   \<in> set (encode_input (bl_tm M) u :: ('c \<Rightarrow> 'a) list)"
-  from LE_in obtain i where
-    i_lt: "i < ?N"
-    and f_eq: "(LE_block (le_tm M) :: 'c \<Rightarrow> 'a)
-                  = (\<lambda>x. let j = i * ?c + c_idx x in
-                          if j < length u then u ! j else bl_tm M)"
-    unfolding encode_input_def Let_def by auto
-  have c_pos: "0 < ?c"
-  proof -
-    have "(c_first :: 'c) \<in> UNIV" by simp
-    thus ?thesis by (simp add: card_gt_0_iff)
-  qed
-  have N_pos: "0 < ?N" using i_lt by simp
-  have u_nonempty: "0 < length u"
-  proof (rule ccontr)
-    assume "\<not> 0 < length u"
-    hence "length u = 0" by simp
-    hence "?N = (?c - 1) div ?c" by simp
-    also have "\<dots> = 0" using c_pos by simp
-    finally have "?N = 0" .
-    thus False using N_pos by simp
-  qed
-  have N_times_c_le: "?N * ?c \<le> length u + ?c - 1"
-    using c_pos by (metis div_times_less_eq_dividend)
-  have ic_lt: "i * ?c < length u"
-  proof -
-    have suc_le: "Suc i \<le> ?N" using i_lt by simp
-    have "Suc i * ?c \<le> ?N * ?c" by (rule mult_le_mono1[OF suc_le])
-    hence "i * ?c + ?c \<le> ?N * ?c" by simp
-    also have "\<dots> \<le> length u + ?c - 1" by (rule N_times_c_le)
-    finally have "i * ?c + ?c \<le> length u + ?c - 1" .
-    thus ?thesis using c_pos u_nonempty by linarith
-  qed
-  have len_xs_eq: "length ?xs = ?c"
-    using card_eq_length_enum[where 'c = 'c] by simp
-  have len_xs: "0 < length ?xs" using c_pos len_xs_eq by simp
-  have x0_idx: "c_idx ?x0 = 0"
-    using c_idx_enum_nth[OF len_xs] .
-  have eval_f: "(\<lambda>x. let j = i * ?c + c_idx x in
-                       if j < length u then u ! j else bl_tm M) ?x0
-                  = u ! (i * ?c)"
-    using ic_lt x0_idx by (simp add: Let_def)
-  have eval_LE: "(LE_block (le_tm M) :: 'c \<Rightarrow> 'a) ?x0 = le_tm M"
-    unfolding LE_block_def by simp
-  have "u ! (i * ?c) \<in> set u" using ic_lt by simp
-  hence "u ! (i * ?c) \<in> Sigma_tm M" using u_sub by auto
-  hence "u ! (i * ?c) \<noteq> le_tm M"
-    using valid_mttm_LE_not_Sigma[OF vM] by auto
-  thus False using f_eq eval_f eval_LE by metis
-qed
+  assumes vM: "valid_ktm M"
+      and u_sub: "set u \<subseteq> Sigma_ktm M"
+  shows "LE_block (le_ktm M)
+           \<notin> set (encode_input (bl_ktm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
+  unfolding LE_block_def
+  by (rule encode_input_no_const_block)
+     (use u_sub valid_ktm_LE_not_Sigma [OF vM] in blast)
 
 subsubsection \<open>Encoder well-formedness and round-trip\<close>
 
@@ -751,9 +684,9 @@ text \<open>Encoder output is well-formed: every block except
   for upstream call sites that feed an encoded word into the
   steps-bound lemma.
 
-  This is the forward arm of the characterisation biconditional
+  This is the forward direction of the characterisation biconditional
   \<open>ae_validation_canonical_iff_encoder_image\<close> below: every
-  encoder image is well-formed.  The reverse arm of that
+  encoder image is well-formed.  The reverse direction of that
   biconditional — every well-formed AE-input is in the encoder
   image — is not consumed by the headline language theorems
   (which are quantified only over explicit encoder-image
@@ -761,17 +694,17 @@ text \<open>Encoder output is well-formed: every block except
   result.\<close>
 
 lemma encode_input_well_formed:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and u :: "'a list"
-  assumes vM: "valid_mttm M"
-      and u_sub: "set u \<subseteq> Sigma_tm M"
-  shows "ae_input_well_formed (bl_tm M)
-           (encode_input (bl_tm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
+  assumes vM: "valid_ktm M"
+      and u_sub: "set u \<subseteq> Sigma_ktm M"
+  shows "ae_input_well_formed (bl_ktm M)
+           (encode_input (bl_ktm M) u :: ('c :: enum \<Rightarrow> 'a) list)"
 proof -
   let ?c = "card (UNIV :: 'c set)"
   let ?N = "(length u + ?c - 1) div ?c"
   let ?xs = "enum_class.enum :: 'c list"
-  let ?w = "encode_input (bl_tm M) u :: ('c \<Rightarrow> 'a) list"
+  let ?w = "encode_input (bl_ktm M) u :: ('c \<Rightarrow> 'a) list"
   have len_w: "length ?w = ?N" by (rule length_encode_input)
   have c_pos: "0 < ?c"
   proof -
@@ -780,8 +713,8 @@ proof -
   qed
   have len_xs: "length ?xs = ?c"
     using card_eq_length_enum[where 'c = 'c] by simp
-  have bl_notin_Sigma: "bl_tm M \<notin> Sigma_tm M"
-    using bl_tm_notin_Sigma_tm[OF vM] .
+  have bl_notin_Sigma: "bl_ktm M \<notin> Sigma_ktm M"
+    using valid_ktm_blank_not_Sigma[OF vM] .
   show ?thesis
     unfolding ae_input_well_formed_def
   proof (intro allI impI)
@@ -790,21 +723,21 @@ proof -
     hence s_lt_N: "s < ?N" using len_w by simp
     have at_s: "?w ! s
                   = (\<lambda>x. let j = s * ?c + c_idx x in
-                            if j < length u then u ! j else bl_tm M)"
+                            if j < length u then u ! j else bl_ktm M)"
     proof -
       have s_lt_range: "s < length [0 ..< ?N]" using s_lt_N by simp
       have nth_range: "[0 ..< ?N] ! s = s" using s_lt_N by simp
       have map_unfold:
         "?w = map (\<lambda>i. (\<lambda>x. let j = i * ?c + c_idx x in
                                 if j < length u then u ! j
-                                else bl_tm M))
+                                else bl_ktm M))
                   [0 ..< ?N]"
         unfolding encode_input_def Let_def by simp
       show ?thesis
         using nth_map[OF s_lt_range,
                       where f = "\<lambda>i. (\<lambda>x. let j = i * ?c + c_idx x in
                                               if j < length u then u ! j
-                                              else bl_tm M)"]
+                                              else bl_ktm M)"]
               nth_range map_unfold
         by simp
     qed
@@ -815,11 +748,11 @@ proof -
     consider (non_last) "Suc s < ?N"
            | (last) "Suc s = ?N"
       using s_lt_N by linarith
-    thus "is_pure_block (bl_tm M) (?w ! s)
-            \<or> (s = length ?w - 1 \<and> is_padded_block (bl_tm M) (?w ! s))"
+    thus "is_pure_block (bl_ktm M) (?w ! s)
+            \<or> (s = length ?w - 1 \<and> is_padded_block (bl_ktm M) (?w ! s))"
     proof cases
       case non_last
-      have all_pure: "\<forall>x :: 'c. (?w ! s) x \<noteq> bl_tm M"
+      have all_pure: "\<forall>x :: 'c. (?w ! s) x \<noteq> bl_ktm M"
       proof
         fix x :: 'c
         have idx_lt_c: "c_idx x < ?c" by (rule c_idx_lt_card)
@@ -838,10 +771,10 @@ proof -
           using at_s by (simp add: Let_def)
         moreover have "u ! (s * ?c + c_idx x) \<in> set u"
           using prod_lt by simp
-        ultimately have "(?w ! s) x \<in> Sigma_tm M" using u_sub by auto
-        thus "(?w ! s) x \<noteq> bl_tm M" using bl_notin_Sigma by auto
+        ultimately have "(?w ! s) x \<in> Sigma_ktm M" using u_sub by auto
+        thus "(?w ! s) x \<noteq> bl_ktm M" using bl_notin_Sigma by auto
       qed
-      hence "is_pure_block (bl_tm M) (?w ! s)"
+      hence "is_pure_block (bl_ktm M) (?w ! s)"
         unfolding is_pure_block_def by simp
       thus ?thesis ..
     next
@@ -869,7 +802,6 @@ proof -
         have N_eq: "?N * ?c = length u"
         proof -
           let ?q = "length u div ?c"
-          have c_neq_0: "?c \<noteq> 0" using c_pos by simp
           have lu_eq: "length u = ?q * ?c"
             using True
             by (metis div_mult_mod_eq add.right_neutral)
@@ -888,7 +820,7 @@ proof -
           finally have "?N = ?q" .
           thus ?thesis using lu_eq by simp
         qed
-        have all_pure: "\<forall>x :: 'c. (?w ! s) x \<noteq> bl_tm M"
+        have all_pure: "\<forall>x :: 'c. (?w ! s) x \<noteq> bl_ktm M"
         proof
           fix x :: 'c
           have idx_lt_c: "c_idx x < ?c" by (rule c_idx_lt_card)
@@ -901,10 +833,10 @@ proof -
             using at_s by (simp add: Let_def)
           moreover have "u ! (s * ?c + c_idx x) \<in> set u"
             using prod_lt by simp
-          ultimately have "(?w ! s) x \<in> Sigma_tm M" using u_sub by auto
-          thus "(?w ! s) x \<noteq> bl_tm M" using bl_notin_Sigma by auto
+          ultimately have "(?w ! s) x \<in> Sigma_ktm M" using u_sub by auto
+          thus "(?w ! s) x \<noteq> bl_ktm M" using bl_notin_Sigma by auto
         qed
-        hence "is_pure_block (bl_tm M) (?w ! s)"
+        hence "is_pure_block (bl_ktm M) (?w ! s)"
           unfolding is_pure_block_def by simp
         thus ?thesis ..
       next
@@ -929,10 +861,6 @@ proof -
           have div_step: "(?q * ?c + (?k + ?c - 1)) div ?c
                             = ?q + (?k + ?c - 1) div ?c"
             by simp
-          have k_plus_c_minus_1_lt: "?k + ?c - 1 < 2 * ?c"
-            using k_lt_c c_pos by linarith
-          have k_plus_c_minus_1_ge: "?c \<le> ?k + ?c - 1"
-            using k_pos c_pos by linarith
           have div_kpc_eq_1: "(?k + ?c - 1) div ?c = 1"
           proof -
             have rewrite: "?k + ?c - 1 = (?k - 1) + ?c"
@@ -954,12 +882,12 @@ proof -
             by (metis add_diff_cancel_right' div_mod_decomp)
           show ?thesis using s_eq_q q_eq by simp
         qed
-        have padded: "is_padded_block (bl_tm M) (?w ! s)"
+        have padded: "is_padded_block (bl_ktm M) (?w ! s)"
           unfolding is_padded_block_def
         proof (intro exI[of _ ?k] conjI)
           show "1 \<le> ?k" by (rule k_pos)
           show "?k < length ?xs" by (rule k_lt_xs)
-          show "\<forall>x :: 'c. c_idx x < ?k \<longrightarrow> (?w ! s) x \<noteq> bl_tm M"
+          show "\<forall>x :: 'c. c_idx x < ?k \<longrightarrow> (?w ! s) x \<noteq> bl_ktm M"
           proof (intro allI impI)
             fix x :: 'c
             assume idx_lt_k: "c_idx x < ?k"
@@ -971,18 +899,18 @@ proof -
               using at_s by (simp add: Let_def)
             moreover have "u ! (s * ?c + c_idx x) \<in> set u"
               using prod_lt by simp
-            ultimately have "(?w ! s) x \<in> Sigma_tm M"
+            ultimately have "(?w ! s) x \<in> Sigma_ktm M"
               using u_sub by auto
-            thus "(?w ! s) x \<noteq> bl_tm M" using bl_notin_Sigma by auto
+            thus "(?w ! s) x \<noteq> bl_ktm M" using bl_notin_Sigma by auto
           qed
-          show "\<forall>x :: 'c. ?k \<le> c_idx x \<longrightarrow> (?w ! s) x = bl_tm M"
+          show "\<forall>x :: 'c. ?k \<le> c_idx x \<longrightarrow> (?w ! s) x = bl_ktm M"
           proof (intro allI impI)
             fix x :: 'c
             assume idx_ge_k: "?k \<le> c_idx x"
             have "s * ?c + c_idx x \<ge> length u"
               using s_times_c_eq idx_ge_k by linarith
             hence "\<not> s * ?c + c_idx x < length u" by simp
-            thus "(?w ! s) x = bl_tm M"
+            thus "(?w ! s) x = bl_ktm M"
               using at_s by (simp add: Let_def)
           qed
         qed

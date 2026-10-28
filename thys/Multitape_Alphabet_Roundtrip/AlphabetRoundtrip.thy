@@ -21,7 +21,7 @@ text \<open>The two alphabet transformations compose \<^emph>\<open>as machines\
   \<^item> \<^bold>\<open>enlarge after reduce\<close>: \<^term>\<open>alphabet_enlarge (alphabet_reduce M)\<close>.
     The reduced machine is well-formed for \<^emph>\<open>any\<close> valid source with a
     four-symbol alphabet (\<open>alphabet_reduce_well_formed\<close>), which discharges the
-    \<^const>\<open>well_formed_mttm\<close> hypothesis \<^const>\<open>alphabet_enlarge\<close> requires of its
+    \<^const>\<open>well_formed_ktm\<close> hypothesis \<^const>\<open>alphabet_enlarge\<close> requires of its
     input -- the cut-tolerance payoff.\<close>
 
 subsection \<open>The enlarged alphabet has at least as many symbols as the source\<close>
@@ -53,9 +53,9 @@ subsection \<open>Time-composition preliminaries\<close>
 
 text \<open>A small fact used when composing the running-time bounds: the block
   count \<open>(n + c - 1) div c\<close> (rounding \<open>n / c\<close> up) that the enlargement
-  bound divides by never exceeds \<open>n\<close> for a nonempty index (\<open>0 < c\<close>).  (Weak
-  acceptance monotonicity, formerly local here, is now the substrate's
-  \<open>accepts_in_time_mttm_mono\<close>.)\<close>
+  bound divides by never exceeds \<open>n\<close> for a nonempty index (\<open>0 < c\<close>).
+  Monotonicity of acceptance in the time bound is the substrate's
+  \<open>accepts_in_time_ktm_mono\<close>.\<close>
 
 lemma ceil_div_le:
   fixes n c :: nat
@@ -95,56 +95,56 @@ text \<open>Reduce \<open>M\<close> to the four-symbol machine \<^term>\<open>al
   (\<open>set_encode_input_ar\<close>).\<close>
 
 theorem alphabet_reduce_enlarge_language:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM: "valid_mttm M"
-      and s_neq_t: "s_tm M \<noteq> t_tm M"
-      and s_neq_r: "s_tm M \<noteq> r_tm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
-  shows "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           (encode_input (bl_tm (alphabet_reduce M))
-                (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w)
-              \<in> Lang_mttm (alphabet_enlarge (alphabet_reduce M)
+  fixes M :: "('q, 'a) ktm"
+  assumes vM: "valid_ktm M"
+      and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+      and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
+  shows "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           (encode_input (bl_ktm (alphabet_reduce M))
+                (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w)
+              \<in> Lang_ktm (alphabet_enlarge (alphabet_reduce M)
                    :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c :: enum) ae_stage),
-                       'c \<Rightarrow> sym4) mttm))
-           = (w \<in> Lang_mttm M)"
+                       'c \<Rightarrow> sym4) ktm))
+           = (w \<in> Lang_ktm M)"
 proof (intro allI impI)
-  fix w assume w: "set w \<subseteq> Sigma_tm M"
-  let ?Mr = "alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) mttm"
-  let ?enc = "encode_input_ar (\<Gamma>_tm M) (bl_tm M) w"
-  have wfr: "well_formed_mttm ?Mr"
+  fix w assume w: "set w \<subseteq> Sigma_ktm M"
+  let ?Mr = "alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) ktm"
+  let ?enc = "encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w"
+  have wfr: "well_formed_ktm ?Mr"
     by (rule alphabet_reduce_well_formed[OF vM card_ge])
-  have red: "(?enc \<in> Lang_mttm ?Mr) = (w \<in> Lang_mttm M)"
+  have red: "(?enc \<in> Lang_ktm ?Mr) = (w \<in> Lang_ktm M)"
     using alphabet_reduce_language[OF vM s_neq_t s_neq_r le_neq_bl card_ge] w
     by blast
-  have guard: "set ?enc \<subseteq> Sigma_tm ?Mr"
-    using set_encode_input_ar[of "\<Gamma>_tm M" "bl_tm M" w]
+  have guard: "set ?enc \<subseteq> Sigma_ktm ?Mr"
+    using set_encode_input_ar[of "\<Gamma>_ktm M" "bl_ktm M" w]
     by (simp add: alphabet_reduce_Sigma)
-  have enl: "(encode_input (bl_tm ?Mr) ?enc
-                \<in> Lang_mttm (alphabet_enlarge ?Mr
+  have enl: "(encode_input (bl_ktm ?Mr) ?enc
+                \<in> Lang_ktm (alphabet_enlarge ?Mr
                      :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c) ae_stage),
-                         'c \<Rightarrow> sym4) mttm))
-             = (?enc \<in> Lang_mttm ?Mr)"
+                         'c \<Rightarrow> sym4) ktm))
+             = (?enc \<in> Lang_ktm ?Mr)"
     using alphabet_enlarge_language[OF wfr] guard by blast
-  show "(encode_input (bl_tm ?Mr) ?enc
-            \<in> Lang_mttm (alphabet_enlarge ?Mr
+  show "(encode_input (bl_ktm ?Mr) ?enc
+            \<in> Lang_ktm (alphabet_enlarge ?Mr
                  :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c) ae_stage),
-                     'c \<Rightarrow> sym4) mttm))
-        = (w \<in> Lang_mttm M)"
+                     'c \<Rightarrow> sym4) ktm))
+        = (w \<in> Lang_ktm M)"
     using enl red by simp
 qed
 
 text \<open>The composed slowdown, with explicit constants.  Reducing then
   enlarging is linear-time, with the affine bound
-  \<open>8 \<cdot> (6 \<cdot> k_tm M + 1) \<cdot> b \<cdot> T(|w|) + 2 \<cdot> b \<cdot> |w| + 4\<close>, where
-  \<open>b = block_width (\<Gamma>_tm M)\<close> is the per-symbol binary width and \<open>k_tm M\<close> the tape
+  \<open>8 \<cdot> (6 \<cdot> k_ktm M + 1) \<cdot> b \<cdot> T(|w|) + 2 \<cdot> b \<cdot> |w| + 4\<close>, where
+  \<open>b = block_width (\<Gamma>_ktm M)\<close> is the per-symbol binary width and \<open>k_ktm M\<close> the tape
   count.  It routes the explicit reduction bound
-  (\<open>(6 \<cdot> k_tm M + 1) \<cdot> b \<cdot> T\<close>, \<open>alphabet_reduce_time_explicit\<close>) in as the
+  (\<open>(6 \<cdot> k_ktm M + 1) \<cdot> b \<cdot> T\<close>, \<open>alphabet_reduce_time_explicit\<close>) in as the
   enlargement's per-input running-time function \<open>Tr\<close>; on the encoded
   intermediate word (length \<open>b \<cdot> |w|\<close>) the enlargement hypothesis holds
-  \<^emph>\<open>exactly\<close> (\<open>Tr (b \<cdot> |w|) = (6 \<cdot> k_tm M + 1) \<cdot> b \<cdot> T(|w|)\<close>), and the
+  \<^emph>\<open>exactly\<close> (\<open>Tr (b \<cdot> |w|) = (6 \<cdot> k_ktm M + 1) \<cdot> b \<cdot> T(|w|)\<close>), and the
   enlargement's ceiling divisions are relaxed by \<open>ceil_div_le\<close> and
-  \<open>accepts_in_time_mttm_mono\<close>.  The enlargement's block-speedup divisor
+  \<open>accepts_in_time_ktm_mono\<close>.  The enlargement's block-speedup divisor
   \<open>c = card (UNIV :: 'c set)\<close> \<^emph>\<open>cancels\<close>: it divides the intermediate length
   and running time, but \<open>ceil_div_le\<close> discards it in the relaxation, so it
   does not appear in the bound --- the block speedup buys nothing once the
@@ -152,68 +152,68 @@ text \<open>The composed slowdown, with explicit constants.  Reducing then
   \<open>alphabet_reduce_enlarge_time\<close> below.\<close>
 
 theorem alphabet_reduce_enlarge_time_explicit:
-  fixes M :: "('q, 'a) mttm" and T :: "nat \<Rightarrow> nat"
-  assumes vM: "valid_mttm M"
-      and s_neq_t: "s_tm M \<noteq> t_tm M"
-      and s_neq_r: "s_tm M \<noteq> r_tm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
-  shows "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+  fixes M :: "('q, 'a) ktm" and T :: "nat \<Rightarrow> nat"
+  assumes vM: "valid_ktm M"
+      and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+      and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
+  shows "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_enlarge (alphabet_reduce M)
                 :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c :: enum) ae_stage),
-                    'c \<Rightarrow> sym4) mttm)
-             (encode_input (bl_tm (alphabet_reduce M))
-                (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w))
-             (8 * (6 * k_tm M + 1) * block_width (\<Gamma>_tm M) * T (length w)
-               + 2 * block_width (\<Gamma>_tm M) * length w + 4)"
+                    'c \<Rightarrow> sym4) ktm)
+             (encode_input (bl_ktm (alphabet_reduce M))
+                (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w))
+             (8 * (6 * k_ktm M + 1) * block_width (\<Gamma>_ktm M) * T (length w)
+               + 2 * block_width (\<Gamma>_ktm M) * length w + 4)"
 proof -
-  let ?Mr = "alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) mttm"
+  let ?Mr = "alphabet_reduce M :: ('q \<times> 'a ar_stage, sym4) ktm"
   let ?Me = "alphabet_enlarge ?Mr
                :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c :: enum) ae_stage),
-                   'c \<Rightarrow> sym4) mttm"
-  let ?kf = "block_width (\<Gamma>_tm M)"
+                   'c \<Rightarrow> sym4) ktm"
+  let ?kf = "block_width (\<Gamma>_ktm M)"
   let ?c = "card (UNIV :: 'c set)"
-  let ?d = "6 * k_tm M + 1"
-  have wfr: "well_formed_mttm ?Mr" by (rule alphabet_reduce_well_formed[OF vM card_ge])
-  have kfpos: "0 < ?kf" using block_width_pos[of "\<Gamma>_tm M"] by simp
+  let ?d = "6 * k_ktm M + 1"
+  have wfr: "well_formed_ktm ?Mr" by (rule alphabet_reduce_well_formed[OF vM card_ge])
+  have kfpos: "0 < ?kf" using block_width_pos[of "\<Gamma>_ktm M"] by simp
   have cpos: "0 < ?c" by (simp add: card_gt_0_iff)
-  have ar: "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-               accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-               accepts_in_time_mttm ?Mr (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w)
+  have ar: "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+               accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+               accepts_in_time_ktm ?Mr (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w)
                  (?d * ?kf * T (length w))"
     by (rule alphabet_reduce_time_explicit[OF vM s_neq_t s_neq_r le_neq_bl card_ge])
   \<comment> \<open>route the reduction bound in as the enlargement's per-input time function\<close>
   define Tr :: "nat \<Rightarrow> nat" where "Tr = (\<lambda>n. ?d * ?kf * T (n div ?kf))"
-  have ae: "\<forall>v. set v \<subseteq> Sigma_tm ?Mr \<longrightarrow>
-        accepts_in_time_mttm ?Mr v (Tr (length v)) \<longrightarrow>
-        accepts_in_time_mttm ?Me (encode_input (bl_tm ?Mr) v)
+  have ae: "\<forall>v. set v \<subseteq> Sigma_ktm ?Mr \<longrightarrow>
+        accepts_in_time_ktm ?Mr v (Tr (length v)) \<longrightarrow>
+        accepts_in_time_ktm ?Me (encode_input (bl_ktm ?Mr) v)
           (2 * ((length v + ?c - 1) div ?c)
             + 8 * ((Tr (length v) + ?c - 1) div ?c) + 4)"
     by (rule alphabet_enlarge_time_explicit[OF wfr, where T = Tr])
-  show "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-        accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-        accepts_in_time_mttm ?Me
-          (encode_input (bl_tm ?Mr) (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w))
-          (8 * (6 * k_tm M + 1) * block_width (\<Gamma>_tm M) * T (length w)
-            + 2 * block_width (\<Gamma>_tm M) * length w + 4)"
+  show "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+        accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+        accepts_in_time_ktm ?Me
+          (encode_input (bl_ktm ?Mr) (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w))
+          (8 * (6 * k_ktm M + 1) * block_width (\<Gamma>_ktm M) * T (length w)
+            + 2 * block_width (\<Gamma>_ktm M) * length w + 4)"
   proof (intro allI impI)
-    fix w assume w: "set w \<subseteq> Sigma_tm M"
-      and accM: "accepts_in_time_mttm M w (T (length w))"
-    let ?v = "encode_input_ar (\<Gamma>_tm M) (bl_tm M) w"
+    fix w assume w: "set w \<subseteq> Sigma_ktm M"
+      and accM: "accepts_in_time_ktm M w (T (length w))"
+    let ?v = "encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w"
     have lenv: "length ?v = ?kf * length w"
       by (simp add: length_encode_input_ar)
     have div_w: "length ?v div ?kf = length w"
       using lenv kfpos by simp
     have Tr_v: "Tr (length ?v) = ?d * ?kf * T (length w)"
       using div_w by (simp add: Tr_def)
-    have accr: "accepts_in_time_mttm ?Mr ?v (Tr (length ?v))"
+    have accr: "accepts_in_time_ktm ?Mr ?v (Tr (length ?v))"
       using ar w accM Tr_v by simp
-    have guard: "set ?v \<subseteq> Sigma_tm ?Mr"
-      using set_encode_input_ar[of "\<Gamma>_tm M" "bl_tm M" w]
+    have guard: "set ?v \<subseteq> Sigma_ktm ?Mr"
+      using set_encode_input_ar[of "\<Gamma>_ktm M" "bl_ktm M" w]
       by (simp add: alphabet_reduce_Sigma)
-    have ae_acc: "accepts_in_time_mttm ?Me (encode_input (bl_tm ?Mr) ?v)
+    have ae_acc: "accepts_in_time_ktm ?Me (encode_input (bl_ktm ?Mr) ?v)
                     (2 * ((length ?v + ?c - 1) div ?c)
                       + 8 * ((Tr (length ?v) + ?c - 1) div ?c) + 4)"
       using ae guard accr by blast
@@ -234,48 +234,48 @@ proof -
         by (simp add: algebra_simps)
       finally show ?thesis .
     qed
-    show "accepts_in_time_mttm ?Me
-            (encode_input (bl_tm ?Mr) ?v)
-            (8 * (6 * k_tm M + 1) * block_width (\<Gamma>_tm M) * T (length w)
-              + 2 * block_width (\<Gamma>_tm M) * length w + 4)"
-      by (rule accepts_in_time_mttm_mono[OF ae_acc bound_le])
+    show "accepts_in_time_ktm ?Me
+            (encode_input (bl_ktm ?Mr) ?v)
+            (8 * (6 * k_ktm M + 1) * block_width (\<Gamma>_ktm M) * T (length w)
+              + 2 * block_width (\<Gamma>_ktm M) * length w + 4)"
+      by (rule accepts_in_time_ktm_mono[OF ae_acc bound_le])
   qed
 qed
 
 text \<open>The classical existential form \<open>A \<cdot> T(|w|) + B \<cdot> |w| + C\<close>, with
-  \<open>A = 8 \<cdot> (6 \<cdot> k_tm M + 1) \<cdot> b\<close>,
+  \<open>A = 8 \<cdot> (6 \<cdot> k_ktm M + 1) \<cdot> b\<close>,
   \<open>B = 2 \<cdot> b\<close>, and \<open>C = 4\<close> from
   \<open>alphabet_reduce_enlarge_time_explicit\<close>.\<close>
 
 theorem alphabet_reduce_enlarge_time:
-  fixes M :: "('q, 'a) mttm" and T :: "nat \<Rightarrow> nat"
-  assumes vM: "valid_mttm M"
-      and s_neq_t: "s_tm M \<noteq> t_tm M"
-      and s_neq_r: "s_tm M \<noteq> r_tm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
+  fixes M :: "('q, 'a) ktm" and T :: "nat \<Rightarrow> nat"
+  assumes vM: "valid_ktm M"
+      and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+      and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
   obtains A B C :: nat
-  where "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+  where "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_enlarge (alphabet_reduce M)
                 :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c :: enum) ae_stage),
-                    'c \<Rightarrow> sym4) mttm)
-             (encode_input (bl_tm (alphabet_reduce M))
-                (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w))
+                    'c \<Rightarrow> sym4) ktm)
+             (encode_input (bl_ktm (alphabet_reduce M))
+                (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w))
              (A * T (length w) + B * length w + C)"
-proof (rule that[of "8 * (6 * k_tm M + 1) * block_width (\<Gamma>_tm M)"
-                    "2 * block_width (\<Gamma>_tm M)" 4])
-  show "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+proof (rule that[of "8 * (6 * k_ktm M + 1) * block_width (\<Gamma>_ktm M)"
+                    "2 * block_width (\<Gamma>_ktm M)" 4])
+  show "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_enlarge (alphabet_reduce M)
                 :: ((('q \<times> 'a ar_stage) \<times> (sym4, 'c :: enum) ae_stage),
-                    'c \<Rightarrow> sym4) mttm)
-             (encode_input (bl_tm (alphabet_reduce M))
-                (encode_input_ar (\<Gamma>_tm M) (bl_tm M) w))
-             (8 * (6 * k_tm M + 1) * block_width (\<Gamma>_tm M) * T (length w)
-               + 2 * block_width (\<Gamma>_tm M) * length w + 4)"
+                    'c \<Rightarrow> sym4) ktm)
+             (encode_input (bl_ktm (alphabet_reduce M))
+                (encode_input_ar (\<Gamma>_ktm M) (bl_ktm M) w))
+             (8 * (6 * k_ktm M + 1) * block_width (\<Gamma>_ktm M) * T (length w)
+               + 2 * block_width (\<Gamma>_ktm M) * length w + 4)"
     by (rule alphabet_reduce_enlarge_time_explicit[OF vM s_neq_t s_neq_r le_neq_bl card_ge])
 qed
 
@@ -285,29 +285,29 @@ text \<open>Enlarge \<open>M\<close> to the block machine \<^term>\<open>alphabe
   that back to four symbols.  This is the direction whose seams need the
   enlarged machine's own well-formedness data: its start / accept / reject
   states, blank and endmarker are the source ones tagged / block-encoded (the
-  field accessors \<open>s_tm_alphabet_enlarge\<close> etc.), and its tape alphabet is the
-  block alphabet \<^term>\<open>gamma_block (\<Gamma>_tm M)\<close>, whose cardinality is at least
+  field accessors \<open>s_ktm_alphabet_enlarge\<close> etc.), and its tape alphabet is the
+  block alphabet \<^term>\<open>gamma_block (\<Gamma>_ktm M)\<close>, whose cardinality is at least
   the source's (\<open>card_gamma_block_ge_card\<close>) --- so a four-symbol source stays
   above the reduction's minimal-alphabet bound.\<close>
 
-lemma Gamma_tm_alphabet_enlarge:
-  fixes M :: "('q, 'a) mttm"
-  shows "\<Gamma>_tm (alphabet_enlarge M
-                  :: ('q \<times> ('a, ('c :: enum)) ae_stage, 'c \<Rightarrow> 'a) mttm)
-          = gamma_block (\<Gamma>_tm M)"
+lemma Gamma_ktm_alphabet_enlarge:
+  fixes M :: "('q, 'a) ktm"
+  shows "\<Gamma>_ktm (alphabet_enlarge M
+                  :: ('q \<times> ('a, ('c :: enum)) ae_stage, 'c \<Rightarrow> 'a) ktm)
+          = gamma_block (\<Gamma>_ktm M)"
   by (cases M) (simp add: alphabet_enlarge_def)
 
-text \<open>Enlargement preserves the tape count (the last \<open>mttm\<close> field is
+text \<open>Enlargement preserves the tape count (the last \<open>ktm\<close> field is
   copied unchanged): the block transformation is purely alphabet-level, so the
-  reduction's tape-count factor \<open>6 \<cdot> k_tm M + 1\<close> is the \<^emph>\<open>source\<close> tape count
+  reduction's tape-count factor \<open>6 \<cdot> k_ktm M + 1\<close> is the \<^emph>\<open>source\<close> tape count
   even when the reduction is applied to the enlarged machine.  Mirrors
   \<open>alphabet_reduce_preserves_tape_count\<close>.\<close>
 
-lemma k_tm_alphabet_enlarge:
-  fixes M :: "('q, 'a) mttm"
-  shows "k_tm (alphabet_enlarge M
-                  :: ('q \<times> ('a, ('c :: enum)) ae_stage, 'c \<Rightarrow> 'a) mttm)
-          = k_tm M"
+lemma k_ktm_alphabet_enlarge:
+  fixes M :: "('q, 'a) ktm"
+  shows "k_ktm (alphabet_enlarge M
+                  :: ('q \<times> ('a, ('c :: enum)) ae_stage, 'c \<Rightarrow> 'a) ktm)
+          = k_ktm M"
   by (cases M) (simp add: alphabet_enlarge_def)
 
 text \<open>Discharge of the reduction's input hypotheses on the enlarged machine
@@ -315,46 +315,46 @@ text \<open>Discharge of the reduction's input hypotheses on the enlarged machin
   bound), packaged for reuse by both the language and the time theorem.\<close>
 
 lemma alphabet_enlarge_reduce_hyps:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM: "valid_mttm M"
-      and s_neq_t: "s_tm M \<noteq> t_tm M"
-      and s_neq_r: "s_tm M \<noteq> r_tm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
-  shows "valid_mttm (alphabet_enlarge M
-            :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) mttm)"
-    and "s_tm (alphabet_enlarge M
-            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)
-          \<noteq> t_tm (alphabet_enlarge M)"
-    and "s_tm (alphabet_enlarge M
-            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)
-          \<noteq> r_tm (alphabet_enlarge M)"
-    and "le_tm (alphabet_enlarge M
-            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)
-          \<noteq> bl_tm (alphabet_enlarge M)"
-    and "card (\<Gamma>_tm (alphabet_enlarge M
-            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)) \<ge> 4"
+  fixes M :: "('q, 'a) ktm"
+  assumes vM: "valid_ktm M"
+      and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+      and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
+  shows "valid_ktm (alphabet_enlarge M
+            :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm)"
+    and "s_ktm (alphabet_enlarge M
+            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
+          \<noteq> t_ktm (alphabet_enlarge M)"
+    and "s_ktm (alphabet_enlarge M
+            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
+          \<noteq> r_ktm (alphabet_enlarge M)"
+    and "le_ktm (alphabet_enlarge M
+            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
+          \<noteq> bl_ktm (alphabet_enlarge M)"
+    and "card (\<Gamma>_ktm (alphabet_enlarge M
+            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)) \<ge> 4"
 proof -
-  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm"
-  have finG: "finite (\<Gamma>_tm M)" by (rule valid_mttm_finite_Gamma[OF vM])
-  show "valid_mttm ?M'" by (rule alphabet_enlarge_wf[OF vM])
-  show "s_tm ?M' \<noteq> t_tm ?M'"
-    using s_neq_t by (simp add: s_tm_alphabet_enlarge t_tm_alphabet_enlarge)
-  show "s_tm ?M' \<noteq> r_tm ?M'"
-    using s_neq_r by (simp add: s_tm_alphabet_enlarge r_tm_alphabet_enlarge)
-  show "le_tm ?M' \<noteq> bl_tm ?M'"
+  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
+  have finG: "finite (\<Gamma>_ktm M)" by (rule valid_ktm_finite_Gamma[OF vM])
+  show "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM])
+  show "s_ktm ?M' \<noteq> t_ktm ?M'"
+    using s_neq_t by (simp add: s_ktm_alphabet_enlarge t_ktm_alphabet_enlarge)
+  show "s_ktm ?M' \<noteq> r_ktm ?M'"
+    using s_neq_r by (simp add: s_ktm_alphabet_enlarge r_ktm_alphabet_enlarge)
+  show "le_ktm ?M' \<noteq> bl_ktm ?M'"
   proof
-    assume "le_tm ?M' = bl_tm ?M'"
-    hence "(LE_block (le_tm M) :: 'c \<Rightarrow> 'a) = bl_block (bl_tm M)"
-      by (simp add: le_tm_alphabet_enlarge bl_tm_alphabet_enlarge)
-    hence "le_tm M = bl_tm M" by (rule LE_block_eq_bl_block_imp_eq)
+    assume "le_ktm ?M' = bl_ktm ?M'"
+    hence "(LE_block (le_ktm M) :: 'c \<Rightarrow> 'a) = bl_block (bl_ktm M)"
+      by (simp add: le_ktm_alphabet_enlarge bl_ktm_alphabet_enlarge)
+    hence "le_ktm M = bl_ktm M" by (rule LE_block_eq_bl_block_imp_eq)
     with le_neq_bl show False by simp
   qed
-  have "card (\<Gamma>_tm M) \<le> card (gamma_block (\<Gamma>_tm M) :: ('c \<Rightarrow> 'a) set)"
+  have "card (\<Gamma>_ktm M) \<le> card (gamma_block (\<Gamma>_ktm M) :: ('c \<Rightarrow> 'a) set)"
     by (rule card_gamma_block_ge_card[OF finG])
-  hence "4 \<le> card (gamma_block (\<Gamma>_tm M) :: ('c \<Rightarrow> 'a) set)"
+  hence "4 \<le> card (gamma_block (\<Gamma>_ktm M) :: ('c \<Rightarrow> 'a) set)"
     using card_ge by linarith
-  thus "card (\<Gamma>_tm ?M') \<ge> 4" by (simp add: Gamma_tm_alphabet_enlarge)
+  thus "card (\<Gamma>_ktm ?M') \<ge> 4" by (simp add: Gamma_ktm_alphabet_enlarge)
 qed
 
 text \<open>The intermediate-word guard: the block encoding of a genuine input
@@ -363,60 +363,60 @@ text \<open>The intermediate-word guard: the block encoding of a genuine input
   language and time theorems of this direction.\<close>
 
 lemma encode_input_in_Sigma_alphabet_enlarge:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM: "valid_mttm M" and w: "set w \<subseteq> Sigma_tm M"
-  shows "set (encode_input (bl_tm M) w :: ('c :: enum \<Rightarrow> 'a) list)
-           \<subseteq> Sigma_tm (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)"
+  fixes M :: "('q, 'a) ktm"
+  assumes vM: "valid_ktm M" and w: "set w \<subseteq> Sigma_ktm M"
+  shows "set (encode_input (bl_ktm M) w :: ('c :: enum \<Rightarrow> 'a) list)
+           \<subseteq> Sigma_ktm (alphabet_enlarge M
+                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)"
 proof -
-  have "set (encode_input (bl_tm M) w :: ('c \<Rightarrow> 'a) list)
-          \<subseteq> gamma_block (Sigma_tm M \<union> {bl_tm M})"
+  have "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)
+          \<subseteq> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
     by (rule encode_input_in_gamma_block[OF w])
-  moreover have "bl_block (bl_tm M)
-          \<notin> set (encode_input (bl_tm M) w :: ('c \<Rightarrow> 'a) list)"
+  moreover have "bl_block (bl_ktm M)
+          \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
     by (rule encode_input_no_bl_block[OF vM w])
-  moreover have "LE_block (le_tm M)
-          \<notin> set (encode_input (bl_tm M) w :: ('c \<Rightarrow> 'a) list)"
+  moreover have "LE_block (le_ktm M)
+          \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
     by (rule encode_input_no_LE_block[OF vM w])
-  ultimately show ?thesis by (auto simp: Sigma_tm_alphabet_enlarge)
+  ultimately show ?thesis by (auto simp: Sigma_ktm_alphabet_enlarge)
 qed
 
 theorem alphabet_enlarge_reduce_language:
-  fixes M :: "('q, 'a) mttm"
-  assumes wfM: "well_formed_mttm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
-  shows "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
+  fixes M :: "('q, 'a) ktm"
+  assumes wfM: "well_formed_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
+  shows "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
            (encode_input_ar
-               (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) mttm))
-               (bl_tm (alphabet_enlarge M))
-               (encode_input (bl_tm M) w)
-             \<in> Lang_mttm (alphabet_reduce (alphabet_enlarge M)
-                  :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm))
-           = (w \<in> Lang_mttm M)"
+               (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm))
+               (bl_ktm (alphabet_enlarge M))
+               (encode_input (bl_ktm M) w)
+             \<in> Lang_ktm (alphabet_reduce (alphabet_enlarge M)
+                  :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm))
+           = (w \<in> Lang_ktm M)"
 proof (intro allI impI)
-  fix w assume w: "set w \<subseteq> Sigma_tm M"
-  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm"
-  have vM: "valid_mttm M"
-    and s_neq_t: "s_tm M \<noteq> t_tm M"
-    and s_neq_r: "s_tm M \<noteq> r_tm M"
-    and le_neq_bl: "le_tm M \<noteq> bl_tm M"
+  fix w assume w: "set w \<subseteq> Sigma_ktm M"
+  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
+  have vM: "valid_ktm M"
+    and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+    and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+    and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     using wfM by auto
   note hyps = alphabet_enlarge_reduce_hyps[OF vM s_neq_t s_neq_r le_neq_bl card_ge]
-  have enl: "(encode_input (bl_tm M) w \<in> Lang_mttm ?M') = (w \<in> Lang_mttm M)"
+  have enl: "(encode_input (bl_ktm M) w \<in> Lang_ktm ?M') = (w \<in> Lang_ktm M)"
     using alphabet_enlarge_language[OF wfM] w by blast
-  have guard: "set (encode_input (bl_tm M) w :: ('c \<Rightarrow> 'a) list) \<subseteq> Sigma_tm ?M'"
+  have guard: "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list) \<subseteq> Sigma_ktm ?M'"
     by (rule encode_input_in_Sigma_alphabet_enlarge[OF vM w])
-  have red: "(encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') (encode_input (bl_tm M) w)
-                \<in> Lang_mttm (alphabet_reduce ?M'
-                     :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm))
-             = (encode_input (bl_tm M) w \<in> Lang_mttm ?M')"
+  have red: "(encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') (encode_input (bl_ktm M) w)
+                \<in> Lang_ktm (alphabet_reduce ?M'
+                     :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm))
+             = (encode_input (bl_ktm M) w \<in> Lang_ktm ?M')"
     using alphabet_reduce_language[OF hyps(1) hyps(2) hyps(3) hyps(4) hyps(5)] guard
     by blast
-  show "(encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') (encode_input (bl_tm M) w)
-            \<in> Lang_mttm (alphabet_reduce ?M'
-                 :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm))
-        = (w \<in> Lang_mttm M)"
+  show "(encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') (encode_input (bl_ktm M) w)
+            \<in> Lang_ktm (alphabet_reduce ?M'
+                 :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm))
+        = (w \<in> Lang_ktm M)"
     using red enl by simp
 qed
 
@@ -430,9 +430,9 @@ text \<open>The composed slowdown for reduce-after-enlarge, with explicit
   bound is stated at \<open>T(|w| + c - 1)\<close> --- \<open>T\<close> at the input length rounded up
   to the next block boundary.  The bound is
   \<open>8 \<cdot> D \<cdot> b' \<cdot> T(|w| + c - 1) + 2 \<cdot> D \<cdot> b' \<cdot> |w| + 4 \<cdot> D \<cdot> b'\<close>, where
-  \<open>D = 6 \<cdot> k_tm M + 1\<close> (the tape count is preserved by enlargement,
-  \<open>k_tm_alphabet_enlarge\<close>) and
-  \<open>b' = block_width (\<Gamma>_tm (alphabet_enlarge M)) = block_width (gamma_block (\<Gamma>_tm M))\<close> is
+  \<open>D = 6 \<cdot> k_ktm M + 1\<close> (the tape count is preserved by enlargement,
+  \<open>k_ktm_alphabet_enlarge\<close>) and
+  \<open>b' = block_width (\<Gamma>_ktm (alphabet_enlarge M)) = block_width (gamma_block (\<Gamma>_ktm M))\<close> is
   the per-symbol width of the \<^emph>\<open>block\<close> alphabet, i.e.
   \<open>\<lceil>c \<cdot> log\<^sub>2 (card \<Gamma>\<^sub>M)\<rceil>\<close>.  Because \<open>b'\<close> grows with \<open>c\<close>, the block-speedup
   factor \<^emph>\<open>does not\<close> cancel here: \<open>c\<close> survives both in the time argument
@@ -440,79 +440,79 @@ text \<open>The composed slowdown for reduce-after-enlarge, with explicit
   existential form is \<open>alphabet_enlarge_reduce_time\<close> below.\<close>
 
 theorem alphabet_enlarge_reduce_time_explicit:
-  fixes M :: "('q, 'a) mttm" and T :: "nat \<Rightarrow> nat"
-  assumes wfM: "well_formed_mttm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
+  fixes M :: "('q, 'a) ktm" and T :: "nat \<Rightarrow> nat"
+  assumes wfM: "well_formed_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
       and Tmono: "mono T"
-  shows "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+  shows "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_reduce (alphabet_enlarge M)
-                :: ((('q \<times> ('a, 'c :: enum) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
+                :: ((('q \<times> ('a, 'c :: enum) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
              (encode_input_ar
-                 (\<Gamma>_tm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
-                 (bl_tm (alphabet_enlarge M))
-                 (encode_input (bl_tm M) w))
-             (8 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
+                 (\<Gamma>_ktm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
+                 (bl_ktm (alphabet_enlarge M))
+                 (encode_input (bl_ktm M) w))
+             (8 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
                    * T (length w + card (UNIV :: 'c set) - 1)
-               + 2 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
+               + 2 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
                    * length w
-               + 4 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)))"
+               + 4 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)))"
 proof -
-  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm"
+  let ?M' = "alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
   let ?c = "card (UNIV :: 'c set)"
-  let ?ke = "block_width (\<Gamma>_tm ?M')"
-  let ?d = "6 * k_tm M + 1"
-  have vM: "valid_mttm M"
-    and s_neq_t: "s_tm M \<noteq> t_tm M"
-    and s_neq_r: "s_tm M \<noteq> r_tm M"
-    and le_neq_bl: "le_tm M \<noteq> bl_tm M"
+  let ?ke = "block_width (\<Gamma>_ktm ?M')"
+  let ?d = "6 * k_ktm M + 1"
+  have vM: "valid_ktm M"
+    and s_neq_t: "s_ktm M \<noteq> t_ktm M"
+    and s_neq_r: "s_ktm M \<noteq> r_ktm M"
+    and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     using wfM by auto
   have cpos: "0 < ?c" by (simp add: card_gt_0_iff)
-  have ktm: "k_tm ?M' = k_tm M" by (rule k_tm_alphabet_enlarge)
+  have ktm: "k_ktm ?M' = k_ktm M" by (rule k_ktm_alphabet_enlarge)
   note hyps = alphabet_enlarge_reduce_hyps[OF vM s_neq_t s_neq_r le_neq_bl card_ge]
   \<comment> \<open>enlargement time constants (explicit: \<open>al = 2\<close>, \<open>fe = 4\<close>)\<close>
-  have ae: "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-        accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-        accepts_in_time_mttm ?M' (encode_input (bl_tm M) w)
+  have ae: "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+        accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+        accepts_in_time_ktm ?M' (encode_input (bl_ktm M) w)
           (2 * ((length w + ?c - 1) div ?c)
             + 8 * ((T (length w) + ?c - 1) div ?c) + 4)"
     by (rule alphabet_enlarge_time_explicit[OF wfM])
   \<comment> \<open>route the enlarged machine's running time in as the reduction's time function\<close>
   define Te :: "nat \<Rightarrow> nat" where "Te = (\<lambda>n. 8 * T (?c * n) + 2 * n + 4)"
   \<comment> \<open>reduction on the enlarged machine (explicit: \<open>e = fr = 0\<close>,
-      \<open>d = 6 \<cdot> k_tm M + 1\<close> by tape preservation, \<open>b\<close> the block-alphabet width)\<close>
-  have ar0: "\<forall>v. set v \<subseteq> Sigma_tm ?M' \<longrightarrow>
-        accepts_in_time_mttm ?M' v (Te (length v)) \<longrightarrow>
-        accepts_in_time_mttm (alphabet_reduce ?M'
-            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
-          (encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') v)
-          ((6 * k_tm ?M' + 1) * ?ke * Te (length v))"
+      \<open>d = 6 \<cdot> k_ktm M + 1\<close> by tape preservation, \<open>b\<close> the block-alphabet width)\<close>
+  have ar0: "\<forall>v. set v \<subseteq> Sigma_ktm ?M' \<longrightarrow>
+        accepts_in_time_ktm ?M' v (Te (length v)) \<longrightarrow>
+        accepts_in_time_ktm (alphabet_reduce ?M'
+            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
+          (encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') v)
+          ((6 * k_ktm ?M' + 1) * ?ke * Te (length v))"
     by (rule alphabet_reduce_time_explicit[OF hyps(1) hyps(2) hyps(3) hyps(4) hyps(5)])
-  have ar: "\<forall>v. set v \<subseteq> Sigma_tm ?M' \<longrightarrow>
-        accepts_in_time_mttm ?M' v (Te (length v)) \<longrightarrow>
-        accepts_in_time_mttm (alphabet_reduce ?M'
-            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
-          (encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') v)
+  have ar: "\<forall>v. set v \<subseteq> Sigma_ktm ?M' \<longrightarrow>
+        accepts_in_time_ktm ?M' v (Te (length v)) \<longrightarrow>
+        accepts_in_time_ktm (alphabet_reduce ?M'
+            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
+          (encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') v)
           (?d * ?ke * Te (length v))"
     using ar0 by (simp add: ktm)
-  show "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-        accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-        accepts_in_time_mttm (alphabet_reduce ?M'
-            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
-          (encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') (encode_input (bl_tm M) w))
+  show "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+        accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+        accepts_in_time_ktm (alphabet_reduce ?M'
+            :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
+          (encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') (encode_input (bl_ktm M) w))
           (8 * ?d * ?ke * T (length w + ?c - 1)
             + 2 * ?d * ?ke * length w + 4 * ?d * ?ke)"
   proof (intro allI impI)
-    fix w assume w: "set w \<subseteq> Sigma_tm M"
-      and accM: "accepts_in_time_mttm M w (T (length w))"
-    let ?v = "encode_input (bl_tm M) w :: ('c \<Rightarrow> 'a) list"
+    fix w assume w: "set w \<subseteq> Sigma_ktm M"
+      and accM: "accepts_in_time_ktm M w (T (length w))"
+    let ?v = "encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list"
     have lenv: "length ?v = (length w + ?c - 1) div ?c"
       by (rule length_encode_input)
     have lv_le: "length ?v \<le> length w"
@@ -535,7 +535,7 @@ proof -
       thus ?thesis using lenv by simp
     qed
     \<comment> \<open>enlargement: the enlarged machine accepts the block encoding\<close>
-    have accAE: "accepts_in_time_mttm ?M' ?v
+    have accAE: "accepts_in_time_ktm ?M' ?v
                    (2 * ((length w + ?c - 1) div ?c)
                      + 8 * ((T (length w) + ?c - 1) div ?c) + 4)"
       using ae w accM by blast
@@ -562,13 +562,13 @@ proof -
       also have "\<dots> = Te (length ?v)" by (simp add: Te_def)
       finally show ?thesis .
     qed
-    have accr_hyp: "accepts_in_time_mttm ?M' ?v (Te (length ?v))"
-      by (rule accepts_in_time_mttm_mono[OF accAE le1])
-    have guard: "set ?v \<subseteq> Sigma_tm ?M'"
+    have accr_hyp: "accepts_in_time_ktm ?M' ?v (Te (length ?v))"
+      by (rule accepts_in_time_ktm_mono[OF accAE le1])
+    have guard: "set ?v \<subseteq> Sigma_ktm ?M'"
       by (rule encode_input_in_Sigma_alphabet_enlarge[OF vM w])
-    have accAR: "accepts_in_time_mttm (alphabet_reduce ?M'
-                    :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
-                    (encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') ?v)
+    have accAR: "accepts_in_time_ktm (alphabet_reduce ?M'
+                    :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
+                    (encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') ?v)
                     (?d * ?ke * Te (length ?v))"
       using ar guard accr_hyp by blast
     have le2: "?d * ?ke * Te (length ?v)
@@ -588,65 +588,65 @@ proof -
         by (simp add: algebra_simps)
       finally show ?thesis .
     qed
-    show "accepts_in_time_mttm (alphabet_reduce ?M'
-              :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
-            (encode_input_ar (\<Gamma>_tm ?M') (bl_tm ?M') ?v)
+    show "accepts_in_time_ktm (alphabet_reduce ?M'
+              :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
+            (encode_input_ar (\<Gamma>_ktm ?M') (bl_ktm ?M') ?v)
             (8 * ?d * ?ke * T (length w + ?c - 1)
               + 2 * ?d * ?ke * length w + 4 * ?d * ?ke)"
-      by (rule accepts_in_time_mttm_mono[OF accAR le2])
+      by (rule accepts_in_time_ktm_mono[OF accAR le2])
   qed
 qed
 
 text \<open>The classical existential form \<open>A \<cdot> T(|w| + c - 1) + B \<cdot> |w| + C\<close>,
   with \<open>A = 8 \<cdot> D \<cdot> b'\<close>, \<open>B = 2 \<cdot> D \<cdot> b'\<close>, \<open>C = 4 \<cdot> D \<cdot> b'\<close> for
-  \<open>D = 6 \<cdot> k_tm M + 1\<close> and \<open>b' = block_width (\<Gamma>_tm (alphabet_enlarge M))\<close>, from
+  \<open>D = 6 \<cdot> k_ktm M + 1\<close> and \<open>b' = block_width (\<Gamma>_ktm (alphabet_enlarge M))\<close>, from
   \<open>alphabet_enlarge_reduce_time_explicit\<close>.\<close>
 
 theorem alphabet_enlarge_reduce_time:
-  fixes M :: "('q, 'a) mttm" and T :: "nat \<Rightarrow> nat"
-  assumes wfM: "well_formed_mttm M"
-      and card_ge: "card (\<Gamma>_tm M) \<ge> 4"
+  fixes M :: "('q, 'a) ktm" and T :: "nat \<Rightarrow> nat"
+  assumes wfM: "well_formed_ktm M"
+      and card_ge: "card (\<Gamma>_ktm M) \<ge> 4"
       and Tmono: "mono T"
   obtains A B C :: nat
-  where "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+  where "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_reduce (alphabet_enlarge M)
-                :: ((('q \<times> ('a, 'c :: enum) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
+                :: ((('q \<times> ('a, 'c :: enum) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
              (encode_input_ar
-                 (\<Gamma>_tm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
-                 (bl_tm (alphabet_enlarge M))
-                 (encode_input (bl_tm M) w))
+                 (\<Gamma>_ktm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
+                 (bl_ktm (alphabet_enlarge M))
+                 (encode_input (bl_ktm M) w))
              (A * T (length w + card (UNIV :: 'c set) - 1) + B * length w + C)"
-proof (rule that[of "8 * (6 * k_tm M + 1)
-                       * block_width (\<Gamma>_tm (alphabet_enlarge M
-                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))"
-                    "2 * (6 * k_tm M + 1)
-                       * block_width (\<Gamma>_tm (alphabet_enlarge M
-                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))"
-                    "4 * (6 * k_tm M + 1)
-                       * block_width (\<Gamma>_tm (alphabet_enlarge M
-                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))"])
-  show "\<forall>w. set w \<subseteq> Sigma_tm M \<longrightarrow>
-           accepts_in_time_mttm M w (T (length w)) \<longrightarrow>
-           accepts_in_time_mttm
+proof (rule that[of "8 * (6 * k_ktm M + 1)
+                       * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))"
+                    "2 * (6 * k_ktm M + 1)
+                       * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))"
+                    "4 * (6 * k_ktm M + 1)
+                       * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                            :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))"])
+  show "\<forall>w. set w \<subseteq> Sigma_ktm M \<longrightarrow>
+           accepts_in_time_ktm M w (T (length w)) \<longrightarrow>
+           accepts_in_time_ktm
              (alphabet_reduce (alphabet_enlarge M)
-                :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) mttm)
+                :: ((('q \<times> ('a, 'c) ae_stage) \<times> ('c \<Rightarrow> 'a) ar_stage), sym4) ktm)
              (encode_input_ar
-                 (\<Gamma>_tm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
-                 (bl_tm (alphabet_enlarge M))
-                 (encode_input (bl_tm M) w))
-             (8 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
+                 (\<Gamma>_ktm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
+                 (bl_ktm (alphabet_enlarge M))
+                 (encode_input (bl_ktm M) w))
+             (8 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
                    * T (length w + card (UNIV :: 'c set) - 1)
-               + 2 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm))
+               + 2 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm))
                    * length w
-               + 4 * (6 * k_tm M + 1)
-                   * block_width (\<Gamma>_tm (alphabet_enlarge M
-                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) mttm)))"
+               + 4 * (6 * k_ktm M + 1)
+                   * block_width (\<Gamma>_ktm (alphabet_enlarge M
+                        :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)))"
     by (rule alphabet_enlarge_reduce_time_explicit[OF wfM card_ge Tmono])
 qed
 

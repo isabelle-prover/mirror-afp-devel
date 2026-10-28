@@ -1,9 +1,7 @@
 chapter AFP
 
 session Multitape_TM_Substrate = HOL +
-  description "Nondeterministic multitape Turing machine substrate.
-    A self-contained, value-level model of nondeterministic multitape Turing
-    machines."
+  description "Nondeterministic multitape Turing machine substrate."
   options [timeout = 300]
   sessions
     "HOL-Library"
@@ -14,6 +12,15 @@ session Multitape_TM_Substrate = HOL +
     Multitape_Finite_Control
     Multitape_Finite_Patch
     Multitape_Time_Convention
+    Multitape_Run_Facts
+    Multitape_Relabelling
+    Multitape_Embedding
+    Multitape_Endmarker_Normal
+    Multitape_Clock_Interface
+    Multitape_Clock_Product
+    Multitape_One_Tape_Clocks
+    Multitape_Binary_Codec
+    Multitape_Enum_Type
   document_files
     "root.tex"
     "root.bib"

@@ -21,8 +21,7 @@
 \providecommand{\isasympm}{\ensuremath{\pm}}
 \providecommand{\isasymne}{\ensuremath{\neq}}
 
-% Session / entry names — single source of truth in sessionnames.tex (canonical
-% at t/document/, symlinked here and dereferenced into a real copy at release).
+% Session / entry names, defined in sessionnames.tex.
 \input{sessionnames}
 
 \begin{document}
@@ -88,8 +87,10 @@ determinism.  This session (\sessAR) establishes:
 
 This is an elementary per-symbol multi-cell encoding leading to a
 reduction in the number of tape symbols: the folklore alphabet
-homomorphism onto a fixed small alphabet, stated (but not costed) by
-Balc\'azar, D\'iaz, and Gabarr\'o~\cite[p.~23]{Balcazar1988:structural} and
+homomorphism onto a fixed small alphabet, stated by
+Balc\'azar, D\'iaz, and Gabarr\'o~\cite[p.~23]{Balcazar1988:structural}
+without its cost, stated as a theorem with an $O(T)$ bound by
+Reischuk~\cite[Theorem~1.4.10]{Reischuk1999:Grundlagen}, and
 set within the wider machine-model-simulation
 landscape~\cite{vanEmdeBoas1990:machine,Papadimitriou1994:computational}.
 
@@ -140,7 +141,7 @@ nondeterministic by default: its transition is a \emph{relation}, so
 acceptance means ``some run reaches the accept state'', and these
 theorems are statements about nondeterministic machines.  The
 deterministic case is singled out by a separate condition,
-\texttt{det\_mttm}.  Second, because the alphabet shrinks, the reduced
+\texttt{det\_ktm}.  Second, because the alphabet shrinks, the reduced
 machine cannot literally accept the same strings; instead each source
 symbol is re-spelled as a fixed block of $\mathrm{sym4}$ symbols by the
 encoding $\mathrm{encode\_input\_ar}$, and ``same language'' is meant
@@ -162,7 +163,12 @@ itself is a folklore normalisation: a multitape machine over an
 arbitrary finite tape alphabet $\Gamma$ is simulated over a fixed small
 alphabet at a per-machine constant-factor cost of
 $\lceil \log_2 |\Gamma| \rceil$ cells per symbol.  Classic texts assume
-it rather than cost it.  Balc\'azar, D\'iaz, and
+it rather than cost it.  The exception we know of is
+Reischuk~\cite[Theorem~1.4.10]{Reischuk1999:Grundlagen}, who states it as
+a theorem under the name used here, \emph{Alphabet-Reduktion}: every
+language accepted by a $k$-tape deterministic machine in time $T$ and
+space $S$ is accepted by a $k$-tape machine in time $O(T)$ and space
+$O(S)$ whose storage uses only a two-element alphabet.  Balc\'azar, D\'iaz, and
 Gabarr\'o~\cite[p.~23]{Balcazar1988:structural} state it directly --- a
 machine, being a word over its alphabet, ``can be translated into any other
 alphabet having at least two symbols via a homomorphism'' (their example
@@ -207,7 +213,7 @@ time bound hold, in a single theorem, for machines of any number of tapes.
 \item[$b = \max(1, \lceil \log_2 |\Gamma| \rceil)$] the \emph{block
   width}: the number of $\mathrm{sym4}$ cells that spell one source
   symbol, and the alphabet-dependent factor in the slowdown
-  $(6k + 1)\,b$ (with $k = \texttt{k\_tm}\,M$ the tape count).  For
+  $(6k + 1)\,b$ (with $k = \texttt{k\_ktm}\,M$ the tape count).  For
   $|\Gamma| \geq 4$ the $\max$ is inactive, so
   $b = \lceil \log_2 |\Gamma| \rceil$; it is the Isabelle constant
   $\texttt{block\_width}\,\Gamma$.
@@ -239,8 +245,8 @@ note four caveats.
 \item \emph{Minimal alphabet.}  The source must carry at least four
   tape symbols ($|\Gamma_M| \geq 4$).  The block-encoding is injective for
   \emph{any} alphabet (the width always fits $|\Gamma_M|$); the real
-  requirement is $\mathrm{block\_width} \geq 2$ (the walker's block
-  logic assumes at least two cells per symbol), for which $|\Gamma_M|
+  requirement is $\mathrm{block\_width} \geq 2$ (the simulation's
+  handling of a block assumes at least two cells per symbol), for which $|\Gamma_M|
   \geq 4$ is the (loose) sufficient condition the theorems carry.
 \item \emph{Same language, up to a fixed re-encoding.}  Because the
   alphabet shrinks, $M''$ cannot literally accept $M$'s strings;
@@ -276,9 +282,9 @@ For each headline theorem we give a cleaned statement and the role of
 every predicate it mentions.  The hypotheses form a \emph{ladder}:
 purely structural facts need none, validity needs the
 minimal-alphabet bound $|\Gamma_M| \geq 4$, behavioural equivalence
-needs the stronger \texttt{well\_formed\_mttm}, and determinism
-preservation needs \texttt{valid\_mttm} together with
-\texttt{det\_mttm}.
+needs the stronger \texttt{well\_formed\_ktm}, and determinism
+preservation needs \texttt{valid\_ktm} together with
+\texttt{det\_ktm}.
 
 \paragraph{\texttt{alphabet\_reduce\_produces\_alphabet\_size\_4}.}
 \[
@@ -294,27 +300,27 @@ that type has exactly four inhabitants.  It is a fact about the target
 \[
   k_{M''} = k_M.
 \]
-Mentions only the tape-count projection \texttt{k\_tm} and the
+Mentions only the tape-count projection \texttt{k\_ktm} and the
 reduction, with no hypotheses.  The reduction acts on the alphabet dimension alone;
 the tape count is copied verbatim, so the equation holds for every
 term of machine type, valid or not.
 
 \paragraph{\texttt{alphabet\_reduce\_wf}.}
 \[
-  \mathrm{valid\_mttm}\, M \ \wedge\ |\Gamma_M| \geq 4
-  \ \Longrightarrow\ \mathrm{valid\_mttm}\, M''.
+  \mathrm{valid\_ktm}\, M \ \wedge\ |\Gamma_M| \geq 4
+  \ \Longrightarrow\ \mathrm{valid\_ktm}\, M''.
 \]
-Closure of the structural invariant; \texttt{valid\_mttm} appears as
+Closure of the structural invariant; \texttt{valid\_ktm} appears as
 both hypothesis and conclusion.  The side condition $|\Gamma_M| \geq
 4$ is the \emph{minimal-alphabet} requirement: the source must carry
 at least four tape symbols for the binary block-encoding to be
 well-defined and injective.  Discharging it amounts to re-checking the
-endmarker discipline and frozen-tape clauses in the encoded world.
+endmarker discipline and frozen-tape clauses for the encoded machine.
 
 \paragraph{\texttt{alphabet\_reduce\_language}.}
 \[
   \begin{aligned}
-    &\mathrm{well\_formed\_mttm}\, M \ \wedge\ |\Gamma_M| \geq 4
+    &\mathrm{well\_formed\_ktm}\, M \ \wedge\ |\Gamma_M| \geq 4
       \ \Longrightarrow\ {} \\
     &\quad \forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
     &\qquad \bigl(\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w \in L(M'')\bigr) \\
@@ -322,8 +328,8 @@ endmarker discipline and frozen-tape clauses in the encoded world.
   \end{aligned}
 \]
 The correctness core, stated as an equivalence between two membership
-facts.  Note the upgrade from \texttt{valid\_mttm} to
-\texttt{well\_formed\_mttm}: the simulation needs the start state to be
+facts.  Note the upgrade from \texttt{valid\_ktm} to
+\texttt{well\_formed\_ktm}: the simulation needs the start state to be
 a genuine pre-halt state and the endmarker to be distinguishable from
 the blank.  The guard $\mathrm{set}\, w \subseteq \Sigma_M$ restricts
 attention to genuine input words, and $\mathrm{encode\_input\_ar}$ is
@@ -337,20 +343,20 @@ it to the equivalence.
 Write $k$ for the number of tapes of $M$ and
 $b = \mathrm{block\_width}(\Gamma_M) = \lceil \log_2 |\Gamma_M| \rceil$
 for the per-symbol block width.  Under
-$\mathrm{well\_formed\_mttm}\, M \wedge |\Gamma_M| \geq 4$,
+$\mathrm{well\_formed\_ktm}\, M \wedge |\Gamma_M| \geq 4$,
 \[
   \begin{aligned}
     &\forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
-    &\quad \mathrm{accepts\_in\_time\_mttm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
-    &\quad \mathrm{accepts\_in\_time\_mttm}\, M''\, \\
+    &\quad \mathrm{accepts\_in\_time\_ktm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
+    &\quad \mathrm{accepts\_in\_time\_ktm}\, M''\, \\
     &\qquad (\mathrm{encode\_input\_ar}\, \Gamma_M\, bl_M\, w)\,
       \bigl((6k + 1)\,b\,T(|w|)\bigr).
   \end{aligned}
 \]
 Linear-time slowdown with an \emph{explicit} constant.  The factor is
 the single number $(6k + 1)\,b$ multiplying the running time, with no
-additive and no linear-in-$|w|$ term.  It comes from an exact per-step
-super-step count of $k(5b + 2) + 2$, folded up to $(6k + 1)\,b$ using
+additive and no linear-in-$|w|$ term.  It comes from an exact count of
+$k(5b + 2) + 2$ steps of $M''$ per simulated step of $M$, folded up to $(6k + 1)\,b$ using
 $b \geq 2$ (which holds because $|\Gamma_M| \geq 4$) and tight at
 $b = 2$, i.e.\ $|\Gamma_M| = 4$.  The crux is that this constant is
 bound \emph{once, outside the $\forall w$}: it depends only on $M$ (its
@@ -364,11 +370,11 @@ $e = f = 0$.
 
 \paragraph{\texttt{alphabet\_reduce\_det}.}
 \[
-  \mathrm{valid\_mttm}\, M \ \wedge\ \mathrm{det\_mttm}\, M
-  \ \Longrightarrow\ \mathrm{det\_mttm}\, M''.
+  \mathrm{valid\_ktm}\, M \ \wedge\ \mathrm{det\_ktm}\, M
+  \ \Longrightarrow\ \mathrm{det\_ktm}\, M''.
 \]
-Determinism preservation.  It needs \emph{both} \texttt{valid\_mttm}
-and \texttt{det\_mttm}: functionality of the reduced transition
+Determinism preservation.  It needs \emph{both} \texttt{valid\_ktm}
+and \texttt{det\_ktm}: functionality of the reduced transition
 relation follows from functionality of the source only because
 validity pins the transition typing on which the per-substep
 transitions of $M''$ are built.  The proof factors through one

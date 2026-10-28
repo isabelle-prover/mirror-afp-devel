@@ -2,12 +2,12 @@ theory AlphabetEnlargement_Uniqueness
   imports AlphabetEnlargement_Simulation
 begin
 
-subsection \<open>Block-predicate identities (VFwd exclusion support)\<close>
+subsection \<open>Identities between the block predicates\<close>
 
 text \<open>Identities relating \<open>is_pure_block\<close>,
   \<open>is_padded_block\<close>, \<open>LE_block\<close>, and \<open>bl_block\<close>.
   Used by the VFwd 6-fold pairwise exclusion lemmas below
-  (and downstream by the reverse-arm trace decoder).  Located here
+  (and downstream by the reverse-direction trace decoder).  Located here
   because the proofs need \<open>c_idx_enum_nth\<close> to construct
   index witnesses inside the existential in
   \<open>is_padded_block\<close>.\<close>
@@ -64,65 +64,63 @@ lemma LE_block_eq_bl_block_imp_eq:
   assumes "(LE_block le :: 'c :: enum \<Rightarrow> 'a) = bl_block bl"
   shows "le = bl"
 proof -
-  have len_pos: "0 < length (enum_class.enum :: 'c list)"
-    using c_idx_in_range(1)[of "c_first :: 'c"] by linarith
   let ?x = "(enum_class.enum :: 'c list) ! 0"
   from assms have "(LE_block le :: 'c \<Rightarrow> 'a) ?x = bl_block bl ?x" by simp
   thus ?thesis unfolding LE_block_def bl_block_def by simp
 qed
 
-subsection \<open>VFwd 6-fold within-phase exclusion\<close>
+subsection \<open>The forward validation scan's transitions are disjoint\<close>
 
 text \<open>The four VFwd-source relations (advance, \<open>to_padded\<close>,
   \<open>to_ret\<close>, reject) are pairwise disjoint under
   \<open>le_neq_bl\<close>.\<close>
 
 lemma ae_delta_val_fwd_advance_to_padded_disjoint:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and a :: "nat \<Rightarrow> 'c :: enum \<Rightarrow> 'a"
-  assumes "le_tm M \<noteq> bl_tm M"
+  assumes "le_ktm M \<noteq> bl_ktm M"
       and "(s, a, s1, a1, d1) \<in> ae_delta_val_fwd_advance M"
       and "(s, a, s2, a2, d2) \<in> ae_delta_val_fwd_to_padded M"
   shows "False"
 proof -
-  have alt: "a 0 = LE_block (le_tm M)
-              \<or> is_pure_block (bl_tm M) (a 0)"
+  have alt: "a 0 = LE_block (le_ktm M)
+              \<or> is_pure_block (bl_ktm M) (a 0)"
     using assms(2) unfolding ae_delta_val_fwd_advance_def by auto
-  have padded: "is_padded_block (bl_tm M) (a 0)"
+  have padded: "is_padded_block (bl_ktm M) (a 0)"
     using assms(3) unfolding ae_delta_val_fwd_to_padded_def by auto
   from alt show False
   proof
-    assume "a 0 = LE_block (le_tm M)"
+    assume "a 0 = LE_block (le_ktm M)"
     thus False using padded assms(1) not_is_padded_LE_block by metis
   next
-    assume "is_pure_block (bl_tm M) (a 0)"
+    assume "is_pure_block (bl_ktm M) (a 0)"
     thus False using padded is_pure_not_padded by metis
   qed
 qed
 
 lemma ae_delta_val_fwd_advance_to_ret_disjoint:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and a :: "nat \<Rightarrow> 'c :: enum \<Rightarrow> 'a"
-  assumes "le_tm M \<noteq> bl_tm M"
+  assumes "le_ktm M \<noteq> bl_ktm M"
       and "(s, a, s1, a1, d1) \<in> ae_delta_val_fwd_advance M"
       and "(s, a, s2, a2, d2) \<in> ae_delta_val_fwd_to_ret M"
   shows "False"
 proof -
-  have alt: "a 0 = LE_block (le_tm M)
-              \<or> is_pure_block (bl_tm M) (a 0)"
+  have alt: "a 0 = LE_block (le_ktm M)
+              \<or> is_pure_block (bl_ktm M) (a 0)"
     using assms(2) unfolding ae_delta_val_fwd_advance_def by auto
-  have to_ret: "a 0 = bl_block (bl_tm M)"
+  have to_ret: "a 0 = bl_block (bl_ktm M)"
     using assms(3) unfolding ae_delta_val_fwd_to_ret_def by auto
   from alt show False
   proof
-    assume "a 0 = LE_block (le_tm M)"
-    with to_ret have eq: "(LE_block (le_tm M) :: 'c \<Rightarrow> 'a) = bl_block (bl_tm M)" by simp
-    hence "le_tm M = bl_tm M" by (rule LE_block_eq_bl_block_imp_eq)
+    assume "a 0 = LE_block (le_ktm M)"
+    with to_ret have eq: "(LE_block (le_ktm M) :: 'c \<Rightarrow> 'a) = bl_block (bl_ktm M)" by simp
+    hence "le_ktm M = bl_ktm M" by (rule LE_block_eq_bl_block_imp_eq)
     thus False using assms(1) by simp
   next
-    assume "is_pure_block (bl_tm M) (a 0)"
-    with to_ret have "is_pure_block (bl_tm M) (bl_block (bl_tm M) :: 'c \<Rightarrow> 'a)" by simp
-    thus False using not_is_pure_bl_block[where 'c='c and bl="bl_tm M"] by simp
+    assume "is_pure_block (bl_ktm M) (a 0)"
+    with to_ret have "is_pure_block (bl_ktm M) (bl_block (bl_ktm M) :: 'c \<Rightarrow> 'a)" by simp
+    thus False using not_is_pure_bl_block[where 'c='c and bl="bl_ktm M"] by simp
   qed
 qed
 
@@ -136,19 +134,19 @@ lemma ae_delta_val_fwd_advance_reject_disjoint:
   by auto
 
 lemma ae_delta_val_fwd_to_padded_to_ret_disjoint:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and a :: "nat \<Rightarrow> 'c :: enum \<Rightarrow> 'a"
   assumes "(s, a, s1, a1, d1) \<in> ae_delta_val_fwd_to_padded M"
       and "(s, a, s2, a2, d2) \<in> ae_delta_val_fwd_to_ret M"
   shows "False"
 proof -
-  have padded: "is_padded_block (bl_tm M) (a 0)"
+  have padded: "is_padded_block (bl_ktm M) (a 0)"
     using assms(1) unfolding ae_delta_val_fwd_to_padded_def by auto
-  have to_ret: "a 0 = bl_block (bl_tm M)"
+  have to_ret: "a 0 = bl_block (bl_ktm M)"
     using assms(2) unfolding ae_delta_val_fwd_to_ret_def by auto
   from padded to_ret
-    have "is_padded_block (bl_tm M) (bl_block (bl_tm M) :: 'c \<Rightarrow> 'a)" by simp
-  thus False using not_is_padded_bl_block[where 'c='c and bl="bl_tm M"] by simp
+    have "is_padded_block (bl_ktm M) (bl_block (bl_ktm M) :: 'c \<Rightarrow> 'a)" by simp
+  thus False using not_is_padded_bl_block[where 'c='c and bl="bl_ktm M"] by simp
 qed
 
 lemma ae_delta_val_fwd_to_padded_reject_disjoint:
@@ -174,8 +172,8 @@ text \<open>V-marker dispatch helpers: package the within-cluster
   Used by \<open>alphabet_enlarge_delta_functional\<close>'s V cases.\<close>
 
 lemma ae_delta_VFwd_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes le_neq_bl: "le_tm M \<noteq> bl_tm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> alphabet_enlarge_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_enlarge_delta M"
       and idx: "snd (snd (snd (snd s))) = VFwd"
@@ -300,7 +298,7 @@ proof -
 qed
 
 lemma ae_delta_VRet_functional:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
   assumes h1: "(s, a, s1, a1, d1) \<in> alphabet_enlarge_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_enlarge_delta M"
       and idx: "snd (snd (snd (snd s))) = VRet"
@@ -371,7 +369,7 @@ proof -
 qed
 
 lemma ae_delta_VFwdPad_functional:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
   assumes h1: "(s, a, s1, a1, d1) \<in> alphabet_enlarge_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_enlarge_delta M"
       and idx: "snd (snd (snd (snd s))) = VFwdPad"
@@ -442,10 +440,10 @@ proof -
 qed
 
 
-subsection \<open>Chain uniqueness --- single-step functionality\<close>
+subsection \<open>Each step has at most one successor\<close>
 
-text \<open>Under \<open>valid_mttm M\<close>, \<open>det_mttm M\<close>, and
-  \<open>le_tm M \<noteq> bl_tm M\<close>, the alphabet-enlargement
+text \<open>Under \<open>valid_ktm M\<close>, \<open>det_ktm M\<close>, and
+  \<open>le_ktm M \<noteq> bl_ktm M\<close>, the alphabet-enlargement
   transition relation is functional in its source pair.  Proof
   case-splits on the source substep index: \<open>SSN\<close> cases dispatch
   via the matching \<open>ae_delta_ssN_only\<close> + \<open>*_functional\<close>
@@ -455,10 +453,10 @@ text \<open>Under \<open>valid_mttm M\<close>, \<open>det_mttm M\<close>, and
   lemma.\<close>
 
 lemma alphabet_enlarge_delta_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM:  "valid_mttm M"
-      and det: "det_mttm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes vM:  "valid_ktm M"
+      and det: "det_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> alphabet_enlarge_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_enlarge_delta M"
   shows "s1 = s2 \<and> a1 = a2 \<and> d1 = d2"
@@ -530,34 +528,34 @@ next
 qed
 
 text \<open>Lifting chain uniqueness from \<open>alphabet_enlarge_delta\<close>
-  to \<open>mttm_step (alphabet_enlarge_delta M)\<close>: single-step then
+  to \<open>ktm_step (alphabet_enlarge_delta M)\<close>: single-step then
   \<open>n\<close>-fold via standard induction.  Consumed in stage 6 to identify
-  the forward arm's produced \<open>c'''\<close> with the backward arm's
+  the forward direction's produced \<open>c'''\<close> with the reverse direction's
   given \<open>c''\<close>.\<close>
 
-lemma mttm_step_alphabet_enlarge_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM:  "valid_mttm M"
-      and det: "det_mttm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and h1: "(c, c1) \<in> mttm_step (alphabet_enlarge_delta M)"
-      and h2: "(c, c2) \<in> mttm_step (alphabet_enlarge_delta M)"
+lemma ktm_step_alphabet_enlarge_functional:
+  fixes M :: "('q, 'a) ktm"
+  assumes vM:  "valid_ktm M"
+      and det: "det_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and h1: "(c, c1) \<in> ktm_step (alphabet_enlarge_delta M)"
+      and h2: "(c, c2) \<in> ktm_step (alphabet_enlarge_delta M)"
   shows "c1 = c2"
 proof -
   from h1 obtain q ts n q1 a1 dir1 where
-      c_eq1:  "c  = Config\<^sub>M q ts n"
-    and c1_eq: "c1 = Config\<^sub>M q1 (\<lambda>k. (ts k)(n k := a1 k))
-                                  (\<lambda>k. go_dir (dir1 k) (n k))"
+      c_eq1:  "c  = KConfig q ts n"
+    and c1_eq: "c1 = KConfig q1 (\<lambda>k. (ts k)(n k := a1 k))
+                                  (\<lambda>k. go_move (dir1 k) (n k))"
     and tr1: "(q, \<lambda>k. ts k (n k), q1, a1, dir1)
                 \<in> alphabet_enlarge_delta M"
-    by (auto elim: mttm_step.cases)
+    by (auto elim: ktm_step.cases)
   from h2 obtain q' ts' n' q2 a2 dir2 where
-      c_eq2:  "c  = Config\<^sub>M q' ts' n'"
-    and c2_eq: "c2 = Config\<^sub>M q2 (\<lambda>k. (ts' k)(n' k := a2 k))
-                                  (\<lambda>k. go_dir (dir2 k) (n' k))"
+      c_eq2:  "c  = KConfig q' ts' n'"
+    and c2_eq: "c2 = KConfig q2 (\<lambda>k. (ts' k)(n' k := a2 k))
+                                  (\<lambda>k. go_move (dir2 k) (n' k))"
     and tr2: "(q', \<lambda>k. ts' k (n' k), q2, a2, dir2)
                 \<in> alphabet_enlarge_delta M"
-    by (auto elim: mttm_step.cases)
+    by (auto elim: ktm_step.cases)
   from c_eq1 c_eq2
   have qq: "q = q'" and tsts: "ts = ts'" and nn: "n = n'"
     by auto
@@ -572,13 +570,13 @@ proof -
   thus ?thesis using c1_eq c2_eq tsts nn by simp
 qed
 
-lemma mttm_step_alphabet_enlarge_relpow_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM:  "valid_mttm M"
-      and det: "det_mttm M"
-      and le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and h1: "(c, c1) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
-      and h2: "(c, c2) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+lemma ktm_step_alphabet_enlarge_relpow_functional:
+  fixes M :: "('q, 'a) ktm"
+  assumes vM:  "valid_ktm M"
+      and det: "det_ktm M"
+      and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and h1: "(c, c1) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
+      and h2: "(c, c2) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
   shows "c1 = c2"
   using h1 h2
 proof (induction n arbitrary: c c1 c2)
@@ -587,15 +585,15 @@ proof (induction n arbitrary: c c1 c2)
 next
   case (Suc n)
   from Suc.prems(1) obtain c1' where
-      step1: "(c, c1') \<in> mttm_step (alphabet_enlarge_delta M)"
-    and rest1: "(c1', c1) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+      step1: "(c, c1') \<in> ktm_step (alphabet_enlarge_delta M)"
+    and rest1: "(c1', c1) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
     by (meson relpow_Suc_D2)
   from Suc.prems(2) obtain c2' where
-      step2: "(c, c2') \<in> mttm_step (alphabet_enlarge_delta M)"
-    and rest2: "(c2', c2) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+      step2: "(c, c2') \<in> ktm_step (alphabet_enlarge_delta M)"
+    and rest2: "(c2', c2) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
     by (meson relpow_Suc_D2)
   have c'_eq: "c1' = c2'"
-    by (rule mttm_step_alphabet_enlarge_functional
+    by (rule ktm_step_alphabet_enlarge_functional
               [OF vM det le_neq_bl step1 step2])
   show ?case using Suc.IH[OF rest1] rest2 c'_eq by simp
 qed
@@ -606,16 +604,16 @@ text \<open>\<open>det\<close>-free chain uniqueness for the \<^emph>\<open>vali
   the SS4\<open>\<rightarrow>\<close>SS5 macro-step; every other stage marker dispatches to a
   functional substep builder.  In particular, from a validation marker
   (\<open>VFwd\<close> / \<open>VFwdPad\<close> / \<open>VRet\<close>) the transition is single-valued
-  with no appeal to \<open>det_mttm M\<close> --- the det-free analogue of
+  with no appeal to \<open>det_ktm M\<close> --- the det-free analogue of
   \<open>alphabet_enlarge_delta_functional\<close> restricted to validation
-  sources.  Consumed by \<open>alphabet_enlarge_language\<close>'s reverse arm to
+  sources.  Consumed by \<open>alphabet_enlarge_language\<close>'s reverse direction to
   identify the unique validation prefix from \<open>ae_init_config\<close> without
   the \<open>det\<close> hypothesis of Hopcroft--Ullman's speed-up theorems
   \<^cite>\<open>\<open>Theorems 12.3, 12.4\<close> in "Hopcroft1979:introduction"\<close>.\<close>
 
 lemma alphabet_enlarge_delta_val_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes le_neq_bl: "le_tm M \<noteq> bl_tm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
       and h1: "(s, a, s1, a1, d1) \<in> alphabet_enlarge_delta M"
       and h2: "(s, a, s2, a2, d2) \<in> alphabet_enlarge_delta M"
       and idx: "snd (snd (snd (snd s))) \<in> {VFwd, VFwdPad, VRet}"
@@ -638,26 +636,26 @@ proof -
   qed
 qed
 
-lemma mttm_step_alphabet_enlarge_val_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and h1: "(c, c1) \<in> mttm_step (alphabet_enlarge_delta M)"
-      and h2: "(c, c2) \<in> mttm_step (alphabet_enlarge_delta M)"
-      and idx: "snd (snd (snd (snd (mt_state c)))) \<in> {VFwd, VFwdPad, VRet}"
+lemma ktm_step_alphabet_enlarge_val_functional:
+  fixes M :: "('q, 'a) ktm"
+  assumes le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and h1: "(c, c1) \<in> ktm_step (alphabet_enlarge_delta M)"
+      and h2: "(c, c2) \<in> ktm_step (alphabet_enlarge_delta M)"
+      and idx: "snd (snd (snd (snd (ktc_state c)))) \<in> {VFwd, VFwdPad, VRet}"
   shows "c1 = c2"
 proof -
   from h1 obtain q ts n q1 a1 dir1 where
-      c_eq1:  "c  = Config\<^sub>M q ts n"
-    and c1_eq: "c1 = Config\<^sub>M q1 (\<lambda>k. (ts k)(n k := a1 k))
-                                  (\<lambda>k. go_dir (dir1 k) (n k))"
+      c_eq1:  "c  = KConfig q ts n"
+    and c1_eq: "c1 = KConfig q1 (\<lambda>k. (ts k)(n k := a1 k))
+                                  (\<lambda>k. go_move (dir1 k) (n k))"
     and tr1: "(q, \<lambda>k. ts k (n k), q1, a1, dir1) \<in> alphabet_enlarge_delta M"
-    by (auto elim: mttm_step.cases)
+    by (auto elim: ktm_step.cases)
   from h2 obtain q' ts' n' q2 a2 dir2 where
-      c_eq2:  "c  = Config\<^sub>M q' ts' n'"
-    and c2_eq: "c2 = Config\<^sub>M q2 (\<lambda>k. (ts' k)(n' k := a2 k))
-                                  (\<lambda>k. go_dir (dir2 k) (n' k))"
+      c_eq2:  "c  = KConfig q' ts' n'"
+    and c2_eq: "c2 = KConfig q2 (\<lambda>k. (ts' k)(n' k := a2 k))
+                                  (\<lambda>k. go_move (dir2 k) (n' k))"
     and tr2: "(q', \<lambda>k. ts' k (n' k), q2, a2, dir2) \<in> alphabet_enlarge_delta M"
-    by (auto elim: mttm_step.cases)
+    by (auto elim: ktm_step.cases)
   from c_eq1 c_eq2 have qq: "q = q'" and tsts: "ts = ts'" and nn: "n = n'"
     by auto
   from tr2 qq tsts nn
@@ -675,13 +673,13 @@ text \<open>The relpow lift: an \<open>R\<close>-chain whose every source config
   The discharge supplies the invariant for an \<open>ae_init_config\<close> prefix
   that stays within the validation sweep.\<close>
 
-lemma mttm_step_alphabet_enlarge_val_relpow_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes le_neq_bl: "le_tm M \<noteq> bl_tm M"
-      and h1: "(c, c1) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
-      and h2: "(c, c2) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
-      and inv: "\<forall>i<n. \<forall>d. (c, d) \<in> mttm_step (alphabet_enlarge_delta M) ^^ i
-                    \<longrightarrow> snd (snd (snd (snd (mt_state d))))
+lemma ktm_step_alphabet_enlarge_val_relpow_functional:
+  fixes M :: "('q, 'a) ktm"
+  assumes le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
+      and h1: "(c, c1) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
+      and h2: "(c, c2) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
+      and inv: "\<forall>i<n. \<forall>d. (c, d) \<in> ktm_step (alphabet_enlarge_delta M) ^^ i
+                    \<longrightarrow> snd (snd (snd (snd (ktc_state d))))
                           \<in> {VFwd, VFwdPad, VRet}"
   shows "c1 = c2"
   using h1 h2 inv
@@ -691,36 +689,36 @@ proof (induction n arbitrary: c c1 c2)
 next
   case (Suc n)
   from Suc.prems(1) obtain c1' where
-      step1: "(c, c1') \<in> mttm_step (alphabet_enlarge_delta M)"
-    and rest1: "(c1', c1) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+      step1: "(c, c1') \<in> ktm_step (alphabet_enlarge_delta M)"
+    and rest1: "(c1', c1) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
     by (meson relpow_Suc_D2)
   from Suc.prems(2) obtain c2' where
-      step2: "(c, c2') \<in> mttm_step (alphabet_enlarge_delta M)"
-    and rest2: "(c2', c2) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+      step2: "(c, c2') \<in> ktm_step (alphabet_enlarge_delta M)"
+    and rest2: "(c2', c2) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
     by (meson relpow_Suc_D2)
-  have c_val: "snd (snd (snd (snd (mt_state c)))) \<in> {VFwd, VFwdPad, VRet}"
+  have c_val: "snd (snd (snd (snd (ktc_state c)))) \<in> {VFwd, VFwdPad, VRet}"
   proof -
-    have a: "(c, c) \<in> mttm_step (alphabet_enlarge_delta M) ^^ 0" by simp
+    have a: "(c, c) \<in> ktm_step (alphabet_enlarge_delta M) ^^ 0" by simp
     have b: "(0::nat) < Suc n" by simp
     show ?thesis using Suc.prems(3) a b by blast
   qed
   have c'_eq: "c1' = c2'"
-    by (rule mttm_step_alphabet_enlarge_val_functional
+    by (rule ktm_step_alphabet_enlarge_val_functional
                 [OF le_neq_bl step1 step2 c_val])
-  have rest2': "(c1', c2) \<in> mttm_step (alphabet_enlarge_delta M) ^^ n"
+  have rest2': "(c1', c2) \<in> ktm_step (alphabet_enlarge_delta M) ^^ n"
     using rest2 c'_eq by simp
   have inv':
-      "\<forall>i<n. \<forall>d. (c1', d) \<in> mttm_step (alphabet_enlarge_delta M) ^^ i
-                    \<longrightarrow> snd (snd (snd (snd (mt_state d))))
+      "\<forall>i<n. \<forall>d. (c1', d) \<in> ktm_step (alphabet_enlarge_delta M) ^^ i
+                    \<longrightarrow> snd (snd (snd (snd (ktc_state d))))
                           \<in> {VFwd, VFwdPad, VRet}"
   proof (intro allI impI)
     fix i d
     assume i_lt: "i < n"
-      and reach: "(c1', d) \<in> mttm_step (alphabet_enlarge_delta M) ^^ i"
-    have "(c, d) \<in> mttm_step (alphabet_enlarge_delta M) ^^ Suc i"
+      and reach: "(c1', d) \<in> ktm_step (alphabet_enlarge_delta M) ^^ i"
+    have "(c, d) \<in> ktm_step (alphabet_enlarge_delta M) ^^ Suc i"
       by (rule relpow_Suc_I2[OF step1 reach])
     moreover have "Suc i < Suc n" using i_lt by simp
-    ultimately show "snd (snd (snd (snd (mt_state d))))
+    ultimately show "snd (snd (snd (snd (ktc_state d))))
                         \<in> {VFwd, VFwdPad, VRet}"
       using Suc.prems(3) by blast
   qed

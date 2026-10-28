@@ -2,15 +2,14 @@ theory AlphabetEnlargement_Pack
   imports AlphabetEnlargement_Reverse Wrap_Base
 begin
 
-section \<open>AE-wrap glue: \<open>wrap_enc\<close> matches \<open>encode_input\<close>\<close>
+section \<open>The wrap's encoder produces the enlarged machine's input\<close>
 
 text \<open>The bridge between the encoding-wrap combinator's input shape and the
   alphabet enlargement's encoded input: the \<open>ae_pack\<close> packer, a
   ceiling-division identity, and the glue lemma
   \<open>wrap_enc_eq_encode_input\<close> identifying @{const wrap_enc} under
-  \<open>ae_pack\<close> with the alphabet enlargement's @{const encode_input}.  This
-  bridge is independent of either wrap's tape layout, so it is shared by both
-  the shift and the faithful (transpose) classical-speedup headline theories.\<close>
+  \<open>ae_pack\<close> with the alphabet enlargement's @{const encode_input}.  The
+  bridge does not depend on the wrap's tape layout.\<close>
 
 text \<open>Ceiling-division identity for nat: \<open>\<lceil>n/c\<rceil>\<close>
   expressed as @{term "n div c + (if n mod c = 0 then 0 else 1)"}

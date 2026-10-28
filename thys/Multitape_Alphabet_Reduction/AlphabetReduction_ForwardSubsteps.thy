@@ -4,6 +4,18 @@ begin
 
 subsection \<open>Per-substep simulation steps\<close>
 
+text \<open>\<^bold>\<open>The read, write and advance steps land in two relations at
+  once.\<close>  Each of those lemmas, and every loop and phase built from
+  them, gives its step in \<open>alphabet_reduce_delta M \<inter> ar_delta_X M\<close>
+  for the phase's substep relation \<open>ar_delta_X\<close>.  The forward
+  simulation needs the steps in the machine's relation; the reverse
+  direction needs them in the substep relation, which is functional,
+  to identify the chains of its step-by-step induction with these.  Neither relation contains
+  the other, because \<^const>\<open>alphabet_reduce_delta\<close> intersects the
+  union of the substep relations with global filters, so the
+  intersection is the one statement that serves both: each client
+  narrows by \<open>ktm_run_mono\<close>.\<close>
+
 text \<open>The compute substep: one \<open>M'\<close>-step from an
   \<open>AR_SimCompute\<close> stage whose \<open>buf\<close> field matches an
   \<open>M\<close>-\<open>\<delta>\<close>-tuple's read vector fires that tuple,
@@ -14,68 +26,68 @@ text \<open>The compute substep: one \<open>M'\<close>-step from an
   symbol back, direction \<open>N\<close>); the per-tape \<open>posk\<close>
   carries through.  The two global \<open>\<delta>LE\<close> filters are
   discharged reflexively (write equals read, move \<open>N\<close>); the
-  target-stage validity rests on \<open>valid_mttm\<close>'s
-  \<open>\<delta>\<close>-range typing (\<open>m_a' k \<in> \<Gamma>_tm M\<close>).
+  target-stage validity rests on \<open>valid_ktm\<close>'s
+  \<open>\<delta>\<close>-range typing (\<open>m_a' k \<in> \<Gamma>_ktm M\<close>).
   Throughout, \<open>b\<close> abbreviates \<open>block_width \<Gamma>\<close> (the per-symbol cell width).\<close>
 
 lemma ar_compute_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimCompute, tk, i, buf, dvec, posk)"
-      and mdelta: "(q, buf, q', m_a', m_d) \<in> delta_tm M"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimCompute, tk, i, buf, dvec, posk)"
+      and mdelta: "(q, buf, q', m_a', m_d) \<in> delta_ktm M"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimCompute, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimCompute, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q', AR_SimWrite, 0, 0, m_a', m_d, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = mt_pos c'"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M)
+              \<and> ktc_state c'' = (q', AR_SimWrite, 0, 0, m_a', m_d, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = ktc_pos c'"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimCompute, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimCompute, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
   let ?s = "(q, AR_SimCompute, tk, i, buf, dvec, posk)"
   let ?s' = "(q', AR_SimWrite, 0, 0, m_a', m_d, posk)"
-  have rel_in: "(?s, ?a, ?s', ?a, (\<lambda>_. dir.N)) \<in> ar_delta_compute M"
+  have rel_in: "(?s, ?a, ?s', ?a, (\<lambda>_. MoveN)) \<in> ar_delta_compute M"
     unfolding ar_delta_compute_def using mdelta by auto
-  have ma'_gamma: "\<forall>k. m_a' k \<in> \<Gamma>_tm M"
-    using valid_mttm_delta(4)[OF vM mdelta] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
-    using ma'_gamma block_width_pos[of "\<Gamma>_tm M"]
+  have ma'_gamma: "\<forall>k. m_a' k \<in> \<Gamma>_ktm M"
+    using valid_ktm_delta(4)[OF vM mdelta] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
+    using ma'_gamma block_width_pos[of "\<Gamma>_ktm M"]
     by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have dsupp: "\<forall>j \<ge> k_tm M. m_a' j = bl_tm M \<and> m_d j = dir.N"
-    using valid_mttm_delta_support[OF vM mdelta] by blast
-  have src_posk: "\<forall>j \<ge> k_tm M. posk j = AR_AtLE"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have dsupp: "\<forall>j \<ge> k_ktm M. m_a' j = bl_ktm M \<and> m_d j = MoveN"
+    using valid_ktm_delta_support[OF vM mdelta] by blast
+  have src_posk: "\<forall>j \<ge> k_ktm M. posk j = AR_AtLE"
     using src_bounded by (simp add: ar_stage_bounded_def)
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4
-                    \<and> (\<lambda>_. dir.N) j = dir.N"
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4
+                    \<and> (\<lambda>_. MoveN) j = MoveN"
     using pad_a by simp
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
-    using dsupp src_posk kpos_tm by (simp add: ar_stage_bounded_def)
-  have ard_in: "(?s, ?a, ?s', ?a, (\<lambda>_. dir.N))
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
+    using dsupp src_posk kpos_ktm by (simp add: ar_stage_bounded_def)
+  have ard_in: "(?s, ?a, ?s', ?a, (\<lambda>_. MoveN))
                   \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd by auto
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_unchanged: "(\<lambda>k. go_dir ((\<lambda>_. dir.N) k) (n k)) = n"
+  have pos_unchanged: "(\<lambda>k. go_move ((\<lambda>_. MoveN) k) (n k)) = n"
     by (rule ext) auto
-  let ?c'' = "Config\<^sub>M ?s' ts n"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir ((\<lambda>_. dir.N) k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, (\<lambda>_. dir.N))
+  let ?c'' = "KConfig ?s' ts n"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move ((\<lambda>_. MoveN) k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, (\<lambda>_. MoveN))
             \<in> alphabet_reduce_delta M"
       by (rule ard_in)
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M)"
     using c'_eq ts_unchanged pos_unchanged by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -107,68 +119,68 @@ text \<open>The advance walk substep: from an \<open>AR_SimAdvance\<close> stage
   \<open>ar_disp_le_2k\<close>.\<close>
 
 lemma ar_advance_walk_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
-      and step_lt: "Suc i < ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
+      and step_lt: "Suc i < ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimAdvance, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimAdvance, tk, Suc i, buf, dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := mt_pos c' tk - 1)"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)
+              \<and> ktc_state c'' = (q, AR_SimAdvance, tk, Suc i, buf, dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := ktc_pos c' tk - 1)"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.L else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveL else MoveN"
   let ?s = "(q, AR_SimAdvance, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimAdvance, tk, Suc i, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_advance M"
     unfolding ar_delta_advance_def
     using qQ aTk step_lt by (intro UnI1) blast
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_tm M)"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_ktm M)"
     using step_lt ar_disp_le_2k[OF kpos, of "dvec tk" "posk tk"] by linarith
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using suc_i_lt buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid aTk pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := n tk - 1)"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := n tk - 1)"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := n tk - 1))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := n tk - 1))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_advance M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -186,68 +198,68 @@ text \<open>The advance boundary substep, non-last tape: the final
   conclusion is therefore conditional on \<open>dvec tk\<close>.\<close>
 
 lemma ar_advance_boundary_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and notlast: "\<not> is_last_k M tk"
-      and fire: "(dvec tk = dir.R \<and> i = 0)
-                 \<or> (dvec tk \<noteq> dir.R
-                     \<and> mt_tape c' tk (mt_pos c' tk) \<noteq> LE4
-                     \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk))"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and fire: "(dvec tk = MoveR \<and> i = 0)
+                 \<or> (dvec tk \<noteq> MoveR
+                     \<and> ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4
+                     \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk))"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimAdvance, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimAdvance, k_succ tk, 0, buf, dvec,
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)
+              \<and> ktc_state c'' = (q, AR_SimAdvance, k_succ tk, 0, buf, dvec,
                                   posk(tk := ar_newpos (dvec tk) (posk tk)))
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (if dvec tk = dir.R then mt_pos c'
-                              else (mt_pos c')(tk := mt_pos c' tk - 1))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (if dvec tk = MoveR then ktc_pos c'
+                              else (ktc_pos c')(tk := ktc_pos c' tk - 1))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> dir.R then dir.L else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> MoveR then MoveL else MoveN"
   let ?s = "(q, AR_SimAdvance, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimAdvance, k_succ tk, 0, buf, dvec,
               posk(tk := ar_newpos (dvec tk) (posk tk)))"
-  have fire': "(dvec tk = dir.R \<and> i = 0)
-               \<or> (dvec tk \<noteq> dir.R \<and> ?a tk \<noteq> LE4
-                   \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk))"
+  have fire': "(dvec tk = MoveR \<and> i = 0)
+               \<or> (dvec tk \<noteq> MoveR \<and> ?a tk \<noteq> LE4
+                   \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk))"
     using fire c'_eq by simp
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_advance M"
     unfolding ar_delta_advance_def
     by (rule UnI1, rule UnI2) (use qQ notlast fire' in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have ksucc_lt: "k_succ tk < k_tm M"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have ksucc_lt: "k_succ tk < k_ktm M"
   proof -
-    have ne: "Suc tk \<noteq> k_tm M" using notlast by (simp add: is_last_k_def)
-    have le: "Suc tk \<le> k_tm M" using tk_lt by simp
+    have ne: "Suc tk \<noteq> k_ktm M" using notlast by (simp add: is_last_k_def)
+    have le: "Suc tk \<le> k_ktm M" using tk_lt by simp
     show ?thesis unfolding k_succ_def using le_neq_implies_less[OF le ne] .
   qed
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have pk: "\<forall>j\<ge>k_tm M. (posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
+    have pk: "\<forall>j\<ge>k_ktm M. (posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
       thus "(posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
@@ -259,18 +271,18 @@ proof -
     using rel_in vsrc dst_valid fire' pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k))
-                   = (if dvec tk = dir.R then n else n(tk := n tk - 1))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k))
+                   = (if dvec tk = MoveR then n else n(tk := n tk - 1))"
     by (rule ext) (auto split: if_splits)
-  let ?c'' = "Config\<^sub>M ?s' ts (if dvec tk = dir.R then n else n(tk := n tk - 1))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (if dvec tk = MoveR then n else n(tk := n tk - 1))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_advance M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -285,68 +297,68 @@ text \<open>The advance boundary substep, last tape: as
   (the third, rightmost arm of \<open>ar_delta_advance\<close>).\<close>
 
 lemma ar_advance_finish_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimAdvance, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and last: "is_last_k M tk"
-      and fire: "(dvec tk = dir.R \<and> i = 0)
-                 \<or> (dvec tk \<noteq> dir.R
-                     \<and> mt_tape c' tk (mt_pos c' tk) \<noteq> LE4
-                     \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk))"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and fire: "(dvec tk = MoveR \<and> i = 0)
+                 \<or> (dvec tk \<noteq> MoveR
+                     \<and> ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4
+                     \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk))"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimAdvance, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimAdvance, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimNext, k_unidx 0, 0, buf, dvec,
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)
+              \<and> ktc_state c'' = (q, AR_SimNext, k_unidx 0, 0, buf, dvec,
                                   posk(tk := ar_newpos (dvec tk) (posk tk)))
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (if dvec tk = dir.R then mt_pos c'
-                              else (mt_pos c')(tk := mt_pos c' tk - 1))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (if dvec tk = MoveR then ktc_pos c'
+                              else (ktc_pos c')(tk := ktc_pos c' tk - 1))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimAdvance, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> dir.R then dir.L else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk \<and> dvec tk \<noteq> MoveR then MoveL else MoveN"
   let ?s = "(q, AR_SimAdvance, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimNext, k_unidx 0, 0, buf, dvec,
               posk(tk := ar_newpos (dvec tk) (posk tk)))"
-  have fire': "(dvec tk = dir.R \<and> i = 0)
-               \<or> (dvec tk \<noteq> dir.R \<and> ?a tk \<noteq> LE4
-                   \<and> Suc i = ar_disp (block_width (\<Gamma>_tm M)) (dvec tk) (posk tk))"
+  have fire': "(dvec tk = MoveR \<and> i = 0)
+               \<or> (dvec tk \<noteq> MoveR \<and> ?a tk \<noteq> LE4
+                   \<and> Suc i = ar_disp (block_width (\<Gamma>_ktm M)) (dvec tk) (posk tk))"
     using fire c'_eq by simp
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_advance M"
     unfolding ar_delta_advance_def
     by (rule UnI2) (use qQ last fire' in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have pk: "\<forall>j\<ge>k_tm M. (posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
+    have pk: "\<forall>j\<ge>k_ktm M. (posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
       thus "(posk(tk := ar_newpos (dvec tk) (posk tk))) j = AR_AtLE"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
-    show ?thesis using src_bounded kpos_tm pk
+    show ?thesis using src_bounded kpos_ktm pk
       by (simp add: ar_stage_bounded_def k_unidx_def)
   qed
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
@@ -354,18 +366,18 @@ proof -
     using rel_in vsrc dst_valid fire' pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k))
-                   = (if dvec tk = dir.R then n else n(tk := n tk - 1))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k))
+                   = (if dvec tk = MoveR then n else n(tk := n tk - 1))"
     by (rule ext) (auto split: if_splits)
-  let ?c'' = "Config\<^sub>M ?s' ts (if dvec tk = dir.R then n else n(tk := n tk - 1))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (if dvec tk = MoveR then n else n(tk := n tk - 1))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_advance M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_advance M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -379,64 +391,64 @@ text \<open>The write LE-skip substep, non-last tape: when \<open>buf tk\<close>
   heads unchanged (the compute-step shape).\<close>
 
 lemma ar_write_le_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskLE: "posk tk = AR_AtLE"
       and notlast: "\<not> is_last_k M tk"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = mt_pos c'"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = ktc_pos c'"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>_. dir.N"
+  let ?d = "\<lambda>_. MoveN"
   let ?s = "(q, AR_SimWrite, tk, 0, buf, dvec, posk)"
   let ?s' = "(q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_write M"
     unfolding ar_delta_write_def
     using qQ poskLE notlast by (intro UnI1) blast
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have ksucc_lt: "k_succ tk < k_tm M"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have ksucc_lt: "k_succ tk < k_ktm M"
   proof -
-    have ne: "Suc tk \<noteq> k_tm M" using notlast by (simp add: is_last_k_def)
-    have le: "Suc tk \<le> k_tm M" using tk_lt by simp
+    have ne: "Suc tk \<noteq> k_ktm M" using notlast by (simp add: is_last_k_def)
+    have le: "Suc tk \<le> k_ktm M" using tk_lt by simp
     show ?thesis unfolding k_succ_def using le_neq_implies_less[OF le ne] .
   qed
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
     using pad_a by simp
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded ksucc_lt by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd by auto
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_unchanged: "(\<lambda>k. go_dir (?d k) (n k)) = n" by (rule ext) auto
-  let ?c'' = "Config\<^sub>M ?s' ts n"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  have pos_unchanged: "(\<lambda>k. go_move (?d k) (n k)) = n" by (rule ext) auto
+  let ?c'' = "KConfig ?s' ts n"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq ts_unchanged pos_unchanged by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -448,59 +460,59 @@ text \<open>The write LE-skip substep, last tape: as \<open>ar_write_le_step\<cl
   Arm 2 of the six-arm \<open>ar_delta_write\<close> union.\<close>
 
 lemma ar_write_le_finish_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskLE: "posk tk = AR_AtLE"
       and last: "is_last_k M tk"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = mt_pos c'"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = ktc_pos c'"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>_. dir.N"
+  let ?d = "\<lambda>_. MoveN"
   let ?s = "(q, AR_SimWrite, tk, 0, buf, dvec, posk)"
   let ?s' = "(q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_write M"
     unfolding ar_delta_write_def
     by (rule UnI1, rule UnI1, rule UnI1, rule UnI1, rule UnI2)
        (use qQ poskLE last in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
     using pad_a by simp
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
-    using src_bounded kpos_tm by (simp add: ar_stage_bounded_def k_unidx_def)
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
+    using src_bounded kpos_ktm by (simp add: ar_stage_bounded_def k_unidx_def)
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd by auto
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_unchanged: "(\<lambda>k. go_dir (?d k) (n k)) = n" by (rule ext) auto
-  let ?c'' = "Config\<^sub>M ?s' ts n"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  have pos_unchanged: "(\<lambda>k. go_move (?d k) (n k)) = n" by (rule ext) auto
+  let ?c'' = "KConfig ?s' ts n"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq ts_unchanged pos_unchanged by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -516,29 +528,29 @@ text \<open>The write back-walk substep (proper region,
   the backward-\<open>\<delta>LE\<close> filter.\<close>
 
 lemma ar_write_walk_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskproper: "posk tk \<noteq> AR_AtLE"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
-      and step_le: "Suc i \<le> block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
+      and step_le: "Suc i \<le> block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimWrite, tk, Suc i, buf, dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := mt_pos c' tk - 1)"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimWrite, tk, Suc i, buf, dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := ktc_pos c' tk - 1)"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.L else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveL else MoveN"
   let ?s = "(q, AR_SimWrite, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimWrite, tk, Suc i, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
@@ -546,40 +558,40 @@ proof -
     unfolding ar_delta_write_def
     by (rule UnI1, rule UnI1, rule UnI1, rule UnI2)
        (use qQ poskproper aTk step_le in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_tm M)"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_ktm M)"
     using step_le kpos by linarith
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using suc_i_lt buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid aTk pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := n tk - 1)"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := n tk - 1)"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := n tk - 1))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := n tk - 1))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -663,65 +675,65 @@ text \<open>The forward-write stepping substep (proper region,
   \<open>cell_repr (buf tk)\<close> is written at \<open>tk\<close>, the head moves
   \<open>R\<close> on \<open>tk\<close> (\<open>N\<close> elsewhere), staying in
   \<open>AR_SimWrite\<close> at \<open>Suc i\<close>.  First per-substep lemma that
-  mutates the tape: the conclusion's \<open>mt_tape\<close> is a nested
+  mutates the tape: the conclusion's \<open>ktc_tape\<close> is a nested
   \<open>fun_upd\<close> writing \<open>write_bit \<Gamma> bl (buf tk) (i-b)\<close> at
   \<open>tk\<close>'s head cell.  The read precondition \<open>a tk \<noteq> LE4\<close>
   (proper region is past \<open>LE4\<close>) discharges the backward-\<open>\<delta>LE\<close>
   filter; \<open>write_bit_not_LE4\<close> discharges the forward filter.\<close>
 
 lemma ar_write_bit_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskproper: "posk tk \<noteq> AR_AtLE"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
-      and ilo: "block_width (\<Gamma>_tm M) \<le> i"
-      and ihi: "Suc i < 2 * block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
+      and ilo: "block_width (\<Gamma>_ktm M) \<le> i"
+      and ihi: "Suc i < 2 * block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimWrite, tk, Suc i, buf, dvec, posk)
-              \<and> mt_tape c'' = (mt_tape c')(tk :=
-                    (mt_tape c' tk)(mt_pos c' tk :=
-                       write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                                 (i - block_width (\<Gamma>_tm M))))
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimWrite, tk, Suc i, buf, dvec, posk)
+              \<and> ktc_tape c'' = (ktc_tape c')(tk :=
+                    (ktc_tape c' tk)(ktc_pos c' tk :=
+                       write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                                 (i - block_width (\<Gamma>_ktm M))))
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
-  let ?wb = "write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk) (i - block_width (\<Gamma>_tm M))"
+  let ?wb = "write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk) (i - block_width (\<Gamma>_ktm M))"
   let ?a = "\<lambda>k. ts k (n k)"
   let ?a' = "\<lambda>kk. if kk = tk then ?wb else ?a kk"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimWrite, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimWrite, tk, Suc i, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
-  have jlt: "i - block_width (\<Gamma>_tm M) < block_width (\<Gamma>_tm M)" using ilo ihi by linarith
+  have jlt: "i - block_width (\<Gamma>_ktm M) < block_width (\<Gamma>_ktm M)" using ilo ihi by linarith
   have wb_not_LE: "?wb \<noteq> LE4" using write_bit_not_LE4[OF jlt] .
   have rel_in: "(?s, ?a, ?s', ?a', ?d) \<in> ar_delta_write M"
     unfolding ar_delta_write_def
     by (rule UnI1, rule UnI1, rule UnI2)
        (use qQ poskproper ilo ihi in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using ihi buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
@@ -730,17 +742,17 @@ proof -
   have tape_new: "(\<lambda>k. (ts k)(n k := ?a' k))
                     = ts(tk := (ts tk)(n tk := ?wb))"
     by (rule ext) (auto simp: fun_upd_triv)
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a' k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a' k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq tape_new pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -754,64 +766,64 @@ text \<open>The forward-write boundary substep, non-last tape
   arm 5 of the union.\<close>
 
 lemma ar_write_bit_boundary_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskproper: "posk tk \<noteq> AR_AtLE"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
       and notlast: "\<not> is_last_k M tk"
-      and ihi: "Suc i = 2 * block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and ihi: "Suc i = 2 * block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)
-              \<and> mt_tape c'' = (mt_tape c')(tk :=
-                    (mt_tape c' tk)(mt_pos c' tk :=
-                       write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                                 (i - block_width (\<Gamma>_tm M))))
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)
+              \<and> ktc_tape c'' = (ktc_tape c')(tk :=
+                    (ktc_tape c' tk)(ktc_pos c' tk :=
+                       write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                                 (i - block_width (\<Gamma>_ktm M))))
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
-  let ?wb = "write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk) (i - block_width (\<Gamma>_tm M))"
+  let ?wb = "write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk) (i - block_width (\<Gamma>_ktm M))"
   let ?a = "\<lambda>k. ts k (n k)"
   let ?a' = "\<lambda>kk. if kk = tk then ?wb else ?a kk"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimWrite, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimWrite, k_succ tk, 0, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have jlt: "i - block_width (\<Gamma>_tm M) < block_width (\<Gamma>_tm M)" using ihi kpos by linarith
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have jlt: "i - block_width (\<Gamma>_ktm M) < block_width (\<Gamma>_ktm M)" using ihi kpos by linarith
   have wb_not_LE: "?wb \<noteq> LE4" using write_bit_not_LE4[OF jlt] .
   have rel_in: "(?s, ?a, ?s', ?a', ?d) \<in> ar_delta_write M"
     unfolding ar_delta_write_def
     by (rule UnI1, rule UnI2) (use qQ poskproper notlast ihi in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have ksucc_lt: "k_succ tk < k_tm M"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have ksucc_lt: "k_succ tk < k_ktm M"
   proof -
-    have ne: "Suc tk \<noteq> k_tm M" using notlast by (simp add: is_last_k_def)
-    have le: "Suc tk \<le> k_tm M" using tk_lt by simp
+    have ne: "Suc tk \<noteq> k_ktm M" using notlast by (simp add: is_last_k_def)
+    have le: "Suc tk \<le> k_ktm M" using tk_lt by simp
     show ?thesis unfolding k_succ_def using le_neq_implies_less[OF le ne] .
   qed
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded ksucc_lt by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
@@ -820,17 +832,17 @@ proof -
   have tape_new: "(\<lambda>k. (ts k)(n k := ?a' k))
                     = ts(tk := (ts tk)(n tk := ?wb))"
     by (rule ext) (auto simp: fun_upd_triv)
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a' k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a' k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq tape_new pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -843,60 +855,60 @@ text \<open>The forward-write boundary substep, last tape: as
   the union.\<close>
 
 lemma ar_write_bit_finish_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimWrite, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and poskproper: "posk tk \<noteq> AR_AtLE"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
       and last: "is_last_k M tk"
-      and ihi: "Suc i = 2 * block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and ihi: "Suc i = 2 * block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimWrite, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimWrite, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)
-              \<and> mt_tape c'' = (mt_tape c')(tk :=
-                    (mt_tape c' tk)(mt_pos c' tk :=
-                       write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                                 (i - block_width (\<Gamma>_tm M))))
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)
+              \<and> ktc_state c'' = (q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)
+              \<and> ktc_tape c'' = (ktc_tape c')(tk :=
+                    (ktc_tape c' tk)(ktc_pos c' tk :=
+                       write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                                 (i - block_width (\<Gamma>_ktm M))))
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimWrite, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
-  let ?wb = "write_bit (\<Gamma>_tm M) (bl_tm M) (buf tk) (i - block_width (\<Gamma>_tm M))"
+  let ?wb = "write_bit (\<Gamma>_ktm M) (bl_ktm M) (buf tk) (i - block_width (\<Gamma>_ktm M))"
   let ?a = "\<lambda>k. ts k (n k)"
   let ?a' = "\<lambda>kk. if kk = tk then ?wb else ?a kk"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimWrite, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimAdvance, k_unidx 0, 0, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have jlt: "i - block_width (\<Gamma>_tm M) < block_width (\<Gamma>_tm M)" using ihi kpos by linarith
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have jlt: "i - block_width (\<Gamma>_ktm M) < block_width (\<Gamma>_ktm M)" using ihi kpos by linarith
   have wb_not_LE: "?wb \<noteq> LE4" using write_bit_not_LE4[OF jlt] .
   have rel_in: "(?s, ?a, ?s', ?a', ?d) \<in> ar_delta_write M"
     unfolding ar_delta_write_def
     by (rule UnI2) (use qQ poskproper last ihi in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a' j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
-    using src_bounded kpos_tm by (simp add: ar_stage_bounded_def k_unidx_def)
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
+    using src_bounded kpos_ktm by (simp add: ar_stage_bounded_def k_unidx_def)
   have ard_in: "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid aTk wb_not_LE pad_read src_bounded dst_bd
@@ -904,88 +916,88 @@ proof -
   have tape_new: "(\<lambda>k. (ts k)(n k := ?a' k))
                     = ts(tk := (ts tk)(n tk := ?wb))"
     by (rule ext) (auto simp: fun_upd_triv)
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a' k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' (ts(tk := (ts tk)(n tk := ?wb))) (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a' k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a', ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_write M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_write M)"
     using c'_eq tape_new pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
 qed
 
 text \<open>The read LE substep, non-last tape: at position \<open>0\<close> the
-  head reads \<open>LE4\<close>, sets \<open>buf tk := le_tm M\<close> directly (the
+  head reads \<open>LE4\<close>, sets \<open>buf tk := le_ktm M\<close> directly (the
   single LE-cell needs no accumulator), moves \<open>R\<close> on \<open>tk\<close>
   to position \<open>1\<close>, and hands off to the next tape's read.  Tape
-  unchanged.  Target-stage validity uses \<open>valid_mttm_LE_in_Gamma\<close>
-  for the \<open>buf tk := le_tm M\<close> entry.\<close>
+  unchanged.  Target-stage validity uses \<open>valid_ktm_LE_in_Gamma\<close>
+  for the \<open>buf tk := le_ktm M\<close> entry.\<close>
 
 lemma ar_read_le_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and notlast: "\<not> is_last_k M tk"
       and posk_le: "posk tk = AR_AtLE"
-      and aLE: "mt_tape c' tk (mt_pos c' tk) = LE4"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and aLE: "ktc_tape c' tk (ktc_pos c' tk) = LE4"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimRead, k_succ tk, 0,
-                                  buf(tk := le_tm M), dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimRead, k_succ tk, 0,
+                                  buf(tk := le_ktm M), dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, 0, buf, dvec, posk)"
-  let ?s' = "(q, AR_SimRead, k_succ tk, 0, buf(tk := le_tm M), dvec, posk)"
+  let ?s' = "(q, AR_SimRead, k_succ tk, 0, buf(tk := le_ktm M), dvec, posk)"
   have aTk: "?a tk = LE4" using aLE c'_eq by simp
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     using qQ notlast posk_le aTk by (intro UnI1) blast
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
-    using buf_valid valid_mttm_LE_in_Gamma[OF vM] kpos
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
+    using buf_valid valid_ktm_LE_in_Gamma[OF vM] kpos
     by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have ksucc_lt: "k_succ tk < k_tm M"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have ksucc_lt: "k_succ tk < k_ktm M"
   proof -
-    have ne: "Suc tk \<noteq> k_tm M" using notlast by (simp add: is_last_k_def)
-    have le: "Suc tk \<le> k_tm M" using tk_lt by simp
+    have ne: "Suc tk \<noteq> k_ktm M" using notlast by (simp add: is_last_k_def)
+    have le: "Suc tk \<le> k_ktm M" using tk_lt by simp
     show ?thesis unfolding k_succ_def using le_neq_implies_less[OF le ne] .
   qed
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M. (buf(tk := le_tm M)) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M. (buf(tk := le_ktm M)) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := le_tm M)) j = bl_tm M"
+      thus "(buf(tk := le_ktm M)) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
     show ?thesis using src_bounded ksucc_lt bt by (simp add: ar_stage_bounded_def)
@@ -995,17 +1007,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1018,63 +1030,63 @@ text \<open>The read LE substep, last tape: as \<open>ar_read_le_step\<close> bu
   \<open>ar_delta_read\<close> union.\<close>
 
 lemma ar_read_le_finish_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and last: "is_last_k M tk"
       and posk_le: "posk tk = AR_AtLE"
-      and aLE: "mt_tape c' tk (mt_pos c' tk) = LE4"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and aLE: "ktc_tape c' tk (ktc_pos c' tk) = LE4"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimCompute, k_unidx 0, 0,
-                                  buf(tk := le_tm M), dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimCompute, k_unidx 0, 0,
+                                  buf(tk := le_ktm M), dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, 0, buf, dvec, posk)"
-  let ?s' = "(q, AR_SimCompute, k_unidx 0, 0, buf(tk := le_tm M), dvec, posk)"
+  let ?s' = "(q, AR_SimCompute, k_unidx 0, 0, buf(tk := le_ktm M), dvec, posk)"
   have aTk: "?a tk = LE4" using aLE c'_eq by simp
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     by (rule UnI1, rule UnI1, rule UnI1, rule UnI1, rule UnI1, rule UnI2)
        (use qQ last posk_le aTk in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
-    using buf_valid valid_mttm_LE_in_Gamma[OF vM] kpos
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
+    using buf_valid valid_ktm_LE_in_Gamma[OF vM] kpos
     by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M. (buf(tk := le_tm M)) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M. (buf(tk := le_ktm M)) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := le_tm M)) j = bl_tm M"
+      thus "(buf(tk := le_ktm M)) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
-    show ?thesis using src_bounded kpos_tm bt
+    show ?thesis using src_bounded kpos_ktm bt
       by (simp add: ar_stage_bounded_def k_unidx_def)
   qed
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
@@ -1082,17 +1094,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1129,28 +1141,28 @@ text \<open>The read proper-arm look-back step 1 (\<open>i = 0\<close>): with th
   seven-arm union.\<close>
 
 lemma ar_read_lookback1_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and posk_proper: "posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}"
-      and notLE: "mt_tape c' tk (mt_pos c' tk) \<noteq> LE4"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and notLE: "ktc_tape c' tk (ktc_pos c' tk) \<noteq> LE4"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimRead, tk, Suc 0, buf, dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := mt_pos c' tk - 1)"
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimRead, tk, Suc 0, buf, dvec, posk)
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := ktc_pos c' tk - 1)"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.L else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveL else MoveN"
   let ?s = "(q, AR_SimRead, tk, 0, buf, dvec, posk)"
   let ?s' = "(q, AR_SimRead, tk, Suc 0, buf, dvec, posk)"
   have aTk: "?a tk \<noteq> LE4" using notLE c'_eq by simp
@@ -1158,38 +1170,38 @@ proof -
     unfolding ar_delta_read_def
     by (rule UnI1, rule UnI1, rule UnI1, rule UnI1, rule UnI2)
        (use qQ posk_proper aTk in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid by (simp add: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
     using src_bounded by (simp add: ar_stage_bounded_def)
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
     unfolding alphabet_reduce_delta_def
     using rel_in vsrc dst_valid aTk pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := n tk - 1)"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := n tk - 1)"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := n tk - 1))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := n tk - 1))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1206,69 +1218,69 @@ text \<open>The read proper-arm look-back step 2 (\<open>i = 1\<close>): at
   (\<open>i = 2\<close>).  Arm 4 of the union.\<close>
 
 lemma ar_read_lookback2_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, Suc 0, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, Suc 0, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and posk_proper: "posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}"
-      and kge2: "2 \<le> block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and kge2: "2 \<le> block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, Suc 0, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, Suc 0, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimRead, tk, Suc (Suc 0),
-                    buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0), dvec,
-                    posk(tk := if mt_tape c' tk (mt_pos c' tk) = LE4
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimRead, tk, Suc (Suc 0),
+                    buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0), dvec,
+                    posk(tk := if ktc_tape c' tk (ktc_pos c' tk) = LE4
                                then AR_AtFirstProper else AR_AtFurtherProper))
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, Suc 0, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, Suc 0, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, Suc 0, buf, dvec, posk)"
   let ?s' = "(q, AR_SimRead, tk, Suc (Suc 0),
-              buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0), dvec,
+              buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0), dvec,
               posk(tk := if ?a tk = LE4
                          then AR_AtFirstProper else AR_AtFurtherProper))"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     by (rule UnI1, rule UnI1, rule UnI1, rule UnI2)
        (use qQ posk_proper in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have gu_mem: "gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0 \<in> \<Gamma>_tm M \<union> {bl_tm M}"
-    using gamma_unenum_mem[OF valid_mttm_finite_Gamma[OF vM]] .
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have gu_mem: "gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0 \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
+    using gamma_unenum_mem[OF valid_ktm_finite_Gamma[OF vM]] .
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kge2 buf_valid gu_mem by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M.
-                (buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0)) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M.
+                (buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0)) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M) 0)) j = bl_tm M"
+      thus "(buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M) 0)) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
-    have pt: "\<forall>j\<ge>k_tm M. (posk(tk := if ?a tk = LE4
+    have pt: "\<forall>j\<ge>k_ktm M. (posk(tk := if ?a tk = LE4
                   then AR_AtFirstProper else AR_AtFurtherProper)) j = AR_AtLE"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
       thus "(posk(tk := if ?a tk = LE4
                then AR_AtFirstProper else AR_AtFurtherProper)) j = AR_AtLE"
@@ -1282,17 +1294,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1308,74 +1320,74 @@ text \<open>The read proper-arm per-bit stepping substep
   (\<open>Suc i = Suc b\<close>).  Arm 5 of the union.\<close>
 
 lemma ar_read_bit_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and posk_proper: "posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}"
       and ilo: "2 \<le> i"
-      and ihi: "Suc i \<le> Suc (block_width (\<Gamma>_tm M))"
-      and kge2: "2 \<le> block_width (\<Gamma>_tm M)"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and ihi: "Suc i \<le> Suc (block_width (\<Gamma>_ktm M))"
+      and kge2: "2 \<le> block_width (\<Gamma>_ktm M)"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimRead, tk, Suc i,
-                    buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                          (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                             + bit_value (mt_tape c' tk (mt_pos c' tk)))),
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimRead, tk, Suc i,
+                    buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                          (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                             + bit_value (ktc_tape c' tk (ktc_pos c' tk)))),
                     dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimRead, tk, Suc i,
-              buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))),
+              buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))),
               dvec, posk)"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     by (rule UnI1, rule UnI1, rule UnI2)
        (use qQ posk_proper ilo ihi in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have gu_mem: "gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                  (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))
-                  \<in> \<Gamma>_tm M \<union> {bl_tm M}"
-    using gamma_unenum_mem[OF valid_mttm_finite_Gamma[OF vM]] .
-  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_tm M)"
+  have gu_mem: "gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                  (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))
+                  \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
+    using gamma_unenum_mem[OF valid_ktm_finite_Gamma[OF vM]] .
+  have suc_i_lt: "Suc i < 2 * block_width (\<Gamma>_ktm M)"
     using ihi kge2 by linarith
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using suc_i_lt buf_valid gu_mem by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M.
-       (buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-              (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                 + bit_value (?a tk)))) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M.
+       (buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+              (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                 + bit_value (?a tk)))) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                   + bit_value (?a tk)))) j = bl_tm M"
+      thus "(buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                   + bit_value (?a tk)))) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
     show ?thesis using src_bounded tk_lt bt by (simp add: ar_stage_bounded_def)
@@ -1385,17 +1397,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1408,77 +1420,77 @@ text \<open>The read proper-arm per-bit boundary substep
   \<open>k_succ tk\<close> with the bit-counter reset.  Arm 6 of the union.\<close>
 
 lemma ar_read_bit_boundary_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and notlast: "\<not> is_last_k M tk"
       and posk_proper: "posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}"
-      and ieq: "i = Suc (block_width (\<Gamma>_tm M))"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and ieq: "i = Suc (block_width (\<Gamma>_ktm M))"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimRead, k_succ tk, 0,
-                    buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                          (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                             + bit_value (mt_tape c' tk (mt_pos c' tk)))),
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimRead, k_succ tk, 0,
+                    buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                          (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                             + bit_value (ktc_tape c' tk (ktc_pos c' tk)))),
                     dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimRead, k_succ tk, 0,
-              buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))),
+              buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))),
               dvec, posk)"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     by (rule UnI1, rule UnI2) (use qQ notlast posk_proper ieq in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have gu_mem: "gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                  (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))
-                  \<in> \<Gamma>_tm M \<union> {bl_tm M}"
-    using gamma_unenum_mem[OF valid_mttm_finite_Gamma[OF vM]] .
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have gu_mem: "gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                  (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))
+                  \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
+    using gamma_unenum_mem[OF valid_ktm_finite_Gamma[OF vM]] .
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid gu_mem by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have ksucc_lt: "k_succ tk < k_tm M"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have ksucc_lt: "k_succ tk < k_ktm M"
   proof -
-    have ne: "Suc tk \<noteq> k_tm M" using notlast by (simp add: is_last_k_def)
-    have le: "Suc tk \<le> k_tm M" using tk_lt by simp
+    have ne: "Suc tk \<noteq> k_ktm M" using notlast by (simp add: is_last_k_def)
+    have le: "Suc tk \<le> k_ktm M" using tk_lt by simp
     show ?thesis unfolding k_succ_def using le_neq_implies_less[OF le ne] .
   qed
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M.
-       (buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-              (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                 + bit_value (?a tk)))) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M.
+       (buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+              (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                 + bit_value (?a tk)))) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                   + bit_value (?a tk)))) j = bl_tm M"
+      thus "(buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                   + bit_value (?a tk)))) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
     show ?thesis using src_bounded ksucc_lt bt by (simp add: ar_stage_bounded_def)
@@ -1488,17 +1500,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)
@@ -1510,75 +1522,75 @@ text \<open>The read proper-arm per-bit boundary substep, last tape: same
   begin the compute substep).  Arm 7 (rightmost) of the union.\<close>
 
 lemma ar_read_bit_finish_step:
-  fixes M :: "('q, 'a) mttm"
-    and c' :: "(sym4, 'q \<times> 'a ar_stage) mt_config"
-  assumes vM: "valid_mttm M"
-      and stg: "mt_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
-      and qQ: "q \<in> Q_tm M"
+  fixes M :: "('q, 'a) ktm"
+    and c' :: "(sym4, 'q \<times> 'a ar_stage) ktc_config"
+  assumes vM: "valid_ktm M"
+      and stg: "ktc_state c' = (q, AR_SimRead, tk, i, buf, dvec, posk)"
+      and qQ: "q \<in> Q_ktm M"
       and last: "is_last_k M tk"
       and posk_proper: "posk tk \<in> {AR_AtFirstProper, AR_AtFurtherProper}"
-      and ieq: "i = Suc (block_width (\<Gamma>_tm M))"
-      and vsrc: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M)
+      and ieq: "i = Suc (block_width (\<Gamma>_ktm M))"
+      and vsrc: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M)
                    (AR_SimRead, tk, i, buf, dvec, posk)"
-      and pad_blank: "\<forall>j \<ge> k_tm M. mt_tape c' j (mt_pos c' j) = BLANK4"
-      and src_bounded: "ar_stage_bounded (bl_tm M) (k_tm M)
+      and pad_blank: "\<forall>j \<ge> k_ktm M. ktc_tape c' j (ktc_pos c' j) = BLANK4"
+      and src_bounded: "ar_stage_bounded (bl_ktm M) (k_ktm M)
                           (AR_SimRead, tk, i, buf, dvec, posk)"
-  shows "\<exists>c''. (c', c'') \<in> mttm_step (alphabet_reduce_delta M)
-              \<and> mt_state c'' = (q, AR_SimCompute, k_unidx 0, 0,
-                    buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                          (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                             + bit_value (mt_tape c' tk (mt_pos c' tk)))),
+  shows "\<exists>c''. (c', c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)
+              \<and> ktc_state c'' = (q, AR_SimCompute, k_unidx 0, 0,
+                    buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                          (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                             + bit_value (ktc_tape c' tk (ktc_pos c' tk)))),
                     dvec, posk)
-              \<and> mt_tape c'' = mt_tape c'
-              \<and> mt_pos c'' = (mt_pos c')(tk := Suc (mt_pos c' tk))"
+              \<and> ktc_tape c'' = ktc_tape c'
+              \<and> ktc_pos c'' = (ktc_pos c')(tk := Suc (ktc_pos c' tk))"
 proof -
   obtain ts n where c'_eq:
-      "c' = Config\<^sub>M (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
+      "c' = KConfig (q, AR_SimRead, tk, i, buf, dvec, posk) ts n"
     using stg by (cases c') auto
   let ?a = "\<lambda>k. ts k (n k)"
-  let ?d = "\<lambda>kk. if kk = tk then dir.R else dir.N"
+  let ?d = "\<lambda>kk. if kk = tk then MoveR else MoveN"
   let ?s = "(q, AR_SimRead, tk, i, buf, dvec, posk)"
   let ?s' = "(q, AR_SimCompute, k_unidx 0, 0,
-              buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                    (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))),
+              buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                    (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))),
               dvec, posk)"
   have rel_in: "(?s, ?a, ?s', ?a, ?d) \<in> ar_delta_read M"
     unfolding ar_delta_read_def
     by (rule UnI2) (use qQ last posk_proper ieq in blast)
-  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_tm M \<union> {bl_tm M}"
+  have buf_valid: "\<forall>k. buf k \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
     using vsrc by (simp add: ar_valid_stage_def)
-  have gu_mem: "gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                  (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk) + bit_value (?a tk))
-                  \<in> \<Gamma>_tm M \<union> {bl_tm M}"
-    using gamma_unenum_mem[OF valid_mttm_finite_Gamma[OF vM]] .
-  have kpos: "0 < block_width (\<Gamma>_tm M)" using block_width_pos[of "\<Gamma>_tm M"] by simp
-  have dst_valid: "ar_valid_stage (\<Gamma>_tm M) (bl_tm M) (snd ?s')"
+  have gu_mem: "gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                  (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk) + bit_value (?a tk))
+                  \<in> \<Gamma>_ktm M \<union> {bl_ktm M}"
+    using gamma_unenum_mem[OF valid_ktm_finite_Gamma[OF vM]] .
+  have kpos: "0 < block_width (\<Gamma>_ktm M)" using block_width_pos[of "\<Gamma>_ktm M"] by simp
+  have dst_valid: "ar_valid_stage (\<Gamma>_ktm M) (bl_ktm M) (snd ?s')"
     using kpos buf_valid gu_mem by (auto simp: ar_valid_stage_def)
-  have pad_a: "\<forall>j \<ge> k_tm M. ?a j = BLANK4" using pad_blank c'_eq by simp
-  have tk_lt: "tk < k_tm M" using src_bounded by (simp add: ar_stage_bounded_def)
-  have kpos_tm: "0 < k_tm M" using vM by (cases M) auto
-  have pad_read: "\<forall>j \<ge> k_tm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+  have pad_a: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4" using pad_blank c'_eq by simp
+  have tk_lt: "tk < k_ktm M" using src_bounded by (simp add: ar_stage_bounded_def)
+  have kpos_ktm: "0 < k_ktm M" using vM by (cases M) auto
+  have pad_read: "\<forall>j \<ge> k_ktm M. ?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
   proof (intro allI impI)
-    fix j assume jge: "k_tm M \<le> j"
+    fix j assume jge: "k_ktm M \<le> j"
     have jne: "j \<noteq> tk" using tk_lt jge by linarith
-    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = dir.N"
+    show "?a j = BLANK4 \<and> ?a j = BLANK4 \<and> ?d j = MoveN"
       using pad_a jge jne by simp
   qed
-  have dst_bd: "ar_stage_bounded (bl_tm M) (k_tm M) (snd ?s')"
+  have dst_bd: "ar_stage_bounded (bl_ktm M) (k_ktm M) (snd ?s')"
   proof -
-    have bt: "\<forall>j\<ge>k_tm M.
-       (buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-              (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                 + bit_value (?a tk)))) j = bl_tm M"
+    have bt: "\<forall>j\<ge>k_ktm M.
+       (buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+              (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                 + bit_value (?a tk)))) j = bl_ktm M"
     proof (intro allI impI)
-      fix j assume jge: "k_tm M \<le> j"
+      fix j assume jge: "k_ktm M \<le> j"
       have "j \<noteq> tk" using tk_lt jge by linarith
-      thus "(buf(tk := gamma_unenum (\<Gamma>_tm M) (bl_tm M)
-                (2 * gamma_enum (\<Gamma>_tm M) (bl_tm M) (buf tk)
-                   + bit_value (?a tk)))) j = bl_tm M"
+      thus "(buf(tk := gamma_unenum (\<Gamma>_ktm M) (bl_ktm M)
+                (2 * gamma_enum (\<Gamma>_ktm M) (bl_ktm M) (buf tk)
+                   + bit_value (?a tk)))) j = bl_ktm M"
         using src_bounded jge by (simp add: ar_stage_bounded_def)
     qed
-    show ?thesis using src_bounded kpos_tm bt
+    show ?thesis using src_bounded kpos_ktm bt
       by (simp add: ar_stage_bounded_def k_unidx_def)
   qed
   have ard_in: "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M"
@@ -1586,17 +1598,17 @@ proof -
     using rel_in vsrc dst_valid pad_read src_bounded dst_bd
     by (auto split: if_splits)
   have ts_unchanged: "(\<lambda>k. (ts k)(n k := ?a k)) = ts" by (rule ext) auto
-  have pos_new: "(\<lambda>k. go_dir (?d k) (n k)) = n(tk := Suc (n tk))"
+  have pos_new: "(\<lambda>k. go_move (?d k) (n k)) = n(tk := Suc (n tk))"
     by (rule ext) simp
-  let ?c'' = "Config\<^sub>M ?s' ts (n(tk := Suc (n tk)))"
-  have "(Config\<^sub>M ?s ts n,
-          Config\<^sub>M ?s' (\<lambda>k. (ts k)(n k := ?a k))
-            (\<lambda>k. go_dir (?d k) (n k)))
-          \<in> mttm_step (alphabet_reduce_delta M)"
-  proof (rule mttm_step.intros)
-    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M" by (rule ard_in)
+  let ?c'' = "KConfig ?s' ts (n(tk := Suc (n tk)))"
+  have "(KConfig ?s ts n,
+          KConfig ?s' (\<lambda>k. (ts k)(n k := ?a k))
+            (\<lambda>k. go_move (?d k) (n k)))
+          \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
+  proof (rule ktm_step.intros)
+    show "(?s, ?a, ?s', ?a, ?d) \<in> alphabet_reduce_delta M \<inter> ar_delta_read M" by (rule IntI [OF ard_in rel_in])
   qed
-  hence step: "(c', ?c'') \<in> mttm_step (alphabet_reduce_delta M)"
+  hence step: "(c', ?c'') \<in> ktm_step (alphabet_reduce_delta M \<inter> ar_delta_read M)"
     using c'_eq ts_unchanged pos_new by simp
   show ?thesis
     using step by (intro exI[where x = ?c'']) (simp add: c'_eq)

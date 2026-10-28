@@ -22,8 +22,8 @@ text \<open>Setup for the \<open>alphabet_enlarge\<close> combinator:
   \<open>alphabet_enlarge_time\<close>, follow further on in this
   chapter.\<close>
 
-text \<open>Substrate selectors (\<open>bl_tm\<close>, \<open>le_tm\<close>, \<open>delta_tm\<close>,
-  \<open>s_tm\<close>, \<open>t_tm\<close>, \<open>r_tm\<close>, \<open>Sigma_tm\<close>, \<open>mt_tape\<close>) live in
+text \<open>Substrate selectors (\<open>bl_ktm\<close>, \<open>le_ktm\<close>, \<open>delta_ktm\<close>,
+  \<open>s_ktm\<close>, \<open>t_ktm\<close>, \<open>r_ktm\<close>, \<open>Sigma_ktm\<close>, \<open>ktc_tape\<close>) live in
   the \<open>Multitape_Substrate\<close> theory alongside the functional substrate
   layer; they're imported transitively.\<close>
 
@@ -245,7 +245,7 @@ definition is_canonical_block ::
 
 text \<open>Sequence-level encoder-canonicity: the input \<open>w\<close> is
   well-formed (= in the encoder image) iff every block is
-  pure, *except possibly the last* which may also be padded.
+  pure, \<^emph>\<open>except possibly the last\<close> which may also be padded.
   Per block encoder-canonicity (\<open>is_canonical_block\<close>) is
   necessary but not sufficient — a sequence with a padded
   block followed by anything else is per-cell canonical but

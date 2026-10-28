@@ -1,9 +1,7 @@
 chapter AFP
 
 session Multitape_Alphabet_Reduction = Multitape_TM_Substrate +
-  description "The determinism-preserving elementary alphabet-encoding combinator.
-    Sibling of Multitape_Alphabet_Enlargement over the shared Multitape_TM_Substrate parent; imports only
-    Multitape_Substrate, never any AE theory, so AR does not depend on AE."
+  description "Alphabet reduction to four tape symbols."
   options [timeout = 300]
   theories
     AlphabetReduction_Codec

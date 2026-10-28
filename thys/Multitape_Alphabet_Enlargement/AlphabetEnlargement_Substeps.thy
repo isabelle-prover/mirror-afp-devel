@@ -26,41 +26,41 @@ text \<open>Validation, VFwd, advance: read either \<open>LE_block le_M\<close>
   phase stays \<open>VFwd\<close>.  No write change.\<close>
 
 definition ae_delta_val_fwd_advance ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_fwd_advance M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VFwd), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> (a 0 = LE_block (le_tm M)
-           \<or> is_pure_block (bl_tm M) (a 0))
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>k. if k = 0 then dir.R else dir.N)}"
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> (a 0 = LE_block (le_ktm M)
+           \<or> is_pure_block (bl_ktm M) (a 0))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>k. if k = 0 then MoveR else MoveN)}"
 
 text \<open>Validation, VFwd \<open>\<rightarrow>\<close> VFwdPad: read a trailing-padded
   block on tape 0; R move on tape 0; N moves on other
   tapes; phase becomes VFwdPad.  No write change.\<close>
 
 definition ae_delta_val_fwd_to_padded ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_fwd_to_padded M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VFwdPad), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> is_padded_block (bl_tm M) (a 0)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>k. if k = 0 then dir.R else dir.N)}"
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> is_padded_block (bl_ktm M) (a 0)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>k. if k = 0 then MoveR else MoveN)}"
 
 text \<open>Validation, VFwd reject: read a non-canonical block
   on tape 0 (in \<open>\<Sigma>'\<close> but neither pure nor padded — blanks in
@@ -68,62 +68,62 @@ text \<open>Validation, VFwd reject: read a non-canonical block
   \<open>r_M'\<close> (= the canonical reject state of \<open>M'\<close>).\<close>
 
 definition ae_delta_val_fwd_reject ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_fwd_reject M =
     {((q, ofs, buf, dest, VFwd), a,
-       (r_tm M, init_stage (le_tm M)), a, d) |
+       (r_ktm M, init_stage (le_ktm M)), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> a 0 \<noteq> LE_block (le_tm M)
-       \<and> a 0 \<noteq> bl_block (bl_tm M)
-       \<and> \<not> is_canonical_block (bl_tm M) (a 0)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>_. dir.N)}"
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> a 0 \<noteq> LE_block (le_ktm M)
+       \<and> a 0 \<noteq> bl_block (bl_ktm M)
+       \<and> \<not> is_canonical_block (bl_ktm M) (a 0)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwd end-of-input: read \<open>bl_block bl_M\<close>
   (past the encoded input); N moves; transition to VRet to
   begin the return scan.\<close>
 
 definition ae_delta_val_fwd_to_ret ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_fwd_to_ret M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> a 0 = bl_block (bl_tm M)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>_. dir.N)}"
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> a 0 = bl_block (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwdPad end-of-input: read \<open>bl_block bl_M\<close>;
   N moves; transition to VRet.  Same as the VFwd version
   except the source phase.\<close>
 
 definition ae_delta_val_pad_to_ret ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_pad_to_ret M =
     {((q, ofs, buf, dest, VFwdPad), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M
-       \<and> a 0 = bl_block (bl_tm M)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>_. dir.N)}"
+       q \<in> Q_ktm M
+       \<and> a 0 = bl_block (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwdPad reject: read anything on tape 0 other
   than \<open>bl_block bl_M\<close>.  This signals a non-blank block
@@ -131,40 +131,40 @@ text \<open>Validation, VFwdPad reject: read anything on tape 0 other
   transition to \<open>r_M'\<close>.\<close>
 
 definition ae_delta_val_pad_reject ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_pad_reject M =
     {((q, ofs, buf, dest, VFwdPad), a,
-       (r_tm M, init_stage (le_tm M)), a, d) |
+       (r_ktm M, init_stage (le_ktm M)), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M
-       \<and> a 0 \<noteq> bl_block (bl_tm M)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>_. dir.N)}"
+       q \<in> Q_ktm M
+       \<and> a 0 \<noteq> bl_block (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VRet step: read a non-LE block on tape 0
   (during the return scan); L move on tape 0; N moves on other
   tapes; phase stays VRet.\<close>
 
 definition ae_delta_val_ret_step ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_ret_step M =
     {((q, ofs, buf, dest, VRet), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M
-       \<and> a 0 \<noteq> LE_block (le_tm M)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>k. if k = 0 then dir.L else dir.N)}"
+       q \<in> Q_ktm M
+       \<and> a 0 \<noteq> LE_block (le_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>k. if k = 0 then MoveL else MoveN)}"
 
 text \<open>Validation, VRet \<open>\<rightarrow>\<close> Sim: read \<open>LE_block le_M\<close> on tape 0
   (return scan reached position 0); N moves uniformly (head
@@ -180,44 +180,44 @@ text \<open>Validation, VRet \<open>\<rightarrow>\<close> Sim: read \<open>LE_bl
   of LE.\<close>
 
 definition ae_delta_val_ret_to_sim ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_val_ret_to_sim M =
     {((q, ofs, buf, dest, VRet), a,
        (q, ofs, buf, dest, SS1), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M
-       \<and> a 0 = LE_block (le_tm M)
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>_. dir.N)}"
+       q \<in> Q_ktm M
+       \<and> a 0 = LE_block (le_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>SS1 \<open>\<rightarrow>\<close> SS2: read home into buffer; per-tape move L
   (steady-state) or N (LE-stage).  No write change
   (\<open>a' = a\<close>); no \<open>M\<close>-state advance.  Buffer-phase substep 1.\<close>
 
 definition ae_delta_ss1_ss2 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss1_ss2 M =
     {((q, ofs, buf, dest, SS1), a,
        (q, ofs, buf', dest, SS2), a, d) |
      q ofs buf dest a buf' d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> buf' = (\<lambda>k. if k < k_tm M
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> buf' = (\<lambda>k. if k < k_ktm M
                      then (fst (buf k), a k, snd (snd (buf k)))
-                     else init_buffer (le_tm M) k)
-       \<and> d = (\<lambda>k. if k < k_tm M
-                  then (if a k = LE_block (le_tm M) then dir.N else dir.L)
-                  else dir.N)}"
+                     else init_buffer (le_ktm M) k)
+       \<and> d = (\<lambda>k. if k < k_ktm M
+                  then (if a k = LE_block (le_ktm M) then MoveN else MoveL)
+                  else MoveN)}"
 
 text \<open>SS2 \<open>\<rightarrow>\<close> SS3: read left into buffer (or placeholder for
   LE-stage); per-tape move R (steady-state, returning to home)
@@ -228,29 +228,29 @@ text \<open>SS2 \<open>\<rightarrow>\<close> SS3: read left into buffer (or plac
   \<open>bl_block bl_M\<close> as a semantic placeholder.\<close>
 
 definition ae_delta_ss2_ss3 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss2_ss3 M =
     {((q, ofs, buf, dest, SS2), a,
        (q, ofs, buf', dest, SS3), a, d) |
      q ofs buf dest a buf' d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> buf' = (\<lambda>k. if k < k_tm M
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> buf' = (\<lambda>k. if k < k_ktm M
                      then (let (l, h, r) = buf k in
-                            (if h = LE_block (le_tm M)
-                               then bl_block (bl_tm M)
+                            (if h = LE_block (le_ktm M)
+                               then bl_block (bl_ktm M)
                                else a k,
                              h, r))
-                     else init_buffer (le_tm M) k)
-       \<and> d = (\<lambda>k. if k < k_tm M
-                  then (if (fst (snd (buf k))) = LE_block (le_tm M)
-                         then dir.N else dir.R)
-                  else dir.N)}"
+                     else init_buffer (le_ktm M) k)
+       \<and> d = (\<lambda>k. if k < k_ktm M
+                  then (if (fst (snd (buf k))) = LE_block (le_ktm M)
+                         then MoveN else MoveR)
+                  else MoveN)}"
 
 text \<open>SS3 \<open>\<rightarrow>\<close> SS4: uniform R move per tape (no buffer update,
   no \<open>M\<close>-state advance).  Both steady-state and LE-stage move
@@ -259,19 +259,19 @@ text \<open>SS3 \<open>\<rightarrow>\<close> SS4: uniform R move per tape (no bu
   from LE).  Buffer-phase substep 3.\<close>
 
 definition ae_delta_ss3_ss4 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss3_ss4 M =
     {((q, ofs, buf, dest, SS3), a,
        (q, ofs, buf, dest, SS4), a, d) |
      q ofs buf dest a d.
-       q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> d = (\<lambda>k. if k < k_tm M then dir.R else dir.N)}"
+       q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> d = (\<lambda>k. if k < k_ktm M then MoveR else MoveN)}"
 
 text \<open>Buffered head position: which buffer slot
   (\<open>AE_Left\<close> / \<open>AE_Home\<close> / \<open>AE_Right\<close>) and which offset
@@ -313,12 +313,12 @@ text \<open>Advance a buffered head position by a direction.  Returns
   \<open>None\<close> case as a vacuous side condition).\<close>
 
 definition bp_advance ::
-  "('c :: enum) bp \<Rightarrow> dir \<Rightarrow> 'c bp option" where
+  "('c :: enum) bp \<Rightarrow> move \<Rightarrow> 'c bp option" where
   "bp_advance p d =
      (let (b, off) = p in
         case d of
-          dir.N \<Rightarrow> Some (b, off)
-        | dir.R \<Rightarrow>
+          MoveN \<Rightarrow> Some (b, off)
+        | MoveR \<Rightarrow>
             (case c_succ off of
                Some off' \<Rightarrow> Some (b, off')
              | None \<Rightarrow>
@@ -326,7 +326,7 @@ definition bp_advance ::
                     AE_Left  \<Rightarrow> Some (AE_Home,  c_first)
                   | AE_Home  \<Rightarrow> Some (AE_Right, c_first)
                   | AE_Right \<Rightarrow> None))
-        | dir.L \<Rightarrow>
+        | MoveL \<Rightarrow>
             (case c_pred off of
                Some off' \<Rightarrow> Some (b, off')
              | None \<Rightarrow>
@@ -355,9 +355,9 @@ text \<open>LE-aware buffered head advance.  Wraps \<open>bp_advance\<close>
   the case is unreachable.\<close>
 
 definition bp_advance_le ::
-  "'a \<Rightarrow> 'a \<Rightarrow> ('c :: enum) bp \<Rightarrow> dir \<Rightarrow> 'c bp option" where
+  "'a \<Rightarrow> 'a \<Rightarrow> ('c :: enum) bp \<Rightarrow> move \<Rightarrow> 'c bp option" where
   "bp_advance_le le a p d =
-     (if a = le \<and> fst p = AE_Home \<and> d = dir.R
+     (if a = le \<and> fst p = AE_Home \<and> d = MoveR
         then Some (AE_Right, c_first)
         else bp_advance p d)"
 
@@ -371,7 +371,7 @@ text \<open>Single buffered \<open>M\<close>-step: applies \<open>M\<close>'s \<
   exit the 3-block buffer on any tape.\<close>
 
 definition m_step_buffered ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q
          \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
          \<times> (nat \<Rightarrow> 'c bp))
@@ -381,10 +381,10 @@ definition m_step_buffered ::
   "m_step_buffered M =
      {((q, blocks, pos), (q', blocks', pos')) |
         q blocks pos q' blocks' pos' a a' d.
-          (q, a, q', a', d) \<in> delta_tm M
+          (q, a, q', a', d) \<in> delta_ktm M
           \<and> (\<forall>k. a k = read_bp (blocks k) (pos k))
           \<and> (\<forall>k. blocks' k = write_bp (blocks k) (pos k) (a' k))
-          \<and> (\<forall>k. bp_advance_le (le_tm M) (a k) (pos k) (d k)
+          \<and> (\<forall>k. bp_advance_le (le_ktm M) (a k) (pos k) (d k)
                   = Some (pos' k))}"
 
 text \<open>Introduction rule for \<open>m_step_buffered\<close>: package the
@@ -395,16 +395,16 @@ text \<open>Introduction rule for \<open>m_step_buffered\<close>: package the
   to extend a coupled run by one step.\<close>
 
 lemma m_step_bufferedI:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and a a' :: "nat \<Rightarrow> 'a"
-    and d :: "nat \<Rightarrow> dir"
+    and d :: "nat \<Rightarrow> move"
     and blocks blocks' ::
           "nat \<Rightarrow> (('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
     and pos pos' :: "nat \<Rightarrow> 'c bp"
-  assumes "(q, a, q', a', d) \<in> delta_tm M"
+  assumes "(q, a, q', a', d) \<in> delta_ktm M"
       and "\<forall>k. a k = read_bp (blocks k) (pos k)"
       and "\<forall>k. blocks' k = write_bp (blocks k) (pos k) (a' k)"
-      and "\<forall>k. bp_advance_le (le_tm M) (a k) (pos k) (d k)
+      and "\<forall>k. bp_advance_le (le_ktm M) (a k) (pos k) (d k)
               = Some (pos' k)"
   shows "((q, blocks, pos), (q', blocks', pos')) \<in> m_step_buffered M"
   using assms unfolding m_step_buffered_def by blast
@@ -421,7 +421,7 @@ text \<open>Auxiliary: up-to-\<open>c\<close>-step composition of \<open>M\<clos
   semantic core of the compute substep (SS4\<open>\<rightarrow>\<close>SS5).\<close>
 
 definition m_steps_buffered ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q
          \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
          \<times> (nat \<Rightarrow> 'c bp))
@@ -433,45 +433,45 @@ definition m_steps_buffered ::
         n \<le> card (UNIV :: 'c set)
         \<and> (s, s') \<in> (m_step_buffered M) ^^ n
         \<and> (n = card (UNIV :: 'c set)
-            \<or> fst s' \<in> {t_tm M, r_tm M})}"
+            \<or> fst s' \<in> {t_ktm M, r_ktm M})}"
 
 text \<open>Functionality of \<open>m_step_buffered\<close> under
-  \<open>det_mttm M\<close>: a single buffered M-step from a fixed source
+  \<open>det_ktm M\<close>: a single buffered M-step from a fixed source
   determines the target uniquely.  Threaded through
   \<open>m_step_buffered_relpow_functional\<close> and
   \<open>m_steps_buffered_functional\<close> below into the
   SS4\<open>\<rightarrow>\<close>SS5 compute substep's functionality lemma — the
   16th entry in the per-substep functionality cluster, completing
-  it under \<open>det_mttm M\<close>.\<close>
+  it under \<open>det_ktm M\<close>.\<close>
 
 lemma m_step_buffered_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes det: "det_mttm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes det: "det_ktm M"
     and h1: "((q, blocks, pos), (q1, blocks1, pos1)) \<in> m_step_buffered M"
     and h2: "((q, blocks, pos), (q2, blocks2, pos2)) \<in> m_step_buffered M"
   shows "(q1, blocks1, pos1) = (q2, blocks2, pos2)"
 proof -
   from h1 obtain a1 a1' d1 where
-      t1: "(q, a1, q1, a1', d1) \<in> delta_tm M"
+      t1: "(q, a1, q1, a1', d1) \<in> delta_ktm M"
     and r1: "\<forall>k. a1 k = read_bp (blocks k) (pos k)"
     and w1: "\<forall>k. blocks1 k = write_bp (blocks k) (pos k) (a1' k)"
-    and p1: "\<forall>k. bp_advance_le (le_tm M) (a1 k) (pos k) (d1 k)
+    and p1: "\<forall>k. bp_advance_le (le_ktm M) (a1 k) (pos k) (d1 k)
                     = Some (pos1 k)"
     unfolding m_step_buffered_def by blast
   from h2 obtain a2 a2' d2 where
-      t2: "(q, a2, q2, a2', d2) \<in> delta_tm M"
+      t2: "(q, a2, q2, a2', d2) \<in> delta_ktm M"
     and r2: "\<forall>k. a2 k = read_bp (blocks k) (pos k)"
     and w2: "\<forall>k. blocks2 k = write_bp (blocks k) (pos k) (a2' k)"
-    and p2: "\<forall>k. bp_advance_le (le_tm M) (a2 k) (pos k) (d2 k)
+    and p2: "\<forall>k. bp_advance_le (le_ktm M) (a2 k) (pos k) (d2 k)
                     = Some (pos2 k)"
     unfolding m_step_buffered_def by blast
   have a_eq: "a1 = a2"
     using r1 r2 by (intro ext) auto
-  have t2': "(q, a1, q2, a2', d2) \<in> delta_tm M"
+  have t2': "(q, a1, q2, a2', d2) \<in> delta_ktm M"
     using t2 a_eq by simp
   from det t1 t2'
   have qad: "(q1, a1', d1) = (q2, a2', d2)"
-    unfolding det_mttm_def by blast
+    unfolding det_ktm_def by blast
   hence q_eq: "q1 = q2" and a'_eq: "a1' = a2'" and d_eq: "d1 = d2"
     by auto
   have b_eq: "blocks1 = blocks2"
@@ -487,12 +487,12 @@ proof -
 qed
 
 text \<open>Relational-power lift of \<open>m_step_buffered_functional\<close>:
-  under \<open>det_mttm M\<close>, n-fold composition is functional too.
+  under \<open>det_ktm M\<close>, n-fold composition is functional too.
   Standard induction-on-n proof using the single-step lemma.\<close>
 
 lemma m_step_buffered_relpow_functional:
-  fixes M :: "('q, 'a) mttm"
-  assumes det: "det_mttm M"
+  fixes M :: "('q, 'a) ktm"
+  assumes det: "det_ktm M"
       and h1: "(s, s1) \<in> (m_step_buffered M) ^^ n"
       and h2: "(s, s2) \<in> (m_step_buffered M) ^^ n"
   shows "s1 = s2"
@@ -526,29 +526,29 @@ next
 qed
 
 text \<open>From a halt state, no buffered M-step is possible.  Follows
-  from \<open>valid_mttm M\<close>'s structural constraint that
-  \<open>delta_tm M\<close> has no transitions originating in
-  \<open>{t_tm M, r_tm M}\<close>.  Used below to rule out the case
+  from \<open>valid_ktm M\<close>'s structural constraint that
+  \<open>delta_ktm M\<close> has no transitions originating in
+  \<open>{t_ktm M, r_ktm M}\<close>.  Used below to rule out the case
   where the two witnesses of \<open>m_steps_buffered\<close>'s
   functionality argument use different step counts.\<close>
 
 lemma m_step_buffered_no_halt:
-  fixes M :: "('q, 'a) mttm"
-  assumes vM: "valid_mttm M"
-      and halt: "q \<in> {t_tm M, r_tm M}"
+  fixes M :: "('q, 'a) ktm"
+  assumes vM: "valid_ktm M"
+      and halt: "q \<in> {t_ktm M, r_ktm M}"
   shows "((q, blocks, pos), s') \<notin> m_step_buffered M"
 proof
   assume "((q, blocks, pos), s') \<in> m_step_buffered M"
   then obtain a q' a' d where
-      st: "(q, a, q', a', d) \<in> delta_tm M"
+      st: "(q, a, q', a', d) \<in> delta_ktm M"
     unfolding m_step_buffered_def by blast
-  from valid_mttm_delta_set[OF vM] st
-  have "q \<in> Q_tm M - {t_tm M, r_tm M}" by auto
+  from valid_ktm_delta_set[OF vM] st
+  have "q \<in> Q_ktm M - {t_ktm M, r_ktm M}" by auto
   with halt show False by auto
 qed
 
 text \<open>Functionality of \<open>m_steps_buffered\<close> under
-  \<open>det_mttm M\<close>: the bounded-and-halt-truncated buffered
+  \<open>det_ktm M\<close>: the bounded-and-halt-truncated buffered
   M-run is functional in its source.
 
   Argument: from membership we obtain step counts \<open>n1, n2\<close>
@@ -564,13 +564,13 @@ text \<open>Functionality of \<open>m_steps_buffered\<close> under
   With \<open>n1 = n2\<close>, the relpow functional lemma finishes.\<close>
 
 lemma m_steps_buffered_functional:
-  fixes M :: "('q, 'a) mttm"
+  fixes M :: "('q, 'a) ktm"
     and s s1 s2 :: "'q
                       \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
                               \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
                       \<times> (nat \<Rightarrow> 'c bp)"
-  assumes vM:  "valid_mttm M"
-      and det: "det_mttm M"
+  assumes vM:  "valid_ktm M"
+      and det: "det_ktm M"
       and h1:  "(s, s1) \<in> m_steps_buffered M"
       and h2:  "(s, s2) \<in> m_steps_buffered M"
   shows "s1 = s2"
@@ -580,12 +580,12 @@ proof -
   from h1 obtain n1 where
       n1_bnd:  "n1 \<le> ?c"
     and n1_run: "(s, s1) \<in> ?R ^^ n1"
-    and n1_halt: "n1 = ?c \<or> fst s1 \<in> {t_tm M, r_tm M}"
+    and n1_halt: "n1 = ?c \<or> fst s1 \<in> {t_ktm M, r_ktm M}"
     unfolding m_steps_buffered_def by blast
   from h2 obtain n2 where
       n2_bnd:  "n2 \<le> ?c"
     and n2_run: "(s, s2) \<in> ?R ^^ n2"
-    and n2_halt: "n2 = ?c \<or> fst s2 \<in> {t_tm M, r_tm M}"
+    and n2_halt: "n2 = ?c \<or> fst s2 \<in> {t_ktm M, r_ktm M}"
     unfolding m_steps_buffered_def by blast
 
   \<comment> \<open>Sub-lemma: under \<open>m < n\<close>, the run from the m-step
@@ -597,7 +597,7 @@ proof -
         \<Longrightarrow> (s, s_n) \<in> ?R ^^ n
         \<Longrightarrow> m < n
         \<Longrightarrow> n \<le> ?c
-        \<Longrightarrow> m = ?c \<or> fst s_m \<in> {t_tm M, r_tm M}
+        \<Longrightarrow> m = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}
         \<Longrightarrow> False"
   proof -
     fix m n :: nat and s_m s_n
@@ -605,7 +605,7 @@ proof -
        and rn: "(s, s_n) \<in> ?R ^^ n"
        and mn: "m < n"
        and nc: "n \<le> ?c"
-       and hl: "m = ?c \<or> fst s_m \<in> {t_tm M, r_tm M}"
+       and hl: "m = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}"
     define k where "k = n - m - 1"
     have k_eq: "n = m + Suc k"
       unfolding k_def using mn by simp
@@ -625,9 +625,9 @@ proof -
       assume "m = ?c"
       with k_eq nc show False by linarith
     next
-      assume halt: "fst s_m \<in> {t_tm M, r_tm M}"
+      assume halt: "fst s_m \<in> {t_ktm M, r_ktm M}"
       obtain q b p where sm_eq: "s_m = (q, b, p)" by (cases s_m)
-      from halt sm_eq have q_halt: "q \<in> {t_tm M, r_tm M}" by simp
+      from halt sm_eq have q_halt: "q \<in> {t_ktm M, r_ktm M}" by simp
       from step_sm sm_eq have "((q, b, p), s'') \<in> ?R" by simp
       with m_step_buffered_no_halt[OF vM q_halt] show False by blast
     qed
@@ -707,7 +707,7 @@ text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   to an M-tape window starting at position 1; the left buffer
   slot is \<open>LE_block\<close> by construction, with no claim about
   M-tape positions \<open>0, \<dots>, c-1\<close> beyond \<open>tM 0 = le\<close>.  Under
-  \<open>\<delta>LE\<close> on \<open>delta_tm M\<close>, M's buffered trajectory in this
+  \<open>\<delta>LE\<close> on \<open>delta_ktm M\<close>, M's buffered trajectory in this
   setting visits only \<open>(AE_Left, c_last)\<close> within the left
   block (when reading LE), never the other left slots, so
   the buffer\<open>\<leftrightarrow>\<close>tape mismatch there is harmless.
@@ -743,7 +743,7 @@ text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   \<open>LE_block le\<close> (block 0's content), the right slot is
   block 1's content (real input/blank), and the left slot
   holds an arbitrary sentinel (SS2 \<open>\<rightarrow>\<close> SS3 installs
-  \<open>bl_block (bl_tm M)\<close>; the predicate doesn't constrain it
+  \<open>bl_block (bl_ktm M)\<close>; the predicate doesn't constrain it
   because M's buffered trajectory cannot reach the left
   block under \<open>\<delta>LE\<close> — M starts at home reading LE,
   can only move N or R, and any R-move from home reading LE
@@ -781,7 +781,7 @@ definition ae_window_invariant_le0 ::
 text \<open>Per-tape unified window invariant for the SS4\<open>\<rightarrow>\<close>SS5
   trace toolkit.  Hybrid encapsulation of the three regime-specific
   sibling predicates: one extra parameter \<open>pos\<close> (the per-tape
-  \<open>mt_pos c' k\<close> at SS4 entry, a frozen value during the
+  \<open>ktc_pos c' k\<close> at SS4 entry, a frozen value during the
   buffered \<open>M\<close>-side run) selects which sibling fires.  Each
   regime is expressed as an implication, so the dispatch is by
   partition of \<open>pos :: nat\<close> into \<open>0\<close> / \<open>1\<close> /
@@ -793,7 +793,7 @@ text \<open>Per-tape unified window invariant for the SS4\<open>\<rightarrow>\<c
   at the relevant conjunct, while the indexing by \<open>pos\<close>
   (rather than a uniform regime tag) lets the predicate be
   instantiated directly from the consumer's per-tape
-  \<open>mt_pos c' k\<close> without an extra dispatch parameter.  The
+  \<open>ktc_pos c' k\<close> without an extra dispatch parameter.  The
   fixed-regime-per-tape property — \<open>pos\<close> doesn't change
   during the buffered run because \<open>m_step_buffered\<close> is
   parameterised by \<open>(q, blocks, pos\<^sub>b\<^sub>p)\<close> with no
@@ -828,31 +828,31 @@ text \<open>SS4 \<open>\<rightarrow>\<close> SS5: read right into buffer; apply 
   projected from \<open>end_pos\<close>.\<close>
 
 definition ae_delta_ss4_ss5 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss4_ss5 M =
      {((q, ofs, buf, dest_old, SS4), a,
         (q', ofs', buf', dest', SS5), a, d) |
         q ofs buf dest_old a q' ofs' buf' dest' d
         buf_full end_pos bufC.
-          q \<in> Q_tm M \<and> q \<noteq> t_tm M \<and> q \<noteq> r_tm M
-          \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
+          q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
+          \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
           \<and> buf_full = (\<lambda>k. (fst (buf k),
-                              if k < k_tm M then fst (snd (buf k)) else a k,
+                              if k < k_ktm M then fst (snd (buf k)) else a k,
                               a k))
           \<and> ((q, buf_full, \<lambda>k. (AE_Home, ofs k)),
              (q', bufC, end_pos)) \<in> m_steps_buffered M
-          \<and> ofs' = (\<lambda>k. if k < k_tm M then snd (end_pos k) else init_offset k)
-          \<and> buf' = (\<lambda>k. if k < k_tm M then bufC k else init_buffer (le_tm M) k)
-          \<and> dest' = (\<lambda>k. if k < k_tm M then fst (end_pos k) else init_dest k)
-          \<and> d = (\<lambda>k. if k < k_tm M
-                       then (if a k = LE_block (le_tm M)
-                               then dir.N else dir.L)
-                       else dir.N)}"
+          \<and> ofs' = (\<lambda>k. if k < k_ktm M then snd (end_pos k) else init_offset k)
+          \<and> buf' = (\<lambda>k. if k < k_ktm M then bufC k else init_buffer (le_ktm M) k)
+          \<and> dest' = (\<lambda>k. if k < k_ktm M then fst (end_pos k) else init_dest k)
+          \<and> d = (\<lambda>k. if k < k_ktm M
+                       then (if a k = LE_block (le_ktm M)
+                               then MoveN else MoveL)
+                       else MoveN)}"
 
 text \<open>Per-tape (write, move) action helpers for the four
   write-back substeps (SS5\<open>\<rightarrow>\<close>SS6, SS6\<open>\<rightarrow>\<close>SS7,
@@ -867,7 +867,7 @@ text \<open>Per-tape (write, move) action helpers for the four
   helpers handle the \<open>AE_Left\<close> branch as a vacuous fall-through
   (will never fire under the compute's invariants).\<close>
 
-text \<open>**Head trajectory through the writeback chain.**  The
+text \<open>\<^emph>\<open>Head trajectory through the writeback chain.\<close>  The
   direction rules in the action helpers below thread \<open>M'\<close>'s
   head through a specific sequence of block positions
   across SS5 \<open>\<rightarrow>\<close> SS8.  Starting from the SS4
@@ -886,11 +886,11 @@ text \<open>**Head trajectory through the writeback chain.**  The
     \<open>r\<close>/\<open>l\<close>; lands at block \<open>s + dest_offset\<close>
     for the next stage.
 
-  **Why this matters for the LE-edge cases.**  For
+  \<^emph>\<open>Why this matters for the LE-edge cases.\<close>  For
   steady-state (\<open>s \<ge> 2\<close>), the walk stays in data
   territory and the LE-guard never fires.  For le1
-  (\<open>s = 1\<close>), the walk reaches **block 0 — the LE
-  position** at SS6 entry (when \<open>dest \<noteq> AE_Left\<close>) or
+  (\<open>s = 1\<close>), the walk reaches \<^emph>\<open>block 0 — the LE
+  position\<close> at SS6 entry (when \<open>dest \<noteq> AE_Left\<close>) or
   at SS8 entry (when \<open>dest = AE_Left\<close>).  At those moments
   the LE-guard branch fires (head reads \<open>LE_block\<close>),
   writing \<open>LE_block\<close> back idempotently.  The
@@ -901,13 +901,13 @@ text \<open>**Head trajectory through the writeback chain.**  The
   loaded from block 0) to a non-LE position — the
   pre-emption that keeps the encoding consistent.\<close>
 
-text \<open>**LE-guard prefix and \<open>\<delta>LE\<close> compatibility.**
+text \<open>\<^emph>\<open>LE-guard prefix and \<open>\<delta>LE\<close> compatibility.\<close>
   Each action helper prepends an LE-guard
   \<open>if a = LE_block le then (a, N) else \<dots>\<close> for syntactic
   \<open>\<delta>LE\<close>-compatibility: the per-substep relations are over
   all \<open>(state, a, \<dots>)\<close> tuples, not just reachable ones, and
   the substrate's \<open>\<delta>LE\<close> well-formedness conjunct (a
-  \<open>valid_mttm\<close> clause) is universal.
+  \<open>valid_ktm\<close> clause) is universal.
   In reachable executions \<open>a = h\<close> at SS5\<open>\<rightarrow>\<close>SS8 (head at
   the home position), so the guard agrees with the
   \<open>h = LE_block le\<close> branch; in unreachable tuples
@@ -926,121 +926,121 @@ text \<open>**LE-guard prefix and \<open>\<delta>LE\<close> compatibility.**
 fun ae_ss5_action ::
   "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
     \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> dir)" where
+    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
   "ae_ss5_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, dir.N)
-      else if h = LE_block le then (a, dir.N)
-      else (h, if ds = AE_Left then dir.R else dir.L))"
+     (if a = LE_block le then (a, MoveN)
+      else if h = LE_block le then (a, MoveN)
+      else (h, if ds = AE_Left then MoveR else MoveL))"
 
 fun ae_ss6_action ::
   "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
     \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> dir)" where
+    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
   "ae_ss6_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, dir.R)
-      else if h = LE_block le then (a, dir.R)
-      else if ds = AE_Left then (r, dir.L) else (l, dir.R))"
+     (if a = LE_block le then (a, MoveR)
+      else if h = LE_block le then (a, MoveR)
+      else if ds = AE_Left then (r, MoveL) else (l, MoveR))"
 
 fun ae_ss7_action ::
   "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
     \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> dir)" where
+    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
   "ae_ss7_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, dir.N)
+     (if a = LE_block le then (a, MoveN)
       else if h = LE_block le
-        then (r, if ds = AE_Right then dir.N else dir.L)
-      else (a, if ds = AE_Left then dir.L else dir.R))"
+        then (r, if ds = AE_Right then MoveN else MoveL)
+      else (a, if ds = AE_Left then MoveL else MoveR))"
 
 fun ae_ss8_action ::
   "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
     \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> dir)" where
+    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
   "ae_ss8_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, dir.N)
+     (if a = LE_block le then (a, MoveN)
       else if h = LE_block le
-        then (if ds = AE_Right then (r, dir.N) else (a, dir.N))
+        then (if ds = AE_Right then (r, MoveN) else (a, MoveN))
       else (case ds of
-              AE_Left  \<Rightarrow> (l, dir.N)
-            | AE_Home  \<Rightarrow> (r, dir.L)
-            | AE_Right \<Rightarrow> (r, dir.N)))"
+              AE_Left  \<Rightarrow> (l, MoveN)
+            | AE_Home  \<Rightarrow> (r, MoveL)
+            | AE_Right \<Rightarrow> (r, MoveN)))"
 
 text \<open>SS5 \<open>\<rightarrow>\<close> SS6: write home block; per-tape move depends on
   \<open>(stage_kind k, dest k)\<close>.  Write-back substep 5.\<close>
 
 definition ae_delta_ss5_ss6 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss5_ss6 M =
     {((q, ofs, buf, dest, SS5), a,
        (q, ofs, buf, dest, SS6), a', d) |
      q ofs buf dest a a' d.
-       q \<in> Q_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> a' = (\<lambda>k. if k < k_tm M
-                     then fst (ae_ss5_action (le_tm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_tm M))
-       \<and> d  = (\<lambda>k. if k < k_tm M
-                     then snd (ae_ss5_action (le_tm M) (a k) (buf k) (dest k))
-                     else dir.N)}"
+       q \<in> Q_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a' = (\<lambda>k. if k < k_ktm M
+                     then fst (ae_ss5_action (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block (bl_ktm M))
+       \<and> d  = (\<lambda>k. if k < k_ktm M
+                     then snd (ae_ss5_action (le_ktm M) (a k) (buf k) (dest k))
+                     else MoveN)}"
 
 text \<open>SS6 \<open>\<rightarrow>\<close> SS7: write left (steady-state, \<open>dest \<in> {AE_Home,
   AE_Right}\<close>) or right (steady-state, \<open>dest = AE_Left\<close>) or
   home (LE-stage); per-tape move per dest.  Write-back substep 6.\<close>
 
 definition ae_delta_ss6_ss7 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss6_ss7 M =
     {((q, ofs, buf, dest, SS6), a,
        (q, ofs, buf, dest, SS7), a', d) |
      q ofs buf dest a a' d.
-       q \<in> Q_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> a' = (\<lambda>k. if k < k_tm M
-                     then fst (ae_ss6_action (le_tm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_tm M))
-       \<and> d  = (\<lambda>k. if k < k_tm M
-                     then snd (ae_ss6_action (le_tm M) (a k) (buf k) (dest k))
-                     else dir.N)}"
+       q \<in> Q_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a' = (\<lambda>k. if k < k_ktm M
+                     then fst (ae_ss6_action (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block (bl_ktm M))
+       \<and> d  = (\<lambda>k. if k < k_ktm M
+                     then snd (ae_ss6_action (le_ktm M) (a k) (buf k) (dest k))
+                     else MoveN)}"
 
 text \<open>SS7 \<open>\<rightarrow>\<close> SS8: idempotent home re-write (steady-state) or
   right write (LE-stage); per-tape move per dest.  Write-back
   substep 7.\<close>
 
 definition ae_delta_ss7_ss8 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss7_ss8 M =
     {((q, ofs, buf, dest, SS7), a,
        (q, ofs, buf, dest, SS8), a', d) |
      q ofs buf dest a a' d.
-       q \<in> Q_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> a' = (\<lambda>k. if k < k_tm M
-                     then fst (ae_ss7_action (le_tm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_tm M))
-       \<and> d  = (\<lambda>k. if k < k_tm M
-                     then snd (ae_ss7_action (le_tm M) (a k) (buf k) (dest k))
-                     else dir.N)}"
+       q \<in> Q_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a' = (\<lambda>k. if k < k_ktm M
+                     then fst (ae_ss7_action (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block (bl_ktm M))
+       \<and> d  = (\<lambda>k. if k < k_ktm M
+                     then snd (ae_ss7_action (le_ktm M) (a k) (buf k) (dest k))
+                     else MoveN)}"
 
 text \<open>SS8 \<open>\<rightarrow>\<close> SS1: write final block at destination; head ends
   at \<open>dest\<close> position; substep counter resets to SS1.  End of
   write-back phase.
 
   Halt-aware destination: if \<open>q\<close> reached a halting state
-  (\<open>t_tm M\<close> / \<open>r_tm M\<close>) during the compute substep, the
+  (\<open>t_ktm M\<close> / \<open>r_ktm M\<close>) during the compute substep, the
   end-of-stage state is forced to \<open>(q, init_stage le_M)\<close>,
   which equals \<open>t_M'\<close> / \<open>r_M'\<close> by construction.  This makes
   M' actually reach its canonical accept / reject state when M
@@ -1049,26 +1049,26 @@ text \<open>SS8 \<open>\<rightarrow>\<close> SS1: write final block at destinati
   stage; \<open>dest\<close> resets to \<open>AE_Home\<close>.\<close>
 
 definition ae_delta_ss8_ss1 ::
-  "('q, 'a) mttm
+  "('q, 'a) ktm
     \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
         \<times> ('q \<times> ('a, 'c) ae_stage)
         \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> (nat \<Rightarrow> dir)) set" where
+        \<times> (nat \<Rightarrow> move)) set" where
   "ae_delta_ss8_ss1 M =
     {((q, ofs, buf, dest, SS8), a,
        (q, stage'), a', d) |
      q ofs buf dest a stage' a' d.
-       q \<in> Q_tm M
-       \<and> (\<forall>j\<ge>k_tm M. a j = bl_block (bl_tm M))
-       \<and> stage' = (if q \<in> {t_tm M, r_tm M}
-                    then init_stage (le_tm M)
+       q \<in> Q_ktm M
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> stage' = (if q \<in> {t_ktm M, r_ktm M}
+                    then init_stage (le_ktm M)
                     else (ofs, buf, init_dest, SS1))
-       \<and> a' = (\<lambda>k. if k < k_tm M
-                     then fst (ae_ss8_action (le_tm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_tm M))
-       \<and> d  = (\<lambda>k. if k < k_tm M
-                     then snd (ae_ss8_action (le_tm M) (a k) (buf k) (dest k))
-                     else dir.N)}"
+       \<and> a' = (\<lambda>k. if k < k_ktm M
+                     then fst (ae_ss8_action (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block (bl_ktm M))
+       \<and> d  = (\<lambda>k. if k < k_ktm M
+                     then snd (ae_ss8_action (le_ktm M) (a k) (buf k) (dest k))
+                     else MoveN)}"
 
 end

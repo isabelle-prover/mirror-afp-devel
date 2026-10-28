@@ -2,20 +2,20 @@ theory Wrap_Base
   imports "Multitape_TM_Substrate.Multitape_Substrate"
 begin
 
-section \<open>Encoding-wrap combinator\<close>
+section \<open>Wrapping a machine with its input encoder\<close>
 
 text \<open>The encoding-wrap combinator.  Given a substrate machine
   \<open>M\<close> over an encoded alphabet \<open>'b\<close> and a per-block packer
   \<open>pack :: 'a list \<Rightarrow> 'b\<close> together with a block size \<open>c\<close>, the
   combinator produces a substrate machine over the union
   alphabet \<open>('a, 'b) wrap_alphabet = Raw 'a | Enc 'b\<close> at the
-  textbook tape count \<open>k_tm M\<close> (no extra tape): the user's raw
+  textbook tape count \<open>k_ktm M\<close> (no extra tape): the user's raw
   input starts on tape \<open>0\<close>, which the wrap reuses as a work tape
-  rather than adding one (faithful \<open>k\<close>-tape section below).
+  rather than adding one (see the section on the tape layout below).
 
   The wrap operates in five reachable phases:
   \<^enum> @{text W_Init} — advance both \<open>W_User\<close> and \<open>W_M 0\<close> past their
-    LE markers in a single super-step.
+    LE markers in a single step.
   \<^enum> @{text "W_Buf ws"} — accumulate up to \<open>c\<close> raw symbols from
     \<open>W_User\<close>; on filling the buffer, pack and write one block
     to \<open>W_M 0\<close>; on seeing an \<open>Enc _\<close> symbol (blank past the input
@@ -29,11 +29,10 @@ text \<open>The encoding-wrap combinator.  Given a substrate machine
     \<open>Enc\<close> embedding and leaves \<open>W_User\<close> untouched.
 
   Halt propagation rides directly on the @{text W_Run}
-  constructor: the wrap's accept state is @{text "W_Run (t_tm M)"},
-  inheriting M's acceptance.  The wrap's reject state
-  @{text W_Rej} is declared for substrate compliance (the
-  @{text "t \<noteq> r"} requirement) but is unreachable from the start
-  state.\<close>
+  constructor: the wrap's accept state is @{text "W_Run (t_ktm M)"},
+  inheriting M's acceptance; its reject state is
+  @{text "W_Run (r_ktm M)"}, inheriting M's rejection, so the wrap
+  preserves halting in either terminal state and not acceptance alone.\<close>
 
 text \<open>Architecture note: the wrap is monolithic at the substrate
   level.  The substrate has no generic machine-composition
@@ -55,11 +54,11 @@ datatype ('a, 'b) wrap_alphabet = Raw 'a | Enc 'b
 subsection \<open>Wrap tape index\<close>
 
 text \<open>Value-level tape indices (@{typ nat}).  The wrap keeps the
-  textbook tape count @{term "k_tm M"} --- \<^emph>\<open>no\<close> extra tape.  Tape
+  textbook tape count @{term "k_ktm M"} --- \<^emph>\<open>no\<close> extra tape.  Tape
   \<open>0\<close> initially holds the user's raw input (matching the substrate
   convention); once the encoder has consumed it, that spent tape is
   reused as one of M's work tapes rather than a fresh tape being
-  prepended (faithful \<open>k\<close>-tape section below).\<close>
+  prepended (see the section on the tape layout below).\<close>
 
 
 subsection \<open>Wrap state space\<close>
@@ -75,23 +74,22 @@ datatype ('q, 'a, 'b) wrap_state =
   | W_Reset
   | W_Disp
   | W_Run 'q
-  | W_Rej
 
-text \<open>The wrap's state set: @{text W_Init}, @{text W_Reset},
-  @{text W_Disp}, @{text W_Rej} as singletons; @{text W_Buf}
+text \<open>The wrap's state set: @{text W_Init}, @{text W_Reset} and
+  @{text W_Disp} as singletons; @{text W_Buf}
   variants ranging over partial buffers of length \<open><c\<close> with
   symbols drawn from the user-facing alphabet; and @{text W_Run}
   variants ranging over M's state set.  Polynomial in
-  \<open>|\<Sigma>u| ^ c + |Q_tm M|\<close>; finite when both factors are.\<close>
+  \<open>|\<Sigma>u| ^ c + |Q_ktm M|\<close>; finite when both factors are.\<close>
 
 definition wrap_state_set ::
-  "('q, 'b) mttm \<Rightarrow> nat \<Rightarrow> 'a set
+  "('q, 'b) ktm \<Rightarrow> nat \<Rightarrow> 'a set
    \<Rightarrow> ('q, 'a, 'b) wrap_state set"
 where
   "wrap_state_set M c \<Sigma>u =
-     {W_Init, W_Reset, W_Disp, W_Rej}
+     {W_Init, W_Reset, W_Disp}
      \<union> {W_Buf ws | ws. length ws < c \<and> set ws \<subseteq> \<Sigma>u}
-     \<union> W_Run ` Q_tm M"
+     \<union> W_Run ` Q_ktm M"
 
 
 subsection \<open>Generic single-tape rewind\<close>
@@ -99,59 +97,58 @@ subsection \<open>Generic single-tape rewind\<close>
 text \<open>The one piece of the wrap \<open>\<delta>\<close>-relation kept in the base: a generic
   family for rewinding a single tape's head back to its \<open>le\<close> marker.  The
   full wrap transition relations — the phase-local encoder, reset, dispatch,
-  and lifted-M families — are assembled downstream, on the \<open>_gen\<close> builders
-  shared with the plant wrap \<open>wrap_delta\<close>; only this rewind family, reused
-  verbatim there, lives at the base.\<close>
+  and lifted-M families — are assembled downstream into \<open>wrap_delta\<close>, from
+  the \<open>_gen\<close> builders; only this rewind family, used there unchanged, lives
+  at the base.\<close>
 
 text \<open>\<open>wrap_rewind_loop_delta_gen qf j K M\<close> walks tape @{text j}'s head one
   cell left per step while it reads a non-\<open>le\<close> symbol, looping in state
   @{text qf} and leaving every other tape idle.  Parameterised over the tape
   index @{text j} and the blank-tail boundary @{text K}, so it rewinds
-  \<^emph>\<open>any\<close> tape at either wrap tape count (@{term "Suc (k_tm M)"} or the
-  faithful @{term "k_tm M"}); the loop state @{text qf} lets it splice into any
-  phase.  The plant wrap instantiates it at @{term "j = Suc 0"} to rewind the
-  storage tape (\<open>wrap_delta\<close>'s \<open>rloop\<close> family).\<close>
+  \<^emph>\<open>any\<close> tape at any tape count; the loop state @{text qf} lets it splice
+  into any phase.  The wrap instantiates it at @{term "j = Suc 0"} to rewind
+  the storage tape (\<open>wrap_delta\<close>'s \<open>rloop\<close> family).\<close>
 
 definition wrap_rewind_loop_delta_gen ::
-  "('q, 'a, 'b) wrap_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> 'a set
+  "('q, 'a, 'b) wrap_state \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_rewind_loop_delta_gen qf j K M \<Sigma>u =
-     { (qf, sym, qf, sym, \<lambda>t. if t = j then dir.L else dir.N)
+     { (qf, sym, qf, sym, \<lambda>t. if t = j then MoveL else MoveN)
        | sym.
-           sym j \<noteq> Enc (le_tm M)
-           \<and> (\<forall>i\<ge>K. sym i = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           sym j \<noteq> Enc (le_ktm M)
+           \<and> (\<forall>i\<ge>K. sym i = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 
 subsection \<open>User-facing language and time-bounded acceptance\<close>
 
 text \<open>The user-facing language of a
-  wrap-shaped machine is the @{const Lang_mttm} preimage under
+  wrap-shaped machine is the @{const Lang_ktm} preimage under
   the @{text Raw} embedding: a user input @{text w} is in the
   user-facing language iff its @{text Raw}-embedded form is in
   the wrap's substrate-level language.  Same routing for
   time-bounded acceptance.  These predicates are stated over
-  arbitrary @{type mttm} values whose alphabet is a
+  arbitrary @{type ktm} values whose alphabet is a
   @{type wrap_alphabet}; their primary use is on the encoding-wrap
-  machines built downstream (the plant wrap \<open>encoding_wrap\<close>), but the
+  machine built downstream (\<open>encoding_wrap\<close>), but the
   definitions are alphabet-shape-agnostic.\<close>
 
 definition Lang_user_wrap ::
-  "('q, ('a, 'b) wrap_alphabet) mttm \<Rightarrow> 'a list set"
+  "('q, ('a, 'b) wrap_alphabet) ktm \<Rightarrow> 'a list set"
 where
-  "Lang_user_wrap M'' = {w. map Raw w \<in> Lang_mttm M''}"
+  "Lang_user_wrap M'' = {w. map Raw w \<in> Lang_ktm M''}"
 
 definition accepts_in_time_user_wrap ::
-  "('q, ('a, 'b) wrap_alphabet) mttm
+  "('q, ('a, 'b) wrap_alphabet) ktm
    \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> bool"
 where
   "accepts_in_time_user_wrap M'' w t =
-     accepts_in_time_mttm M'' (map Raw w) t"
+     accepts_in_time_ktm M'' (map Raw w) t"
 
 subsection \<open>Encoder image and state-set finiteness\<close>
 
@@ -186,15 +183,15 @@ text \<open>Helper: the wrap state set is finite when M is valid and the
   user alphabet is finite.  @{text W_Buf}'s payload range is finite
   because length is bounded by @{term c} and entries are drawn from
   the finite @{term \<Sigma>u}; @{text W_Run}'s payload range is finite
-  because @{term "Q_tm M"} is finite by @{thm valid_mttm_finite_Q}.\<close>
+  because @{term "Q_ktm M"} is finite by @{thm valid_ktm_finite_Q}.\<close>
 
 lemma finite_wrap_state_set:
-  assumes "valid_mttm M"
+  assumes "valid_ktm M"
       and "finite \<Sigma>u"
   shows "finite (wrap_state_set M c \<Sigma>u)"
 proof -
-  have fin_Q: "finite (Q_tm M)"
-    by (rule valid_mttm_finite_Q[OF assms(1)])
+  have fin_Q: "finite (Q_ktm M)"
+    by (rule valid_ktm_finite_Q[OF assms(1)])
   have fin_buf: "finite {W_Buf ws | ws. length ws < c \<and> set ws \<subseteq> \<Sigma>u}"
   proof -
     have "{ws. length ws < c \<and> set ws \<subseteq> \<Sigma>u} \<subseteq> {ws. set ws \<subseteq> \<Sigma>u \<and> length ws \<le> c}"
@@ -210,11 +207,11 @@ proof -
       by blast
     ultimately show ?thesis by metis
   qed
-  have fin_run: "finite (W_Run ` Q_tm M)"
+  have fin_run: "finite (W_Run ` Q_ktm M)"
     using fin_Q by (rule finite_imageI)
-  have "finite ({W_Init, W_Reset, W_Disp, W_Rej}
+  have "finite ({W_Init, W_Reset, W_Disp}
                   \<union> {W_Buf ws | ws. length ws < c \<and> set ws \<subseteq> \<Sigma>u}
-                  \<union> W_Run ` Q_tm M)"
+                  \<union> W_Run ` Q_ktm M)"
     using fin_buf fin_run by simp
   thus ?thesis
     unfolding wrap_state_set_def by simp
@@ -228,13 +225,13 @@ text \<open>Structural facts about the encoder image @{const wrap_enc}, which ch
   block (@{text wrap_enc_nth}) and of the final short block
   (@{text wrap_enc_nth_partial}), the length of the packed sequence
   (@{text length_wrap_enc}), and the tape-alphabet membership of every packed
-  symbol --- each lies in the @{text Enc}-image of @{term "\<Gamma>_tm M"}
+  symbol --- each lies in the @{text Enc}-image of @{term "\<Gamma>_ktm M"}
   (@{text wrap_enc_in_Gamma}), is distinct from the @{text le} marker
-  (@{text wrap_enc_ne_le}), and lies in @{term "Sigma_tm M"} whenever the
+  (@{text wrap_enc_ne_le}), and lies in @{term "Sigma_ktm M"} whenever the
   packer contracts into it (@{text wrap_enc_in_Sigma}, with that packing
   side-condition isolated in @{text pack_take_in_set_wrap_enc}).
 
-  This is shared base machinery.  The faithful \<open>k\<close>-tape encoder simulation ---
+  This is shared base machinery.  The encoder simulation ---
   the \<open>_gen\<close> / \<open>_B\<close> transition chains that write @{const wrap_enc} onto the
   storage tape --- reads these invariants back to certify the encoded input; and
   the AE-wrap glue @{text wrap_enc_eq_encode_input} builds on them to match
@@ -436,10 +433,10 @@ proof (induction "length w" arbitrary: w rule: less_induct)
 qed
 
 text \<open>Derived safety lemmas for entries of @{const wrap_enc}: under the pack
-  contracts (@{term "pack (take c (drop (i * c) w)) \<in> \<Gamma>_tm M"} and the
-  \<open>\<noteq> le_tm M\<close> companion, universally quantified over indices @{term i} with
+  contracts (@{term "pack (take c (drop (i * c) w)) \<in> \<Gamma>_ktm M"} and the
+  \<open>\<noteq> le_ktm M\<close> companion, universally quantified over indices @{term i} with
   @{term "i * c < length w"}), every entry of @{term "wrap_enc pack c w"} lies in
-  @{term "\<Gamma>_tm M"} and differs from @{term "le_tm M"}.  Proof case-splits on
+  @{term "\<Gamma>_ktm M"} and differs from @{term "le_ktm M"}.  Proof case-splits on
   whether the entry is a full block (@{term "j < length w div c"}, served by
   @{thm[source] wrap_enc_nth}) or the trailing partial block
   (@{term "j = length w div c"} forced by length, served by
@@ -457,8 +454,8 @@ text \<open>Bridge for the reverse direction (consumed by @{text wrap_language_r
   (@{term "(Suc i) * c \<le> length w"}, served by @{thm[source] wrap_enc_nth}) or the
   trailing partial block (forced when @{term "(Suc i) * c > length w"} and
   @{term "i * c < length w"}, served by @{thm[source] wrap_enc_nth_partial}).  Composing
-  with @{prop "set (wrap_enc pack c w) \<subseteq> Sigma_tm M"} (from
-  @{text "wrap_enc pack c w \<in> Lang_mttm M"}) yields the pack contracts that
+  with @{prop "set (wrap_enc pack c w) \<subseteq> Sigma_ktm M"} (from
+  @{text "wrap_enc pack c w \<in> Lang_ktm M"}) yields the pack contracts that
   @{text encoder_phase_terminates} / @{text reset_phase_terminates} need.\<close>
 
 lemma pack_take_in_set_wrap_enc:
@@ -529,12 +526,17 @@ proof -
   qed
 qed
 
-lemma wrap_enc_in_Gamma:
+text \<open>The \<open>j\<close>-th output cell is the packing of the \<open>j\<close>-th input block,
+  which starts inside the input; this holds for the final, partial block
+  too, since \<^term>\<open>take c\<close> of a shorter remainder is that remainder.
+  Every property of the output cells follows from this and the matching
+  property of \<open>pack\<close> on blocks.\<close>
+
+lemma wrap_enc_nth_block:
   assumes c_pos: "0 < c"
-      and pack_contract_in:
-        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<in> \<Gamma>_tm M"
       and j_lt: "j < length (wrap_enc pack c w)"
-    shows "wrap_enc pack c w ! j \<in> \<Gamma>_tm M"
+    shows "j * c < length w
+           \<and> wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
 proof -
   have len_eq:
     "length (wrap_enc pack c w)
@@ -555,7 +557,7 @@ proof -
     have nth_eq:
       "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
       by (rule wrap_enc_nth[OF c_pos Sjc_le])
-    show ?thesis using nth_eq pack_contract_in[OF jc_lt] by simp
+    show ?thesis using jc_lt nth_eq ..
   next
     case False
     with j_lt len_eq have j_eq: "j = length w div c"
@@ -580,150 +582,63 @@ proof -
       using len_drop mod_lt_c by simp
     have nth_eq': "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
       using nth_eq take_eq j_eq by simp
-    show ?thesis using nth_eq' pack_contract_in[OF jc_lt] by simp
+    show ?thesis using jc_lt nth_eq' ..
   qed
 qed
+
+lemma wrap_enc_in_Gamma:
+  assumes c_pos: "0 < c"
+      and pack_contract_in:
+        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<in> \<Gamma>_ktm M"
+      and j_lt: "j < length (wrap_enc pack c w)"
+    shows "wrap_enc pack c w ! j \<in> \<Gamma>_ktm M"
+  using wrap_enc_nth_block [OF c_pos j_lt] pack_contract_in by simp
 
 lemma wrap_enc_ne_le:
   assumes c_pos: "0 < c"
       and pack_contract_ne_le:
-        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<noteq> le_tm M"
+        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<noteq> le_ktm M"
       and j_lt: "j < length (wrap_enc pack c w)"
-    shows "wrap_enc pack c w ! j \<noteq> le_tm M"
-proof -
-  have len_eq:
-    "length (wrap_enc pack c w)
-       = length w div c + (if length w mod c = 0 then 0 else 1)"
-    by (rule length_wrap_enc[OF c_pos])
-  have q_c_le: "(length w div c) * c \<le> length w"
-    by (rule div_times_less_eq_dividend)
-  show ?thesis
-  proof (cases "j < length w div c")
-    case True
-    hence Suc_j_le_q: "Suc j \<le> length w div c" by simp
-    have Sjc_le_qc: "(Suc j) * c \<le> (length w div c) * c"
-      by (rule mult_le_mono1[OF Suc_j_le_q])
-    hence Sjc_le: "(Suc j) * c \<le> length w" using q_c_le by linarith
-    have jc_lt_Sjc: "j * c < Suc j * c" using c_pos by simp
-    have jc_lt: "j * c < length w"
-      using jc_lt_Sjc Sjc_le by linarith
-    have nth_eq:
-      "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
-      by (rule wrap_enc_nth[OF c_pos Sjc_le])
-    show ?thesis using nth_eq pack_contract_ne_le[OF jc_lt] by simp
-  next
-    case False
-    with j_lt len_eq have j_eq: "j = length w div c"
-                          and mod_ne: "length w mod c \<noteq> 0"
-      by (auto split: if_splits)
-    have nth_eq:
-      "wrap_enc pack c w ! j = pack (drop ((length w div c) * c) w)"
-      using j_eq wrap_enc_nth_partial[OF c_pos mod_ne] by simp
-    have div_mod_eq: "(length w div c) * c + length w mod c = length w"
-      by (rule div_mult_mod_eq)
-    have mod_pos: "0 < length w mod c" using mod_ne by simp
-    have jc_eq: "j * c = (length w div c) * c" using j_eq by simp
-    have jc_lt: "j * c < length w"
-      using jc_eq div_mod_eq mod_pos by linarith
-    have len_drop_basic: "length (drop (j * c) w) = length w - j * c"
-      by simp
-    have len_drop: "length (drop (j * c) w) = length w mod c"
-      using len_drop_basic jc_eq div_mod_eq by linarith
-    have mod_lt_c: "length w mod c < c"
-      using c_pos by (rule mod_less_divisor)
-    have take_eq: "take c (drop (j * c) w) = drop (j * c) w"
-      using len_drop mod_lt_c by simp
-    have nth_eq': "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
-      using nth_eq take_eq j_eq by simp
-    show ?thesis using nth_eq' pack_contract_ne_le[OF jc_lt] by simp
-  qed
-qed
+    shows "wrap_enc pack c w ! j \<noteq> le_ktm M"
+  using wrap_enc_nth_block [OF c_pos j_lt] pack_contract_ne_le by simp
 
 text \<open>Companion to @{thm[source] wrap_enc_in_Gamma} for the Sigma alphabet (the
   tightened pack-image discipline from the 2026-05-20 Sigma-tightening of the
   buffer-close delta-families).  Used in the forward direction of
   @{text wrap_language} to conclude @{prop "set (wrap_enc pack c w) \<subseteq>
-  Sigma_tm M"} from the pack-contracts-in-Sigma derived from a wrap-accepting
+  Sigma_ktm M"} from the pack-contracts-in-Sigma derived from a wrap-accepting
   trace.\<close>
 
 lemma wrap_enc_in_Sigma:
   assumes c_pos: "0 < c"
       and pack_contract_in_Sigma:
-        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<in> Sigma_tm M"
+        "\<And>i. i * c < length w \<Longrightarrow> pack (take c (drop (i * c) w)) \<in> Sigma_ktm M"
       and j_lt: "j < length (wrap_enc pack c w)"
-    shows "wrap_enc pack c w ! j \<in> Sigma_tm M"
-proof -
-  have len_eq:
-    "length (wrap_enc pack c w)
-       = length w div c + (if length w mod c = 0 then 0 else 1)"
-    by (rule length_wrap_enc[OF c_pos])
-  have q_c_le: "(length w div c) * c \<le> length w"
-    by (rule div_times_less_eq_dividend)
-  show ?thesis
-  proof (cases "j < length w div c")
-    case True
-    hence Suc_j_le_q: "Suc j \<le> length w div c" by simp
-    have Sjc_le_qc: "(Suc j) * c \<le> (length w div c) * c"
-      by (rule mult_le_mono1[OF Suc_j_le_q])
-    hence Sjc_le: "(Suc j) * c \<le> length w" using q_c_le by linarith
-    have jc_lt_Sjc: "j * c < Suc j * c" using c_pos by simp
-    have jc_lt: "j * c < length w"
-      using jc_lt_Sjc Sjc_le by linarith
-    have nth_eq:
-      "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
-      by (rule wrap_enc_nth[OF c_pos Sjc_le])
-    show ?thesis using nth_eq pack_contract_in_Sigma[OF jc_lt] by simp
-  next
-    case False
-    with j_lt len_eq have j_eq: "j = length w div c"
-                          and mod_ne: "length w mod c \<noteq> 0"
-      by (auto split: if_splits)
-    have nth_eq:
-      "wrap_enc pack c w ! j = pack (drop ((length w div c) * c) w)"
-      using j_eq wrap_enc_nth_partial[OF c_pos mod_ne] by simp
-    have div_mod_eq: "(length w div c) * c + length w mod c = length w"
-      by (rule div_mult_mod_eq)
-    have mod_pos: "0 < length w mod c" using mod_ne by simp
-    have jc_eq: "j * c = (length w div c) * c" using j_eq by simp
-    have jc_lt: "j * c < length w"
-      using jc_eq div_mod_eq mod_pos by linarith
-    have len_drop_basic: "length (drop (j * c) w) = length w - j * c"
-      by simp
-    have len_drop: "length (drop (j * c) w) = length w mod c"
-      using len_drop_basic jc_eq div_mod_eq by linarith
-    have mod_lt_c: "length w mod c < c"
-      using c_pos by (rule mod_less_divisor)
-    have take_eq: "take c (drop (j * c) w) = drop (j * c) w"
-      using len_drop mod_lt_c by simp
-    have nth_eq': "wrap_enc pack c w ! j = pack (take c (drop (j * c) w))"
-      using nth_eq take_eq j_eq by simp
-    show ?thesis using nth_eq' pack_contract_in_Sigma[OF jc_lt] by simp
-  qed
-qed
+    shows "wrap_enc pack c w ! j \<in> Sigma_ktm M"
+  using wrap_enc_nth_block [OF c_pos j_lt] pack_contract_in_Sigma by simp
 
-section \<open>Faithful (k-tape) encoding wrap: transpose primitives\<close>
+section \<open>The wrap's tape layout: the transposition\<close>
 
-text \<open>The faithful @{text k}-tape encoding wrap runs an alphabet-enlarged
-  machine M on exactly @{term "k_tm M"} physical tapes — the textbook tape
-  count, matching the textbook @{text "k > 1"}.  The obvious encoding wrap would
-  prepend a dedicated raw-input tape and run M on physical tapes
-  @{text "1 \<dots> k"}, costing @{term "Suc (k_tm M)"} tapes; the faithful
-  variant instead reuses the spent input tape.  After the encoder has written
-  the encoded input onto physical tape @{text 1} (= M's tape @{text 0}),
-  physical tape @{text 0} is blanked and serves as M's tape @{text 1}, and the
-  run phase \<^emph>\<open>transposes\<close> physical tapes @{text 0} and @{text 1}
+text \<open>The encoding wrap runs an alphabet-enlarged machine M on exactly
+  @{term "k_ktm M"} physical tapes, the same number of tapes as M.  The
+  obvious encoding wrap would add a tape for the raw input and run M on
+  physical tapes @{text "1 \<dots> k"}, using @{term "Suc (k_ktm M)"} tapes; this
+  one reuses the input tape instead.  The encoder writes the encoded input
+  onto physical tape @{text 1}, which serves as M's tape @{text 0}; physical
+  tape @{text 0}, once its input has been read, serves as M's tape @{text 1}.
+  So the run phase \<^emph>\<open>transposes\<close> physical tapes @{text 0} and @{text 1}
   (M's tape @{text i} lives on physical tape @{term "wrap_tau i"}).  This is
   Hopcroft and Ullman's ``use the storage tape as the input tape and the old
   input tape as a storage tape''
   \<^cite>\<open>\<open>p.~290\<close> in "Hopcroft1979:introduction"\<close>, and needs
-  @{term "k_tm M \<ge> 2"} (the textbook @{text "k > 1"}).
-  No substrate change: the leftward blanking walk stops at the existing
-  @{text le} (LE discipline clause 1) and writes no fresh @{text le}.
+  @{term "k_ktm M \<ge> 2"} (the textbook @{text "k > 1"}).  How the reused
+  tape is made ready for M, by writing a fresh @{text le} past the consumed
+  input rather than rewinding over it, is the subject of the next theory.
 
   This section introduces the tape transposition, the boundary-parameterised
-  encoder families, and the transposed run relation — purely additive
-  definitions over the base wrap types above; they are assembled into the
-  plant-\<open>le\<close> combinator \<open>wrap_delta\<close> downstream.\<close>
+  encoder families, and the transposed run relation, all definitions over
+  the wrap types above; they are assembled into the combinator
+  \<open>wrap_delta\<close> downstream.\<close>
 
 
 subsection \<open>The tape transposition\<close>
@@ -759,125 +674,125 @@ lemma wrap_tau_lt2: "wrap_tau p < 2 \<longleftrightarrow> p < 2"
 subsection \<open>Boundary-parameterised encoder families\<close>
 
 text \<open>The six encoder phase families, generalised over the in-range tape
-  boundary @{term K} and instantiated below at the faithful tape count
-  @{term "K = k_tm M"}.  Each read / write / head action addresses only
+  boundary @{term K} and instantiated downstream at M's tape count
+  @{term "K = k_ktm M"}.  Each read / write / head action addresses only
   physical tapes @{text 0} and @{text 1}; @{term K} marks the boundary above
   which tapes are out of range and blank.  Stating the families over the
   boundary @{term K} keeps the encoder-correctness lemmas independent of the
   exact tape count.\<close>
 
 definition wrap_init_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm
+  "nat \<Rightarrow> ('q, 'b) ktm
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_init_delta_gen K M =
      { (W_Init,
-        \<lambda>t. if t < K then Enc (le_tm M) else Enc (bl_tm M),
+        \<lambda>t. if t < K then Enc (le_ktm M) else Enc (bl_ktm M),
         W_Buf [],
-        \<lambda>t. if t < K then Enc (le_tm M) else Enc (bl_tm M),
-        \<lambda>t. case t of 0 \<Rightarrow> dir.R
-                    | Suc k \<Rightarrow> (if k = 0 then dir.R else dir.N)) }"
+        \<lambda>t. if t < K then Enc (le_ktm M) else Enc (bl_ktm M),
+        \<lambda>t. case t of 0 \<Rightarrow> MoveR
+                    | Suc k \<Rightarrow> (if k = 0 then MoveR else MoveN)) }"
 
 definition wrap_buf_extend_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> nat \<Rightarrow> 'a set
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> nat \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_buf_extend_delta_gen K M c \<Sigma>u =
      { (W_Buf ws, sym, W_Buf (ws @ [a]), sym,
-        \<lambda>t. case t of 0 \<Rightarrow> dir.R | _ \<Rightarrow> dir.N)
+        \<lambda>t. case t of 0 \<Rightarrow> MoveR | _ \<Rightarrow> MoveN)
        | ws a sym.
            length ws + 1 < c \<and> a \<in> \<Sigma>u \<and> set ws \<subseteq> \<Sigma>u
            \<and> sym 0 = Raw a
-           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 definition wrap_buf_close_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a set
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_buf_close_delta_gen K M pack c \<Sigma>u =
      { (W_Buf ws, sym, W_Buf [],
         (\<lambda>t. case t of Suc k \<Rightarrow> (if k = 0 then Enc (pack (ws @ [a]))
                                 else sym (Suc k))
                      | 0 \<Rightarrow> sym 0),
-        \<lambda>t. case t of 0 \<Rightarrow> dir.R
-                    | Suc k \<Rightarrow> (if k = 0 then dir.R else dir.N))
+        \<lambda>t. case t of 0 \<Rightarrow> MoveR
+                    | Suc k \<Rightarrow> (if k = 0 then MoveR else MoveN))
        | ws a sym.
            length ws + 1 = c \<and> a \<in> \<Sigma>u \<and> set ws \<subseteq> \<Sigma>u
            \<and> sym 0 = Raw a
-           \<and> sym (Suc 0) \<noteq> Enc (le_tm M)
-           \<and> pack (ws @ [a]) \<in> Sigma_tm M
-           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           \<and> sym (Suc 0) \<noteq> Enc (le_ktm M)
+           \<and> pack (ws @ [a]) \<in> Sigma_ktm M
+           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 definition wrap_buf_empty_end_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> 'a set
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_buf_empty_end_delta_gen K M \<Sigma>u =
-     { (W_Buf [], sym, W_Reset, sym, \<lambda>_. dir.N)
+     { (W_Buf [], sym, W_Reset, sym, \<lambda>_. MoveN)
        | sym.
-           sym 0 = Enc (bl_tm M)
-           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           sym 0 = Enc (bl_ktm M)
+           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 definition wrap_buf_nonempty_end_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a set
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_buf_nonempty_end_delta_gen K M pack c \<Sigma>u =
      { (W_Buf ws, sym, W_Reset,
         (\<lambda>t. case t of Suc k \<Rightarrow> (if k = 0 then Enc (pack ws)
                                 else sym (Suc k))
                      | 0 \<Rightarrow> sym 0),
-        \<lambda>t. case t of Suc k \<Rightarrow> (if k = 0 then dir.R else dir.N)
-                    | 0 \<Rightarrow> dir.N)
+        \<lambda>t. case t of Suc k \<Rightarrow> (if k = 0 then MoveR else MoveN)
+                    | 0 \<Rightarrow> MoveN)
        | ws sym.
            ws \<noteq> [] \<and> length ws < c \<and> set ws \<subseteq> \<Sigma>u
-           \<and> sym 0 = Enc (bl_tm M)
-           \<and> sym (Suc 0) \<noteq> Enc (le_tm M)
-           \<and> pack ws \<in> Sigma_tm M
-           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           \<and> sym 0 = Enc (bl_ktm M)
+           \<and> sym (Suc 0) \<noteq> Enc (le_ktm M)
+           \<and> pack ws \<in> Sigma_ktm M
+           \<and> (\<forall>j\<ge>K. sym j = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 definition wrap_disp_delta_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> 'a set
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_disp_delta_gen K M \<Sigma>u =
-     { (W_Disp, sym, W_Run (s_tm M), sym, \<lambda>_. dir.N)
+     { (W_Disp, sym, W_Run (s_ktm M), sym, \<lambda>_. MoveN)
        | sym.
-           (\<forall>j\<ge>K. sym j = Enc (bl_tm M))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           (\<forall>j\<ge>K. sym j = Enc (bl_ktm M))
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
 
 subsection \<open>Transposed run relation\<close>
 
-text \<open>Phase 5, faithful form.  Each M-@{text \<delta>} entry
+text \<open>Phase 5, the run.  Each M-@{text \<delta>} entry
   @{text "(q, \<sigma>, q', \<sigma>', d)"} lifts so that physical tape @{text p} carries
   M's tape @{term "wrap_tau p"}: it is read as @{term "Enc (\<sigma> (wrap_tau p))"},
   written as @{term "Enc (\<sigma>' (wrap_tau p))"}, and moved by
@@ -886,32 +801,32 @@ text \<open>Phase 5, faithful form.  Each M-@{text \<delta>} entry
   tape.\<close>
 
 definition wrap_run_delta ::
-  "('q, 'b) mttm \<Rightarrow> 'a set
+  "('q, 'b) ktm \<Rightarrow> 'a set
    \<Rightarrow> (('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
        \<times> ('q, 'a, 'b) wrap_state
        \<times> (nat \<Rightarrow> ('a, 'b) wrap_alphabet)
-       \<times> (nat \<Rightarrow> dir)) set"
+       \<times> (nat \<Rightarrow> move)) set"
 where
   "wrap_run_delta M \<Sigma>u =
      { (W_Run q, sym, W_Run q',
         (\<lambda>p. Enc (\<sigma>' (wrap_tau p))),
         (\<lambda>p. d (wrap_tau p)))
        | q \<sigma> q' \<sigma>' d sym.
-           (q, \<sigma>, q', \<sigma>', d) \<in> delta_tm M
+           (q, \<sigma>, q', \<sigma>', d) \<in> delta_ktm M
            \<and> (\<forall>p. sym p = Enc (\<sigma> (wrap_tau p)))
-           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_tm M }"
+           \<and> sym \<in> UNIV \<rightarrow> Raw ` \<Sigma>u \<union> Enc ` \<Gamma>_ktm M }"
 
-section \<open>Faithful (k-tape) encoding wrap: encoder-phase threading\<close>
+section \<open>Configurations of the encoder phase\<close>
 
 text \<open>The boundary-parameterised encoder configurations that the six encoder
   families thread through.  The families address only
   physical tape @{text 0} (reading the raw input) and physical tape @{text 1}
-  (receiving the encoded input); the in-range boundary @{term "k_tm M"} fixes
-  the content of every tape from index @{term "k_tm M"} up (out of range,
+  (receiving the encoded input); the in-range boundary @{term "k_ktm M"} fixes
+  the content of every tape from index @{term "k_ktm M"} up (out of range,
   blank).  The encoder never touches those tapes, so the config-threading
   lemmas are stated generically over the boundary @{term K} and specialised
-  at @{term "K = k_tm M"}.
+  at @{term "K = k_ktm M"}.
 
   The threading reuses the boundary-\<^emph>\<open>independent\<close> @{const wrap_enc}
   lemmas (@{thm[source] length_wrap_enc}, @{thm[source] wrap_enc_nth},
@@ -925,25 +840,25 @@ subsection \<open>Boundary-parameterised encoder configurations\<close>
 text \<open>The post-encoder waypoint: the encoder has finished, state @{text W_Reset},
   physical tape @{text 0} still holding the raw input, physical tape @{text 1}
   holding the full @{const wrap_enc} encoding, both heads at the right end.
-  Generalised over the in-range boundary @{term K}, specialised below at the
-  faithful instance @{term "K = k_tm M"}.\<close>
+  Generalised over the in-range boundary @{term K}, specialised downstream at
+  @{term "K = k_ktm M"}.\<close>
 
 definition post_encoder_config_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list
-   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) mt_config"
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list
+   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) ktc_config"
 where
   "post_encoder_config_gen K M pack c w =
-     Config\<^sub>M W_Reset
+     KConfig W_Reset
        (\<lambda>t n. if t < K
               then (case t of
-                0 \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                0 \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if n \<le> length w then Raw (w ! (n - 1))
-                          else Enc (bl_tm M))
-              | Suc k \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                          else Enc (bl_ktm M))
+              | Suc k \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if k = 0 \<and> n \<le> length (wrap_enc pack c w)
                             then Enc (wrap_enc pack c w ! (n - 1))
-                          else Enc (bl_tm M)))
-              else Enc (bl_tm M))
+                          else Enc (bl_ktm M)))
+              else Enc (bl_ktm M))
        (\<lambda>t. case t of
               0 \<Rightarrow> length w + 1
             | Suc k \<Rightarrow> (if k = 0 then 1 + length (wrap_enc pack c w) else 0))"
@@ -954,21 +869,21 @@ text \<open>Intermediate encoder configuration after @{term i} complete block
   @{text "1 + i"}, physical tape @{text 0} head at @{text "1 + i * c"}.\<close>
 
 definition mid_encoder_config_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat
-   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) mt_config"
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat
+   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) ktc_config"
 where
   "mid_encoder_config_gen K M pack c w i =
-     Config\<^sub>M (W_Buf [])
+     KConfig (W_Buf [])
        (\<lambda>t n. if t < K
               then (case t of
-                0 \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                0 \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if n \<le> length w then Raw (w ! (n - 1))
-                          else Enc (bl_tm M))
-              | Suc k \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                          else Enc (bl_ktm M))
+              | Suc k \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if k = 0 \<and> n \<le> i
                             then Enc (wrap_enc pack c w ! (n - 1))
-                          else Enc (bl_tm M)))
-              else Enc (bl_tm M))
+                          else Enc (bl_ktm M)))
+              else Enc (bl_ktm M))
        (\<lambda>t. case t of
               0 \<Rightarrow> 1 + i * c
             | Suc k \<Rightarrow> (if k = 0 then 1 + i else 0))"
@@ -977,101 +892,79 @@ text \<open>Finer-grained intermediate inside the @{term i}-th cycle, with @{ter
   input symbols already accumulated in the buffer (@{text "0 \<le> j \<le> c - 1"}).\<close>
 
 definition mid_buf_extending_config_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list
    \<Rightarrow> nat \<Rightarrow> nat
-   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) mt_config"
+   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) ktc_config"
 where
   "mid_buf_extending_config_gen K M pack c w i j =
-     Config\<^sub>M (W_Buf (take j (drop (i * c) w)))
+     KConfig (W_Buf (take j (drop (i * c) w)))
        (\<lambda>t n. if t < K
               then (case t of
-                0 \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                0 \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if n \<le> length w then Raw (w ! (n - 1))
-                          else Enc (bl_tm M))
-              | Suc k \<Rightarrow> (if n = 0 then Enc (le_tm M)
+                          else Enc (bl_ktm M))
+              | Suc k \<Rightarrow> (if n = 0 then Enc (le_ktm M)
                           else if k = 0 \<and> n \<le> i
                             then Enc (wrap_enc pack c w ! (n - 1))
-                          else Enc (bl_tm M)))
-              else Enc (bl_tm M))
+                          else Enc (bl_ktm M)))
+              else Enc (bl_ktm M))
        (\<lambda>t. case t of
               0 \<Rightarrow> 1 + i * c + j
             | Suc k \<Rightarrow> (if k = 0 then 1 + i else 0))"
 
-section \<open>Faithful (k-tape) encoding wrap: combined reset and dispatch\<close>
+section \<open>The reset, and the hand-over to the simulation\<close>
 
-text \<open>After the encoder phase the faithful wrap is at
+text \<open>After the encoder phase the wrap is at
   @{const post_encoder_config_gen}: physical tape @{text 0} still holds the raw
-  input (the spent input tape), physical tape @{text 1} holds the encoded input,
-  both heads parked at the right end.  The \<^emph>\<open>combined reset\<close> walks both heads
-  left at once — blanking physical tape @{text 0} (which becomes M's blank work
-  tape @{text 1}) while \<^emph>\<open>preserving\<close> physical tape @{text 1}'s encoded content
-  — each head halting at its own @{text le}; when both read @{text le} the
-  dispatch fires (@{text "W_Reset \<rightarrow> W_Disp \<rightarrow> W_Run (s_tm M)"}).  The
-  resulting configuration is the @{text \<tau>}-lift of M's initial configuration on
-  the encoded input.
-
-  Physical tape @{text 0}'s content evolves with its head as it is blanked,
-  and the two heads walk at different speeds: the encoded tape is no longer
-  than the input tape, so its head reaches @{text le} first and then sits
-  there while the input tape finishes blanking.\<close>
+  input, physical tape @{text 1} holds the encoded input, and both heads are
+  parked at the right end.  The reset rewinds physical tape @{text 1} to its
+  @{text le}, then writes a fresh @{text le} on physical tape @{text 0} under
+  its head and dispatches to M (@{text "W_Reset \<rightarrow> W_Disp \<rightarrow> W_Run (s_ktm M)"});
+  the downstream theory @{text Wrap_Reset} proves this.  This section provides
+  the configurations the reset passes through, and \<open>lift_M_config\<close>,
+  the configuration of M laid out on the wrap's tapes.\<close>
 
 
-subsection \<open>The \<open>\<tau>\<close>-lift of an M-configuration\<close>
+subsection \<open>A configuration of M on the wrap's tapes\<close>
 
 text \<open>Physical tape @{text p} carries M's tape @{term "wrap_tau p"}, encoded.
   No frozen input tape: every physical tape is an @{const Enc}-image of an
   M-tape, so the lift needs no @{text "pack / c / w"} parameters.\<close>
 
 definition lift_M_config ::
-  "('q, 'b) mttm \<Rightarrow> ('b, 'q) mt_config
-   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) mt_config"
+  "('q, 'b) ktm \<Rightarrow> ('b, 'q) ktc_config
+   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) ktc_config"
 where
   "lift_M_config M cM =
-     Config\<^sub>M (W_Run (mt_state cM))
-       (\<lambda>p n. if p < k_tm M then Enc (mt_tape cM (wrap_tau p) n)
-              else Enc (bl_tm M))
-       (\<lambda>p. mt_pos cM (wrap_tau p))"
+     KConfig (W_Run (ktc_state cM))
+       (\<lambda>p n. if p < k_ktm M then Enc (ktc_tape cM (wrap_tau p) n)
+              else Enc (bl_ktm M))
+       (\<lambda>p. ktc_pos cM (wrap_tau p))"
 
 
-subsection \<open>The combined reset configuration\<close>
+subsection \<open>The rewind configuration\<close>
 
-text \<open>State @{text W_Reset}; physical tape @{text 0} head at @{term m0} with the
-  raw input blanked above it (cells @{text "> m0"} are @{text bl}); physical
-  tape @{text 1} head at @{term m1} with the encoded input preserved; tapes
-  @{text "2 \<dots> K-1"} untouched.  Parameterised by the in-range boundary
-  @{term K} and the two head positions.\<close>
+text \<open>The reset rewinds physical tape @{text 1} alone: the configuration is
+  the post-encoder waypoint with that tape's head moved to @{term m1}.
+  Physical tape @{text 0} still holds the raw input with its head just past
+  it, and is not touched until the fresh @{text le} is written.\<close>
 
-definition mid_reset_combined_config_gen ::
-  "nat \<Rightarrow> ('q, 'b) mttm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat \<Rightarrow> nat
-   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) mt_config"
+definition mid_rewind_config_gen ::
+  "nat \<Rightarrow> ('q, 'b) ktm \<Rightarrow> ('a list \<Rightarrow> 'b) \<Rightarrow> nat \<Rightarrow> 'a list \<Rightarrow> nat
+   \<Rightarrow> (('a, 'b) wrap_alphabet, ('q, 'a, 'b) wrap_state) ktc_config"
 where
-  "mid_reset_combined_config_gen K M pack c w m0 m1 =
-     Config\<^sub>M W_Reset
-       (\<lambda>t n. if t < K
-              then (case t of
-                0 \<Rightarrow> (if n = 0 then Enc (le_tm M)
-                          else if n \<le> m0 \<and> n \<le> length w then Raw (w ! (n - 1))
-                          else Enc (bl_tm M))
-              | Suc k \<Rightarrow> (if n = 0 then Enc (le_tm M)
-                          else if k = 0 \<and> n \<le> length (wrap_enc pack c w)
-                            then Enc (wrap_enc pack c w ! (n - 1))
-                          else Enc (bl_tm M)))
-              else Enc (bl_tm M))
-       (\<lambda>t. case t of
-              0 \<Rightarrow> m0
-            | Suc k \<Rightarrow> (if k = 0 then m1 else 0))"
+  "mid_rewind_config_gen K M pack c w m1 =
+     KConfig W_Reset (ktc_tape (post_encoder_config_gen K M pack c w))
+       ((ktc_pos (post_encoder_config_gen K M pack c w))(1 := m1))"
 
-text \<open>Boundary identity: @{const post_encoder_config_gen} is the top of the
-  combined reset — physical tape @{text 0} head at @{term "length w + 1"} (no
-  cell blanked yet, since @{term "n \<le> length w + 1 \<and> n \<le> length w"} collapses
-  to @{term "n \<le> length w"}), physical tape @{text 1} head at
-  @{term "1 + length (wrap_enc pack c w)"}.\<close>
+text \<open>The top of the rewind is the post-encoder waypoint itself, with
+  physical tape @{text 1}'s head at @{term "1 + length (wrap_enc pack c w)"}.\<close>
 
-lemma post_encoder_eq_mid_reset_combined_top:
+lemma post_encoder_eq_mid_rewind_top:
   "post_encoder_config_gen K M pack c w
-     = mid_reset_combined_config_gen K M pack c w
-         (length w + 1) (Suc (length (wrap_enc pack c w)))"
-  unfolding post_encoder_config_gen_def mid_reset_combined_config_gen_def
+     = mid_rewind_config_gen K M pack c w
+         (Suc (length (wrap_enc pack c w)))"
+  unfolding post_encoder_config_gen_def mid_rewind_config_gen_def
   by (simp add: fun_eq_iff split: nat.split)
 
 end
