@@ -68,7 +68,7 @@ fun fold_options xs = fold (fn x =>
   | NONE => I)) xs [];
 
 fun the_pair [x, y] = (x, y)
-  | the_pair _ = raise General.Size;
+  | the_pair _ = raise List.Empty;
 
 fun strip_comb2 (f $ x $ y) = (f, (x, y))
   | strip_comb2 t = raise TERM ("strip_comb2", [t]);
