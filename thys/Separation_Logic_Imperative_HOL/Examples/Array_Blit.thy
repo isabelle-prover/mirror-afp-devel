@@ -75,9 +75,9 @@ subsection "Code Generator Setup"
         src = ArraySlice.slice (src,IntInf.toInt si,SOME (IntInf.toInt len)),
         dst = dst})
 
-    fun array_nth_oo v a i () = Array.sub(a,IntInf.toInt i) handle Subscript => v | Overflow => v
+    fun array_nth_oo v a i () = Array.sub(a,IntInf.toInt i) handle General.Subscript => v | General.Overflow => v
     fun array_upd_oo f i x a () = 
-      (Array.update(a,IntInf.toInt i,x); a) handle Subscript => f () | Overflow => f ()
+      (Array.update(a,IntInf.toInt i,x); a) handle General.Subscript => f () | General.Overflow => f ()
 
 \<close>
 

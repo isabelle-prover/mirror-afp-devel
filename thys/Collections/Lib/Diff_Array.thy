@@ -642,7 +642,7 @@ fun shrink (aref, sz) = case aref of
   (Unsynchronized.ref Invalid) => raise AccessedOldVersion |
   (Unsynchronized.ref (Value a)) => (
     if sz > Array.length a then
-      raise Size
+      raise General.Size
     else (
       aref:=Invalid;
       Unsynchronized.ref (Value (Array.tabulate (sz,fn i => Array.sub (a,i))))
@@ -743,7 +743,7 @@ structure FArray = struct
   fun shrink (aref, sz) = case aref of
     (Unsynchronized.ref (Value a)) => (
       if sz > Array.length a then
-        raise Size
+        raise General.Size
       else (
         Unsynchronized.ref (Value (Array.tabulate (sz,fn i => Array.sub (a,i))))
       )
