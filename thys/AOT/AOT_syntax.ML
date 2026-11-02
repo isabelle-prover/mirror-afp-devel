@@ -127,7 +127,7 @@ fun unconstrain_var
   | unconstrain_var ast = raise Ast.AST
       ("Expected position constrained variable.", [ast])
 fun make_constrained_var sx =
-  (Ast.Appl [Ast.Constant "_constrain", Ast.Variable (Symbol_Pos.implode sx),
+  (Ast.Appl [Ast.Constant "_constrain", Ast.Variable (Symbol_Pos.content sx),
              Ast.Variable (Term_Position.encode
                 [Term_Position.no_syntax (Position.range_position (Symbol_Pos.range sx))])])
 fun implode_pos x = (Symbol_Pos.implode_range (Symbol_Pos.range x) x) |>
