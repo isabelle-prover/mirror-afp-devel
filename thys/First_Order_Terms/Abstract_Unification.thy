@@ -15,12 +15,6 @@ theory Abstract_Unification
 begin
 
 (*TODO: move*)
-lemma foldr_assoc:
-  assumes "\<And>f g h. b (b f g) h = b f (b g h)"
-  shows "foldr b xs (b y z) = b (foldr b xs y) z"
-  using assms by (induct xs) simp_all
-
-(*TODO: move*)
 lemma union_commutes:
   "M + {#x#} + N = M + N + {#x#}"
   "M + mset xs + N = M + N + mset xs"
