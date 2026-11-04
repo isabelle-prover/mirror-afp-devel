@@ -286,16 +286,15 @@ Resources for theories and auxiliary files.
 *)
 \<open>
 signature C_RESOURCES = 
-sig 
-    val parse_files: (Path.T -> Path.T list) -> (theory -> Token.file list) c_parser  
-    val parse_file : (theory -> Token.file ) c_parser 
+sig
+  val parse_file : (theory -> Token.file ) c_parser 
 end
 
 structure C_Resources: C_RESOURCES=
 struct
 (* load files *)
 
-fun parse_files make_paths =
+val parse_file =
   Scan.ahead C_Parse.not_eof -- C_Parse.path_input >> (fn (tok, source) => fn thy =>
     (case C_Token.get_files tok of
       [] =>
@@ -303,15 +302,10 @@ fun parse_files make_paths =
           val master_dir = Resources.master_directory thy;
           val name = Input.string_of source;
           val pos = Input.pos_of source;
-          (* val delimited = Input.is_delimited source; *)
-          val src_paths = make_paths (Path.explode name);
-        in map (fn sd => Resources.read_file master_dir (sd,pos)) src_paths end
-    | files => map Exn.release files));
-
-val parse_file = parse_files single >> (fn f => f #> the_single);
+        in Resources.read_file master_dir (Path.explode name, pos) end
+    | files => the_single (map Exn.release files)));
 
 end;
-
 \<close>
 
 end
