@@ -386,14 +386,14 @@ object AFP_Site_Gen {
     for {
       session <- afp_deps
       if !afp.sessions_structure(session).is_afp
-      (theory, i) <- sessions_deps(session).proper_session_theories.zipWithIndex
-    } theory_page(i, None, session, theory)
+      (thy, i) <- sessions_deps(session).used_theories_proper.zipWithIndex
+    } theory_page(i, None, session, thy.name)
 
     val entry_theories =
       afp.entry_list.map(entry => entry ->
         entry.sessions.map(session => session.name ->
-          (for ((theory, i) <- sessions_deps(session.name).proper_session_theories.zipWithIndex)
-          yield theory_page(i, Some(entry), session.name, theory)))).toMap
+          (for ((thy, i) <- sessions_deps(session.name).used_theories_proper.zipWithIndex)
+          yield theory_page(i, Some(entry), session.name, thy.name)))).toMap
 
 
     /* add entries */

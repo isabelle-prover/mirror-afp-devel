@@ -35,8 +35,8 @@ object AFP_Stats {
     val (loc, thms) =
       (for {
         session <- AFP_Structure.entry_sessions(entry.name)
-        node <- deps(session.name).proper_session_theories
-        lines = split_lines(File.read(node.path)).map(_.trim)
+        thy <- deps(session.name).used_theories_proper
+        lines = split_lines(File.read(thy.name.path)).map(_.trim)
       } yield {
         (lines.count(_.nonEmpty), lines.count(line => theorem_commands.exists(line.startsWith)))
       }).unzip

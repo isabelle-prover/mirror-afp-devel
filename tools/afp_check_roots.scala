@@ -100,7 +100,7 @@ object AFP_Check_Roots {
             entry_dir <- check_dirs.flatMap(entry_dirs)
             sessions = Sessions.parse_root_entries(entry_dir + Sessions.ROOT).map(_.name)
 
-            theory_nodes = sessions.flatMap(deps.apply(_).proper_session_theories)
+            theory_nodes = sessions.flatMap(a => deps.apply(a).used_theories_proper.map(_.name))
             thy_files = theory_nodes.map(node => File.the_relative_path(entry_dir, node.path))
 
             physical_files = File.find_files(entry_dir, pred = File.is_thy, relative = true)
@@ -154,8 +154,8 @@ object AFP_Check_Roots {
           val all_sessions = structure.build_selection(Sessions.Selection(all_sessions = true))
           val deps = structure.selection_deps(Sessions.Selection(all_sessions = true))
           def session_thys(session_name: String): List[(String, String)] =
-            deps(session_name).proper_session_theories.map(node =>
-              Long_Name.base_name(node.theory) -> session_name)
+            deps(session_name).used_theories_proper.map(thy =>
+              Long_Name.base_name(thy.name.theory) -> session_name)
 
           val session_set = sessions.toSet
           val duplicates =
