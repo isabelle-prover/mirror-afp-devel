@@ -222,7 +222,7 @@ where
 | "intround roundTowardNegative y =
     (if y < - largest TYPE(('e ,'f) float) then minus_infinity
      else if y > largest TYPE(('e ,'f) float) then topfloat
-     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<ge> y} y)"
+     else closest (valof) (\<lambda>x. True) {a. is_integral a \<and> valof a \<le> y} y)"
 | "intround roundTowardZero y =
     (if y < - largest TYPE(('e ,'f) float) then bottomfloat
      else if y > largest TYPE(('e ,'f) float) then topfloat
