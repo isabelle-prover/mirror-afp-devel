@@ -787,13 +787,13 @@ proof -
   have "(n choose s) * p ^ (s choose 2) \<le> n^s / fact s * p ^ (s choose 2)"
   proof (intro mult_right_mono)
     show "real (n choose s) \<le> real (n ^ s) / fact s"
-      using binomial_fact_pow[of n s] of_nat_mono
-      by (fastforce simp: divide_simps mult.commute)
+      using of_nat_mono [OF binomial_fact_pow[of n s], where 'a=real]
+      by (simp add: divide_simps mult.commute)
   qed (use p01 in auto)
   also have "\<dots> < 1 / fact s"
     using B by (simp add: divide_simps)
   also have "\<dots> \<le> 1/2"
-    by (smt (verit, best) One_nat_def Suc_1 Suc_leD assms fact_2 fact_mono frac_less2 numeral_3_eq_3)
+    using \<open>s \<ge> 3\<close> fact_2 fact_mono[of 2 s] by simp
   finally show ?thesis .
 qed
 

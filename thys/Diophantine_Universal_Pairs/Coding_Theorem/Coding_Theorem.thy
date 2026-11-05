@@ -137,7 +137,7 @@ qed
 lemma D_bound: "abs D \<le> fact \<delta> * \<L> * \<B>^(n (\<nu>+1))"
 proof -
   have 0: "i\<in>\<delta>_tuples \<Longrightarrow> D_precoeff i \<le> int (fact \<delta>)" for i
-    unfolding D_precoeff_def \<delta>_tuples_def using mchoose_le of_nat_mono by fastforce
+    unfolding D_precoeff_def \<delta>_tuples_def using mchoose_le of_nat_mono by blast
 
   have "D_exponent i \<le> n (\<nu>+1)" for i
     unfolding D_exponent_def by simp

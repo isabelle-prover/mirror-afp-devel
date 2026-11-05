@@ -777,7 +777,7 @@ proof -
           using k_in by auto
         then have "real k / d \<ge> real (d*(h-1))/d"
           using less.prems(1-2) 
-          by (smt (verit, del_insts) frac_le ind_dec linordered_nonzero_semiring_class.of_nat_mono mult_less_cancel1 of_nat_0_le_iff of_nat_0_less_iff)
+          by (smt (verit, del_insts) frac_le ind_dec of_nat_mono mult_less_cancel1 of_nat_0_le_iff of_nat_0_less_iff)
         then have b1: "real k / real d \<ge> h -1"
           using ind_dec by auto
         have "k < d*h"
