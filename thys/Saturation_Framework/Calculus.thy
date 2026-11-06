@@ -406,4 +406,69 @@ proof
     unfolding Liminf_llist_def by auto
 qed
 
+subsection \<open>Changing the Consequence Relation\<close>
+
+text \<open>A calculus and its refutational completeness can be transported to another
+  consequence relation that agrees on entailment of contradictions. No agreement
+  on other conclusions is required. The inference system and redundancy criteria,
+  and hence saturation and derivations, are preserved.\<close>
+
+context calculus
+begin
+
+lemma calculus_with_equivalent_entailment:
+  assumes cons: "consequence_relation Bot entails'"
+    and bot_iff: "\<And>B N. B \<in> Bot \<Longrightarrow> (entails' N {B} \<longleftrightarrow> entails N {B})"
+  shows "calculus Bot Inf entails' Red_I Red_F"
+proof -
+  interpret new: consequence_relation Bot entails' by (rule cons)
+  show ?thesis
+  proof
+    show "Red_I N \<subseteq> Inf" for N by (rule Red_I_to_Inf)
+    show "B \<in> Bot \<Longrightarrow> entails' N {B} \<Longrightarrow> entails' (N - Red_F N) {B}" for B N
+      using bot_iff Red_F_Bot by blast
+    show "N \<subseteq> N' \<Longrightarrow> Red_F N \<subseteq> Red_F N'" for N N' by (rule Red_F_of_subset)
+    show "N \<subseteq> N' \<Longrightarrow> Red_I N \<subseteq> Red_I N'" for N N' by (rule Red_I_of_subset)
+    show "N' \<subseteq> Red_F N \<Longrightarrow> Red_F N \<subseteq> Red_F (N - N')" for N N'
+      by (rule Red_F_of_Red_F_subset)
+    show "N' \<subseteq> Red_F N \<Longrightarrow> Red_I N \<subseteq> Red_I (N - N')" for N N'
+      by (rule Red_I_of_Red_F_subset)
+    show "\<iota> \<in> Inf \<Longrightarrow> concl_of \<iota> \<in> N \<Longrightarrow> \<iota> \<in> Red_I N" for \<iota> N
+      by (rule Red_I_of_Inf_to_N)
+  qed
+qed
+
+end
+
+context statically_complete_calculus
+begin
+
+lemma statically_complete_with_equivalent_entailment:
+  assumes cons: "consequence_relation Bot entails'"
+    and bot_iff: "\<And>B N. B \<in> Bot \<Longrightarrow> (entails' N {B} \<longleftrightarrow> entails N {B})"
+  shows "statically_complete_calculus Bot Inf entails' Red_I Red_F"
+proof -
+  interpret new: calculus Bot Inf entails' Red_I Red_F
+    by (rule calculus_with_equivalent_entailment[OF cons bot_iff])
+  show ?thesis
+    by unfold_locales (use statically_complete bot_iff in blast)
+qed
+
+end
+
+context dynamically_complete_calculus
+begin
+
+lemma dynamically_complete_with_equivalent_entailment:
+  assumes cons: "consequence_relation Bot entails'"
+    and bot_iff: "\<And>B N. B \<in> Bot \<Longrightarrow> (entails' N {B} \<longleftrightarrow> entails N {B})"
+  shows "dynamically_complete_calculus Bot Inf entails' Red_I Red_F"
+proof -
+  interpret new: statically_complete_calculus Bot Inf entails' Red_I Red_F
+    by (rule statically_complete_with_equivalent_entailment[OF cons bot_iff])
+  show ?thesis by (rule new.dynamically_complete_calculus_axioms)
+qed
+
+end
+
 end

@@ -744,4 +744,148 @@ theorem stat_eq_dyn_ref_comp_fam_inter: "statically_complete_calculus Bot_F Inf_
 
 end
 
+
+subsection \<open>Lifting with an Independent Nonground Consequence Relation\<close>
+
+text \<open>The Herbrand lift remains available as an auxiliary relation. The chosen
+  nonground consequence relation need only agree with it on contradictions.
+  This is the compatibility condition of Section 4.3 of Roos's MSc thesis.
+  Existing inference groundings and redundancy criteria are reused unchanged.\<close>
+
+locale standard_lifting_with_entailment =
+  standard_lifting Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G Bot_F \<G>_F \<G>_I
+  for Bot_F :: "'f set" and Inf_F Bot_G Inf_G entails_G Red_I_G Red_F_G \<G>_F \<G>_I +
+  fixes entails_F :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool"
+  assumes entails_F_consequence: "consequence_relation Bot_F entails_F"
+    and entails_F_bot_iff:
+      "B \<in> Bot_F \<Longrightarrow> (entails_F N {B} \<longleftrightarrow> entails_G (\<G>_Fset N) (\<G>_F B))"
+begin
+
+sublocale chosen: calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>
+  by (rule calculus_with_equivalent_entailment[OF entails_F_consequence])
+    (use entails_F_bot_iff in simp)
+
+theorem stat_ref_comp_with_entailment:
+  assumes ground_complete: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G"
+    and coverage: "\<And>N. chosen.saturated N \<Longrightarrow> ground_Inf_overapproximated N"
+  shows "statically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>"
+proof -
+  interpret lifted: statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>
+    by (rule stat_ref_comp_to_non_ground[OF ground_complete coverage])
+  show ?thesis
+    by (rule lifted.statically_complete_with_equivalent_entailment[OF entails_F_consequence])
+      (use entails_F_bot_iff in simp)
+qed
+
+corollary dyn_ref_comp_with_entailment:
+  assumes "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G"
+    and "\<And>N. chosen.saturated N \<Longrightarrow> ground_Inf_overapproximated N"
+  shows "dynamically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>"
+proof -
+  interpret chosen: statically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>
+    by (rule stat_ref_comp_with_entailment[OF assms])
+  show ?thesis by (rule chosen.dynamically_complete_calculus_axioms)
+qed
+
+end
+
+
+text \<open>Tiebreaker redundancy also depends only on the grounding and order,
+  so the same compatibility condition suffices for the ordered calculus.\<close>
+
+locale tiebreaker_lifting_with_entailment =
+  tiebreaker_lifting Bot_F Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g
+  for Bot_F :: "'f set" and Inf_F Bot_G entails_G Inf_G Red_I_G Red_F_G \<G>_F \<G>_I Prec_F_g +
+  fixes entails_F :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool"
+  assumes entails_F_consequence: "consequence_relation Bot_F entails_F"
+    and entails_F_bot_iff:
+      "B \<in> Bot_F \<Longrightarrow> (entails_F N {B} \<longleftrightarrow> entails_G (\<G>_Fset N) (\<G>_F B))"
+begin
+
+sublocale chosen: calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>
+  by (rule calculus_with_equivalent_entailment[OF entails_F_consequence])
+    (use entails_F_bot_iff in simp)
+
+theorem stat_ref_comp_with_entailment:
+  assumes ground_complete: "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G"
+    and coverage: "\<And>N. chosen.saturated N \<Longrightarrow> ground_Inf_overapproximated N"
+  shows "statically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>"
+proof -
+  have complete: "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> empty_ord.Red_F_\<G>"
+    by (rule empty_ord.stat_ref_comp_to_non_ground[OF ground_complete coverage])
+  interpret lifted: statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>
+    using complete static_empty_order_equiv_static by blast
+  show ?thesis
+    by (rule lifted.statically_complete_with_equivalent_entailment[OF entails_F_consequence])
+      (use entails_F_bot_iff in simp)
+qed
+
+corollary dyn_ref_comp_with_entailment:
+  assumes "statically_complete_calculus Bot_G Inf_G entails_G Red_I_G Red_F_G"
+    and "\<And>N. chosen.saturated N \<Longrightarrow> ground_Inf_overapproximated N"
+  shows "dynamically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>"
+proof -
+  interpret chosen: statically_complete_calculus Bot_F Inf_F entails_F Red_I_\<G> Red_F_\<G>
+    by (rule stat_ref_comp_with_entailment[OF assms])
+  show ?thesis by (rule chosen.dynamically_complete_calculus_axioms)
+qed
+
+end
+
+text \<open>For an intersection it suffices to agree on contradictions with the
+  intersection of the lifted relations, rather than with each member separately.\<close>
+
+locale lifting_intersection_with_entailment =
+  lifting_intersection Inf_F Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q Bot_F
+    \<G>_F_q \<G>_I_q Prec_F_g
+  for Bot_F :: "'f set" and Inf_F Bot_G Q Inf_G_q entails_q Red_I_q Red_F_q
+    \<G>_F_q \<G>_I_q Prec_F_g +
+  fixes entails_F :: "'f set \<Rightarrow> 'f set \<Rightarrow> bool"
+  assumes entails_F_consequence: "consequence_relation Bot_F entails_F"
+    and entails_F_bot_iff:
+      "B \<in> Bot_F \<Longrightarrow> (entails_F N {B} \<longleftrightarrow>
+        (\<forall>q \<in> Q. entails_q q (\<G>_Fset_q q N) (\<G>_F_q q B)))"
+begin
+
+lemma entails_F_bot_iff_lifted:
+  "B \<in> Bot_F \<Longrightarrow> (entails_F N {B} \<longleftrightarrow> entails N {B})"
+  using entails_F_bot_iff unfolding entails_\<G>_def by simp
+
+sublocale chosen: calculus Bot_F Inf_F entails_F Red_I Red_F
+  by (rule calculus_with_equivalent_entailment[OF entails_F_consequence entails_F_bot_iff_lifted])
+
+sublocale chosen_empty_ord: calculus Bot_F Inf_F entails_F Red_I Red_F_\<G>_empty
+  by (rule empty_ord.calculus_with_equivalent_entailment[OF entails_F_consequence entails_F_bot_iff_lifted])
+
+theorem stat_ref_comp_with_entailment:
+  assumes ground_complete:
+      "\<forall>q \<in> Q. statically_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q) (Red_F_q q)"
+    and coverage: "\<And>N. chosen.saturated N \<Longrightarrow> \<exists>q \<in> Q. ground_Inf_overapproximated q N"
+  shows "statically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F"
+    and "statically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F_\<G>_empty"
+proof -
+  have complete: "statically_complete_calculus Bot_F Inf_F entails Red_I Red_F_\<G>_empty"
+    by (rule stat_ref_comp_to_non_ground_fam_inter[OF ground_complete coverage])
+  interpret lifted: statically_complete_calculus Bot_F Inf_F entails Red_I Red_F
+    using complete static_empty_ord_inter_equiv_static_inter by blast
+  show "statically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F"
+    by (rule lifted.statically_complete_with_equivalent_entailment[OF entails_F_consequence entails_F_bot_iff_lifted])
+  interpret lifted_empty: statically_complete_calculus Bot_F Inf_F entails Red_I Red_F_\<G>_empty
+    by (rule complete)
+  show "statically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F_\<G>_empty"
+    by (rule lifted_empty.statically_complete_with_equivalent_entailment[OF entails_F_consequence entails_F_bot_iff_lifted])
+qed
+
+corollary dyn_ref_comp_with_entailment:
+  assumes "\<forall>q \<in> Q. statically_complete_calculus Bot_G (Inf_G_q q) (entails_q q) (Red_I_q q) (Red_F_q q)"
+    and "\<And>N. chosen.saturated N \<Longrightarrow> \<exists>q \<in> Q. ground_Inf_overapproximated q N"
+  shows "dynamically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F"
+proof -
+  interpret chosen: statically_complete_calculus Bot_F Inf_F entails_F Red_I Red_F
+    by (rule stat_ref_comp_with_entailment(1)[OF assms])
+  show ?thesis by (rule chosen.dynamically_complete_calculus_axioms)
+qed
+
+end
+
 end
