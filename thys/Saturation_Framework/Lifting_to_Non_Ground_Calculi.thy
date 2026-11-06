@@ -67,8 +67,8 @@ definition Red_F_\<G> :: "'f set \<Rightarrow> 'f set" where
   \<open>Red_F_\<G> N = {C. \<forall>D \<in> \<G>_F C. D \<in> Red_F_G (\<G>_Fset N)}\<close>
 
 (* lem:derived-consequence-relation *)
-lemma consequence_relation_lifted: "consequence_relation Bot_F entails_\<G>"
-proof
+sublocale herbrand: consequence_relation Bot_F "(\<Turnstile>\<G>)"
+proof unfold_locales
   show "Bot_F \<noteq> {}" using Bot_F_not_empty .
 next
   show \<open>B\<in>Bot_F \<Longrightarrow> {B} \<Turnstile>\<G> N\<close> for B N
@@ -572,7 +572,7 @@ proof -
   moreover have "Red_F_\<G>_q q = wf_lift.Red_F_\<G>"
     unfolding Red_F_\<G>_q_def wf_lift.Red_F_\<G>_def by blast
   moreover have "calculus Bot_F Inf_F (entails_\<G>_q q) wf_lift.Red_I_\<G> wf_lift.Red_F_\<G>"
-    by (rule wf_lift.calculus_with_entailment[OF wf_lift.consequence_relation_lifted]) simp
+    by (rule wf_lift.calculus_with_entailment[OF wf_lift.herbrand.consequence_relation_axioms]) simp
   ultimately show ?thesis by simp
 qed
 
@@ -590,8 +590,6 @@ proof -
     unfolding Red_F_\<G>_empty_q_def wf_lift.empty_ord.Red_F_\<G>_def by blast
   moreover have "calculus Bot_F Inf_F (entails_\<G>_q q) wf_lift.Red_I_\<G> wf_lift.empty_ord.Red_F_\<G>"
   proof -
-    interpret lifted: consequence_relation Bot_F "entails_\<G>_q q"
-      by (rule wf_lift.consequence_relation_lifted)
     interpret standard: standard_lifting_with_entailment Bot_F Inf_F Bot_G "Inf_G_q q"
       "entails_q q" "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q" "entails_\<G>_q q"
       by unfold_locales simp
@@ -613,7 +611,7 @@ next
     using qi_in by (metis standard_lifting_family)
 
   show "consequence_relation Bot_F (entails_\<G>_q qi)"
-    by (rule lift.consequence_relation_lifted)
+    by (rule lift.herbrand.consequence_relation_axioms)
 qed
 
 sublocale herbrand: intersection_calculus Bot_F Inf_F Q entails_\<G>_q Red_I_\<G>_q Red_F_\<G>_q
@@ -739,8 +737,6 @@ proof (standard, clarify)
   interpret q_data: tiebreaker_lifting_data Bot_F Inf_F Bot_G "entails_q q" "Inf_G_q q"
     "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q" Prec_F_g
     using standard_lifting_family q_in by blast
-  interpret lifted: consequence_relation Bot_F "entails_\<G>_q q"
-    by (rule q_calc.consequence_relation_axioms)
   interpret lifted_q_calc: standard_lifting_with_entailment Bot_F Inf_F Bot_G "Inf_G_q q"
     "entails_q q" "Red_I_q q" "Red_F_q q" "\<G>_F_q q" "\<G>_I_q q" "entails_\<G>_q q"
     by unfold_locales simp
@@ -802,9 +798,6 @@ locale standard_lifting =
   for Inf_F :: "'f inference set" and Bot_G Inf_G entails_G Red_I_G Red_F_G Bot_F \<G>_F \<G>_I
 begin
 
-interpretation consequence_relation Bot_F entails_\<G>
-  by (rule consequence_relation_lifted)
-
 sublocale standard_lifting_with_entailment Bot_F Inf_F Bot_G Inf_G entails_G
   Red_I_G Red_F_G \<G>_F \<G>_I "(\<Turnstile>\<G>)"
   by unfold_locales simp
@@ -857,15 +850,15 @@ lemma saturated_empty_order_equiv_saturated:
 
 (* lem:static-ref-compl-indep-of-sqsubset *)
 lemma static_empty_order_equiv_static:
-  "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G> =
-      statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> empty_ord.Red_F_\<G>"
+  "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) Red_I_\<G> Red_F_\<G> =
+      statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) Red_I_\<G> empty_ord.Red_F_\<G>"
   unfolding statically_complete_calculus_def
   by (rule iffI) (standard,(standard)[],simp)+
 
 (* thm:FRedsqsubset-is-dyn-ref-compl *)
 theorem static_to_dynamic:
-  "statically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> empty_ord.Red_F_\<G> =
-      dynamically_complete_calculus Bot_F Inf_F entails_\<G> Red_I_\<G> Red_F_\<G>"
+  "statically_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) Red_I_\<G> empty_ord.Red_F_\<G> =
+      dynamically_complete_calculus Bot_F Inf_F (\<Turnstile>\<G>) Red_I_\<G> Red_F_\<G>"
   using dyn_equiv_stat static_empty_order_equiv_static
   by blast
    
