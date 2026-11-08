@@ -1,7 +1,8 @@
 chapter AFP
 
 session HOL_in_HOL_Deep_Infinity_ZFC = HOL_in_HOL_Deep +
-  options [timeout = 300]
+  description "Companion to HOL_in_HOL_Deep: over Paulson's ZFC_in_HOL a standard model with full function spaces is constructed (the individuals interpreted as the finite ordinals), showing NK consistent with a Dedekind-style axiom of infinity and with the relational axiom of choice -- the relative consistency of full classical higher-order logic in the sense of Church. The main entry is imported unchanged; only this entry uses a set-theoretic universe."
+  options [timeout = 600]
   sessions
     ZFC_in_HOL
   theories

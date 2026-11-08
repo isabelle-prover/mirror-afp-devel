@@ -7,7 +7,7 @@ section \<open>Full classical HOL, abstractly: the choice scheme, the axioms' sa
 text \<open>This theory is the @{emph \<open>set-theory-free\<close>} half of the companion development: it
   imports only the main entry @{session HOL_in_HOL_Deep} and never mentions a set-theoretic
   universe.  The Dedekind axiom of infinity \<open>DInf\<close>, its satisfaction conditions and its
-  separation from the infinity scheme are inherited from the main entry (theory
+  separation from the first-order sentences of infinity are inherited from the main entry (theory
   \<open>NK_Infinity\<close>); here the relational choice scheme
   \<open>ACrel\<close> is added as an object formula with its satisfaction condition in an
   @{emph \<open>arbitrary\<close>}
@@ -15,13 +15,16 @@ text \<open>This theory is the @{emph \<open>set-theory-free\<close>} half of th
   classical
   \<open>HOL\<close> is consistent as soon as @{emph \<open>some\<close>} standard model has Dedekind-infinite
   individuals --- and the universe interfaces are isolated from which the required standard
-  model is @{emph \<open>constructed\<close>}: the locale \<open>hol_universe\<close>, and beneath it an at most as
-  strong Harrison-style locale \<open>harrison_universe\<close>.
+  model is @{emph \<open>constructed\<close>}: the locale \<open>hol_universe\<close>, and beneath it the more
+  primitive Harrison-style locale \<open>harrison_universe\<close>, from which \<open>hol_universe\<close> is in
+  turn constructed.
   Completeness for the extension by \<open>DInf\<close> is likewise established here, in plain HOL.
   That the assumptions of these locales are satisfiable is a separate question --- no
-  @{emph \<open>plain-HOL\<close>} type answers it: Cantor's tower outgrows every type plain HOL can
-  construct, and G\"odel's second theorem bars every other plain-HOL route (see the document
-  introduction) --- and is deferred to this entry's final theory, \<open>HOL_in_HOL_Deep_Infinity_ZFC\<close>,
+  @{emph \<open>plain-HOL\<close>} type answers it: by Cantor's theorem no such type carries the tower of
+  full function spaces over an infinite base, and G\"odel's second theorem bars every other
+  plain-HOL route (a metatheoretic argument, not formalised; see the document introduction)
+  --- and is
+  deferred to this entry's final theory, \<open>HOL_in_HOL_Deep_Infinity_ZFC\<close>,
   which instantiates both locales with Paulson's axiomatic set-theoretic universe \<^emph>\<open>V\<close>.  The split makes the
   dependency structure machine-visible: nothing in this theory rests on \<open>ZFC_in_HOL\<close>.\<close>
 
@@ -201,36 +204,27 @@ text \<open>\<^bold>\<open>The relative-consistency theorem, abstractly.\<close>
   Dedekind-infinitely many individuals.  Then full classical \<open>HOL\<close> is consistent.
   Consistency is the predicate \<open>con\<close> of the main entry, defined by
   \<open>con \<Phi> \<longleftrightarrow> \<not> (\<Phi> \<turnstile> \<^bold>\<bottom>)\<close>: the conclusion below states that \<open>NK\<close> cannot derive falsity
-  from \<open>DInf\<close> together with all instances of \<open>ACrel\<close>.  The eigen-parameter starvation that
-  makes \<open>con\<close> a weak reading for impure infinite contexts (main entry, \<open>NK_Infinity\<close>)
-  cannot arise here: the axioms use no parameters at all, so the context is pure, and over
-  an infinite signature \<open>con \<Phi>\<close> and \<open>\<not> (\<Phi> \<tturnstile> \<^bold>\<bottom>)\<close> provably coincide
-  (@{thm [source] fprov_eq_bprov}).  The proof
-  works for an \<^emph>\<open>arbitrary\<close> such model, whatever type its elements come from, and uses no
-  set theory.  The one thing plain HOL cannot supply is the premise --- a model with
-  infinitely many individuals; producing one is the central task of the set-theoretic theory
-  that concludes this entry.\<^footnote>\<open>Why not?  Plain HOL has infinite @{emph \<open>types\<close>}, and every
-  single level \<open>nat\<close>, \<open>nat \<Rightarrow> bool\<close>, \<open>\<dots>\<close> of the full tower exists as a type.  What it lacks
-  is @{emph \<open>one carrier\<close>} for the whole tower at once.  In BKK's sense ``standard'' means
-  only that the function domains are @{emph \<open>full\<close>}; but a model formalised inside plain HOL
-  necessarily has one further feature: the object types are values of the datatype \<open>ty\<close>, so
-  any formalised model --- the locale @{locale standard_model} included --- interprets all
-  domains inside a single carrier type \<open>'u\<close> (simple types cannot assign each object type its
-  own meta-type).  Over infinite individuals with full function spaces that one carrier must
-  outgrow every level of the tower.  No plain-HOL type reaches that far: every type plain HOL can construct is bounded
-  in cardinality by some finite tower of function spaces over its one primitive infinite
-  type \<open>ind\<close> (of which \<open>nat\<close> is the familiar copy).  One might hope to escape with a @{emph \<open>Henkin\<close>} model, whose function domains
-  need not be full and which therefore fits into a small carrier.  But a sparse function
-  domain need not provide what the axiom asks for.  \<open>DInf\<close> says: @{emph \<open>there exists\<close>} an injective,
-  non-surjective self-map of the individuals.  In a Henkin model that map has to be an
-  element of the (now sparse) function domain \<open>D\<^bsub>\<iota> \<^bold>\<Rightarrow> \<iota>\<^esub>\<close> --- and it may simply not be
-  there, even when the individuals are infinite.  This is not a hypothetical: the main
-  entry's \<open>henkin_scheme_refutes_DInf\<close> constructs a Henkin model with infinitely many
-  individuals in which \<open>DInf\<close> is nevertheless @{emph \<open>false\<close>}.  And the canonical way to build
-  a Henkin model that does contain the witness --- the term-model construction --- takes the
-  consistency of \<open>DInf\<close> as its @{emph \<open>premise\<close>}, and so cannot be the way to prove it
-  (that @{emph \<open>every\<close>} other route fails as well is G\"odel's second theorem, see the
-  introduction).\<close>\<close>
+  from \<open>DInf\<close> together with all instances of \<open>ACrel\<close>.  The context is pure (the axioms use
+  no parameters), so over an infinite signature \<open>con \<Phi>\<close> and \<open>\<not> (\<Phi> \<tturnstile> \<^bold>\<bottom>)\<close> coincide
+  (@{thm [source] fprov_eq_bprov}), and the caveat on \<open>con\<close> for impure contexts (main entry,
+  \<open>NK_Infinity\<close>) does not apply.  The proof works for an \<^emph>\<open>arbitrary\<close> such model, whatever
+  type its elements come from, and uses no set theory.  What plain HOL cannot supply is the
+  premise --- a standard model with infinitely many individuals; producing one is the task
+  of the set-theoretic theory that concludes this entry.\<^footnote>\<open>Plain HOL has infinite
+  @{emph \<open>types\<close>}, and every single level \<open>nat\<close>, \<open>nat \<Rightarrow> bool\<close>, \<open>\<dots>\<close> of the full tower
+  exists as a type.  What it lacks is @{emph \<open>one carrier\<close>} for the whole tower at once: the
+  object types are values of the datatype \<open>ty\<close>, so any model formalised here --- the locale
+  @{locale standard_model} included --- interprets all domains inside a single carrier type
+  \<open>'u\<close>, and over infinite individuals with full function spaces that carrier must exceed
+  every level of the tower, whereas every type plain HOL can construct is bounded in
+  cardinality by some finite tower of function spaces over \<open>ind\<close> (a metatheoretic fact about
+  HOL's type constructors, not formalised).  A Henkin model avoids the cardinality
+  obstruction, but its sparse function domain \<open>D\<^bsub>\<iota> \<^bold>\<Rightarrow> \<iota>\<^esub>\<close> need not contain the self-map
+  that \<open>DInf\<close> asserts --- the main entry's \<open>henkin_scheme_refutes_DInf\<close> gives a Henkin
+  model with infinitely many individuals in which \<open>DInf\<close> is false --- and the term-model
+  construction, which does produce a Henkin model of \<open>DInf\<close>, takes the consistency of
+  \<open>DInf\<close> as its premise.  That every other plain-HOL route fails as well is G\"odel's second
+  theorem (see the introduction).\<close>\<close>
 
 theorem con_full_HOL_rel:
   fixes Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
@@ -255,7 +249,7 @@ proof -
     by (rule model_con[OF xi]) (use wff_DInf wff_ACrel satD satAC in auto)
 qed
 
-text \<open>Completeness carries over to the axiomatic extension, in its strongest form: \<open>{DInf}\<close> is
+text \<open>Completeness carries over to the axiomatic extension: \<open>{DInf}\<close> is
   a finite context, so @{thm [source] completeness_hyps_open_finite} applies ---
   free variables are allowed in the conclusion, the carrier and the signature are any infinite
   types, and purity is automatic.  Any formula true in every infinite-carrier model of \<open>DInf\<close>
@@ -279,16 +273,33 @@ theorem sound_and_complete_DInf:
   shows "{DInf} \<turnstile> A \<longleftrightarrow> {DInf} \<Turnstile>('u::infinite) A"
   using assms NK_completeness_DInf soundness_sat by blast
 
+text \<open>Model existence for the extension, likewise in plain HOL: from \<open>con {DInf}\<close> as an
+  @{emph \<open>explicit hypothesis\<close>}, a countable \<open>\<Sigma>\<close>-Henkin model of \<open>DInf\<close> over a countable
+  signature, by the main entry's @{thm [source] countable_henkin_sat}.  The hypothesis is
+  what this development does not supply in plain HOL; the set-theoretic companion theory discharges it
+  (@{text con_DInf}) and so obtains the model outright.\<close>
 
-section \<open>Minimising the meta-theory: a weaker universe suffices\<close>
+theorem countable_henkin_model_DInf_of_con:
+  assumes "con ({DInf} :: 'p::{countable,infinite} tm set)"
+  obtains Dm Ap
+      and Ee :: "(nat \<Rightarrow> ty \<Rightarrow> 'p::{countable,infinite} tm set) \<Rightarrow> 'p tm \<Rightarrow> 'p tm set"
+      and vl \<xi>
+  where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
+        "app_struct.asg Dm \<xi>" "vl (Ee \<xi> (DInf :: 'p tm))"
+  by (rule countable_henkin_sat[OF cwff_DInf assms])
 
-text \<open>We weaken the premise of @{thm [source] con_full_HOL_rel} once more.  Instead of
-  \<^emph>\<open>assuming\<close> the logical constants (as \<open>standard_model\<close> does), the locale \<open>hol_universe\<close>
-  adds Dedekind-infinite individuals to the constants-construction interface
+
+section \<open>A smaller interface: the universe locale\<close>
+
+text \<open>We replace the premise of @{thm [source] con_full_HOL_rel} by a smaller interface.
+  Instead of \<^emph>\<open>assuming\<close> the logical constants (as \<open>standard_model\<close> does), the locale
+  \<open>hol_universe\<close> adds Dedekind-infinite individuals to the constants-construction interface
   @{locale lambda_universe} of the main entry: a universe with full function spaces,
   booleans, extensionality and a domain-respecting parameter interpretation, over which
-  the constants are @{emph \<open>constructed\<close>}.  Any model of these weaker assumptions ---
-  the final theory provides one over \<open>V\<close> --- thus yields the relative consistency of full \<open>HOL\<close>.\<close>
+  the constants are @{emph \<open>constructed\<close>}.  Any model of this interface --- the final
+  theory provides one over \<open>V\<close> --- yields the relative consistency of full \<open>HOL\<close>.  (The
+  interface has fewer primitives; no comparison of logical strength with \<open>standard_model\<close>
+  is formalised.)\<close>
 
 locale hol_universe = lambda_universe Dm Ap Lm Tv Fv Jv
   for Dm :: "ty \<Rightarrow> 'u \<Rightarrow> bool" and Ap :: "'u \<Rightarrow> 'u \<Rightarrow> 'u"
@@ -304,11 +315,13 @@ theorem con_full_HOL_universe:
 
 end
 
-section \<open>Minimising further: a Harrison-style universe axiom\<close>
+section \<open>A more primitive interface: a Harrison-style universe axiom\<close>
 
-text \<open>Harrison's self-verification of HOL Light \<^cite>\<open>Harrison06\<close> proves the soundness of
-  HOL-with-infinity in a meta-logic strengthened by a single \<^emph>\<open>universe axiom\<close>: an infinite
-  type closed under the set-forming operations that full function spaces require.  The
+text \<open>Harrison's self-verification of HOL Light \<^cite>\<open>Harrison06\<close> proves soundness and
+  consistency of HOL Light's kernel twice, without its axiom of infinity inside HOL Light and
+  with it in a meta-logic strengthened by a single \<^emph>\<open>universe axiom\<close>, stated as
+  a cardinality condition: a type strictly larger than the natural numbers and closed under
+  exponentiation of smaller cardinalities.  The
   locale \<open>harrison_universe\<close> is our rendering of that axiom, one level below
   \<open>hol_universe\<close>: it mentions neither types, domains, application nor abstraction.  Fixed
   are an injective pairing \<open>pr\<close>, an injective coding \<open>enc\<close> of the \<^emph>\<open>small\<close> collections
@@ -319,8 +332,9 @@ text \<open>Harrison's self-verification of HOL Light \<^cite>\<open>Harrison06\
   every finite-type domain embeds into it.  The subtlety is that \<open>v\<close> is closed only under the
   operations those finite types require --- pairing and \<^emph>\<open>small\<close> (coded) power collections ---
   and \<^emph>\<open>not\<close> under its own full function space \<open>v \<^bold>\<Rightarrow> \<o>\<close>, which by Cantor would be strictly
-  larger.  This restricted closure, rather than a full powerset, is exactly what keeps the
-  axiom consistent and of merely strong-limit strength.\<close>  From these data alone the whole
+  larger.  This restricted closure, rather than a full powerset, keeps the assumptions weak,
+  informally at the level of a strong limit; which cardinal hypothesis the locale corresponds
+  to exactly is left open (a metatheoretic remark).\<close>  From these data alone the whole
   \<open>hol_universe\<close> structure is @{emph \<open>constructed\<close>}: domains as collections of coded functional
   graphs, abstraction by coding, application by decoding.\<close>
 
@@ -343,6 +357,22 @@ text \<open>Smallness of the empty collection need not be assumed: it is a sub-c
 
 lemma Sm_empty: "Sm (\<lambda>_. False)"
   by (rule Sm_sub[OF Sm_D0]) (simp add: le_fun_def)
+
+text \<open>The carrier as a whole is not small: were it small, every collection would be (downward
+  closure), \<open>enc\<close> would be injective on all of them, and Cantor's diagonal would be coded.
+  So the closure under coded powers is a closure under powers of \<^emph>\<open>small\<close> collections only,
+  never under the carrier's own full function space.\<close>
+
+lemma not_Sm_UNIV: "\<not> Sm (\<lambda>_. True)"
+proof
+  assume "Sm (\<lambda>_. True)"
+  hence all: "Sm Y" for Y by (rule Sm_sub) (simp add: le_fun_def)
+  hence inj: "inj enc" by (intro injI) (rule enc_inj)
+  define D where "D = (\<lambda>x. \<not> inv enc x x)"
+  have "D (enc D) = (\<not> D (enc D))"
+    using inv_f_f[OF inj, of D] unfolding D_def by metis
+  thus False by blast
+qed
 
 subsection \<open>Truth values, domains, abstraction, application\<close>
 

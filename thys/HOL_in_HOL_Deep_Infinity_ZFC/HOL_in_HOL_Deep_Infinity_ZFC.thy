@@ -8,11 +8,12 @@ text \<open>This theory supplies the one ingredient the abstract half \<open>HOL
   type satisfying the \<open>hol_universe\<close> assumptions.  Over Paulson's \<^session>\<open>ZFC_in_HOL\<close> the
   individuals are interpreted as the finite ordinals \<^term>\<open>\<omega>\<close> and every function space is
   full, so the successor map witnesses Dedekind infinity and all assumptions of the locale are
-  discharged.  The consistency of full classical \<open>HOL\<close> and of \<open>NK\<close> with \<open>DInf\<close> then fall out
-  of the abstract theorems; \<open>V\<close> also validates the at most as strong Harrison-style
-  interface \<open>harrison_universe\<close> outright --- and that most abstract interface carries the
-  exported consistency theorem; a rank bound closes the development, showing every domain of
-  the witnessing model lives inside the set \<open>Vset (\<omega> + \<omega>)\<close>.  Only this theory imports \<open>ZFC_in_HOL\<close>.\<close>
+  discharged.  The consistency of full classical \<open>HOL\<close> and of \<open>NK\<close> with \<open>DInf\<close> then follow
+  from the abstract theorems; \<open>V\<close> also validates the more primitive Harrison-style
+  interface \<open>harrison_universe\<close> directly, and that interface carries the exported
+  consistency theorem; a rank bound closes the development, showing that every domain of the
+  witnessing model is an element of the set \<open>Vset (\<omega> + \<omega>)\<close>.  Only this theory imports
+  \<open>ZFC_in_HOL\<close>.\<close>
 
 subsection \<open>Domains, application, abstraction\<close>
 
@@ -58,22 +59,29 @@ text \<open>The \<open>V\<close>-frame discharges the Dedekind-infinity assumpti
   (verbatim the frame premise of @{thm [source] con_full_HOL_rel}): the successor on \<open>\<omega>\<close> is
   an injective, non-surjective self-map of the individuals.\<close>
 
+lemma V_succ_witness:
+  shows V_succ_dom: "VD (\<iota> \<^bold>\<Rightarrow> \<iota>) (VLm \<iota> succ)"
+    and V_succ_inj: "\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow>
+                      (app (VLm \<iota> succ) a = app (VLm \<iota> succ) b \<longrightarrow> a = b))"
+    and V_succ_ns: "\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app (VLm \<iota> succ) z \<noteq> c)"
+proof -
+  have beta: "app (VLm \<iota> succ) a = succ a" if "VD \<iota> a" for a by (rule VLm_beta[OF that])
+  show "VD (\<iota> \<^bold>\<Rightarrow> \<iota>) (VLm \<iota> succ)" by (rule VLm_dom) (simp add: VD_def)
+  show "\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow> (app (VLm \<iota> succ) a = app (VLm \<iota> succ) b \<longrightarrow> a = b))"
+    by (auto simp: beta)
+  show "\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app (VLm \<iota> succ) z \<noteq> c)"
+    by (rule exI[of _ 0]) (auto simp: beta VD_def)
+qed
+
 lemma V_inf:
   "\<exists>d. VD (\<iota> \<^bold>\<Rightarrow> \<iota>) d
        \<and> (\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow> (app d a = app d b \<longrightarrow> a = b)))
        \<and> (\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app d z \<noteq> c))"
-proof -
-  have beta: "app (VLm \<iota> succ) a = succ a" if "VD \<iota> a" for a by (rule VLm_beta[OF that])
-  have dom: "VD (\<iota> \<^bold>\<Rightarrow> \<iota>) (VLm \<iota> succ)" by (rule VLm_dom) (simp add: VD_def)
-  have injv: "\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow> (app (VLm \<iota> succ) a = app (VLm \<iota> succ) b \<longrightarrow> a = b))"
-    by (auto simp: beta)
-  have nsv: "\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app (VLm \<iota> succ) z \<noteq> c)"
-    by (rule exI[of _ 0]) (auto simp: beta VD_def)
-  show ?thesis using dom injv nsv by blast
-qed
+  using V_succ_witness by blast
 
 text \<open>\<open>V\<close> is such a universe: the \<open>hol_universe\<close> assumptions are satisfiable (relative to
-  \<open>ZF\<close>) --- yet they demand far less than full \<open>ZF\<close>.\<close>
+  \<open>ZF\<close>) --- and, as the rank bound at the end of this theory shows, the witnessing model
+  lives inside the set \<open>Vset (\<omega> + \<omega>)\<close>.\<close>
 
 theorem V_hol_universe:
   "hol_universe VD app VLm (1::V) 0 (VJv :: 'p \<Rightarrow> ty \<Rightarrow> V)"
@@ -95,13 +103,14 @@ lemmas V_standard_model =
 
 subsection \<open>\<open>V\<close> validates the Harrison-style axiom, and consistency follows\<close>
 
-text \<open>The at most as strong interface \<open>harrison_universe\<close> --- our rendering of Harrison's
+text \<open>The more primitive interface \<open>harrison_universe\<close> --- our rendering of Harrison's
   universe axiom --- is likewise validated by \<open>V\<close> directly: pairing is \<^term>\<open>vpair\<close>, a
   collection is small in the sense of the locale iff it is \<open>small\<close>, its code is Paulson's
   \<open>set\<close>, and the individuals are again the finite ordinals.  The coded-power closure is
   exactly \<open>VPow\<close> seen through the coding.  The locale rebuilds domains, application and
-  abstraction from these four constants alone, so the headline consistency theorem rests
-  on nothing beyond them --- one spine, through the most abstract interface.\<close>
+  abstraction from these four constants alone, so the exported consistency theorem uses \<open>V\<close>
+  only through these four constants and the properties of them that the locale assumes: a
+  single dependency chain through the most primitive interface.\<close>
 
 lemma V_enc_inj:
   assumes "small {x. X x}" and "small {x. Y x}" and "set {x. X x} = set {x. Y x}"
@@ -163,7 +172,7 @@ text \<open>The infinity-only consistency \<open>con {DInf}\<close> is the same 
   successor witness on \<open>\<omega>\<close> to the carrier-generic \<open>DInf_sat\<close>; it holds for \<^emph>\<open>every\<close> parameter
   type \<open>'p\<close>.  The \<^emph>\<open>countable\<close> model that witnesses it is the ZFC-free term model of
   @{thm [source] countable_henkin_sat}, so a set-theoretic universe enters \<^emph>\<open>only\<close> through the
-  consistency premise --- the model itself has a countable total domain, carved out of the
+  consistency premise --- the model itself has a countable total domain, a subset of the
   carrier \<^typ>\<open>'p tm set\<close>, and never mentions \<^typ>\<open>V\<close>.\<close>
 
 theorem con_DInf: "con ({DInf} :: 'p tm set)"
@@ -177,17 +186,8 @@ proof -
   have xi: "bkkA.asg \<xi>"
     unfolding bkkA.asg_def \<xi>_def using VD_nonempty by (metis someI_ex)
   \<comment> \<open>the successor on \<open>\<omega>\<close> is an injective, non-surjective self-map of the individuals\<close>
-  define f0 :: V where "f0 = VLm \<iota> succ"
-  have f0dom: "VD (\<iota> \<^bold>\<Rightarrow> \<iota>) f0" unfolding f0_def by (rule VLm_dom) (simp add: VD_def)
-  have f0app: "app f0 a = succ a" if "VD \<iota> a" for a
-    unfolding f0_def by (rule VLm_beta[OF that])
   have satD: "den (DInf :: 'p tm) \<xi> = 1"
-  proof (rule DInf_sat[OF xi f0dom])
-    show "\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow> (app f0 a = app f0 b \<longrightarrow> a = b))"
-      by (auto simp: f0app)
-    show "\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app f0 z \<noteq> c)"
-      by (rule exI[of _ 0]) (auto simp: f0app VD_def)
-  qed
+    by (rule DInf_sat[OF xi V_succ_dom V_succ_inj V_succ_ns])
   show ?thesis by (rule model_con[OF xi]) (use wff_DInf satD in auto)
 qed
 
@@ -197,16 +197,12 @@ theorem countable_henkin_model_DInf:
       and vl \<xi>
   where "bkk_model Dm Ap Ee vl" "countable {x. \<exists>\<tau>. Dm \<tau> x}"
         "app_struct.asg Dm \<xi>" "vl (Ee \<xi> (DInf :: 'p tm))"
-  by (rule countable_henkin_sat[OF cwff_DInf con_DInf])
+  by (rule countable_henkin_model_DInf_of_con[OF con_DInf])
 
-text \<open>The converse half of the separation of axiom and scheme.  The main entry proves that
-  the infinity @{emph \<open>scheme\<close>} does not yield the axiom (\<open>Diag_not_derives_DInf\<close>,
-  \<open>henkin_scheme_refutes_DInf\<close> in its \<open>NK_Infinity\<close>).  The \<open>V\<close>-model settles the other
-  direction: its parameter interpretation \<open>VJv\<close> is constant at each type
-  (@{thm [source] VJv_param_independent}), so all diagram
-  constants denote the same individual and every inequation \<open>dneq f i j\<close> is refuted, while
-  \<open>DInf\<close> holds.  By soundness the axiom derives no diagram inequation --- as
-  @{emph \<open>sentences\<close>}, axiom and scheme are incomparable.\<close>
+text \<open>In passing: \<open>DInf\<close> mentions no constants, and the \<open>V\<close>-model interprets every parameter
+  alike at each type (@{thm [source] VJv_param_independent}), so it refutes every inequation
+  \<open>dneq f i j\<close> of the main entry's auxiliary inequation scheme while satisfying \<open>DInf\<close>.  By soundness the axiom
+  derives none of them --- an immediate consequence of the axiom having a model at all.\<close>
 
 theorem DInf_not_derives_dneq:
   fixes f :: "nat \<Rightarrow> 'p::infinite"
@@ -221,18 +217,9 @@ proof
   define \<xi> :: "nat \<Rightarrow> ty \<Rightarrow> V" where "\<xi> = (\<lambda>n \<tau>. SOME v. VD \<tau> v)"
   have xi: "bkkA.asg \<xi>"
     unfolding bkkA.asg_def \<xi>_def using VD_nonempty by (metis someI_ex)
-  \<comment> \<open>\<open>DInf\<close> holds, by the successor witness of \<open>con_DInf\<close>\<close>
-  define f0 :: V where "f0 = VLm \<iota> succ"
-  have f0dom: "VD (\<iota> \<^bold>\<Rightarrow> \<iota>) f0" unfolding f0_def by (rule VLm_dom) (simp add: VD_def)
-  have f0app: "app f0 a = succ a" if "VD \<iota> a" for a
-    unfolding f0_def by (rule VLm_beta[OF that])
+  \<comment> \<open>\<open>DInf\<close> holds, by the successor witness\<close>
   have satD: "den (DInf :: 'p tm) \<xi> = 1"
-  proof (rule DInf_sat[OF xi f0dom])
-    show "\<forall>a. VD \<iota> a \<longrightarrow> (\<forall>b. VD \<iota> b \<longrightarrow> (app f0 a = app f0 b \<longrightarrow> a = b))"
-      by (auto simp: f0app)
-    show "\<exists>c. VD \<iota> c \<and> (\<forall>z. VD \<iota> z \<longrightarrow> app f0 z \<noteq> c)"
-      by (rule exI[of _ 0]) (auto simp: f0app VD_def)
-  qed
+    by (rule DInf_sat[OF xi V_succ_dom V_succ_inj V_succ_ns])
   \<comment> \<open>the inequation fails: both parameters denote the same individual\<close>
   have peq: "den ((f i)\<^sup>p\<^bsub>\<iota>\<^esub> \<^bold>=\<^bsub>\<iota>\<^esub> (f j)\<^sup>p\<^bsub>\<iota>\<^esub>) \<xi> = 1"
     using sat_PEqB[OF wff_Par wff_Par xi] VJv_param_independent[of "f i" \<iota> "f j"] by simp
@@ -249,8 +236,8 @@ subsection \<open>The universe has bounded rank: no replacement, no proper class
 text \<open>The rank bound is now made precise: \<^emph>\<open>every\<close> domain \<open>D \<sigma>\<close> has rank below \<open>\<omega> + \<omega>\<close> (that is,
   \<open>\<omega> \<cdot> 2\<close>), so every domain is an element of the \<^emph>\<open>set\<close> \<open>Vset (\<omega> + \<omega>)\<close>.  The domain of individuals
   sits at rank \<open>\<omega>\<close>, and each function-space layer \<open>D (\<sigma> \<^bold>\<Rightarrow> \<tau>) = VPi (D \<sigma>) (\<lambda>_. D \<tau>)\<close> --- contained in
-  \<open>VPow (VPow (VPow (D \<sigma> \<squnion> D \<tau>)))\<close> --- raises the rank by only three, which the limit ordinal
-  \<open>\<omega> + \<omega>\<close> absorbs.\<close>
+  \<open>VPow (VPow (VPow (D \<sigma> \<squnion> D \<tau>)))\<close> --- raises the rank by at most three, which the limit
+  ordinal \<open>\<omega> + \<omega>\<close> absorbs.\<close>
 
 lemma rank_D_iota: "rank (D \<iota>) = \<omega>" by (simp add: rank_of_Ord)
 
