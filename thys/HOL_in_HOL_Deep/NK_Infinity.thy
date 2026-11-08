@@ -17,11 +17,16 @@ text \<open>The parametric family of finite standard models constructed in \<ope
 
   Two things should be kept apart.  The standard first-order axiomatisation of ``the domain
   is infinite'' consists of the constant-free sentences ``there are at least \<open>n\<close>
-  individuals'', one for each \<open>n\<close> (\<open>ExDistinct n\<close> below).  The inequation scheme over new
+  individuals'', one for each \<open>n\<close> (\<open>ExDistinct n\<close> below): their models are precisely the
+  infinite structures, so the class of infinite structures is \<open>\<Delta>\<close>-elementary, while the
+  class of finite structures is not (\<^cite>\<open>EFT21\<close>, III.6.3 and VI.3.4).  The inequation scheme over new
   constants is the tool of the compactness argument, not itself an axiomatisation: it
   derives each of those sentences (\<open>Ineq_derives_distinct_n\<close> below); that its
   constant-free consequences are no more than theirs is the translation argument, not
-  formalised here.  We keep the short name \<open>Ineq\<close> for the scheme.  Compactness --- the finite character of derivability,
+  formalised here.  The sentences themselves are shown consistent, and shown not to derive
+  the Dedekind axiom, by the finite models directly and at every signature
+  (\<open>distinct_finite_model\<close> below); the scheme needs an infinite signature for its
+  constants.  We keep the short name \<open>Ineq\<close> for the scheme.  Compactness --- the finite character of derivability,
   @{thm [source] con_compact} --- lifts the consistency of each @{emph \<open>finite\<close>} part of
   the scheme, satisfied in one of the finite models above, to the consistency of the whole
   scheme.  So consistency of \<open>NK\<close> with the scheme is obtained from the finite models
@@ -147,7 +152,8 @@ text \<open>The constant-free first-order sentences ``there are at least \<open>
   witnesses are \<open>C, F C, F (F C), \<dots>\<close> for the self-map \<open>F\<close> and the point \<open>C\<close> outside its
   range, and their pairwise distinctness follows from injectivity by induction.  The
   derivation is built by meta-level recursion on \<open>n\<close>, one \<open>NK\<close>-derivation for each \<open>n\<close>.
-  These sentences are the standard first-order axiomatisation of infinity; the inequation
+  These sentences are the standard first-order axiomatisation of infinity
+  (\<^cite>\<open>EFT21\<close>, III.6.3); the inequation
   scheme derives them too (\<open>Ineq_derives_distinct_n\<close>, below), and so does the axiom.\<close>
 
 text \<open>The sentences.  \<open>AllNeq t ss\<close> says that \<open>t\<close> differs from every member of \<open>ss\<close>,
@@ -628,6 +634,143 @@ proof -
   thus ?thesis using sat_NegB[OF wff_DInf xi] by simp
 qed
 
+text \<open>Satisfaction of the constant-free sentences, peeled down to the carrier: \<open>AllNeq\<close> and
+  \<open>Distinct\<close> mean what they say about the denotations, and a block of existentials is
+  satisfied once witnesses are named.  Only the direction needed below is stated for the
+  existential block: distinct individuals \<open>e v\<close> for the bound variables \<open>vs\<close>, with the
+  variables already opened (\<open>us\<close>) assigned their witnesses, satisfy \<open>ExD\<close>.\<close>
+
+lemma sat_AllNeq:
+  assumes wt: "wff\<^bsub>\<iota>\<^esub>(t)" and ws: "\<forall>s \<in> set ss. wff\<^bsub>\<iota>\<^esub>(s)" and xi: "bkkA.asg \<xi>"
+  shows "(den (AllNeq t ss) \<xi> = Tv) \<longleftrightarrow> (\<forall>s \<in> set ss. den t \<xi> \<noteq> den s \<xi>)"
+  using ws
+proof (induction ss)
+  case Nil thus ?case using bkk.vl_TF[OF xi] by simp
+next
+  case (Cons s ss)
+  have ws1: "wff\<^bsub>\<iota>\<^esub>(s)" and wss: "\<forall>s \<in> set ss. wff\<^bsub>\<iota>\<^esub>(s)" using Cons.prems by auto
+  have w1: "wff\<^bsub>\<o>\<^esub>(\<^bold>\<not> (t \<^bold>=\<^bsub>\<iota>\<^esub> s))" using wt ws1 by (auto intro: wff_Not wff_PEq)
+  have w2: "wff\<^bsub>\<o>\<^esub>(AllNeq t ss)" by (rule wff_AllNeq[OF wt wss])
+  have "(den (AllNeq t (s # ss)) \<xi> = Tv)
+      \<longleftrightarrow> (den (\<^bold>\<not> (t \<^bold>=\<^bsub>\<iota>\<^esub> s)) \<xi> = Tv) \<and> (den (AllNeq t ss) \<xi> = Tv)"
+    using sat_AndB[OF w1 w2 xi] by simp
+  moreover have "(den (\<^bold>\<not> (t \<^bold>=\<^bsub>\<iota>\<^esub> s)) \<xi> = Tv) \<longleftrightarrow> den t \<xi> \<noteq> den s \<xi>"
+    using sat_NegB[OF wff_PEq[OF wt ws1] xi] sat_PEqB[OF wt ws1 xi] by simp
+  ultimately show ?case using Cons.IH[OF wss] by simp
+qed
+
+lemma sat_Distinct:
+  assumes ws: "\<forall>t \<in> set ts. wff\<^bsub>\<iota>\<^esub>(t)" and xi: "bkkA.asg \<xi>"
+  shows "(den (Distinct ts) \<xi> = Tv) \<longleftrightarrow> distinct (map (\<lambda>t. den t \<xi>) ts)"
+  using ws
+proof (induction ts)
+  case Nil thus ?case using bkk.vl_TF[OF xi] by simp
+next
+  case (Cons t ts)
+  have wt: "wff\<^bsub>\<iota>\<^esub>(t)" and wts: "\<forall>t \<in> set ts. wff\<^bsub>\<iota>\<^esub>(t)" using Cons.prems by auto
+  have w1: "wff\<^bsub>\<o>\<^esub>(AllNeq t ts)" by (rule wff_AllNeq[OF wt wts])
+  have w2: "wff\<^bsub>\<o>\<^esub>(Distinct ts)" by (rule wff_Distinct[OF wts])
+  have "(den (Distinct (t # ts)) \<xi> = Tv)
+      \<longleftrightarrow> (den (AllNeq t ts) \<xi> = Tv) \<and> (den (Distinct ts) \<xi> = Tv)"
+    using sat_AndB[OF w1 w2 xi] by simp
+  thus ?case using sat_AllNeq[OF wt wts xi] Cons.IH[OF wts] by auto
+qed
+
+lemma sat_ExD_I:
+  assumes dist: "distinct (us @ vs)"
+      and dom: "\<forall>v \<in> set (us @ vs). \<D>\<^bsub>\<iota>\<^esub> (e v)"
+      and inj: "inj_on e (set (us @ vs))"
+      and xi: "bkkA.asg \<xi>"
+      and agree: "\<forall>v \<in> set us. \<xi> v \<iota> = e v"
+  shows "den (ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) us) vs) \<xi> = Tv"
+  using dist dom inj xi agree
+proof (induction vs arbitrary: us \<xi>)
+  case Nil
+  have "(den (Distinct (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) us)) \<xi> = Tv) \<longleftrightarrow> distinct (map (\<lambda>v. \<xi> v \<iota>) us)"
+    using sat_Distinct[OF _ Nil.prems(4), of "map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) us"]
+    by (simp add: wff_Fre comp_def)
+  moreover have "map (\<lambda>v. \<xi> v \<iota>) us = map e us" using Nil.prems(5) by simp
+  moreover have "distinct (map e us)" using Nil.prems(1,3) by (simp add: distinct_map)
+  ultimately show ?case by simp
+next
+  case (Cons v vs)
+  let ?us' = "us @ [v]" and ?\<xi>' = "\<xi>(v\<^bsub>\<iota>\<^esub> := e v)"
+  have dv: "\<D>\<^bsub>\<iota>\<^esub> (e v)" using Cons.prems(2) by simp
+  have xi': "bkkA.asg ?\<xi>'" by (rule bkkA.asg_upd[OF Cons.prems(4) dv])
+  have vus: "v \<notin> set us" using Cons.prems(1) by auto
+  have agree': "\<forall>w \<in> set ?us'. ?\<xi>' w \<iota> = e w"
+    using Cons.prems(5) vus by (auto simp: upd_def)
+  have ih: "den (ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) ?us') vs) ?\<xi>' = Tv"
+    by (rule Cons.IH[OF _ _ _ xi' agree']) (use Cons.prems(1,2,3) in auto)
+  have w: "wff\<^bsub>\<o>\<^esub>(ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) ?us') vs)"
+    by (rule wff_ExD) (simp add: wff_Fre)
+  have "den (ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) us) (v # vs)) \<xi>
+      = den (\<^bold>\<exists>v\<^bsub>\<iota>\<^esub>. ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) ?us') vs) \<xi>" by simp
+  also have "\<dots> = Tv" using sat_ExN[OF w Cons.prems(4)] dv ih by blast
+  finally show ?case .
+qed
+
+lemma sat_ExDistinct_I:
+  assumes xi: "bkkA.asg \<xi>"
+      and dom: "\<forall>i < n. \<D>\<^bsub>\<iota>\<^esub> (e i)" and inj: "inj_on e {0..<n}"
+  shows "den (ExDistinct n) \<xi> = Tv"
+proof -
+  let ?vs = "[] @ map vD [0..<n]"
+  have dist: "distinct ?vs" by (simp add: distinct_map inj_on_def vD_def)
+  have dom': "\<forall>v \<in> set ?vs. \<D>\<^bsub>\<iota>\<^esub> (e (v - 10))" using dom by (auto simp: vD_def)
+  have inj': "inj_on (\<lambda>v. e (v - 10)) (set ?vs)"
+  proof (rule inj_onI)
+    fix x y assume "x \<in> set ?vs" "y \<in> set ?vs" and exy: "e (x - 10) = e (y - 10)"
+    then obtain i j where "x = vD i" "i < n" "y = vD j" "j < n" by auto
+    thus "x = y" using exy inj by (auto simp: vD_def inj_on_def)
+  qed
+  have "den (ExD (map (\<lambda>v. v\<^sup>f\<^bsub>\<iota>\<^esub>) []) (map vD [0..<n])) \<xi> = Tv"
+    by (rule sat_ExD_I[OF dist dom' inj' xi]) simp
+  thus ?thesis by (simp add: ExDistinct_def)
+qed
+
+end
+
+text \<open>In a standard model the function domain is full, so the self-map of \<open>DInf_sat_iff\<close>
+  can be any set-function: \<open>DInf\<close> holds exactly when the individual domain is
+  Dedekind-infinite as a set.\<close>
+
+context standard_model
+begin
+
+lemma DInf_sat_iff_Dedekind:
+  assumes xi: "bkkA.asg \<xi>"
+  shows "(den DInf \<xi> = Tv)
+       = (\<exists>h. (\<forall>a. Dm \<iota> a \<longrightarrow> Dm \<iota> (h a))
+              \<and> (\<forall>a b. Dm \<iota> a \<longrightarrow> Dm \<iota> b \<longrightarrow> h a = h b \<longrightarrow> a = b)
+              \<and> (\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> h z \<noteq> c)))"
+proof
+  assume "den DInf \<xi> = Tv"
+  then obtain d where d: "Dm (\<iota> \<^bold>\<Rightarrow> \<iota>) d"
+      and inj: "\<forall>a. Dm \<iota> a \<longrightarrow> (\<forall>b. Dm \<iota> b \<longrightarrow> (d \<^bold>@ a = d \<^bold>@ b \<longrightarrow> a = b))"
+      and ns: "\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> d \<^bold>@ z \<noteq> c)"
+    using DInf_sat_iff[OF xi] by blast
+  show "\<exists>h. (\<forall>a. Dm \<iota> a \<longrightarrow> Dm \<iota> (h a))
+              \<and> (\<forall>a b. Dm \<iota> a \<longrightarrow> Dm \<iota> b \<longrightarrow> h a = h b \<longrightarrow> a = b)
+              \<and> (\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> h z \<noteq> c))"
+    by (rule exI[where x = "\<lambda>a. d \<^bold>@ a"]) (use Ap_dom[OF d] inj ns in blast)
+next
+  assume "\<exists>h. (\<forall>a. Dm \<iota> a \<longrightarrow> Dm \<iota> (h a))
+              \<and> (\<forall>a b. Dm \<iota> a \<longrightarrow> Dm \<iota> b \<longrightarrow> h a = h b \<longrightarrow> a = b)
+              \<and> (\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> h z \<noteq> c))"
+  then obtain h where hd: "\<And>a. Dm \<iota> a \<Longrightarrow> Dm \<iota> (h a)"
+      and inj: "\<forall>a b. Dm \<iota> a \<longrightarrow> Dm \<iota> b \<longrightarrow> h a = h b \<longrightarrow> a = b"
+      and ns: "\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> h z \<noteq> c)" by blast
+  let ?d = "Lm \<iota> h"
+  have dd: "Dm (\<iota> \<^bold>\<Rightarrow> \<iota>) ?d" by (rule Lm_dom[OF hd])
+  have app: "\<And>a. Dm \<iota> a \<Longrightarrow> ?d \<^bold>@ a = h a" by (rule beta_Lm[OF hd])
+  have "Dm (\<iota> \<^bold>\<Rightarrow> \<iota>) ?d
+      \<and> (\<forall>a. Dm \<iota> a \<longrightarrow> (\<forall>b. Dm \<iota> b \<longrightarrow> (?d \<^bold>@ a = ?d \<^bold>@ b \<longrightarrow> a = b)))
+      \<and> (\<exists>c. Dm \<iota> c \<and> (\<forall>z. Dm \<iota> z \<longrightarrow> ?d \<^bold>@ z \<noteq> c))"
+    using dd inj ns app by (metis (no_types, lifting))
+  thus "den DInf \<xi> = Tv" using DInf_sat_iff[OF xi] by blast
+qed
+
 end
 
 text \<open>The refuting finite models: the size-\<open>k\<close> family of \<open>Consistency\<close>, with the parameter
@@ -816,9 +959,11 @@ proof -
   thus ?thesis by (rule fprovI[OF finF FI])
 qed
 
-text \<open>Hence the constant-free sentences do not derive the axiom either: a derivation
-  from finitely many of them would, by cut, be a derivation from a finite part of the
-  scheme.  As a first-order axiomatisation of infinity, \<open>{ExDistinct n | n}\<close> is thus
+text \<open>The constant-free sentences do not derive the axiom either; this is proved below
+  directly from the finite models (\<open>distinct_finite_model\<close>), and the cut reduction
+  \<open>distinct_scheme_fprov_Ineq\<close> links the two formulations: every finitary consequence
+  of the sentences is one of the scheme.  As a first-order axiomatisation of infinity,
+  \<open>{ExDistinct n | n}\<close> is thus
   strictly weaker than \<open>DInf\<close> in \<open>NK\<close> (the converse derivations are
   @{thm [source] DInf_derives_distinct_n}).  Over standard models the two are
   equivalent, since an infinite individual domain with a full function space has an
@@ -853,32 +998,73 @@ proof -
   thus ?thesis by (rule fprovI[OF finF FI])
 qed
 
-theorem distinct_scheme_not_derives_DInf:
-  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
-proof
-  assume h: "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf"
-  obtain f :: "nat \<Rightarrow> 'p" where injf: "inj f"
-    using infinite_UNIV infinite_countable_subset by blast
-  have "Ineq f \<tturnstile> (DInf :: 'p tm)"
-    by (rule distinct_scheme_fprov_Ineq[OF h wff_DInf])
-  thus False using Ineq_not_derives_DInf[OF injf] by simp
+text \<open>The two statements about the sentences themselves are proved directly, by the finite
+  models of \<open>Consistency\<close>, at @{emph \<open>every\<close>} signature: a finite part of the sentences has
+  a largest index \<open>n\<close>, the standard model with \<open>n + 1\<close> individuals satisfies it and refutes
+  \<open>DInf\<close>, and soundness does the rest.  No auxiliary constants are involved, so the
+  signature may be finite; the reduction through the scheme above
+  (\<open>distinct_scheme_fprov_Ineq\<close>) remains as the link between the two formulations.\<close>
+
+lemma distinct_finite_model:
+  assumes finF: "finite F" and FD: "F \<subseteq> range (ExDistinct :: nat \<Rightarrow> 'p tm)"
+  shows "con F" and "\<not> (F \<turnstile> (DInf :: 'p tm))"
+proof -
+  obtain I where finI: "finite I" and FI: "F = ExDistinct ` I"
+    using finite_subset_image[OF finF FD] by blast
+  define k where "k = Suc (Max (insert 0 I))"
+  have kpos: "0 < k" by (simp add: k_def)
+  have lt: "n < k" if "n \<in> I" for n
+  proof -
+    have "n \<le> Max (insert 0 I)" using that finI by (intro Max_ge) auto
+    thus ?thesis by (simp add: k_def)
+  qed
+  interpret U: lambda_universe "cD k" cAp "cLm k" "VB True" "VB False"
+    "cJv k (\<lambda>p. 0) :: 'p \<Rightarrow> ty \<Rightarrow> ival"
+    by (rule concrete_lambda_universe[OF kpos]) (rule kpos)
+  interpret standard_model "cD k" cAp "cLm k" "VB True" "VB False"
+    U.Ngv U.Dsv U.Iv U.Ev U.Piv "cJv k (\<lambda>p. 0) :: 'p \<Rightarrow> ty \<Rightarrow> ival"
+    by (rule U.is_standard_model)
+  have asgX: "bkkA.asg (cXi k)" by (simp add: bkkA.asg_def cXi_def hd_en_dom[OF kpos])
+  have Fsat: "\<forall>B\<in>F. wff\<^bsub>\<o>\<^esub>(B) \<and> den B (cXi k) = VB True"
+  proof
+    fix B assume "B \<in> F"
+    then obtain n where B: "B = ExDistinct n" and nI: "n \<in> I" using FI by auto
+    have "den (ExDistinct n) (cXi k) = VB True"
+    proof (rule sat_ExDistinct_I[OF asgX, where e = VI])
+      show "\<forall>i<n. cD k \<iota> (VI i)" using lt[OF nI] by (auto simp: cD_def)
+      show "inj_on VI {0..<n}" by (simp add: inj_on_def)
+    qed
+    thus "wff\<^bsub>\<o>\<^esub>(B) \<and> den B (cXi k) = VB True" by (simp add: B wff_ExDistinct)
+  qed
+  show "con F" by (rule model_con[OF asgX Fsat])
+  have finD: "finite {x. cD k \<iota> x}" by (simp add: cD_def)
+  have nDsat: "den (\<^bold>\<not> DInf :: 'p tm) (cXi k) = VB True"
+    by (rule DInf_refuted_finite[OF asgX finD])
+  show "\<not> (F \<turnstile> (DInf :: 'p tm))"
+  proof
+    assume "F \<turnstile> (DInf :: 'p tm)"
+    hence "den (DInf :: 'p tm) (cXi k) = VB True"
+      by (rule soundness_bkk[OF _ bkk_model_pred asgX]) (use Fsat in auto)
+    thus False using nDsat sat_NegB[OF wff_DInf asgX] by simp
+  qed
 qed
 
-text \<open>Consistency of the constant-free sentences themselves, by the same reduction: no finite
-  part of \<open>{ExDistinct n | n}\<close> derives falsity.  The finite models of \<open>Consistency\<close> of size
-  \<open>k\<close> satisfy \<open>ExDistinct n\<close> for every \<open>n \<le> k\<close>, so the sentences need no auxiliary
-  constants at all; the route through the scheme is a convenience of the formalisation.\<close>
+theorem distinct_scheme_not_derives_DInf:
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf)"
+proof
+  assume "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf"
+  then obtain F where finF: "finite F" and FD: "F \<subseteq> range ExDistinct"
+      and FDI: "F \<turnstile> (DInf :: 'p tm)"
+    by (auto simp: fprov_def)
+  thus False using distinct_finite_model(2)[OF finF FD] by simp
+qed
+
+text \<open>Consistency of the constant-free sentences themselves: no finite part of
+  \<open>{ExDistinct n | n}\<close> derives falsity, at every signature.\<close>
 
 theorem con_distinct_scheme:
-  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> \<^bold>\<bottom>)"
-proof
-  assume h: "range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> \<^bold>\<bottom>"
-  obtain f :: "nat \<Rightarrow> 'p" where injf: "inj f"
-    using infinite_UNIV infinite_countable_subset by blast
-  have "Ineq f \<tturnstile> (\<^bold>\<bottom> :: 'p tm)"
-    by (rule distinct_scheme_fprov_Ineq[OF h wff_FalseB])
-  thus False using con_Ineq_fprov[OF injf] by simp
-qed
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> \<^bold>\<bottom>)"
+  unfolding fprov_con by (blast intro: distinct_finite_model(1))
 
 subsection \<open>The Henkin countermodel\<close>
 

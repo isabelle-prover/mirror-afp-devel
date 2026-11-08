@@ -1,7 +1,7 @@
 chapter AFP
 
 session HOL_in_HOL_Deep = HOL +
-  description "A locally-nameless deep embedding of classical higher-order logic (Church's simple theory of types) after Benzmueller, Brown and Kohlhase: the calculus NK is proved sound, Henkin-complete and consistent, entirely within plain Isabelle/HOL. Completeness is strengthened to open formulas, arbitrary infinite carriers and signatures, and derivation from hypotheses; Cantor's theorem is derived inside the calculus, and compactness yields consistency with a scheme of inequations between new individual constants without constructing an infinite model; the Dedekind axiom of infinity derives every constant-free sentence 'there are at least n individuals', and neither the scheme nor these sentences derive the axiom. Targets Isabelle2025-2."
+  description "A locally-nameless deep embedding of classical higher-order logic (Church's simple theory of types) after Benzmueller, Brown and Kohlhase: the calculus NK is proved sound, Henkin-complete and consistent, entirely within plain Isabelle/HOL. Completeness is strengthened to open formulas, arbitrary infinite carriers and signatures, and derivation from hypotheses; Cantor's theorem is derived inside the calculus, and compactness yields consistency with a scheme of inequations between new individual constants without constructing an infinite model; the Dedekind axiom of infinity derives every constant-free sentence 'there are at least n individuals', and neither the scheme nor these sentences derive the axiom."
   options [timeout = 600]
   sessions
     "HOL-Library"
@@ -17,6 +17,7 @@ session HOL_in_HOL_Deep = HOL +
     Cantor
     Main_Results
     Footprint_Checks
+    Footprint_Deps
   document_files
     "root.tex"
     "root.bib"

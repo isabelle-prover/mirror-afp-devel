@@ -147,7 +147,8 @@ text \<open>The scheme does not yield the single Dedekind-style axiom of infinit
   development.  Both results rest on the
   auxiliary constants of the scheme.  What the axiom does derive is every constant-free
   sentence ``there are at least \<open>n\<close> individuals'' (\<open>ExDistinct n\<close> in theory
-  \<open>NK_Infinity\<close>), the classical first-order axiomatisation of infinity.\<close>
+  \<open>NK_Infinity\<close>), the classical first-order axiomatisation of infinity
+  (\<^cite>\<open>EFT21\<close>, III.6.3).\<close>
 
 corollary scheme_does_not_derive_axiom:
   "inj (f :: nat \<Rightarrow> 'p::infinite) \<Longrightarrow> \<not> (Ineq f \<tturnstile> (DInf :: 'p tm))"
@@ -157,29 +158,31 @@ corollary axiom_derives_every_finite_cardinality:
   "{DInf :: 'p::infinite tm} \<turnstile> ExDistinct n"
   by (rule DInf_derives_distinct_n)
 
-text \<open>The converse fails: the constant-free sentences together do not derive the axiom
-  (\<open>distinct_scheme_not_derives_DInf\<close>; the Henkin model of
+text \<open>The converse fails: the constant-free sentences together do not derive the axiom,
+  at every signature (\<open>distinct_scheme_not_derives_DInf\<close>, by the finite models of
+  \<open>Consistency\<close>; over an infinite signature the Henkin model of
   \<open>henkin_scheme_refutes_DInf\<close> satisfies all of them and refutes \<open>DInf\<close>).  So in \<open>NK\<close>
   the first-order axiomatisation of infinity is strictly weaker than the Dedekind axiom;
   over standard models the two are equivalent (the step from an infinite individual
   domain to a Dedekind self-map in the full function space is not formalised).\<close>
 
 corollary finite_cardinalities_do_not_derive_axiom:
-  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> DInf)"
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> DInf)"
   by (rule distinct_scheme_not_derives_DInf)
 
 text \<open>The constant-free sentences are consistent with \<open>NK\<close>: no finite part of them derives
-  falsity.  Every finite part holds in a large enough finite model of \<open>Consistency\<close>, so, as
-  for the scheme, the consistency proof constructs no infinite model.\<close>
+  falsity.  Every finite part holds in a large enough finite model of \<open>Consistency\<close>, so
+  the consistency proof constructs no infinite model; and since the sentences mention no
+  constants, the signature may be finite.\<close>
 
 corollary finite_cardinalities_consistent:
-  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p::infinite tm) \<tturnstile> \<^bold>\<bottom>)"
+  "\<not> (range (ExDistinct :: nat \<Rightarrow> 'p tm) \<tturnstile> \<^bold>\<bottom>)"
   by (rule con_distinct_scheme)
 
 text \<open>Model existence (the positive half of Henkin completeness), restated: every consistent
   sentence over a countable signature has a \<open>\<Sigma>\<close>-Henkin model with @{emph \<open>countable\<close>} total domain, within plain HOL.
   Consistency is the only premise --- so where an axiom (e.g.\ of infinity) has no finite
-  models and its consistency has to be established in a stronger meta-theory, that
+  models and its consistency is established in a stronger meta-theory, that
   meta-theory is used for the consistency premise alone, and the witnessing model still has
   a countable total domain: the \<open>\<sim>\<close>-classes of closed wffs, a subset of the carrier
   \<^typ>\<open>'p tm set\<close>.\<close>
