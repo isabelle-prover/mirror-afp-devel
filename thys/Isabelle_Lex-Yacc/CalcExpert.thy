@@ -254,18 +254,18 @@ end
 
 text\<open>Defining a simple Isar-toplevel command\<close>
 ML\<open>
-fun calc source thy = 
-    let 
-      val ctxt = Proof_Context.init_global thy
-      val _ = writeln(Int.toString (Calc.parse_source ctxt source)) 
-    in thy end
+local val global_calc2_lock = Thread.Mutex.mutex () in
 
-val global_calc2_lock = Thread.Mutex.mutex ();
+fun calc2 ctxt source =
+  Multithreading.synchronized_body "Calc." global_calc2_lock
+    (fn run => run (fn () => writeln (Int.toString (Calc.parse_source ctxt source))) ())
+
 val _ = Outer_Syntax.command @{command_keyword "calc2"}
         "A simple inline calculator" 
-        (Parse.input Parse.cartouche >> (fn source => Toplevel.theory (fn thy =>
-          Multithreading.synchronized_body "Calc." global_calc2_lock
-            (fn run => run (fn () => calc source thy) ()))))
+        (Parse.input Parse.cartouche >> (fn source =>
+          Toplevel.keep (fn state => calc2 (Toplevel.context_of state) source)))
+
+end
 \<close>
 
 calc2\<open>

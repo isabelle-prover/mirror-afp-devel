@@ -552,8 +552,9 @@ local
     Scan.optional (\<^keyword>\<open>yacc_user_declarations\<close> |-- Parse.ML_source >> SOME) NONE --
     (\<^keyword>\<open>yacc_definitions\<close> |-- Parse.input Parse.cartouche) --
     (\<^keyword>\<open>yacc_rules\<close> |-- Parse.input Parse.cartouche)
-in
+
   val global_lex_yacc_lock = Thread.Mutex.mutex ();
+in
   val _ = Outer_Syntax.command @{command_keyword "ml_lex_yacc"}
           "Generate and load SML parser based on lex/yacc specifications." 
         (
