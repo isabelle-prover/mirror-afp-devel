@@ -6,9 +6,7 @@ begin
 subsubsection \<open>Type class of continuous permutations and variations thereof\<close>
 
 class cont_pt = 
-  cpo + 
-  pt +
-  assumes perm_cont: "\<And>p. cont ((permute p) :: 'a::{cpo,pt} \<Rightarrow> 'a)"
+  assumes perm_cont: "cont (permute p :: 'a :: {cpo, pt} \<Rightarrow> 'a)"
 
 class discr_pt = 
   discrete_cpo + 
@@ -24,13 +22,13 @@ instance pcpo_pt \<subseteq> cont_pt
 instance discr_pt \<subseteq> cont_pt
  by standard auto
 
-lemma (in cont_pt) perm_cont_simp[simp]: "\<pi> \<bullet> x \<sqsubseteq> \<pi> \<bullet> y \<longleftrightarrow> x \<sqsubseteq> y"
+lemma (in cont_pt) perm_cont_simp[simp]: "\<pi> \<bullet> x \<sqsubseteq> \<pi> \<bullet> y \<longleftrightarrow> x \<sqsubseteq> y" for x y :: 'a
   apply rule
   apply (drule cont2monofunE[OF perm_cont, of _ _ "-\<pi>"], simp)[1]
   apply (erule cont2monofunE[OF perm_cont, of _ _ "\<pi>"])
   done
 
-lemma (in cont_pt) perm_below_to_right: "\<pi> \<bullet> x \<sqsubseteq> y \<longleftrightarrow> x \<sqsubseteq> - \<pi> \<bullet>  y"
+lemma (in cont_pt) perm_below_to_right: "\<pi> \<bullet> x \<sqsubseteq> y \<longleftrightarrow> x \<sqsubseteq> - \<pi> \<bullet>  y" for x y :: 'a
   by (metis perm_cont_simp pt_class.permute_minus_cancel(2))
  
 lemma perm_is_ub_simp[simp]: "\<pi> \<bullet> S <| \<pi> \<bullet> (x::'a::cont_pt) \<longleftrightarrow> S <| x"
