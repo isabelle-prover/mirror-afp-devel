@@ -60,8 +60,6 @@ local
   val lock = Thread.Mutex.mutex ();
 in
 
-fun SYNCHRONIZED name = Multithreading.synchronized name lock;
-
 fun setup_feedback extra_output_filename = let
     val trace_extra = case extra_output_filename of
         NONE => K ()
@@ -73,11 +71,10 @@ fun setup_feedback extra_output_filename = let
       | SOME _ => (fn pfx => fn f => fn msg as (s, _) => (trace_extra (pfx ^ s); f msg))
     
   in
-    SYNCHRONIZED "feedback" (fn () => (
-    Feedback.errorf := add_extra "ERROR: " Feedback.report_error;
-    Feedback.warnf := add_extra "" Feedback.report_warning;
-    Feedback.informf := add_extra "" (Feedback.report_inform o apfst Feedback.timestamp)))
-
+    Multithreading.synchronized_body "feedback" lock (fn _ =>
+     (Feedback.errorf := add_extra "ERROR: " Feedback.report_error;
+      Feedback.warnf := add_extra "" Feedback.report_warning;
+      Feedback.informf := add_extra "" (Feedback.report_inform o apfst Feedback.timestamp)))
   end
 end
 

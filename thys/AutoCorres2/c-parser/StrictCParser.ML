@@ -34,9 +34,7 @@ local
   val lock = Thread.Mutex.mutex ();
 in
 
-fun SYNCHRONIZED name = Multithreading.synchronized name lock;
-
-fun parse_raw ctxt error_lookahead path cpp_output = let
+fun parse_unsynchronized ctxt error_lookahead path cpp_output = let
   val fname = Path.file_name (Path.base path)
   val lexarg = StrictCLex.UserDeclarations.new_state ctxt fname
   val lexer = StrictCParser.makeLexer (single_shot (suffix "\n" (cat_lines cpp_output))) lexarg
@@ -48,7 +46,9 @@ in
 end
 
 fun parse ctxt error_lookahead path cpp_output =
-  SYNCHRONIZED "cparser" (fn () => parse_raw ctxt  error_lookahead path cpp_output)
+  Multithreading.synchronized_body "cparser" lock (fn run =>
+    run (fn () => parse_unsynchronized ctxt error_lookahead path cpp_output) ())
+
 end
 
 end;
