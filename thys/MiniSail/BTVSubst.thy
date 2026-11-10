@@ -7,9 +7,8 @@ chapter \<open>Basic Type Variable Substitution\<close>
 
 section \<open>Class\<close>
 
-class has_subst_b = fs +
-  fixes subst_b :: "'a::fs \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> 'a::fs" (\<open>_[_::=_]\<^sub>b\<close> [1000,50,50] 1000)
-
+class has_subst_b =
+  fixes subst_b :: "'a \<Rightarrow> bv \<Rightarrow> b \<Rightarrow> 'a::fs" (\<open>_[_::=_]\<^sub>b\<close> [1000,50,50] 1000)
 assumes fresh_subst_if:  "j \<sharp> (t[i::=x]\<^sub>b )  \<longleftrightarrow> (atom i \<sharp> t \<and> j \<sharp> t) \<or> (j \<sharp> x \<and> (j \<sharp> t \<or> j = atom i))" 
   and    forget_subst[simp]:  "atom a \<sharp> tm \<Longrightarrow> tm[a::=x]\<^sub>b  = tm"
   and    subst_id[simp]:      "tm[a::=(B_var a)]\<^sub>b  = tm"
