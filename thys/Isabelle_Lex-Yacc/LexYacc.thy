@@ -570,10 +570,11 @@ in
               val lex_only = member (op =) opts "lex_only" 
             in
               Toplevel.theory (fn thy => 
-               Multithreading.synchronized "Lex/Yacc generation." global_lex_yacc_lock (fn () =>
-                MlLexYacc.generate is_verbose is_expert no_reflect no_linking lex_only yacc_only name 
-                  lex_user lex_defs lex_rules 
-                  yacc_user yacc_defs yacc_rules thy))
+               Multithreading.synchronized_body "Lex/Yacc generation." global_lex_yacc_lock (fn run =>
+                run (fn () =>
+                  MlLexYacc.generate is_verbose is_expert no_reflect no_linking lex_only yacc_only name 
+                    lex_user lex_defs lex_rules 
+                    yacc_user yacc_defs yacc_rules thy) ()))
             end)
         )
 end
