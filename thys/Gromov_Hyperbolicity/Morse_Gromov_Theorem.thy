@@ -137,6 +137,7 @@ to $x$ go close to $p$, i.e., the triangular inequality $d(x,y) \leq d(x,p) + d(
 an equality, up to an additive constant.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) dist_along_quasiconvex:
+  fixes x y :: 'a
   assumes "quasiconvex C G" "p \<in> proj_set x G" "y \<in> G"
   shows "dist x p + dist p y \<le> dist x y + 4 * deltaG(TYPE('a)) + 2 * C"
 proof -
@@ -174,6 +175,7 @@ on a quasi-convex set is controlled by the distance of the original points, with
 distances of the points to the set.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) proj_along_quasiconvex_contraction:
+  fixes x y :: 'a
   assumes "quasiconvex C G" "px \<in> proj_set x G" "py \<in> proj_set y G"
   shows "dist px py \<le> max (5 * deltaG(TYPE('a)) + 2 * C) (dist x y - dist px x - dist py y + 10 * deltaG(TYPE('a)) + 4 * C)"
 proof -
@@ -205,6 +207,7 @@ qed
 text \<open>The projection on a quasi-convex set is $1$-Lipschitz up to an additive error.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) proj_along_quasiconvex_contraction':
+  fixes x y :: 'a
   assumes "quasiconvex C G" "px \<in> proj_set x G" "py \<in> proj_set y G"
   shows "dist px py \<le> dist x y + 4 * deltaG(TYPE('a)) + 2 * C"
 proof (cases "dist y py \<le> dist x px")
@@ -227,16 +230,19 @@ text \<open>We can in particular specialize the previous statements to geodesics
 $0$-quasi-convex.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) dist_along_geodesic:
+  fixes x y :: 'a
   assumes "geodesic_segment G" "p \<in> proj_set x G" "y \<in> G"
   shows "dist x p + dist p y \<le> dist x y + 4 * deltaG(TYPE('a))"
 using dist_along_quasiconvex[OF quasiconvex_of_geodesic[OF assms(1)] assms(2) assms(3)] by auto
 
 lemma (in Gromov_hyperbolic_space_geodesic) proj_along_geodesic_contraction:
+  fixes x y :: 'a
   assumes "geodesic_segment G" "px \<in> proj_set x G" "py \<in> proj_set y G"
   shows "dist px py \<le> max (5 * deltaG(TYPE('a))) (dist x y - dist px x - dist py y + 10 * deltaG(TYPE('a)))"
 using proj_along_quasiconvex_contraction[OF quasiconvex_of_geodesic[OF assms(1)] assms(2) assms(3)] by auto
 
 lemma (in Gromov_hyperbolic_space_geodesic) proj_along_geodesic_contraction':
+  fixes x y :: 'a
   assumes "geodesic_segment G" "px \<in> proj_set x G" "py \<in> proj_set y G"
   shows "dist px py \<le> dist x y + 4 * deltaG(TYPE('a))"
 using proj_along_quasiconvex_contraction'[OF quasiconvex_of_geodesic[OF assms(1)] assms(2) assms(3)] by auto
@@ -248,6 +254,7 @@ to the starting point, say. For further applications, we also pick the first suc
 all the previous points are also close to the starting point.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) quasi_convex_projection_small_gaps:
+  fixes G :: "'a set"
   assumes "continuous_on {a..(b::real)} f"
           "a \<le> b"
           "quasiconvex C G"
@@ -318,7 +325,7 @@ proof -
     have *: "\<forall>s \<in> {a..t}. dist (p a) (p s) \<le> d"
       using A \<open>t < u\<close> by auto
     have "dist (p t) (p u) \<le> dist (f t) (f u) + 4 * deltaG(TYPE('a)) + 2 * C"
-      apply (rule proj_along_quasiconvex_contraction'[OF \<open>quasiconvex C G\<close>])
+      apply (rule proj_along_quasiconvex_contraction' [OF \<open>quasiconvex C G\<close>])
       using assms (4) \<open>t \<in> {a..b}\<close> \<open>a \<le> u\<close> \<open>u \<le> b\<close> by auto
     also have "... \<le> (delta - deltaG(TYPE('a))) + 4 * deltaG(TYPE('a)) + 2 * C"
       apply (intro mono_intros)
@@ -420,6 +427,7 @@ qed
 text \<open>Same lemma, except that one exchanges the roles of the beginning and the end point.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) quasi_convex_projection_small_gaps':
+  fixes G :: "'a set"
   assumes "continuous_on {a..(b::real)} f"
           "a \<le> b"
           "quasiconvex C G"
@@ -478,6 +486,7 @@ around the fact that one can not say or use easily in Isabelle that a type with 
 $\delta$ is also hyperbolic for any larger constant $\delta'$.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) geodesic_projection_exp_contracting_aux:
+  fixes G :: "'a set"
   assumes "geodesic_segment G"
           "px \<in> proj_set x G"
           "py \<in> proj_set y G"
@@ -618,6 +627,7 @@ the distance between points is divided by $2$. Then one iterates this statement 
 as possible, gaining a factor $2$ each time and therefore an exponential factor in the end.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) geodesic_projection_exp_contracting:
+  fixes G :: "'a set"
   assumes "geodesic_segment G"
           "\<And>x y. x \<in> {a..b} \<Longrightarrow> y \<in> {a..b} \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
           "a \<le> b"
@@ -948,6 +958,7 @@ original quasiconvex set or the geodesic do not have to coincide, but they are w
 most $C + 8 \delta$.\<close>
 
 lemma (in Gromov_hyperbolic_space_geodesic) quasiconvex_projection_exp_contracting:
+  fixes G :: "'a set"
   assumes "quasiconvex K G"
           "\<And>x y. x \<in> {a..b} \<Longrightarrow> y \<in> {a..b} \<Longrightarrow> dist (f x) (f y) \<le> lambda * dist x y + C"
           "a \<le> b"

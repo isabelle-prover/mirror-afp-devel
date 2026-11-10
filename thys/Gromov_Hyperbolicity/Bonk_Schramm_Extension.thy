@@ -1276,15 +1276,14 @@ be pulled from the corresponding result in the Bonk Schramm extension. The strai
 only express this invariance under isometries of all the properties under consideration.\<close>
 
 proposition (in Gromov_hyperbolic_space) lipschitz_path_close_to_geodesic':
-  fixes c::"real \<Rightarrow> 'a"
+  fixes c :: "real \<Rightarrow> 'a" and G :: "'a set"
   assumes "lipschitz_on M {A..B} c"
           "geodesic_segment_between G (c A) (c B)"
           "x \<in> G"
   shows "infdist x (c`{A..B}) \<le> (4/ln 2) * deltaG(TYPE('a)) * max 0 (ln (B-A)) + M"
 proof -
-  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
-    apply standard using Bonk_Schramm_extension_hyperbolic by auto
-
+  interpret BS: Gromov_hyperbolic_space_geodesic "(\<lambda>_ :: 'a Bonk_Schramm_extension itself. deltaG TYPE('a))"
+    apply standard using Bonk_Schramm_extension_hyperbolic .
   have "infdist x (c`{A..B}) = infdist (to_Bonk_Schramm_extension x) ((to_Bonk_Schramm_extension o c)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_infdist[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
@@ -1304,8 +1303,8 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem':
           "geodesic_segment_between G (f a) (f b)"
   shows "hausdorff_distance (f`{a..b}) G \<le> 92 * lambda\<^sup>2 * (C + deltaG(TYPE('a)))"
 proof -
-  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
-    apply standard using Bonk_Schramm_extension_hyperbolic by auto
+  interpret BS: Gromov_hyperbolic_space_geodesic "(\<lambda>_ :: 'a Bonk_Schramm_extension itself. deltaG TYPE('a))"
+    apply standard using Bonk_Schramm_extension_hyperbolic .
   have "hausdorff_distance (f`{a..b}) (G) = hausdorff_distance ((to_Bonk_Schramm_extension o f)`{a..b}) ((to_Bonk_Schramm_extension)`G)"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
@@ -1323,8 +1322,8 @@ theorem (in Gromov_hyperbolic_space) Morse_Gromov_theorem2':
           "c A = d A" "c B = d B"
   shows "hausdorff_distance (c`{A..B}) (d`{A..B}) \<le> 184 * lambda^2 * (C + deltaG(TYPE('a)))"
 proof -
-  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('a Bonk_Schramm_extension \<Rightarrow> 'a Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('a)))"
-    apply standard using Bonk_Schramm_extension_hyperbolic by auto
+  interpret BS: Gromov_hyperbolic_space_geodesic "(\<lambda>_ :: 'a Bonk_Schramm_extension itself. deltaG TYPE('a))"
+    apply standard using Bonk_Schramm_extension_hyperbolic .
   have "hausdorff_distance (c`{A..B}) (d`{A..B}) = hausdorff_distance ((to_Bonk_Schramm_extension o c)`{A..B}) ((to_Bonk_Schramm_extension o d)`{A..B})"
     unfolding image_comp[symmetric] apply (rule isometry_preserves_hausdorff_distance[symmetric, of UNIV])
     using to_Bonk_Schramm_extension_isometry by auto
@@ -1339,8 +1338,8 @@ lemma Gromov_hyperbolic_invariant_under_quasi_isometry_explicit':
   assumes "lambda C-quasi_isometry f"
   shows "Gromov_hyperbolic_subset (752 * lambda^3 * (C + deltaG(TYPE('b)))) (UNIV::('a set))"
 proof -
-  interpret BS: Gromov_hyperbolic_space_geodesic "dist::('b Bonk_Schramm_extension \<Rightarrow> 'b Bonk_Schramm_extension \<Rightarrow> real)" "uniformity" "open" "(\<lambda>_. deltaG(TYPE('b)))"
-    apply standard using Bonk_Schramm_extension_hyperbolic by auto
+  interpret BS: Gromov_hyperbolic_space_geodesic "(\<lambda>_ :: 'b Bonk_Schramm_extension itself. deltaG TYPE('b))"
+    apply standard using Bonk_Schramm_extension_hyperbolic .
   have A: "(lambda * 1) (C * 1 + 0)-quasi_isometry_on UNIV (to_Bonk_Schramm_extension o f)"
     by (rule quasi_isometry_on_compose[OF assms, of _ _ UNIV])
        (auto simp add: isometry_quasi_isometry_on[OF to_Bonk_Schramm_extension_isometry])

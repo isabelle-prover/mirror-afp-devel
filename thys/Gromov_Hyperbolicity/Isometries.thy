@@ -1088,8 +1088,8 @@ text \<open>In this subsection, we define geodesic spaces (metric spaces in whic
 segment joining any pair of points). We specialize the previous statements on geodesic segments to
 these situations.\<close>
 
-class geodesic_space = metric_space +
-  assumes geodesic: "geodesic_subset (UNIV::('a::metric_space) set)"
+class geodesic_space = "open" +
+  assumes geodesic: "geodesic_subset (UNIV :: 'a::metric_space set)"
 
 text \<open>The simplest example of a geodesic space is a real normed vector space. Significant examples
 also include graphs (with the graph distance), Riemannian manifolds, and $CAT(\kappa)$ spaces.\<close>
@@ -1098,13 +1098,13 @@ instance real_normed_vector \<subseteq> geodesic_space
 by (standard, simp add: convex_is_geodesic)
 
 lemma (in geodesic_space) some_geodesic_is_geodesic_segment [simp]:
-  "geodesic_segment_between {x--y} x (y::'a)"
-  "geodesic_segment {x--y}"
+  "geodesic_segment_between {x--y} x y"
+  "geodesic_segment {x--y}" for x y :: 'a
 using some_geodesic_segment_description(1)[of x y] geodesic_subsetD[OF geodesic] by (auto, blast)
 
 lemma (in geodesic_space) some_geodesic_connected [simp]:
-  "connected {x--y}" "path_connected {x--y}"
-by (auto intro!: geodesic_segment_topology)
+  "connected {x--y}" "path_connected {x--y}" for x y :: 'a
+  by (auto intro!: geodesic_segment_topology)
 
 text \<open>In geodesic spaces, we restate as simp rules all properties of the geodesic segment
 parametrizations.\<close>
@@ -1118,6 +1118,7 @@ lemma (in geodesic_space) geodesic_segment_param_in_geodesic_spaces [simp]:
   "t \<in> {0..dist x y} \<Longrightarrow> dist x (geodesic_segment_param {x--y} x t) = t"
   "s \<in> {0..dist x y} \<Longrightarrow> t \<in> {0..dist x y} \<Longrightarrow> dist (geodesic_segment_param {x--y} x s) (geodesic_segment_param {x--y} x t) = abs(s-t)"
   "z \<in> {x--y} \<Longrightarrow> z = geodesic_segment_param {x--y} x (dist x z)"
+   for x y z :: 'a
 using geodesic_segment_param[OF some_geodesic_is_geodesic_segment(1)[of x y]] by auto
 
 
@@ -1127,7 +1128,7 @@ text \<open>In this subsection, we define uniquely geodesic spaces, i.e., geodes
 additionally, there is a unique geodesic between any pair of points.\<close>
 
 class uniquely_geodesic_space = geodesic_space +
-  assumes uniquely_geodesic: "\<And>x y G H. geodesic_segment_between G x y \<Longrightarrow> geodesic_segment_between H x y \<Longrightarrow> G = H"
+  assumes uniquely_geodesic: "geodesic_segment_between G x y \<Longrightarrow> geodesic_segment_between H x y \<Longrightarrow> G = H"
 
 text \<open>To prove that a geodesic space is uniquely geodesic, it suffices to show that there is no loop,
 i.e., if two geodesic segments intersect only at their endpoints, then they coincide.
@@ -1232,6 +1233,7 @@ lemma geodesic_segment_unique:
 using uniquely_geodesic[of _ x y] by (meson some_geodesic_is_geodesic_segment)
 
 lemma geodesic_segment_dist':
+  fixes x y z :: 'a
   assumes "dist x z = dist x y + dist y z"
   shows "y \<in> {x--z}" "{x--z} = {x--y} \<union> {y--z}"
 proof -
@@ -1243,7 +1245,7 @@ proof -
 qed
 
 lemma geodesic_segment_expression:
-  "{x--z} = {y. dist x z = dist x y + dist y z}"
+  "{x--z} = {y. dist x z = dist x y + dist y z}" for x z :: 'a
 using geodesic_segment_dist'(1) geodesic_segment_dist[OF some_geodesic_is_geodesic_segment(1)] by auto
 
 lemma geodesic_segment_split:
@@ -1255,6 +1257,7 @@ apply (rule geodesic_segment_union(2)[of x z], auto simp add: assms)
 using assms geodesic_segment_expression by blast
 
 lemma geodesic_segment_subparam':
+  fixes x y z :: 'a
   assumes "y \<in> {x--z}" "t \<in> {0..dist x y}"
   shows "geodesic_segment_param {x--z} x t = geodesic_segment_param {x--y} x t"
 apply (rule geodesic_segment_subparam[of _ _ z _ y]) using assms apply auto

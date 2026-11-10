@@ -176,7 +176,7 @@ in the definition. The $\delta$ in Gromov-hyperbolicity type class is called \ve
 avoid name clashes.
 \<close>
 
-class metric_space_with_deltaG = metric_space +
+class metric_space_with_deltaG =
   fixes deltaG::"('a::metric_space) itself \<Rightarrow> real"
 
 class Gromov_hyperbolic_space = metric_space_with_deltaG +
@@ -185,7 +185,8 @@ class Gromov_hyperbolic_space = metric_space_with_deltaG +
 class Gromov_hyperbolic_space_geodesic = Gromov_hyperbolic_space + geodesic_space
 
 lemma (in Gromov_hyperbolic_space) hyperb_quad_ineq [mono_intros]:
-  shows "dist x y + dist z t \<le> max (dist x z + dist y t) (dist x t + dist y z) + 2 * deltaG(TYPE('a))"
+  "dist x y + dist z t \<le> max (dist x z + dist y t) (dist x t + dist y z) + 2 * deltaG(TYPE('a))"
+  for x y z t :: 'a
 using hyperb_quad_ineq0 unfolding Gromov_hyperbolic_subset_def by auto
 
 text \<open>It readily follows from the definition that the completion of a $\delta$-hyperbolic
@@ -410,6 +411,7 @@ text \<open>The distance of a point on a side of triangle to the opposite vertex
 the length of the opposite sides, up to $\delta$.\<close>
 
 lemma dist_le_max_dist_triangle:
+  fixes x y :: 'a
   assumes "geodesic_segment_between G x y"
           "m \<in> G"
   shows "dist m z \<le> max (dist x z) (dist y z) + deltaG(TYPE('a))"
@@ -594,7 +596,7 @@ proof -
 
   have "dist (geodesic_segment_param Gxy x t) (geodesic_segment_param Gxz x t) \<le> 4 * delta"
     if H: "geodesic_segment_between Gxy x y" "geodesic_segment_between Gxz x z" "t \<in> {0..Gromov_product_at x y z}"
-    for x y z t Gxy Gxz
+    for x y z :: 'a and t Gxy Gxz
   proof -
     have Main: "dist (geodesic_segment_param Gxy x u) (geodesic_segment_param Gxz x u) \<le> 4 * delta"
       if "u \<in> {delta..<Gromov_product_at x y z}" for u
@@ -741,7 +743,7 @@ proof -
   text \<open>First step: the result is true for $t = (y,z)_x$.\<close>
   have Main: "dist (geodesic_segment_param Gxy x (Gromov_product_at x y z)) (geodesic_segment_param Gxz x (Gromov_product_at x y z)) \<le> 6 * delta"
     if H: "geodesic_segment_between Gxy x y" "geodesic_segment_between Gxz x z"
-    for x y z Gxy Gxz
+    for x y z :: 'a and Gxy Gxz
   proof -
     obtain w where w: "infdist w Gxy \<le> delta" "infdist w Gxz \<le> delta" "infdist w {y--z} \<le> delta"
       using assms[OF H, of "{y--z}"] by auto
@@ -871,7 +873,7 @@ proof -
   reduction to the first step.\<close>
   have "dist (geodesic_segment_param Gxy x t) (geodesic_segment_param Gxz x t) \<le> 6 * delta"
     if H: "geodesic_segment_between Gxy x y" "geodesic_segment_between Gxz x z" "t \<in> {0..Gromov_product_at x y z}"
-    for x y z t Gxy Gxz
+    for x y z :: 'a and t Gxy Gxz
   proof -
     define ys where "ys = (\<lambda>s. geodesic_segment_param Gxy x (s * dist x y))"
     define zs where "zs = (\<lambda>s. geodesic_segment_param Gxz x (s * dist x z))"
@@ -1004,9 +1006,54 @@ proof
     by (metis (full_types) Un_commute geodesic_segment_between_real geodesic_segment_commute ivl_disj_un_two_touch(4) le_max_iff_disj max.absorb_iff2 max.commute min_absorb2)
 qed
 
-context metric_tree begin
+context metric_tree
+begin
 
 text \<open>We show that a metric tree is uniquely geodesic.\<close>
+
+lemma uniquely_geodesic_space:
+  \<open>class.uniquely_geodesic_space TYPE('a)\<close>
+proof
+  fix x y G H assume H: "geodesic_segment_between G x y" "geodesic_segment_between H x (y::'a)"
+  show "G = H"
+  proof (rule uniquely_geodesic_spaceI[OF _ H])
+    fix G H x y assume "geodesic_segment_between G x y" "geodesic_segment_between H x y" "G \<inter> H = {x, (y::'a)}"
+    show "x = y"
+    proof (rule ccontr)
+      assume "x \<noteq> y"
+      then have "dist x y > 0" by auto
+      obtain g where g: "g 0 = x" "g (dist x y) = y" "isometry_on {0..dist x y} g" "G = g`{0..dist x y}"
+        by (meson \<open>geodesic_segment_between G x y\<close> geodesic_segment_between_def)
+      define G2 where "G2 = g`{0..dist x y/2}"
+      have "G2 \<subseteq> G" unfolding G2_def g(4) by auto
+      define z where "z = g(dist x y/2)"
+      have "dist x z = dist x y/2"
+        using isometry_onD[OF g(3), of 0 "dist x y/2"] g(1) z_def unfolding dist_real_def by auto
+      have "dist y z = dist x y/2"
+        using isometry_onD[OF g(3), of "dist x y" "dist x y/2"] g(2) z_def unfolding dist_real_def by auto
+
+      have G2: "geodesic_segment_between G2 x z" unfolding \<open>g 0 = x\<close>[symmetric] z_def G2_def
+        apply (rule geodesic_segmentI2) by (rule isometry_on_subset[OF g(3)], auto simp add: \<open>g 0 = x\<close>)
+      have [simp]: "x \<in> G2" "z \<in> G2" using geodesic_segment_endpoints G2 by auto
+      have "dist x a \<le> dist x z" if "a \<in> G2" for a
+        apply (rule geodesic_segment_dist_le) using G2 that by auto
+      also have "... < dist x y" unfolding \<open>dist x z = dist x y/2\<close> using \<open>dist x y > 0\<close> by auto
+      finally have "y \<notin> G2" by auto
+
+      then have "G2 \<inter> H = {x}"
+        using \<open>G2 \<subseteq> G\<close> \<open>x \<in> G2\<close> \<open>G \<inter> H = {x, y}\<close> by auto
+      have *: "geodesic_segment_between (G2 \<union> H) z y"
+        apply (rule geod_union[of _ _ x])
+        using \<open>G2 \<inter> H = {x}\<close> \<open>geodesic_segment_between H x y\<close> G2 by (auto simp add: geodesic_segment_commute)
+      have "dist x y \<le> dist z x + dist x y" by auto
+      also have "... = dist z y"
+        apply (rule geodesic_segment_dist[OF *]) using \<open>G \<inter> H = {x, y}\<close> by auto
+      also have "... = dist x y / 2"
+        by (simp add: \<open>dist y z = dist x y / 2\<close> metric_space_class.dist_commute)
+      finally show False using \<open>dist x y > 0\<close> by auto
+    qed
+  qed
+qed
 
 subclass uniquely_geodesic_space
 proof
@@ -1058,7 +1105,7 @@ definition center::"'a \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> 'a"
   where "center x y z = (SOME t. t \<in> {x--y} \<inter> {x--z} \<inter> {y--z})"
 
 lemma center_as_intersection:
-  "{x--y} \<inter> {x--z} \<inter> {y--z} = {center x y z}"
+  "{x--y} \<inter> {x--z} \<inter> {y--z} = {center x y z}" for x y z :: 'a
 proof -
   obtain g where g: "g 0 = x" "g (dist x y) = y" "isometry_on {0..dist x y} g" "{x--y} = g`{0..dist x y}"
     by (meson geodesic_segment_between_def some_geodesic_is_geodesic_segment(1))
@@ -1116,7 +1163,7 @@ proof -
     apply (subst g(2)[symmetric], subst h(2)[symmetric]) apply(rule geod_union[of _ _ "h a"])
     using geodesic_segment_commute G2 H2 a * by force+
   then have "G2 \<union> H2 = {y--z}"
-    using geodesic_segment_unique by auto
+    using geodesic_segment_unique [of \<open>G2 \<union> H2\<close> y z] by simp
   then have "c \<in> {y--z}" using * by auto
   then have *: "c \<in> {x--y} \<inter> {x--z} \<inter> {y--z}"
     using g(4) h(4) c_def a by force
