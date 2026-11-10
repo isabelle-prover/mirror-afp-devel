@@ -19,53 +19,54 @@ text \<open>The machine here is the wrap with its first-block language table.  T
   end.\<close>
 
 abbreviation wrap_speedup ::
-  "('q, 'a) ktm \<Rightarrow>
-    (('q \<times> ('a, 'c::enum) ae_stage, 'a, 'c \<Rightarrow> 'a) wrap_state,
-      ('a, 'c \<Rightarrow> 'a) wrap_alphabet) ktm" where
-  "wrap_speedup M \<equiv> encoding_wrap
-    (alphabet_enlarge M) (ae_pack (bl_ktm M)) (card (UNIV :: 'c set)) (Sigma_ktm M)"
+  "nat \<Rightarrow> ('q, 'a) ktm \<Rightarrow>
+    (('q \<times> 'a ae_stage, 'a, nat \<Rightarrow> 'a) wrap_state,
+      ('a, nat \<Rightarrow> 'a) wrap_alphabet) ktm" where
+  "wrap_speedup m M \<equiv> encoding_wrap
+    (alphabet_enlarge m M) (ae_pack m (bl_ktm M)) (m) (Sigma_ktm M)"
 
 definition wrap_speedup_bound :: "nat \<Rightarrow> nat \<Rightarrow> nat \<Rightarrow> nat" where
   "wrap_speedup_bound m n T = n + 3 * ((n + m - 1) div m) +
     8 * ((T + m - 1) div m) + 9"
 
 abbreviation wrap_prefix_speedup ::
-  "('q,'a) ktm \<Rightarrow> nat \<Rightarrow>
-    (bool \<times> (('q \<times> ('a,'c::enum) ae_stage,'a,'c \<Rightarrow> 'a) wrap_state),
-      ('a,'c \<Rightarrow> 'a) wrap_alphabet) ktm" where
-  "wrap_prefix_speedup M N \<equiv>
-    wrap_prefix_patch (wrap_speedup M) (\<lambda>w. w \<in> Lang_ktm M) N"
+  "nat \<Rightarrow> ('q,'a) ktm \<Rightarrow> nat \<Rightarrow>
+    (bool \<times> (('q \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm" where
+  "wrap_prefix_speedup m M N \<equiv>
+    wrap_prefix_patch (wrap_speedup m M) (\<lambda>w. w \<in> Lang_ktm M) N"
 
 definition wrap_prefix_speedup_bound where
   "wrap_prefix_speedup_bound N m n T = (if n \<le> N then n+2 else wrap_speedup_bound m n T)"
 
 lemma wrap_prefix_speedup_contract:
   fixes M :: "('s,'a) ktm"
-    and P :: "(bool \<times> (('s \<times> ('a,'b::enum) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state),
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+    and P :: "(bool \<times> (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   assumes wf: "well_formed_ktm M" and k2: "2 \<le> k_ktm M"
-      and width: "N < card (UNIV :: 'b set)"
-  defines "P \<equiv> wrap_prefix_speedup M N"
+      and width: "N < m"
+  defines "P \<equiv> wrap_prefix_speedup m M N"
   shows "valid_ktm P"
     and "Lang_ktm P = map Raw ` Lang_ktm M"
     and "det_ktm M \<Longrightarrow> det_ktm P"
 proof -
-  let ?m = "card (UNIV :: 'b set)"
-  let ?A = "alphabet_enlarge M :: ('s \<times> ('a,'b) ae_stage,'b \<Rightarrow> 'a) ktm"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('b \<Rightarrow> 'a)"
+  have m_pos: "0 < m" using width by linarith
+  let ?m = "m"
+  let ?A = "alphabet_enlarge m M :: ('s \<times> 'a ae_stage,nat \<Rightarrow> 'a) ktm"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?W = "encoding_wrap ?A ?pack ?m (Sigma_ktm M)"
   have validM: "valid_ktm M" and blle: "le_ktm M \<noteq> bl_ktm M" using wf by auto
-  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM])
-  have positive: "0 < ?m" by (simp add: card_gt_0_iff)
+  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM m_pos])
+  have positive: "0 < ?m" by (rule m_pos)
   have blleA: "bl_ktm ?A \<noteq> le_ktm ?A"
-    using blle by (simp add: bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge
-      bl_block_def LE_block_def fun_eq_iff)
+    using LE_block_neq_bl_block[OF m_pos blle]
+    by (metis bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge)
   have k2A: "2 \<le> k_ktm ?A" using k2 by (cases M) (simp add: alphabet_enlarge_def)
-  note F = linear_speedup_form_1_raw_nae[where 'c='b, OF wf k2]
+  note F = linear_speedup_form_1_raw_nae[OF wf k2 m_pos]
   show "valid_ktm P" unfolding P_def by (rule wrap_prefix_patch_valid[OF F(1)])
   have enc: "set (wrap_enc ?pack ?m w) \<subseteq> Sigma_ktm ?A"
     if "set w \<subseteq> Sigma_ktm M" for w
-    by (rule ae_wrap_enc_in_Sigma[OF validM that])
+    by (rule ae_wrap_enc_in_Sigma[OF validM that m_pos])
   have table: "(\<lambda>u. u \<in> Lang_ktm M) = (\<lambda>u. u \<in> Lang_user_wrap ?W)"
     using F(2) by simp
   have lang: "Lang_user_wrap P = Lang_ktm M"
@@ -93,35 +94,36 @@ proof -
   qed
   assume det: "det_ktm M"
   have "det_ktm ?W"
-    by (rule linear_speedup_form_1_raw_dae(2)[where 'c='b, OF wf det k2])
+    by (rule linear_speedup_form_1_raw_dae(2)[OF wf det k2 m_pos])
   then show "det_ktm P" unfolding P_def by (rule wrap_prefix_patch_det)
 qed
 
 lemma wrap_prefix_speedup_short:
   fixes M :: "('s,'a) ktm"
-    and P :: "(bool \<times> (('s \<times> ('a,'b::enum) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state),
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+    and P :: "(bool \<times> (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   assumes wf: "well_formed_ktm M" and k2: "2 \<le> k_ktm M"
-      and width: "N < card (UNIV :: 'b set)"
+      and width: "N < m"
       and word: "set w \<subseteq> Sigma_ktm M" and short: "length w \<le> N"
-  defines "P \<equiv> wrap_prefix_speedup M N"
+  defines "P \<equiv> wrap_prefix_speedup m M N"
   shows "reaches_state_in_time_ktm P (map Raw w)
     (if w \<in> Lang_ktm M then t_ktm P else r_ktm P) (length w + 2)"
 proof -
-  let ?m = "card (UNIV :: 'b set)"
-  let ?A = "alphabet_enlarge M :: ('s \<times> ('a,'b) ae_stage,'b \<Rightarrow> 'a) ktm"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('b \<Rightarrow> 'a)"
+  have m_pos: "0 < m" using width by linarith
+  let ?m = "m"
+  let ?A = "alphabet_enlarge m M :: ('s \<times> 'a ae_stage,nat \<Rightarrow> 'a) ktm"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?W = "encoding_wrap ?A ?pack ?m (Sigma_ktm M)"
   have validM: "valid_ktm M" and blle: "le_ktm M \<noteq> bl_ktm M" using wf by auto
-  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM])
-  have positive: "0 < ?m" by (simp add: card_gt_0_iff)
+  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM m_pos])
+  have positive: "0 < ?m" by (rule m_pos)
   have blleA: "bl_ktm ?A \<noteq> le_ktm ?A"
-    using blle by (simp add: bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge
-      bl_block_def LE_block_def fun_eq_iff)
+    using LE_block_neq_bl_block[OF m_pos blle]
+    by (metis bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge)
   have k2A: "2 \<le> k_ktm ?A" using k2 by (cases M) (simp add: alphabet_enlarge_def)
   have pack: "?pack (take ?m (drop (i*?m) w)) \<in> Sigma_ktm ?A"
     if "i*?m < length w" for i
-    using ae_wrap_enc_in_Sigma[OF validM word, where 'c='b]
+    using ae_wrap_enc_in_Sigma[OF validM word m_pos]
       pack_take_in_set_wrap_enc[OF positive that, where pack="?pack"] by blast
   have shortm: "length w < ?m" using short width by arith
   have run: "reaches_state_in_time_ktm P (map Raw w)
@@ -135,27 +137,28 @@ qed
 
 lemma wrap_prefix_speedup_long:
   fixes M :: "('s,'a) ktm"
-    and P :: "(bool \<times> (('s \<times> ('a,'b::enum) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state),
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+    and P :: "(bool \<times> (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   assumes wf: "well_formed_ktm M" and k2: "2 \<le> k_ktm M"
       and word: "set w \<subseteq> Sigma_ktm M" and long: "N < length w"
-      and run: "reaches_state_in_time_ktm (wrap_speedup M) (map Raw w) (W_Run q) T"
-  defines "P \<equiv> wrap_prefix_speedup M N"
+      and run: "reaches_state_in_time_ktm (wrap_speedup m M) (map Raw w) (W_Run q) T"
+      and m_pos: "0 < m"
+  defines "P \<equiv> wrap_prefix_speedup m M N"
   shows "reaches_state_in_time_ktm P (map Raw w) (False, W_Run q) T"
 proof -
-  let ?m = "card (UNIV :: 'b set)"
-  let ?A = "alphabet_enlarge M :: ('s \<times> ('a,'b) ae_stage,'b \<Rightarrow> 'a) ktm"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('b \<Rightarrow> 'a)"
+  let ?m = "m"
+  let ?A = "alphabet_enlarge m M :: ('s \<times> 'a ae_stage,nat \<Rightarrow> 'a) ktm"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   have validM: "valid_ktm M" and blle: "le_ktm M \<noteq> bl_ktm M" using wf by auto
-  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM])
-  have positive: "0 < ?m" by (simp add: card_gt_0_iff)
+  have validA: "valid_ktm ?A" by (rule alphabet_enlarge_wf[OF validM m_pos])
+  have positive: "0 < ?m" by (rule m_pos)
   have blleA: "bl_ktm ?A \<noteq> le_ktm ?A"
-    using blle by (simp add: bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge
-      bl_block_def LE_block_def fun_eq_iff)
+    using LE_block_neq_bl_block[OF m_pos blle]
+    by (metis bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge)
   have k2A: "2 \<le> k_ktm ?A" using k2 by (cases M) (simp add: alphabet_enlarge_def)
   have pack: "?pack (take ?m (drop (i*?m) w)) \<in> Sigma_ktm ?A"
     if "i*?m < length w" for i
-    using ae_wrap_enc_in_Sigma[OF validM word, where 'c='b]
+    using ae_wrap_enc_in_Sigma[OF validM word m_pos]
       pack_take_in_set_wrap_enc[OF positive that, where pack="?pack"] by blast
   show ?thesis unfolding P_def
     by (rule wrap_prefix_transport[where A="?A" and pack="?pack" and m="?m"
@@ -165,15 +168,15 @@ qed
 
 lemma wrap_prefix_speedup_accepts:
   fixes M :: "('s,'a) ktm"
-    and P :: "(bool \<times> (('s \<times> ('a,'b::enum) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state),
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+    and P :: "(bool \<times> (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   assumes wf: "well_formed_ktm M" and k2: "2 \<le> k_ktm M"
-      and width: "N < card (UNIV :: 'b set)"
+      and width: "N < m"
       and word: "set w \<subseteq> Sigma_ktm M"
       and source: "accepts_in_time_ktm M w T"
-  defines "P \<equiv> wrap_prefix_speedup M N"
+  defines "P \<equiv> wrap_prefix_speedup m M N"
   shows "accepts_in_time_ktm P (map Raw w)
-    (wrap_prefix_speedup_bound N (card (UNIV :: 'b set)) (length w) T)"
+    (wrap_prefix_speedup_bound N (m) (length w) T)"
 proof (cases "length w \<le> N")
   case True
   have member: "w \<in> Lang_ktm M" using word source by (auto simp: Lang_ktm_iff)
@@ -184,22 +187,23 @@ proof (cases "length w \<le> N")
     by (simp add: accepts_in_time_ktm_iff_reaches wrap_prefix_speedup_bound_def)
 next
   case False
-  let ?m = "card (UNIV :: 'b set)"
-  let ?W = "wrap_speedup M :: (('s \<times> ('a,'b) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state,
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+  have m_pos: "0 < m" using width by linarith
+  let ?m = "m"
+  let ?W = "wrap_speedup m M :: (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state,
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   have long: "N < length w" using False by simp
   have raw: "accepts_in_time_user_wrap ?W w
     (length w + (length w + ?m - 1) div ?m + 5
       + 2 * ((length w + ?m - 1) div ?m) + 8 * ((T + ?m - 1) div ?m) + 4)"
-    using linear_speedup_form_1_raw_nae(3)[where 'c='b and T="\<lambda>_. T",
-      OF wf k2] word source by blast
+    using linear_speedup_form_1_raw_nae(3)[where T="\<lambda>_. T",
+      OF wf k2 m_pos] word source by blast
   have run: "reaches_state_in_time_ktm ?W (map Raw w)
-    (W_Run (t_ktm M, init_stage (le_ktm M))) (wrap_speedup_bound ?m (length w) T)"
+    (W_Run (t_ktm M, init_stage m (le_ktm M))) (wrap_speedup_bound ?m (length w) T)"
     using raw by (simp add: accepts_in_time_user_wrap_def accepts_in_time_ktm_iff_reaches
       t_ktm_alphabet_enlarge wrap_speedup_bound_def algebra_simps)
   have "reaches_state_in_time_ktm P (map Raw w)
-    (False, W_Run (t_ktm M, init_stage (le_ktm M))) (wrap_speedup_bound ?m (length w) T)"
-    unfolding P_def by (rule wrap_prefix_speedup_long[OF wf k2 word long run])
+    (False, W_Run (t_ktm M, init_stage m (le_ktm M))) (wrap_speedup_bound ?m (length w) T)"
+    unfolding P_def by (rule wrap_prefix_speedup_long[OF wf k2 word long run m_pos])
   then show ?thesis using False
     by (simp add: P_def accepts_in_time_ktm_iff_reaches
       t_ktm_alphabet_enlarge wrap_prefix_speedup_bound_def)
@@ -225,16 +229,16 @@ qed
 
 theorem wrap_prefix_speedup_band:
   fixes M :: "('s,'a) ktm"
-    and P :: "(bool \<times> (('s \<times> ('a,'b::enum) ae_stage,'a,'b \<Rightarrow> 'a) wrap_state),
-      ('a,'b \<Rightarrow> 'a) wrap_alphabet) ktm"
+    and P :: "(bool \<times> (('s \<times> 'a ae_stage,'a,nat \<Rightarrow> 'a) wrap_state),
+      ('a,nat \<Rightarrow> 'a) wrap_alphabet) ktm"
   assumes wf: "well_formed_ktm M" and k2: "2 \<le> k_ktm M"
       and timed: "\<And>w. w \<in> Lang_ktm M \<Longrightarrow>
         accepts_in_time_ktm M w (c * t (length w) + e)"
       and q: "0 < q"
       and band: "\<And>n. N0 \<le> n \<Longrightarrow> n + n div q \<le> t n"
-      and large: "16 * (3 + 8*c) * (q+1) + 16*c + 1 \<le> card (UNIV :: 'b set)"
-      and width: "max N0 (q * (81 + 128*e)) < card (UNIV :: 'b set)"
-  defines "P \<equiv> wrap_prefix_speedup M (max N0 (q * (81 + 128*e)))"
+      and large: "16 * (3 + 8*c) * (q+1) + 16*c + 1 \<le> m"
+      and width: "max N0 (q * (81 + 128*e)) < m"
+  defines "P \<equiv> wrap_prefix_speedup m M (max N0 (q * (81 + 128*e)))"
   shows "time_bounded_conv P t"
 proof -
   have lang: "Lang_ktm P = map Raw ` Lang_ktm M"
@@ -247,7 +251,7 @@ proof -
     have word: "set w \<subseteq> Sigma_ktm M" using member by (simp add: Lang_ktm_iff)
     have run: "accepts_in_time_ktm P (map Raw w)
       (wrap_prefix_speedup_bound (max N0 (q * (81 + 128*e)))
-        (card (UNIV :: 'b set)) (length w) (c*t (length w)+e))"
+        (m) (length w) (c*t (length w)+e))"
       unfolding P_def by (rule wrap_prefix_speedup_accepts[OF wf k2 width word timed[OF member]])
     have "accepts_in_time_ktm P (map Raw w) (max (length w+2) (t (length w)))"
       by (rule accepts_in_time_ktm_mono[OF run wrap_prefix_speedup_bound_band[OF q large band]])

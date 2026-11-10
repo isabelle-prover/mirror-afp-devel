@@ -20,7 +20,6 @@ session Multitape_TM_Substrate = HOL +
     Multitape_Clock_Product
     Multitape_One_Tape_Clocks
     Multitape_Binary_Codec
-    Multitape_Enum_Type
   document_files
     "root.tex"
     "root.bib"

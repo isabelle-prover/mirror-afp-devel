@@ -83,36 +83,36 @@ lemma m_step_buffered_lift_to_tape_general:
     and cM :: "('a, 'q) ktc_config"
     and q q' :: 'q
     and blocks blocks' ::
-          "nat \<Rightarrow> (('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
-    and pos_bp pos_bp' :: "nat \<Rightarrow> 'c bp"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
+    and pos_bp pos_bp' :: "nat \<Rightarrow> bp"
     and pos_n :: "nat \<Rightarrow> nat"
   assumes vM:        "valid_ktm M"
       and lu:        "le_unique M"
       and cM_valid:  "valid_config_ktm M cM"
       and step:      "((q, blocks, pos_bp), (q', blocks', pos_bp'))
-                         \<in> m_step_buffered M"
+                         \<in> m_step_buffered m M"
       and st_eq:     "ktc_state cM = q"
-      and window:    "\<forall>k<k_ktm M. ae_window_invariant_general
+      and window:    "\<forall>k<k_ktm M. ae_window_invariant_general m
                             (ktc_tape cM k) (ktc_pos cM k)
                             (pos_bp k) (blocks k) (pos_n k)
                             (le_ktm M)"
-      and bp_lt:     "\<forall>k. bp_linear (pos_bp k)
-                              < 3 * card (UNIV :: 'c set) - 1"
-      and bp_pos:    "\<forall>k. 0 < bp_linear (pos_bp k)"
+      and bp_lt:     "\<forall>k. bp_linear m (pos_bp k)
+                              < 3 * m - 1"
+      and bp_pos:    "\<forall>k. 0 < bp_linear m (pos_bp k)"
       and no_le:     "\<forall>k<k_ktm M. (pos_n k = 0
                               \<longrightarrow> (\<forall>i. 0 < i
-                                          \<and> i \<le> card (UNIV :: 'c set)
+                                          \<and> i \<le> m
                                        \<longrightarrow> ktc_tape cM k i \<noteq> le_ktm M))
                            \<and> (pos_n k = 1
                                 \<longrightarrow> (\<forall>i. 0 < i
-                                            \<and> i \<le> 2 * card (UNIV :: 'c set)
+                                            \<and> i \<le> 2 * m
                                          \<longrightarrow> ktc_tape cM k i \<noteq> le_ktm M))
                            \<and> (pos_n k \<ge> 2
                                 \<longrightarrow> ktc_tape cM k (ktc_pos cM k) \<noteq> le_ktm M)"
   shows "\<exists>cM'.
             (cM, cM') \<in> ktm_step (delta_ktm M)
             \<and> ktc_state cM' = q'
-            \<and> (\<forall>k<k_ktm M. ae_window_invariant_general
+            \<and> (\<forall>k<k_ktm M. ae_window_invariant_general m
                       (ktc_tape cM' k) (ktc_pos cM' k)
                       (pos_bp' k) (blocks' k) (pos_n k) (le_ktm M))"
 proof -
@@ -130,7 +130,7 @@ proof -
       delta_mem: "(q, a, q', a', d) \<in> delta_ktm M"
     and read_eq:  "\<forall>k. a k = read_bp (blocks k) (pos_bp k)"
     and write_eq: "\<forall>k. blocks' k = write_bp (blocks k) (pos_bp k) (a' k)"
-    and adv_eq:   "\<forall>k. bp_advance_le (le_ktm M) (a k) (pos_bp k) (d k)
+    and adv_eq:   "\<forall>k. bp_advance_le m (le_ktm M) (a k) (pos_bp k) (d k)
                           = Some (pos_bp' k)"
     unfolding m_step_buffered_def by auto
   have read_match: "\<forall>k. a k = ts_pre k (n_pre k)"
@@ -140,9 +140,9 @@ proof -
     proof (cases "k < k_ktm M")
       case True
       from window True have wi_k:
-          "ae_window_invariant_general (ktc_tape cM k) (ktc_pos cM k)
+          "ae_window_invariant_general m (ktc_tape cM k) (ktc_pos cM k)
               (pos_bp k) (blocks k) (pos_n k) (le_ktm M)" by blast
-      hence wi_k': "ae_window_invariant_general (ts_pre k) (n_pre k)
+      hence wi_k': "ae_window_invariant_general m (ts_pre k) (n_pre k)
                        (pos_bp k) (blocks k) (pos_n k) (le_ktm M)"
         using tp_eq ps_eq by simp
       have "read_bp (blocks k) (pos_bp k) = ts_pre k (n_pre k)"
@@ -180,28 +180,28 @@ proof -
   qed
   have st_new: "ktc_state ?cM' = q'" by simp
   have new_window:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape ?cM' k) (ktc_pos ?cM' k)
               (pos_bp' k) (blocks' k) (pos_n k) (le_ktm M)"
   proof (intro allI impI)
     fix k assume klt: "k < k_ktm M"
-    let ?c = "card (UNIV :: 'c set)"
+    let ?c = "m"
     have tape_k: "ktc_tape ?cM' k = (ts_pre k)(n_pre k := a' k)" by simp
     have pos_k:  "ktc_pos ?cM' k  = go_move (d k) (n_pre k)" by simp
     have blocks'_k: "blocks' k = write_bp (blocks k) (pos_bp k) (a' k)"
       using write_eq by blast
-    have adv_k_buf: "bp_advance_le (le_ktm M) (a k) (pos_bp k) (d k)
+    have adv_k_buf: "bp_advance_le m (le_ktm M) (a k) (pos_bp k) (d k)
                         = Some (pos_bp' k)"
       using adv_eq by blast
     have read_a_k: "a k = ts_pre k (n_pre k)" using read_match by blast
-    have adv_k: "bp_advance_le (le_ktm M) (ts_pre k (n_pre k))
+    have adv_k: "bp_advance_le m (le_ktm M) (ts_pre k (n_pre k))
                     (pos_bp k) (d k) = Some (pos_bp' k)"
       using adv_k_buf read_a_k by simp
-    have wi_gen_k: "ae_window_invariant_general
+    have wi_gen_k: "ae_window_invariant_general m
         (ts_pre k) (n_pre k) (pos_bp k) (blocks k) (pos_n k) (le_ktm M)"
       using window klt tp_eq ps_eq by simp
-    have bp_lt_k:  "bp_linear (pos_bp k) < 3 * ?c - 1" using bp_lt by blast
-    have bp_pos_k: "0 < bp_linear (pos_bp k)" using bp_pos by blast
+    have bp_lt_k:  "bp_linear m (pos_bp k) < 3 * ?c - 1" using bp_lt by blast
+    have bp_pos_k: "0 < bp_linear m (pos_bp k)" using bp_pos by blast
     \<comment> \<open>LE-discipline side conditions, derived from
       \<open>valid_ktm M\<close>; used in \<open>le0\<close> and \<open>le1\<close>
       branches.\<close>
@@ -223,18 +223,18 @@ proof -
     \<comment> \<open>Dispatch on \<open>pos_n k\<close> regime.\<close>
     consider (steady) "pos_n k \<ge> 2" | (le1) "pos_n k = 1" | (le0) "pos_n k = 0"
       by linarith
-    then show "ae_window_invariant_general
+    then show "ae_window_invariant_general m
                  (ktc_tape ?cM' k) (ktc_pos ?cM' k)
                  (pos_bp' k) (blocks' k) (pos_n k) (le_ktm M)"
     proof cases
       case steady
-      have wi_st: "ae_window_invariant (ts_pre k) (n_pre k)
+      have wi_st: "ae_window_invariant m (ts_pre k) (n_pre k)
                       (pos_bp k) (blocks k) ((pos_n k - 2) * ?c + 1)"
         using wi_gen_k steady
         unfolding ae_window_invariant_general_def by simp
       have no_le_k: "ts_pre k (n_pre k) \<noteq> le_ktm M"
         using no_le klt steady tp_eq ps_eq by force
-      have wi_post: "ae_window_invariant
+      have wi_post: "ae_window_invariant m
                         ((ts_pre k)(n_pre k := a' k))
                         (go_move (d k) (n_pre k))
                         (pos_bp' k)
@@ -243,7 +243,7 @@ proof -
         by (rule ae_window_invariant_step
                 [OF wi_st adv_k bp_lt_k bp_pos_k no_le_k])
       have wi_post_gen:
-          "ae_window_invariant_general
+          "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
               (go_move (d k) (n_pre k))
               (pos_bp' k)
@@ -254,14 +254,14 @@ proof -
       show ?thesis using wi_post_gen tape_k pos_k blocks'_k by simp
     next
       case le1
-      have wi_l1: "ae_window_invariant_le1 (ts_pre k) (n_pre k)
+      have wi_l1: "ae_window_invariant_le1 m (ts_pre k) (n_pre k)
                       (pos_bp k) (blocks k) (le_ktm M)"
         using wi_gen_k le1
         unfolding ae_window_invariant_general_def by simp
       have no_le_win_k: "\<forall>i. 0 < i \<and> i \<le> 2 * ?c
                                 \<longrightarrow> ts_pre k i \<noteq> le_ktm M"
         using no_le klt le1 tp_eq by simp
-      have wi_post: "ae_window_invariant_le1
+      have wi_post: "ae_window_invariant_le1 m
                         ((ts_pre k)(n_pre k := a' k))
                         (go_move (d k) (n_pre k))
                         (pos_bp' k)
@@ -271,7 +271,7 @@ proof -
                 [OF wi_l1 adv_k bp_lt_k bp_pos_k
                     a_le_k a_not_le_k no_le_win_k])
       have wi_post_gen:
-          "ae_window_invariant_general
+          "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
               (go_move (d k) (n_pre k))
               (pos_bp' k)
@@ -282,14 +282,14 @@ proof -
       show ?thesis using wi_post_gen tape_k pos_k blocks'_k by simp
     next
       case le0
-      have wi_l0: "ae_window_invariant_le0 (ts_pre k) (n_pre k)
+      have wi_l0: "ae_window_invariant_le0 m (ts_pre k) (n_pre k)
                       (pos_bp k) (blocks k) (le_ktm M)"
         using wi_gen_k le0
         unfolding ae_window_invariant_general_def by simp
       have no_le_win_k: "\<forall>i. 0 < i \<and> i \<le> ?c
                                 \<longrightarrow> ts_pre k i \<noteq> le_ktm M"
         using no_le klt le0 tp_eq by simp
-      have wi_post: "ae_window_invariant_le0
+      have wi_post: "ae_window_invariant_le0 m
                         ((ts_pre k)(n_pre k := a' k))
                         (go_move (d k) (n_pre k))
                         (pos_bp' k)
@@ -299,7 +299,7 @@ proof -
                 [OF wi_l0 adv_k bp_lt_k bp_pos_k
                     a_le_k a_not_le_k no_le_win_k])
       have wi_post_gen:
-          "ae_window_invariant_general
+          "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
               (go_move (d k) (n_pre k))
               (pos_bp' k)
@@ -339,15 +339,15 @@ text \<open>Auxiliary induction for the reverse lift: given an
 lemma m_step_buffered_chain_lift_to_tape:
   fixes M :: "('q, 'a) ktm"
     and qM :: 'q
-    and ofs :: "nat \<Rightarrow> 'c :: enum"
+    and ofs :: "nat \<Rightarrow> nat"
     and buf_full ::
-          "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and pos :: "nat \<Rightarrow> nat"
     and n :: nat
     and qM_n :: 'q
     and buf_n ::
-          "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
-    and end_pos_n :: "nat \<Rightarrow> 'c bp"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
+    and end_pos_n :: "nat \<Rightarrow> bp"
     and cM :: "('a, 'q) ktc_config"
   assumes vM:    "valid_ktm M"
       and lu:    "le_unique M"
@@ -355,51 +355,52 @@ lemma m_step_buffered_chain_lift_to_tape:
       and qM_in: "qM \<in> Q_ktm M"
       and chain: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
                    (qM_n, buf_n, end_pos_n))
-                      \<in> (m_step_buffered M) ^^ n"
+                      \<in> (m_step_buffered m M) ^^ n"
       and st_eq: "ktc_state cM = qM"
       and window:
-            "\<forall>k<k_ktm M. ae_window_invariant_general
+            "\<forall>k<k_ktm M. ae_window_invariant_general m
                     (ktc_tape cM k) (ktc_pos cM k)
                     (AE_Home, ofs k) (buf_full k) (pos k) (le_ktm M)"
-      and n_bound: "n \<le> card (UNIV :: 'c set)"
+      and n_bound: "n \<le> m"
       and no_le:
             "\<forall>k. (pos k = 0
-                    \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < m
                               \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (pos k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 2 * m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (pos k \<ge> 2
-                      \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 3 * m
                                 \<longrightarrow> ktc_tape cM k
-                                      ((pos k - 2) * card (UNIV :: 'c set)
+                                      ((pos k - 2) * m
                                         + 1 + i)
                                     \<noteq> le_ktm M))"
       and left_not_le_pos0:
-            "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_full k) \<noteq> LE_block (le_ktm M)"
+            "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_full k) \<noteq> LE_block m (le_ktm M)"
+      and ofs_lt: "\<forall>k. ofs k < m"
   shows "\<exists>cM_n.
             (cM, cM_n) \<in> ktm_step (delta_ktm M) ^^ n
             \<and> ktc_state cM_n = qM_n
-            \<and> (\<forall>k<k_ktm M. ae_window_invariant_general
+            \<and> (\<forall>k<k_ktm M. ae_window_invariant_general m
                       (ktc_tape cM_n k) (ktc_pos cM_n k)
                       (end_pos_n k) (buf_n k) (pos k) (le_ktm M))
             \<and> (\<forall>k. (pos k = 0
-                       \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                       \<longrightarrow> (\<forall>i. i < m
                                   \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
                     \<and> (pos k = 1
-                          \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                          \<longrightarrow> (\<forall>i. i < 2 * m
                                     \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
                     \<and> (pos k \<ge> 2
-                          \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                          \<longrightarrow> (\<forall>i. i < 3 * m
                                     \<longrightarrow> ktc_tape cM_n k
-                                          ((pos k - 2) * card (UNIV :: 'c set)
+                                          ((pos k - 2) * m
                                             + 1 + i)
                                         \<noteq> le_ktm M)))
             \<and> (\<forall>k<k_ktm M. pos k = 0
-                       \<longrightarrow> fst (buf_n k) \<noteq> LE_block (le_ktm M))
-            \<and> (\<forall>k. card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + n
-                    \<and> bp_linear (end_pos_n k)
-                          < 2 * card (UNIV :: 'c set) + n)"
+                       \<longrightarrow> fst (buf_n k) \<noteq> LE_block m (le_ktm M))
+            \<and> (\<forall>k. m \<le> bp_linear m (end_pos_n k) + n
+                    \<and> bp_linear m (end_pos_n k)
+                          < 2 * m + n)"
   using chain n_bound
 proof (induction n arbitrary: qM_n buf_n end_pos_n)
   case 0
@@ -419,37 +420,37 @@ proof (induction n arbitrary: qM_n buf_n end_pos_n)
   proof (intro exI [where x = cM] conjI)
     show "(cM, cM) \<in> ktm_step (delta_ktm M) ^^ 0" by simp
     show "ktc_state cM = qM_n" using st_eq qM_n_eq by simp
-    show "\<forall>k<k_ktm M. ae_window_invariant_general
+    show "\<forall>k<k_ktm M. ae_window_invariant_general m
                   (ktc_tape cM k) (ktc_pos cM k)
                   (end_pos_n k) (buf_n k) (pos k) (le_ktm M)"
       using window buf_n_eq end_pos_eq by simp
     show "\<forall>k. (pos k = 0
-                 \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                 \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k = 1
-                   \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 2 * m
                              \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k \<ge> 2
-                   \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 3 * m
                              \<longrightarrow> ktc_tape cM k
-                                   ((pos k - 2) * card (UNIV :: 'c set)
+                                   ((pos k - 2) * m
                                      + 1 + i)
                                  \<noteq> le_ktm M))"
       using no_le by simp
-    show "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_n k) \<noteq> LE_block (le_ktm M)"
+    show "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_n k) \<noteq> LE_block m (le_ktm M)"
       using left_not_le_pos0 buf_n_eq by simp
-    show "\<forall>k. card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + 0
-                \<and> bp_linear (end_pos_n k) < 2 * card (UNIV :: 'c set) + 0"
+    show "\<forall>k. m \<le> bp_linear m (end_pos_n k) + 0
+                \<and> bp_linear m (end_pos_n k) < 2 * m + 0"
     proof (intro allI conjI)
       fix k
-      have lin_eq: "bp_linear (end_pos_n k)
-                       = card (UNIV :: 'c set) + c_idx (ofs k)"
+      have lin_eq: "bp_linear m (end_pos_n k)
+                       = m + ofs k"
         using end_pos_eq unfolding bp_linear_def by simp
-      have idx_lt: "c_idx (ofs k) < card (UNIV :: 'c set)"
-        by (rule c_idx_lt_card)
-      show "card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + 0"
+      have idx_lt: "ofs k < m"
+        using ofs_lt by simp
+      show "m \<le> bp_linear m (end_pos_n k) + 0"
         using lin_eq by simp
-      show "bp_linear (end_pos_n k) < 2 * card (UNIV :: 'c set) + 0"
+      show "bp_linear m (end_pos_n k) < 2 * m + 0"
         using lin_eq idx_lt by simp
     qed
   qed
@@ -465,24 +466,24 @@ next
     substrate \<open>ktm_step\<close> from \<open>cM_n'\<close> to a fresh
     \<open>cM_n\<close>; compose via \<open>relpow_Suc_I\<close>.  Re-derive the
     four threaded conjuncts at length \<open>Suc n'\<close>.\<close>
-  have n'_bound: "n' \<le> card (UNIV :: 'c set)"
+  have n'_bound: "n' \<le> m"
     using Suc.prems(2) by linarith
   from Suc.prems(1) obtain s_n' where
       chain_n':  "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)), s_n')
-                      \<in> (m_step_buffered M) ^^ n'"
+                      \<in> (m_step_buffered m M) ^^ n'"
     and last_step_raw: "(s_n', (qM_n, buf_n, end_pos_n))
-                          \<in> m_step_buffered M"
+                          \<in> m_step_buffered m M"
     by (rule relpow_Suc_E)
   obtain qM_n' buf_n' end_pos_n' where
       s_n'_eq: "s_n' = (qM_n', buf_n', end_pos_n')"
     by (cases s_n') auto
   have chain_n'_unp:
       "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
-        (qM_n', buf_n', end_pos_n')) \<in> (m_step_buffered M) ^^ n'"
+        (qM_n', buf_n', end_pos_n')) \<in> (m_step_buffered m M) ^^ n'"
     using chain_n' s_n'_eq by simp
   have last_step:
       "((qM_n', buf_n', end_pos_n'), (qM_n, buf_n, end_pos_n))
-          \<in> m_step_buffered M"
+          \<in> m_step_buffered m M"
     using last_step_raw s_n'_eq by simp
   \<comment> \<open>Invoke the IH at length \<open>n'\<close>.\<close>
   from Suc.IH[OF chain_n'_unp n'_bound]
@@ -490,29 +491,29 @@ next
       trace_n': "(cM, cM_n') \<in> ktm_step (delta_ktm M) ^^ n'"
     and st_n':  "ktc_state cM_n' = qM_n'"
     and window_n':
-          "\<forall>k<k_ktm M. ae_window_invariant_general
+          "\<forall>k<k_ktm M. ae_window_invariant_general m
                   (ktc_tape cM_n' k) (ktc_pos cM_n' k)
                   (end_pos_n' k) (buf_n' k) (pos k) (le_ktm M)"
     and no_le_n':
           "\<forall>k. (pos k = 0
-                   \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < m
                              \<longrightarrow> ktc_tape cM_n' k (Suc i) \<noteq> le_ktm M))
                 \<and> (pos k = 1
-                     \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                     \<longrightarrow> (\<forall>i. i < 2 * m
                                \<longrightarrow> ktc_tape cM_n' k (Suc i) \<noteq> le_ktm M))
                 \<and> (pos k \<ge> 2
-                     \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                     \<longrightarrow> (\<forall>i. i < 3 * m
                                \<longrightarrow> ktc_tape cM_n' k
-                                     ((pos k - 2) * card (UNIV :: 'c set)
+                                     ((pos k - 2) * m
                                        + 1 + i)
                                    \<noteq> le_ktm M))"
     and left_n':
           "\<forall>k<k_ktm M. pos k = 0
-                   \<longrightarrow> fst (buf_n' k) \<noteq> LE_block (le_ktm M)"
+                   \<longrightarrow> fst (buf_n' k) \<noteq> LE_block m (le_ktm M)"
     and bp_bound_n':
-          "\<forall>k. card (UNIV :: 'c set) \<le> bp_linear (end_pos_n' k) + n'
-                \<and> bp_linear (end_pos_n' k)
-                       < 2 * card (UNIV :: 'c set) + n'"
+          "\<forall>k. m \<le> bp_linear m (end_pos_n' k) + n'
+                \<and> bp_linear m (end_pos_n' k)
+                       < 2 * m + n'"
     by blast
   \<comment> \<open>Validity of the intermediate config \<open>cM_n'\<close>, threaded
     along the IH's \<open>n'\<close>-step trace; supplies the leaf lift's
@@ -521,24 +522,27 @@ next
     by (rule valid_reach_relpow_ktm[OF vM cM_valid trace_n'])
   \<comment> \<open>Per-tape strict bounds at \<open>n'\<close>: \<open>n' \<le> c - 1\<close>
     gives \<open>0 < bp_linear < 3c - 1\<close>.\<close>
-  have c_pos: "1 \<le> card (UNIV :: 'c set)"
+  have c_pos: "1 \<le> m"
     using Suc.prems(2) by linarith
+  have end_lt: "\<forall>k. snd (end_pos_n' k) < m"
+    by (rule m_step_buffered_relpow_offset_lt[OF _ chain_n'_unp])
+       (use ofs_lt c_pos in simp_all)
   have bp_lt_n':
-      "\<forall>k. bp_linear (end_pos_n' k) < 3 * card (UNIV :: 'c set) - 1"
+      "\<forall>k. bp_linear m (end_pos_n' k) < 3 * m - 1"
   proof (intro allI)
     fix k
-    have lin_lt: "bp_linear (end_pos_n' k) < 2 * card (UNIV :: 'c set) + n'"
+    have lin_lt: "bp_linear m (end_pos_n' k) < 2 * m + n'"
       using bp_bound_n' by blast
-    show "bp_linear (end_pos_n' k) < 3 * card (UNIV :: 'c set) - 1"
+    show "bp_linear m (end_pos_n' k) < 3 * m - 1"
       using lin_lt Suc.prems(2) c_pos by linarith
   qed
   have bp_pos_n':
-      "\<forall>k. 0 < bp_linear (end_pos_n' k)"
+      "\<forall>k. 0 < bp_linear m (end_pos_n' k)"
   proof (intro allI)
     fix k
-    have low: "card (UNIV :: 'c set) \<le> bp_linear (end_pos_n' k) + n'"
+    have low: "m \<le> bp_linear m (end_pos_n' k) + n'"
       using bp_bound_n' by blast
-    show "0 < bp_linear (end_pos_n' k)"
+    show "0 < bp_linear m (end_pos_n' k)"
       using low Suc.prems(2) c_pos by linarith
   qed
   \<comment> \<open>Per-tape no-LE-at-head at \<open>cM_n'\<close>, regime-dispatched
@@ -554,14 +558,14 @@ next
     three regime sublemmas, combined via \<open>blast\<close>.\<close>
   have head_le0:
       "\<forall>k. pos k = 0
-              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> m
                           \<longrightarrow> ktc_tape cM_n' k i \<noteq> le_ktm M)"
   proof (intro allI impI allI impI)
     fix k i
     assume pos_0: "pos k = 0"
-       and i_bnd: "0 < i \<and> i \<le> card (UNIV :: 'c set)"
+       and i_bnd: "0 < i \<and> i \<le> m"
     then obtain j where i_eq: "i = Suc j"
-                    and j_lt: "j < card (UNIV :: 'c set)"
+                    and j_lt: "j < m"
       by (metis Suc_le_eq Suc_pred')
     from no_le_n' pos_0 j_lt
     have "ktc_tape cM_n' k (Suc j) \<noteq> le_ktm M" by blast
@@ -569,14 +573,14 @@ next
   qed
   have head_le1:
       "\<forall>k. pos k = 1
-              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> 2 * card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> 2 * m
                           \<longrightarrow> ktc_tape cM_n' k i \<noteq> le_ktm M)"
   proof (intro allI impI allI impI)
     fix k i
     assume pos_1: "pos k = 1"
-       and i_bnd: "0 < i \<and> i \<le> 2 * card (UNIV :: 'c set)"
+       and i_bnd: "0 < i \<and> i \<le> 2 * m"
     then obtain j where i_eq: "i = Suc j"
-                    and j_lt: "j < 2 * card (UNIV :: 'c set)"
+                    and j_lt: "j < 2 * m"
       by (metis Suc_le_eq Suc_pred')
     from no_le_n' pos_1 j_lt
     have "ktc_tape cM_n' k (Suc j) \<noteq> le_ktm M" by blast
@@ -588,12 +592,12 @@ next
   proof (intro allI impI impI)
     fix k
     assume klt: "k < k_ktm M" and pos_ge: "pos k \<ge> 2"
-    let ?c = "card (UNIV :: 'c set)"
-    have wi_k: "ae_window_invariant_general
+    let ?c = "m"
+    have wi_k: "ae_window_invariant_general m
                     (ktc_tape cM_n' k) (ktc_pos cM_n' k)
                     (end_pos_n' k) (buf_n' k) (pos k) (le_ktm M)"
       using window_n' klt by blast
-    have wi_steady: "ae_window_invariant
+    have wi_steady: "ae_window_invariant m
                         (ktc_tape cM_n' k) (ktc_pos cM_n' k)
                         (end_pos_n' k) (buf_n' k)
                         ((pos k - 2) * ?c + 1)"
@@ -601,27 +605,27 @@ next
       unfolding ae_window_invariant_general_def by simp
     have head_eq: "ktc_pos cM_n' k
                        = (pos k - 2) * ?c + 1
-                         + bp_linear (end_pos_n' k)"
+                         + bp_linear m (end_pos_n' k)"
       using wi_steady unfolding ae_window_invariant_def by simp
-    have lin_lt_3c: "bp_linear (end_pos_n' k) < 3 * ?c"
+    have lin_lt_3c: "bp_linear m (end_pos_n' k) < 3 * ?c"
     proof -
-      have step: "bp_linear (end_pos_n' k) < 3 * ?c - 1"
+      have step: "bp_linear m (end_pos_n' k) < 3 * ?c - 1"
         using bp_lt_n' by blast
       show ?thesis using step c_pos by linarith
     qed
     from no_le_n' pos_ge lin_lt_3c
     have "ktc_tape cM_n' k
-              ((pos k - 2) * ?c + 1 + bp_linear (end_pos_n' k))
+              ((pos k - 2) * ?c + 1 + bp_linear m (end_pos_n' k))
             \<noteq> le_ktm M" by blast
     thus "ktc_tape cM_n' k (ktc_pos cM_n' k) \<noteq> le_ktm M"
       using head_eq by simp
   qed
   have no_le_step2a:
       "\<forall>k<k_ktm M. (pos k = 0
-              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> m
                           \<longrightarrow> ktc_tape cM_n' k i \<noteq> le_ktm M))
            \<and> (pos k = 1
-                \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> 2 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. 0 < i \<and> i \<le> 2 * m
                             \<longrightarrow> ktc_tape cM_n' k i \<noteq> le_ktm M))
            \<and> (pos k \<ge> 2
                 \<longrightarrow> ktc_tape cM_n' k (ktc_pos cM_n' k) \<noteq> le_ktm M)"
@@ -632,7 +636,7 @@ next
       step_extracted:
         "(cM_n', cM_n) \<in> ktm_step (delta_ktm M)
          \<and> ktc_state cM_n = qM_n
-         \<and> (\<forall>k<k_ktm M. ae_window_invariant_general
+         \<and> (\<forall>k<k_ktm M. ae_window_invariant_general m
                     (ktc_tape cM_n k) (ktc_pos cM_n k)
                     (end_pos_n k) (buf_n k) (pos k) (le_ktm M))"
     using m_step_buffered_lift_to_tape_general
@@ -643,7 +647,7 @@ next
   have st_n_eq:   "ktc_state cM_n = qM_n"
     using step_extracted by simp
   have window_n:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_n k) (ktc_pos cM_n k)
               (end_pos_n k) (buf_n k) (pos k) (le_ktm M)"
     using step_extracted by simp
@@ -703,12 +707,12 @@ next
   qed
   have no_le0_n:
       "\<forall>k. pos k = 0
-              \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. i < m
                         \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M)"
   proof (intro allI impI allI impI)
     fix k i
     assume pos_0: "pos k = 0"
-       and i_bd: "i < card (UNIV :: 'c set)"
+       and i_bd: "i < m"
     have ih_at: "ts_pre k (Suc i) \<noteq> le_ktm M"
     proof -
       from no_le_n' pos_0 i_bd
@@ -734,12 +738,12 @@ next
   qed
   have no_le1_n:
       "\<forall>k. pos k = 1
-              \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. i < 2 * m
                         \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M)"
   proof (intro allI impI allI impI)
     fix k i
     assume pos_1: "pos k = 1"
-       and i_bd: "i < 2 * card (UNIV :: 'c set)"
+       and i_bd: "i < 2 * m"
     have ih_at: "ts_pre k (Suc i) \<noteq> le_ktm M"
     proof -
       from no_le_n' pos_1 i_bd
@@ -765,15 +769,15 @@ next
   qed
   have no_le2_n:
       "\<forall>k. pos k \<ge> 2
-              \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. i < 3 * m
                         \<longrightarrow> ktc_tape cM_n k
-                              ((pos k - 2) * card (UNIV :: 'c set) + 1 + i)
+                              ((pos k - 2) * m + 1 + i)
                             \<noteq> le_ktm M)"
   proof (intro allI impI allI impI)
     fix k i
     assume pos_ge: "pos k \<ge> 2"
-       and i_bd: "i < 3 * card (UNIV :: 'c set)"
-    let ?j = "(pos k - 2) * card (UNIV :: 'c set) + 1 + i"
+       and i_bd: "i < 3 * m"
+    let ?j = "(pos k - 2) * m + 1 + i"
     have ih_at: "ts_pre k ?j \<noteq> le_ktm M"
     proof -
       from no_le_n' pos_ge i_bd
@@ -799,15 +803,15 @@ next
   qed
   have no_le_n:
       "\<forall>k. (pos k = 0
-              \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. i < m
                         \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
            \<and> (pos k = 1
-                \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 2 * m
                           \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
            \<and> (pos k \<ge> 2
-                \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 3 * m
                           \<longrightarrow> ktc_tape cM_n k
-                                ((pos k - 2) * card (UNIV :: 'c set)
+                                ((pos k - 2) * m
                                   + 1 + i)
                               \<noteq> le_ktm M))"
     using no_le0_n no_le1_n no_le2_n by blast
@@ -824,20 +828,20 @@ next
     and read_buf: "\<forall>k. a_buf k = read_bp (buf_n' k) (end_pos_n' k)"
     and write_buf: "\<forall>k. buf_n k
                             = write_bp (buf_n' k) (end_pos_n' k) (a'_buf k)"
-    and adv_buf: "\<forall>k. bp_advance_le (le_ktm M) (a_buf k)
+    and adv_buf: "\<forall>k. bp_advance_le m (le_ktm M) (a_buf k)
                               (end_pos_n' k) (d_buf k)
                           = Some (end_pos_n k)"
     unfolding m_step_buffered_def by auto
   have left_n:
-      "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_n k) \<noteq> LE_block (le_ktm M)"
+      "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_n k) \<noteq> LE_block m (le_ktm M)"
   proof (intro allI impI impI)
     fix k
     assume klt: "k < k_ktm M" and pos_0: "pos k = 0"
-    have wi_k: "ae_window_invariant_general
+    have wi_k: "ae_window_invariant_general m
                     (ktc_tape cM_n' k) (ktc_pos cM_n' k)
                     (end_pos_n' k) (buf_n' k) (pos k) (le_ktm M)"
       using window_n' klt by blast
-    have wi_l0: "ae_window_invariant_le0
+    have wi_l0: "ae_window_invariant_le0 m
                     (ktc_tape cM_n' k) (ktc_pos cM_n' k)
                     (end_pos_n' k) (buf_n' k) (le_ktm M)"
       using wi_k pos_0
@@ -881,7 +885,7 @@ next
         thus ?thesis using wb_eq buf_n'_eq by simp
       qed
     qed
-    show "fst (buf_n k) \<noteq> LE_block (le_ktm M)"
+    show "fst (buf_n k) \<noteq> LE_block m (le_ktm M)"
       using fst_buf_n left_n' klt pos_0 by simp
   qed
   \<comment> \<open>Conjunct 5 threading: \<open>bp_bound\<close> at \<open>end_pos_n\<close>.
@@ -890,27 +894,27 @@ next
     bounds follow from the IH bounds and the advance equation.
     Helper: \<open>bp_advance_le_lin_bounded\<close> (in Setup).\<close>
   have bp_bound_n:
-      "\<forall>k. card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + Suc n'
-            \<and> bp_linear (end_pos_n k)
-                 < 2 * card (UNIV :: 'c set) + Suc n'"
+      "\<forall>k. m \<le> bp_linear m (end_pos_n k) + Suc n'
+            \<and> bp_linear m (end_pos_n k)
+                 < 2 * m + Suc n'"
   proof (intro allI)
     fix k
     have low_n':
-        "card (UNIV :: 'c set) \<le> bp_linear (end_pos_n' k) + n'"
+        "m \<le> bp_linear m (end_pos_n' k) + n'"
       using bp_bound_n' by blast
     have high_n':
-        "bp_linear (end_pos_n' k) < 2 * card (UNIV :: 'c set) + n'"
+        "bp_linear m (end_pos_n' k) < 2 * m + n'"
       using bp_bound_n' by blast
-    have pos_n': "0 < bp_linear (end_pos_n' k)"
+    have pos_n': "0 < bp_linear m (end_pos_n' k)"
       using bp_pos_n' by blast
-    have adv_k: "bp_advance_le (le_ktm M) (a_buf k) (end_pos_n' k) (d_buf k)
+    have adv_k: "bp_advance_le m (le_ktm M) (a_buf k) (end_pos_n' k) (d_buf k)
                     = Some (end_pos_n k)"
       using adv_buf by blast
-    show "card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + Suc n'
-            \<and> bp_linear (end_pos_n k)
-                  < 2 * card (UNIV :: 'c set) + Suc n'"
+    show "m \<le> bp_linear m (end_pos_n k) + Suc n'
+            \<and> bp_linear m (end_pos_n k)
+                  < 2 * m + Suc n'"
       by (rule bp_advance_le_lin_bounded
-              [OF adv_k pos_n' high_n' low_n'])
+              [OF adv_k pos_n' high_n' low_n' end_lt[rule_format]])
   qed
   \<comment> \<open>Assemble the six output conjuncts.\<close>
   show ?case
@@ -918,29 +922,29 @@ next
     show "(cM, cM_n) \<in> ktm_step (delta_ktm M) ^^ Suc n'"
       using trace_n .
     show "ktc_state cM_n = qM_n" using st_n_eq .
-    show "\<forall>k<k_ktm M. ae_window_invariant_general
+    show "\<forall>k<k_ktm M. ae_window_invariant_general m
                   (ktc_tape cM_n k) (ktc_pos cM_n k)
                   (end_pos_n k) (buf_n k) (pos k) (le_ktm M)"
       using window_n .
     show "\<forall>k. (pos k = 0
-                 \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                 \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k = 1
-                   \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 2 * m
                              \<longrightarrow> ktc_tape cM_n k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k \<ge> 2
-                   \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 3 * m
                              \<longrightarrow> ktc_tape cM_n k
-                                   ((pos k - 2) * card (UNIV :: 'c set)
+                                   ((pos k - 2) * m
                                      + 1 + i)
                                  \<noteq> le_ktm M))"
       using no_le_n .
     show "\<forall>k<k_ktm M. pos k = 0
-                 \<longrightarrow> fst (buf_n k) \<noteq> LE_block (le_ktm M)"
+                 \<longrightarrow> fst (buf_n k) \<noteq> LE_block m (le_ktm M)"
       using left_n .
-    show "\<forall>k. card (UNIV :: 'c set) \<le> bp_linear (end_pos_n k) + Suc n'
-                \<and> bp_linear (end_pos_n k)
-                      < 2 * card (UNIV :: 'c set) + Suc n'"
+    show "\<forall>k. m \<le> bp_linear m (end_pos_n k) + Suc n'
+                \<and> bp_linear m (end_pos_n k)
+                      < 2 * m + Suc n'"
       using bp_bound_n .
   qed
 qed
@@ -961,14 +965,14 @@ text \<open>User-facing reverse lift on
 lemma m_steps_buffered_lift_to_tape:
   fixes M :: "('q, 'a) ktm"
     and qM :: 'q
-    and ofs :: "nat \<Rightarrow> 'c :: enum"
+    and ofs :: "nat \<Rightarrow> nat"
     and buf_full ::
-          "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and pos :: "nat \<Rightarrow> nat"
     and qM_end :: 'q
     and buf_end ::
-          "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
-    and end_pos_bp :: "nat \<Rightarrow> 'c bp"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
+    and end_pos_bp :: "nat \<Rightarrow> bp"
     and cM :: "('a, 'q) ktc_config"
   assumes vM:    "valid_ktm M"
       and lu:    "le_unique M"
@@ -976,89 +980,90 @@ lemma m_steps_buffered_lift_to_tape:
       and qM_in: "qM \<in> Q_ktm M"
       and steps: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
                    (qM_end, buf_end, end_pos_bp))
-                      \<in> m_steps_buffered M"
+                      \<in> m_steps_buffered m M"
       and st_eq: "ktc_state cM = qM"
       and window:
-            "\<forall>k<k_ktm M. ae_window_invariant_general
+            "\<forall>k<k_ktm M. ae_window_invariant_general m
                     (ktc_tape cM k) (ktc_pos cM k)
                     (AE_Home, ofs k) (buf_full k) (pos k) (le_ktm M)"
       and no_le:
             "\<forall>k. (pos k = 0
-                    \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < m
                               \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (pos k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 2 * m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (pos k \<ge> 2
-                      \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 3 * m
                                 \<longrightarrow> ktc_tape cM k
-                                      ((pos k - 2) * card (UNIV :: 'c set)
+                                      ((pos k - 2) * m
                                         + 1 + i)
                                     \<noteq> le_ktm M))"
       and left_not_le_pos0:
-            "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_full k) \<noteq> LE_block (le_ktm M)"
+            "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_full k) \<noteq> LE_block m (le_ktm M)"
+      and ofs_lt: "\<forall>k. ofs k < m"
   obtains cM_end n where
       "(cM, cM_end) \<in> ktm_step (delta_ktm M) ^^ n"
-    and "n \<le> card (UNIV :: 'c set)"
-    and "n = card (UNIV :: 'c set) \<or> ktc_state cM_end \<in> {t_ktm M, r_ktm M}"
+    and "n \<le> m"
+    and "n = m \<or> ktc_state cM_end \<in> {t_ktm M, r_ktm M}"
     and "ktc_state cM_end = qM_end"
-    and "\<forall>k<k_ktm M. ae_window_invariant_general
+    and "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM_end k) (ktc_pos cM_end k)
                 (end_pos_bp k) (buf_end k) (pos k) (le_ktm M)"
     and "\<forall>k. (pos k = 0
-                 \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                 \<longrightarrow> (\<forall>i. i < m
                            \<longrightarrow> ktc_tape cM_end k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k = 1
-                   \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 2 * m
                              \<longrightarrow> ktc_tape cM_end k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k \<ge> 2
-                   \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 3 * m
                              \<longrightarrow> ktc_tape cM_end k
-                                   ((pos k - 2) * card (UNIV :: 'c set)
+                                   ((pos k - 2) * m
                                      + 1 + i)
                                  \<noteq> le_ktm M))"
     and "\<forall>k<k_ktm M. pos k = 0
-                \<longrightarrow> fst (buf_end k) \<noteq> LE_block (le_ktm M)"
+                \<longrightarrow> fst (buf_end k) \<noteq> LE_block m (le_ktm M)"
 proof -
   \<comment> \<open>Unfold \<open>m_steps_buffered\<close>'s existential.\<close>
   from steps obtain n where
       chain_n: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
                  (qM_end, buf_end, end_pos_bp))
-                    \<in> (m_step_buffered M) ^^ n"
-    and n_bnd: "n \<le> card (UNIV :: 'c set)"
+                    \<in> (m_step_buffered m M) ^^ n"
+    and n_bnd: "n \<le> m"
     and halt_or_full:
-        "n = card (UNIV :: 'c set) \<or> qM_end \<in> {t_ktm M, r_ktm M}"
+        "n = m \<or> qM_end \<in> {t_ktm M, r_ktm M}"
     unfolding m_steps_buffered_def by auto
   \<comment> \<open>Invoke Step 2b-aux to obtain the substrate trace plus
     the threaded invariants at \<open>cM_n\<close>.\<close>
   from m_step_buffered_chain_lift_to_tape
         [OF vM lu cM_valid qM_in chain_n st_eq window n_bnd no_le
-            left_not_le_pos0]
+            left_not_le_pos0 ofs_lt]
   obtain cM_end where
       trace_n:  "(cM, cM_end) \<in> ktm_step (delta_ktm M) ^^ n"
     and st_eq_n: "ktc_state cM_end = qM_end"
     and window_n:
-        "\<forall>k<k_ktm M. ae_window_invariant_general
+        "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM_end k) (ktc_pos cM_end k)
                 (end_pos_bp k) (buf_end k) (pos k) (le_ktm M)"
     and no_le_n:
         "\<forall>k. (pos k = 0
-                 \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                 \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_end k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k = 1
-                   \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 2 * m
                               \<longrightarrow> ktc_tape cM_end k (Suc i) \<noteq> le_ktm M))
               \<and> (pos k \<ge> 2
-                   \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                   \<longrightarrow> (\<forall>i. i < 3 * m
                               \<longrightarrow> ktc_tape cM_end k
-                                    ((pos k - 2) * card (UNIV :: 'c set)
+                                    ((pos k - 2) * m
                                       + 1 + i)
                                   \<noteq> le_ktm M))"
     and left_n:
-        "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_end k) \<noteq> LE_block (le_ktm M)"
+        "\<forall>k<k_ktm M. pos k = 0 \<longrightarrow> fst (buf_end k) \<noteq> LE_block m (le_ktm M)"
     by blast
   have halt_or_full_substrate:
-      "n = card (UNIV :: 'c set) \<or> ktc_state cM_end \<in> {t_ktm M, r_ktm M}"
+      "n = m \<or> ktc_state cM_end \<in> {t_ktm M, r_ktm M}"
     using halt_or_full st_eq_n by simp
   show ?thesis
     by (rule that[OF trace_n n_bnd halt_or_full_substrate
@@ -1085,9 +1090,9 @@ text \<open>Reverse-direction counterpart of
 
 lemma ae_step_ss4_ss5_destruct_to_buffered:
   fixes M :: "('q, 'a) ktm"
-    and c c' :: "('c :: enum \<Rightarrow> 'a,
-                  'q \<times> ('a, 'c) ae_stage) ktc_config"
-  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss4_ss5 M)"
+    and c c' :: "(nat \<Rightarrow> 'a,
+                  'q \<times> 'a ae_stage) ktc_config"
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss4_ss5 m M)"
   obtains q ofs buf dest_old ts n q_out buf' bufC end_pos where
       "c = KConfig (q, ofs, buf, dest_old, SS4) ts n"
     and "ktc_state c' = (q_out,
@@ -1097,30 +1102,30 @@ lemma ae_step_ss4_ss5_destruct_to_buffered:
                         \<lambda>k. if k < k_ktm M then fst (end_pos k)
                               else init_dest k, SS5)"
     and "buf' = (\<lambda>k. if k < k_ktm M then bufC k
-                       else init_buffer (le_ktm M) k)"
+                       else init_buffer m (le_ktm M) k)"
     and "ktc_tape c' = ts"
     and "ktc_pos c'
            = (\<lambda>k. go_move (if k < k_ktm M
-                            then (if ts k (n k) = LE_block (le_ktm M)
+                            then (if ts k (n k) = LE_block m (le_ktm M)
                                     then MoveN else MoveL)
                             else MoveN)
                          (n k))"
     and "q \<in> Q_ktm M"
     and "q \<noteq> t_ktm M"
     and "q \<noteq> r_ktm M"
-    and "\<forall>j\<ge>k_ktm M. ts j (n j) = bl_block (bl_ktm M)"
+    and "\<forall>j\<ge>k_ktm M. ts j (n j) = bl_block m (bl_ktm M)"
     and "((q, \<lambda>k. (fst (buf k),
                     if k < k_ktm M then fst (snd (buf k)) else ts k (n k),
                     ts k (n k)),
             \<lambda>k. (AE_Home, ofs k)),
-           (q_out, bufC, end_pos)) \<in> m_steps_buffered M"
+           (q_out, bufC, end_pos)) \<in> m_steps_buffered m M"
 proof -
   from step obtain s tsP nP s' aP dP where
       cP_eq: "c = KConfig s tsP nP"
       and c'_eq: "c' = KConfig s' (\<lambda>k. (tsP k)(nP k := aP k))
                                    (\<lambda>k. go_move (dP k) (nP k))"
       and rel: "(s, (\<lambda>k. tsP k (nP k)), s', aP, dP)
-                  \<in> ae_delta_ss4_ss5 M"
+                  \<in> ae_delta_ss4_ss5 m M"
     by (auto elim: ktm_step.cases)
   from rel obtain q ofs buf dest_old q_out ofs' buf' dest'
                   buf_full end_pos bufC
@@ -1130,7 +1135,7 @@ proof -
       and q_in_Q: "q \<in> Q_ktm M"
       and q_neq_t_M: "q \<noteq> t_ktm M"
       and q_neq_r_M: "q \<noteq> r_ktm M"
-      and supp: "\<forall>j\<ge>k_ktm M. tsP j (nP j) = bl_block (bl_ktm M)"
+      and supp: "\<forall>j\<ge>k_ktm M. tsP j (nP j) = bl_block m (bl_ktm M)"
       and buf_full_eq: "buf_full
                          = (\<lambda>k. (fst (buf k),
                                   if k < k_ktm M then fst (snd (buf k))
@@ -1138,15 +1143,15 @@ proof -
                                   tsP k (nP k)))"
       and m_steps_raw: "((q, buf_full, \<lambda>k. (AE_Home, ofs k)),
                           (q_out, bufC, end_pos))
-                            \<in> m_steps_buffered M"
+                            \<in> m_steps_buffered m M"
       and ofs'_eq: "ofs' = (\<lambda>k. if k < k_ktm M then snd (end_pos k)
                                   else init_offset k)"
       and buf'_eq: "buf' = (\<lambda>k. if k < k_ktm M then bufC k
-                                  else init_buffer (le_ktm M) k)"
+                                  else init_buffer m (le_ktm M) k)"
       and dest'_eq: "dest' = (\<lambda>k. if k < k_ktm M then fst (end_pos k)
                                    else init_dest k)"
       and d_eq: "dP = (\<lambda>k. if k < k_ktm M
-                             then (if tsP k (nP k) = LE_block (le_ktm M)
+                             then (if tsP k (nP k) = LE_block m (le_ktm M)
                                      then MoveN else MoveL)
                              else MoveN)"
     by (auto simp: ae_delta_ss4_ss5_def)
@@ -1167,13 +1172,13 @@ proof -
                                else init_dest k, SS5)"
       using c'_eq s'_eq ofs'_eq dest'_eq by simp
     show "buf' = (\<lambda>k. if k < k_ktm M then bufC k
-                        else init_buffer (le_ktm M) k)"
+                        else init_buffer m (le_ktm M) k)"
       by (rule buf'_eq)
     show "ktc_tape c' = tsP"
       using c'_eq ts_write_unchanged by simp
     show "ktc_pos c'
             = (\<lambda>k. go_move (if k < k_ktm M
-                             then (if tsP k (nP k) = LE_block (le_ktm M)
+                             then (if tsP k (nP k) = LE_block m (le_ktm M)
                                      then MoveN else MoveL)
                              else MoveN)
                           (nP k))"
@@ -1181,12 +1186,12 @@ proof -
     show "q \<in> Q_ktm M" by (rule q_in_Q)
     show "q \<noteq> t_ktm M" by (rule q_neq_t_M)
     show "q \<noteq> r_ktm M" by (rule q_neq_r_M)
-    show "\<forall>j\<ge>k_ktm M. tsP j (nP j) = bl_block (bl_ktm M)" by (rule supp)
+    show "\<forall>j\<ge>k_ktm M. tsP j (nP j) = bl_block m (bl_ktm M)" by (rule supp)
     show "((q, \<lambda>k. (fst (buf k),
                      if k < k_ktm M then fst (snd (buf k)) else tsP k (nP k),
                      tsP k (nP k)),
               \<lambda>k. (AE_Home, ofs k)),
-            (q_out, bufC, end_pos)) \<in> m_steps_buffered M"
+            (q_out, bufC, end_pos)) \<in> m_steps_buffered m M"
       using m_steps_raw buf_full_eq by simp
   qed
 qed
@@ -1212,41 +1217,41 @@ text \<open>\<^emph>\<open>Reverse-direction counterpart of \<open>ae_forward_st
 
 lemma ae_backward_stage_load_chain:
   fixes M :: "('q, 'a) ktm"
-    and c' c3 :: "('c :: enum \<Rightarrow> 'a,
-                   'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c3 :: "(nat \<Rightarrow> 'a,
+                   'q \<times> 'a ae_stage) ktc_config"
     and qM' :: 'q
-    and ofs :: "nat \<Rightarrow> 'c"
-    and buf :: "nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and ofs :: "nat \<Rightarrow> nat"
+    and buf :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and dest :: "nat \<Rightarrow> ae_dest"
   assumes vM:          "valid_ktm M"
       and c'_state:    "ktc_state c' = (qM', ofs, buf, dest, SS1)"
       and inv_ss1:     "ae_inv_ss1 M c'"
-      and gamma_c':    "ae_tape_in_gamma_block M c'"
-      and buf_gamma:   "ae_buffer_in_gamma_block M c'"
-      and pos_link_c': "ae_position_link M c'"
+      and gamma_c':    "ae_tape_in_gamma_block m M c'"
+      and buf_gamma:   "ae_buffer_in_gamma_block m M c'"
+      and pos_link_c': "ae_position_link m M c'"
       and qM'_neq_t:   "qM' \<noteq> t_ktm M"
       and qM'_neq_r:   "qM' \<noteq> r_ktm M"
       and run:         "(c', c3)
-                          \<in> ktm_step (alphabet_enlarge_delta M) ^^ 3"
+                          \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 3"
   obtains c1 c2 where
-      "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-    and "(c', c1) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-    and "(c1, c2) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-    and "(c2, c3) \<in> ktm_step (alphabet_enlarge_delta M)"
+      "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+    and "(c', c1) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+    and "(c1, c2) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+    and "(c2, c3) \<in> ktm_step (alphabet_enlarge_delta m M)"
     and "ae_inv_ss4 M c3"
-    and "ae_tape_in_gamma_block M c3"
-    and "ae_buffer_in_gamma_block M c3"
+    and "ae_tape_in_gamma_block m M c3"
+    and "ae_buffer_in_gamma_block m M c3"
     and "fst (ktc_state c3) = qM'"
-    and "ae_position_link M c3"
+    and "ae_position_link m M c3"
 proof -
   \<comment> \<open>Peel the 3-step chain into three alphabet-enlarge steps
       through intermediates \<open>c1\<close>, \<open>c2\<close>.\<close>
   from run obtain c1 c2 where
-      step1: "(c', c1) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and step2: "(c1, c2) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and step3: "(c2, c3) \<in> ktm_step (alphabet_enlarge_delta M)"
+      step1: "(c', c1) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and step2: "(c1, c2) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and step3: "(c2, c3) \<in> ktm_step (alphabet_enlarge_delta m M)"
     by (auto dest!: relpow_Suc_D2 simp: numeral_3_eq_3)
 
   \<comment> \<open>Substep 1: SS1\<open>\<rightarrow>\<close>SS2.  Commit step1 to
@@ -1254,95 +1259,95 @@ proof -
       then propagate the per-substep invariant and side-bands.\<close>
   have c'_idx_ss1: "snd (snd (snd (snd (ktc_state c')))) = SS1"
     using c'_state by simp
-  have step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
+  have step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
     by (rule ktm_step_ae_delta_ss1_only[OF step1 c'_idx_ss1])
   have inv_ss2: "ae_inv_ss2 M c1"
     using ae_step_ss1_ss2_invariant[OF vM inv_ss1 step1_sub] .
-  have gamma_c1: "ae_tape_in_gamma_block M c1"
+  have gamma_c1: "ae_tape_in_gamma_block m M c1"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c' step1] .
-  have buf_gamma_c1: "ae_buffer_in_gamma_block M c1"
+  have buf_gamma_c1: "ae_buffer_in_gamma_block m M c1"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma
                                                             gamma_c' step1] .
   have c1_fst_eq: "fst (ktc_state c1) = qM'"
     using step1_sub c'_state
     by (auto simp: ae_delta_ss1_ss2_def elim: ktm_step.cases)
-  have aux_45_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss4_ss5 M)
-                        \<Longrightarrow> ae_position_link M c1"
+  have aux_45_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss4_ss5 m M)
+                        \<Longrightarrow> ae_position_link m M c1"
     using ae_pos_link_aux_void_ss4_ss5[where M = M and c_pre = c' and c_post = c1]
           c'_idx_ss1 by simp
-  have aux_56_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss5_ss6 M)
-                        \<Longrightarrow> ae_position_link M c1"
+  have aux_56_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss5_ss6 m M)
+                        \<Longrightarrow> ae_position_link m M c1"
     using ae_pos_link_aux_void_ss5_ss6[where M = M and c_pre = c' and c_post = c1]
           c'_idx_ss1 by simp
-  have aux_78_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss7_ss8 M)
-                        \<Longrightarrow> ae_position_link M c1"
+  have aux_78_at_c': "(c', c1) \<in> ktm_step (ae_delta_ss7_ss8 m M)
+                        \<Longrightarrow> ae_position_link m M c1"
     using ae_pos_link_aux_void_ss7_ss8[where M = M and c_pre = c' and c_post = c1]
           c'_idx_ss1 by simp
-  have pos_link_c1: "ae_position_link M c1"
+  have pos_link_c1: "ae_position_link m M c1"
     using ae_step_alphabet_enlarge_position_link_preserve[OF pos_link_c'
             step1 aux_45_at_c' aux_56_at_c' aux_78_at_c'] .
 
   \<comment> \<open>Substep 2: SS2\<open>\<rightarrow>\<close>SS3.\<close>
   have c1_idx_ss2: "snd (snd (snd (snd (ktc_state c1)))) = SS2"
     using inv_ss2 unfolding ae_inv_ss2_def by (cases "ktc_state c1") auto
-  have step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
+  have step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
     by (rule ktm_step_ae_delta_ss2_only[OF step2 c1_idx_ss2])
   have inv_ss3: "ae_inv_ss3 M c2"
     using ae_step_ss2_ss3_invariant[OF vM inv_ss2 step2_sub] .
-  have gamma_c2: "ae_tape_in_gamma_block M c2"
+  have gamma_c2: "ae_tape_in_gamma_block m M c2"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c1 step2] .
-  have buf_gamma_c2: "ae_buffer_in_gamma_block M c2"
+  have buf_gamma_c2: "ae_buffer_in_gamma_block m M c2"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c1
                                                             gamma_c1 step2] .
   have c2_fst_eq: "fst (ktc_state c2) = qM'"
     using step2_sub c1_fst_eq
     by (cases "ktc_state c1")
        (auto simp: ae_delta_ss2_ss3_def elim: ktm_step.cases)
-  have aux_45_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss4_ss5 M)
-                        \<Longrightarrow> ae_position_link M c2"
+  have aux_45_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss4_ss5 m M)
+                        \<Longrightarrow> ae_position_link m M c2"
     using ae_pos_link_aux_void_ss4_ss5[where M = M and c_pre = c1 and c_post = c2]
           c1_idx_ss2 by simp
-  have aux_56_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss5_ss6 M)
-                        \<Longrightarrow> ae_position_link M c2"
+  have aux_56_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss5_ss6 m M)
+                        \<Longrightarrow> ae_position_link m M c2"
     using ae_pos_link_aux_void_ss5_ss6[where M = M and c_pre = c1 and c_post = c2]
           c1_idx_ss2 by simp
-  have aux_78_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss7_ss8 M)
-                        \<Longrightarrow> ae_position_link M c2"
+  have aux_78_at_c1: "(c1, c2) \<in> ktm_step (ae_delta_ss7_ss8 m M)
+                        \<Longrightarrow> ae_position_link m M c2"
     using ae_pos_link_aux_void_ss7_ss8[where M = M and c_pre = c1 and c_post = c2]
           c1_idx_ss2 by simp
-  have pos_link_c2: "ae_position_link M c2"
+  have pos_link_c2: "ae_position_link m M c2"
     using ae_step_alphabet_enlarge_position_link_preserve[OF pos_link_c1
             step2 aux_45_at_c1 aux_56_at_c1 aux_78_at_c1] .
 
   \<comment> \<open>Substep 3: SS3\<open>\<rightarrow>\<close>SS4.\<close>
   have c2_idx_ss3: "snd (snd (snd (snd (ktc_state c2)))) = SS3"
     using inv_ss3 unfolding ae_inv_ss3_def by (cases "ktc_state c2") auto
-  have step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
+  have step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
     by (rule ktm_step_ae_delta_ss3_only[OF step3 c2_idx_ss3])
   have inv_ss4: "ae_inv_ss4 M c3"
     using ae_step_ss3_ss4_invariant[OF vM inv_ss3 step3_sub] .
-  have gamma_c3: "ae_tape_in_gamma_block M c3"
+  have gamma_c3: "ae_tape_in_gamma_block m M c3"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c2 step3] .
-  have buf_gamma_c3: "ae_buffer_in_gamma_block M c3"
+  have buf_gamma_c3: "ae_buffer_in_gamma_block m M c3"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c2
                                                             gamma_c2 step3] .
   have c3_fst_eq: "fst (ktc_state c3) = qM'"
     using step3_sub c2_fst_eq
     by (cases "ktc_state c2")
        (auto simp: ae_delta_ss3_ss4_def elim: ktm_step.cases)
-  have aux_45_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss4_ss5 M)
-                        \<Longrightarrow> ae_position_link M c3"
+  have aux_45_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss4_ss5 m M)
+                        \<Longrightarrow> ae_position_link m M c3"
     using ae_pos_link_aux_void_ss4_ss5[where M = M and c_pre = c2 and c_post = c3]
           c2_idx_ss3 by simp
-  have aux_56_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss5_ss6 M)
-                        \<Longrightarrow> ae_position_link M c3"
+  have aux_56_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss5_ss6 m M)
+                        \<Longrightarrow> ae_position_link m M c3"
     using ae_pos_link_aux_void_ss5_ss6[where M = M and c_pre = c2 and c_post = c3]
           c2_idx_ss3 by simp
-  have aux_78_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss7_ss8 M)
-                        \<Longrightarrow> ae_position_link M c3"
+  have aux_78_at_c2: "(c2, c3) \<in> ktm_step (ae_delta_ss7_ss8 m M)
+                        \<Longrightarrow> ae_position_link m M c3"
     using ae_pos_link_aux_void_ss7_ss8[where M = M and c_pre = c2 and c_post = c3]
           c2_idx_ss3 by simp
-  have pos_link_c3: "ae_position_link M c3"
+  have pos_link_c3: "ae_position_link m M c3"
     using ae_step_alphabet_enlarge_position_link_preserve[OF pos_link_c2
             step3 aux_45_at_c2 aux_56_at_c2 aux_78_at_c2] .
 
@@ -1386,42 +1391,43 @@ text \<open>\<^emph>\<open>Reverse-direction SS4\<open>\<rightarrow>\<close>SS5 
 lemma ae_backward_stage_compute_extract:
   fixes M :: "('q, 'a) ktm"
     and cM :: "('a, 'q) ktc_config"
-    and c' c1 c2 c3 c4 :: "('c :: enum \<Rightarrow> 'a,
-                              'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c1 c2 c3 c4 :: "(nat \<Rightarrow> 'a,
+                              'q \<times> 'a ae_stage) ktc_config"
     and qM' :: 'q
-    and ofs :: "nat \<Rightarrow> 'c"
-    and buf :: "nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and ofs :: "nat \<Rightarrow> nat"
+    and buf :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and dest :: "nat \<Rightarrow> ae_dest"
   assumes vM:          "valid_ktm M"
       and lu:          "le_unique M"
       and cM_valid:    "valid_config_ktm M cM"
-      and sim:         "ae_simulates M cM c'"
+      and sim:         "ae_simulates m M cM c'"
       and c'_state:    "ktc_state c' = (qM', ofs, buf, dest, SS1)"
-      and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block (le_ktm M)"
+      and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block m (le_ktm M)"
       and le_neq_bl:   "le_ktm M \<noteq> bl_ktm M"
       and no_le_per_tape:
             "\<forall>k. (ktc_pos c' k \<ge> 2
-                    \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < 3 * m
                               \<longrightarrow> ktc_tape cM k
-                                    ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                    ((ktc_pos c' k - 2) * m
                                        + 1 + i)
                                   \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 2 * m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 0
-                      \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
-      and step1_sub:   "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-      and step2_sub:   "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-      and step3_sub:   "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-      and step4_full:  "(c3, c4) \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step1_sub:   "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+      and step2_sub:   "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+      and step3_sub:   "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+      and step4_full:  "(c3, c4) \<in> ktm_step (alphabet_enlarge_delta m M)"
       and c3_idx_ss4:  "snd (snd (snd (snd (ktc_state c3)))) = SS4"
+      and bufv: "ae_buffer_in_gamma_block m M c'"
   obtains cM_new buf' end_pos n where
-      "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
     and "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and "n \<le> card (UNIV :: 'c set)"
-    and "n = card (UNIV :: 'c set)
+    and "n \<le> m"
+    and "n = m
             \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
     and "ktc_state c4 = (ktc_state cM_new,
                           \<lambda>k. if k < k_ktm M then snd (end_pos k)
@@ -1430,41 +1436,45 @@ lemma ae_backward_stage_compute_extract:
                           \<lambda>k. if k < k_ktm M then fst (end_pos k)
                                 else init_dest k, SS5)"
     and "ktc_tape c4 = ktc_tape c'"
-    and "\<forall>k<k_ktm M. ae_window_invariant_general
+    and "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM_new k) (ktc_pos cM_new k)
                 (end_pos k) (buf' k) (ktc_pos c' k) (le_ktm M)"
     and "\<forall>k. (ktc_pos c' k = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k \<ge> 2
-                  \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 3 * m
                             \<longrightarrow> ktc_tape cM_new k
-                                  ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                  ((ktc_pos c' k - 2) * m
                                      + 1 + i)
                                 \<noteq> le_ktm M))"
     and "\<forall>k<k_ktm M. ktc_pos c' k = 0
-                \<longrightarrow> fst (buf' k) \<noteq> LE_block (le_ktm M)"
+                \<longrightarrow> fst (buf' k) \<noteq> LE_block m (le_ktm M)"
 proof -
+  have m_pos: "0 < m" by (rule ae_buffer_in_gamma_block_width_pos[OF bufv])
+  have ofs_lt: "\<forall>k. ofs k < m"
+    by (rule ae_buffer_in_gamma_block_offsets[OF bufv c'_state])
   \<comment> \<open>Commit step4 to \<open>ae_delta_ss4_ss5\<close> via the
       cross-phase exclusion lift.\<close>
-  have step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+  have step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
     by (rule ktm_step_ae_delta_ss4_only[OF step4_full c3_idx_ss4])
 
   \<comment> \<open>Extract tape correspondence from the simulation invariant.\<close>
-  have tape_corr: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+  have tape_corr: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                           (ktc_tape cM k) (ktc_tape c' k)"
     using sim c'_state unfolding ae_simulates_def by auto
 
   \<comment> \<open>Home-cell LE classification.\<close>
   have home_classification:
       "\<forall>k<k_ktm M. (ktc_pos c' k = 0
-              \<longrightarrow> ktc_tape c' k (ktc_pos c' k) = LE_block (le_ktm M))
+              \<longrightarrow> ktc_tape c' k (ktc_pos c' k) = LE_block m (le_ktm M))
            \<and> (ktc_pos c' k \<ge> 1
-              \<longrightarrow> ktc_tape c' k (ktc_pos c' k) \<noteq> LE_block (le_ktm M))"
-    by (rule ae_home_classification[OF le_anchor no_le_per_tape tape_corr])
+              \<longrightarrow> ktc_tape c' k (ktc_pos c' k) \<noteq> LE_block m (le_ktm M))"
+    by (rule ae_home_classification[OF le_anchor no_le_per_tape tape_corr
+          ktm_step_alphabet_enlarge_width_pos[OF step4_full]])
 
   \<comment> \<open>SS4-entry buffer / tape / position characterisation
       (direction-agnostic, shared with forward direction).\<close>
@@ -1472,13 +1482,13 @@ proof -
       "ktc_state c3 = (qM', ofs,
                        (\<lambda>k. if k < k_ktm M
                               then (if ktc_pos c' k = 0
-                                     then (bl_block (bl_ktm M),
-                                           LE_block (le_ktm M),
+                                     then (bl_block m (bl_ktm M),
+                                           LE_block m (le_ktm M),
                                            snd (snd (buf k)))
                                      else (ktc_tape c' k (ktc_pos c' k - 1),
                                            ktc_tape c' k (ktc_pos c' k),
                                            snd (snd (buf k))))
-                              else init_buffer (le_ktm M) k),
+                              else init_buffer m (le_ktm M) k),
                        dest, SS4)"
     using ae_ss1_to_ss4_buffer_chars_general(1)[OF c'_state step1_sub
                                                    step2_sub step3_sub
@@ -1495,12 +1505,12 @@ proof -
   \<comment> \<open>Per-tape SS4 window invariant at \<open>cM\<close> via the unified
       from-correspondence helper.\<close>
   have window_at_cM:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM k) (ktc_pos cM k)
               (AE_Home, ofs k)
               (if ktc_pos c' k = 0
-                 then (bl_block (bl_ktm M),
-                       LE_block (le_ktm M),
+                 then (bl_block m (bl_ktm M),
+                       LE_block m (le_ktm M),
                        ktc_tape c' k 1)
                else if ktc_pos c' k = 1
                  then (ktc_tape c' k 0,
@@ -1513,7 +1523,7 @@ proof -
               (le_ktm M)"
     using ae_ss4_window_from_correspondence_general[OF sim c'_state
                                                        le_anchor
-                                                       no_le_per_tape] .
+                                                       no_le_per_tape ofs_lt] .
 
   \<comment> \<open>Destructure the SS4\<open>\<rightarrow>\<close>SS5 step into its
       \<open>m_steps_buffered\<close> chain.  Bind every obtained variable
@@ -1530,25 +1540,25 @@ proof -
                         \<lambda>k. if k < k_ktm M then fst (end_pos k)
                               else init_dest k, SS5)"
     and buf'_def: "buf' = (\<lambda>k. if k < k_ktm M then bufC k
-                                 else init_buffer (le_ktm M) k)"
+                                 else init_buffer m (le_ktm M) k)"
     and c4_tape_raw: "ktc_tape c4 = tsD"
     and c4_pos_raw:
         "ktc_pos c4
            = (\<lambda>k. go_move (if k < k_ktm M
-                            then (if tsD k (nD k) = LE_block (le_ktm M)
+                            then (if tsD k (nD k) = LE_block m (le_ktm M)
                                     then MoveN else MoveL)
                             else MoveN)
                          (nD k))"
     and qD_in: "qD \<in> Q_ktm M"
     and qD_neq_t: "qD \<noteq> t_ktm M"
     and qD_neq_r: "qD \<noteq> r_ktm M"
-    and tsD_supp: "\<forall>j\<ge>k_ktm M. tsD j (nD j) = bl_block (bl_ktm M)"
+    and tsD_supp: "\<forall>j\<ge>k_ktm M. tsD j (nD j) = bl_block m (bl_ktm M)"
     and m_steps:
         "((qD, \<lambda>k. (fst (bufD k),
                      if k < k_ktm M then fst (snd (bufD k)) else tsD k (nD k),
                      tsD k (nD k)),
             \<lambda>k. (AE_Home, ofsD k)),
-           (q_out, bufC, end_pos)) \<in> m_steps_buffered M"
+           (q_out, bufC, end_pos)) \<in> m_steps_buffered m M"
     by (rule ae_step_ss4_ss5_destruct_to_buffered[OF step4_sub])
 
   \<comment> \<open>Identify destructed names with our load-chain view.\<close>
@@ -1559,13 +1569,13 @@ proof -
   have bufD_eq:
       "bufD = (\<lambda>k. if k < k_ktm M
                      then (if ktc_pos c' k = 0
-                            then (bl_block (bl_ktm M),
-                                  LE_block (le_ktm M),
+                            then (bl_block m (bl_ktm M),
+                                  LE_block m (le_ktm M),
                                   snd (snd (buf k)))
                             else (ktc_tape c' k (ktc_pos c' k - 1),
                                   ktc_tape c' k (ktc_pos c' k),
                                   snd (snd (buf k))))
-                     else init_buffer (le_ktm M) k)"
+                     else init_buffer m (le_ktm M) k)"
     using c3_eq c3_state by simp
   have tsD_eq: "tsD = ktc_tape c'"
     using c3_eq c3_tape by simp
@@ -1580,7 +1590,7 @@ proof -
       empty-tape shadow and never enter the wrapper's
       \<open>\<forall>k<k_ktm M\<close> obligations.\<close>
   define buf_full_src ::
-      "nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+      "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     where "buf_full_src =
              (\<lambda>k. (fst (bufD k),
                    if k < k_ktm M then fst (snd (bufD k)) else tsD k (nD k),
@@ -1591,7 +1601,7 @@ proof -
   have src_align:
       "\<forall>k<k_ktm M. buf_full_src k
               = (if ktc_pos c' k = 0
-                   then (bl_block (bl_ktm M), LE_block (le_ktm M),
+                   then (bl_block m (bl_ktm M), LE_block m (le_ktm M),
                          ktc_tape c' k 1)
                  else if ktc_pos c' k = 1
                    then (ktc_tape c' k 0, ktc_tape c' k 1, ktc_tape c' k 2)
@@ -1602,7 +1612,7 @@ proof -
     fix k assume klt: "k < k_ktm M"
     have bufD_k: "bufD k
                     = (if ktc_pos c' k = 0
-                         then (bl_block (bl_ktm M), LE_block (le_ktm M),
+                         then (bl_block m (bl_ktm M), LE_block m (le_ktm M),
                                snd (snd (buf k)))
                          else (ktc_tape c' k (ktc_pos c' k - 1),
                                ktc_tape c' k (ktc_pos c' k),
@@ -1615,7 +1625,7 @@ proof -
       using klt unfolding buf_full_src_def by simp
     show "buf_full_src k
             = (if ktc_pos c' k = 0
-                 then (bl_block (bl_ktm M), LE_block (le_ktm M),
+                 then (bl_block m (bl_ktm M), LE_block m (le_ktm M),
                        ktc_tape c' k 1)
                else if ktc_pos c' k = 1
                  then (ktc_tape c' k 0, ktc_tape c' k 1, ktc_tape c' k 2)
@@ -1649,18 +1659,18 @@ proof -
       substituted for \<open>ofsD\<close>.\<close>
   have m_steps_src:
       "((qD, buf_full_src, \<lambda>k. (AE_Home, ofs k)),
-          (q_out, bufC, end_pos)) \<in> m_steps_buffered M"
+          (q_out, bufC, end_pos)) \<in> m_steps_buffered m M"
     using m_steps ofsD_eq unfolding buf_full_src_def by simp
 
   \<comment> \<open>Window invariant at \<open>cM\<close> for the guarded source, on
       active tapes, via the regime alignment.\<close>
   have window_at_cM_src:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM k) (ktc_pos cM k)
               (AE_Home, ofs k) (buf_full_src k) (ktc_pos c' k) (le_ktm M)"
   proof (intro allI impI)
     fix k assume klt: "k < k_ktm M"
-    show "ae_window_invariant_general (ktc_tape cM k) (ktc_pos cM k)
+    show "ae_window_invariant_general m (ktc_tape cM k) (ktc_pos cM k)
             (AE_Home, ofs k) (buf_full_src k) (ktc_pos c' k) (le_ktm M)"
       using window_at_cM[rule_format, OF klt] src_align[rule_format, OF klt]
       by simp
@@ -1671,25 +1681,17 @@ proof -
       hypotheses by construction.  Left-not-LE for pos=0 tapes
       is the \<open>bl_block \<noteq> LE_block\<close> argument.\<close>
   have bl_neq_le:
-      "(bl_block (bl_ktm M) :: 'c \<Rightarrow> 'a) \<noteq> LE_block (le_ktm M)"
-  proof
-    assume eq: "(bl_block (bl_ktm M) :: 'c \<Rightarrow> 'a) = LE_block (le_ktm M)"
-    have "bl_block (bl_ktm M) (SOME x :: 'c. True)
-            = LE_block (le_ktm M) (SOME x :: 'c. True)"
-      using eq by simp
-    hence "bl_ktm M = le_ktm M"
-      unfolding bl_block_def LE_block_def by simp
-    with le_neq_bl show False by simp
-  qed
+      "(bl_block m (bl_ktm M) :: nat \<Rightarrow> 'a) \<noteq> LE_block m (le_ktm M)"
+    using LE_block_neq_bl_block[OF m_pos le_neq_bl] by metis
   have left_not_le_pos0_buf_full:
       "\<forall>k<k_ktm M. ktc_pos c' k = 0
-              \<longrightarrow> fst (buf_full_src k) \<noteq> LE_block (le_ktm M)"
+              \<longrightarrow> fst (buf_full_src k) \<noteq> LE_block m (le_ktm M)"
   proof (intro allI impI impI)
     fix k assume klt: "k < k_ktm M" and pos0: "ktc_pos c' k = 0"
     have "buf_full_src k
-            = (bl_block (bl_ktm M), LE_block (le_ktm M), ktc_tape c' k 1)"
+            = (bl_block m (bl_ktm M), LE_block m (le_ktm M), ktc_tape c' k 1)"
       using src_align[rule_format, OF klt] pos0 by simp
-    thus "fst (buf_full_src k) \<noteq> LE_block (le_ktm M)"
+    thus "fst (buf_full_src k) \<noteq> LE_block m (le_ktm M)"
       using bl_neq_le by simp
   qed
 
@@ -1700,62 +1702,62 @@ proof -
       assumption convention.\<close>
   have no_le_per_tape_reordered:
       "\<forall>k. (ktc_pos c' k = 0
-              \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+              \<longrightarrow> (\<forall>i. i < m
                         \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
            \<and> (ktc_pos c' k = 1
-                \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 2 * m
                           \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
            \<and> (ktc_pos c' k \<ge> 2
-                \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 3 * m
                           \<longrightarrow> ktc_tape cM k
-                                ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                ((ktc_pos c' k - 2) * m
                                    + 1 + i)
                               \<noteq> le_ktm M))"
     using no_le_per_tape by blast
 
   obtain cM_new n where
       cM_trace_n: "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and n_bnd: "n \<le> card (UNIV :: 'c set)"
+    and n_bnd: "n \<le> m"
     and halt_or_full:
-        "n = card (UNIV :: 'c set)
+        "n = m
             \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
     and cM_new_st: "ktc_state cM_new = q_out"
     and new_window_C:
-        "\<forall>k<k_ktm M. ae_window_invariant_general
+        "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM_new k) (ktc_pos cM_new k)
                 (end_pos k) (bufC k) (ktc_pos c' k) (le_ktm M)"
     and new_no_le:
         "\<forall>k. (ktc_pos c' k = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k \<ge> 2
-                  \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 3 * m
                             \<longrightarrow> ktc_tape cM_new k
-                                  ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                  ((ktc_pos c' k - 2) * m
                                      + 1 + i)
                                 \<noteq> le_ktm M))"
     and new_left_C:
         "\<forall>k<k_ktm M. ktc_pos c' k = 0
-                \<longrightarrow> fst (bufC k) \<noteq> LE_block (le_ktm M)"
+                \<longrightarrow> fst (bufC k) \<noteq> LE_block m (le_ktm M)"
     by (rule m_steps_buffered_lift_to_tape
           [OF vM lu cM_valid qD_in m_steps_src st_eq_cM window_at_cM_src
-              no_le_per_tape_reordered left_not_le_pos0_buf_full])
+              no_le_per_tape_reordered left_not_le_pos0_buf_full ofs_lt])
   \<comment> \<open>The SS5 buffer \<open>buf'\<close> agrees with the chain target
       \<open>bufC\<close> on active tapes; transport the per-active-tape
       window and left-not-LE facts.\<close>
   have buf'_active: "\<forall>k<k_ktm M. buf' k = bufC k"
     using buf'_def by simp
   have new_window:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (end_pos k) (buf' k) (ktc_pos c' k) (le_ktm M)"
     using new_window_C buf'_active by simp
   have new_left_not_le_pos0:
       "\<forall>k<k_ktm M. ktc_pos c' k = 0
-              \<longrightarrow> fst (buf' k) \<noteq> LE_block (le_ktm M)"
+              \<longrightarrow> fst (buf' k) \<noteq> LE_block m (le_ktm M)"
     using new_left_C buf'_active by simp
 
   \<comment> \<open>Tape preservation through SS4\<open>\<rightarrow>\<close>SS5: the substep
@@ -1779,11 +1781,11 @@ proof -
   show thesis
   proof (rule that[where cM_new = cM_new and buf' = buf'
                      and end_pos = end_pos and n = n])
-    show "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)" by (rule step4_sub)
+    show "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)" by (rule step4_sub)
     show "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
       by (rule cM_trace_n)
-    show "n \<le> card (UNIV :: 'c set)" by (rule n_bnd)
-    show "n = card (UNIV :: 'c set)
+    show "n \<le> m" by (rule n_bnd)
+    show "n = m
             \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
       by (rule halt_or_full)
     show "ktc_state c4 = (ktc_state cM_new,
@@ -1794,25 +1796,25 @@ proof -
                                 else init_dest k, SS5)"
       by (rule c4_state)
     show "ktc_tape c4 = ktc_tape c'" by (rule c4_tape)
-    show "\<forall>k<k_ktm M. ae_window_invariant_general
+    show "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM_new k) (ktc_pos cM_new k)
                 (end_pos k) (buf' k) (ktc_pos c' k) (le_ktm M)"
       by (rule new_window)
     show "\<forall>k. (ktc_pos c' k = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k \<ge> 2
-                  \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 3 * m
                             \<longrightarrow> ktc_tape cM_new k
-                                  ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                  ((ktc_pos c' k - 2) * m
                                      + 1 + i)
                                 \<noteq> le_ktm M))"
       by (rule new_no_le)
     show "\<forall>k<k_ktm M. ktc_pos c' k = 0
-                \<longrightarrow> fst (buf' k) \<noteq> LE_block (le_ktm M)"
+                \<longrightarrow> fst (buf' k) \<noteq> LE_block m (le_ktm M)"
       by (rule new_left_not_le_pos0)
   qed
 qed
@@ -1848,53 +1850,53 @@ text \<open>\<^emph>\<open>Reverse-direction SS5\<open>\<rightarrow>\<close>SS1 
 
 lemma ae_backward_stage_writeback_chain:
   fixes M :: "('q, 'a) ktm"
-    and c4 c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c4 c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
     and q_out :: 'q
   assumes vM:           "valid_ktm M"
       and c4_inv:       "ae_inv_ss5 M c4"
       and c4_q:         "fst (ktc_state c4) = q_out"
       and q_out_in_Q:   "q_out \<in> Q_ktm M"
-      and gamma_c4:     "ae_tape_in_gamma_block M c4"
-      and buf_gamma_c4: "ae_buffer_in_gamma_block M c4"
+      and gamma_c4:     "ae_tape_in_gamma_block m M c4"
+      and buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
       and run:          "(c4, c'')
-                           \<in> ktm_step (alphabet_enlarge_delta M) ^^ 4"
+                           \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 4"
   obtains c5 c6 c7 where
-      "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-    and "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-    and "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-    and "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-    and "(c7, c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+    and "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+    and "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+    and "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+    and "(c7, c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
     and "q_out \<notin> {t_ktm M, r_ktm M} \<longrightarrow> ae_inv_ss1 M c''"
     and "q_out \<in> {t_ktm M, r_ktm M}
             \<longrightarrow> (case ktc_state c'' of (qH, _, _, _, idx)
                   \<Rightarrow> qH \<in> {t_ktm M, r_ktm M} \<and> idx = VFwd)"
     and "fst (ktc_state c'') = q_out"
-    and "ae_tape_in_gamma_block M c''"
-    and "ae_buffer_in_gamma_block M c''"
+    and "ae_tape_in_gamma_block m M c''"
+    and "ae_buffer_in_gamma_block m M c''"
 proof -
   \<comment> \<open>Peel the 4-step chain into four alphabet-enlarge steps
       through intermediates \<open>c5\<close>, \<open>c6\<close>, \<open>c7\<close>.\<close>
   from run obtain c5 c6 c7 where
-      step5: "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and step6: "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and step7: "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta M)"
-    and step8: "(c7, c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      step5: "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and step6: "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and step7: "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta m M)"
+    and step8: "(c7, c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
     by (auto dest!: relpow_Suc_D2 simp: numeral_eq_Suc)
 
   \<comment> \<open>Substep 5: SS5\<open>\<rightarrow>\<close>SS6.\<close>
   have c4_idx_ss5: "snd (snd (snd (snd (ktc_state c4)))) = SS5"
     using c4_inv unfolding ae_inv_ss5_def by (cases "ktc_state c4") auto
-  have step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
+  have step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
     by (rule ktm_step_ae_delta_ss5_only[OF step5 c4_idx_ss5])
   have inv_ss6: "ae_inv_ss6 M c5"
     using ae_step_ss5_ss6_invariant[OF vM c4_inv step5_sub] .
-  have gamma_c5: "ae_tape_in_gamma_block M c5"
+  have gamma_c5: "ae_tape_in_gamma_block m M c5"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c4 step5] .
-  have buf_gamma_c5: "ae_buffer_in_gamma_block M c5"
+  have buf_gamma_c5: "ae_buffer_in_gamma_block m M c5"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c4
                                                             gamma_c4 step5] .
   have c5_fst_eq: "fst (ktc_state c5) = q_out"
@@ -1906,13 +1908,13 @@ proof -
   have c5_idx_ss6: "snd (snd (snd (snd (ktc_state c5)))) = SS6"
     using inv_ss6 unfolding ae_inv_ss6_def
     by (cases "ktc_state c5") auto
-  have step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
+  have step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
     by (rule ktm_step_ae_delta_ss6_only[OF step6 c5_idx_ss6])
   have inv_ss7: "ae_inv_ss7 M c6"
     using ae_step_ss6_ss7_invariant[OF vM inv_ss6 step6_sub] .
-  have gamma_c6: "ae_tape_in_gamma_block M c6"
+  have gamma_c6: "ae_tape_in_gamma_block m M c6"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c5 step6] .
-  have buf_gamma_c6: "ae_buffer_in_gamma_block M c6"
+  have buf_gamma_c6: "ae_buffer_in_gamma_block m M c6"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c5
                                                             gamma_c5 step6] .
   have c6_fst_eq: "fst (ktc_state c6) = q_out"
@@ -1924,13 +1926,13 @@ proof -
   have c6_idx_ss7: "snd (snd (snd (snd (ktc_state c6)))) = SS7"
     using inv_ss7 unfolding ae_inv_ss7_def
     by (cases "ktc_state c6") auto
-  have step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
+  have step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
     by (rule ktm_step_ae_delta_ss7_only[OF step7 c6_idx_ss7])
   have inv_ss8: "ae_inv_ss8 M c7"
     using ae_step_ss7_ss8_invariant[OF vM inv_ss7 step7_sub] .
-  have gamma_c7: "ae_tape_in_gamma_block M c7"
+  have gamma_c7: "ae_tape_in_gamma_block m M c7"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c6 step7] .
-  have buf_gamma_c7: "ae_buffer_in_gamma_block M c7"
+  have buf_gamma_c7: "ae_buffer_in_gamma_block m M c7"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c6
                                                             gamma_c6 step7] .
   have c7_fst_eq: "fst (ktc_state c7) = q_out"
@@ -1946,15 +1948,15 @@ proof -
   have c7_idx_ss8: "snd (snd (snd (snd (ktc_state c7)))) = SS8"
     using inv_ss8 unfolding ae_inv_ss8_def
     by (cases "ktc_state c7") auto
-  have step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+  have step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     by (rule ktm_step_ae_delta_ss8_only[OF step8 c7_idx_ss8])
   have c''_fst_eq: "fst (ktc_state c'') = q_out"
     using step8_sub c7_fst_eq
     by (cases "ktc_state c7")
        (auto simp: ae_delta_ss8_ss1_def elim: ktm_step.cases)
-  have gamma_c'': "ae_tape_in_gamma_block M c''"
+  have gamma_c'': "ae_tape_in_gamma_block m M c''"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c7 step8] .
-  have buf_gamma_c'': "ae_buffer_in_gamma_block M c''"
+  have buf_gamma_c'': "ae_buffer_in_gamma_block m M c''"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c7
                                                             gamma_c7 step8] .
 
@@ -2013,18 +2015,18 @@ text \<open>Reverse-direction dispatcher: unpack \<open>ae_simulates\<close>
 lemma ae_simulates_state_disjunction:
   fixes M :: "('q, 'a) ktm"
     and cM :: "('a, 'q) ktc_config"
-    and c' :: "('c :: enum \<Rightarrow> 'a,
-                'q \<times> ('a, 'c) ae_stage) ktc_config"
-  assumes sim: "ae_simulates M cM c'"
+    and c' :: "(nat \<Rightarrow> 'a,
+                'q \<times> 'a ae_stage) ktc_config"
+  assumes sim: "ae_simulates m M cM c'"
   obtains qM' ofs buf dest idx where
       "ktc_state c' = (qM', ofs, buf, dest, idx)"
     and "ktc_state cM = qM'"
     and "(idx = SS1 \<and> qM' \<notin> {t_ktm M, r_ktm M})
          \<or> (qM' \<in> {t_ktm M, r_ktm M}
-              \<and> (ofs, buf, dest, idx) = init_stage (le_ktm M))"
-    and "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+              \<and> (ofs, buf, dest, idx) = init_stage m (le_ktm M))"
+    and "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
               (ktc_tape cM k) (ktc_tape c' k)"
-    and "ae_tape_in_gamma_block M c'"
+    and "ae_tape_in_gamma_block m M c'"
 proof -
   obtain qM' ofs buf dest idx where
       state_comp: "ktc_state c' = (qM', ofs, buf, dest, idx)"
@@ -2032,25 +2034,25 @@ proof -
   have sim_body:
       "((idx = SS1 \<and> qM' \<notin> {t_ktm M, r_ktm M})
           \<or> (qM' \<in> {t_ktm M, r_ktm M}
-               \<and> (ofs, buf, dest, idx) = init_stage (le_ktm M)))
+               \<and> (ofs, buf, dest, idx) = init_stage m (le_ktm M)))
        \<and> ktc_state cM = qM'
-       \<and> (\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+       \<and> (\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                  (ktc_tape cM k) (ktc_tape c' k))
        \<and> (idx = SS1
-            \<longrightarrow> (\<forall>k<k_ktm M. ktc_pos cM k = ae_decode_pos (ktc_pos c' k) (ofs k)))
-       \<and> ae_tape_in_gamma_block M c'"
+            \<longrightarrow> (\<forall>k<k_ktm M. ktc_pos cM k = ae_decode_pos m (ktc_pos c' k) (ofs k)))
+       \<and> ae_tape_in_gamma_block m M c'"
     using sim state_comp unfolding ae_simulates_def by simp
   have qM_eq: "ktc_state cM = qM'" using sim_body by simp
   have state_disj:
       "(idx = SS1 \<and> qM' \<notin> {t_ktm M, r_ktm M})
         \<or> (qM' \<in> {t_ktm M, r_ktm M}
-              \<and> (ofs, buf, dest, idx) = init_stage (le_ktm M))"
+              \<and> (ofs, buf, dest, idx) = init_stage m (le_ktm M))"
     using sim_body by simp
   have tape_corr:
-      "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+      "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
               (ktc_tape cM k) (ktc_tape c' k)"
     using sim_body by simp
-  have gamma_c': "ae_tape_in_gamma_block M c'"
+  have gamma_c': "ae_tape_in_gamma_block m M c'"
     using sim_body by simp
   show ?thesis
     by (rule that[OF state_comp qM_eq state_disj tape_corr gamma_c'])
@@ -2073,96 +2075,84 @@ text \<open>The det-free replacement for the SS4\<open>\<rightarrow>\<close>SS5 
   is recovered from the tape.  Combined, they give the full-window
   (\<open>pos \<ge> 2\<close>) inversion below.\<close>
 
-text \<open>\<open>c_idx\<close> is injective: it has \<open>enum_class.enum ! c_idx x = x\<close>
-  as a section (\<open>c_idx_in_range\<close>), so equal indices give equal
-  elements.\<close>
-
-lemma c_idx_inj:
-  fixes x y :: "'c :: enum"
-  assumes "c_idx x = c_idx y"
-  shows "x = y"
-proof -
-  have "x = (enum_class.enum :: 'c list) ! c_idx x"
-    by (rule c_idx_in_range(2)[symmetric])
-  also have "\<dots> = (enum_class.enum :: 'c list) ! c_idx y"
-    using assms by simp
-  also have "\<dots> = y" by (rule c_idx_in_range(2))
-  finally show ?thesis .
-qed
-
 text \<open>(A) \<open>bp_linear\<close> injective.  The direction component lands the
-  value in one of three disjoint length-\<open>card\<close> intervals, so equal
-  values force equal directions; \<open>c_idx\<close>-injectivity then forces equal
-  cells.\<close>
+  value in one of three disjoint length-\<open>m\<close> intervals, so equal
+  values force equal directions and then equal offsets.\<close>
 
 lemma bp_linear_inj:
-  fixes p q :: "('c :: enum) bp"
-  assumes "bp_linear p = bp_linear q"
+  fixes p q :: "bp"
+  assumes "bp_linear m p = bp_linear m q"
+      and p_lt: "snd p < m" and q_lt: "snd q < m"
   shows "p = q"
 proof -
   obtain d x where p: "p = (d, x)" by (cases p)
   obtain d' y where q: "q = (d', y)" by (cases q)
-  have bx: "c_idx x < card (UNIV :: 'c set)" by (rule c_idx_lt_card)
-  have by': "c_idx y < card (UNIV :: 'c set)" by (rule c_idx_lt_card)
+  have bx: "x < m" using p_lt p by simp
+  have by': "y < m" using q_lt q by simp
   from assms have eq:
-    "(case d of AE_Left \<Rightarrow> 0 | AE_Home \<Rightarrow> card (UNIV :: 'c set)
-        | AE_Right \<Rightarrow> 2 * card (UNIV :: 'c set)) + c_idx x
-     = (case d' of AE_Left \<Rightarrow> 0 | AE_Home \<Rightarrow> card (UNIV :: 'c set)
-        | AE_Right \<Rightarrow> 2 * card (UNIV :: 'c set)) + c_idx y"
+    "(case d of AE_Left \<Rightarrow> 0 | AE_Home \<Rightarrow> m
+        | AE_Right \<Rightarrow> 2 * m) + x
+     = (case d' of AE_Left \<Rightarrow> 0 | AE_Home \<Rightarrow> m
+        | AE_Right \<Rightarrow> 2 * m) + y"
     by (simp add: p q bp_linear_def)
-  have "d = d' \<and> c_idx x = c_idx y"
+  have "d = d' \<and> x = y"
     using eq bx by' by (cases d; cases d'; simp; linarith)
-  hence "d = d'" and "x = y" using c_idx_inj by auto
+  hence "d = d'" and "x = y" by auto
   thus ?thesis by (simp add: p q)
 qed
 
-text \<open>(B) the window \<open>buf_lin_at blocks\<close> determines \<open>blocks\<close>.  Each
-  of the three blocks is read at every \<open>'c\<close>-cell as \<open>i\<close> sweeps its
-  third of the window, because \<open>enum_class.enum\<close> enumerates the whole
-  type.\<close>
+text \<open>(B) the window \<open>buf_lin_at blocks\<close> determines extensional
+  \<open>blocks\<close>.  Each of the three blocks is read at every offset below
+  \<open>m\<close> as \<open>i\<close> sweeps its third of the window, and an extensional block
+  is fixed by those cells.\<close>
 
 lemma buf_window_determines:
-  fixes b1 b2 :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "\<forall>i < 3 * card (UNIV :: 'c set). buf_lin_at b1 i = buf_lin_at b2 i"
+  fixes b1 b2 :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "\<forall>i < 3 * m. buf_lin_at m b1 i = buf_lin_at m b2 i"
+      and x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
   shows "b1 = b2"
 proof -
   obtain l1 h1 r1 where b1: "b1 = (l1, h1, r1)" by (cases b1)
   obtain l2 h2 r2 where b2: "b2 = (l2, h2, r2)" by (cases b2)
-  let ?c = "card (UNIV :: 'c set)"
+  let ?c = "m"
+  have ext: "l1 \<in> extensional {..<m}" "h1 \<in> extensional {..<m}"
+       "r1 \<in> extensional {..<m}" "l2 \<in> extensional {..<m}"
+       "h2 \<in> extensional {..<m}" "r2 \<in> extensional {..<m}"
+    using x1 x2 by (simp_all add: b1 b2 ae_blocks_ext_def)
   have lE: "l1 = l2"
-  proof (rule ext)
-    fix x :: 'c
-    have idx: "c_idx x < ?c" by (rule c_idx_lt_card)
-    hence lt: "c_idx x < 3 * ?c" by simp
-    have v1: "buf_lin_at b1 (c_idx x) = l1 x"
-      using idx by (simp add: b1 buf_lin_at_def Let_def c_idx_in_range(2))
-    have v2: "buf_lin_at b2 (c_idx x) = l2 x"
-      using idx by (simp add: b2 buf_lin_at_def Let_def c_idx_in_range(2))
-    from assms lt have "buf_lin_at b1 (c_idx x) = buf_lin_at b2 (c_idx x)" by blast
+  proof (rule extensionalityI[OF ext(1) ext(4)])
+    fix x :: nat assume "x \<in> {..<m}"
+    then have x_lt: "x < m" by simp
+    hence lt: "x < 3 * ?c" by simp
+    have v1: "buf_lin_at m b1 x = l1 x"
+      using x_lt by (simp add: b1 buf_lin_at_def Let_def)
+    have v2: "buf_lin_at m b2 x = l2 x"
+      using x_lt by (simp add: b2 buf_lin_at_def Let_def)
+    from assms(1) lt have "buf_lin_at m b1 x = buf_lin_at m b2 x" by blast
     with v1 v2 show "l1 x = l2 x" by simp
   qed
   have hE: "h1 = h2"
-  proof (rule ext)
-    fix x :: 'c
-    have idx: "c_idx x < ?c" by (rule c_idx_lt_card)
-    hence lt: "?c + c_idx x < 3 * ?c" by linarith
-    have v1: "buf_lin_at b1 (?c + c_idx x) = h1 x"
-      using idx by (simp add: b1 buf_lin_at_def Let_def c_idx_in_range(2))
-    have v2: "buf_lin_at b2 (?c + c_idx x) = h2 x"
-      using idx by (simp add: b2 buf_lin_at_def Let_def c_idx_in_range(2))
-    from assms lt have "buf_lin_at b1 (?c + c_idx x) = buf_lin_at b2 (?c + c_idx x)" by blast
+  proof (rule extensionalityI[OF ext(2) ext(5)])
+    fix x :: nat assume "x \<in> {..<m}"
+    then have x_lt: "x < m" by simp
+    hence lt: "?c + x < 3 * ?c" by linarith
+    have v1: "buf_lin_at m b1 (?c + x) = h1 x"
+      using x_lt by (simp add: b1 buf_lin_at_def Let_def)
+    have v2: "buf_lin_at m b2 (?c + x) = h2 x"
+      using x_lt by (simp add: b2 buf_lin_at_def Let_def)
+    from assms(1) lt have "buf_lin_at m b1 (?c + x) = buf_lin_at m b2 (?c + x)" by blast
     with v1 v2 show "h1 x = h2 x" by simp
   qed
   have rE: "r1 = r2"
-  proof (rule ext)
-    fix x :: 'c
-    have idx: "c_idx x < ?c" by (rule c_idx_lt_card)
-    hence lt: "2 * ?c + c_idx x < 3 * ?c" by linarith
-    have v1: "buf_lin_at b1 (2 * ?c + c_idx x) = r1 x"
-      using idx by (simp add: b1 buf_lin_at_def Let_def c_idx_in_range(2))
-    have v2: "buf_lin_at b2 (2 * ?c + c_idx x) = r2 x"
-      using idx by (simp add: b2 buf_lin_at_def Let_def c_idx_in_range(2))
-    from assms lt have "buf_lin_at b1 (2 * ?c + c_idx x) = buf_lin_at b2 (2 * ?c + c_idx x)" by blast
+  proof (rule extensionalityI[OF ext(3) ext(6)])
+    fix x :: nat assume "x \<in> {..<m}"
+    then have x_lt: "x < m" by simp
+    hence lt: "2 * ?c + x < 3 * ?c" by linarith
+    have v1: "buf_lin_at m b1 (2 * ?c + x) = r1 x"
+      using x_lt by (simp add: b1 buf_lin_at_def Let_def)
+    have v2: "buf_lin_at m b2 (2 * ?c + x) = r2 x"
+      using x_lt by (simp add: b2 buf_lin_at_def Let_def)
+    from assms(1) lt have "buf_lin_at m b1 (2 * ?c + x) = buf_lin_at m b2 (2 * ?c + x)" by blast
     with v1 v2 show "r1 x = r2 x" by simp
   qed
   show ?thesis using b1 b2 lE hE rE by simp
@@ -2172,75 +2162,87 @@ text \<open>Per-block reads of \<open>buf_lin_at\<close>: the three thirds of th
   window read the left / home / right block respectively.\<close>
 
 lemma buf_lin_at_l:
-  fixes b :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "i < card (UNIV :: 'c set)"
-  shows "buf_lin_at b i = fst b ((enum_class.enum :: 'c list) ! i)"
+  fixes b :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "i < m"
+  shows "buf_lin_at m b i = fst b ([0..<m] ! i)"
   using assms by (simp add: buf_lin_at_def case_prod_beta Let_def)
 
 lemma buf_lin_at_h:
-  fixes b :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "card (UNIV :: 'c set) \<le> i" and "i < 2 * card (UNIV :: 'c set)"
-  shows "buf_lin_at b i = fst (snd b) ((enum_class.enum :: 'c list) ! (i - card (UNIV :: 'c set)))"
+  fixes b :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "m \<le> i" and "i < 2 * m"
+  shows "buf_lin_at m b i = fst (snd b) ([0..<m] ! (i - m))"
   using assms by (simp add: buf_lin_at_def case_prod_beta Let_def)
 
 lemma buf_lin_at_r:
-  fixes b :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "2 * card (UNIV :: 'c set) \<le> i" and "i < 3 * card (UNIV :: 'c set)"
-  shows "buf_lin_at b i = snd (snd b) ((enum_class.enum :: 'c list) ! (i - 2 * card (UNIV :: 'c set)))"
+  fixes b :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "2 * m \<le> i" and "i < 3 * m"
+  shows "buf_lin_at m b i = snd (snd b) ([0..<m] ! (i - 2 * m))"
   using assms by (simp add: buf_lin_at_def case_prod_beta Let_def)
 
 text \<open>Per-block determination from window reads over the block's third.\<close>
 
 lemma buf_left_window:
-  fixes b1 b2 :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "\<forall>i < card (UNIV :: 'c set). buf_lin_at b1 i = buf_lin_at b2 i"
+  fixes b1 b2 :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "\<forall>i < m. buf_lin_at m b1 i = buf_lin_at m b2 i"
+      and x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
   shows "fst b1 = fst b2"
-proof (rule ext)
-  fix x :: 'c
-  have idx: "c_idx x < card (UNIV :: 'c set)" by (rule c_idx_lt_card)
-  have "fst b1 x = buf_lin_at b1 (c_idx x)"
-    using idx by (simp add: buf_lin_at_l c_idx_in_range(2))
-  also have "\<dots> = buf_lin_at b2 (c_idx x)" using assms idx by blast
+proof (rule extensionalityI)
+  show "fst b1 \<in> extensional {..<m}" "fst b2 \<in> extensional {..<m}"
+    using x1 x2 by (simp_all add: ae_blocks_ext_def)
+next
+  fix x :: nat assume "x \<in> {..<m}"
+  then have x_lt: "x < m" by simp
+  have "fst b1 x = buf_lin_at m b1 x"
+    using x_lt by (simp add: buf_lin_at_l)
+  also have "\<dots> = buf_lin_at m b2 x" using assms(1) x_lt by blast
   also have "\<dots> = fst b2 x"
-    using idx by (simp add: buf_lin_at_l c_idx_in_range(2))
+    using x_lt by (simp add: buf_lin_at_l)
   finally show "fst b1 x = fst b2 x" .
 qed
 
 lemma buf_home_window:
-  fixes b1 b2 :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "\<forall>i. card (UNIV :: 'c set) \<le> i \<and> i < 2 * card (UNIV :: 'c set)
-                 \<longrightarrow> buf_lin_at b1 i = buf_lin_at b2 i"
+  fixes b1 b2 :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "\<forall>i. m \<le> i \<and> i < 2 * m
+                 \<longrightarrow> buf_lin_at m b1 i = buf_lin_at m b2 i"
+      and x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
   shows "fst (snd b1) = fst (snd b2)"
-proof (rule ext)
-  fix x :: 'c
-  let ?c = "card (UNIV :: 'c set)"
-  have idx: "c_idx x < ?c" by (rule c_idx_lt_card)
-  have lo: "?c \<le> ?c + c_idx x" by simp
-  have hi: "?c + c_idx x < 2 * ?c" using idx by linarith
-  have "fst (snd b1) x = buf_lin_at b1 (?c + c_idx x)"
-    using lo hi by (simp add: buf_lin_at_h c_idx_in_range(2))
-  also have "\<dots> = buf_lin_at b2 (?c + c_idx x)" using assms lo hi by blast
+proof (rule extensionalityI)
+  show "fst (snd b1) \<in> extensional {..<m}" "fst (snd b2) \<in> extensional {..<m}"
+    using x1 x2 by (simp_all add: ae_blocks_ext_def)
+next
+  fix x :: nat assume "x \<in> {..<m}"
+  then have x_lt: "x < m" by simp
+  let ?c = "m"
+  have lo: "?c \<le> ?c + x" by simp
+  have hi: "?c + x < 2 * ?c" using x_lt by linarith
+  have "fst (snd b1) x = buf_lin_at m b1 (?c + x)"
+    using lo hi x_lt by (simp add: buf_lin_at_h)
+  also have "\<dots> = buf_lin_at m b2 (?c + x)" using assms(1) lo hi by blast
   also have "\<dots> = fst (snd b2) x"
-    using lo hi by (simp add: buf_lin_at_h c_idx_in_range(2))
+    using lo hi x_lt by (simp add: buf_lin_at_h)
   finally show "fst (snd b1) x = fst (snd b2) x" .
 qed
 
 lemma buf_right_window:
-  fixes b1 b2 :: "(('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
-  assumes "\<forall>i. 2 * card (UNIV :: 'c set) \<le> i \<and> i < 3 * card (UNIV :: 'c set)
-                 \<longrightarrow> buf_lin_at b1 i = buf_lin_at b2 i"
+  fixes b1 b2 :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+  assumes "\<forall>i. 2 * m \<le> i \<and> i < 3 * m
+                 \<longrightarrow> buf_lin_at m b1 i = buf_lin_at m b2 i"
+      and x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
   shows "snd (snd b1) = snd (snd b2)"
-proof (rule ext)
-  fix x :: 'c
-  let ?c = "card (UNIV :: 'c set)"
-  have idx: "c_idx x < ?c" by (rule c_idx_lt_card)
-  have lo: "2 * ?c \<le> 2 * ?c + c_idx x" by simp
-  have hi: "2 * ?c + c_idx x < 3 * ?c" using idx by linarith
-  have "snd (snd b1) x = buf_lin_at b1 (2 * ?c + c_idx x)"
-    using lo hi by (simp add: buf_lin_at_r c_idx_in_range(2))
-  also have "\<dots> = buf_lin_at b2 (2 * ?c + c_idx x)" using assms lo hi by blast
+proof (rule extensionalityI)
+  show "snd (snd b1) \<in> extensional {..<m}" "snd (snd b2) \<in> extensional {..<m}"
+    using x1 x2 by (simp_all add: ae_blocks_ext_def)
+next
+  fix x :: nat assume "x \<in> {..<m}"
+  then have x_lt: "x < m" by simp
+  let ?c = "m"
+  have lo: "2 * ?c \<le> 2 * ?c + x" by simp
+  have hi: "2 * ?c + x < 3 * ?c" using x_lt by linarith
+  have "snd (snd b1) x = buf_lin_at m b1 (2 * ?c + x)"
+    using lo hi x_lt by (simp add: buf_lin_at_r)
+  also have "\<dots> = buf_lin_at m b2 (2 * ?c + x)" using assms(1) lo hi by blast
   also have "\<dots> = snd (snd b2) x"
-    using lo hi by (simp add: buf_lin_at_r c_idx_in_range(2))
+    using lo hi x_lt by (simp add: buf_lin_at_r)
   finally show "snd (snd b1) x = snd (snd b2) x" .
 qed
 
@@ -2249,21 +2251,25 @@ text \<open>Full-window inversion (\<open>pos \<ge> 2\<close>): the head and the
 
 lemma ae_window_invariant_determines:
   fixes tM :: "nat \<Rightarrow> 'a"
-  assumes h1: "ae_window_invariant tM nM bp1 b1 p_start"
-      and h2: "ae_window_invariant tM nM bp2 b2 p_start"
-  shows "bp1 = (bp2 :: ('c :: enum) bp) \<and> b1 = b2"
+  assumes h1: "ae_window_invariant m tM nM bp1 b1 p_start"
+      and h2: "ae_window_invariant m tM nM bp2 b2 p_start"
+  shows "bp1 = (bp2 :: bp) \<and> b1 = b2"
 proof
-  from h1 h2 have "nM = p_start + bp_linear bp1" "nM = p_start + bp_linear bp2"
+  from h1 h2 have "nM = p_start + bp_linear m bp1" "nM = p_start + bp_linear m bp2"
     unfolding ae_window_invariant_def by simp_all
-  hence "bp_linear bp1 = bp_linear bp2" by simp
-  thus "bp1 = bp2" by (rule bp_linear_inj)
+  hence "bp_linear m bp1 = bp_linear m bp2" by simp
+  moreover have "snd bp1 < m" "snd bp2 < m"
+    using h1 h2 unfolding ae_window_invariant_def by simp_all
+  ultimately show "bp1 = bp2" by (rule bp_linear_inj)
 next
   from h1 h2 have
-      "\<forall>i < 3 * card (UNIV :: 'c set). tM (p_start + i) = buf_lin_at b1 i"
-      "\<forall>i < 3 * card (UNIV :: 'c set). tM (p_start + i) = buf_lin_at b2 i"
+      "\<forall>i < 3 * m. tM (p_start + i) = buf_lin_at m b1 i"
+      "\<forall>i < 3 * m. tM (p_start + i) = buf_lin_at m b2 i"
     unfolding ae_window_invariant_def by simp_all
-  hence "\<forall>i < 3 * card (UNIV :: 'c set). buf_lin_at b1 i = buf_lin_at b2 i" by simp
-  thus "b1 = b2" by (rule buf_window_determines)
+  hence "\<forall>i < 3 * m. buf_lin_at m b1 i = buf_lin_at m b2 i" by simp
+  moreover have "ae_blocks_ext m b1" "ae_blocks_ext m b2"
+    using h1 h2 unfolding ae_window_invariant_def by simp_all
+  ultimately show "b1 = b2" by (rule buf_window_determines)
 qed
 
 text \<open>Boundary-position \<open>bp\<close> inversions: the head \<open>nM\<close> determines
@@ -2272,22 +2278,23 @@ text \<open>Boundary-position \<open>bp\<close> inversions: the head \<open>nM\<
   equation.  The three directions still land \<open>nM\<close> in disjoint ranges.\<close>
 
 lemma bp_le1_inj:
-  fixes bp1 bp2 :: "('c :: enum) bp" and nM :: nat
-  assumes A1: "case fst bp1 of AE_Left \<Rightarrow> snd bp1 = c_last \<and> nM = 0
-                 | AE_Home \<Rightarrow> nM = Suc (c_idx (snd bp1))
-                 | AE_Right \<Rightarrow> nM = Suc (card (UNIV :: 'c set) + c_idx (snd bp1))"
-      and A2: "case fst bp2 of AE_Left \<Rightarrow> snd bp2 = c_last \<and> nM = 0
-                 | AE_Home \<Rightarrow> nM = Suc (c_idx (snd bp2))
-                 | AE_Right \<Rightarrow> nM = Suc (card (UNIV :: 'c set) + c_idx (snd bp2))"
+  fixes bp1 bp2 :: "bp" and nM :: nat
+  assumes A1: "case fst bp1 of AE_Left \<Rightarrow> snd bp1 = c_last m \<and> nM = 0
+                 | AE_Home \<Rightarrow> nM = Suc (snd bp1)
+                 | AE_Right \<Rightarrow> nM = Suc (m + snd bp1)"
+      and A2: "case fst bp2 of AE_Left \<Rightarrow> snd bp2 = c_last m \<and> nM = 0
+                 | AE_Home \<Rightarrow> nM = Suc (snd bp2)
+                 | AE_Right \<Rightarrow> nM = Suc (m + snd bp2)"
+      and lt1: "snd bp1 < m" and lt2: "snd bp2 < m"
   shows "bp1 = bp2"
 proof -
   obtain d1 x1 where p1: "bp1 = (d1, x1)" by (cases bp1)
   obtain d2 x2 where p2: "bp2 = (d2, x2)" by (cases bp2)
-  have b1: "c_idx x1 < card (UNIV :: 'c set)" by (rule c_idx_lt_card)
-  have b2: "c_idx x2 < card (UNIV :: 'c set)" by (rule c_idx_lt_card)
+  have b1: "x1 < m" using lt1 p1 by simp
+  have b2: "x2 < m" using lt2 p2 by simp
   have "d1 = d2 \<and> x1 = x2"
     using A1[unfolded p1] A2[unfolded p2] b1 b2
-    by (cases d1; cases d2; simp; (linarith | blast intro: c_idx_inj))
+    by (cases d1; cases d2; simp; (linarith | blast))
   thus ?thesis using p1 p2 by simp
 qed
 
@@ -2297,49 +2304,53 @@ text \<open>Full inversion at \<open>pos = 1\<close>: every direction constrains
 
 lemma ae_window_invariant_le1_determines:
   fixes tM :: "nat \<Rightarrow> 'a"
-  assumes h1: "ae_window_invariant_le1 tM nM bp1 b1 le"
-      and h2: "ae_window_invariant_le1 tM nM bp2 b2 le"
-  shows "bp1 = (bp2 :: ('c :: enum) bp) \<and> b1 = b2"
+  assumes h1: "ae_window_invariant_le1 m tM nM bp1 b1 le"
+      and h2: "ae_window_invariant_le1 m tM nM bp2 b2 le"
+  shows "bp1 = (bp2 :: bp) \<and> b1 = b2"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
-  have a1: "case fst bp1 of AE_Left \<Rightarrow> snd bp1 = c_last \<and> nM = 0
-              | AE_Home \<Rightarrow> nM = Suc (c_idx (snd bp1))
-              | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp1))"
+  let ?c = "m"
+  have a1: "case fst bp1 of AE_Left \<Rightarrow> snd bp1 = c_last m \<and> nM = 0
+              | AE_Home \<Rightarrow> nM = Suc (snd bp1)
+              | AE_Right \<Rightarrow> nM = Suc (?c + snd bp1)"
     using h1 unfolding ae_window_invariant_le1_def by simp
-  have a2: "case fst bp2 of AE_Left \<Rightarrow> snd bp2 = c_last \<and> nM = 0
-              | AE_Home \<Rightarrow> nM = Suc (c_idx (snd bp2))
-              | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp2))"
+  have a2: "case fst bp2 of AE_Left \<Rightarrow> snd bp2 = c_last m \<and> nM = 0
+              | AE_Home \<Rightarrow> nM = Suc (snd bp2)
+              | AE_Right \<Rightarrow> nM = Suc (?c + snd bp2)"
     using h2 unfolding ae_window_invariant_le1_def by simp
-  have bp: "bp1 = bp2" by (rule bp_le1_inj[OF a1 a2])
-  have lefts: "fst b1 = LE_block le" "fst b2 = LE_block le"
+  have lt1: "snd bp1 < m" and lt2: "snd bp2 < m"
     using h1 h2 unfolding ae_window_invariant_le1_def by simp_all
-  have e1: "\<forall>i<2 * ?c. tM (Suc i) = buf_lin_at b1 (?c + i)"
+  have x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
+    using h1 h2 unfolding ae_window_invariant_le1_def by simp_all
+  have bp: "bp1 = bp2" by (rule bp_le1_inj[OF a1 a2 lt1 lt2])
+  have lefts: "fst b1 = LE_block m le" "fst b2 = LE_block m le"
+    using h1 h2 unfolding ae_window_invariant_le1_def by simp_all
+  have e1: "\<forall>i<2 * ?c. tM (Suc i) = buf_lin_at m b1 (?c + i)"
     using h1 unfolding ae_window_invariant_le1_def by simp
-  have e2: "\<forall>i<2 * ?c. tM (Suc i) = buf_lin_at b2 (?c + i)"
+  have e2: "\<forall>i<2 * ?c. tM (Suc i) = buf_lin_at m b2 (?c + i)"
     using h2 unfolding ae_window_invariant_le1_def by simp
   have home: "fst (snd b1) = fst (snd b2)"
-  proof (rule buf_home_window, intro allI impI)
+  proof (rule buf_home_window[OF _ x1 x2], intro allI impI)
     fix i assume "?c \<le> i \<and> i < 2 * ?c"
     then have i1: "?c \<le> i" and i2: "i < 2 * ?c" by auto
     from i2 have lt: "i - ?c < 2 * ?c" by linarith
     from i1 have eq: "?c + (i - ?c) = i" by linarith
-    from e1 lt have "tM (Suc (i - ?c)) = buf_lin_at b1 (?c + (i - ?c))" by blast
-    with eq have A: "tM (Suc (i - ?c)) = buf_lin_at b1 i" by simp
-    from e2 lt have "tM (Suc (i - ?c)) = buf_lin_at b2 (?c + (i - ?c))" by blast
-    with eq have B: "tM (Suc (i - ?c)) = buf_lin_at b2 i" by simp
-    from A B show "buf_lin_at b1 i = buf_lin_at b2 i" by simp
+    from e1 lt have "tM (Suc (i - ?c)) = buf_lin_at m b1 (?c + (i - ?c))" by blast
+    with eq have A: "tM (Suc (i - ?c)) = buf_lin_at m b1 i" by simp
+    from e2 lt have "tM (Suc (i - ?c)) = buf_lin_at m b2 (?c + (i - ?c))" by blast
+    with eq have B: "tM (Suc (i - ?c)) = buf_lin_at m b2 i" by simp
+    from A B show "buf_lin_at m b1 i = buf_lin_at m b2 i" by simp
   qed
   have right: "snd (snd b1) = snd (snd b2)"
-  proof (rule buf_right_window, intro allI impI)
+  proof (rule buf_right_window[OF _ x1 x2], intro allI impI)
     fix i assume "2 * ?c \<le> i \<and> i < 3 * ?c"
     then have i1: "2 * ?c \<le> i" and i2: "i < 3 * ?c" by auto
     from i2 have lt: "i - ?c < 2 * ?c" by linarith
     from i1 have eq: "?c + (i - ?c) = i" by linarith
-    from e1 lt have "tM (Suc (i - ?c)) = buf_lin_at b1 (?c + (i - ?c))" by blast
-    with eq have A: "tM (Suc (i - ?c)) = buf_lin_at b1 i" by simp
-    from e2 lt have "tM (Suc (i - ?c)) = buf_lin_at b2 (?c + (i - ?c))" by blast
-    with eq have B: "tM (Suc (i - ?c)) = buf_lin_at b2 i" by simp
-    from A B show "buf_lin_at b1 i = buf_lin_at b2 i" by simp
+    from e1 lt have "tM (Suc (i - ?c)) = buf_lin_at m b1 (?c + (i - ?c))" by blast
+    with eq have A: "tM (Suc (i - ?c)) = buf_lin_at m b1 i" by simp
+    from e2 lt have "tM (Suc (i - ?c)) = buf_lin_at m b2 (?c + (i - ?c))" by blast
+    with eq have B: "tM (Suc (i - ?c)) = buf_lin_at m b2 i" by simp
+    from A B show "buf_lin_at m b1 i = buf_lin_at m b2 i" by simp
   qed
   have "b1 = b2" using lefts home right by (cases b1; cases b2) auto
   with bp show ?thesis by simp
@@ -2355,16 +2366,16 @@ text \<open>General window inversion (all \<open>pos\<close>).  The home and rig
 
 lemma ae_window_invariant_general_determines:
   fixes tM :: "nat \<Rightarrow> 'a"
-  assumes h1: "ae_window_invariant_general tM nM bp1 b1 pos le"
-      and h2: "ae_window_invariant_general tM nM bp2 b2 pos le"
-  shows "fst (snd b1) = fst (snd (b2 :: (('c :: enum) \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)))
+  assumes h1: "ae_window_invariant_general m tM nM bp1 b1 pos le"
+      and h2: "ae_window_invariant_general m tM nM bp2 b2 pos le"
+  shows "fst (snd b1) = fst (snd (b2 :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
          \<and> snd (snd b1) = snd (snd b2)
          \<and> (pos \<noteq> 0 \<longrightarrow> bp1 = bp2 \<and> b1 = b2)"
 proof (cases "pos \<ge> 2")
   case True
-  have w1: "ae_window_invariant tM nM bp1 b1 ((pos - 2) * card (UNIV :: 'c set) + 1)"
+  have w1: "ae_window_invariant m tM nM bp1 b1 ((pos - 2) * m + 1)"
     using h1 True unfolding ae_window_invariant_general_def by simp
-  have w2: "ae_window_invariant tM nM bp2 b2 ((pos - 2) * card (UNIV :: 'c set) + 1)"
+  have w2: "ae_window_invariant m tM nM bp2 b2 ((pos - 2) * m + 1)"
     using h2 True unfolding ae_window_invariant_general_def by simp
   from ae_window_invariant_determines[OF w1 w2]
   have "bp1 = bp2" and "b1 = b2" by simp_all
@@ -2374,9 +2385,9 @@ next
   show ?thesis
   proof (cases "pos = 1")
     case True
-    have l1: "ae_window_invariant_le1 tM nM bp1 b1 le"
+    have l1: "ae_window_invariant_le1 m tM nM bp1 b1 le"
       using h1 True unfolding ae_window_invariant_general_def by simp
-    have l2: "ae_window_invariant_le1 tM nM bp2 b2 le"
+    have l2: "ae_window_invariant_le1 m tM nM bp2 b2 le"
       using h2 True unfolding ae_window_invariant_general_def by simp
     from ae_window_invariant_le1_determines[OF l1 l2]
     have "bp1 = bp2" and "b1 = b2" by simp_all
@@ -2384,28 +2395,30 @@ next
   next
     case False
     with \<open>\<not> 2 \<le> pos\<close> have pos0: "pos = 0" by simp
-    have l1: "ae_window_invariant_le0 tM nM bp1 b1 le"
+    have l1: "ae_window_invariant_le0 m tM nM bp1 b1 le"
       using h1 pos0 unfolding ae_window_invariant_general_def by simp
-    have l2: "ae_window_invariant_le0 tM nM bp2 b2 le"
+    have l2: "ae_window_invariant_le0 m tM nM bp2 b2 le"
       using h2 pos0 unfolding ae_window_invariant_general_def by simp
-    let ?c = "card (UNIV :: 'c set)"
-    have homes: "fst (snd b1) = LE_block le" "fst (snd b2) = LE_block le"
+    let ?c = "m"
+    have homes: "fst (snd b1) = LE_block m le" "fst (snd b2) = LE_block m le"
       using l1 l2 unfolding ae_window_invariant_le0_def by simp_all
-    have f1: "\<forall>i<?c. tM (Suc i) = buf_lin_at b1 (2 * ?c + i)"
+    have f1: "\<forall>i<?c. tM (Suc i) = buf_lin_at m b1 (2 * ?c + i)"
       using l1 unfolding ae_window_invariant_le0_def by simp
-    have f2: "\<forall>i<?c. tM (Suc i) = buf_lin_at b2 (2 * ?c + i)"
+    have f2: "\<forall>i<?c. tM (Suc i) = buf_lin_at m b2 (2 * ?c + i)"
       using l2 unfolding ae_window_invariant_le0_def by simp
+    have x1: "ae_blocks_ext m b1" and x2: "ae_blocks_ext m b2"
+      using l1 l2 unfolding ae_window_invariant_le0_def by simp_all
     have right: "snd (snd b1) = snd (snd b2)"
-    proof (rule buf_right_window, intro allI impI)
+    proof (rule buf_right_window[OF _ x1 x2], intro allI impI)
       fix i assume "2 * ?c \<le> i \<and> i < 3 * ?c"
       then have i1: "2 * ?c \<le> i" and i2: "i < 3 * ?c" by auto
       from i2 have lt: "i - 2 * ?c < ?c" by linarith
       from i1 have eq: "2 * ?c + (i - 2 * ?c) = i" by linarith
-      from f1 lt have "tM (Suc (i - 2 * ?c)) = buf_lin_at b1 (2 * ?c + (i - 2 * ?c))" by blast
-      with eq have A: "tM (Suc (i - 2 * ?c)) = buf_lin_at b1 i" by simp
-      from f2 lt have "tM (Suc (i - 2 * ?c)) = buf_lin_at b2 (2 * ?c + (i - 2 * ?c))" by blast
-      with eq have B: "tM (Suc (i - 2 * ?c)) = buf_lin_at b2 i" by simp
-      from A B show "buf_lin_at b1 i = buf_lin_at b2 i" by simp
+      from f1 lt have "tM (Suc (i - 2 * ?c)) = buf_lin_at m b1 (2 * ?c + (i - 2 * ?c))" by blast
+      with eq have A: "tM (Suc (i - 2 * ?c)) = buf_lin_at m b1 i" by simp
+      from f2 lt have "tM (Suc (i - 2 * ?c)) = buf_lin_at m b2 (2 * ?c + (i - 2 * ?c))" by blast
+      with eq have B: "tM (Suc (i - 2 * ?c)) = buf_lin_at m b2 i" by simp
+      from A B show "buf_lin_at m b1 i = buf_lin_at m b2 i" by simp
     qed
     from homes right pos0 show ?thesis by auto
   qed
@@ -2421,21 +2434,21 @@ text \<open>Per-tape lift of the window inversion: across the active tapes
 
 lemma ae_window_general_indexed_determines:
   fixes tM :: "nat \<Rightarrow> nat \<Rightarrow> 'a" and nM pos :: "nat \<Rightarrow> nat"
-    and bp1 bp2 :: "nat \<Rightarrow> ('c :: enum) bp"
-    and b1 b2 :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and bp1 bp2 :: "nat \<Rightarrow> bp"
+    and b1 b2 :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and le :: 'a and K :: nat
-  assumes h1: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+  assumes h1: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le"
-      and h2: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+      and h2: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le"
   shows "\<forall>k<K. fst (snd (b1 k)) = fst (snd (b2 k))
               \<and> snd (snd (b1 k)) = snd (snd (b2 k))
               \<and> (pos k \<noteq> 0 \<longrightarrow> bp1 k = bp2 k \<and> b1 k = b2 k)"
 proof (intro allI impI)
   fix k assume k: "k < K"
-  from h1 k have g1: "ae_window_invariant_general (tM k) (nM k)
+  from h1 k have g1: "ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le" by blast
-  from h2 k have g2: "ae_window_invariant_general (tM k) (nM k)
+  from h2 k have g2: "ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le" by blast
   show "fst (snd (b1 k)) = fst (snd (b2 k))
           \<and> snd (snd (b1 k)) = snd (snd (b2 k))
@@ -2461,34 +2474,34 @@ text \<open>The det-free replacement for \<open>ae_delta_ss4_ss5_functional\<clo
 
 lemma ae_ss4_ss5_shared_source_tape:
   fixes M :: "('q, 'a) ktm"
-    and c4 c5a c5b :: "('c :: enum \<Rightarrow> 'a,
-                        'q \<times> ('a, 'c) ae_stage) ktc_config"
-  assumes stepa: "(c4, c5a) \<in> ktm_step (ae_delta_ss4_ss5 M)"
-      and stepb: "(c4, c5b) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+    and c4 c5a c5b :: "(nat \<Rightarrow> 'a,
+                        'q \<times> 'a ae_stage) ktc_config"
+  assumes stepa: "(c4, c5a) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+      and stepb: "(c4, c5b) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
   shows "ktc_tape c5a = ktc_tape c5b \<and> ktc_pos c5a = ktc_pos c5b"
 proof -
   obtain s ts n where c4_eq: "c4 = KConfig s ts n" by (cases c4)
   from stepa c4_eq obtain s'a a'a da where
       a_eq: "c5a = KConfig s'a (\<lambda>k. (ts k)(n k := a'a k))
                                  (\<lambda>k. go_move (da k) (n k))"
-    and rela: "(s, (\<lambda>k. ts k (n k)), s'a, a'a, da) \<in> ae_delta_ss4_ss5 M"
+    and rela: "(s, (\<lambda>k. ts k (n k)), s'a, a'a, da) \<in> ae_delta_ss4_ss5 m M"
     by (auto elim: ktm_step.cases)
   from stepb c4_eq obtain s'b a'b db where
       b_eq: "c5b = KConfig s'b (\<lambda>k. (ts k)(n k := a'b k))
                                  (\<lambda>k. go_move (db k) (n k))"
-    and relb: "(s, (\<lambda>k. ts k (n k)), s'b, a'b, db) \<in> ae_delta_ss4_ss5 M"
+    and relb: "(s, (\<lambda>k. ts k (n k)), s'b, a'b, db) \<in> ae_delta_ss4_ss5 m M"
     by (auto elim: ktm_step.cases)
   \<comment> \<open>Write equals read and direction is canonical in the read, for
       both steps; hence both match the shared source.\<close>
   have wa: "a'a = (\<lambda>k. ts k (n k))"
    and dda: "da = (\<lambda>k. if k < k_ktm M
-                          then (if ts k (n k) = LE_block (le_ktm M)
+                          then (if ts k (n k) = LE_block m (le_ktm M)
                                   then MoveN else MoveL)
                           else MoveN)"
     using rela unfolding ae_delta_ss4_ss5_def by auto
   have wb: "a'b = (\<lambda>k. ts k (n k))"
    and ddb: "db = (\<lambda>k. if k < k_ktm M
-                          then (if ts k (n k) = LE_block (le_ktm M)
+                          then (if ts k (n k) = LE_block m (le_ktm M)
                                   then MoveN else MoveL)
                           else MoveN)"
     using relb unfolding ae_delta_ss4_ss5_def by auto
@@ -2508,23 +2521,23 @@ text \<open>At \<open>pos = 0\<close> the home block is uniformly \<open>LE_bloc
   induction is needed.\<close>
 
 lemma ae_ss5_action_indep_left:
-  "ae_ss5_action le a (l, LE_block le, r) ds
-     = ae_ss5_action le a (l', LE_block le, r) ds"
+  "ae_ss5_action m le a (l, LE_block m le, r) ds
+     = ae_ss5_action m le a (l', LE_block m le, r) ds"
   by simp
 
 lemma ae_ss6_action_indep_left:
-  "ae_ss6_action le a (l, LE_block le, r) ds
-     = ae_ss6_action le a (l', LE_block le, r) ds"
+  "ae_ss6_action m le a (l, LE_block m le, r) ds
+     = ae_ss6_action m le a (l', LE_block m le, r) ds"
   by simp
 
 lemma ae_ss7_action_indep_left:
-  "ae_ss7_action le a (l, LE_block le, r) ds
-     = ae_ss7_action le a (l', LE_block le, r) ds"
+  "ae_ss7_action m le a (l, LE_block m le, r) ds
+     = ae_ss7_action m le a (l', LE_block m le, r) ds"
   by simp
 
 lemma ae_ss8_action_indep_left:
-  "ae_ss8_action le a (l, LE_block le, r) ds
-     = ae_ss8_action le a (l', LE_block le, r) ds"
+  "ae_ss8_action m le a (l, LE_block m le, r) ds
+     = ae_ss8_action m le a (l', LE_block m le, r) ds"
   by simp
 
 text \<open>The boundary \<^emph>\<open>direction\<close> (the \<open>dest\<close> the actions read) does
@@ -2534,18 +2547,18 @@ text \<open>The boundary \<^emph>\<open>direction\<close> (the \<open>dest\<clos
   one genuine pos=0 don't-care).\<close>
 
 lemma ae_window_le0_dest_agree:
-  fixes bp1 bp2 :: "('c :: enum) bp"
-  assumes h1: "ae_window_invariant_le0 tM nM bp1 b1 le"
-      and h2: "ae_window_invariant_le0 tM nM bp2 b2 le"
+  fixes bp1 bp2 :: "bp"
+  assumes h1: "ae_window_invariant_le0 m tM nM bp1 b1 le"
+      and h2: "ae_window_invariant_le0 m tM nM bp2 b2 le"
   shows "fst bp1 = fst bp2 \<and> (fst bp1 \<noteq> AE_Home \<longrightarrow> bp1 = bp2)"
 proof -
   obtain d1 x1 where p1: "bp1 = (d1, x1)" by (cases bp1)
   obtain d2 x2 where p2: "bp2 = (d2, x2)" by (cases bp2)
   have key1: "(d1 = AE_Home \<longrightarrow> nM = 0)
-                \<and> (d1 = AE_Right \<longrightarrow> nM = Suc (c_idx x1)) \<and> d1 \<noteq> AE_Left"
+                \<and> (d1 = AE_Right \<longrightarrow> nM = Suc x1) \<and> d1 \<noteq> AE_Left"
     using h1[unfolded ae_window_invariant_le0_def p1] by (cases d1) auto
   have key2: "(d2 = AE_Home \<longrightarrow> nM = 0)
-                \<and> (d2 = AE_Right \<longrightarrow> nM = Suc (c_idx x2)) \<and> d2 \<noteq> AE_Left"
+                \<and> (d2 = AE_Right \<longrightarrow> nM = Suc x2) \<and> d2 \<noteq> AE_Left"
     using h2[unfolded ae_window_invariant_le0_def p2] by (cases d2) auto
   have move: "d1 = d2"
   proof (cases "nM = 0")
@@ -2563,10 +2576,10 @@ proof -
   proof
     assume nh: "d1 \<noteq> AE_Home"
     have r1: "d1 = AE_Right" using key1 nh by (cases d1) auto
-    have "nM = Suc (c_idx x1)" using key1 r1 by simp
-    moreover have "nM = Suc (c_idx x2)" using key2 move r1 by simp
-    ultimately have "c_idx x1 = c_idx x2" by simp
-    thus "x1 = x2" by (rule c_idx_inj)
+    have "nM = Suc x1" using key1 r1 by simp
+    moreover have "nM = Suc x2" using key2 move r1 by simp
+    ultimately have "x1 = x2" by simp
+    thus "x1 = x2" .
   qed
   show ?thesis using move full p1 p2 by simp
 qed
@@ -2579,18 +2592,18 @@ text \<open>The per-block agreement the SS5\<open>\<rightarrow>\<close>SS8 actio
   inversion + \<open>le0\<close>.\<close>
 
 definition ae_blk_agree ::
-  "'a \<Rightarrow> (('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-       \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)) \<Rightarrow> bool" where
-  "ae_blk_agree le b1 b2 \<longleftrightarrow>
+  "nat \<Rightarrow> 'a \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+       \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) \<Rightarrow> bool" where
+  "ae_blk_agree m le b1 b2 \<longleftrightarrow>
      fst (snd b1) = fst (snd b2)
      \<and> snd (snd b1) = snd (snd b2)
-     \<and> (fst (snd b1) \<noteq> LE_block le \<longrightarrow> fst b1 = fst b2)"
+     \<and> (fst (snd b1) \<noteq> LE_block m le \<longrightarrow> fst b1 = fst b2)"
 
 lemma ae_blk_agree_action_eq:
-  assumes "ae_blk_agree le b1 b2"
-  shows "b1 = b2 \<or> (fst (snd b1) = LE_block le \<and> fst (snd b2) = LE_block le
+  assumes "ae_blk_agree m le b1 b2"
+  shows "b1 = b2 \<or> (fst (snd b1) = LE_block m le \<and> fst (snd b2) = LE_block m le
                       \<and> snd (snd b1) = snd (snd b2))"
-proof (cases "fst (snd b1) = LE_block le")
+proof (cases "fst (snd b1) = LE_block m le")
   case False
   hence "fst b1 = fst b2" using assms unfolding ae_blk_agree_def by simp
   moreover have "fst (snd b1) = fst (snd b2)" "snd (snd b1) = snd (snd b2)"
@@ -2603,13 +2616,13 @@ next
 qed
 
 lemma ae_ss5_action_cong:
-  assumes "ae_blk_agree le b1 b2"
-  shows "ae_ss5_action le a b1 ds = ae_ss5_action le a b2 ds"
+  assumes "ae_blk_agree m le b1 b2"
+  shows "ae_ss5_action m le a b1 ds = ae_ss5_action m le a b2 ds"
   using ae_blk_agree_action_eq[OF assms]
 proof
   assume "b1 = b2" thus ?thesis by simp
 next
-  assume "fst (snd b1) = LE_block le \<and> fst (snd b2) = LE_block le
+  assume "fst (snd b1) = LE_block m le \<and> fst (snd b2) = LE_block m le
             \<and> snd (snd b1) = snd (snd b2)"
   thus ?thesis
     by (cases b1; cases b2)
@@ -2617,13 +2630,13 @@ next
 qed
 
 lemma ae_ss6_action_cong:
-  assumes "ae_blk_agree le b1 b2"
-  shows "ae_ss6_action le a b1 ds = ae_ss6_action le a b2 ds"
+  assumes "ae_blk_agree m le b1 b2"
+  shows "ae_ss6_action m le a b1 ds = ae_ss6_action m le a b2 ds"
   using ae_blk_agree_action_eq[OF assms]
 proof
   assume "b1 = b2" thus ?thesis by simp
 next
-  assume "fst (snd b1) = LE_block le \<and> fst (snd b2) = LE_block le
+  assume "fst (snd b1) = LE_block m le \<and> fst (snd b2) = LE_block m le
             \<and> snd (snd b1) = snd (snd b2)"
   thus ?thesis
     by (cases b1; cases b2)
@@ -2631,13 +2644,13 @@ next
 qed
 
 lemma ae_ss7_action_cong:
-  assumes "ae_blk_agree le b1 b2"
-  shows "ae_ss7_action le a b1 ds = ae_ss7_action le a b2 ds"
+  assumes "ae_blk_agree m le b1 b2"
+  shows "ae_ss7_action m le a b1 ds = ae_ss7_action m le a b2 ds"
   using ae_blk_agree_action_eq[OF assms]
 proof
   assume "b1 = b2" thus ?thesis by simp
 next
-  assume "fst (snd b1) = LE_block le \<and> fst (snd b2) = LE_block le
+  assume "fst (snd b1) = LE_block m le \<and> fst (snd b2) = LE_block m le
             \<and> snd (snd b1) = snd (snd b2)"
   thus ?thesis
     by (cases b1; cases b2)
@@ -2645,13 +2658,13 @@ next
 qed
 
 lemma ae_ss8_action_cong:
-  assumes "ae_blk_agree le b1 b2"
-  shows "ae_ss8_action le a b1 ds = ae_ss8_action le a b2 ds"
+  assumes "ae_blk_agree m le b1 b2"
+  shows "ae_ss8_action m le a b1 ds = ae_ss8_action m le a b2 ds"
   using ae_blk_agree_action_eq[OF assms]
 proof
   assume "b1 = b2" thus ?thesis by simp
 next
-  assume "fst (snd b1) = LE_block le \<and> fst (snd b2) = LE_block le
+  assume "fst (snd b1) = LE_block m le \<and> fst (snd b2) = LE_block m le
             \<and> snd (snd b1) = snd (snd b2)"
   thus ?thesis
     by (cases b1; cases b2)
@@ -2668,15 +2681,15 @@ text \<open>Config-level SS5\<open>\<rightarrow>\<close>SS6 congruence: two conf
 
 lemma ae_ss5_ss6_cong:
   fixes M :: "('q, 'a) ktm"
-    and c1 c2 c1' c2' :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c1 c2 c1' c2' :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c1 = ktc_tape c2"
       and pos:  "ktc_pos c1 = ktc_pos c2"
       and st1:  "ktc_state c1 = (q, ofs1, buf1, dest, SS5)"
       and st2:  "ktc_state c2 = (q, ofs2, buf2, dest, SS5)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
-      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss5_ss6 M)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
+      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss5_ss6 m M)"
   shows "ktc_tape c1' = ktc_tape c2' \<and> ktc_pos c1' = ktc_pos c2'
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS6)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS6)"
@@ -2689,36 +2702,36 @@ proof -
       c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
                                  (\<lambda>k. go_move (d1 k) (n k))"
     and rel1: "((q, ofs1, buf1, dest, SS5), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss5_ss6 M"
+                s1', a'1, d1) \<in> ae_delta_ss5_ss6 m M"
     by (auto elim: ktm_step.cases)
   from s2[unfolded c2d] obtain s2' a'2 d2 where
       c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
                                  (\<lambda>k. go_move (d2 k) (n k))"
     and rel2: "((q, ofs2, buf2, dest, SS5), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss5_ss6 M"
+                s2', a'2, d2) \<in> ae_delta_ss5_ss6 m M"
     by (auto elim: ktm_step.cases)
   have e1: "s1' = (q, ofs1, buf1, dest, SS6)"
     and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss5_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss5_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss5_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss5_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
                           else MoveN)"
     using rel1 unfolding ae_delta_ss5_ss6_def by auto
   have e2: "s2' = (q, ofs2, buf2, dest, SS6)"
     and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss5_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss5_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss5_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss5_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
                           else MoveN)"
     using rel2 unfolding ae_delta_ss5_ss6_def by auto
-  have act: "\<And>k. ae_ss5_action (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss5_action (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss5_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
+                  = ae_ss5_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
     by (rule ae_ss5_action_cong[OF blk[rule_format]])
   have "a'1 = a'2"
     by (rule ext) (simp add: a1 a2 act)
@@ -2729,15 +2742,15 @@ qed
 
 lemma ae_ss6_ss7_cong:
   fixes M :: "('q, 'a) ktm"
-    and c1 c2 c1' c2' :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c1 c2 c1' c2' :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c1 = ktc_tape c2"
       and pos:  "ktc_pos c1 = ktc_pos c2"
       and st1:  "ktc_state c1 = (q, ofs1, buf1, dest, SS6)"
       and st2:  "ktc_state c2 = (q, ofs2, buf2, dest, SS6)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
-      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss6_ss7 M)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
+      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss6_ss7 m M)"
   shows "ktc_tape c1' = ktc_tape c2' \<and> ktc_pos c1' = ktc_pos c2'
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS7)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS7)"
@@ -2750,36 +2763,36 @@ proof -
       c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
                                  (\<lambda>k. go_move (d1 k) (n k))"
     and rel1: "((q, ofs1, buf1, dest, SS6), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss6_ss7 M"
+                s1', a'1, d1) \<in> ae_delta_ss6_ss7 m M"
     by (auto elim: ktm_step.cases)
   from s2[unfolded c2d] obtain s2' a'2 d2 where
       c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
                                  (\<lambda>k. go_move (d2 k) (n k))"
     and rel2: "((q, ofs2, buf2, dest, SS6), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss6_ss7 M"
+                s2', a'2, d2) \<in> ae_delta_ss6_ss7 m M"
     by (auto elim: ktm_step.cases)
   have e1: "s1' = (q, ofs1, buf1, dest, SS7)"
     and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss6_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss6_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss6_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss6_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
                           else MoveN)"
     using rel1 unfolding ae_delta_ss6_ss7_def by auto
   have e2: "s2' = (q, ofs2, buf2, dest, SS7)"
     and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss6_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss6_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss6_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss6_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
                           else MoveN)"
     using rel2 unfolding ae_delta_ss6_ss7_def by auto
-  have act: "\<And>k. ae_ss6_action (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss6_action (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss6_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
+                  = ae_ss6_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
     by (rule ae_ss6_action_cong[OF blk[rule_format]])
   have "a'1 = a'2"
     by (rule ext) (simp add: a1 a2 act)
@@ -2790,15 +2803,15 @@ qed
 
 lemma ae_ss7_ss8_cong:
   fixes M :: "('q, 'a) ktm"
-    and c1 c2 c1' c2' :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c1 c2 c1' c2' :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c1 = ktc_tape c2"
       and pos:  "ktc_pos c1 = ktc_pos c2"
       and st1:  "ktc_state c1 = (q, ofs1, buf1, dest, SS7)"
       and st2:  "ktc_state c2 = (q, ofs2, buf2, dest, SS7)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
-      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss7_ss8 M)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
+      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss7_ss8 m M)"
   shows "ktc_tape c1' = ktc_tape c2' \<and> ktc_pos c1' = ktc_pos c2'
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS8)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS8)"
@@ -2811,36 +2824,36 @@ proof -
       c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
                                  (\<lambda>k. go_move (d1 k) (n k))"
     and rel1: "((q, ofs1, buf1, dest, SS7), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss7_ss8 M"
+                s1', a'1, d1) \<in> ae_delta_ss7_ss8 m M"
     by (auto elim: ktm_step.cases)
   from s2[unfolded c2d] obtain s2' a'2 d2 where
       c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
                                  (\<lambda>k. go_move (d2 k) (n k))"
     and rel2: "((q, ofs2, buf2, dest, SS7), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss7_ss8 M"
+                s2', a'2, d2) \<in> ae_delta_ss7_ss8 m M"
     by (auto elim: ktm_step.cases)
   have e1: "s1' = (q, ofs1, buf1, dest, SS8)"
     and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss7_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss7_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss7_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss7_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
                           else MoveN)"
     using rel1 unfolding ae_delta_ss7_ss8_def by auto
   have e2: "s2' = (q, ofs2, buf2, dest, SS8)"
     and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss7_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss7_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss7_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss7_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
                           else MoveN)"
     using rel2 unfolding ae_delta_ss7_ss8_def by auto
-  have act: "\<And>k. ae_ss7_action (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss7_action (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss7_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
+                  = ae_ss7_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
     by (rule ae_ss7_action_cong[OF blk[rule_format]])
   have "a'1 = a'2"
     by (rule ext) (simp add: a1 a2 act)
@@ -2857,16 +2870,16 @@ text \<open>The closing SS8\<open>\<rightarrow>\<close>SS1 step also resets \<op
 
 lemma ae_ss8_ss1_cong:
   fixes M :: "('q, 'a) ktm"
-    and c1 c2 c1' c2' :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c1 c2 c1' c2' :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c1 = ktc_tape c2"
       and pos:  "ktc_pos c1 = ktc_pos c2"
       and st1:  "ktc_state c1 = (q, ofs1, buf1, dest, SS8)"
       and st2:  "ktc_state c2 = (q, ofs2, buf2, dest, SS8)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
       and qnh:  "q \<notin> {t_ktm M, r_ktm M}"
-      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
   shows "ktc_tape c1' = ktc_tape c2' \<and> ktc_pos c1' = ktc_pos c2'
          \<and> ktc_state c1' = (q, ofs1, buf1, init_dest, SS1)
          \<and> ktc_state c2' = (q, ofs2, buf2, init_dest, SS1)"
@@ -2879,36 +2892,36 @@ proof -
       c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
                                  (\<lambda>k. go_move (d1 k) (n k))"
     and rel1: "((q, ofs1, buf1, dest, SS8), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss8_ss1 M"
+                s1', a'1, d1) \<in> ae_delta_ss8_ss1 m M"
     by (auto elim: ktm_step.cases)
   from s2[unfolded c2d] obtain s2' a'2 d2 where
       c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
                                  (\<lambda>k. go_move (d2 k) (n k))"
     and rel2: "((q, ofs2, buf2, dest, SS8), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss8_ss1 M"
+                s2', a'2, d2) \<in> ae_delta_ss8_ss1 m M"
     by (auto elim: ktm_step.cases)
   have e1: "s1' = (q, ofs1, buf1, init_dest, SS1)"
     and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
                           else MoveN)"
     using rel1 qnh unfolding ae_delta_ss8_ss1_def by auto
   have e2: "s2' = (q, ofs2, buf2, init_dest, SS1)"
     and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
                           else MoveN)"
     using rel2 qnh unfolding ae_delta_ss8_ss1_def by auto
-  have act: "\<And>k. ae_ss8_action (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss8_action (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
+                  = ae_ss8_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
     by (rule ae_ss8_action_cong[OF blk[rule_format]])
   have "a'1 = a'2"
     by (rule ext) (simp add: a1 a2 act)
@@ -2927,22 +2940,22 @@ text \<open>Chaining the four congruences through the macro-cycle tail
 
 lemma ae_ss5_ss8_segment_cong:
   fixes M :: "('q, 'a) ktm"
-    and c5a c5b ca cb :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c5a c5b ca cb :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c5a = ktc_tape c5b"
       and pos:  "ktc_pos c5a = ktc_pos c5b"
       and st1:  "ktc_state c5a = (q, ofs1, buf1, dest, SS5)"
       and st2:  "ktc_state c5b = (q, ofs2, buf2, dest, SS5)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
       and qnh:  "q \<notin> {t_ktm M, r_ktm M}"
-      and a56:  "(c5a, d6a) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and a67:  "(d6a, d7a) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and a78:  "(d7a, d8a) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and a81:  "(d8a, ca)  \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and b56:  "(c5b, d6b) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and b67:  "(d6b, d7b) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and b78:  "(d7b, d8b) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and b81:  "(d8b, cb)  \<in> ktm_step (ae_delta_ss8_ss1 M)"
+      and a56:  "(c5a, d6a) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and a67:  "(d6a, d7a) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and a78:  "(d7a, d8a) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and a81:  "(d8a, ca)  \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and b56:  "(c5b, d6b) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and b67:  "(d6b, d7b) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and b78:  "(d7b, d8b) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and b81:  "(d8b, cb)  \<in> ktm_step (ae_delta_ss8_ss1 m M)"
   shows "ktc_tape ca = ktc_tape cb \<and> ktc_pos ca = ktc_pos cb
          \<and> ktc_state ca = (q, ofs1, buf1, init_dest, SS1)
          \<and> ktc_state cb = (q, ofs2, buf2, init_dest, SS1)"
@@ -2975,16 +2988,16 @@ text \<open>The \<open>ae_simulates\<close> transfer (the congruence that closes
   \<open>buf\<close> nor \<open>dest\<close>.\<close>
 
 lemma ae_decode_pos_eq_0:
-  "ae_decode_pos s i = 0 \<Longrightarrow> s = 0"
+  "ae_decode_pos m s i = 0 \<Longrightarrow> s = 0"
   by (simp add: ae_decode_pos_def split: if_splits)
 
-lemma ae_decode_pos_zero_eq: "ae_decode_pos 0 i = 0"
+lemma ae_decode_pos_zero_eq: "ae_decode_pos m 0 i = 0"
   by (simp add: ae_decode_pos_def)
 
 lemma ae_simulates_transfer:
   fixes M :: "('q, 'a) ktm" and cM :: "('a, 'q) ktc_config"
-    and c'' c''' :: "('c :: enum \<Rightarrow> 'a, 'q \<times> ('a, 'c) ae_stage) ktc_config"
-  assumes sim':   "ae_simulates M cM c'''"
+    and c'' c''' :: "(nat \<Rightarrow> 'a, 'q \<times> 'a ae_stage) ktc_config"
+  assumes sim':   "ae_simulates m M cM c'''"
       and cM_inQ: "ktc_state cM \<in> Q_ktm M"
       and cM_nt:  "ktc_state cM \<noteq> t_ktm M"
       and cM_nr:  "ktc_state cM \<noteq> r_ktm M"
@@ -2994,46 +3007,46 @@ lemma ae_simulates_transfer:
       and st3:    "ktc_state c''' = (q, ofs2, buf2, init_dest, SS1)"
       and qnh:    "q \<notin> {t_ktm M, r_ktm M}"
       and ofsh:   "\<forall>k<k_ktm M. ktc_pos cM k = 0 \<or> ofs1 k = ofs2 k"
-      and gam:    "ae_tape_in_gamma_block M c''"
-  shows "ae_simulates M cM c''"
+      and gam:    "ae_tape_in_gamma_block m M c''"
+  shows "ae_simulates m M cM c''"
 proof -
   obtain qM' ofs buf dest where
       ust: "ktc_state c''' = (qM', ofs, buf, dest, SS1)"
     and qeq: "ktc_state cM = qM'"
-    and corr: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+    and corr: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                             (ktc_tape cM k) (ktc_tape c''' k)"
     and dec0: "\<forall>k<k_ktm M. ktc_pos cM k
-                            = ae_decode_pos (ktc_pos c''' k) (ofs k)"
+                            = ae_decode_pos m (ktc_pos c''' k) (ofs k)"
     by (rule ae_forward_stage_unpack_sim[OF sim' cM_inQ cM_nt cM_nr])
   from ust st3 have qM'eq: "qM' = q" and ofeq: "ofs = ofs2" by auto
   have dec: "\<forall>k<k_ktm M. ktc_pos cM k
-                          = ae_decode_pos (ktc_pos c''' k) (ofs2 k)"
+                          = ae_decode_pos m (ktc_pos c''' k) (ofs2 k)"
     using dec0 ofeq by simp
-  have corr2: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+  have corr2: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                             (ktc_tape cM k) (ktc_tape c'' k)"
     using corr tape by simp
   have qeq2: "ktc_state cM = q" using qeq qM'eq by simp
   have dec2: "\<forall>k<k_ktm M. ktc_pos cM k
-                           = ae_decode_pos (ktc_pos c'' k) (ofs1 k)"
+                           = ae_decode_pos m (ktc_pos c'' k) (ofs1 k)"
   proof (intro allI impI)
     fix k assume k: "k < k_ktm M"
-    have d3: "ktc_pos cM k = ae_decode_pos (ktc_pos c''' k) (ofs2 k)"
+    have d3: "ktc_pos cM k = ae_decode_pos m (ktc_pos c''' k) (ofs2 k)"
       by (rule dec[rule_format, OF k])
     have ppos: "ktc_pos c'' k = ktc_pos c''' k" using pos by simp
-    show "ktc_pos cM k = ae_decode_pos (ktc_pos c'' k) (ofs1 k)"
+    show "ktc_pos cM k = ae_decode_pos m (ktc_pos c'' k) (ofs1 k)"
     proof (cases "ktc_pos cM k = 0")
       case True
-      have "ae_decode_pos (ktc_pos c''' k) (ofs2 k) = 0"
+      have "ae_decode_pos m (ktc_pos c''' k) (ofs2 k) = 0"
         using d3[symmetric] True by simp
       from ae_decode_pos_eq_0[OF this] have "ktc_pos c''' k = 0" .
-      hence "ae_decode_pos (ktc_pos c'' k) (ofs1 k) = 0"
+      hence "ae_decode_pos m (ktc_pos c'' k) (ofs1 k) = 0"
         using ppos by (simp add: ae_decode_pos_zero_eq)
       thus ?thesis using True by simp
     next
       case False
       from ofsh[rule_format, OF k] False have "ofs1 k = ofs2 k" by simp
-      hence "ae_decode_pos (ktc_pos c'' k) (ofs1 k)
-               = ae_decode_pos (ktc_pos c''' k) (ofs2 k)"
+      hence "ae_decode_pos m (ktc_pos c'' k) (ofs1 k)
+               = ae_decode_pos m (ktc_pos c''' k) (ofs2 k)"
         using ppos by simp
       thus ?thesis using d3 by simp
     qed
@@ -3055,31 +3068,31 @@ text \<open>The bridge from the window inversion to the segment congruence's
 
 lemma ae_ss5_window_blk_dest_agree:
   fixes tM :: "nat \<Rightarrow> nat \<Rightarrow> 'a" and nM pos :: "nat \<Rightarrow> nat"
-    and bp1 bp2 :: "nat \<Rightarrow> ('c :: enum) bp"
-    and b1 b2 :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and bp1 bp2 :: "nat \<Rightarrow> bp"
+    and b1 b2 :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and le :: 'a and K :: nat
-  assumes h1: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+  assumes h1: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le"
-      and h2: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+      and h2: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le"
-  shows "(\<forall>k<K. ae_blk_agree le (b1 k) (b2 k))
+  shows "(\<forall>k<K. ae_blk_agree m le (b1 k) (b2 k))
          \<and> (\<forall>k<K. fst (bp1 k) = fst (bp2 k))"
 proof (intro conjI allI impI)
   fix k assume k: "k < K"
-  from h1 k have g1: "ae_window_invariant_general (tM k) (nM k)
+  from h1 k have g1: "ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le" by blast
-  from h2 k have g2: "ae_window_invariant_general (tM k) (nM k)
+  from h2 k have g2: "ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le" by blast
   from ae_window_invariant_general_determines[OF g1 g2]
   have hr1: "fst (snd (b1 k)) = fst (snd (b2 k))"
    and hr2: "snd (snd (b1 k)) = snd (snd (b2 k))"
    and full: "pos k \<noteq> 0 \<longrightarrow> bp1 k = bp2 k \<and> b1 k = b2 k" by simp_all
-  show "ae_blk_agree le (b1 k) (b2 k)"
+  show "ae_blk_agree m le (b1 k) (b2 k)"
   proof (cases "pos k = 0")
     case True
-    have le0_1: "ae_window_invariant_le0 (tM k) (nM k) (bp1 k) (b1 k) le"
+    have le0_1: "ae_window_invariant_le0 m (tM k) (nM k) (bp1 k) (b1 k) le"
       using g1 True unfolding ae_window_invariant_general_def by simp
-    have "fst (snd (b1 k)) = LE_block le"
+    have "fst (snd (b1 k)) = LE_block m le"
       using le0_1 unfolding ae_window_invariant_le0_def by simp
     thus ?thesis using hr1 hr2 unfolding ae_blk_agree_def by simp
   next
@@ -3089,16 +3102,16 @@ proof (intro conjI allI impI)
   qed
 next
   fix k assume k: "k < K"
-  from h1 k have g1: "ae_window_invariant_general (tM k) (nM k)
+  from h1 k have g1: "ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le" by blast
-  from h2 k have g2: "ae_window_invariant_general (tM k) (nM k)
+  from h2 k have g2: "ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le" by blast
   show "fst (bp1 k) = fst (bp2 k)"
   proof (cases "pos k = 0")
     case True
-    have le0_1: "ae_window_invariant_le0 (tM k) (nM k) (bp1 k) (b1 k) le"
+    have le0_1: "ae_window_invariant_le0 m (tM k) (nM k) (bp1 k) (b1 k) le"
       using g1 True unfolding ae_window_invariant_general_def by simp
-    have le0_2: "ae_window_invariant_le0 (tM k) (nM k) (bp2 k) (b2 k) le"
+    have le0_2: "ae_window_invariant_le0 m (tM k) (nM k) (bp2 k) (b2 k) le"
       using g2 True unfolding ae_window_invariant_general_def by simp
     from ae_window_le0_dest_agree[OF le0_1 le0_2] show ?thesis by simp
   next
@@ -3118,19 +3131,19 @@ text \<open>Halt branch of the closing SS8\<open>\<rightarrow>\<close>SS1 step. 
 
 lemma ae_ss8_ss1_cong_halt:
   fixes M :: "('q, 'a) ktm"
-    and c1 c2 c1' c2' :: "('c :: enum \<Rightarrow> 'a,
-                           'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c1 c2 c1' c2' :: "(nat \<Rightarrow> 'a,
+                           'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c1 = ktc_tape c2"
       and pos:  "ktc_pos c1 = ktc_pos c2"
       and st1:  "ktc_state c1 = (q, ofs1, buf1, dest, SS8)"
       and st2:  "ktc_state c2 = (q, ofs2, buf2, dest, SS8)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
       and qh:   "q \<in> {t_ktm M, r_ktm M}"
-      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+      and s1:   "(c1, c1') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and s2:   "(c2, c2') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
   shows "ktc_tape c1' = ktc_tape c2' \<and> ktc_pos c1' = ktc_pos c2'
-         \<and> ktc_state c1' = (q, init_stage (le_ktm M))
-         \<and> ktc_state c2' = (q, init_stage (le_ktm M))"
+         \<and> ktc_state c1' = (q, init_stage m (le_ktm M))
+         \<and> ktc_state c2' = (q, init_stage m (le_ktm M))"
 proof -
   obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS8) ts n"
     using st1 by (cases c1) auto
@@ -3140,36 +3153,36 @@ proof -
       c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
                                  (\<lambda>k. go_move (d1 k) (n k))"
     and rel1: "((q, ofs1, buf1, dest, SS8), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss8_ss1 M"
+                s1', a'1, d1) \<in> ae_delta_ss8_ss1 m M"
     by (auto elim: ktm_step.cases)
   from s2[unfolded c2d] obtain s2' a'2 d2 where
       c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
                                  (\<lambda>k. go_move (d2 k) (n k))"
     and rel2: "((q, ofs2, buf2, dest, SS8), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss8_ss1 M"
+                s2', a'2, d2) \<in> ae_delta_ss8_ss1 m M"
     by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, init_stage (le_ktm M))"
+  have e1: "s1' = (q, init_stage m (le_ktm M))"
     and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf1 k) (dest k))
                           else MoveN)"
     using rel1 qh unfolding ae_delta_ss8_ss1_def by auto
-  have e2: "s2' = (q, init_stage (le_ktm M))"
+  have e2: "s2' = (q, init_stage m (le_ktm M))"
     and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
-                          else bl_block (bl_ktm M))"
+                          else bl_block m (bl_ktm M))"
     and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action (le_ktm M) (ts k (n k))
+                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
                                       (buf2 k) (dest k))
                           else MoveN)"
     using rel2 qh unfolding ae_delta_ss8_ss1_def by auto
-  have act: "\<And>k. ae_ss8_action (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss8_action (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
+                  = ae_ss8_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
     by (rule ae_ss8_action_cong[OF blk[rule_format]])
   have "a'1 = a'2"
     by (rule ext) (simp add: a1 a2 act)
@@ -3187,19 +3200,19 @@ text \<open>Halt-agnostic prefix of the macro-cycle tail: chaining the three
 
 lemma ae_ss5_ss8_segment_to_ss8:
   fixes M :: "('q, 'a) ktm"
-    and c5a c5b c8a c8b :: "('c :: enum \<Rightarrow> 'a,
-                            'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c5a c5b c8a c8b :: "(nat \<Rightarrow> 'a,
+                            'q \<times> 'a ae_stage) ktc_config"
   assumes tape: "ktc_tape c5a = ktc_tape c5b"
       and pos:  "ktc_pos c5a = ktc_pos c5b"
       and st1:  "ktc_state c5a = (q, ofs1, buf1, dest, SS5)"
       and st2:  "ktc_state c5b = (q, ofs2, buf2, dest, SS5)"
-      and blk:  "\<forall>k. ae_blk_agree (le_ktm M) (buf1 k) (buf2 k)"
-      and a56:  "(c5a, d6a) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and a67:  "(d6a, d7a) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and a78:  "(d7a, c8a) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and b56:  "(c5b, d6b) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and b67:  "(d6b, d7b) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and b78:  "(d7b, c8b) \<in> ktm_step (ae_delta_ss7_ss8 M)"
+      and blk:  "\<forall>k. ae_blk_agree m (le_ktm M) (buf1 k) (buf2 k)"
+      and a56:  "(c5a, d6a) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and a67:  "(d6a, d7a) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and a78:  "(d7a, c8a) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and b56:  "(c5b, d6b) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and b67:  "(d6b, d7b) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and b78:  "(d7b, c8b) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
   shows "ktc_tape c8a = ktc_tape c8b \<and> ktc_pos c8a = ktc_pos c8b
          \<and> ktc_state c8a = (q, ofs1, buf1, dest, SS8)
          \<and> ktc_state c8b = (q, ofs2, buf2, dest, SS8)"
@@ -3227,21 +3240,21 @@ text \<open>Halt-case \<open>ae_simulates\<close> transfer.  When the simulated 
 
 lemma ae_simulates_transfer_halt:
   fixes M :: "('q, 'a) ktm" and cM :: "('a, 'q) ktc_config"
-    and c'' c''' :: "('c :: enum \<Rightarrow> 'a, 'q \<times> ('a, 'c) ae_stage) ktc_config"
-  assumes sim':    "ae_simulates M cM c'''"
+    and c'' c''' :: "(nat \<Rightarrow> 'a, 'q \<times> 'a ae_stage) ktc_config"
+  assumes sim':    "ae_simulates m M cM c'''"
       and cM_halt: "ktc_state cM \<in> {t_ktm M, r_ktm M}"
       and tape:    "ktc_tape c'' = ktc_tape c'''"
-      and st2:     "ktc_state c'' = (ktc_state cM, init_stage (le_ktm M))"
-      and gam:     "ae_tape_in_gamma_block M c''"
-  shows "ae_simulates M cM c''"
+      and st2:     "ktc_state c'' = (ktc_state cM, init_stage m (le_ktm M))"
+      and gam:     "ae_tape_in_gamma_block m M c''"
+  shows "ae_simulates m M cM c''"
 proof -
   obtain qM' ofs buf dest idx where
       ust: "ktc_state c''' = (qM', ofs, buf, dest, idx)"
     and qeq: "ktc_state cM = qM'"
-    and corr: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+    and corr: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                             (ktc_tape cM k) (ktc_tape c''' k)"
     by (rule ae_simulates_state_disjunction[OF sim'])
-  have corr2: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+  have corr2: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                             (ktc_tape cM k) (ktc_tape c'' k)"
     using corr tape by simp
   show ?thesis
@@ -3262,19 +3275,19 @@ text \<open>The offset-agreement bridge (the non-halt transfer's \<open>ofsh\<cl
 
 lemma ae_ss5_window_ofs_agree:
   fixes tM :: "nat \<Rightarrow> nat \<Rightarrow> 'a" and nM pos :: "nat \<Rightarrow> nat"
-    and bp1 bp2 :: "nat \<Rightarrow> ('c :: enum) bp"
-    and b1 b2 :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and bp1 bp2 :: "nat \<Rightarrow> bp"
+    and b1 b2 :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and le :: 'a and K :: nat
-  assumes h1: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+  assumes h1: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le"
-      and h2: "\<forall>k<K. ae_window_invariant_general (tM k) (nM k)
+      and h2: "\<forall>k<K. ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le"
   shows "\<forall>k<K. nM k = 0 \<or> snd (bp1 k) = snd (bp2 k)"
 proof (intro allI impI)
   fix k assume k: "k < K"
-  from h1 k have g1: "ae_window_invariant_general (tM k) (nM k)
+  from h1 k have g1: "ae_window_invariant_general m (tM k) (nM k)
                           (bp1 k) (b1 k) (pos k) le" by blast
-  from h2 k have g2: "ae_window_invariant_general (tM k) (nM k)
+  from h2 k have g2: "ae_window_invariant_general m (tM k) (nM k)
                           (bp2 k) (b2 k) (pos k) le" by blast
   show "nM k = 0 \<or> snd (bp1 k) = snd (bp2 k)"
   proof (cases "pos k = 0")
@@ -3284,9 +3297,9 @@ proof (intro allI impI)
     thus ?thesis by simp
   next
     case True
-    have le0_1: "ae_window_invariant_le0 (tM k) (nM k) (bp1 k) (b1 k) le"
+    have le0_1: "ae_window_invariant_le0 m (tM k) (nM k) (bp1 k) (b1 k) le"
       using g1 True unfolding ae_window_invariant_general_def by simp
-    have le0_2: "ae_window_invariant_le0 (tM k) (nM k) (bp2 k) (b2 k) le"
+    have le0_2: "ae_window_invariant_le0 m (tM k) (nM k) (bp2 k) (b2 k) le"
       using g2 True unfolding ae_window_invariant_general_def by simp
     from ae_window_le0_dest_agree[OF le0_1 le0_2]
     have full: "fst (bp1 k) \<noteq> AE_Home \<longrightarrow> bp1 k = bp2 k"
@@ -3323,43 +3336,43 @@ text \<open>Integration prototype (non-halt branch).  This is the
 
 lemma nae_sim_proto_nonhalt:
   fixes M :: "('q, 'a) ktm" and cM_new :: "('a, 'q) ktc_config"
-    and c3 c4 c5 c6 c7 c'' :: "('c :: enum \<Rightarrow> 'a,
-                               'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and c4f c5f c6f c7f c''' :: "('c :: enum \<Rightarrow> 'a,
-                                 'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and ofs_r ofs_f :: "nat \<Rightarrow> 'c"
-    and buf_r buf_f :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and c3 c4 c5 c6 c7 c'' :: "(nat \<Rightarrow> 'a,
+                               'q \<times> 'a ae_stage) ktc_config"
+    and c4f c5f c6f c7f c''' :: "(nat \<Rightarrow> 'a,
+                                 'q \<times> 'a ae_stage) ktc_config"
+    and ofs_r ofs_f :: "nat \<Rightarrow> nat"
+    and buf_r buf_f :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and dest_r dest_f :: "nat \<Rightarrow> ae_dest" and pos :: "nat \<Rightarrow> nat"
   assumes q_in_Q:  "ktc_state cM_new \<in> Q_ktm M"
       and nonhalt: "ktc_state cM_new \<notin> {t_ktm M, r_ktm M}"
       \<comment> \<open>common SS4 source\<close>
-      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 M)"
-      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
       \<comment> \<open>SS5 states + window correspondences (run / fwd)\<close>
       and c4_state:  "ktc_state c4  = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
       and c4f_state: "ktc_state c4f = (ktc_state cM_new, ofs_f, buf_f, dest_f, SS5)"
-      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_r k, ofs_r k) (buf_r k) (pos k) (le_ktm M)"
-      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_f k, ofs_f k) (buf_f k) (pos k) (le_ktm M)"
       \<comment> \<open>inactive-tape tails (both \<open>init\<close> beyond \<open>k_ktm M\<close>)\<close>
       and buf_tail:  "\<forall>k. \<not> k < k_ktm M
-                         \<longrightarrow> ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+                         \<longrightarrow> ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
       and dest_tail: "\<forall>k. \<not> k < k_ktm M \<longrightarrow> dest_r k = dest_f k"
       \<comment> \<open>run / forward SS5\<open>\<rightarrow>\<close>SS1 substep chains\<close>
-      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and sim_fwd: "ae_simulates M cM_new c'''"
-      and gam:     "ae_tape_in_gamma_block M c''"
-  shows "ae_simulates M cM_new c''"
+      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and sim_fwd: "ae_simulates m M cM_new c'''"
+      and gam:     "ae_tape_in_gamma_block m M c''"
+  shows "ae_simulates m M cM_new c''"
 proof -
   \<comment> \<open>Shared SS4 source: tape + head positions agree at SS5.\<close>
   from ae_ss4_ss5_shared_source_tape[OF run45 fwd45]
@@ -3368,16 +3381,16 @@ proof -
   \<comment> \<open>Window bridge: buffers \<open>ae_blk_agree\<close>, \<open>dest\<close> direction agrees
       (active tapes).\<close>
   from ae_ss5_window_blk_dest_agree[OF run_window fwd_window]
-  have blk_act: "\<forall>k<k_ktm M. ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+  have blk_act: "\<forall>k<k_ktm M. ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
    and dir_act: "\<forall>k<k_ktm M. dest_r k = dest_f k" by simp_all
   \<comment> \<open>Offset bridge: \<open>ofs\<close> agrees except where the simulated head is
       \<open>0\<close> --- this is the transfer's \<open>ofsh\<close>.\<close>
   from ae_ss5_window_ofs_agree[OF run_window fwd_window]
   have ofsh: "\<forall>k<k_ktm M. ktc_pos cM_new k = 0 \<or> ofs_r k = ofs_f k" by simp
   \<comment> \<open>Lift \<open>blk\<close> / \<open>dest\<close> agreement to all tapes via the tails.\<close>
-  have blk_all: "\<forall>k. ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+  have blk_all: "\<forall>k. ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
   proof
-    fix k show "ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+    fix k show "ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
       by (cases "k < k_ktm M") (use blk_act buf_tail in blast)+
   qed
   have dest_eq: "dest_r = dest_f"
@@ -3417,48 +3430,48 @@ text \<open>Integration prototype (halt branch).  When the simulated M-config
 
 lemma nae_sim_proto_halt:
   fixes M :: "('q, 'a) ktm" and cM_new :: "('a, 'q) ktc_config"
-    and c3 c4 c5 c6 c7 c'' :: "('c :: enum \<Rightarrow> 'a,
-                               'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and c4f c5f c6f c7f c''' :: "('c :: enum \<Rightarrow> 'a,
-                                 'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and ofs_r ofs_f :: "nat \<Rightarrow> 'c"
-    and buf_r buf_f :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and c3 c4 c5 c6 c7 c'' :: "(nat \<Rightarrow> 'a,
+                               'q \<times> 'a ae_stage) ktc_config"
+    and c4f c5f c6f c7f c''' :: "(nat \<Rightarrow> 'a,
+                                 'q \<times> 'a ae_stage) ktc_config"
+    and ofs_r ofs_f :: "nat \<Rightarrow> nat"
+    and buf_r buf_f :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and dest_r dest_f :: "nat \<Rightarrow> ae_dest" and pos :: "nat \<Rightarrow> nat"
   assumes halt: "ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
-      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 M)"
-      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
       and c4_state:  "ktc_state c4  = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
       and c4f_state: "ktc_state c4f = (ktc_state cM_new, ofs_f, buf_f, dest_f, SS5)"
-      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_r k, ofs_r k) (buf_r k) (pos k) (le_ktm M)"
-      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_f k, ofs_f k) (buf_f k) (pos k) (le_ktm M)"
       and buf_tail:  "\<forall>k. \<not> k < k_ktm M
-                         \<longrightarrow> ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+                         \<longrightarrow> ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
       and dest_tail: "\<forall>k. \<not> k < k_ktm M \<longrightarrow> dest_r k = dest_f k"
-      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and sim_fwd: "ae_simulates M cM_new c'''"
-      and gam:     "ae_tape_in_gamma_block M c''"
-  shows "ae_simulates M cM_new c''"
+      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and sim_fwd: "ae_simulates m M cM_new c'''"
+      and gam:     "ae_tape_in_gamma_block m M c''"
+  shows "ae_simulates m M cM_new c''"
 proof -
   from ae_ss4_ss5_shared_source_tape[OF run45 fwd45]
   have tape45: "ktc_tape c4 = ktc_tape c4f"
    and pos45:  "ktc_pos c4 = ktc_pos c4f" by simp_all
   from ae_ss5_window_blk_dest_agree[OF run_window fwd_window]
-  have blk_act: "\<forall>k<k_ktm M. ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+  have blk_act: "\<forall>k<k_ktm M. ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
    and dir_act: "\<forall>k<k_ktm M. dest_r k = dest_f k" by simp_all
-  have blk_all: "\<forall>k. ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+  have blk_all: "\<forall>k. ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
   proof
-    fix k show "ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+    fix k show "ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
       by (cases "k < k_ktm M") (use blk_act buf_tail in blast)+
   qed
   have dest_eq: "dest_r = dest_f"
@@ -3479,7 +3492,7 @@ proof -
       \<open>init_stage\<close>, tapes agree.\<close>
   from ae_ss8_ss1_cong_halt[OF t8 p8 s8 s8f blk_all halt run8 fwd8]
   have tcc: "ktc_tape c'' = ktc_tape c'''"
-   and st_c'': "ktc_state c'' = (ktc_state cM_new, init_stage (le_ktm M))"
+   and st_c'': "ktc_state c'' = (ktc_state cM_new, init_stage m (le_ktm M))"
     by simp_all
   show ?thesis
     by (rule ae_simulates_transfer_halt[OF sim_fwd halt tcc st_c'' gam])
@@ -3501,38 +3514,38 @@ text \<open>Combined integration prototype: the full \<open>ae_sim_c''\<close> o
 
 lemma nae_sim_proto:
   fixes M :: "('q, 'a) ktm" and cM_new :: "('a, 'q) ktc_config"
-    and c3 c4 c5 c6 c7 c'' :: "('c :: enum \<Rightarrow> 'a,
-                               'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and c4f c5f c6f c7f c''' :: "('c :: enum \<Rightarrow> 'a,
-                                 'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and ofs_r ofs_f :: "nat \<Rightarrow> 'c"
-    and buf_r buf_f :: "nat \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
+    and c3 c4 c5 c6 c7 c'' :: "(nat \<Rightarrow> 'a,
+                               'q \<times> 'a ae_stage) ktc_config"
+    and c4f c5f c6f c7f c''' :: "(nat \<Rightarrow> 'a,
+                                 'q \<times> 'a ae_stage) ktc_config"
+    and ofs_r ofs_f :: "nat \<Rightarrow> nat"
+    and buf_r buf_f :: "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
     and dest_r dest_f :: "nat \<Rightarrow> ae_dest" and pos :: "nat \<Rightarrow> nat"
   assumes q_in_Q:  "ktc_state cM_new \<in> Q_ktm M"
-      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 M)"
-      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      and run45: "(c3, c4)  \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+      and fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
       and c4_state:  "ktc_state c4  = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
       and c4f_state: "ktc_state c4f = (ktc_state cM_new, ofs_f, buf_f, dest_f, SS5)"
-      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and run_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_r k, ofs_r k) (buf_r k) (pos k) (le_ktm M)"
-      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general
+      and fwd_window: "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_f k, ofs_f k) (buf_f k) (pos k) (le_ktm M)"
       and buf_tail:  "\<forall>k. \<not> k < k_ktm M
-                         \<longrightarrow> ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+                         \<longrightarrow> ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
       and dest_tail: "\<forall>k. \<not> k < k_ktm M \<longrightarrow> dest_r k = dest_f k"
-      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and sim_fwd: "ae_simulates M cM_new c'''"
-      and gam:     "ae_tape_in_gamma_block M c''"
-  shows "ae_simulates M cM_new c''"
+      and run5: "(c4, c5)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and run6: "(c5, c6)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and run7: "(c6, c7)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and run8: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and fwd5: "(c4f, c5f)  \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and fwd6: "(c5f, c6f)  \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and fwd7: "(c6f, c7f)  \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and fwd8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and sim_fwd: "ae_simulates m M cM_new c'''"
+      and gam:     "ae_tape_in_gamma_block m M c''"
+  shows "ae_simulates m M cM_new c''"
 proof (cases "ktc_state cM_new \<in> {t_ktm M, r_ktm M}")
   case True
   show ?thesis
@@ -3572,68 +3585,68 @@ text \<open>\<^emph>\<open>Reverse-direction chain orchestration.\<close>  Combi
 lemma ae_backward_stage_decompose:
   fixes M :: "('q, 'a) ktm"
     and cM :: "('a, 'q) ktc_config"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
     and qM' :: 'q
-    and ofs :: "nat \<Rightarrow> 'c"
-    and buf :: "nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and ofs :: "nat \<Rightarrow> nat"
+    and buf :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and dest :: "nat \<Rightarrow> ae_dest"
   assumes vM:          "valid_ktm M"
       and lu:          "le_unique M"
-      and sim:         "ae_simulates M cM c'"
+      and sim:         "ae_simulates m M cM c'"
       and val_cM:      "valid_config_ktm M cM"
       and c'_state:    "ktc_state c' = (qM', ofs, buf, dest, SS1)"
       and inv_ss1:     "ae_inv_ss1 M c'"
-      and gamma_c':    "ae_tape_in_gamma_block M c'"
-      and buf_gamma:   "ae_buffer_in_gamma_block M c'"
-      and pos_link_c': "ae_position_link M c'"
-      and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block (le_ktm M)"
+      and gamma_c':    "ae_tape_in_gamma_block m M c'"
+      and buf_gamma:   "ae_buffer_in_gamma_block m M c'"
+      and pos_link_c': "ae_position_link m M c'"
+      and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block m (le_ktm M)"
       and le_neq_bl:   "le_ktm M \<noteq> bl_ktm M"
       and qM'_neq_t:   "qM' \<noteq> t_ktm M"
       and qM'_neq_r:   "qM' \<noteq> r_ktm M"
       and no_le_per_tape:
             "\<forall>k. (ktc_pos c' k \<ge> 2
-                    \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < 3 * m
                               \<longrightarrow> ktc_tape cM k
-                                    ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                    ((ktc_pos c' k - 2) * m
                                        + 1 + i)
                                   \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 2 * m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 0
-                      \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
       and run:         "(c', c'')
-                          \<in> ktm_step (alphabet_enlarge_delta M) ^^ 8"
+                          \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 8"
   obtains c1 c2 c3 c4 c5 c6 c7 cM_new n ofs_r buf_r dest_r where
-      "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-    and "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-    and "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-    and "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
-    and "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-    and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-    and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-    and "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+      "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+    and "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+    and "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+    and "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+    and "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+    and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+    and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+    and "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     and "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and "n \<le> card (UNIV :: 'c set)"
-    and "n = card (UNIV :: 'c set)
+    and "n \<le> m"
+    and "n = m
             \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
     and "fst (ktc_state c'') = ktc_state cM_new"
     and "ktc_state cM_new \<notin> {t_ktm M, r_ktm M}
             \<longrightarrow> ae_inv_ss1 M c''"
     and "ktc_state cM_new \<in> {t_ktm M, r_ktm M}
             \<longrightarrow> snd (snd (snd (snd (ktc_state c'')))) = VFwd"
-    and "ae_tape_in_gamma_block M c''"
-    and "ae_buffer_in_gamma_block M c''"
+    and "ae_tape_in_gamma_block m M c''"
+    and "ae_buffer_in_gamma_block m M c''"
     and "ktc_state c4 = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
-    and "\<forall>k<k_ktm M. ae_window_invariant_general
+    and "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_r k, ofs_r k) (buf_r k) (ktc_pos c' k) (le_ktm M)"
-    and "ae_buffer_in_gamma_block M c4"
+    and "ae_buffer_in_gamma_block m M c4"
     and "ktc_state cM_new \<in> Q_ktm M"
 proof -
-  let ?R = "ktm_step (alphabet_enlarge_delta M)"
+  let ?R = "ktm_step (alphabet_enlarge_delta m M)"
 
   \<comment> \<open>Peel the 8-step chain into 8 individual full steps via
       \<open>numeral_eq_Suc\<close>-driven Suc unfolding.  Then rebuild the
@@ -3678,17 +3691,17 @@ proof -
       c3 invariants.  These c1, c2 may differ syntactically from
       c1', c2' above, but we propagate forward using only c1, c2.\<close>
   obtain c1 c2 where
-      step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
+      step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
     and step1_full: "(c', c1) \<in> ?R"
-    and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
+    and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
     and step2_full: "(c1, c2) \<in> ?R"
-    and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
+    and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
     and step3_full: "(c2, c3) \<in> ?R"
     and inv_ss4_c3: "ae_inv_ss4 M c3"
-    and gamma_c3: "ae_tape_in_gamma_block M c3"
-    and buf_gamma_c3: "ae_buffer_in_gamma_block M c3"
+    and gamma_c3: "ae_tape_in_gamma_block m M c3"
+    and buf_gamma_c3: "ae_buffer_in_gamma_block m M c3"
     and c3_q_eq: "fst (ktc_state c3) = qM'"
-    and pos_link_c3: "ae_position_link M c3"
+    and pos_link_c3: "ae_position_link m M c3"
     by (rule ae_backward_stage_load_chain
                 [OF vM c'_state inv_ss1 gamma_c' buf_gamma pos_link_c'
                     qM'_neq_t qM'_neq_r load_run])
@@ -3703,11 +3716,11 @@ proof -
       trace, termination disjunction, c4 5-tuple state shape (used
       internally only), and tape/buffer/window propagation facts.\<close>
   obtain cM_new buf' end_pos n where
-      step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
     and cM_trace: "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and n_bnd: "n \<le> card (UNIV :: 'c set)"
+    and n_bnd: "n \<le> m"
     and halt_or_full:
-          "n = card (UNIV :: 'c set)
+          "n = m
               \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
     and c4_state:
           "ktc_state c4 = (ktc_state cM_new,
@@ -3718,28 +3731,28 @@ proof -
                                   else init_dest k, SS5)"
     and c4_tape: "ktc_tape c4 = ktc_tape c'"
     and window_cM_new:
-          "\<forall>k<k_ktm M. ae_window_invariant_general
+          "\<forall>k<k_ktm M. ae_window_invariant_general m
                   (ktc_tape cM_new k) (ktc_pos cM_new k)
                   (end_pos k) (buf' k) (ktc_pos c' k) (le_ktm M)"
     and no_le_cM_new:
           "\<forall>k. (ktc_pos c' k = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM_new k (Suc i) \<noteq> le_ktm M))
               \<and> (ktc_pos c' k \<ge> 2
-                  \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 3 * m
                             \<longrightarrow> ktc_tape cM_new k
-                                  ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                  ((ktc_pos c' k - 2) * m
                                      + 1 + i)
                                 \<noteq> le_ktm M))"
     and buf'_le_pos0:
           "\<forall>k<k_ktm M. ktc_pos c' k = 0
-                  \<longrightarrow> fst (buf' k) \<noteq> LE_block (le_ktm M)"
+                  \<longrightarrow> fst (buf' k) \<noteq> LE_block m (le_ktm M)"
     by (rule ae_backward_stage_compute_extract
                 [OF vM lu val_cM sim c'_state le_anchor le_neq_bl no_le_per_tape
-                    step1_sub step2_sub step3_sub step4_full c3_idx_ss4])
+                    step1_sub step2_sub step3_sub step4_full c3_idx_ss4 buf_gamma])
 
   \<comment> \<open>First-order projections from \<open>c4_state\<close> —
       these are the inputs to \<open>writeback_chain\<close>
@@ -3786,9 +3799,9 @@ proof -
   qed
 
   \<comment> \<open>Push gamma / buffer-gamma through step4 to c4.\<close>
-  have gamma_c4: "ae_tape_in_gamma_block M c4"
+  have gamma_c4: "ae_tape_in_gamma_block m M c4"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c3 step4_full] .
-  have buf_gamma_c4: "ae_buffer_in_gamma_block M c4"
+  have buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve
             [OF vM buf_gamma_c3 gamma_c3 step4_full] .
 
@@ -3803,13 +3816,13 @@ proof -
       writeback exposes c5, c6, c7 substep facts and the halt-aware
       c'' status keyed on \<open>q_out\<close>.\<close>
   obtain c5 c6 c7 where
-      step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
+      step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
     and step5_full: "(c4, c5) \<in> ?R"
-    and step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
+    and step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
     and step6_full: "(c5, c6) \<in> ?R"
-    and step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
+    and step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
     and step7_full: "(c6, c7) \<in> ?R"
-    and step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+    and step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     and step8_full: "(c7, c'') \<in> ?R"
     and c''_non_halt:
           "ktc_state cM_new \<notin> {t_ktm M, r_ktm M}
@@ -3819,8 +3832,8 @@ proof -
               \<longrightarrow> (case ktc_state c'' of (qH, _, _, _, idx)
                     \<Rightarrow> qH \<in> {t_ktm M, r_ktm M} \<and> idx = VFwd)"
     and c''_q_eq: "fst (ktc_state c'') = ktc_state cM_new"
-    and gamma_c'': "ae_tape_in_gamma_block M c''"
-    and buf_gamma_c'': "ae_buffer_in_gamma_block M c''"
+    and gamma_c'': "ae_tape_in_gamma_block m M c''"
+    and buf_gamma_c'': "ae_buffer_in_gamma_block m M c''"
     by (rule ae_backward_stage_writeback_chain
                 [OF vM inv_ss5_c4 c4_q q_in_Q gamma_c4 buf_gamma_c4
                     writeback_run])
@@ -3856,14 +3869,14 @@ proof -
   have R_c4_state: "ktc_state c4 = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
     using c4_state by (simp add: ofs_r_def buf_r_def dest_r_def)
   have R_run_window:
-      "\<forall>k<k_ktm M. ae_window_invariant_general
+      "\<forall>k<k_ktm M. ae_window_invariant_general m
               (ktc_tape cM_new k) (ktc_pos cM_new k)
               (dest_r k, ofs_r k) (buf_r k) (ktc_pos c' k) (le_ktm M)"
   proof (intro allI impI)
     fix k assume klt: "k < k_ktm M"
     have bp_eq: "(dest_r k, ofs_r k) = end_pos k"
       using klt by (simp add: dest_r_def ofs_r_def)
-    show "ae_window_invariant_general (ktc_tape cM_new k) (ktc_pos cM_new k)
+    show "ae_window_invariant_general m (ktc_tape cM_new k) (ktc_pos cM_new k)
             (dest_r k, ofs_r k) (buf_r k) (ktc_pos c' k) (le_ktm M)"
       using window_cM_new[rule_format, OF klt] bp_eq by (simp add: buf_r_def)
   qed
@@ -3929,40 +3942,41 @@ text \<open>\<^emph>\<open>Reverse-direction top-level wrapper.\<close>  Given t
 lemma ae_backward_stage:
   fixes M :: "('q, 'a) ktm"
     and cM :: "('a, 'q) ktc_config"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes vM:           "valid_ktm M"
       and lu:           "le_unique M"
-      and sim:          "ae_simulates M cM c'"
+      and sim:          "ae_simulates m M cM c'"
       and val_cM:       "valid_config_ktm M cM"
       and q_neq_t:      "ktc_state cM \<noteq> t_ktm M"
       and q_neq_r:      "ktc_state cM \<noteq> r_ktm M"
-      and buf_gamma:    "ae_buffer_in_gamma_block M c'"
-      and le_anchor:    "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block (le_ktm M)"
+      and buf_gamma:    "ae_buffer_in_gamma_block m M c'"
+      and le_anchor:    "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block m (le_ktm M)"
       and le_neq_bl:    "le_ktm M \<noteq> bl_ktm M"
       and no_le_per_tape:
             "\<forall>k. (ktc_pos c' k \<ge> 2
-                    \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < 3 * m
                               \<longrightarrow> ktc_tape cM k
-                                    ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+                                    ((ktc_pos c' k - 2) * m
                                        + 1 + i)
                                   \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < 2 * m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                  \<and> (ktc_pos c' k = 0
-                      \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                      \<longrightarrow> (\<forall>i. i < m
                                 \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
-      and run:          "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ 8"
+      and run:          "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 8"
   obtains cM_new n where
       "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and "n \<le> card (UNIV :: 'c set)"
-    and "n = card (UNIV :: 'c set)
+    and "n \<le> m"
+    and "n = m
             \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
-    and "ae_simulates M cM_new c''"
-    and "ae_buffer_in_gamma_block M c''"
-    and "\<forall>kk<k_ktm M. ktc_tape c'' kk 0 = LE_block (le_ktm M)"
+    and "ae_simulates m M cM_new c''"
+    and "ae_buffer_in_gamma_block m M c''"
+    and "\<forall>kk<k_ktm M. ktc_tape c'' kk 0 = LE_block m (le_ktm M)"
 proof -
+  have m_pos: "0 < m" by (rule ae_buffer_in_gamma_block_width_pos[OF buf_gamma])
   \<comment> \<open>Derive \<open>ktc_state cM \<in> Q_ktm M\<close> from
       \<open>val_cM\<close> for the sim-unpack invocation.\<close>
   have qM_in_Q: "ktc_state cM \<in> Q_ktm M"
@@ -3980,28 +3994,28 @@ proof -
     and qM'_in_Q:   "qM' \<in> Q_ktm M"
     and qM'_neq_t:  "qM' \<noteq> t_ktm M"
     and qM'_neq_r:  "qM' \<noteq> r_ktm M"
-    and tape_corr:  "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+    and tape_corr:  "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                             (ktc_tape cM k) (ktc_tape c' k)"
-    and pos_decode: "\<forall>k<k_ktm M. ktc_pos cM k = ae_decode_pos (ktc_pos c' k) (ofs k)"
-    and gamma_c':   "ae_tape_in_gamma_block M c'"
+    and pos_decode: "\<forall>k<k_ktm M. ktc_pos cM k = ae_decode_pos m (ktc_pos c' k) (ofs k)"
+    and gamma_c':   "ae_tape_in_gamma_block m M c'"
     and inv_ss1:    "ae_inv_ss1 M c'"
-    and pos_link_c': "ae_position_link M c'"
+    and pos_link_c': "ae_position_link m M c'"
     by (rule ae_forward_stage_unpack_sim[OF sim qM_in_Q q_neq_t q_neq_r])
 
   \<comment> \<open>Decompose the 8-step chain.\<close>
   obtain c1 c2 c3 c4 c5 c6 c7 cM_new n ofs_r buf_r dest_r where
-      step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-    and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-    and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-    and step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
-    and step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-    and step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-    and step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-    and step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+      step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+    and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+    and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+    and step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+    and step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+    and step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+    and step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+    and step8_sub: "(c7, c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     and cM_trace: "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n"
-    and n_bnd:    "n \<le> card (UNIV :: 'c set)"
+    and n_bnd:    "n \<le> m"
     and halt_or_full:
-          "n = card (UNIV :: 'c set)
+          "n = m
               \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
     and c''_fst_eq: "fst (ktc_state c'') = ktc_state cM_new"
     and c''_non_halt:
@@ -4010,15 +4024,15 @@ proof -
     and c''_halt_idx:
           "ktc_state cM_new \<in> {t_ktm M, r_ktm M}
               \<longrightarrow> snd (snd (snd (snd (ktc_state c'')))) = VFwd"
-    and gamma_c'': "ae_tape_in_gamma_block M c''"
-    and buf_gamma_c'': "ae_buffer_in_gamma_block M c''"
+    and gamma_c'': "ae_tape_in_gamma_block m M c''"
+    and buf_gamma_c'': "ae_buffer_in_gamma_block m M c''"
     and run_c4_state:
           "ktc_state c4 = (ktc_state cM_new, ofs_r, buf_r, dest_r, SS5)"
     and run_window:
-          "\<forall>k<k_ktm M. ae_window_invariant_general
+          "\<forall>k<k_ktm M. ae_window_invariant_general m
                   (ktc_tape cM_new k) (ktc_pos cM_new k)
                   (dest_r k, ofs_r k) (buf_r k) (ktc_pos c' k) (le_ktm M)"
-    and run_buf_gamma_c4: "ae_buffer_in_gamma_block M c4"
+    and run_buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
     and run_q_in_Q: "ktc_state cM_new \<in> Q_ktm M"
     by (rule ae_backward_stage_decompose
                 [OF vM lu sim val_cM c'_state inv_ss1 gamma_c' buf_gamma
@@ -4034,22 +4048,22 @@ proof -
       \<open>delta_ktm (alphabet_enlarge M)\<close> and
       \<open>LE_block (le_ktm M)\<close> \<open>\<leftrightarrow>\<close>
       \<open>le_ktm (alphabet_enlarge M)\<close> identities.\<close>
-  have le_anchor_c'': "\<forall>kk<k_ktm M. ktc_tape c'' kk 0 = LE_block (le_ktm M)"
+  have le_anchor_c'': "\<forall>kk<k_ktm M. ktc_tape c'' kk 0 = LE_block m (le_ktm M)"
   proof (intro allI impI)
     fix kk
     assume kklt: "kk < k_ktm M"
-    let ?M' = "alphabet_enlarge M
-                  :: ('q \<times> ('a, 'c) ae_stage,
-                      'c \<Rightarrow> 'a) ktm"
+    let ?M' = "alphabet_enlarge m M
+                  :: ('q \<times> 'a ae_stage,
+                      nat \<Rightarrow> 'a) ktm"
     have vM': "valid_ktm ?M'"
-      by (rule alphabet_enlarge_wf[OF vM])
+      by (rule alphabet_enlarge_wf[OF vM m_pos])
     have run': "(c', c'') \<in> ktm_step (delta_ktm ?M') ^^ 8"
       using run by (simp add: delta_ktm_alphabet_enlarge)
     have le_at_c'_kk: "ktc_tape c' kk 0 = le_ktm ?M'"
       using le_anchor[rule_format, OF kklt] by (simp add: le_ktm_alphabet_enlarge)
     have "ktc_tape c'' kk 0 = le_ktm ?M'"
       by (rule ktm_relpow_LE_pos0_preserve[OF vM' run' le_at_c'_kk])
-    then show "ktc_tape c'' kk 0 = LE_block (le_ktm M)"
+    then show "ktc_tape c'' kk 0 = LE_block m (le_ktm M)"
       by (simp add: le_ktm_alphabet_enlarge)
   qed
   \<comment> \<open>Sub-step \<open>ae_sim_c''\<close> (\<open>det\<close>-free): rather than
@@ -4067,31 +4081,31 @@ proof -
       \<open>buf\<close> / \<open>dest\<close> to \<open>init\<close> beyond \<open>k_ktm M\<close>.
       The forward direction's full \<open>ae_simulates\<close> transports across
       the SS5\<open>\<rightarrow>\<close>SS1 congruence to \<open>c''\<close>.\<close>
-  have ae_sim_c'': "ae_simulates M cM_new c''"
+  have ae_sim_c'': "ae_simulates m M cM_new c''"
   proof -
     \<comment> \<open>Forward direction: a \<open>c'''\<close> simulating the same \<open>cM_new\<close>,
         with its full substep chain + SS5 exposure.\<close>
     obtain c''' c1f c2f c3f c4f c5f c6f c7f ofs_f buf_f dest_f where
         fwd_chain: "(c', c''')
-                       \<in> ktm_step (alphabet_enlarge_delta M) ^^ 8"
-      and sim_c''': "ae_simulates M cM_new c'''"
-      and fwd_bufg_c''': "ae_buffer_in_gamma_block M c'''"
-      and fwd_le_c''': "\<forall>kk<k_ktm M. ktc_tape c''' kk 0 = LE_block (le_ktm M)"
-      and f_step1: "(c', c1f) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-      and f_step2: "(c1f, c2f) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-      and f_step3: "(c2f, c3f) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-      and f_step4: "(c3f, c4f) \<in> ktm_step (ae_delta_ss4_ss5 M)"
-      and f_step5: "(c4f, c5f) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and f_step6: "(c5f, c6f) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and f_step7: "(c6f, c7f) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and f_step8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+                       \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 8"
+      and sim_c''': "ae_simulates m M cM_new c'''"
+      and fwd_bufg_c''': "ae_buffer_in_gamma_block m M c'''"
+      and fwd_le_c''': "\<forall>kk<k_ktm M. ktc_tape c''' kk 0 = LE_block m (le_ktm M)"
+      and f_step1: "(c', c1f) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+      and f_step2: "(c1f, c2f) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+      and f_step3: "(c2f, c3f) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+      and f_step4: "(c3f, c4f) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
+      and f_step5: "(c4f, c5f) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and f_step6: "(c5f, c6f) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and f_step7: "(c6f, c7f) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and f_step8: "(c7f, c''') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
       and fwd_c4_state:
             "ktc_state c4f = (ktc_state cM_new, ofs_f, buf_f, dest_f, SS5)"
       and fwd_window:
-            "\<forall>kk<k_ktm M. ae_window_invariant_general
+            "\<forall>kk<k_ktm M. ae_window_invariant_general m
                     (ktc_tape cM_new kk) (ktc_pos cM_new kk)
                     (dest_f kk, ofs_f kk) (buf_f kk) (ktc_pos c' kk) (le_ktm M)"
-      and fwd_buf_gamma_c4f: "ae_buffer_in_gamma_block M c4f"
+      and fwd_buf_gamma_c4f: "ae_buffer_in_gamma_block m M c4f"
       by (rule ae_simulates_forward_stage_general
                   [OF vM lu sim qM_in_Q q_neq_t q_neq_r buf_gamma n_bnd
                       cM_trace halt_or_full le_anchor le_neq_bl
@@ -4102,17 +4116,17 @@ proof -
     have c1_eq: "c1 = c1f"
       by (rule ktm_step_functional [OF _ step1_sub f_step1])
         (use ae_delta_ss1_ss2_functional in blast)
-    have f_step2': "(c1, c2f) \<in> ktm_step (ae_delta_ss2_ss3 M)"
+    have f_step2': "(c1, c2f) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
       using f_step2 c1_eq by simp
     have c2_eq: "c2 = c2f"
       by (rule ktm_step_functional [OF _ step2_sub f_step2'])
         (use ae_delta_ss2_ss3_functional in blast)
-    have f_step3': "(c2, c3f) \<in> ktm_step (ae_delta_ss3_ss4 M)"
+    have f_step3': "(c2, c3f) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
       using f_step3 c2_eq by simp
     have c3_eq: "c3 = c3f"
       by (rule ktm_step_functional [OF _ step3_sub f_step3'])
         (use ae_delta_ss3_ss4_functional in blast)
-    have fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+    have fwd45: "(c3, c4f) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
       using f_step4 c3_eq by simp
 
     \<comment> \<open>Inactive-tape tails: \<open>ae_buffer_in_gamma_block\<close> carries
@@ -4120,23 +4134,23 @@ proof -
         to \<open>init\<close> beyond \<open>k_ktm M\<close> on both arms, so they agree
         there.\<close>
     have run_tails:
-        "(\<forall>j\<ge>k_ktm M. buf_r j = init_buffer (le_ktm M) j)
+        "(\<forall>j\<ge>k_ktm M. buf_r j = init_buffer m (le_ktm M) j)
           \<and> (\<forall>j\<ge>k_ktm M. dest_r j = init_dest j)"
       using run_buf_gamma_c4[unfolded ae_buffer_in_gamma_block_def run_c4_state]
       by simp
     have fwd_tails:
-        "(\<forall>j\<ge>k_ktm M. buf_f j = init_buffer (le_ktm M) j)
+        "(\<forall>j\<ge>k_ktm M. buf_f j = init_buffer m (le_ktm M) j)
           \<and> (\<forall>j\<ge>k_ktm M. dest_f j = init_dest j)"
       using fwd_buf_gamma_c4f[unfolded ae_buffer_in_gamma_block_def fwd_c4_state]
       by simp
     have buf_tail:
         "\<forall>k. \<not> k < k_ktm M
-              \<longrightarrow> ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+              \<longrightarrow> ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
     proof (intro allI impI)
       fix k assume "\<not> k < k_ktm M"
       hence kge: "k_ktm M \<le> k" by simp
       have "buf_r k = buf_f k" using run_tails fwd_tails kge by simp
-      thus "ae_blk_agree (le_ktm M) (buf_r k) (buf_f k)"
+      thus "ae_blk_agree m (le_ktm M) (buf_r k) (buf_f k)"
         by (simp add: ae_blk_agree_def)
     qed
     have dest_tail: "\<forall>k. \<not> k < k_ktm M \<longrightarrow> dest_r k = dest_f k"
@@ -4183,112 +4197,112 @@ text \<open>Substep-cycle progression: a single full-delta step from a
 
 lemma ae_step_from_SS1_lands_at_SS2:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS1"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS2"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss1_ss2 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss1_ss2 m M)"
     by (rule ktm_step_ae_delta_ss1_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss1_ss2 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss1_ss2 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss1_ss2_def)
 qed
 
 lemma ae_step_from_SS2_lands_at_SS3:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS2"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS3"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss2_ss3 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss2_ss3 m M)"
     by (rule ktm_step_ae_delta_ss2_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss2_ss3 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss2_ss3 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss2_ss3_def)
 qed
 
 lemma ae_step_from_SS3_lands_at_SS4:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS3"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS4"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss3_ss4 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss3_ss4 m M)"
     by (rule ktm_step_ae_delta_ss3_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss3_ss4 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss3_ss4 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss3_ss4_def)
 qed
 
 lemma ae_step_from_SS4_lands_at_SS5:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS4"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS5"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss4_ss5 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss4_ss5 m M)"
     by (rule ktm_step_ae_delta_ss4_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss4_ss5 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss4_ss5 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss4_ss5_def)
 qed
 
 lemma ae_step_from_SS5_lands_at_SS6:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS5"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS6"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss5_ss6 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss5_ss6 m M)"
     by (rule ktm_step_ae_delta_ss5_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss5_ss6 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss5_ss6 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss5_ss6_def)
 qed
 
 lemma ae_step_from_SS6_lands_at_SS7:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS6"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS7"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss6_ss7 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss6_ss7 m M)"
     by (rule ktm_step_ae_delta_ss6_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss6_ss7 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss6_ss7 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss6_ss7_def)
 qed
 
 lemma ae_step_from_SS7_lands_at_SS8:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS7"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) = SS8"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss7_ss8 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss7_ss8 m M)"
     by (rule ktm_step_ae_delta_ss7_only [OF _ idx])
   then obtain a a' d
-    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss7_ss8 M"
+    where "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss7_ss8 m M"
     by (rule ktm_step_states)
   then show ?thesis by (auto simp: ae_delta_ss7_ss8_def)
 qed
@@ -4304,30 +4318,30 @@ text \<open>SS8 is the cycle-closure substep: post-state lands at
 
 lemma ae_step_from_SS8_lands_at_SS1_or_VFwd:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes idx: "snd (snd (snd (snd (ktc_state c')))) = SS8"
-      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M)"
+      and step: "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
   shows "snd (snd (snd (snd (ktc_state c'')))) \<in> {SS1, VFwd}"
 proof -
-  from step have "(c', c'') \<in> ktm_step (ae_delta_ss8_ss1 M)"
+  from step have "(c', c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     by (rule ktm_step_ae_delta_ss8_only [OF _ idx])
   then obtain a a' d
-    where rel: "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss8_ss1 M"
+    where rel: "(ktc_state c', a, ktc_state c'', a', d) \<in> ae_delta_ss8_ss1 m M"
     by (rule ktm_step_states)
   obtain q ofs buf stage' where
       s'_eq: "ktc_state c'' = (q, stage')"
     and stage'_eq: "stage' = (if q \<in> {t_ktm M, r_ktm M}
-                                then init_stage (le_ktm M)
+                                then init_stage m (le_ktm M)
                                 else (ofs, buf, init_dest, SS1))"
     using rel unfolding ae_delta_ss8_ss1_def by auto
   have init_stage_substep_VFwd:
-      "snd (snd (snd (init_stage (le_ktm M) :: ('a, 'c) ae_stage))) = VFwd"
+      "snd (snd (snd (init_stage m (le_ktm M) :: 'a ae_stage))) = VFwd"
     unfolding init_stage_def by simp
   show ?thesis
   proof (cases "q \<in> {t_ktm M, r_ktm M}")
     case True
-    hence stage'_init: "stage' = init_stage (le_ktm M)"
+    hence stage'_init: "stage' = init_stage m (le_ktm M)"
       using stage'_eq by simp
     have "snd (snd (snd (snd (ktc_state c'')))) = VFwd"
       using s'_eq stage'_init init_stage_substep_VFwd by simp
@@ -4344,31 +4358,31 @@ qed
 
 
 text \<open>Chain-progression: from a config at substep \<open>SS1\<close>,
-  no chain of length \<open>1 \<le> m \<le> 7\<close> reaches a configuration
+  no chain of length \<open>1 \<le> p \<le> 7\<close> reaches a configuration
   at substep \<open>VFwd\<close>.  The substep cycle \<open>SS1
   \<rightarrow> SS2 \<rightarrow> ... \<rightarrow> SS8 \<rightarrow>
   SS1 \<or> VFwd\<close> takes exactly 8 steps from \<open>SS1\<close> to
   reach \<open>VFwd\<close>; shorter chains stay within
   \<open>\<lbrace>SS2,...,SS8\<rbrace>\<close>.
 
-  Used by the reverse chunked-phase argument to force \<open>m \<ge>
+  Used by the reverse chunked-phase argument to force \<open>p \<ge>
   8\<close> when an SS1-paired \<open>c'\<close> has a chain ending in the
   canonical halt config \<open>(t_ktm M, init_stage le)\<close>.\<close>
 
 lemma ae_chain_from_SS1_short_not_VFwd:
   fixes M :: "('q, 'a) ktm"
-    and c' c'' :: "('c :: enum \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and m :: nat
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
+    and p :: nat
   assumes idx_SS1: "snd (snd (snd (snd (ktc_state c')))) = SS1"
-      and m_lt_8:  "0 < m \<and> m < 8"
-      and chain:   "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ m"
+      and m_lt_8:  "0 < p \<and> p < 8"
+      and chain:   "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ p"
   shows "snd (snd (snd (snd (ktc_state c'')))) \<noteq> VFwd"
 proof -
-  let ?R = "ktm_step (alphabet_enlarge_delta M)"
+  let ?R = "ktm_step (alphabet_enlarge_delta m M)"
   let ?idx = "\<lambda>c. snd (snd (snd (snd (ktc_state c))))"
-  consider (m1) "m = 1" | (m2) "m = 2" | (m3) "m = 3" | (m4) "m = 4"
-         | (m5) "m = 5" | (m6) "m = 6" | (m7) "m = 7"
+  consider (m1) "p = 1" | (m2) "p = 2" | (m3) "p = 3" | (m4) "p = 4"
+         | (m5) "p = 5" | (m6) "p = 6" | (m7) "p = 7"
     using m_lt_8 by linarith
   thus ?thesis
   proof cases
@@ -4495,8 +4509,8 @@ lemma ae_no_le_per_tape_from_reach:
   fixes M :: "('q, 'a) ktm"
     and w :: "'a list"
     and cM :: "('a, 'q) ktc_config"
-    and c' :: "('c :: enum \<Rightarrow> 'a,
-                 'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' :: "(nat \<Rightarrow> 'a,
+                 'q \<times> 'a ae_stage) ktc_config"
   assumes vM:        "valid_ktm M"
       and lu:        "le_unique M"
       and w_sub:     "set w \<subseteq> Sigma_ktm M"
@@ -4504,34 +4518,34 @@ lemma ae_no_le_per_tape_from_reach:
       and reach_M:   "(init_config_ktm M w, cM)
                         \<in> (ktm_step (delta_ktm M))\<^sup>*"
   shows "\<forall>k. (ktc_pos c' k \<ge> 2
-                \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 3 * m
                           \<longrightarrow> ktc_tape cM k
                                 ((ktc_pos c' k - 2)
-                                    * card (UNIV :: 'c set)
+                                    * m
                                    + 1 + i)
                               \<noteq> le_ktm M))
              \<and> (ktc_pos c' k = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
              \<and> (ktc_pos c' k = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
 proof (intro allI conjI impI allI impI)
   fix k :: nat and i :: nat
   assume "2 \<le> ktc_pos c' k"
-     and "i < 3 * card (UNIV :: 'c set)"
+     and "i < 3 * m"
   have idx_nz:
-      "(ktc_pos c' k - 2) * card (UNIV :: 'c set) + 1 + i \<noteq> 0"
+      "(ktc_pos c' k - 2) * m + 1 + i \<noteq> 0"
     by simp
   show "ktc_tape cM k
-          ((ktc_pos c' k - 2) * card (UNIV :: 'c set)
+          ((ktc_pos c' k - 2) * m
              + 1 + i) \<noteq> le_ktm M"
     using valid_reach_LE_only_pos0_ktm
             [OF vM lu w_sub reach_M idx_nz le_neq_bl[symmetric]] .
 next
   fix k :: nat and i :: nat
   assume "ktc_pos c' k = 1"
-     and "i < 2 * card (UNIV :: 'c set)"
+     and "i < 2 * m"
   have idx_nz: "Suc i \<noteq> 0" by simp
   show "ktc_tape cM k (Suc i) \<noteq> le_ktm M"
     using valid_reach_LE_only_pos0_ktm
@@ -4539,7 +4553,7 @@ next
 next
   fix k :: nat and i :: nat
   assume "ktc_pos c' k = 0"
-     and "i < card (UNIV :: 'c set)"
+     and "i < m"
   have idx_nz: "Suc i \<noteq> 0" by simp
   show "ktc_tape cM k (Suc i) \<noteq> le_ktm M"
     using valid_reach_LE_only_pos0_ktm
@@ -4559,20 +4573,21 @@ text \<open>Halt-branch contradiction: when \<open>ktc_state c'\<close> is at a
 lemma ae_halt_c'_no_step:
   fixes M :: "('q, 'a) ktm"
     and qM' :: 'q
-    and c' c'' :: "(('c :: enum) \<Rightarrow> 'a,
-                     'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c'' :: "(nat \<Rightarrow> 'a,
+                     'q \<times> 'a ae_stage) ktc_config"
   assumes vM:        "valid_ktm M"
       and qM_in_tr:  "qM' \<in> {t_ktm M, r_ktm M}"
-      and state_c':  "ktc_state c' = (qM', init_stage (le_ktm M))"
+      and state_c':  "ktc_state c' = (qM', init_stage m (le_ktm M))"
       and step:      "(c', c'')
-                          \<in> ktm_step (alphabet_enlarge_delta M)"
+                          \<in> ktm_step (alphabet_enlarge_delta m M)"
+      and m_pos: "0 < m"
   shows "False"
 proof -
-  let ?M' = "alphabet_enlarge M
-               :: ('q \<times> ('a, 'c) ae_stage,
-                   'c \<Rightarrow> 'a) ktm"
+  let ?M' = "alphabet_enlarge m M
+               :: ('q \<times> 'a ae_stage,
+                   nat \<Rightarrow> 'a) ktm"
   have valM': "valid_ktm ?M'"
-    by (rule alphabet_enlarge_wf[OF vM])
+    by (rule alphabet_enlarge_wf[OF vM m_pos])
   have step_M': "(c', c'') \<in> ktm_step (delta_ktm ?M')"
     using step by (simp add: delta_ktm_alphabet_enlarge)
   from qM_in_tr have qM_cases: "qM' = t_ktm M \<or> qM' = r_ktm M"
@@ -4597,7 +4612,7 @@ qed
 subsubsection \<open>The reverse simulation, one stage at a time, and the language\<close>
 
 text \<open>Chunked-induction engine for the reverse direction.  Given a
-  finite \<open>M'\<close>-chain \<open>(c', c_acc)\<close> of length \<open>m\<close> ending in the
+  finite \<open>M'\<close>-chain \<open>(c', c_acc)\<close> of length \<open>p\<close> ending in the
   canonical halt configuration \<open>(t_ktm M, init_stage le)\<close>, plus an
   \<open>ae_simulates\<close> invariant at \<open>c'\<close> with the standard side-band
   invariants \<open>buf_gamma\<close> and \<open>le_anchor\<close>, deliver an accepting
@@ -4607,13 +4622,13 @@ text \<open>Chunked-induction engine for the reverse direction.  Given a
   \<open>ae_backward_stage\<close> and recurse.
 
   Three induction cases:
-   \<open>\<bullet>\<close>\<open>m = 0\<close> base: \<open>c' = c_acc\<close>; the simulation's accept
+   \<open>\<bullet>\<close>\<open>p = 0\<close> base: \<open>c' = c_acc\<close>; the simulation's accept
      correspondence forces \<open>ktc_state cM = t_ktm M\<close>.
-   \<open>\<bullet>\<close>\<open>0 < m < 8\<close>: contradiction via
+   \<open>\<bullet>\<close>\<open>0 < p < 8\<close>: contradiction via
      \<open>ae_chain_from_SS1_short_not_VFwd\<close> (or trivial substep
      mismatch when \<open>c' = c_acc\<close>'s sister case applies).
-   \<open>\<bullet>\<close>\<open>m \<ge> 8\<close> peel: split \<open>m = 8 + (m - 8)\<close> via \<open>relpow_add\<close>,
-     apply \<open>ae_backward_stage\<close> to the first chunk, IH on \<open>m - 8\<close>.
+   \<open>\<bullet>\<close>\<open>p \<ge> 8\<close> peel: split \<open>p = 8 + (p - 8)\<close> via \<open>relpow_add\<close>,
+     apply \<open>ae_backward_stage\<close> to the first chunk, IH on \<open>p - 8\<close>.
 
   The conclusion is in \<open>rtrancl\<close> form (the \<open>n_M\<close> step counter
   is forgotten via \<open>relpow_imp_rtrancl\<close>) to ease the downstream
@@ -4623,9 +4638,9 @@ lemma ae_simulation_phase_chunked_reverse:
   fixes M :: "('q, 'a) ktm"
     and w :: "'a list"
     and cM :: "('a, 'q) ktc_config"
-    and c' c_acc :: "('c :: enum \<Rightarrow> 'a,
-                'q \<times> ('a, 'c) ae_stage) ktc_config"
-    and m :: nat
+    and c' c_acc :: "(nat \<Rightarrow> 'a,
+                'q \<times> 'a ae_stage) ktc_config"
+    and p :: nat
   assumes vM:         "valid_ktm M"
       and lu:         "le_unique M"
       and w_sub:      "set w \<subseteq> Sigma_ktm M"
@@ -4633,64 +4648,65 @@ lemma ae_simulation_phase_chunked_reverse:
       and reach_M:    "(init_config_ktm M w, cM)
                           \<in> (ktm_step (delta_ktm M))\<^sup>*"
       and trace:      "(c', c_acc)
-                          \<in> ktm_step (alphabet_enlarge_delta M) ^^ m"
+                          \<in> ktm_step (alphabet_enlarge_delta m M) ^^ p"
       and accept:     "ktc_state c_acc
-                          = (t_ktm M, init_stage (le_ktm M))"
-      and sim:        "ae_simulates M cM c'"
-      and buf_gamma:  "ae_buffer_in_gamma_block M c'"
-      and le_anchor:  "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block (le_ktm M)"
+                          = (t_ktm M, init_stage m (le_ktm M))"
+      and sim:        "ae_simulates m M cM c'"
+      and buf_gamma:  "ae_buffer_in_gamma_block m M c'"
+      and le_anchor:  "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block m (le_ktm M)"
   shows "\<exists>cM_final. (cM, cM_final) \<in> (ktm_step (delta_ktm M))\<^sup>*
                     \<and> ktc_state cM_final = t_ktm M"
   using reach_M trace sim buf_gamma le_anchor
-proof (induction m arbitrary: cM c' rule: less_induct)
-  case (less m)
+proof (induction p arbitrary: cM c' rule: less_induct)
+  case (less p)
   obtain qM' ofs buf dest idx where
       state_c': "ktc_state c' = (qM', ofs, buf, dest, idx)"
     and qM_eq:   "ktc_state cM = qM'"
     and state_disj: "(idx = SS1 \<and> qM' \<notin> {t_ktm M, r_ktm M})
                      \<or> (qM' \<in> {t_ktm M, r_ktm M}
                          \<and> (ofs, buf, dest, idx)
-                             = init_stage (le_ktm M))"
-    and "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+                             = init_stage m (le_ktm M))"
+    and "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                 (ktc_tape cM k) (ktc_tape c' k)"
-    and "ae_tape_in_gamma_block M c'"
+    and "ae_tape_in_gamma_block m M c'"
     by (rule ae_simulates_state_disjunction[OF less.prems(3)])
   consider (halt) "qM' \<in> {t_ktm M, r_ktm M}
-                   \<and> (ofs, buf, dest, idx) = init_stage (le_ktm M)"
+                   \<and> (ofs, buf, dest, idx) = init_stage m (le_ktm M)"
          | (ss1)  "idx = SS1 \<and> qM' \<notin> {t_ktm M, r_ktm M}"
     using state_disj by blast
   thus ?case
   proof cases
     case halt
-    have state_full: "ktc_state c' = (qM', init_stage (le_ktm M))"
+    have state_full: "ktc_state c' = (qM', init_stage m (le_ktm M))"
       using state_c' halt by simp
     show ?thesis
-    proof (cases m)
+    proof (cases p)
       case 0
       from less.prems(2) 0 have c'_eq: "c' = c_acc" by simp
-      have "ktc_state c' = (t_ktm M, init_stage (le_ktm M))"
+      have "ktc_state c' = (t_ktm M, init_stage m (le_ktm M))"
         using accept c'_eq by simp
       hence qM_t: "qM' = t_ktm M" using state_full by simp
       have cM_state: "ktc_state cM = t_ktm M" using qM_eq qM_t by simp
       have refl: "(cM, cM) \<in> (ktm_step (delta_ktm M))\<^sup>*" by simp
       show ?thesis using refl cM_state by blast
     next
-      case (Suc m')
+      case (Suc p')
       have trace_Suc:
-          "(c', c_acc) \<in> ktm_step (alphabet_enlarge_delta M)
-                              ^^ Suc m'"
+          "(c', c_acc) \<in> ktm_step (alphabet_enlarge_delta m M)
+                              ^^ Suc p'"
         using less.prems(2) Suc by simp
       obtain c'_1 where
           first_step:
-              "(c', c'_1) \<in> ktm_step (alphabet_enlarge_delta M)"
+              "(c', c'_1) \<in> ktm_step (alphabet_enlarge_delta m M)"
         and rest_trace:
-              "(c'_1, c_acc) \<in> ktm_step (alphabet_enlarge_delta M)
-                                    ^^ m'"
+              "(c'_1, c_acc) \<in> ktm_step (alphabet_enlarge_delta m M)
+                                    ^^ p'"
         using relpow_Suc_D2[OF trace_Suc] by blast
       have qM_in_tr: "qM' \<in> {t_ktm M, r_ktm M}" using halt by simp
       have False
         by (rule ae_halt_c'_no_step
-                   [OF vM qM_in_tr state_full first_step])
+                   [OF vM qM_in_tr state_full first_step
+                      ktm_step_alphabet_enlarge_width_pos[OF first_step]])
       thus ?thesis by simp
     qed
   next
@@ -4700,15 +4716,15 @@ proof (induction m arbitrary: cM c' rule: less_induct)
       using state_c' idx_SS1 by simp
     have qM_neq_t: "ktc_state cM \<noteq> t_ktm M" using qM_eq ss1 by simp
     have qM_neq_r: "ktc_state cM \<noteq> r_ktm M" using qM_eq ss1 by simp
-    consider (m_zero) "m = 0"
-           | (m_short) "0 < m \<and> m < 8"
-           | (m_long) "8 \<le> m"
+    consider (m_zero) "p = 0"
+           | (m_short) "0 < p \<and> p < 8"
+           | (m_long) "8 \<le> p"
       by linarith
     thus ?thesis
     proof cases
       case m_zero
       from less.prems(2) m_zero have c'_eq: "c' = c_acc" by simp
-      have "ktc_state c' = (t_ktm M, init_stage (le_ktm M))"
+      have "ktc_state c' = (t_ktm M, init_stage m (le_ktm M))"
         using accept c'_eq by simp
       hence c'_VFwd: "snd (snd (snd (snd (ktc_state c')))) = VFwd"
         unfolding init_stage_def by simp
@@ -4727,48 +4743,48 @@ proof (induction m arbitrary: cM c' rule: less_induct)
       thus ?thesis by simp
     next
       case m_long
-      define m_rem where "m_rem \<equiv> m - 8"
-      have m_split: "m = 8 + m_rem"
+      define m_rem where "m_rem \<equiv> p - 8"
+      have m_split: "p = 8 + m_rem"
         using m_long m_rem_def by simp
-      have rem_lt: "m_rem < m"
+      have rem_lt: "m_rem < p"
         using m_long m_rem_def by simp
       from less.prems(2) m_split have trace_compose:
           "(c', c_acc)
-              \<in> (ktm_step (alphabet_enlarge_delta M) ^^ 8)
-                  O (ktm_step (alphabet_enlarge_delta M) ^^ m_rem)"
+              \<in> (ktm_step (alphabet_enlarge_delta m M) ^^ 8)
+                  O (ktm_step (alphabet_enlarge_delta m M) ^^ m_rem)"
         by (simp add: relpow_add)
       obtain c_8 where
           run_8:    "(c', c_8)
-                        \<in> ktm_step (alphabet_enlarge_delta M) ^^ 8"
+                        \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 8"
         and rest_8: "(c_8, c_acc)
-                        \<in> ktm_step (alphabet_enlarge_delta M) ^^ m_rem"
+                        \<in> ktm_step (alphabet_enlarge_delta m M) ^^ m_rem"
         using trace_compose by auto
       have val_cM: "valid_config_ktm M cM"
         by (rule valid_reach_ktm[OF vM w_sub less.prems(1)])
       have no_le_per_tape:
           "\<forall>k. (ktc_pos c' k \<ge> 2
-                  \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 3 * m
                             \<longrightarrow> ktc_tape cM k
                                   ((ktc_pos c' k - 2)
-                                      * card (UNIV :: 'c set)
+                                      * m
                                      + 1 + i)
                                 \<noteq> le_ktm M))
                \<and> (ktc_pos c' k = 1
-                    \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < 2 * m
                               \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
                \<and> (ktc_pos c' k = 0
-                    \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                    \<longrightarrow> (\<forall>i. i < m
                               \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
         by (rule ae_no_le_per_tape_from_reach
                    [OF vM lu w_sub le_neq_bl less.prems(1)])
       obtain cM_new n_M where
           cM_run:    "(cM, cM_new) \<in> ktm_step (delta_ktm M) ^^ n_M"
-        and n_M_le:   "n_M \<le> card (UNIV :: 'c set)"
-        and end_disj: "n_M = card (UNIV :: 'c set)
+        and n_M_le:   "n_M \<le> m"
+        and end_disj: "n_M = m
                           \<or> ktc_state cM_new \<in> {t_ktm M, r_ktm M}"
-        and sim_new:  "ae_simulates M cM_new c_8"
-        and buf_new:  "ae_buffer_in_gamma_block M c_8"
-        and le_new:   "\<forall>kk<k_ktm M. ktc_tape c_8 kk 0 = LE_block (le_ktm M)"
+        and sim_new:  "ae_simulates m M cM_new c_8"
+        and buf_new:  "ae_buffer_in_gamma_block m M c_8"
+        and le_new:   "\<forall>kk<k_ktm M. ktc_tape c_8 kk 0 = LE_block m (le_ktm M)"
         by (rule ae_backward_stage[OF vM lu less.prems(3) val_cM
                                        qM_neq_t qM_neq_r
                                        less.prems(4) less.prems(5)
@@ -4831,11 +4847,12 @@ text \<open>Language-equivalence statement (biconditional) for every
 theorem alphabet_enlarge_language:
   fixes M :: "('q, 'a) ktm"
   assumes wf:        "well_formed_ktm M"
+      and m_pos: "0 < m"
   shows "\<forall>w. set w \<subseteq> Sigma_ktm M
-              \<longrightarrow> (encode_input (bl_ktm M) w \<in> Lang_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm))
+              \<longrightarrow> (encode_input m (bl_ktm M) w \<in> Lang_ktm
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm))
                   = (w \<in> Lang_ktm M)"
 proof -
   from wf have vM:        "valid_ktm M"
@@ -4845,24 +4862,24 @@ proof -
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
 
-  let ?M' = "alphabet_enlarge M
-               :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
+  let ?M' = "alphabet_enlarge m M
+               :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
 
   have fwd: "\<forall>w. set w \<subseteq> Sigma_ktm M
                   \<longrightarrow> w \<in> Lang_ktm M
-                  \<longrightarrow> encode_input (bl_ktm M) w \<in> Lang_ktm ?M'"
-    by (rule alphabet_enlarge_language_forward[OF wf])
+                  \<longrightarrow> encode_input m (bl_ktm M) w \<in> Lang_ktm ?M'"
+    by (rule alphabet_enlarge_language_forward[OF wf m_pos])
 
   show ?thesis
   proof (intro allI impI)
     fix w :: "'a list"
     assume w_sub: "set w \<subseteq> Sigma_ktm M"
-    show "(encode_input (bl_ktm M) w \<in> Lang_ktm ?M')
+    show "(encode_input m (bl_ktm M) w \<in> Lang_ktm ?M')
             = (w \<in> Lang_ktm M)"
     proof
       assume w_in_M: "w \<in> Lang_ktm M"
       from fwd w_sub w_in_M
-      show "encode_input (bl_ktm M) w \<in> Lang_ktm ?M'"
+      show "encode_input m (bl_ktm M) w \<in> Lang_ktm ?M'"
         by blast
     next
       \<comment> \<open>Reverse direction: \<open>encode_input w \<in> Lang_ktm M'\<close>
@@ -4879,54 +4896,51 @@ proof -
           remainder; repack the resulting M-trace as
           \<open>Lang_ktm M\<close>.\<close>
       assume enc_in_M':
-          "encode_input (bl_ktm M) w \<in> Lang_ktm ?M'"
+          "encode_input m (bl_ktm M) w \<in> Lang_ktm ?M'"
       \<comment> \<open>Step 1: Unpack the M'-acceptance.\<close>
       from enc_in_M' obtain wM' nM' where
           acc_path_M':
-            "(init_config_ktm ?M' (encode_input (bl_ktm M) w),
+            "(init_config_ktm ?M' (encode_input m (bl_ktm M) w),
               KConfig (t_ktm ?M') wM' nM')
                 \<in> (ktm_step (delta_ktm ?M'))\<^sup>*"
         unfolding Lang_ktm_def by blast
-      define c_acc :: "('c \<Rightarrow> 'a, 'q \<times> ('a, 'c) ae_stage)
+      define c_acc :: "(nat \<Rightarrow> 'a, 'q \<times> 'a ae_stage)
                           ktc_config"
         where "c_acc \<equiv> KConfig (t_ktm ?M') wM' nM'"
       \<comment> \<open>Step 2: Bridge \<open>?M'\<close> components to AE-side and
           convert rtrancl to relpow.\<close>
       have c_acc_state:
-          "ktc_state c_acc = (t_ktm M, init_stage (le_ktm M))"
+          "ktc_state c_acc = (t_ktm M, init_stage m (le_ktm M))"
         unfolding c_acc_def by (simp add: t_ktm_alphabet_enlarge)
       have acc_path_AE:
-          "(ae_init_config M (encode_input (bl_ktm M) w), c_acc)
-              \<in> (ktm_step (alphabet_enlarge_delta M))\<^sup>*"
+          "(ae_init_config m M (encode_input m (bl_ktm M) w), c_acc)
+              \<in> (ktm_step (alphabet_enlarge_delta m M))\<^sup>*"
         using acc_path_M'
         by (simp add: init_config_alphabet_enlarge
                       delta_ktm_alphabet_enlarge c_acc_def)
       obtain N where acc_pow:
-          "(ae_init_config M (encode_input (bl_ktm M) w), c_acc)
-              \<in> ktm_step (alphabet_enlarge_delta M) ^^ N"
+          "(ae_init_config m M (encode_input m (bl_ktm M) w), c_acc)
+              \<in> ktm_step (alphabet_enlarge_delta m M) ^^ N"
         using acc_path_AE rtrancl_imp_relpow by metis
-      \<comment> \<open>Step 3: Peel validation.  Explicit type annotation
-          on \<open>c'_post\<close> to share \<open>'c\<close> with \<open>c_acc\<close> (the
-          validation-peel lemma is polymorphic over \<open>'c\<close>;
-          without the annotation Isabelle freshens).\<close>
-      obtain n_val and c'_post :: "('c \<Rightarrow> 'a,
-                                     'q \<times> ('a, 'c) ae_stage) ktc_config" where
-          val_run:    "(ae_init_config M (encode_input (bl_ktm M) w),
+      \<comment> \<open>Step 3: Peel validation.\<close>
+      obtain n_val and c'_post :: "(nat \<Rightarrow> 'a,
+                                     'q \<times> 'a ae_stage) ktc_config" where
+          val_run:    "(ae_init_config m M (encode_input m (bl_ktm M) w),
                         c'_post)
-                          \<in> ktm_step (alphabet_enlarge_delta M)
+                          \<in> ktm_step (alphabet_enlarge_delta m M)
                                   ^^ n_val"
-        and val_sim:  "ae_simulates M (init_config_ktm M w) c'_post"
-        and val_buf:  "ae_buffer_in_gamma_block M c'_post"
-        and val_le:   "\<forall>kk<k_ktm M. ktc_tape c'_post kk 0 = LE_block (le_ktm M)"
+        and val_sim:  "ae_simulates m M (init_config_ktm M w) c'_post"
+        and val_buf:  "ae_buffer_in_gamma_block m M c'_post"
+        and val_le:   "\<forall>kk<k_ktm M. ktc_tape c'_post kk 0 = LE_block m (le_ktm M)"
         and val_reach:
-              "\<forall>i<n_val. \<forall>d :: ('c \<Rightarrow> 'a,
-                                  'q \<times> ('a, 'c) ae_stage) ktc_config.
-                  (ae_init_config M (encode_input (bl_ktm M) w), d)
-                      \<in> ktm_step (alphabet_enlarge_delta M) ^^ i
+              "\<forall>i<n_val. \<forall>d :: (nat \<Rightarrow> 'a,
+                                  'q \<times> 'a ae_stage) ktc_config.
+                  (ae_init_config m M (encode_input m (bl_ktm M) w), d)
+                      \<in> ktm_step (alphabet_enlarge_delta m M) ^^ i
                     \<longrightarrow> snd (snd (snd (snd (ktc_state d))))
                           \<in> {VFwd, VFwdPad, VRet}"
         by (rule ae_validation_post_state_canonical
-                   [OF vM w_sub le_neq_bl])
+                   [OF vM w_sub le_neq_bl m_pos])
       \<comment> \<open>Step 4: Identify chain remainder.  By
           \<open>ktm_step_alphabet_enlarge_val_relpow_functional\<close> the
           validation endpoint sits on the unique chain from
@@ -4944,29 +4958,29 @@ proof -
         have sum_eq: "N + (n_val - N) = n_val"
           using N_lt by simp
         have val_run_combined:
-            "(ae_init_config M (encode_input (bl_ktm M) w), c'_post)
-                \<in> ktm_step (alphabet_enlarge_delta M)
+            "(ae_init_config m M (encode_input m (bl_ktm M) w), c'_post)
+                \<in> ktm_step (alphabet_enlarge_delta m M)
                       ^^ (N + (n_val - N))"
           using val_run sum_eq by simp
         hence val_compose:
-            "(ae_init_config M (encode_input (bl_ktm M) w), c'_post)
-                \<in> (ktm_step (alphabet_enlarge_delta M) ^^ N)
-                    O (ktm_step (alphabet_enlarge_delta M)
+            "(ae_init_config m M (encode_input m (bl_ktm M) w), c'_post)
+                \<in> (ktm_step (alphabet_enlarge_delta m M) ^^ N)
+                    O (ktm_step (alphabet_enlarge_delta m M)
                           ^^ (n_val - N))"
           by (simp add: relpow_add)
         obtain c_mid where
             step_to_mid:
-              "(ae_init_config M (encode_input (bl_ktm M) w), c_mid)
-                  \<in> ktm_step (alphabet_enlarge_delta M) ^^ N"
+              "(ae_init_config m M (encode_input m (bl_ktm M) w), c_mid)
+                  \<in> ktm_step (alphabet_enlarge_delta m M) ^^ N"
           and step_from_mid:
               "(c_mid, c'_post)
-                  \<in> ktm_step (alphabet_enlarge_delta M)
+                  \<in> ktm_step (alphabet_enlarge_delta m M)
                         ^^ (n_val - N)"
           using val_compose by auto
-        have inv_N: "\<forall>i<N. \<forall>d :: ('c \<Rightarrow> 'a,
-                                    'q \<times> ('a, 'c) ae_stage) ktc_config.
-                        (ae_init_config M (encode_input (bl_ktm M) w), d)
-                            \<in> ktm_step (alphabet_enlarge_delta M) ^^ i
+        have inv_N: "\<forall>i<N. \<forall>d :: (nat \<Rightarrow> 'a,
+                                    'q \<times> 'a ae_stage) ktc_config.
+                        (ae_init_config m M (encode_input m (bl_ktm M) w), d)
+                            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ i
                           \<longrightarrow> snd (snd (snd (snd (ktc_state d))))
                                 \<in> {VFwd, VFwdPad, VRet}"
           using val_reach N_lt by (meson less_trans)
@@ -4975,7 +4989,7 @@ proof -
                      [OF le_neq_bl step_to_mid acc_pow inv_N])
         have step_from_acc:
             "(c_acc, c'_post)
-                \<in> ktm_step (alphabet_enlarge_delta M)
+                \<in> ktm_step (alphabet_enlarge_delta m M)
                       ^^ (n_val - N)"
           using step_from_mid c_mid_eq by simp
         have extra_pos: "0 < n_val - N" using N_lt by simp
@@ -4984,20 +4998,20 @@ proof -
           using extra_pos by (cases "n_val - N") auto
         have step_from_acc_Suc:
             "(c_acc, c'_post)
-                \<in> ktm_step (alphabet_enlarge_delta M)
+                \<in> ktm_step (alphabet_enlarge_delta m M)
                       ^^ Suc m_extra_pred"
           using step_from_acc m_extra_Suc by simp
         obtain c_acc_1 where
             first_step:
               "(c_acc, c_acc_1)
-                  \<in> ktm_step (alphabet_enlarge_delta M)"
+                  \<in> ktm_step (alphabet_enlarge_delta m M)"
           and rest_step:
               "(c_acc_1, c'_post)
-                  \<in> ktm_step (alphabet_enlarge_delta M)
+                  \<in> ktm_step (alphabet_enlarge_delta m M)
                         ^^ m_extra_pred"
           using relpow_Suc_D2[OF step_from_acc_Suc] by blast
         have valM': "valid_ktm ?M'"
-          by (rule alphabet_enlarge_wf[OF vM])
+          by (rule alphabet_enlarge_wf[OF vM m_pos])
         have first_step_M':
             "(c_acc, c_acc_1) \<in> ktm_step (delta_ktm ?M')"
           using first_step by (simp add: delta_ktm_alphabet_enlarge)
@@ -5008,28 +5022,28 @@ proof -
           show False by simp
       qed
       have remainder:
-          "(c'_post, c_acc) \<in> ktm_step (alphabet_enlarge_delta M)
+          "(c'_post, c_acc) \<in> ktm_step (alphabet_enlarge_delta m M)
                                     ^^ (N - n_val)"
       proof -
         have sum_eq: "n_val + (N - n_val) = N"
           using n_val_le_N by simp
-        have "(ae_init_config M (encode_input (bl_ktm M) w), c_acc)
-                \<in> ktm_step (alphabet_enlarge_delta M)
+        have "(ae_init_config m M (encode_input m (bl_ktm M) w), c_acc)
+                \<in> ktm_step (alphabet_enlarge_delta m M)
                       ^^ (n_val + (N - n_val))"
           using acc_pow sum_eq by simp
         hence acc_compose:
-            "(ae_init_config M (encode_input (bl_ktm M) w), c_acc)
-                \<in> (ktm_step (alphabet_enlarge_delta M) ^^ n_val)
-                    O (ktm_step (alphabet_enlarge_delta M)
+            "(ae_init_config m M (encode_input m (bl_ktm M) w), c_acc)
+                \<in> (ktm_step (alphabet_enlarge_delta m M) ^^ n_val)
+                    O (ktm_step (alphabet_enlarge_delta m M)
                           ^^ (N - n_val))"
           by (simp add: relpow_add)
         obtain c_mid where
             run_to_mid:
-              "(ae_init_config M (encode_input (bl_ktm M) w), c_mid)
-                  \<in> ktm_step (alphabet_enlarge_delta M) ^^ n_val"
+              "(ae_init_config m M (encode_input m (bl_ktm M) w), c_mid)
+                  \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_val"
           and run_from_mid:
               "(c_mid, c_acc)
-                  \<in> ktm_step (alphabet_enlarge_delta M)
+                  \<in> ktm_step (alphabet_enlarge_delta m M)
                         ^^ (N - n_val)"
           using acc_compose by auto
         have c_mid_eq: "c_mid = c'_post"
@@ -5091,46 +5105,47 @@ theorem alphabet_enlarge_nae:
   fixes M :: "('q, 'a) ktm"
     and T :: "nat \<Rightarrow> nat"
   assumes wf: "well_formed_ktm M"
+      and m_pos: "0 < m"
   obtains \<alpha> f :: nat
   where "\<forall>w. set w \<subseteq> Sigma_ktm M
-              \<longrightarrow> (encode_input (bl_ktm M) w \<in> Lang_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm))
+              \<longrightarrow> (encode_input m (bl_ktm M) w \<in> Lang_ktm
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm))
                   = (w \<in> Lang_ktm M)"
     and "\<forall>w. set w \<subseteq> Sigma_ktm M
               \<longrightarrow> accepts_in_time_ktm M w (T (length w))
               \<longrightarrow> accepts_in_time_ktm
-                    (alphabet_enlarge M
-                       :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                    (encode_input (bl_ktm M) w)
-                    (\<alpha> * ((length w + card (UNIV :: 'c set) - 1)
-                            div card (UNIV :: 'c set))
-                     + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                             div card (UNIV :: 'c set))
+                    (alphabet_enlarge m M
+                       :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                    (encode_input m (bl_ktm M) w)
+                    (\<alpha> * ((length w + m - 1)
+                            div m)
+                     + 8 * ((T (length w) + m - 1)
+                             div m)
                      + f)"
 proof -
   have lang:
     "\<forall>w. set w \<subseteq> Sigma_ktm M
-            \<longrightarrow> (encode_input (bl_ktm M) w \<in> Lang_ktm
-                    (alphabet_enlarge M
-                       :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                           'c \<Rightarrow> 'a) ktm))
+            \<longrightarrow> (encode_input m (bl_ktm M) w \<in> Lang_ktm
+                    (alphabet_enlarge m M
+                       :: ('q \<times> 'a ae_stage,
+                           nat \<Rightarrow> 'a) ktm))
                 = (w \<in> Lang_ktm M)"
-    by (rule alphabet_enlarge_language[OF wf])
+    by (rule alphabet_enlarge_language[OF wf m_pos])
   obtain \<alpha> f :: nat where time:
     "\<forall>w. set w \<subseteq> Sigma_ktm M
             \<longrightarrow> accepts_in_time_ktm M w (T (length w))
             \<longrightarrow> accepts_in_time_ktm
-                  (alphabet_enlarge M
-                     :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                  (encode_input (bl_ktm M) w)
-                  (\<alpha> * ((length w + card (UNIV :: 'c set) - 1)
-                          div card (UNIV :: 'c set))
-                   + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                           div card (UNIV :: 'c set))
+                  (alphabet_enlarge m M
+                     :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                  (encode_input m (bl_ktm M) w)
+                  (\<alpha> * ((length w + m - 1)
+                          div m)
+                   + 8 * ((T (length w) + m - 1)
+                           div m)
                    + f)"
-    by (rule alphabet_enlarge_time[OF wf])
+    by (rule alphabet_enlarge_time[OF wf m_pos])
   show ?thesis by (rule that[OF lang time])
 qed
 

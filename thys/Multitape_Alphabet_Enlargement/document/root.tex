@@ -49,11 +49,11 @@ Ullman~\cite[Theorems 12.3 and 12.4]{Hopcroft1979:introduction}
 and its nondeterministic corollary.
 
 Given a multitape Turing machine $M$ with alphabet $\Sigma_M$
-and a chosen block size $c$, we build an enlarged machine
-$M' = \mathrm{alphabet\_enlarge}\, M$.  Its alphabet is
-$\Sigma_M^c \cup \{\Box, \rhd\}$ (with a fresh blank and left-end
-marker), and it simulates $c$ steps of $M$ at a time, reading its
-input in blocks of $c$ symbols.  A separate wrapping step folds the
+and a chosen block size $m$, we build an enlarged machine
+$M' = \mathrm{alphabet\_enlarge}\, m\, M$.  Its alphabet is
+$\Sigma_M^m \cup \{\Box, \rhd\}$ (with a fresh blank and left-end
+marker), and it simulates $m$ steps of $M$ at a time, reading its
+input in blocks of $m$ symbols.  A separate wrapping step folds the
 block-encoder into the machine, so that the textbook statements
 compare languages over $M$'s original alphabet.
 
@@ -62,15 +62,15 @@ headline theorems:
 
 \begin{itemize}
 \item \emph{Time bound}: if $M$ accepts $w$ in time $T(n)$, then
-  $M'$ accepts $\mathrm{encode\_input}\, bl_M\, w$ in time
-  $2 \lceil n/c \rceil + 8 \lceil T(n)/c \rceil + 4$ (theorem
+  $M'$ accepts $\mathrm{encode\_input}\, m\, bl_M\, w$ in time
+  $2 \lceil n/m \rceil + 8 \lceil T(n)/m \rceil + 4$ (theorem
   \texttt{alphabet\_enlarge\_time\_explicit}).  Both the input length
-  and the running time are divided by the group size $c$.  The same bound
+  and the running time are divided by the block size $m$.  The same bound
   holds for rejecting runs: if $M$ reaches its reject state on $w$ in time
   $T(n)$, so does $M'$ on the encoded input
   (\texttt{alphabet\_enlarge\_terminal\_time}).
 \item \emph{Language biconditional}:
-  $\mathrm{encode\_input}\, bl_M\, w \in L(M') \iff w \in L(M)$ for every
+  $\mathrm{encode\_input}\, m\, bl_M\, w \in L(M') \iff w \in L(M)$ for every
   well-formed $M$, with no determinism hypothesis.
 \item \emph{Determinism-free building block}: for an arbitrary,
   possibly nondeterministic, well-formed $M$, the language
@@ -87,7 +87,7 @@ headline theorems:
   time $(1 + \varepsilon)|w| + K$ (exactly $|w| + |w| \,\mathrm{div}\, q + K$)
   --- matching Hopcroft and Ullman's $(1 + \varepsilon)n$, with the additive
   constant now an explicit closed expression $K = 28 + 8 d_0 + 8 b$ --- once the
-  block size $c$ is taken large enough (it grows with $q$ and the slope
+  block size $m$ is taken large enough (it grows with $q$ and the slope
   $d_0$).  It is proved both in a deterministic version ($M$ deterministic
   $\Rightarrow$ $M''$ deterministic) and a nondeterministic version (no
   determinism hypothesis); the latter is the Hopcroft--Ullman corollary
@@ -150,13 +150,13 @@ In one sentence: this session proves the \emph{linear speedup
 theorem} for multitape Turing machines, in both its deterministic and
 nondeterministic forms.  The theorem says that any machine can be made
 to run a constant factor faster.  The idea is to enlarge the machine's
-tape alphabet so that a fixed number $c$ of the original cells is
-packed into one ``block'', and then to simulate $c$ of the original
+tape alphabet so that a fixed number $m$ of the original cells is
+packed into one ``block'', and then to simulate $m$ of the original
 steps at a time.
 
 Two constructions do the work.  The first,
-$M' = \mathrm{alphabet\_enlarge}\, M$, rebuilds $M$ so that it works
-over the block alphabet and simulates $c$ steps of $M$ in each of its
+$M' = \mathrm{alphabet\_enlarge}\, m\, M$, rebuilds $M$ so that it works
+over the block alphabet and simulates $m$ steps of $M$ in each of its
 own steps.  Its input must be presented in the same blocked form.  The
 second, $M'' = \mathrm{encoding\_wrap}(M', \ldots)$, folds the
 block-encoder into the machine, so that the textbook statements can be
@@ -182,11 +182,12 @@ the $\mathrm{NTIME}$ corollaries
 $\mathrm{NTIME}(T(n)) = \mathrm{NTIME}(c\,T(n))$) that Hopcroft and
 Ullman state without proof.  Second, because the alphabet grows, the
 plain machine $M'$ reads its input in blocked form
-$\mathrm{encode\_input}\, bl_M\, w$; the wrapped machine $M''$ hides
+$\mathrm{encode\_input}\, m\, bl_M\, w$; the wrapped machine $M''$ hides
 that encoding, which is why the corollaries can be stated over the
-original alphabet.  Third, the block size $c$ can be any fixed number;
+original alphabet.  Third, the block size $m$ is a parameter, a natural
+number, so a proof can choose it from the machine at hand;
 the speedup factor is $1 + \varepsilon$ with $\varepsilon = 1/q$, and
-each corollary holds once $c$ is large enough relative to $q$.
+each corollary holds once $m$ is large enough relative to $q$.
 
 Every theorem is stated for an arbitrary machine $M$, so each is a
 genuine ``for all $M$'' result.  The sibling entry \sessAR{} goes the
@@ -200,25 +201,25 @@ construction; in the classical literature it is the alphabet-growing
 half of the Hartmanis--Stearns tape-compression / linear-speedup
 theorem and carries no standard short name of its own.
 \begin{description}
-\item[$c = |{'c}|$] the \emph{group size}: the number of original
-  cells packed into one block, equal to
-  $\mathrm{card}\,(\mathrm{UNIV} :: {'c}\ \mathrm{set})$ for a type
-  parameter ${'c} :: \mathrm{enum}$.
-\item[$M' = \mathrm{alphabet\_enlarge}\, M$] the enlarged machine,
-  over the block alphabet ${'c} \to {'a}$, with state type
-  ${'q} \times ({'a},{'c})\ \mathrm{ae\_stage}$; it simulates $c$
+\item[$m$] the \emph{block size}: the number of original cells packed
+  into one block, Hopcroft and Ullman's $m$.  It is a parameter, a
+  natural number; the theorems assume $0 < m$.
+\item[$M' = \mathrm{alphabet\_enlarge}\, m\, M$] the enlarged machine,
+  over blocks $\mathit{nat} \to {'a}$ extensional on $\{0, \ldots, m-1\}$
+  (cells $0$ to $m-1$, \emph{undefined} beyond), with state type
+  ${'q} \times {'a}\ \mathrm{ae\_stage}$; it simulates $m$
   steps of $M$ per $M'$-stage following Hopcroft--Ullman's
   eight-substep scheme.
 \item[$\mathrm{ae\_stage}$] the per-state bookkeeping carried by $M'$
   (validation / simulation substep tag, per-tape buffers, head
   destinations).
-\item[$\mathrm{encode\_input}\, bl\, w$] the input encoding: it groups
-  $w$ into consecutive blocks of $c$ symbols, each packed as a function
-  ${'c} \to {'a}$ holding those $c$ symbols, padding the final block
+\item[$\mathrm{encode\_input}\, m\, bl\, w$] the input encoding: it groups
+  $w$ into consecutive blocks of $m$ symbols, each packed as a block
+  holding those $m$ symbols, padding the final block
   with the blank $bl$.  The result is
-  a list of $\lceil |w| / c \rceil$ blocks.
+  a list of $\lceil |w| / m \rceil$ blocks.
 \item[$M''$, the wrapped machine]
-  $\mathrm{encoding\_wrap}\, M'\, (\mathrm{ae\_pack}\, bl_M)\, c\,
+  $\mathrm{encoding\_wrap}\, M'\, (\mathrm{ae\_pack}\, m\, bl_M)\, m\,
   \Sigma_M$: the raw machine $M'$ with an inline block-encoder.  It keeps
   $M$'s $k$ tapes: the encoder copies the input in blocks onto a second
   tape, and the input tape then serves as one of $M'$'s work tapes, with
@@ -253,7 +254,7 @@ simulation, while van Emde Boas's survey~\cite{vanEmdeBoas1990:machine} reads
 the original Hartmanis--Stearns theorem~\cite{Hartmanis1965:computational} as
 intending an amortised, non-oblivious simulation that reaches
 $(1 + \varepsilon)$ directly rather than through any fixed multiplicative
-constant.  Whichever the constant, the group size $c$ divides it away, so we
+constant.  Whichever the constant, the block size $m$ divides it away, so we
 formalise the scheme cleanest to verify rather than the one with the
 smallest factor.  For deterministic machines the floor of $n$ is not
 reached:
@@ -289,14 +290,14 @@ Three caveats orient a reader deciding whether these results apply.
 \begin{itemize}
 \item \emph{Original-alphabet statements need the wrap.}  The raw
   enlarged machine $M'$ works on block-encoded input
-  ($\mathrm{encode\_input}\, bl_M\, w$); the same-alphabet corollaries
+  ($\mathrm{encode\_input}\, m\, bl_M\, w$); the same-alphabet corollaries
   hold for the \emph{wrapped} machine $M''$, which folds the encoder
   in.  Statements about $M'$ alone carry the visible encoding.
 \item \emph{The corollaries need a large enough group.}  The speedup
   factor is $1 + \varepsilon$ with $\varepsilon = 1/q$, and each
-  corollary holds only once the group size $c$ is large enough
-  relative to $q$ ($q\,(3 + 8 d_0) \leq c$ for the linear
-  case, $16 q \leq c$ for the super-linear case).
+  corollary holds only once the block size $m$ is large enough
+  relative to $q$ ($q\,(3 + 8 d_0) \leq m$ for the linear
+  case, $16 q \leq m$ for the super-linear case).
 \item \emph{The super-linear case needs a growth hypothesis.}
   HU~12.3 assumes
   $\forall d.\ \exists N.\ \forall n \geq N.\ d\,n \leq T(n)$ and holds
@@ -313,8 +314,8 @@ two conventions needed to read them.
 
 \paragraph{Two reading conventions.}
 First, in these quoted statements $c$ is Hopcroft and Ullman's
-\emph{time-complexity coefficient}; it is \emph{unrelated} to our group
-size $c$ (the enlargement block size of the vocabulary above).  Second,
+\emph{time-complexity coefficient}; their $m$, the number of cells packed
+into one symbol, is our block size $m$.  Second,
 they use the convention that $cT(n)$ abbreviates
 $\max(n + 1, \lceil cT(n) \rceil)$: the $n + 1$ floor is the cost of
 reading the input and reaching the blank past its end, and it is what
@@ -396,7 +397,7 @@ well-typed block machine.
   \begin{aligned}
     &\mathrm{well\_formed\_ktm}\, M \ \Longrightarrow\
       \forall w.\ \mathrm{set}\, w \subseteq \Sigma_M \longrightarrow {} \\
-    &\quad \bigl(\mathrm{encode\_input}\, bl_M\, w \in L(M')\bigr)
+    &\quad \bigl(\mathrm{encode\_input}\, m\, bl_M\, w \in L(M')\bigr)
       = \bigl(w \in L(M)\bigr).
   \end{aligned}
 \]
@@ -406,24 +407,24 @@ accepts $w$.
 
 \paragraph{\texttt{alphabet\_enlarge\_time\_explicit} and
   \texttt{alphabet\_enlarge\_time}.}
-Under $\mathrm{well\_formed\_ktm}\, M$, for every input word $w$:
+Under $\mathrm{well\_formed\_ktm}\, M$ and $0 < m$, for every input word $w$:
 \[
   \begin{aligned}
     &\mathrm{accepts\_in\_time\_ktm}\, M\, w\, (T(|w|)) \longrightarrow {} \\
     &\quad \mathrm{accepts\_in\_time\_ktm}\, M'\,
-      (\mathrm{encode\_input}\, bl_M\, w)\, \\
-    &\qquad \bigl(2\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + 4\bigr).
+      (\mathrm{encode\_input}\, m\, bl_M\, w)\, \\
+    &\qquad \bigl(2\,\lceil |w|/m\rceil + 8\,\lceil T(|w|)/m\rceil + 4\bigr).
   \end{aligned}
 \]
-The $\lceil\,\cdot\,/c\rceil$ factors are the source of the speedup:
-both the input length and the running time are divided by the group
-size $c$.  The coefficients $2$, $8$, $4$ are absolute constants (the
+The $\lceil\,\cdot\,/m\rceil$ factors are the source of the speedup:
+both the input length and the running time are divided by the block
+size $m$.  The coefficients $2$, $8$, $4$ are absolute constants (the
 $8$ counts the eight substeps simulated per group); none of them
-depends on $M$, on $w$, or even on $c$.  The explicit-constant
+depends on $M$, on $w$, or even on $m$.  The explicit-constant
 statement is \texttt{alphabet\_enlarge\_time\_explicit}; the
 \texttt{obtains}-corollary \texttt{alphabet\_enlarge\_time} repackages
 it existentially as
-$\exists \alpha, f.\ \alpha\,\lceil |w|/c\rceil + 8\,\lceil T(|w|)/c\rceil + f$,
+$\exists \alpha, f.\ \alpha\,\lceil |w|/m\rceil + 8\,\lceil T(|w|)/m\rceil + f$,
 instantiated at $\alpha = 2$, $f = 4$.
 
 Both are the accepting instance of
@@ -446,10 +447,10 @@ corollaries below.
 \paragraph{\texttt{linear\_speedup\_HU\_12\_4\_nae} /
 \texttt{\_dae} (linear-$T$ case).}
 Assume $\mathrm{well\_formed\_ktm}\, M$, $k \geq 2$, a linear time bound
-$T(n) \leq d_0 n + b$, and $q > 0$, $c > 0$.  Then $M''$ is valid,
+$T(n) \leq d_0 n + b$, and $q > 0$, $m > 0$.  Then $M''$ is valid,
 $\texttt{Lang\_user\_wrap}\, M'' = L(M)$
 (same language, \emph{over the original alphabet}), and, provided
-$c$ is large enough ($q\,(3 + 8 d_0) \leq c$), for every
+$m$ is large enough ($q\,(3 + 8 d_0) \leq m$), for every
 $w$,
 \[
   \begin{aligned}
@@ -521,7 +522,7 @@ $P$ accepts every $w \in L(M)$ within
 $\max(|w| + 2,\ |w| + |w|\,\mathrm{div}\,q)$.  The machine $P$ is the wrap
 with a \emph{first-block patch}
 (\texttt{wrap\_prefix\_patch}, theory \texttt{Wrap\_Prefix\_Patch}): while
-the encoder packs the first block of $c$ input symbols, a flag records that
+the encoder packs the first block of $m$ input symbols, a flag records that
 no block has yet been closed, and if the input ends inside that block the
 encoder's end-of-input transition goes straight to the verdict of a table
 of the words of length at most the threshold.  This is Hopcroft and
@@ -554,9 +555,9 @@ with at least two tapes accepts each word of its language within
 $a\,t(n) + e$ steps, for constants $a$ and $e$, then the patched wrap accepts
 the same language within the convention bound $\max(n + 2,\ t(n))$
 (\texttt{wrap\_prefix\_speedup\_band}).  The constant factor $a$ is absorbed
-by taking the group size large enough, as stated in that theorem; the short
+by taking the block size large enough, as stated in that theorem; the short
 words decided from the table are those of length at most
-$\max(N_0,\ q(81 + 128 e))$, and the group size must exceed that length.
+$\max(N_0,\ q(81 + 128 e))$, and the block size must exceed that length.
 The accompanying \texttt{wrap\_prefix\_speedup\_contract} gives validity, the
 language (each word mapped through $\mathrm{Raw}$) and, for deterministic
 $M$, determinism.

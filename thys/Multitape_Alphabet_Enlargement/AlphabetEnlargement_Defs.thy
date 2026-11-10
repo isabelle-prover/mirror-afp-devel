@@ -73,44 +73,33 @@ proof (intro_classes)
 qed
 
 text \<open>Stage bookkeeping carried in the output machine's state set:
-  per-tape within-block offset (\<open>nat \<Rightarrow> 'c\<close>), per-tape three-block
+  per-tape within-block offset (\<open>nat \<Rightarrow> nat\<close>), per-tape three-block
   buffer (left, home, right), per-tape destination indicator
   (\<open>AE_Left\<close> / \<open>AE_Home\<close> / \<open>AE_Right\<close>), and the substep counter
   within the current 8-substep stage.\<close>
 
-type_synonym ('a, 'c) ae_stage =
-  "(nat \<Rightarrow> 'c)
-   \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+type_synonym 'a ae_stage =
+  "(nat \<Rightarrow> nat)
+   \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
    \<times> (nat \<Rightarrow> ae_dest)
    \<times> substep_idx"
 
-subsection \<open>Offset arithmetic on \<open>'c\<close>\<close>
+subsection \<open>Offsets within a block\<close>
 
-text \<open>The compute substep tracks a simulated head position by an
-  offset within a 3-block buffer; advancing by \<open>L\<close> / \<open>R\<close>
-  requires partial successor / predecessor on \<open>'c\<close>.  We use the
-  canonical enumeration provided by the \<open>enum\<close> class.\<close>
+text \<open>A block holds \<open>m\<close> cells of \<open>M\<close>'s tape, at the offsets
+  \<open>0\<close> to \<open>m - 1\<close>; \<open>m\<close> is Hopcroft and Ullman's compression factor.
+  The compute substep tracks a simulated head position by an offset
+  within a 3-block buffer; advancing by \<open>L\<close> / \<open>R\<close> needs a partial
+  successor and predecessor on offsets.\<close>
 
-definition c_idx :: "'c :: enum \<Rightarrow> nat" where
-  "c_idx x = (THE i. i < length (enum_class.enum :: 'c list)
-                     \<and> (enum_class.enum :: 'c list) ! i = x)"
+definition c_last :: "nat \<Rightarrow> nat" where
+  "c_last m = m - 1"
 
-definition c_first :: "'c :: enum" where
-  "c_first = (enum_class.enum :: 'c list) ! 0"
+definition c_succ :: "nat \<Rightarrow> nat \<Rightarrow> nat option" where
+  "c_succ m x = (if Suc x < m then Some (Suc x) else None)"
 
-definition c_last :: "'c :: enum" where
-  "c_last = (enum_class.enum :: 'c list)
-              ! (length (enum_class.enum :: 'c list) - 1)"
-
-definition c_succ :: "'c :: enum \<Rightarrow> 'c option" where
-  "c_succ x =
-     (let xs = enum_class.enum :: 'c list; i = c_idx x in
-        if Suc i < length xs then Some (xs ! Suc i) else None)"
-
-definition c_pred :: "'c :: enum \<Rightarrow> 'c option" where
-  "c_pred x =
-     (let xs = enum_class.enum :: 'c list; i = c_idx x in
-        if i = 0 then None else Some (xs ! (i - 1)))"
+definition c_pred :: "nat \<Rightarrow> nat option" where
+  "c_pred x = (if x = 0 then None else Some (x - 1))"
 
 subsection \<open>Block-encoding helpers\<close>
 
@@ -119,44 +108,45 @@ text \<open>The constant LE-block: a block whose every cell holds
   Compatible with the substrate's \<open>\<delta>LE\<close> invariant: any read of
   this block tests \<open>le\<close> at every cell, so the
   \<open>a k = LE \<Longrightarrow> a' k = LE \<and> d k \<in> {N, R}\<close> obligation lifts
-  pointwise from \<open>M\<close>'s.\<close>
+  pointwise from \<open>M\<close>'s.
 
-definition LE_block :: "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)" where
-  "LE_block le = (\<lambda>_. le)"
+  A block is a function on offsets, \<^emph>\<open>extensional\<close> on \<open>{..<m}\<close>:
+  past the last offset it is \<open>undefined\<close>, so that the blocks over a
+  finite alphabet form a finite set (\<open>gamma_block\<close>).\<close>
+
+definition LE_block :: "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)" where
+  "LE_block m le = restrict (\<lambda>_. le) {..<m}"
 
 text \<open>The constant blank-block: a block whose every cell holds
   \<open>M\<close>'s blank symbol.  Used as \<open>M'\<close>'s blank, and also as the
   semantic placeholder for \<open>buf.left\<close> in LE-stages.\<close>
 
-definition bl_block :: "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)" where
-  "bl_block bl = (\<lambda>_. bl)"
+definition bl_block :: "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)" where
+  "bl_block m bl = restrict (\<lambda>_. bl) {..<m}"
 
 subsection \<open>Encoder\<close>
 
-text \<open>Encoding an input word as a list of \<open>c\<close>-blocks,
+text \<open>Encoding an input word as a list of \<open>m\<close>-cell blocks,
   padding the final block with the substrate's blank symbol if the
-  input length is not a multiple of \<open>c\<close>.
-
-  The grouping factor \<open>c = card (UNIV :: 'c set)\<close> is determined at
-  the type level.  Block \<open>i\<close> (for \<open>i < \<lceil>length w / c\<rceil>\<close>) is
-  the function \<open>\<lambda>x. if i \<cdot> c + c_idx x < length w then w ! (i \<cdot> c
-  + c_idx x) else bl\<close>; the output list has length
-  \<open>\<lceil>length w / c\<rceil>\<close>, computed in nat arithmetic as
-  \<open>(length w + c - 1) div c\<close>.\<close>
+  input length is not a multiple of \<open>m\<close>.  Block \<open>i\<close> (for
+  \<open>i < \<lceil>length w / m\<rceil>\<close>) holds \<open>w ! (i \<cdot> m + x)\<close> at offset
+  \<open>x\<close>, or the blank past the end of \<open>w\<close>; the output list has
+  length \<open>\<lceil>length w / m\<rceil>\<close>, computed in nat arithmetic as
+  \<open>(length w + m - 1) div m\<close>.\<close>
 
 definition encode_input ::
-  "'a \<Rightarrow> 'a list \<Rightarrow> (('c :: enum) \<Rightarrow> 'a) list" where
-  "encode_input bl w =
-     (let c = card (UNIV :: 'c set) in
-        map (\<lambda>i. (\<lambda>x. let j = i * c + c_idx x in
-                          if j < length w then w ! j else bl))
+  "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> (nat \<Rightarrow> 'a) list" where
+  "encode_input m bl w =
+     (let c = m in
+        map (\<lambda>i. restrict (\<lambda>x. let j = i * c + x in
+                          if j < length w then w ! j else bl) {..<m})
             [0 ..< (length w + c - 1) div c])"
 
 subsection \<open>Decoder\<close>
 
 text \<open>Decoder: extract \<open>M\<close>-symbols from a list of blocks by
-  taking each block's \<open>bl\<close>-free prefix under the canonical
-  \<open>'c\<close>-enumeration.  For pure blocks this yields all \<open>c\<close>
+  taking each block's \<open>bl\<close>-free prefix in offset
+  order.  For pure blocks this yields all \<open>m\<close>
   cells; for trailing-padded blocks it yields the non-blank
   prefix; for non-canonical blocks (blank-then-non-blank
   pattern) it yields the leading non-blank prefix only — but
@@ -165,24 +155,20 @@ text \<open>Decoder: extract \<open>M\<close>-symbols from a list of blocks by
   forward direction of
   \<open>ae_validation_canonical_iff_encoder_image\<close>.\<close>
 
-definition ae_decode_block :: "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<Rightarrow> 'a list" where
-  "ae_decode_block bl f =
-     takeWhile (\<lambda>a. a \<noteq> bl) (map f (enum_class.enum :: 'c list))"
+definition ae_decode_block :: "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> 'a list" where
+  "ae_decode_block m bl f =
+     takeWhile (\<lambda>a. a \<noteq> bl) (map f [0..<m])"
 
-definition ae_decode_input :: "'a \<Rightarrow> (('c :: enum) \<Rightarrow> 'a) list \<Rightarrow> 'a list" where
-  "ae_decode_input bl w = concat (map (ae_decode_block bl) w)"
+definition ae_decode_input :: "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) list \<Rightarrow> 'a list" where
+  "ae_decode_input m bl w = concat (map (ae_decode_block m bl) w)"
 
 subsection \<open>Initial stage\<close>
 
-text \<open>Initial within-block offset.  Every tape's offset starts at a
-  canonical element of \<open>'c\<close> (treated as the within-block position
-  of \<open>M\<close>'s left endmarker on each tape).  The specific element is
-  underspecified at this level; the simulation argument (§30.4)
-  fixes a canonical \<open>0\<close>-offset matching \<open>M\<close>'s initial head
-  position.\<close>
+text \<open>Initial within-block offset: \<open>0\<close> on every tape (treated as
+  the within-block position of \<open>M\<close>'s left endmarker on each tape).\<close>
 
-definition init_offset :: "nat \<Rightarrow> ('c :: enum)" where
-  "init_offset = (\<lambda>_. SOME x. True)"
+definition init_offset :: "nat \<Rightarrow> nat" where
+  "init_offset = (\<lambda>_. 0)"
 
 text \<open>Initial buffer.  Every tape starts with three constant
   \<open>LE\<close>-blocks: at \<open>M'\<close>'s position 0 the home block is the
@@ -192,10 +178,10 @@ text \<open>Initial buffer.  Every tape starts with three constant
   every stage.\<close>
 
 definition init_buffer ::
-  "'a \<Rightarrow> (nat \<Rightarrow> (('c :: enum \<Rightarrow> 'a)
-                  \<times> ('c \<Rightarrow> 'a)
-                  \<times> ('c \<Rightarrow> 'a)))" where
-  "init_buffer le = (\<lambda>_. (LE_block le, LE_block le, LE_block le))"
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> ((nat \<Rightarrow> 'a)
+                  \<times> (nat \<Rightarrow> 'a)
+                  \<times> (nat \<Rightarrow> 'a)))" where
+  "init_buffer m le = (\<lambda>_. (LE_block m le, LE_block m le, LE_block m le))"
 
 text \<open>Initial destination indicator: every tape starts with
   \<open>AE_Home\<close> (the indicator is meaningful only after the compute
@@ -208,8 +194,8 @@ text \<open>Initial stage: zero offset, all-\<open>LE\<close> buffers, dest = ho
   substep counter \<open>SS1\<close>.\<close>
 
 definition init_stage ::
-  "'a \<Rightarrow> ('a, 'c :: enum) ae_stage" where
-  "init_stage le = (init_offset, init_buffer le, init_dest, VFwd)"
+  "nat \<Rightarrow> 'a \<Rightarrow> 'a ae_stage" where
+  "init_stage m le = (init_offset, init_buffer m le, init_dest, VFwd)"
 
 subsection \<open>Encoder-canonicity predicates\<close>
 
@@ -218,21 +204,21 @@ text \<open>A block is \<open>pure\<close> if every cell is non-blank.  In the
   this form (every cell is from the original input).\<close>
 
 definition is_pure_block ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<Rightarrow> bool" where
-  "is_pure_block bl f = (\<forall>x. f x \<noteq> bl)"
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
+  "is_pure_block m bl f = (\<forall>x<m. f x \<noteq> bl)"
 
 text \<open>A block is \<open>trailing-padded\<close> if there is a non-empty,
-  proper prefix (under the canonical \<open>'c\<close>-enumeration) of
+  proper prefix (in offset order) of
   non-blank cells, and the remaining cells are all blank.  In the
   encoder image, the last block has this form when the
   input length is not a multiple of \<open>c\<close>.\<close>
 
 definition is_padded_block ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<Rightarrow> bool" where
-  "is_padded_block bl f =
-     (\<exists>k. k \<ge> 1 \<and> k < length (enum_class.enum :: 'c list)
-       \<and> (\<forall>x. c_idx x < k \<longrightarrow> f x \<noteq> bl)
-       \<and> (\<forall>x. c_idx x \<ge> k \<longrightarrow> f x = bl))"
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
+  "is_padded_block m bl f =
+     (\<exists>k. k \<ge> 1 \<and> k < length [0..<m]
+       \<and> (\<forall>x<m. x < k \<longrightarrow> f x \<noteq> bl)
+       \<and> (\<forall>x<m. x \<ge> k \<longrightarrow> f x = bl))"
 
 text \<open>Encoder-canonical block: pure or trailing-padded.  The
   validation phase accepts only blocks satisfying this
@@ -240,8 +226,8 @@ text \<open>Encoder-canonical block: pure or trailing-padded.  The
   non-trailing positions) route the input to \<open>r_M'\<close>.\<close>
 
 definition is_canonical_block ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<Rightarrow> bool" where
-  "is_canonical_block bl f = (is_pure_block bl f \<or> is_padded_block bl f)"
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> bool" where
+  "is_canonical_block m bl f = (is_pure_block m bl f \<or> is_padded_block m bl f)"
 
 text \<open>Sequence-level encoder-canonicity: the input \<open>w\<close> is
   well-formed (= in the encoder image) iff every block is
@@ -256,10 +242,10 @@ text \<open>Sequence-level encoder-canonicity: the input \<open>w\<close> is
   any non-\<open>bl_block\<close> cell after a padded block.\<close>
 
 definition ae_input_well_formed ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a) list \<Rightarrow> bool" where
-  "ae_input_well_formed bl w \<longleftrightarrow>
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a) list \<Rightarrow> bool" where
+  "ae_input_well_formed m bl w \<longleftrightarrow>
      (\<forall>s. s < length w \<longrightarrow>
-        (is_pure_block bl (w ! s)
-         \<or> (s = length w - 1 \<and> is_padded_block bl (w ! s))))"
+        (is_pure_block m bl (w ! s)
+         \<or> (s = length w - 1 \<and> is_padded_block m bl (w ! s))))"
 
 end

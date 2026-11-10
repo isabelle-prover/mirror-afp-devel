@@ -369,13 +369,6 @@ None of them builds a machine for a particular language.
   bounded range (\texttt{syms\_to\_nat\_nat\_to\_syms},
   \texttt{nat\_to\_syms\_inj}), and the width that indexes a finite set,
   $\lceil \log_2 |S| \rceil$ and at least one (\texttt{block\_width}).
-\item[\texttt{Multitape\_Enum\_Type}] Machine-free support for
-  applying a theorem quantified over enumerable types, such as the linear
-  speedup theorem of \sessAE: a local copy of $\{0,\ldots,K-1\}$ is an
-  instance of \texttt{enum}, so such a statement can be discharged with
-  the \texttt{HOL-Types\_To\_Sets} local typedef (applied by the theory
-  that uses it,
-  so this entry does not depend on that session).
 \end{description}
 
 \newpage

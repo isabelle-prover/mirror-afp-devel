@@ -16,19 +16,19 @@ text \<open>Halting correspondence: when \<open>M\<close> is in a halting state 
   accepting ones.\<close>
 
 lemma ae_simulates_terminal_state:
-  assumes sim: "ae_simulates M c d"
+  assumes sim: "ae_simulates m M c d"
       and terminal: "q \<in> {t_ktm M, r_ktm M}"
       and state: "ktc_state c = q"
-  shows "ktc_state d = (q, init_stage (le_ktm M))"
+  shows "ktc_state d = (q, init_stage m (le_ktm M))"
 proof -
   obtain p off buf dest idx where shape:
     "ktc_state d = (p, off, buf, dest, idx)" by (cases "ktc_state d")
   have paired: "ktc_state c = p" and phase:
     "(idx = SS1 \<and> p \<notin> {t_ktm M, r_ktm M}) \<or>
-      (p \<in> {t_ktm M, r_ktm M} \<and> (off, buf, dest, idx) = init_stage (le_ktm M))"
+      (p \<in> {t_ktm M, r_ktm M} \<and> (off, buf, dest, idx) = init_stage m (le_ktm M))"
     using sim unfolding ae_simulates_def Let_def shape by simp_all
   have p: "p = q" using paired state by simp
-  have canonical: "(off, buf, dest, idx) = init_stage (le_ktm M)"
+  have canonical: "(off, buf, dest, idx) = init_stage m (le_ktm M)"
     using phase terminal p by blast
   show ?thesis using shape p canonical by simp
 qed
@@ -49,7 +49,7 @@ text \<open>Chunked-induction engine for the simulation-phase
 
   Proof structure (when discharged): induction on the M-path
   length \<open>n\<close>, taking the next chunk of up to
-  \<open>c = card (UNIV :: 'c set)\<close> M-steps per stage and
+  \<open>m\<close> M-steps per stage and
   invoking \<open>ae_simulates_forward_stage_general\<close>.  The
   invariant \<open>buf_gamma c'_j \<and> le_anchor c'_j\<close> is
   preserved by \<open>forward_stage_general\<close>'s output
@@ -66,8 +66,8 @@ lemma ae_simulation_phase_chunked:
   fixes M :: "('q, 'a) ktm"
     and w :: "'a list"
     and cM cM_final :: "('a, 'q) ktc_config"
-    and c' :: "('c :: enum \<Rightarrow> 'a,
-                'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' :: "(nat \<Rightarrow> 'a,
+                'q \<times> 'a ae_stage) ktc_config"
     and n :: nat
   assumes vM:         "valid_ktm M"
       and lu:         "le_unique M"
@@ -80,13 +80,13 @@ lemma ae_simulation_phase_chunked:
                           \<in> (ktm_step (delta_ktm M))\<^sup>*"
       and trace:      "(cM, cM_final) \<in> (ktm_step (delta_ktm M))^^n"
       and accept:     "ktc_state cM_final = q_stop"
-      and sim:        "ae_simulates M cM c'"
-      and buf_gamma:  "ae_buffer_in_gamma_block M c'"
-      and le_anchor:  "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block (le_ktm M)"
-  shows "\<exists>m c''. m \<le> 8 * ((n + card (UNIV :: 'c set) - 1)
-                            div card (UNIV :: 'c set))
-              \<and> (c', c'') \<in> (ktm_step (alphabet_enlarge_delta M))^^m
-              \<and> ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+      and sim:        "ae_simulates m M cM c'"
+      and buf_gamma:  "ae_buffer_in_gamma_block m M c'"
+      and le_anchor:  "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block m (le_ktm M)"
+  shows "\<exists>nm c''. nm \<le> 8 * ((n + m - 1)
+                            div m)
+              \<and> (c', c'') \<in> (ktm_step (alphabet_enlarge_delta m M))^^nm
+              \<and> ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
   using reach_M trace accept sim buf_gamma le_anchor
 proof (induction n arbitrary: cM cM_final c' rule: less_induct)
   case (less n)
@@ -104,21 +104,21 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
         trace), so \<open>ktc_state cM = q_stop\<close> by \<open>accept\<close>.
         \<open>ae_simulates_accept_iff\<close> then forces
         \<open>ktc_state c' = (q_stop, init_stage (le_ktm M))\<close>.
-        Witness: \<open>m = 0\<close>, \<open>c'' = c'\<close>.\<close>
+        Witness: \<open>nm = 0\<close>, \<open>c'' = c'\<close>.\<close>
     have trace_zero: "(cM, cM_final) \<in> (ktm_step (delta_ktm M))^^0"
       using less.prems(2) \<open>n = 0\<close> by simp
     have cM_eq: "cM_final = cM"
       using trace_zero by simp
     have ktc_cM: "ktc_state cM = q_stop"
       using less.prems(3) cM_eq by simp
-    have state_c': "ktc_state c' = (q_stop, init_stage (le_ktm M))"
+    have state_c': "ktc_state c' = (q_stop, init_stage m (le_ktm M))"
       by (rule ae_simulates_terminal_state[OF less.prems(4) terminal ktc_cM])
     have run_zero:
-        "(c', c') \<in> (ktm_step (alphabet_enlarge_delta M))^^0"
+        "(c', c') \<in> (ktm_step (alphabet_enlarge_delta m M))^^0"
       by simp
     have bound_zero:
-        "(0 :: nat) \<le> 8 * ((n + card (UNIV :: 'c set) - 1)
-                             div card (UNIV :: 'c set))"
+        "(0 :: nat) \<le> 8 * ((n + m - 1)
+                             div m)"
       by simp
     show ?thesis
       using bound_zero run_zero state_c' by blast
@@ -153,12 +153,9 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
         The chunk satisfies \<open>end_or_halt\<close>, which holds via
         \<open>k_chunk = n = halt\<close> when \<open>n \<le> c\<close>, or via
         \<open>k_chunk = c\<close> when \<open>n > c\<close>.\<close>
-    define c where "c \<equiv> card (UNIV :: 'c set)"
+    define c where "c \<equiv> m"
     have c_pos: "0 < c"
-    proof -
-      have "(c_first :: 'c) \<in> UNIV" by simp
-      thus ?thesis unfolding c_def by (simp add: card_gt_0_iff)
-    qed
+      unfolding c_def by (rule ae_buffer_in_gamma_block_width_pos[OF buf_gamma])
     define k_chunk where "k_chunk \<equiv> min n c"
     have k_chunk_pos:  "0 < k_chunk"
       using c_pos Suc unfolding k_chunk_def by simp
@@ -272,30 +269,30 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
         \<open>obtain ... by (rule ...)\<close> as the \<open>obtains\<close>-elim
         pattern (automation diverges on \<open>obtains\<close> rules
         with multiple output conjuncts).\<close>
-    have k_chunk_le_card: "k_chunk \<le> card (UNIV :: 'c set)"
+    have k_chunk_le_card: "k_chunk \<le> m"
       using k_chunk_le_c unfolding c_def .
     have end_or_halt_card:
-        "k_chunk = card (UNIV :: 'c set)
+        "k_chunk = m
           \<or> ktc_state cM_k \<in> {t_ktm M, r_ktm M}"
       using end_or_halt unfolding c_def .
     have no_le_per_tape_card:
         "\<forall>kk. (ktc_pos c' kk \<ge> 2
-                \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+                \<longrightarrow> (\<forall>i. i < 3 * m
                           \<longrightarrow> ktc_tape cM kk
-                                ((ktc_pos c' kk - 2) * card (UNIV :: 'c set) + 1 + i)
+                                ((ktc_pos c' kk - 2) * m + 1 + i)
                               \<noteq> le_ktm M))
              \<and> (ktc_pos c' kk = 1
-                  \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < 2 * m
                             \<longrightarrow> ktc_tape cM kk (Suc i) \<noteq> le_ktm M))
              \<and> (ktc_pos c' kk = 0
-                  \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+                  \<longrightarrow> (\<forall>i. i < m
                             \<longrightarrow> ktc_tape cM kk (Suc i) \<noteq> le_ktm M))"
       using no_le_per_tape unfolding c_def .
     obtain c8 where
-        chain8: "(c', c8) \<in> ktm_step (alphabet_enlarge_delta M) ^^ 8"
-      and sim_c8: "ae_simulates M cM_k c8"
-      and buf_gamma_c8: "ae_buffer_in_gamma_block M c8"
-      and le_anchor_c8: "\<forall>kk<k_ktm M. ktc_tape c8 kk 0 = LE_block (le_ktm M)"
+        chain8: "(c', c8) \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 8"
+      and sim_c8: "ae_simulates m M cM_k c8"
+      and buf_gamma_c8: "ae_buffer_in_gamma_block m M c8"
+      and le_anchor_c8: "\<forall>kk<k_ktm M. ktc_tape c8 kk 0 = LE_block m (le_ktm M)"
       by (rule ae_simulates_forward_stage_general
                  [OF vM lu less.prems(4) cM_in_Q cM_neq_t cM_neq_r
                      less.prems(5) k_chunk_le_card chunk_trace
@@ -328,10 +325,10 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
     have n_minus_lt_n: "n - k_chunk < n"
       using k_chunk_pos Suc by linarith
     obtain m_rec c'' where
-        bound_rec: "m_rec \<le> 8 * ((n - k_chunk + card (UNIV :: 'c set) - 1)
-                                   div card (UNIV :: 'c set))"
-      and chain_rec: "(c8, c'') \<in> (ktm_step (alphabet_enlarge_delta M))^^m_rec"
-      and state_c'': "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+        bound_rec: "m_rec \<le> 8 * ((n - k_chunk + m - 1)
+                                   div m)"
+      and chain_rec: "(c8, c'') \<in> (ktm_step (alphabet_enlarge_delta m M))^^m_rec"
+      and state_c'': "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
       using less.IH[OF n_minus_lt_n reach_cM_k rest_after_chunk
                        less.prems(3) sim_c8 buf_gamma_c8 le_anchor_c8]
       by blast
@@ -339,7 +336,7 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
         with the recursion-arm \<open>chain_rec\<close> via \<open>relpow_add\<close>:
         \<open>rel ^^ 8 O rel ^^ m_rec = rel ^^ (8 + m_rec)\<close>.\<close>
     have chain_compose:
-        "(c', c'') \<in> (ktm_step (alphabet_enlarge_delta M))^^(8 + m_rec)"
+        "(c', c'') \<in> (ktm_step (alphabet_enlarge_delta m M))^^(8 + m_rec)"
       using chain8 chain_rec by (auto simp: relpow_add)
     \<comment> \<open>Substep K: arithmetic bound \<open>8 + m_rec \<le> 8 \<cdot> \<lceil>n/c\<rceil>\<close>.
         Case-split mirroring substep E's:
@@ -355,27 +352,27 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
     have n_pos: "0 < n" using Suc by simp
     have bound_compose:
         "8 + m_rec
-          \<le> 8 * ((n + card (UNIV :: 'c set) - 1)
-                    div card (UNIV :: 'c set))"
+          \<le> 8 * ((n + m - 1)
+                    div m)"
     proof (cases "k_chunk = n")
       case True
       have m_rec_zero: "m_rec = 0"
       proof -
         have "n - k_chunk = 0" using True by simp
-        hence "(n - k_chunk + card (UNIV :: 'c set) - 1)
-                  div card (UNIV :: 'c set) = 0"
+        hence "(n - k_chunk + m - 1)
+                  div m = 0"
           using c_pos[unfolded c_def] by simp
         thus ?thesis using bound_rec by simp
       qed
       have one_le_ceil:
-          "1 \<le> (n + card (UNIV :: 'c set) - 1)
-                  div card (UNIV :: 'c set)"
+          "1 \<le> (n + m - 1)
+                  div m"
       proof -
-        have "card (UNIV :: 'c set) \<le> n + card (UNIV :: 'c set) - 1"
+        have "m \<le> n + m - 1"
           using n_pos by simp
-        hence "card (UNIV :: 'c set) div card (UNIV :: 'c set)
-                \<le> (n + card (UNIV :: 'c set) - 1)
-                    div card (UNIV :: 'c set)"
+        hence "m div m
+                \<le> (n + m - 1)
+                    div m"
           using div_le_mono by blast
         thus ?thesis using c_pos[unfolded c_def] by simp
       qed
@@ -395,32 +392,32 @@ proof (induction n arbitrary: cM cM_final c' rule: less_induct)
       have n_minus_eq: "n - k_chunk + c - 1 = n - 1"
         using k_chunk_eq_c n_gt_c by simp
       have rec_bound:
-          "m_rec \<le> 8 * ((n - 1) div card (UNIV :: 'c set))"
+          "m_rec \<le> 8 * ((n - 1) div m)"
         using bound_rec n_minus_eq unfolding c_def by simp
       have ceil_step:
-          "(n + card (UNIV :: 'c set) - 1)
-              div card (UNIV :: 'c set)
-            = (n - 1) div card (UNIV :: 'c set) + 1"
+          "(n + m - 1)
+              div m
+            = (n - 1) div m + 1"
       proof -
-        have c_nz: "card (UNIV :: 'c set) \<noteq> 0"
+        have c_nz: "m \<noteq> 0"
           using c_pos unfolding c_def by simp
-        have sum_eq: "n + card (UNIV :: 'c set) - 1
-                       = (n - 1) + card (UNIV :: 'c set)"
+        have sum_eq: "n + m - 1
+                       = (n - 1) + m"
           using n_pos by simp
         have div_step:
-            "((n - 1) + card (UNIV :: 'c set))
-                div card (UNIV :: 'c set)
-              = (n - 1) div card (UNIV :: 'c set) + 1"
+            "((n - 1) + m)
+                div m
+              = (n - 1) div m + 1"
           using div_add_self2[OF c_nz] .
         show ?thesis using sum_eq div_step by simp
       qed
       have "8 + m_rec
-              \<le> 8 + 8 * ((n - 1) div card (UNIV :: 'c set))"
+              \<le> 8 + 8 * ((n - 1) div m)"
         using rec_bound by simp
-      also have "\<dots> = 8 * ((n - 1) div card (UNIV :: 'c set) + 1)"
+      also have "\<dots> = 8 * ((n - 1) div m + 1)"
         by simp
-      also have "\<dots> = 8 * ((n + card (UNIV :: 'c set) - 1)
-                            div card (UNIV :: 'c set))"
+      also have "\<dots> = 8 * ((n + m - 1)
+                            div m)"
         using ceil_step by simp
       finally show ?thesis .
     qed
@@ -459,24 +456,24 @@ lemma ae_simulation_phase_step_count:
   fixes M :: "('q, 'a) ktm"
     and T :: "nat \<Rightarrow> nat"
     and u :: "'a list"
-    and c' :: "('c :: enum \<Rightarrow> 'a,
-                'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' :: "(nat \<Rightarrow> 'a,
+                'q \<times> 'a ae_stage) ktc_config"
   assumes vM:         "valid_ktm M"
       and lu:         "le_unique M"
       and terminal: "q_stop \<in> {t_ktm M, r_ktm M}"
       and m_accepts:  "reaches_state_in_time_ktm M u q_stop (T (length u))"
       and u_sub:      "set u \<subseteq> Sigma_ktm M"
-      and sim:        "ae_simulates M (init_config_ktm M u) c'"
-      and buf_gamma_c': "ae_buffer_in_gamma_block M c'"
-      and le_anchor_c': "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block (le_ktm M)"
+      and sim:        "ae_simulates m M (init_config_ktm M u) c'"
+      and buf_gamma_c': "ae_buffer_in_gamma_block m M c'"
+      and le_anchor_c': "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block m (le_ktm M)"
       and s_neq_t:    "s_ktm M \<noteq> t_ktm M"
       and s_neq_r:    "s_ktm M \<noteq> r_ktm M"
       and le_neq_bl:  "le_ktm M \<noteq> bl_ktm M"
   obtains n_steps :: nat and c'' where
-      "n_steps \<le> 8 * ((T (length u) + card (UNIV :: 'c set) - 1)
-                       div card (UNIV :: 'c set))"
-    and "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ n_steps"
-    and "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+      "n_steps \<le> 8 * ((T (length u) + m - 1)
+                       div m)"
+    and "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_steps"
+    and "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
 proof -
   \<comment> \<open>Step 1: unpack the weak-acceptance witness — the specific
       terminal \<open>M\<close>-path of length \<open>n0 \<le> T (length u)\<close>
@@ -498,10 +495,10 @@ proof -
           \<in> (ktm_step (delta_ktm M))\<^sup>*"
     by simp
   obtain n_steps c'' where
-      tight_bound: "n_steps \<le> 8 * ((n0 + card (UNIV :: 'c set) - 1)
-                                       div card (UNIV :: 'c set))"
-    and run:   "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ n_steps"
-    and halt:  "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+      tight_bound: "n_steps \<le> 8 * ((n0 + m - 1)
+                                       div m)"
+    and run:   "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_steps"
+    and halt:  "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
     using ae_simulation_phase_chunked[OF vM lu u_sub le_neq_bl s_neq_t s_neq_r terminal
                                           init_reach n0_run n0_acc sim
                                           buf_gamma_c' le_anchor_c']
@@ -510,22 +507,22 @@ proof -
       loose \<open>T(|u|)\<close>-bound using \<open>n0 \<le> T (length u)\<close> and
       monotonicity of \<open>div\<close> on the dividend.\<close>
   have div_mono:
-      "(n0 + card (UNIV :: 'c set) - 1) div card (UNIV :: 'c set)
-         \<le> (T (length u) + card (UNIV :: 'c set) - 1)
-              div card (UNIV :: 'c set)"
+      "(n0 + m - 1) div m
+         \<le> (T (length u) + m - 1)
+              div m"
     using n0_bd by (intro div_le_mono add_le_mono) auto
   have loose_bound:
-      "n_steps \<le> 8 * ((T (length u) + card (UNIV :: 'c set) - 1)
-                       div card (UNIV :: 'c set))"
+      "n_steps \<le> 8 * ((T (length u) + m - 1)
+                       div m)"
     using tight_bound div_mono by linarith
   show ?thesis
   proof (rule that)
-    show "n_steps \<le> 8 * ((T (length u) + card (UNIV :: 'c set) - 1)
-                            div card (UNIV :: 'c set))"
+    show "n_steps \<le> 8 * ((T (length u) + m - 1)
+                            div m)"
       using loose_bound .
-    show "(c', c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ n_steps"
+    show "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_steps"
       using run .
-    show "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+    show "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
       using halt .
   qed
 qed

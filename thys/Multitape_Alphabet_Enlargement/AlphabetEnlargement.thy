@@ -15,14 +15,14 @@ text \<open>The three top-level theorems characterising
 
 subsection \<open>Top-level theorems\<close>
 
-text \<open>Time bound, encoded form: \<open>M' = alphabet_enlarge M\<close>
-  on input \<open>encode_input (bl_ktm M) w\<close> runs in time
-  \<open>\<alpha> \<cdot> \<lceil>n/c\<rceil> + 8 \<cdot> \<lceil>T(n) / c\<rceil> + f\<close> for structural
+text \<open>Time bound, encoded form: \<open>M' = alphabet_enlarge m M\<close>
+  on input \<open>encode_input m (bl_ktm M) w\<close> runs in time
+  \<open>\<alpha> \<cdot> \<lceil>n/m\<rceil> + 8 \<cdot> \<lceil>T(n) / m\<rceil> + f\<close> for structural
   additive constants \<open>\<alpha>, f\<close> independent of \<open>M\<close>, where
-  \<open>c = card (UNIV :: 'c set)\<close> is the grouping factor and \<open>n\<close> is
+  \<open>m\<close> is the block size and \<open>n\<close> is
   \<open>M\<close>'s input length \<open>length w\<close>.  \<open>M'\<close>'s input is the
-  consolidated block-encoding \<open>encode_input (bl_ktm M) w\<close> of
-  length \<open>\<lceil>n/c\<rceil>\<close>.
+  consolidated block-encoding \<open>encode_input m (bl_ktm M) w\<close> of
+  length \<open>\<lceil>n/m\<rceil>\<close>.
 
   This is the linear-speedup theorem in \<^emph>\<open>encoded form\<close>:
   the input bijection
@@ -52,7 +52,7 @@ text \<open>Time bound, encoded form: \<open>M' = alphabet_enlarge M\<close>
   \<^emph>\<open>Existential acceptance.\<close>  Hypothesis and conclusion both at
   \<open>accepts_in_time_ktm\<close> (the existential accepting-path
   predicate).  The constants \<open>\<alpha>\<close>, \<open>f\<close>
-  depend only on \<open>M\<close> (and the type-level \<open>'c\<close>), not
+  depend only on \<open>M\<close> and \<open>m\<close>, not
   on \<open>w\<close>; the universal-\<open>w\<close> form inside \<open>obtains\<close> encodes
   this.
 
@@ -73,18 +73,19 @@ theorem alphabet_enlarge_terminal_time:
     and T :: "nat \<Rightarrow> nat"
   assumes wf:        "well_formed_ktm M"
       and terminal: "q_stop \<in> {t_ktm M, r_ktm M}"
+      and m_pos: "0 < m"
   shows "\<forall>w. set w \<subseteq> Sigma_ktm M
                 \<longrightarrow> reaches_state_in_time_ktm M w q_stop (T (length w))
                 \<longrightarrow> reaches_state_in_time_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm)
-                      (encode_input (bl_ktm M) w)
-                      (q_stop, init_stage (le_ktm M))
-                      (2 * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                       + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                               div card (UNIV :: 'c set))
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm)
+                      (encode_input m (bl_ktm M) w)
+                      (q_stop, init_stage m (le_ktm M))
+                      (2 * ((length w + m - 1)
+                              div m)
+                       + 8 * ((T (length w) + m - 1)
+                               div m)
                        + 4)"
 proof -
   from wf have vM:        "valid_ktm M"
@@ -94,14 +95,14 @@ proof -
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
 
-  let ?c = "card (UNIV :: 'c set)"
-  let ?M' = "alphabet_enlarge M
-               :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?M' = "alphabet_enlarge m M
+               :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
 
     show "\<forall>w. set w \<subseteq> Sigma_ktm M
                 \<longrightarrow> reaches_state_in_time_ktm M w q_stop (T (length w))
-                \<longrightarrow> reaches_state_in_time_ktm ?M' (encode_input (bl_ktm M) w)
-                      (q_stop, init_stage (le_ktm M))
+                \<longrightarrow> reaches_state_in_time_ktm ?M' (encode_input m (bl_ktm M) w)
+                      (q_stop, init_stage m (le_ktm M))
                       (2 * ((length w + ?c - 1) div ?c)
                        + 8 * ((T (length w) + ?c - 1) div ?c)
                        + 4)"
@@ -112,11 +113,11 @@ proof -
 
       \<comment> \<open>Step 1: encoded-input setup — gamma-block containment,
           well-formedness, and \<open>s_ktm M \<in> Q_ktm M\<close>.\<close>
-      let ?ew = "encode_input (bl_ktm M) w
-                  :: ('c \<Rightarrow> 'a) list"
-      have ew_sub: "set ?ew \<subseteq> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
+      let ?ew = "encode_input m (bl_ktm M) w
+                  :: (nat \<Rightarrow> 'a) list"
+      have ew_sub: "set ?ew \<subseteq> gamma_block m (Sigma_ktm M \<union> {bl_ktm M})"
         by (rule encode_input_in_gamma_block[OF w_sub])
-      have ew_wf: "ae_input_well_formed (bl_ktm M) ?ew"
+      have ew_wf: "ae_input_well_formed m (bl_ktm M) ?ew"
         by (rule encode_input_well_formed[OF vM w_sub])
       have s_in_Q: "s_ktm M \<in> Q_ktm M"
         by (rule valid_ktm_s_in_Q[OF vM])
@@ -126,17 +127,17 @@ proof -
           configuration with the tape unchanged from
           \<open>ae_init_config M ?ew\<close>.\<close>
       let ?c1 = "KConfig (s_ktm M, init_offset,
-                             init_buffer (le_ktm M), init_dest, SS1)
-                           (ktc_tape (ae_init_config M ?ew))
+                             init_buffer m (le_ktm M), init_dest, SS1)
+                           (ktc_tape (ae_init_config m M ?ew))
                            (\<lambda>_ :: nat. 0)
-                   :: ('c \<Rightarrow> 'a,
-                       'q \<times> ('a, 'c) ae_stage) ktc_config"
+                   :: (nat \<Rightarrow> 'a,
+                       'q \<times> 'a ae_stage) ktc_config"
       have val_chain:
-          "(ae_init_config M ?ew, ?c1)
-              \<in> ktm_step (alphabet_enlarge_delta M)
+          "(ae_init_config m M ?ew, ?c1)
+              \<in> ktm_step (alphabet_enlarge_delta m M)
                   ^^ (2 * length ?ew + 4)"
         by (rule ae_validation_well_formed_to_SS1
-                   [OF vM ew_sub ew_wf s_in_Q s_neq_t s_neq_r le_neq_bl])
+                   [OF vM ew_sub ew_wf s_in_Q s_neq_t s_neq_r le_neq_bl m_pos])
 
       \<comment> \<open>Step 3: post-validation invariants on \<open>?c1\<close>.
 
@@ -155,25 +156,25 @@ proof -
               start state.  All five conjuncts derived directly
               from the start-config shape and the tape-side
               invariants on \<open>ae_init_config\<close>.\<close>
-      have le_anchor: "\<forall>kk<k_ktm M. ktc_tape ?c1 kk 0 = LE_block (le_ktm M)"
+      have le_anchor: "\<forall>kk<k_ktm M. ktc_tape ?c1 kk 0 = LE_block m (le_ktm M)"
       proof (intro allI impI)
         fix kk assume kk_lt: "kk < k_ktm M"
-        have "ktc_tape ?c1 kk 0 = ktc_tape (ae_init_config M ?ew) kk 0"
+        have "ktc_tape ?c1 kk 0 = ktc_tape (ae_init_config m M ?ew) kk 0"
           by simp
-        also have "\<dots> = LE_block (le_ktm M)"
+        also have "\<dots> = LE_block m (le_ktm M)"
           by (rule ae_init_config_tape_le[OF kk_lt])
-        finally show "ktc_tape ?c1 kk 0 = LE_block (le_ktm M)" .
+        finally show "ktc_tape ?c1 kk 0 = LE_block m (le_ktm M)" .
       qed
 
-      have buf_gamma: "ae_buffer_in_gamma_block M ?c1"
+      have buf_gamma: "ae_buffer_in_gamma_block m M ?c1"
         unfolding ae_buffer_in_gamma_block_def init_buffer_def
-        using LE_block_in_gamma_block[OF valid_ktm_LE_in_Gamma[OF vM]]
-        by simp
+        using LE_block_in_gamma_block[OF valid_ktm_LE_in_Gamma[OF vM]] m_pos
+        by (simp add: init_offset_def)
 
       have tape_corr:
-          "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+          "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                   (ktc_tape (init_config_ktm M w) k)
-                  (ktc_tape (ae_init_config M ?ew) k)"
+                  (ktc_tape (ae_init_config m M ?ew) k)"
         by (rule ae_tape_correspondence_init[OF vM w_sub])
       have subst_pos_zero:
           "\<forall>k. ktc_pos (init_config_ktm M w) k = 0"
@@ -181,25 +182,25 @@ proof -
       have c1_pos_zero: "\<forall>k. ktc_pos ?c1 k = 0" by simp
       have pos_corr_c1:
           "\<forall>k. ktc_pos (init_config_ktm M w) k
-                  = ae_decode_pos (ktc_pos ?c1 k)
-                                  ((init_offset :: nat \<Rightarrow> 'c) k)"
+                  = ae_decode_pos m (ktc_pos ?c1 k)
+                                  ((init_offset :: nat \<Rightarrow> nat) k)"
         using c1_pos_zero subst_pos_zero
         unfolding ae_decode_pos_def by simp
       have qM_subst: "ktc_state (init_config_ktm M w) = s_ktm M"
         by (cases M) simp
       have c1_state:
           "ktc_state ?c1 = (s_ktm M, init_offset,
-                            init_buffer (le_ktm M), init_dest, SS1)"
+                            init_buffer m (le_ktm M), init_dest, SS1)"
         by simp
-      have gamma_block_c1: "ae_tape_in_gamma_block M ?c1"
+      have gamma_block_c1: "ae_tape_in_gamma_block m M ?c1"
         unfolding ae_tape_in_gamma_block_def
       proof (intro conjI)
-        show "\<forall>k p. ktc_tape ?c1 k p \<in> gamma_block (\<Gamma>_ktm M)"
+        show "\<forall>k p. ktc_tape ?c1 k p \<in> gamma_block m (\<Gamma>_ktm M)"
           using ae_init_config_in_gamma_block[OF vM ew_sub] by simp
-        show "\<forall>j\<ge>k_ktm M. \<forall>p. ktc_tape ?c1 j p = bl_block (bl_ktm M)"
+        show "\<forall>j\<ge>k_ktm M. \<forall>p. ktc_tape ?c1 j p = bl_block m (bl_ktm M)"
           by (simp add: ae_init_config_tape_blank_tail)
       qed
-      have sim: "ae_simulates M (init_config_ktm M w) ?c1"
+      have sim: "ae_simulates m M (init_config_ktm M w) ?c1"
         unfolding ae_simulates_def Let_def c1_state
         using qM_subst tape_corr pos_corr_c1 gamma_block_c1
               s_neq_t s_neq_r by simp
@@ -213,8 +214,8 @@ proof -
           n_sim_bd:
               "n_sim \<le> 8 * ((T (length w) + ?c - 1) div ?c)"
         and sim_chain:
-            "(?c1, c'') \<in> ktm_step (alphabet_enlarge_delta M) ^^ n_sim"
-        and c''_state: "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+            "(?c1, c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_sim"
+        and c''_state: "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
         using ae_simulation_phase_step_count
                 [where M = M and T = T and u = w and c' = ?c1,
                  OF vM lu terminal m_acc w_sub sim buf_gamma le_anchor
@@ -223,8 +224,8 @@ proof -
 
       \<comment> \<open>Step 5: compose validation and simulation chains.\<close>
       have chain_compose:
-          "(ae_init_config M ?ew, c'')
-              \<in> ktm_step (alphabet_enlarge_delta M)
+          "(ae_init_config m M ?ew, c'')
+              \<in> ktm_step (alphabet_enlarge_delta m M)
                   ^^ ((2 * length ?ew + 4) + n_sim)"
         using val_chain sim_chain by (auto simp: relpow_add)
 
@@ -243,20 +244,20 @@ proof -
       \<comment> \<open>Step 7: bridge to substrate-level expressions and
           conclude \<open>accepts_in_time_ktm\<close>.\<close>
       have init_bridge:
-          "init_config_ktm ?M' ?ew = ae_init_config M ?ew"
+          "init_config_ktm ?M' ?ew = ae_init_config m M ?ew"
         by (rule init_config_alphabet_enlarge)
       have delta_bridge:
-          "delta_ktm ?M' = alphabet_enlarge_delta M"
+          "delta_ktm ?M' = alphabet_enlarge_delta m M"
         by (rule delta_ktm_alphabet_enlarge)
 
-      show "reaches_state_in_time_ktm ?M' ?ew (q_stop, init_stage (le_ktm M)) ?target"
+      show "reaches_state_in_time_ktm ?M' ?ew (q_stop, init_stage m (le_ktm M)) ?target"
         unfolding reaches_state_in_time_ktm_def
       proof (intro exI conjI)
         show "?total \<le> ?target" using bound .
         show "(init_config_ktm ?M' ?ew, c'')
                 \<in> (ktm_step (delta_ktm ?M')) ^^ ?total"
           using chain_compose init_bridge delta_bridge by simp
-        show "ktc_state c'' = (q_stop, init_stage (le_ktm M))"
+        show "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
           by (rule c''_state)
       qed
     qed
@@ -268,58 +269,60 @@ theorem alphabet_enlarge_time_explicit:
   fixes M :: "('q, 'a) ktm"
     and T :: "nat \<Rightarrow> nat"
   assumes wf:        "well_formed_ktm M"
+      and m_pos: "0 < m"
   shows "\<forall>w. set w \<subseteq> Sigma_ktm M
                 \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                 \<longrightarrow> accepts_in_time_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm)
-                      (encode_input (bl_ktm M) w)
-                      (2 * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                       + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                               div card (UNIV :: 'c set))
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm)
+                      (encode_input m (bl_ktm M) w)
+                      (2 * ((length w + m - 1)
+                              div m)
+                       + 8 * ((T (length w) + m - 1)
+                               div m)
                        + 4)"
   unfolding accepts_in_time_ktm_iff_reaches t_ktm_alphabet_enlarge
-  by (rule alphabet_enlarge_terminal_time [OF wf]) simp
+  by (rule alphabet_enlarge_terminal_time [OF wf _ m_pos]) simp
 
 text \<open>The classical HU-form of the linear-speedup time bound: the
   additive constants \<open>\<alpha>\<close>, \<open>f\<close> instantiated at \<open>\<alpha> = 2\<close>, \<open>f = 4\<close>
   from \<open>alphabet_enlarge_time_explicit\<close>.  The per-block simulation
-  constant \<open>8\<close> and the speedup divisor \<open>card (UNIV :: 'c set)\<close> are already
+  constant \<open>8\<close> and the speedup divisor \<open>m\<close> are already
   explicit in the statement.\<close>
 
 theorem alphabet_enlarge_time:
   fixes M :: "('q, 'a) ktm"
     and T :: "nat \<Rightarrow> nat"
   assumes wf: "well_formed_ktm M"
+      and m_pos: "0 < m"
   obtains \<alpha> f :: nat
     where "\<forall>w. set w \<subseteq> Sigma_ktm M
                 \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                 \<longrightarrow> accepts_in_time_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm)
-                      (encode_input (bl_ktm M) w)
-                      (\<alpha> * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                       + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                               div card (UNIV :: 'c set))
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm)
+                      (encode_input m (bl_ktm M) w)
+                      (\<alpha> * ((length w + m - 1)
+                              div m)
+                       + 8 * ((T (length w) + m - 1)
+                               div m)
                        + f)"
 proof (rule that[of 2 4])
   show "\<forall>w. set w \<subseteq> Sigma_ktm M
                 \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                 \<longrightarrow> accepts_in_time_ktm
-                      (alphabet_enlarge M
-                         :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                             'c \<Rightarrow> 'a) ktm)
-                      (encode_input (bl_ktm M) w)
-                      (2 * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                       + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                               div card (UNIV :: 'c set))
+                      (alphabet_enlarge m M
+                         :: ('q \<times> 'a ae_stage,
+                             nat \<Rightarrow> 'a) ktm)
+                      (encode_input m (bl_ktm M) w)
+                      (2 * ((length w + m - 1)
+                              div m)
+                       + 8 * ((T (length w) + m - 1)
+                               div m)
                        + 4)"
-    by (rule alphabet_enlarge_time_explicit[OF wf])
+    by (rule alphabet_enlarge_time_explicit[OF wf m_pos])
 qed
 
 text \<open>Forward language inclusion modulo input encoding: a word
@@ -360,12 +363,13 @@ text \<open>Forward language inclusion modulo input encoding: a word
 theorem alphabet_enlarge_language_forward:
   fixes M :: "('q, 'a) ktm"
   assumes wf:        "well_formed_ktm M"
+      and m_pos: "0 < m"
   shows "\<forall>w. set w \<subseteq> Sigma_ktm M
               \<longrightarrow> w \<in> Lang_ktm M
-              \<longrightarrow> encode_input (bl_ktm M) w \<in> Lang_ktm
-                    (alphabet_enlarge M
-                       :: ('q \<times> ('a, ('c :: enum)) ae_stage,
-                           'c \<Rightarrow> 'a) ktm)"
+              \<longrightarrow> encode_input m (bl_ktm M) w \<in> Lang_ktm
+                    (alphabet_enlarge m M
+                       :: ('q \<times> 'a ae_stage,
+                           nat \<Rightarrow> 'a) ktm)"
 proof -
   from wf have vM:        "valid_ktm M"
            and lu:        "le_unique M"
@@ -374,9 +378,9 @@ proof -
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
 
-  let ?c = "card (UNIV :: 'c set)"
-  let ?M' = "alphabet_enlarge M
-               :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?M' = "alphabet_enlarge m M
+               :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
 
   show ?thesis
   proof (intro allI impI)
@@ -388,19 +392,19 @@ proof -
         \<open>alphabet_enlarge M\<close>'s \<open>\<Sigma>\<close>: gamma-block
         membership minus the two excluded markers.\<close>
     have enc_in_gamma:
-        "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)
-            \<subseteq> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
+        "set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)
+            \<subseteq> gamma_block m (Sigma_ktm M \<union> {bl_ktm M})"
       by (rule encode_input_in_gamma_block[OF w_sub])
     have enc_no_bl:
-        "bl_block (bl_ktm M)
-            \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
+        "bl_block m (bl_ktm M)
+            \<notin> set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)"
       by (rule encode_input_no_bl_block[OF vM w_sub])
     have enc_no_LE:
-        "LE_block (le_ktm M)
-            \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
+        "LE_block m (le_ktm M)
+            \<notin> set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)"
       by (rule encode_input_no_LE_block[OF vM w_sub])
     have enc_sub:
-        "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)
+        "set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)
             \<subseteq> Sigma_ktm ?M'"
       unfolding Sigma_ktm_alphabet_enlarge
       using enc_in_gamma enc_no_bl enc_no_LE by blast
@@ -433,18 +437,18 @@ proof -
         "\<forall>w_arg. set w_arg \<subseteq> Sigma_ktm M
                   \<longrightarrow> accepts_in_time_ktm M w_arg n0
                   \<longrightarrow> accepts_in_time_ktm ?M'
-                        (encode_input (bl_ktm M) w_arg)
+                        (encode_input m (bl_ktm M) w_arg)
                         (\<alpha> * ((length w_arg + ?c - 1) div ?c)
                          + 8 * ((n0 + ?c - 1) div ?c) + f)"
       by (rule alphabet_enlarge_time
-                 [where T = "\<lambda>_. n0", OF wf])
+                 [where T = "\<lambda>_. n0", OF wf m_pos])
     from AE_time w_sub m_acc have m'_acc:
-        "accepts_in_time_ktm ?M' (encode_input (bl_ktm M) w)
+        "accepts_in_time_ktm ?M' (encode_input m (bl_ktm M) w)
             (\<alpha> * ((length w + ?c - 1) div ?c)
              + 8 * ((n0 + ?c - 1) div ?c) + f)"
       by blast
     from m'_acc obtain n_m' c_acc where
-        run: "(init_config_ktm ?M' (encode_input (bl_ktm M) w),
+        run: "(init_config_ktm ?M' (encode_input m (bl_ktm M) w),
                c_acc)
                 \<in> (ktm_step (delta_ktm ?M')) ^^ n_m'"
       and acc: "ktc_state c_acc = t_ktm ?M'"
@@ -453,11 +457,11 @@ proof -
         "c_acc = KConfig (t_ktm ?M') wM_acc' nM_acc"
       using acc by (cases c_acc) simp
     have run_star:
-        "(init_config_ktm ?M' (encode_input (bl_ktm M) w),
+        "(init_config_ktm ?M' (encode_input m (bl_ktm M) w),
           KConfig (t_ktm ?M') wM_acc' nM_acc)
             \<in> (ktm_step (delta_ktm ?M'))\<^sup>*"
       using run c_acc_eq relpow_imp_rtrancl by metis
-    show "encode_input (bl_ktm M) w \<in> Lang_ktm ?M'"
+    show "encode_input m (bl_ktm M) w \<in> Lang_ktm ?M'"
       unfolding Lang_ktm_def
       using enc_sub run_star by blast
   qed

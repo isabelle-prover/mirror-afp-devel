@@ -24,84 +24,84 @@ text \<open>The middle link of the forward-stage chain
 lemma ae_forward_stage_step_chain:
   fixes M :: "('q, 'a) ktm"
     and cM :: "('a, 'q) ktc_config"
-    and c' c1 c2 c3 c4 :: "('c :: enum \<Rightarrow> 'a,
-                'q \<times> ('a, 'c) ae_stage) ktc_config"
+    and c' c1 c2 c3 c4 :: "(nat \<Rightarrow> 'a,
+                'q \<times> 'a ae_stage) ktc_config"
   assumes vM:        "valid_ktm M"
       and le_anchor:
-      "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block (le_ktm M)"
+      "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block m (le_ktm M)"
       and no_le_per_tape:
       "\<forall>k. (ktc_pos c' k \<ge> 2
-      \<longrightarrow> (\<forall>i. i < 3 * card (UNIV :: 'c set)
+      \<longrightarrow> (\<forall>i. i < 3 * m
       \<longrightarrow> ktc_tape cM k
-      ((ktc_pos c' k - 2) * card (UNIV :: 'c set) + 1 + i)
+      ((ktc_pos c' k - 2) * m + 1 + i)
       \<noteq> le_ktm M))
       \<and> (ktc_pos c' k = 1
-      \<longrightarrow> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+      \<longrightarrow> (\<forall>i. i < 2 * m
       \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
       \<and> (ktc_pos c' k = 0
-      \<longrightarrow> (\<forall>i. i < card (UNIV :: 'c set)
+      \<longrightarrow> (\<forall>i. i < m
       \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
-      and tape_corr: "\<forall>k<k_ktm M. ae_tape_correspondence (le_ktm M)
+      and tape_corr: "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
       (ktc_tape cM k) (ktc_tape c' k)"
-      and step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 M)"
-      and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 M)"
-      and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 M)"
-      and c_ge_1: "1 \<le> card (UNIV :: 'c set)"
-      and c_eq_len: "card (UNIV :: 'c set) = length (enum_class.enum :: 'c list)"
+      and step1_sub: "(c', c1) \<in> ktm_step (ae_delta_ss1_ss2 m M)"
+      and step2_sub: "(c1, c2) \<in> ktm_step (ae_delta_ss2_ss3 m M)"
+      and step3_sub: "(c2, c3) \<in> ktm_step (ae_delta_ss3_ss4 m M)"
+      and c_ge_1: "1 \<le> m"
+      and c_eq_len: "m = length [0..<m]"
       and home_classification:
       "\<forall>k<k_ktm M. (ktc_pos c' k = 0
-      \<longrightarrow> ktc_tape c' k (ktc_pos c' k) = LE_block (le_ktm M))
+      \<longrightarrow> ktc_tape c' k (ktc_pos c' k) = LE_block m (le_ktm M))
       \<and> (ktc_pos c' k \<ge> 1
-      \<longrightarrow> ktc_tape c' k (ktc_pos c' k) \<noteq> LE_block (le_ktm M))"
+      \<longrightarrow> ktc_tape c' k (ktc_pos c' k) \<noteq> LE_block m (le_ktm M))"
       and c3_pos: "\<And>k. k < k_ktm M \<Longrightarrow> ktc_pos c3 k = ktc_pos c' k + 1"
       and bl_neq_le:
-      "(bl_block (bl_ktm M) :: 'c \<Rightarrow> 'a) \<noteq> LE_block (le_ktm M)"
-      and step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 M)"
+      "(bl_block m (bl_ktm M) :: nat \<Rightarrow> 'a) \<noteq> LE_block m (le_ktm M)"
+      and step4_sub: "(c3, c4) \<in> ktm_step (ae_delta_ss4_ss5 m M)"
       and c4_buf_not_le_per_tape:
       "case ktc_state c4 of (_, _, b, _, _) \<Rightarrow>
       \<forall>kk<k_ktm M. (ktc_pos c' kk = 0
-      \<longrightarrow> fst (b kk) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (b kk)) \<noteq> LE_block (le_ktm M))
+      \<longrightarrow> fst (b kk) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (b kk)) \<noteq> LE_block m (le_ktm M))
       \<and> (ktc_pos c' kk = 1
-      \<longrightarrow> fst (snd (b kk)) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (b kk)) \<noteq> LE_block (le_ktm M))
+      \<longrightarrow> fst (snd (b kk)) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (b kk)) \<noteq> LE_block m (le_ktm M))
       \<and> (ktc_pos c' kk \<ge> 2
-      \<longrightarrow> fst (b kk) \<noteq> LE_block (le_ktm M)
-      \<and> fst (snd (b kk)) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (b kk)) \<noteq> LE_block (le_ktm M))"
+      \<longrightarrow> fst (b kk) \<noteq> LE_block m (le_ktm M)
+      \<and> fst (snd (b kk)) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (b kk)) \<noteq> LE_block m (le_ktm M))"
       and inv_ss5: "ae_inv_ss5 M c4"
-      and gamma_c4: "ae_tape_in_gamma_block M c4"
-      and buf_gamma_c4: "ae_buffer_in_gamma_block M c4"
+      and gamma_c4: "ae_tape_in_gamma_block m M c4"
+      and buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
   obtains c5 q5 ofs5 buf5 dest5 c6 c7 q6 ofs6 buf6 dest6 c8
-    where "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-      and "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta M)"
+    where "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta m M)"
       and "ktc_state c4 = (q5, ofs5, buf5, dest5, SS5)"
       and "ktc_state c5 = (q5, ofs5, buf5, dest5, SS6)"
       and "ktc_tape c4 = ktc_tape c'"
       and
       "\<forall>k<k_ktm M. (ktc_pos c' k = 0
-      \<longrightarrow> fst (buf5 k) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))
+      \<longrightarrow> fst (buf5 k) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))
       \<and> (ktc_pos c' k = 1
-      \<longrightarrow> fst (snd (buf5 k)) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))
+      \<longrightarrow> fst (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))
       \<and> (ktc_pos c' k \<ge> 2
-      \<longrightarrow> fst (buf5 k) \<noteq> LE_block (le_ktm M)
-      \<and> fst (snd (buf5 k)) \<noteq> LE_block (le_ktm M)
-      \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))"
+      \<longrightarrow> fst (buf5 k) \<noteq> LE_block m (le_ktm M)
+      \<and> fst (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)
+      \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))"
       and
-      "\<forall>k. ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block (le_ktm M)"
+      "\<forall>k. ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block m (le_ktm M)"
       and "\<forall>kk. kk < k_ktm M \<longrightarrow> ktc_pos c4 kk = ktc_pos c' kk"
-      and "\<forall>k<k_ktm M. ktc_tape c5 k 0 = LE_block (le_ktm M)"
+      and "\<forall>k<k_ktm M. ktc_tape c5 k 0 = LE_block m (le_ktm M)"
       and
       "\<forall>kk. kk < k_ktm M \<longrightarrow> ktc_pos c' kk = 1 \<longrightarrow> dest5 kk \<noteq> AE_Left
       \<longrightarrow> ktc_pos c5 kk = 0"
-      and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-      and "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta M)"
-      and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-      and "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta M)"
-      and "ae_tape_in_gamma_block M c7"
-      and "ae_buffer_in_gamma_block M c7"
+      and "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta m M)"
+      and "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta m M)"
+      and "ae_tape_in_gamma_block m M c7"
+      and "ae_buffer_in_gamma_block m M c7"
       and "ktc_state c6 = (q6, ofs6, buf6, dest6, SS7)"
       and "ktc_state c7 = (q6, ofs6, buf6, dest6, SS8)"
       and "buf6 = buf5"
@@ -122,19 +122,19 @@ lemma ae_forward_stage_step_chain:
       \<longrightarrow> ktc_pos c7 kk = 0"
       and
       "\<forall>kk. kk < k_ktm M \<longrightarrow> ktc_pos c' kk = 1 \<longrightarrow> dest5 kk = AE_Left
-      \<longrightarrow> ktc_tape c7 kk 0 = LE_block (le_ktm M)"
-      and "(c7, c8) \<in> ktm_step (ae_delta_ss8_ss1 M)"
-      and "(c7, c8) \<in> ktm_step (alphabet_enlarge_delta M)"
+      \<longrightarrow> ktc_tape c7 kk 0 = LE_block m (le_ktm M)"
+      and "(c7, c8) \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and "(c7, c8) \<in> ktm_step (alphabet_enlarge_delta m M)"
 proof -
   obtain c5 where
-      step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 M)"
-    and step5: "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta M)"
+      step5_sub: "(c4, c5) \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+    and step5: "(c4, c5) \<in> ktm_step (alphabet_enlarge_delta m M)"
     using ae_step_ss5_ss6_exists[OF inv_ss5 gamma_c4 buf_gamma_c4] by blast
   have inv_ss6: "ae_inv_ss6 M c5"
     using ae_step_ss5_ss6_invariant[OF vM inv_ss5 step5_sub] .
-  have gamma_c5: "ae_tape_in_gamma_block M c5"
+  have gamma_c5: "ae_tape_in_gamma_block m M c5"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c4 step5] .
-  have buf_gamma_c5: "ae_buffer_in_gamma_block M c5"
+  have buf_gamma_c5: "ae_buffer_in_gamma_block m M c5"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c4
                                                             gamma_c4 step5] .
 
@@ -154,16 +154,16 @@ proof -
       on \<open>M'\<close>-tape), so the cumulative tape is unchanged through
       \<open>c1\<close>\<open>\<dots>\<close>\<open>c4\<close>.  Uniform across regimes.\<close>
   have nw_12: "\<And>q a q' a' d.
-                  (q, a, q', a', d) \<in> ae_delta_ss1_ss2 M \<Longrightarrow> a' = a"
+                  (q, a, q', a', d) \<in> ae_delta_ss1_ss2 m M \<Longrightarrow> a' = a"
     by (auto simp: ae_delta_ss1_ss2_def)
   have nw_23: "\<And>q a q' a' d.
-                  (q, a, q', a', d) \<in> ae_delta_ss2_ss3 M \<Longrightarrow> a' = a"
+                  (q, a, q', a', d) \<in> ae_delta_ss2_ss3 m M \<Longrightarrow> a' = a"
     by (auto simp: ae_delta_ss2_ss3_def)
   have nw_34: "\<And>q a q' a' d.
-                  (q, a, q', a', d) \<in> ae_delta_ss3_ss4 M \<Longrightarrow> a' = a"
+                  (q, a, q', a', d) \<in> ae_delta_ss3_ss4 m M \<Longrightarrow> a' = a"
     by (auto simp: ae_delta_ss3_ss4_def)
   have nw_45: "\<And>q a q' a' d.
-                  (q, a, q', a', d) \<in> ae_delta_ss4_ss5 M \<Longrightarrow> a' = a"
+                  (q, a, q', a', d) \<in> ae_delta_ss4_ss5 m M \<Longrightarrow> a' = a"
     by (auto simp: ae_delta_ss4_ss5_def)
   have tape_c1_eq: "ktc_tape c1 = ktc_tape c'"
     using ktm_step_no_write_tape[OF step1_sub nw_12] .
@@ -184,15 +184,15 @@ proof -
       (le1) and the steady-state full \<open>buf5_not_le\<close>.\<close>
   have buf5_not_le_per_tape:
       "\<forall>k<k_ktm M. (ktc_pos c' k = 0
-             \<longrightarrow> fst (buf5 k) \<noteq> LE_block (le_ktm M)
-                \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))
+             \<longrightarrow> fst (buf5 k) \<noteq> LE_block m (le_ktm M)
+                \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))
            \<and> (ktc_pos c' k = 1
-                \<longrightarrow> fst (snd (buf5 k)) \<noteq> LE_block (le_ktm M)
-                  \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))
+                \<longrightarrow> fst (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)
+                  \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))
            \<and> (ktc_pos c' k \<ge> 2
-                \<longrightarrow> fst (buf5 k) \<noteq> LE_block (le_ktm M)
-                  \<and> fst (snd (buf5 k)) \<noteq> LE_block (le_ktm M)
-                  \<and> snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M))"
+                \<longrightarrow> fst (buf5 k) \<noteq> LE_block m (le_ktm M)
+                  \<and> fst (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)
+                  \<and> snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M))"
     using c4_buf_not_le_per_tape c4_state by simp
 
   \<comment> \<open>Sub-step 5c: \<open>right_not_le_c'\<close>.  The unified "right-of-home
@@ -205,31 +205,32 @@ proof -
       indices coincide with the correspondence-derived address
       \<open>ktc_pos c' k \<cdot> c + 1\<close>.\<close>
   have right_not_le_c':
-      "\<forall>k. ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block (le_ktm M)"
+      "\<forall>k. ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block m (le_ktm M)"
   proof (intro allI)
     fix k :: nat
-    show "ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block (le_ktm M)"
+    show "ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block m (le_ktm M)"
     proof (cases "k < k_ktm M")
       case True
-    let ?x = "(enum_class.enum :: 'c list) ! 0"
-    let ?c = "card (UNIV :: 'c set)"
-    have zero_lt_len: "0 < length (enum_class.enum :: 'c list)"
+    let ?x = "[0..<m] ! 0"
+    let ?c = "m"
+    have zero_lt_len: "0 < length [0..<m]"
       using c_ge_1 c_eq_len by linarith
-    have x_idx0: "c_idx ?x = 0"
-      using c_idx_enum_nth[OF zero_lt_len] .
-    have tc_k: "ae_tape_correspondence (le_ktm M) (ktc_tape cM k) (ktc_tape c' k)"
+    have x_idx0: "?x = 0"
+      using zero_lt_len by simp
+    have tc_k: "ae_tape_correspondence m (le_ktm M) (ktc_tape cM k) (ktc_tape c' k)"
       using tape_corr[rule_format, OF True] .
     have addr_via_tc:
         "ktc_tape cM k (ktc_pos c' k * ?c + 1)
           = ktc_tape c' k (ktc_pos c' k + 1) ?x"
     proof -
       from tc_k have unf:
-          "\<forall>s\<ge>1. \<forall>i. ktc_tape cM k ((s - 1) * ?c + c_idx i + 1)
+          "\<forall>s\<ge>1. \<forall>i<m. ktc_tape cM k ((s - 1) * ?c + i + 1)
                       = ktc_tape c' k s i"
         unfolding ae_tape_correspondence_def by simp
       have s_ge1: "ktc_pos c' k + 1 \<ge> 1" by simp
-      from unf s_ge1 have eq:
-          "ktc_tape cM k ((ktc_pos c' k + 1 - 1) * ?c + c_idx ?x + 1)
+      have x_lt: "?x < m" using c_ge_1 by simp
+      from unf s_ge1 x_lt have eq:
+          "ktc_tape cM k ((ktc_pos c' k + 1 - 1) * ?c + ?x + 1)
             = ktc_tape c' k (ktc_pos c' k + 1) ?x"
         by blast
       thus ?thesis using x_idx0 by simp
@@ -262,12 +263,12 @@ proof -
         using no_le_per_tape steady idx_lt by blast
       thus ?thesis using addr_via_tc addr_eq by simp
     qed
-    thus "ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block (le_ktm M)"
-      unfolding LE_block_def by auto
+    thus "ktc_tape c' k (ktc_pos c' k + 1) \<noteq> LE_block m (le_ktm M)"
+      using c_ge_1 unfolding LE_block_def by auto
     next
       case False
       hence kge: "k_ktm M \<le> k" by simp
-      have "ktc_tape c' k (ktc_pos c' k + 1) = bl_block (bl_ktm M)"
+      have "ktc_tape c' k (ktc_pos c' k + 1) = bl_block m (bl_ktm M)"
         using gamma_c4 kge
         unfolding ae_tape_in_gamma_block_def tape_c4_eq_c'[symmetric]
         by simp
@@ -293,11 +294,11 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa4 k))
                           (\<lambda>k. go_move (dr4 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa4, dr4)
-                    \<in> ae_delta_ss4_ss5 M"
+                    \<in> ae_delta_ss4_ss5 m M"
       using step4_sub by (auto elim: ktm_step.cases)
     have dr4_eq:
         "dr4 = (\<lambda>k. if k < k_ktm M
-                     then (if tts k (nn k) = LE_block (le_ktm M)
+                     then (if tts k (nn k) = LE_block m (le_ktm M)
                            then MoveN else MoveL)
                      else MoveN)"
       using tr_in by (auto simp: ae_delta_ss4_ss5_def)
@@ -309,7 +310,7 @@ proof -
     have read_at_c3:
         "tts kk (nn kk) = ktc_tape c' kk (ktc_pos c' kk + 1)"
       using tts_kk c3_kk tape_c3_eq_c' by simp
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using read_at_c3 right_not_le_c' by simp
     have dr4_L: "dr4 kk = MoveL"
       using dr4_eq read_ne_LE kklt by simp
@@ -328,11 +329,11 @@ proof -
       tapes \<open>c4_pos = 0\<close>, so the SS5 action fires at cell 0; but the
       LE-guard fires (read = \<open>LE_block\<close> via \<open>le_anchor\<close>) and
       idempotently writes \<open>LE_block\<close> back.  Either way cell 0 stays.\<close>
-  have tape_c5_zero_le: "\<forall>k<k_ktm M. ktc_tape c5 k 0 = LE_block (le_ktm M)"
+  have tape_c5_zero_le: "\<forall>k<k_ktm M. ktc_tape c5 k 0 = LE_block m (le_ktm M)"
   proof (intro allI impI)
     fix k assume klt: "k < k_ktm M"
     consider (le0) "ktc_pos c' k = 0" | (rest) "ktc_pos c' k \<ge> 1" by linarith
-    thus "ktc_tape c5 k 0 = LE_block (le_ktm M)"
+    thus "ktc_tape c5 k 0 = LE_block m (le_ktm M)"
     proof cases
       case rest
       have c4_kk_ne0: "ktc_pos c4 k \<noteq> 0"
@@ -342,7 +343,7 @@ proof -
         using ktm_step_tape_off_head[OF step5 zero_ne_pos] .
       have "ktc_tape c4 k 0 = ktc_tape c' k 0"
         using tape_c4_eq_c' by simp
-      also have "\<dots> = LE_block (le_ktm M)"
+      also have "\<dots> = LE_block m (le_ktm M)"
         using le_anchor[rule_format, OF klt] by simp
       finally show ?thesis using c5_zero_eq_c4 by simp
     next
@@ -355,14 +356,14 @@ proof -
                             (\<lambda>k. (tts k)(nn k := aa5 k))
                             (\<lambda>k. go_move (dr5 k) (nn k))"
         and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa5, dr5)
-                      \<in> ae_delta_ss5_ss6 M"
+                      \<in> ae_delta_ss5_ss6 m M"
         using step5_sub by (auto elim: ktm_step.cases)
       obtain q ofs buf dest where
           qq_eq: "qq = (q, ofs, buf, dest, SS5)"
         and aa5_eq: "aa5 = (\<lambda>k. if k < k_ktm M
-                                  then fst (ae_ss5_action (le_ktm M)
+                                  then fst (ae_ss5_action m (le_ktm M)
                                              (tts k (nn k)) (buf k) (dest k))
-                                  else bl_block (bl_ktm M))"
+                                  else bl_block m (bl_ktm M))"
         using tr_in by (auto simp: ae_delta_ss5_ss6_def)
       have nn_kk: "nn k = ktc_pos c4 k" using c4_eq5 by simp
       have nn_kk_0: "nn k = 0" using nn_kk c4_pos_kk by simp
@@ -370,11 +371,11 @@ proof -
         using c4_eq5 nn_kk by simp
       have read_at: "tts k (nn k) = ktc_tape c' k 0"
         using tts_kk c4_pos_kk tape_c4_eq_c' by simp
-      have read_LE: "tts k (nn k) = LE_block (le_ktm M)"
+      have read_LE: "tts k (nn k) = LE_block m (le_ktm M)"
         using read_at le_anchor[rule_format, OF klt] by simp
       obtain l h r where buf_k: "buf k = (l, h, r)"
         by (cases "buf k") auto
-      have aa5_LE: "aa5 k = LE_block (le_ktm M)"
+      have aa5_LE: "aa5 k = LE_block m (le_ktm M)"
         using aa5_eq read_LE buf_k klt by simp
       have step_apply: "ktc_tape c5 k 0 = ((tts k)(nn k := aa5 k)) 0"
         using c5_eq by simp
@@ -406,13 +407,13 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa5 k))
                           (\<lambda>k. go_move (dr5 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa5, dr5)
-                    \<in> ae_delta_ss5_ss6 M"
+                    \<in> ae_delta_ss5_ss6 m M"
       using step5_sub by (auto elim: ktm_step.cases)
     obtain q ofs buf dest where
         qq_eq: "qq = (q, ofs, buf, dest, SS5)"
       and dr5_eq:
           "dr5 = (\<lambda>k. if k < k_ktm M
-                       then snd (ae_ss5_action (le_ktm M)
+                       then snd (ae_ss5_action m (le_ktm M)
                                   (tts k (nn k)) (buf k) (dest k))
                        else MoveN)"
       using tr_in by (auto simp: ae_delta_ss5_ss6_def)
@@ -427,20 +428,20 @@ proof -
     have read_at_home:
         "tts kk (nn kk) = ktc_tape c' kk 1"
       using tts_kk c4_kk tape_c4_eq_c' by simp
-    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block (le_ktm M)"
+    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block m (le_ktm M)"
     proof -
       have pos_ge1: "(1 :: nat) \<le> ktc_pos c' kk" using pos_kk by simp
-      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block (le_ktm M)"
+      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block m (le_ktm M)"
         using home_classification[rule_format, OF kklt] pos_ge1 by blast
       thus ?thesis using pos_kk by simp
     qed
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using read_at_home home_ne_LE by simp
     obtain ll hh rr where buf5_kk: "buf5 kk = (ll, hh, rr)"
       using prod.exhaust by metis
-    have h_ne_LE: "hh \<noteq> LE_block (le_ktm M)"
+    have h_ne_LE: "hh \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "fst (snd (buf5 kk)) \<noteq> LE_block (le_ktm M)"
+      have "fst (snd (buf5 kk)) \<noteq> LE_block m (le_ktm M)"
         using buf5_not_le_per_tape[rule_format, OF kklt] pos_kk by blast
       thus ?thesis using buf5_kk by simp
     qed
@@ -469,9 +470,9 @@ proof -
       so the antecedent is false (vacuous); pos=1 tapes use
       \<open>c5_pos_for_pos1\<close> + \<open>tape_c5_zero_le\<close> for the substantive
       case.\<close>
-  have pos_link_c5: "ae_position_link M c5"
+  have pos_link_c5: "ae_position_link m M c5"
   proof -
-    have r_not_le: "\<forall>k<k_ktm M. snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M)"
+    have r_not_le: "\<forall>k<k_ktm M. snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)"
     proof (intro allI impI)
       fix k
       assume klt: "k < k_ktm M"
@@ -479,7 +480,7 @@ proof -
              | (le1) "ktc_pos c' k = 1"
              | (steady) "ktc_pos c' k \<ge> 2"
         by linarith
-      thus "snd (snd (buf5 k)) \<noteq> LE_block (le_ktm M)"
+      thus "snd (snd (buf5 k)) \<noteq> LE_block m (le_ktm M)"
       proof cases
         case le0    thus ?thesis using buf5_not_le_per_tape[rule_format, OF klt] by blast
       next
@@ -490,33 +491,33 @@ proof -
     qed
     have ss6_cond:
         "\<forall>k<k_ktm M. dest5 k \<noteq> AE_Left
-                \<longrightarrow> fst (buf5 k) = LE_block (le_ktm M)
-                \<longrightarrow> ktc_tape c5 k (ktc_pos c5 k) = LE_block (le_ktm M)"
+                \<longrightarrow> fst (buf5 k) = LE_block m (le_ktm M)
+                \<longrightarrow> ktc_tape c5 k (ktc_pos c5 k) = LE_block m (le_ktm M)"
     proof (intro allI impI)
       fix k
       assume klt: "k < k_ktm M"
       assume dest_ne: "dest5 k \<noteq> AE_Left"
-      assume l_eq_le: "fst (buf5 k) = LE_block (le_ktm M)"
+      assume l_eq_le: "fst (buf5 k) = LE_block m (le_ktm M)"
       consider (le0) "ktc_pos c' k = 0"
              | (le1) "ktc_pos c' k = 1"
              | (steady) "ktc_pos c' k \<ge> 2"
         by linarith
-      thus "ktc_tape c5 k (ktc_pos c5 k) = LE_block (le_ktm M)"
+      thus "ktc_tape c5 k (ktc_pos c5 k) = LE_block m (le_ktm M)"
       proof cases
         case le0
-        have "fst (buf5 k) \<noteq> LE_block (le_ktm M)"
+        have "fst (buf5 k) \<noteq> LE_block m (le_ktm M)"
           using buf5_not_le_per_tape[rule_format, OF klt] le0 by blast
         thus ?thesis using l_eq_le by simp
       next
         case le1
         have c5_pos_zero: "ktc_pos c5 k = 0"
           using c5_pos_for_pos1[OF klt le1 dest_ne] .
-        have "ktc_tape c5 k 0 = LE_block (le_ktm M)"
+        have "ktc_tape c5 k 0 = LE_block m (le_ktm M)"
           using tape_c5_zero_le[rule_format, OF klt] by simp
         thus ?thesis using c5_pos_zero by simp
       next
         case steady
-        have "fst (buf5 k) \<noteq> LE_block (le_ktm M)"
+        have "fst (buf5 k) \<noteq> LE_block m (le_ktm M)"
           using buf5_not_le_per_tape[rule_format, OF klt] steady by blast
         thus ?thesis using l_eq_le by simp
       qed
@@ -532,35 +533,35 @@ proof -
       preservation lemma (the three aux conditionals are vacuous: idx-pre
       is SS6, not SS4/5/7).  Identical to the corresponding le0/le1 / steady
       blocks.\<close>
-  have le_compat_ss6_c5: "ae_le_compat_ss6 M c5"
+  have le_compat_ss6_c5: "ae_le_compat_ss6 m M c5"
     using ae_position_link_discharges_ss6[OF inv_ss6 pos_link_c5] .
   obtain c6 where
-      step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 M)"
-    and step6: "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta M)"
+      step6_sub: "(c5, c6) \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+    and step6: "(c5, c6) \<in> ktm_step (alphabet_enlarge_delta m M)"
     using ae_step_ss6_ss7_exists[OF inv_ss6 gamma_c5 buf_gamma_c5
                                     le_compat_ss6_c5] by blast
   have inv_ss7: "ae_inv_ss7 M c6"
     using ae_step_ss6_ss7_invariant[OF vM inv_ss6 step6_sub] .
-  have gamma_c6: "ae_tape_in_gamma_block M c6"
+  have gamma_c6: "ae_tape_in_gamma_block m M c6"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c5 step6] .
-  have buf_gamma_c6: "ae_buffer_in_gamma_block M c6"
+  have buf_gamma_c6: "ae_buffer_in_gamma_block m M c6"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c5
                                                             gamma_c5 step6] .
   have c5_idx_ss6: "snd (snd (snd (snd (ktc_state c5)))) = SS6"
     using c5_state by simp
-  have aux_45_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss4_ss5 M)
-                        \<Longrightarrow> ae_position_link M c6"
+  have aux_45_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss4_ss5 m M)
+                        \<Longrightarrow> ae_position_link m M c6"
     using ae_pos_link_aux_void_ss4_ss5[where M = M and c_pre = c5 and c_post = c6]
           c5_idx_ss6 by simp
-  have aux_56_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss5_ss6 M)
-                        \<Longrightarrow> ae_position_link M c6"
+  have aux_56_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss5_ss6 m M)
+                        \<Longrightarrow> ae_position_link m M c6"
     using ae_pos_link_aux_void_ss5_ss6[where M = M and c_pre = c5 and c_post = c6]
           c5_idx_ss6 by simp
-  have aux_78_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss7_ss8 M)
-                        \<Longrightarrow> ae_position_link M c6"
+  have aux_78_at_c5: "(c5, c6) \<in> ktm_step (ae_delta_ss7_ss8 m M)
+                        \<Longrightarrow> ae_position_link m M c6"
     using ae_pos_link_aux_void_ss7_ss8[where M = M and c_pre = c5 and c_post = c6]
           c5_idx_ss6 by simp
-  have pos_link_c6: "ae_position_link M c6"
+  have pos_link_c6: "ae_position_link m M c6"
     using ae_step_alphabet_enlarge_position_link_preserve[OF pos_link_c5
             step6 aux_45_at_c5 aux_56_at_c5 aux_78_at_c5] .
 
@@ -570,18 +571,18 @@ proof -
       change only the tape and stage index, not the buffer component),
       so the \<open>buf5\<close> per-tape non-LE shape transfers to \<open>buf6 = buf5\<close>
       and \<open>c7\<close>'s state inherits the same buffer triple.\<close>
-  have le_compat_ss7_c6: "ae_le_compat_ss7 M c6"
+  have le_compat_ss7_c6: "ae_le_compat_ss7 m M c6"
     using ae_position_link_discharges_ss7[OF inv_ss7 pos_link_c6] .
   obtain c7 where
-      step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 M)"
-    and step7: "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta M)"
+      step7_sub: "(c6, c7) \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+    and step7: "(c6, c7) \<in> ktm_step (alphabet_enlarge_delta m M)"
     using ae_step_ss7_ss8_exists[OF inv_ss7 gamma_c6 buf_gamma_c6
                                     le_compat_ss7_c6] by blast
   have inv_ss8: "ae_inv_ss8 M c7"
     using ae_step_ss7_ss8_invariant[OF vM inv_ss7 step7_sub] .
-  have gamma_c7: "ae_tape_in_gamma_block M c7"
+  have gamma_c7: "ae_tape_in_gamma_block m M c7"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c6 step7] .
-  have buf_gamma_c7: "ae_buffer_in_gamma_block M c7"
+  have buf_gamma_c7: "ae_buffer_in_gamma_block m M c7"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c6
                                                             gamma_c6 step7] .
 
@@ -624,13 +625,13 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa5 k))
                           (\<lambda>k. go_move (dr5 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa5, dr5)
-                    \<in> ae_delta_ss5_ss6 M"
+                    \<in> ae_delta_ss5_ss6 m M"
       using step5_sub by (auto elim: ktm_step.cases)
     obtain q ofs buf dest where
         qq_eq: "qq = (q, ofs, buf, dest, SS5)"
       and dr5_eq:
           "dr5 = (\<lambda>k. if k < k_ktm M
-                       then snd (ae_ss5_action (le_ktm M)
+                       then snd (ae_ss5_action m (le_ktm M)
                                   (tts k (nn k)) (buf k) (dest k))
                        else MoveN)"
       using tr_in by (auto simp: ae_delta_ss5_ss6_def)
@@ -644,20 +645,20 @@ proof -
       using c4_eq5 nn_kk by simp
     have read_at_home: "tts kk (nn kk) = ktc_tape c' kk 1"
       using tts_kk c4_kk tape_c4_eq_c' by simp
-    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block (le_ktm M)"
+    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block m (le_ktm M)"
     proof -
       have pos_ge1: "(1 :: nat) \<le> ktc_pos c' kk" using pos_kk by simp
-      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block (le_ktm M)"
+      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block m (le_ktm M)"
         using home_classification[rule_format, OF kklt] pos_ge1 by blast
       thus ?thesis using pos_kk by simp
     qed
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using read_at_home home_ne_LE by simp
     obtain ll hh rr where buf5_kk: "buf5 kk = (ll, hh, rr)"
       using prod.exhaust by metis
-    have h_ne_LE: "hh \<noteq> LE_block (le_ktm M)"
+    have h_ne_LE: "hh \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "fst (snd (buf5 kk)) \<noteq> LE_block (le_ktm M)"
+      have "fst (snd (buf5 kk)) \<noteq> LE_block m (le_ktm M)"
         using buf5_not_le_per_tape[rule_format, OF kklt] pos_kk by blast
       thus ?thesis using buf5_kk by simp
     qed
@@ -688,13 +689,13 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa5 k))
                           (\<lambda>k. go_move (dr5 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa5, dr5)
-                    \<in> ae_delta_ss5_ss6 M"
+                    \<in> ae_delta_ss5_ss6 m M"
       using step5_sub by (auto elim: ktm_step.cases)
     obtain q ofs buf dest where
         qq_eq: "qq = (q, ofs, buf, dest, SS5)"
       and aa5_eq:
-          "aa5 = (\<lambda>k. if k < k_ktm M then fst (ae_ss5_action (le_ktm M)
-                              (tts k (nn k)) (buf k) (dest k)) else bl_block (bl_ktm M))"
+          "aa5 = (\<lambda>k. if k < k_ktm M then fst (ae_ss5_action m (le_ktm M)
+                              (tts k (nn k)) (buf k) (dest k)) else bl_block m (bl_ktm M))"
       using tr_in by (auto simp: ae_delta_ss5_ss6_def)
     have qq_state: "qq = (q5, ofs5, buf5, dest5, SS5)"
       using c4_state c4_eq5 by simp
@@ -706,20 +707,20 @@ proof -
       using c4_eq5 nn_kk by simp
     have read_at_home: "tts kk (nn kk) = ktc_tape c' kk 1"
       using tts_kk c4_kk tape_c4_eq_c' by simp
-    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block (le_ktm M)"
+    have home_ne_LE: "ktc_tape c' kk 1 \<noteq> LE_block m (le_ktm M)"
     proof -
       have pos_ge1: "(1 :: nat) \<le> ktc_pos c' kk" using pos_kk by simp
-      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block (le_ktm M)"
+      have "ktc_tape c' kk (ktc_pos c' kk) \<noteq> LE_block m (le_ktm M)"
         using home_classification[rule_format, OF kklt] pos_ge1 by blast
       thus ?thesis using pos_kk by simp
     qed
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using read_at_home home_ne_LE by simp
     obtain ll hh rr where buf5_kk: "buf5 kk = (ll, hh, rr)"
       using prod.exhaust by metis
-    have h_ne_LE: "hh \<noteq> LE_block (le_ktm M)"
+    have h_ne_LE: "hh \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "fst (snd (buf5 kk)) \<noteq> LE_block (le_ktm M)"
+      have "fst (snd (buf5 kk)) \<noteq> LE_block m (le_ktm M)"
         using buf5_not_le_per_tape[rule_format, OF kklt] pos_kk by blast
       thus ?thesis using buf5_kk by simp
     qed
@@ -759,12 +760,12 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa6 k))
                           (\<lambda>k. go_move (dr6 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa6, dr6)
-                    \<in> ae_delta_ss6_ss7 M"
+                    \<in> ae_delta_ss6_ss7 m M"
       using step6_sub by (auto elim: ktm_step.cases)
     obtain q ofs buf dest where
         qq_eq: "qq = (q, ofs, buf, dest, SS6)"
       and dr6_eq:
-          "dr6 = (\<lambda>k. if k < k_ktm M then snd (ae_ss6_action (le_ktm M)
+          "dr6 = (\<lambda>k. if k < k_ktm M then snd (ae_ss6_action m (le_ktm M)
                               (tts k (nn k)) (buf k) (dest k)) else MoveN)"
       using tr_in by (auto simp: ae_delta_ss6_ss7_def)
     have qq_state: "qq = (q5, ofs5, buf5, dest5, SS6)"
@@ -788,19 +789,19 @@ proof -
     have read_at_right:
         "tts kk (nn kk) = ktc_tape c' kk 2"
       using tts_kk c5_kk c5_tape_at_2 c4_tape_at_2 by simp
-    have right_ne_LE_pos1: "ktc_tape c' kk 2 \<noteq> LE_block (le_ktm M)"
+    have right_ne_LE_pos1: "ktc_tape c' kk 2 \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "ktc_tape c' kk (ktc_pos c' kk + 1) \<noteq> LE_block (le_ktm M)"
+      have "ktc_tape c' kk (ktc_pos c' kk + 1) \<noteq> LE_block m (le_ktm M)"
         using right_not_le_c' by blast
       thus ?thesis using pos_kk by (simp add: numeral_2_eq_2)
     qed
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using read_at_right right_ne_LE_pos1 by simp
     obtain ll hh rr where buf5_kk: "buf5 kk = (ll, hh, rr)"
       using prod.exhaust by metis
-    have h_ne_LE: "hh \<noteq> LE_block (le_ktm M)"
+    have h_ne_LE: "hh \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "fst (snd (buf5 kk)) \<noteq> LE_block (le_ktm M)"
+      have "fst (snd (buf5 kk)) \<noteq> LE_block m (le_ktm M)"
         using buf5_not_le_per_tape[rule_format, OF kklt] pos_kk by blast
       thus ?thesis using buf5_kk by simp
     qed
@@ -820,7 +821,7 @@ proof -
 
   have tape_c6_zero_le_pos1_dest_left:
       "\<And>kk. kk < k_ktm M \<Longrightarrow> ktc_pos c' kk = 1 \<Longrightarrow> dest5 kk = AE_Left
-            \<Longrightarrow> ktc_tape c6 kk 0 = LE_block (le_ktm M)"
+            \<Longrightarrow> ktc_tape c6 kk 0 = LE_block m (le_ktm M)"
   proof -
     fix kk
     assume kklt: "kk < k_ktm M"
@@ -831,9 +832,9 @@ proof -
     have c6_zero_eq_c5:
         "ktc_tape c6 kk 0 = ktc_tape c5 kk 0"
       using ktm_step_tape_off_head[OF step6 zero_ne_pos_c5] .
-    have c5_zero_le: "ktc_tape c5 kk 0 = LE_block (le_ktm M)"
+    have c5_zero_le: "ktc_tape c5 kk 0 = LE_block m (le_ktm M)"
       using tape_c5_zero_le[rule_format, OF kklt] by simp
-    show "ktc_tape c6 kk 0 = LE_block (le_ktm M)"
+    show "ktc_tape c6 kk 0 = LE_block m (le_ktm M)"
       using c6_zero_eq_c5 c5_zero_le by simp
   qed
 
@@ -859,12 +860,12 @@ proof -
                           (\<lambda>k. (tts k)(nn k := aa7 k))
                           (\<lambda>k. go_move (dr7 k) (nn k))"
       and tr_in: "(qq, \<lambda>k. tts k (nn k), qq', aa7, dr7)
-                    \<in> ae_delta_ss7_ss8 M"
+                    \<in> ae_delta_ss7_ss8 m M"
       using step7_sub by (auto elim: ktm_step.cases)
     obtain q ofs buf dest where
         qq_eq: "qq = (q, ofs, buf, dest, SS7)"
       and dr7_eq:
-          "dr7 = (\<lambda>k. if k < k_ktm M then snd (ae_ss7_action (le_ktm M)
+          "dr7 = (\<lambda>k. if k < k_ktm M then snd (ae_ss7_action m (le_ktm M)
                               (tts k (nn k)) (buf k) (dest k)) else MoveN)"
       using tr_in by (auto simp: ae_delta_ss7_ss8_def)
     have qq_state: "qq = (q5, ofs5, buf5, dest5, SS7)"
@@ -886,13 +887,13 @@ proof -
       using c6_at_one tape_c5_at_one_pos1[OF kklt pos_kk] by simp
     obtain ll hh rr where buf5_kk: "buf5 kk = (ll, hh, rr)"
       using prod.exhaust by metis
-    have h_ne_LE: "hh \<noteq> LE_block (le_ktm M)"
+    have h_ne_LE: "hh \<noteq> LE_block m (le_ktm M)"
     proof -
-      have "fst (snd (buf5 kk)) \<noteq> LE_block (le_ktm M)"
+      have "fst (snd (buf5 kk)) \<noteq> LE_block m (le_ktm M)"
         using buf5_not_le_per_tape[rule_format, OF kklt] pos_kk by blast
       thus ?thesis using buf5_kk by simp
     qed
-    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block (le_ktm M)"
+    have read_ne_LE: "tts kk (nn kk) \<noteq> LE_block m (le_ktm M)"
       using tts_kk c6_kk c6_at_one_eq_h buf5_kk h_ne_LE by simp
     have dr7_kk:
         "dr7 kk = (if dest5 kk = AE_Left then MoveL else MoveR)"
@@ -910,7 +911,7 @@ proof -
 
   have tape_c7_zero_le_pos1_dest_left:
       "\<And>kk. kk < k_ktm M \<Longrightarrow> ktc_pos c' kk = 1 \<Longrightarrow> dest5 kk = AE_Left
-            \<Longrightarrow> ktc_tape c7 kk 0 = LE_block (le_ktm M)"
+            \<Longrightarrow> ktc_tape c7 kk 0 = LE_block m (le_ktm M)"
   proof -
     fix kk
     assume kklt: "kk < k_ktm M"
@@ -921,7 +922,7 @@ proof -
     have c7_zero_eq_c6:
         "ktc_tape c7 kk 0 = ktc_tape c6 kk 0"
       using ktm_step_tape_off_head[OF step7 zero_ne_pos_c6] .
-    show "ktc_tape c7 kk 0 = LE_block (le_ktm M)"
+    show "ktc_tape c7 kk 0 = LE_block m (le_ktm M)"
       using c7_zero_eq_c6 tape_c6_zero_le_pos1_dest_left[OF kklt pos_kk dest_eq]
       by simp
   qed
@@ -932,9 +933,9 @@ proof -
       for pos=1 + dest=\<open>AE_Left\<close>, vacuous for pos=0/\<open>\<ge>\<close>2.
       Then \<open>le_compat_ss8\<close> from \<open>pos_link_c7\<close>, invoke
       \<open>ae_step_ss8_ss1_exists\<close>.\<close>
-  have pos_link_c7: "ae_position_link M c7"
+  have pos_link_c7: "ae_position_link m M c7"
   proof -
-    have r_not_le: "\<forall>k<k_ktm M. snd (snd (buf6 k)) \<noteq> LE_block (le_ktm M)"
+    have r_not_le: "\<forall>k<k_ktm M. snd (snd (buf6 k)) \<noteq> LE_block m (le_ktm M)"
     proof (intro allI impI)
       fix k
       assume klt: "k < k_ktm M"
@@ -942,7 +943,7 @@ proof -
              | (le1) "ktc_pos c' k = 1"
              | (steady) "ktc_pos c' k \<ge> 2"
         by linarith
-      thus "snd (snd (buf6 k)) \<noteq> LE_block (le_ktm M)"
+      thus "snd (snd (buf6 k)) \<noteq> LE_block m (le_ktm M)"
       proof cases
         case le0    thus ?thesis using buf5_not_le_per_tape[rule_format, OF klt] buf6_eq_buf5 by blast
       next
@@ -953,36 +954,36 @@ proof -
     qed
     have ss8_cond:
         "\<forall>k<k_ktm M. dest6 k = AE_Left
-                \<longrightarrow> fst (buf6 k) = LE_block (le_ktm M)
-                \<longrightarrow> ktc_tape c7 k (ktc_pos c7 k) = LE_block (le_ktm M)"
+                \<longrightarrow> fst (buf6 k) = LE_block m (le_ktm M)
+                \<longrightarrow> ktc_tape c7 k (ktc_pos c7 k) = LE_block m (le_ktm M)"
     proof (intro allI impI)
       fix k
       assume klt: "k < k_ktm M"
       assume dest_eq: "dest6 k = AE_Left"
-      assume l_eq_le: "fst (buf6 k) = LE_block (le_ktm M)"
+      assume l_eq_le: "fst (buf6 k) = LE_block m (le_ktm M)"
       have dest5_eq: "dest5 k = AE_Left" using dest_eq dest6_eq_dest5 by simp
-      have l_eq_le_buf5: "fst (buf5 k) = LE_block (le_ktm M)"
+      have l_eq_le_buf5: "fst (buf5 k) = LE_block m (le_ktm M)"
         using l_eq_le buf6_eq_buf5 by simp
       consider (le0) "ktc_pos c' k = 0"
              | (le1) "ktc_pos c' k = 1"
              | (steady) "ktc_pos c' k \<ge> 2"
         by linarith
-      thus "ktc_tape c7 k (ktc_pos c7 k) = LE_block (le_ktm M)"
+      thus "ktc_tape c7 k (ktc_pos c7 k) = LE_block m (le_ktm M)"
       proof cases
         case le0
-        have "fst (buf5 k) \<noteq> LE_block (le_ktm M)"
+        have "fst (buf5 k) \<noteq> LE_block m (le_ktm M)"
           using buf5_not_le_per_tape[rule_format, OF klt] le0 by blast
         thus ?thesis using l_eq_le_buf5 by simp
       next
         case le1
         have c7_pos_k: "ktc_pos c7 k = 0"
           using c7_pos_for_pos1_dest_left[OF klt le1 dest5_eq] .
-        have "ktc_tape c7 k 0 = LE_block (le_ktm M)"
+        have "ktc_tape c7 k 0 = LE_block m (le_ktm M)"
           using tape_c7_zero_le_pos1_dest_left[OF klt le1 dest5_eq] .
         thus ?thesis using c7_pos_k by simp
       next
         case steady
-        have "fst (buf5 k) \<noteq> LE_block (le_ktm M)"
+        have "fst (buf5 k) \<noteq> LE_block m (le_ktm M)"
           using buf5_not_le_per_tape[rule_format, OF klt] steady by blast
         thus ?thesis using l_eq_le_buf5 by simp
       qed
@@ -992,11 +993,11 @@ proof -
       using r_not_le ss8_cond c7_state by simp
   qed
 
-  have le_compat_ss8_c7: "ae_le_compat_ss8 M c7"
+  have le_compat_ss8_c7: "ae_le_compat_ss8 m M c7"
     using ae_position_link_discharges_ss8[OF inv_ss8 pos_link_c7] .
   obtain c8 where
-      step8_sub: "(c7, c8) \<in> ktm_step (ae_delta_ss8_ss1 M)"
-    and step8: "(c7, c8) \<in> ktm_step (alphabet_enlarge_delta M)"
+      step8_sub: "(c7, c8) \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+    and step8: "(c7, c8) \<in> ktm_step (alphabet_enlarge_delta m M)"
     using ae_step_ss8_ss1_exists[OF vM inv_ss8 gamma_c7 buf_gamma_c7
                                     le_compat_ss8_c7] by blast
   \<comment> \<open>Re-express the per-tape \<open>\<And>kk\<close> facts as object-level
@@ -1028,7 +1029,7 @@ proof -
     using c7_pos_for_pos1_dest_left by blast
   have tape_c7_zero_le_pos1_dest_left_all:
       "\<forall>kk. kk < k_ktm M \<longrightarrow> ktc_pos c' kk = 1 \<longrightarrow> dest5 kk = AE_Left
-       \<longrightarrow> ktc_tape c7 kk 0 = LE_block (le_ktm M)"
+       \<longrightarrow> ktc_tape c7 kk 0 = LE_block m (le_ktm M)"
     using tape_c7_zero_le_pos1_dest_left by blast
   show thesis by (rule that[OF step5_sub step5 c4_state c5_state tape_c4_eq_c'
         buf5_not_le_per_tape right_not_le_c' c4_pos_all tape_c5_zero_le

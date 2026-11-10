@@ -26,34 +26,42 @@ lemma ae_window_invariant_step:
   fixes le a' :: 'a
     and tM :: "nat \<Rightarrow> 'a"
     and nM p_start :: nat
-    and bp bp' :: "('c :: enum) bp"
-    and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and bp bp' :: "bp"
+    and blocks :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and d :: move
-  assumes wi:     "ae_window_invariant tM nM bp blocks p_start"
-      and adv:    "bp_advance_le le (tM nM) bp d = Some bp'"
-      and bp_lt:  "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
-      and bp_pos: "0 < bp_linear bp"
+  assumes wi:     "ae_window_invariant m tM nM bp blocks p_start"
+      and adv:    "bp_advance_le m le (tM nM) bp d = Some bp'"
+      and bp_lt:  "bp_linear m bp < 3 * m - 1"
+      and bp_pos: "0 < bp_linear m bp"
       and no_le:  "tM nM \<noteq> le"
-  shows "ae_window_invariant
+  shows "ae_window_invariant m
             (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') p_start"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
+  let ?c = "m"
   from wi have p_start_ge: "p_start \<ge> 1"
     unfolding ae_window_invariant_def by simp
-  from wi have head_corr: "nM = p_start + bp_linear bp"
+  from wi have head_corr: "nM = p_start + bp_linear m bp"
     unfolding ae_window_invariant_def by simp
   from wi have win_eq:
-      "\<forall>i. i < 3 * ?c \<longrightarrow> tM (p_start + i) = buf_lin_at blocks i"
+      "\<forall>i. i < 3 * ?c \<longrightarrow> tM (p_start + i) = buf_lin_at m blocks i"
     unfolding ae_window_invariant_def by simp
+  from wi have bp_m: "snd bp < m"
+    unfolding ae_window_invariant_def by simp
+  from wi have bext: "ae_blocks_ext m blocks"
+    unfolding ae_window_invariant_def by simp
+  have bext': "ae_blocks_ext m (write_bp blocks bp a')"
+    by (rule ae_blocks_ext_write_bp[OF bext bp_m])
+  have bp'_m: "snd bp' < m"
+    using bp_advance_le_offset_lt[OF _ bp_m adv] bp_m by simp
   \<comment> \<open>The LE-jump in \<open>bp_advance_le\<close> doesn't fire because
     \<open>tM nM \<noteq> le\<close>; so \<open>adv\<close> collapses to a plain
     \<open>bp_advance\<close>.\<close>
-  have adv_plain: "bp_advance bp d = Some bp'"
+  have adv_plain: "bp_advance m bp d = Some bp'"
   proof -
     from no_le have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR)"
       by simp
-    hence "bp_advance_le le (tM nM) bp d = bp_advance bp d"
+    hence "bp_advance_le m le (tM nM) bp d = bp_advance m bp d"
       unfolding bp_advance_le_def by auto
     with adv show ?thesis by simp
   qed
@@ -61,25 +69,25 @@ proof -
     direction.  N keeps \<open>bp\<close>, R increments \<open>bp_linear\<close>, L
     decrements (needs \<open>nM \<ge> 1\<close>, supplied by
     \<open>p_start_ge\<close>).\<close>
-  have head_new: "go_move d nM = p_start + bp_linear bp'"
+  have head_new: "go_move d nM = p_start + bp_linear m bp'"
   proof (cases d)
     case MoveN
     from adv_plain MoveN have "Some bp' = Some bp"
-      using bp_advance_N_some[of bp] by simp
+      using bp_advance_N_some[of _ bp] by simp
     hence bp'_eq: "bp' = bp" by simp
     show ?thesis using MoveN bp'_eq head_corr by simp
   next
     case MoveR
-    from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
-    have lin_R: "bp_linear bp' = Suc (bp_linear bp)"
-      by (rule bp_advance_R_linear[OF adv_R])
+    from adv_plain MoveR have adv_R: "bp_advance m bp MoveR = Some bp'" by simp
+    have lin_R: "bp_linear m bp' = Suc (bp_linear m bp)"
+      by (rule bp_advance_R_linear[OF adv_R bp_m])
     show ?thesis using MoveR lin_R head_corr by simp
   next
     case MoveL
-    from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
-    have lin_L: "Suc (bp_linear bp') = bp_linear bp"
-      by (rule bp_advance_L_linear[OF adv_L])
-    have nM_form: "nM = Suc (p_start + bp_linear bp')"
+    from adv_plain MoveL have adv_L: "bp_advance m bp MoveL = Some bp'" by simp
+    have lin_L: "Suc (bp_linear m bp') = bp_linear m bp"
+      by (rule bp_advance_L_linear[OF adv_L bp_m])
+    have nM_form: "nM = Suc (p_start + bp_linear m bp')"
       using head_corr lin_L by simp
     show ?thesis using MoveL nM_form by simp
   qed
@@ -91,33 +99,33 @@ proof -
   have win_new:
       "\<forall>i. i < 3 * ?c \<longrightarrow>
               (tM(nM := a')) (p_start + i)
-                = buf_lin_at (write_bp blocks bp a') i"
+                = buf_lin_at m (write_bp blocks bp a') i"
   proof (intro allI impI)
     fix i
     assume i_lt: "i < 3 * ?c"
     show "(tM(nM := a')) (p_start + i)
-            = buf_lin_at (write_bp blocks bp a') i"
-    proof (cases "i = bp_linear bp")
+            = buf_lin_at m (write_bp blocks bp a') i"
+    proof (cases "i = bp_linear m bp")
       case True
       have pos_eq: "p_start + i = nM" using True head_corr by simp
       have "(tM(nM := a')) (p_start + i) = a'" using pos_eq by simp
-      moreover have "buf_lin_at (write_bp blocks bp a') i = a'"
-        using True buf_lin_at_write_bp_match[of blocks bp a'] by simp
+      moreover have "buf_lin_at m (write_bp blocks bp a') i = a'"
+        using True buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
       ultimately show ?thesis by simp
     next
       case False
       hence pos_neq: "p_start + i \<noteq> nM" using head_corr by simp
       have "(tM(nM := a')) (p_start + i) = tM (p_start + i)"
         using pos_neq by simp
-      also have "... = buf_lin_at blocks i" using win_eq i_lt by blast
-      also have "... = buf_lin_at (write_bp blocks bp a') i"
+      also have "... = buf_lin_at m blocks i" using win_eq i_lt by blast
+      also have "... = buf_lin_at m (write_bp blocks bp a') i"
         by (rule buf_lin_at_write_bp_other[OF False i_lt, symmetric])
       finally show ?thesis .
     qed
   qed
   show ?thesis
     unfolding ae_window_invariant_def
-    using p_start_ge head_new win_new by simp
+    using p_start_ge head_new win_new bp'_m bext' by simp
 qed
 
 text \<open>Structural-case equivalence for the \<open>le1\<close> regime: the
@@ -131,7 +139,7 @@ text \<open>Structural-case equivalence for the \<open>le1\<close> regime: the
   Backward direction (\<open>\<Leftarrow>\<close>): given the algebraic relation,
   case-split on \<open>fst bp\<close> and recover the original case-clause
   from \<open>bp_linear\<close>'s known form per case (using
-  \<open>c_idx_last\<close> for the \<open>AE_Left\<close> sub-case where the
+  \<open>c_last_def\<close> for the \<open>AE_Left\<close> sub-case where the
   algebraic relation forces \<open>snd bp = c_last\<close>).
 
   Used by \<open>ae_window_invariant_le1_step\<close> to reduce the
@@ -139,93 +147,93 @@ text \<open>Structural-case equivalence for the \<open>le1\<close> regime: the
   avoiding a per-direction-per-block-boundary nested case analysis.\<close>
 
 lemma bp_linear_le1_struct_iff:
-  fixes bp :: "('c :: enum) bp"
+  fixes bp :: "bp"
     and nM :: nat
+  assumes bp_m: "snd bp < m"
   shows "(case fst bp of
-            AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-          | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-          | AE_Right \<Rightarrow> nM = Suc (card (UNIV :: 'c set)
-                                  + c_idx (snd bp)))
-        \<longleftrightarrow> Suc (bp_linear bp) = nM + card (UNIV :: 'c set)"
+            AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+          | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+          | AE_Right \<Rightarrow> nM = Suc (m
+                                  + snd bp))
+        \<longleftrightarrow> Suc (bp_linear m bp) = nM + m"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
-  have idx_lt: "c_idx (snd bp) < ?c" by (rule c_idx_lt_card)
+  let ?c = "m"
   show ?thesis
   proof (cases "fst bp")
     case AE_Left
-    have lin_eq: "bp_linear bp = c_idx (snd bp)"
+    have lin_eq: "bp_linear m bp = snd bp"
       using AE_Left by (cases bp) simp
     show ?thesis
     proof
       assume "case fst bp of
-                AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-              | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-              | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
-      with AE_Left have snd_eq: "snd bp = c_last" and nM_eq: "nM = 0" by auto
-      have "c_idx (snd bp) = ?c - 1" using snd_eq c_idx_last by simp
-      thus "Suc (bp_linear bp) = nM + ?c"
-        using lin_eq nM_eq idx_lt by simp
+                AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+              | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+              | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
+      with AE_Left have snd_eq: "snd bp = c_last m" and nM_eq: "nM = 0" by auto
+      have "snd bp = ?c - 1" using snd_eq c_last_def by simp
+      thus "Suc (bp_linear m bp) = nM + ?c"
+        using lin_eq nM_eq bp_m by simp
     next
-      assume "Suc (bp_linear bp) = nM + ?c"
-      hence "Suc (c_idx (snd bp)) = nM + ?c" using lin_eq by simp
+      assume "Suc (bp_linear m bp) = nM + ?c"
+      hence "Suc (snd bp) = nM + ?c" using lin_eq by simp
       hence nM_zero: "nM = 0"
-        using idx_lt by linarith
-      with \<open>Suc (c_idx (snd bp)) = nM + ?c\<close>
-      have idx_eq: "c_idx (snd bp) = ?c - 1" using idx_lt by simp
-      have c_idx_last_eq: "c_idx (c_last :: 'c) = ?c - 1"
-        by (rule c_idx_last)
-      have idx_at: "c_idx (snd bp) = c_idx (c_last :: 'c)"
-        using idx_eq c_idx_last_eq by simp
-      hence snd_eq: "snd bp = c_last"
-        by (metis c_idx_in_range(2))
+        using bp_m by linarith
+      with \<open>Suc (snd bp) = nM + ?c\<close>
+      have idx_eq: "snd bp = ?c - 1" using bp_m by simp
+      have c_last_eq: "(c_last m :: nat) = ?c - 1"
+        by (simp add: c_last_def)
+      have idx_at: "snd bp = (c_last m :: nat)"
+        using idx_eq c_last_eq by simp
+      hence snd_eq: "snd bp = c_last m"
+        by simp
       show "case fst bp of
-              AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-            | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-            | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
+              AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+            | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+            | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
         using AE_Left snd_eq nM_zero by simp
     qed
   next
     case AE_Home
-    have lin_eq: "bp_linear bp = ?c + c_idx (snd bp)"
+    have lin_eq: "bp_linear m bp = ?c + snd bp"
       using AE_Home by (cases bp) simp
     show ?thesis
     proof
       assume "case fst bp of
-                AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-              | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-              | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
-      with AE_Home have nM_eq: "nM = Suc (c_idx (snd bp))" by simp
-      thus "Suc (bp_linear bp) = nM + ?c" using lin_eq by simp
+                AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+              | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+              | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
+      with AE_Home have nM_eq: "nM = Suc (snd bp)" by simp
+      thus "Suc (bp_linear m bp) = nM + ?c" using lin_eq by simp
     next
-      assume "Suc (bp_linear bp) = nM + ?c"
-      hence "Suc (?c + c_idx (snd bp)) = nM + ?c" using lin_eq by simp
-      hence "nM = Suc (c_idx (snd bp))" by simp
+      assume "Suc (bp_linear m bp) = nM + ?c"
+      hence "Suc (?c + snd bp) = nM + ?c" using lin_eq by simp
+      hence "nM = Suc (snd bp)" by simp
       thus "case fst bp of
-              AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-            | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-            | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
+              AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+            | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+            | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
         using AE_Home by simp
     qed
   next
     case AE_Right
-    have lin_eq: "bp_linear bp = 2 * ?c + c_idx (snd bp)"
+    have lin_eq: "bp_linear m bp = 2 * ?c + snd bp"
       using AE_Right by (cases bp) simp
     show ?thesis
     proof
       assume "case fst bp of
-                AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-              | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-              | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
-      with AE_Right have nM_eq: "nM = Suc (?c + c_idx (snd bp))" by simp
-      thus "Suc (bp_linear bp) = nM + ?c" using lin_eq by simp
+                AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+              | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+              | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
+      with AE_Right have nM_eq: "nM = Suc (?c + snd bp)" by simp
+      thus "Suc (bp_linear m bp) = nM + ?c" using lin_eq by simp
     next
-      assume "Suc (bp_linear bp) = nM + ?c"
-      hence "Suc (2 * ?c + c_idx (snd bp)) = nM + ?c" using lin_eq by simp
-      hence "nM = Suc (?c + c_idx (snd bp))" by simp
+      assume "Suc (bp_linear m bp) = nM + ?c"
+      hence "Suc (2 * ?c + snd bp) = nM + ?c" using lin_eq by simp
+      hence "nM = Suc (?c + snd bp)" by simp
       thus "case fst bp of
-              AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-            | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-            | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp))"
+              AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+            | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+            | AE_Right \<Rightarrow> nM = Suc (?c + snd bp)"
         using AE_Right by simp
     qed
   qed
@@ -252,39 +260,47 @@ lemma ae_window_invariant_le1_step:
   fixes le a' :: 'a
     and tM :: "nat \<Rightarrow> 'a"
     and nM :: nat
-    and bp bp' :: "('c :: enum) bp"
-    and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and bp bp' :: "bp"
+    and blocks :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and d :: move
-  assumes wi:        "ae_window_invariant_le1 tM nM bp blocks le"
-      and adv:       "bp_advance_le le (tM nM) bp d = Some bp'"
-      and bp_lt:     "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
-      and bp_pos:    "0 < bp_linear bp"
+  assumes wi:        "ae_window_invariant_le1 m tM nM bp blocks le"
+      and adv:       "bp_advance_le m le (tM nM) bp d = Some bp'"
+      and bp_lt:     "bp_linear m bp < 3 * m - 1"
+      and bp_pos:    "0 < bp_linear m bp"
       and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
       and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
-      and no_le_win: "\<forall>i. 0 < i \<and> i \<le> 2 * card (UNIV :: 'c set)
+      and no_le_win: "\<forall>i. 0 < i \<and> i \<le> 2 * m
                               \<longrightarrow> tM i \<noteq> le"
-  shows "ae_window_invariant_le1
+  shows "ae_window_invariant_le1 m
             (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') le"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
-  from wi have l_LE: "fst blocks = LE_block le"
+  let ?c = "m"
+  from wi have l_LE: "fst blocks = LE_block m le"
     unfolding ae_window_invariant_le1_def by simp
   from wi have tM_0: "tM 0 = le"
     unfolding ae_window_invariant_le1_def by simp
-  have struct_lin: "Suc (bp_linear bp) = nM + ?c"
+  from wi have bp_m: "snd bp < m"
+    unfolding ae_window_invariant_le1_def by simp
+  from wi have bext: "ae_blocks_ext m blocks"
+    unfolding ae_window_invariant_le1_def by simp
+  have bext': "ae_blocks_ext m (write_bp blocks bp a')"
+    by (rule ae_blocks_ext_write_bp[OF bext bp_m])
+  have bp'_m: "snd bp' < m"
+    using bp_advance_le_offset_lt[OF _ bp_m adv] bp_m by simp
+  have struct_lin: "Suc (bp_linear m bp) = nM + ?c"
   proof -
     have "(case fst bp of
-            AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-          | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-          | AE_Right \<Rightarrow> nM = Suc (?c + c_idx (snd bp)))"
+            AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+          | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+          | AE_Right \<Rightarrow> nM = Suc (?c + snd bp))"
       using wi unfolding ae_window_invariant_le1_def by simp
     thus ?thesis
-      using bp_linear_le1_struct_iff[where bp = bp and nM = nM]
+      using bp_linear_le1_struct_iff[OF bp_m, where nM = nM]
       by blast
   qed
   from wi have align:
-      "\<forall>i. i < 2 * ?c \<longrightarrow> tM (Suc i) = buf_lin_at blocks (?c + i)"
+      "\<forall>i. i < 2 * ?c \<longrightarrow> tM (Suc i) = buf_lin_at m blocks (?c + i)"
     unfolding ae_window_invariant_le1_def by simp
   \<comment> \<open>LE-jump never fires in \<open>le1\<close>: at \<open>fst bp = AE_Home\<close>,
     \<open>nM\<close> lies in \<open>{1..c}\<close>, so \<open>tM nM \<noteq> le\<close> by
@@ -293,17 +309,16 @@ proof -
   proof
     assume "tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR"
     hence le_at: "tM nM = le" and fst_home: "fst bp = AE_Home" by auto
-    have lin: "bp_linear bp = ?c + c_idx (snd bp)"
+    have lin: "bp_linear m bp = ?c + snd bp"
       using fst_home by (cases bp) simp
-    from struct_lin lin have nM_eq: "nM = Suc (c_idx (snd bp))" by simp
-    have idx_lt: "c_idx (snd bp) < ?c" by (rule c_idx_lt_card)
-    have nM_bd: "0 < nM \<and> nM \<le> ?c" using nM_eq idx_lt by simp
+    from struct_lin lin have nM_eq: "nM = Suc (snd bp)" by simp
+    have nM_bd: "0 < nM \<and> nM \<le> ?c" using nM_eq bp_m by simp
     hence "tM nM \<noteq> le" using no_le_win by simp
     with le_at show False by simp
   qed
-  have adv_plain: "bp_advance bp d = Some bp'"
+  have adv_plain: "bp_advance m bp d = Some bp'"
   proof -
-    have "bp_advance_le le (tM nM) bp d = bp_advance bp d"
+    have "bp_advance_le m le (tM nM) bp d = bp_advance m bp d"
       using not_le_jump unfolding bp_advance_le_def by auto
     with adv show ?thesis by simp
   qed
@@ -311,24 +326,24 @@ proof -
     go_move d nM + c\<close>.  By the equivalence
     \<open>bp_linear_le1_struct_iff\<close> this implies the structural
     case-on-\<open>fst bp'\<close> at \<open>nM' = go_move d nM\<close>.\<close>
-  have struct_new: "Suc (bp_linear bp') = go_move d nM + ?c"
+  have struct_new: "Suc (bp_linear m bp') = go_move d nM + ?c"
   proof (cases d)
     case MoveN
     from adv_plain MoveN have "Some bp' = Some bp"
-      using bp_advance_N_some[of bp] by simp
+      using bp_advance_N_some[of _ bp] by simp
     hence bp'_eq: "bp' = bp" by simp
     show ?thesis using MoveN bp'_eq struct_lin by simp
   next
     case MoveR
-    from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
-    have lin_R: "bp_linear bp' = Suc (bp_linear bp)"
-      by (rule bp_advance_R_linear[OF adv_R])
+    from adv_plain MoveR have adv_R: "bp_advance m bp MoveR = Some bp'" by simp
+    have lin_R: "bp_linear m bp' = Suc (bp_linear m bp)"
+      by (rule bp_advance_R_linear[OF adv_R bp_m])
     show ?thesis using MoveR lin_R struct_lin by simp
   next
     case MoveL
-    from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
-    have lin_L: "Suc (bp_linear bp') = bp_linear bp"
-      by (rule bp_advance_L_linear[OF adv_L])
+    from adv_plain MoveL have adv_L: "bp_advance m bp MoveL = Some bp'" by simp
+    have lin_L: "Suc (bp_linear m bp') = bp_linear m bp"
+      by (rule bp_advance_L_linear[OF adv_L bp_m])
     have nM_pos: "0 < nM"
     proof (rule ccontr)
       assume "\<not> 0 < nM"
@@ -337,22 +352,22 @@ proof -
       with a_le have d_in: "d \<in> {MoveN, MoveR}" by blast
       with MoveL show False by simp
     qed
-    obtain m where m_eq: "nM = Suc m" using nM_pos by (cases nM) auto
-    have "Suc (Suc (bp_linear bp')) = Suc (bp_linear bp)"
+    obtain p where m_eq: "nM = Suc p" using nM_pos by (cases nM) auto
+    have "Suc (Suc (bp_linear m bp')) = Suc (bp_linear m bp)"
       using lin_L by simp
     also have "... = nM + ?c" using struct_lin by simp
-    also have "... = Suc (m + ?c)" using m_eq by simp
-    finally have lhs_eq: "Suc (bp_linear bp') = m + ?c" by simp
-    have rhs_eq: "go_move MoveL nM = m" using m_eq by simp
+    also have "... = Suc (p + ?c)" using m_eq by simp
+    finally have lhs_eq: "Suc (bp_linear m bp') = p + ?c" by simp
+    have rhs_eq: "go_move MoveL nM = p" using m_eq by simp
     show ?thesis using MoveL lhs_eq rhs_eq by simp
   qed
   have struct_post:
       "(case fst bp' of
-          AE_Left  \<Rightarrow> snd bp' = c_last \<and> go_move d nM = 0
-        | AE_Home  \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
-        | AE_Right \<Rightarrow> go_move d nM = Suc (?c + c_idx (snd bp')))"
+          AE_Left  \<Rightarrow> snd bp' = c_last m \<and> go_move d nM = 0
+        | AE_Home  \<Rightarrow> go_move d nM = Suc (snd bp')
+        | AE_Right \<Rightarrow> go_move d nM = Suc (?c + snd bp'))"
     using struct_new
-          bp_linear_le1_struct_iff[where bp = bp' and nM = "go_move d nM"]
+          bp_linear_le1_struct_iff[OF bp'_m, where nM = "go_move d nM"]
     by blast
   \<comment> \<open>Window-content alignment over \<open>{1..2c} \<leftrightarrow> {c..3c-1}\<close>:
     the write lands at buffer index \<open>bp_linear bp\<close>; if that
@@ -361,36 +376,36 @@ proof -
   have align_new:
       "\<forall>i. i < 2 * ?c \<longrightarrow>
               (tM(nM := a')) (Suc i)
-                = buf_lin_at (write_bp blocks bp a') (?c + i)"
+                = buf_lin_at m (write_bp blocks bp a') (?c + i)"
   proof (intro allI impI)
     fix i
     assume i_lt: "i < 2 * ?c"
     show "(tM(nM := a')) (Suc i)
-            = buf_lin_at (write_bp blocks bp a') (?c + i)"
-    proof (cases "?c + i = bp_linear bp")
+            = buf_lin_at m (write_bp blocks bp a') (?c + i)"
+    proof (cases "?c + i = bp_linear m bp")
       case True
-      hence "Suc (?c + i) = Suc (bp_linear bp)" by simp
+      hence "Suc (?c + i) = Suc (bp_linear m bp)" by simp
       hence "Suc i + ?c = nM + ?c" using struct_lin by simp
       hence Suc_i_eq: "Suc i = nM" by simp
       have lhs: "(tM(nM := a')) (Suc i) = a'" using Suc_i_eq by simp
-      have rhs: "buf_lin_at (write_bp blocks bp a') (?c + i) = a'"
-        using True buf_lin_at_write_bp_match[of blocks bp a'] by simp
+      have rhs: "buf_lin_at m (write_bp blocks bp a') (?c + i) = a'"
+        using True buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
       show ?thesis using lhs rhs by simp
     next
       case False
-      hence c_plus_i_neq: "?c + i \<noteq> bp_linear bp" by simp
+      hence c_plus_i_neq: "?c + i \<noteq> bp_linear m bp" by simp
       have Suc_i_neq: "Suc i \<noteq> nM"
       proof
         assume "Suc i = nM"
         hence "Suc i + ?c = nM + ?c" by simp
-        hence "Suc (?c + i) = Suc (bp_linear bp)" using struct_lin by simp
-        hence "?c + i = bp_linear bp" by simp
+        hence "Suc (?c + i) = Suc (bp_linear m bp)" using struct_lin by simp
+        hence "?c + i = bp_linear m bp" by simp
         with c_plus_i_neq show False ..
       qed
       have c_plus_i_lt: "?c + i < 3 * ?c" using i_lt by simp
       have "(tM(nM := a')) (Suc i) = tM (Suc i)" using Suc_i_neq by simp
-      also have "... = buf_lin_at blocks (?c + i)" using align i_lt by blast
-      also have "... = buf_lin_at (write_bp blocks bp a') (?c + i)"
+      also have "... = buf_lin_at m blocks (?c + i)" using align i_lt by blast
+      also have "... = buf_lin_at m (write_bp blocks bp a') (?c + i)"
         by (rule buf_lin_at_write_bp_other
                   [OF c_plus_i_neq c_plus_i_lt, symmetric])
       finally show ?thesis .
@@ -402,32 +417,32 @@ proof -
     the left slot stays \<open>LE_block le\<close>; in \<open>AE_Home\<close> /
     \<open>AE_Right\<close> cases the write doesn't touch the left
     slot.\<close>
-  have fst_new: "fst (write_bp blocks bp a') = LE_block le"
+  have fst_new: "fst (write_bp blocks bp a') = LE_block m le"
   proof (cases "fst bp")
     case AE_Left
     obtain b' off where bp_eq: "bp = (b', off)" by (cases bp)
     have b'_eq: "b' = AE_Left" using AE_Left bp_eq by simp
-    have lin_eq: "bp_linear bp = c_idx off" using bp_eq AE_Left by simp
-    have idx_lt: "c_idx off < ?c" by (rule c_idx_lt_card)
-    from struct_lin lin_eq have suc_eq: "Suc (c_idx off) = nM + ?c" by simp
-    have nM_zero: "nM = 0" using suc_eq idx_lt by linarith
-    have idx_top: "c_idx off = ?c - 1" using suc_eq nM_zero by linarith
-    have c_idx_last_eq: "c_idx (c_last :: 'c) = ?c - 1" by (rule c_idx_last)
-    have idx_at: "c_idx off = c_idx (c_last :: 'c)"
-      using idx_top c_idx_last_eq by simp
-    hence off_eq: "off = c_last" by (metis c_idx_in_range(2))
+    have lin_eq: "bp_linear m bp = off" using bp_eq AE_Left by simp
+    have off_m: "off < m" using bp_m bp_eq by simp
+    from struct_lin lin_eq have suc_eq: "Suc off = nM + ?c" by simp
+    have nM_zero: "nM = 0" using suc_eq off_m by linarith
+    have idx_top: "off = ?c - 1" using suc_eq nM_zero by linarith
+    have c_last_eq: "(c_last m :: nat) = ?c - 1" by (simp add: c_last_def)
+    have idx_at: "off = (c_last m :: nat)"
+      using idx_top c_last_eq by simp
+    hence off_eq: "off = c_last m" by simp
     have tM_nM_eq: "tM nM = le" using nM_zero tM_0 by simp
     have a'_eq: "a' = le" using a_le tM_nM_eq by blast
     obtain l h r where blocks_eq: "blocks = (l, h, r)"
       by (cases blocks) auto
-    have l_eq: "l = LE_block le" using l_LE blocks_eq by simp
+    have l_eq: "l = LE_block m le" using l_LE blocks_eq by simp
     have wb_eq: "write_bp blocks bp a' = (l(off := a'), h, r)"
       using bp_eq b'_eq blocks_eq unfolding write_bp_def by simp
-    have "l(off := a') = LE_block le"
+    have "l(off := a') = LE_block m le"
     proof -
-      have "l(off := a') = (LE_block le)(c_last := le)"
+      have "l(off := a') = (LE_block m le)(c_last m := le)"
         using l_eq off_eq a'_eq by simp
-      also have "... = LE_block le" unfolding LE_block_def by auto
+      also have "... = LE_block m le" unfolding LE_block_def using off_m off_eq by auto
       finally show ?thesis .
     qed
     thus ?thesis using wb_eq by simp
@@ -466,7 +481,7 @@ proof -
   qed
   show ?thesis
     unfolding ae_window_invariant_le1_def
-    using fst_new tM_0_new struct_post align_new by simp
+    using fst_new tM_0_new struct_post align_new bp'_m bext' by simp
 qed
 
 text \<open>\<open>le0\<close>-regime window-invariant preservation under one
@@ -491,40 +506,48 @@ lemma ae_window_invariant_le0_step:
   fixes le a' :: 'a
     and tM :: "nat \<Rightarrow> 'a"
     and nM :: nat
-    and bp bp' :: "('c :: enum) bp"
-    and blocks :: "('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a)"
+    and bp bp' :: "bp"
+    and blocks :: "(nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
     and d :: move
-  assumes wi:        "ae_window_invariant_le0 tM nM bp blocks le"
-      and adv:       "bp_advance_le le (tM nM) bp d = Some bp'"
-      and bp_lt:     "bp_linear bp < 3 * card (UNIV :: 'c set) - 1"
-      and bp_pos:    "0 < bp_linear bp"
+  assumes wi:        "ae_window_invariant_le0 m tM nM bp blocks le"
+      and adv:       "bp_advance_le m le (tM nM) bp d = Some bp'"
+      and bp_lt:     "bp_linear m bp < 3 * m - 1"
+      and bp_pos:    "0 < bp_linear m bp"
       and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
       and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
-      and no_le_win: "\<forall>i. 0 < i \<and> i \<le> card (UNIV :: 'c set)
+      and no_le_win: "\<forall>i. 0 < i \<and> i \<le> m
                               \<longrightarrow> tM i \<noteq> le"
-  shows "ae_window_invariant_le0
+  shows "ae_window_invariant_le0 m
             (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') le"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
-  from wi have h_LE: "fst (snd blocks) = LE_block le"
+  let ?c = "m"
+  from wi have h_LE: "fst (snd blocks) = LE_block m le"
     unfolding ae_window_invariant_le0_def by simp
   from wi have tM_0: "tM 0 = le"
     unfolding ae_window_invariant_le0_def by simp
+  from wi have bp_m: "snd bp < m"
+    unfolding ae_window_invariant_le0_def by simp
+  from wi have bext: "ae_blocks_ext m blocks"
+    unfolding ae_window_invariant_le0_def by simp
+  have bext': "ae_blocks_ext m (write_bp blocks bp a')"
+    by (rule ae_blocks_ext_write_bp[OF bext bp_m])
+  have bp'_m: "snd bp' < m"
+    using bp_advance_le_offset_lt[OF _ bp_m adv] bp_m by simp
   from wi have align:
-      "\<forall>i. i < ?c \<longrightarrow> tM (Suc i) = buf_lin_at blocks (2 * ?c + i)"
+      "\<forall>i. i < ?c \<longrightarrow> tM (Suc i) = buf_lin_at m blocks (2 * ?c + i)"
     unfolding ae_window_invariant_le0_def by simp
   from wi have struct_pre:
       "(case fst bp of
           AE_Home  \<Rightarrow> nM = 0
-        | AE_Right \<Rightarrow> nM = Suc (c_idx (snd bp))
+        | AE_Right \<Rightarrow> nM = Suc (snd bp)
         | AE_Left  \<Rightarrow> False)"
     unfolding ae_window_invariant_le0_def by simp
   have not_left: "fst bp \<noteq> AE_Left"
     using struct_pre by (cases "fst bp") auto
   obtain l h r where blocks_eq: "blocks = (l, h, r)"
     by (cases blocks) auto
-  have h_eq: "h = LE_block le" using h_LE blocks_eq by simp
+  have h_eq: "h = LE_block m le" using h_LE blocks_eq by simp
   obtain b off where bp_eq: "bp = (b, off)" by (cases bp)
   show ?thesis
   proof (cases b)
@@ -541,9 +564,9 @@ proof -
       so the home slot stays \<open>LE_block le\<close>.\<close>
     have wb_eq: "write_bp blocks bp a' = (l, h(off := a'), r)"
       using bp_eq b_home blocks_eq unfolding write_bp_def by simp
-    have h_new: "h(off := a') = LE_block le"
-      using h_eq a'_le unfolding LE_block_def by auto
-    have new_blocks: "write_bp blocks bp a' = (l, LE_block le, r)"
+    have h_new: "h(off := a') = LE_block m le"
+      using h_eq a'_le bp_m bp_eq unfolding LE_block_def by auto
+    have new_blocks: "write_bp blocks bp a' = (l, LE_block m le, r)"
       using wb_eq h_new by simp
     \<comment> \<open>Tape: \<open>tM(0 := le) = tM\<close>.\<close>
     have tM_new: "tM(nM := a') = tM"
@@ -551,75 +574,77 @@ proof -
     show ?thesis
     proof (cases d)
       case MoveN
-      from adv MoveN have "bp_advance_le le (tM nM) bp MoveN = Some bp'" by simp
+      from adv MoveN have "bp_advance_le m le (tM nM) bp MoveN = Some bp'" by simp
       hence bp'_eq: "bp' = bp"
-        unfolding bp_advance_le_def using bp_advance_N_some[of bp] by auto
+        unfolding bp_advance_le_def using bp_advance_N_some[of _ bp] by auto
       show ?thesis
         unfolding ae_window_invariant_le0_def
       proof (intro conjI)
-        show "fst (snd (write_bp blocks bp a')) = LE_block le"
+        show "snd bp' < m" by (rule bp'_m)
+        show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+        show "fst (snd (write_bp blocks bp a')) = LE_block m le"
           using new_blocks by simp
         show "(tM(nM := a')) 0 = le" using tM_new tM_0 by simp
         show "(case fst bp' of
                 AE_Home  \<Rightarrow> go_move d nM = 0
-              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+              | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
               | AE_Left  \<Rightarrow> False)"
           using bp'_eq bp_eq b_home MoveN nM_zero by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
         proof (intro allI impI)
           fix i
           assume i_lt: "i < ?c"
           have lhs: "(tM(nM := a')) (Suc i) = tM (Suc i)"
             using tM_new by simp
-          also have "... = buf_lin_at blocks (2 * ?c + i)"
+          also have "... = buf_lin_at m blocks (2 * ?c + i)"
             using align i_lt by blast
-          also have "... = buf_lin_at (l, LE_block le, r) (2 * ?c + i)"
+          also have "... = buf_lin_at m (l, LE_block m le, r) (2 * ?c + i)"
             using h_eq blocks_eq
             unfolding buf_lin_at_def by simp
-          also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+          also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
             using new_blocks by simp
           finally show "(tM(nM := a')) (Suc i)
-                          = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)" .
+                          = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)" .
         qed
       qed
     next
       case MoveR
-      \<comment> \<open>LE-jump fires: \<open>bp' = (AE_Right, c_first)\<close>,
-        \<open>go_move MoveR 0 = 1 = Suc (c_idx c_first)\<close>.\<close>
+      \<comment> \<open>LE-jump fires: \<open>bp' = (AE_Right, 0)\<close>,
+        \<open>go_move MoveR 0 = 1 = Suc 0\<close>.\<close>
       from adv MoveR tM_nM_le b_home bp_eq
-      have bp'_eq: "bp' = (AE_Right, c_first)"
+      have bp'_eq: "bp' = (AE_Right, 0)"
         unfolding bp_advance_le_def by simp
       have nM'_eq: "go_move MoveR nM = 1" using nM_zero by simp
-      have c_idx_first_eq: "c_idx (c_first :: 'c) = 0"
-        by (rule c_idx_first)
       show ?thesis
         unfolding ae_window_invariant_le0_def
       proof (intro conjI)
-        show "fst (snd (write_bp blocks bp a')) = LE_block le"
+        show "snd bp' < m" by (rule bp'_m)
+        show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+        show "fst (snd (write_bp blocks bp a')) = LE_block m le"
           using new_blocks by simp
         show "(tM(nM := a')) 0 = le" using tM_new tM_0 by simp
         show "(case fst bp' of
                 AE_Home  \<Rightarrow> go_move d nM = 0
-              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+              | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
               | AE_Left  \<Rightarrow> False)"
-          using bp'_eq MoveR nM'_eq c_idx_first_eq by simp
+          using bp'_eq MoveR nM'_eq by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
         proof (intro allI impI)
           fix i
           assume i_lt: "i < ?c"
           have "(tM(nM := a')) (Suc i) = tM (Suc i)" using tM_new by simp
-          also have "... = buf_lin_at blocks (2 * ?c + i)"
+          also have "... = buf_lin_at m blocks (2 * ?c + i)"
             using align i_lt by blast
-          also have "... = buf_lin_at (l, LE_block le, r) (2 * ?c + i)"
+          also have "... = buf_lin_at m (l, LE_block m le, r) (2 * ?c + i)"
             using h_eq blocks_eq unfolding buf_lin_at_def by simp
-          also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+          also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
             using new_blocks by simp
           finally show "(tM(nM := a')) (Suc i)
-                          = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)" .
+                          = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)" .
         qed
       qed
     next
@@ -630,78 +655,80 @@ proof -
     case AE_Right
     have b_right: "b = AE_Right" using AE_Right .
     from struct_pre bp_eq AE_Right
-    have nM_form: "nM = Suc (c_idx off)" by simp
-    have idx_lt: "c_idx off < ?c" by (rule c_idx_lt_card)
+    have nM_form: "nM = Suc off" by simp
+    have idx_lt: "off < ?c" using bp_m bp_eq by simp
     have nM_bd: "0 < nM \<and> nM \<le> ?c" using nM_form idx_lt by simp
     \<comment> \<open>LE-jump doesn't fire (\<open>fst bp = AE_Right \<noteq> AE_Home\<close>).
       So \<open>bp_advance_le = bp_advance\<close>.\<close>
-    have adv_plain: "bp_advance bp d = Some bp'"
+    have adv_plain: "bp_advance m bp d = Some bp'"
     proof -
       have "\<not> (tM nM = le \<and> fst bp = AE_Home \<and> d = MoveR)"
         using bp_eq b_right by simp
-      hence "bp_advance_le le (tM nM) bp d = bp_advance bp d"
+      hence "bp_advance_le m le (tM nM) bp d = bp_advance m bp d"
         unfolding bp_advance_le_def by auto
       with adv show ?thesis by simp
     qed
     \<comment> \<open>Write-back: writes to right slot, home and left unchanged.\<close>
     have wb_eq: "write_bp blocks bp a' = (l, h, r(off := a'))"
       using bp_eq b_right blocks_eq unfolding write_bp_def by simp
-    have new_h: "fst (snd (write_bp blocks bp a')) = LE_block le"
+    have new_h: "fst (snd (write_bp blocks bp a')) = LE_block m le"
       using wb_eq h_eq by simp
     \<comment> \<open>Tape: cell 0 unchanged (\<open>nM \<ge> 1\<close>).\<close>
     have tM_0_new: "(tM(nM := a')) 0 = le"
       using nM_bd tM_0 by simp
     \<comment> \<open>Alignment under the parallel write: the only updated buffer cell
-      is at index \<open>2c + c_idx off = bp_linear bp\<close>; the tape update
-      at \<open>nM = Suc (c_idx off)\<close> corresponds.\<close>
-    have bp_lin: "bp_linear bp = 2 * ?c + c_idx off"
+      is at index \<open>2c + off = bp_linear bp\<close>; the tape update
+      at \<open>nM = Suc off\<close> corresponds.\<close>
+    have bp_lin: "bp_linear m bp = 2 * ?c + off"
       using bp_eq b_right by simp
     show ?thesis
     proof (cases d)
       case MoveN
       from adv_plain MoveN have "Some bp' = Some bp"
-        using bp_advance_N_some[of bp] by simp
+        using bp_advance_N_some[of _ bp] by simp
       hence bp'_eq: "bp' = bp" by simp
       show ?thesis
         unfolding ae_window_invariant_le0_def
       proof (intro conjI)
-        show "fst (snd (write_bp blocks bp a')) = LE_block le"
+        show "snd bp' < m" by (rule bp'_m)
+        show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+        show "fst (snd (write_bp blocks bp a')) = LE_block m le"
           by (rule new_h)
         show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
         show "(case fst bp' of
                 AE_Home  \<Rightarrow> go_move d nM = 0
-              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+              | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
               | AE_Left  \<Rightarrow> False)"
           using bp'_eq bp_eq b_right MoveN nM_form by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
         proof (intro allI impI)
           fix i
           assume i_lt: "i < ?c"
           show "(tM(nM := a')) (Suc i)
-                  = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
-          proof (cases "i = c_idx off")
+                  = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
+          proof (cases "i = off")
             case True
             have "Suc i = nM" using True nM_form by simp
             hence lhs: "(tM(nM := a')) (Suc i) = a'" by simp
-            have idx_eq: "2 * ?c + i = bp_linear bp"
+            have idx_eq: "2 * ?c + i = bp_linear m bp"
               using True bp_lin by simp
-            have rhs: "buf_lin_at (write_bp blocks bp a') (2 * ?c + i) = a'"
-              using idx_eq buf_lin_at_write_bp_match[of blocks bp a'] by simp
+            have rhs: "buf_lin_at m (write_bp blocks bp a') (2 * ?c + i) = a'"
+              using idx_eq buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
             show ?thesis using lhs rhs by simp
           next
             case False
-            have idx_neq: "2 * ?c + i \<noteq> bp_linear bp"
+            have idx_neq: "2 * ?c + i \<noteq> bp_linear m bp"
               using False bp_lin by simp
             have idx_2c_lt: "2 * ?c + i < 3 * ?c" using i_lt by simp
             have Suc_i_neq: "Suc i \<noteq> nM"
               using False nM_form by simp
             have "(tM(nM := a')) (Suc i) = tM (Suc i)"
               using Suc_i_neq by simp
-            also have "... = buf_lin_at blocks (2 * ?c + i)"
+            also have "... = buf_lin_at m blocks (2 * ?c + i)"
               using align i_lt by blast
-            also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+            also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
               by (rule buf_lin_at_write_bp_other
                         [OF idx_neq idx_2c_lt, symmetric])
             finally show ?thesis .
@@ -710,16 +737,16 @@ proof -
       qed
     next
       case MoveR
-      from adv_plain MoveR have adv_R: "bp_advance bp MoveR = Some bp'" by simp
+      from adv_plain MoveR have adv_R: "bp_advance m bp MoveR = Some bp'" by simp
       \<comment> \<open>Either \<open>bp' = (AE_Right, ofs')\<close> with
-        \<open>c_idx ofs' = Suc (c_idx off)\<close>, or \<open>bp' = None\<close>
+        \<open>ofs' = Suc off\<close>, or \<open>bp' = None\<close>
         via the \<open>AE_Right\<close> R-boundary (\<open>c_succ off = None\<close>),
         which contradicts \<open>adv\<close>.  Hence
         \<open>c_succ off = Some ofs'\<close>.\<close>
-      obtain ofs' where c_succ_off: "c_succ off = Some ofs'"
-      proof (cases "c_succ off")
+      obtain ofs' where c_succ_off: "c_succ m off = Some ofs'"
+      proof (cases "c_succ m off")
         case None
-        have "bp_advance bp MoveR = None"
+        have "bp_advance m bp MoveR = None"
           using bp_eq b_right None unfolding bp_advance_def by simp
         with adv_R show thesis by simp
       next
@@ -729,50 +756,52 @@ proof -
       have bp'_eq: "bp' = (AE_Right, ofs')"
         using bp_eq b_right c_succ_off adv_R
         unfolding bp_advance_def by simp
-      have idx_succ: "c_idx ofs' = Suc (c_idx off)"
-        by (rule c_succ_idx_some[OF c_succ_off])
-      have nM_succ: "go_move MoveR nM = Suc (c_idx ofs')"
+      have idx_succ: "ofs' = Suc off"
+        by (rule c_succ_Some[OF c_succ_off])
+      have nM_succ: "go_move MoveR nM = Suc ofs'"
         using nM_form idx_succ by simp
       show ?thesis
         unfolding ae_window_invariant_le0_def
       proof (intro conjI)
-        show "fst (snd (write_bp blocks bp a')) = LE_block le"
+        show "snd bp' < m" by (rule bp'_m)
+        show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+        show "fst (snd (write_bp blocks bp a')) = LE_block m le"
           by (rule new_h)
         show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
         show "(case fst bp' of
                 AE_Home  \<Rightarrow> go_move d nM = 0
-              | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+              | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
               | AE_Left  \<Rightarrow> False)"
           using bp'_eq MoveR nM_succ by simp
         show "\<forall>i. i < ?c \<longrightarrow>
                   (tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
         proof (intro allI impI)
           fix i
           assume i_lt: "i < ?c"
           show "(tM(nM := a')) (Suc i)
-                  = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
-          proof (cases "i = c_idx off")
+                  = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
+          proof (cases "i = off")
             case True
             have "Suc i = nM" using True nM_form by simp
             hence lhs: "(tM(nM := a')) (Suc i) = a'" by simp
-            have idx_eq: "2 * ?c + i = bp_linear bp"
+            have idx_eq: "2 * ?c + i = bp_linear m bp"
               using True bp_lin by simp
-            have rhs: "buf_lin_at (write_bp blocks bp a') (2 * ?c + i) = a'"
-              using idx_eq buf_lin_at_write_bp_match[of blocks bp a'] by simp
+            have rhs: "buf_lin_at m (write_bp blocks bp a') (2 * ?c + i) = a'"
+              using idx_eq buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
             show ?thesis using lhs rhs by simp
           next
             case False
-            have idx_neq: "2 * ?c + i \<noteq> bp_linear bp"
+            have idx_neq: "2 * ?c + i \<noteq> bp_linear m bp"
               using False bp_lin by simp
             have idx_2c_lt: "2 * ?c + i < 3 * ?c" using i_lt by simp
             have Suc_i_neq: "Suc i \<noteq> nM"
               using False nM_form by simp
             have "(tM(nM := a')) (Suc i) = tM (Suc i)"
               using Suc_i_neq by simp
-            also have "... = buf_lin_at blocks (2 * ?c + i)"
+            also have "... = buf_lin_at m blocks (2 * ?c + i)"
               using align i_lt by blast
-            also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+            also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
               by (rule buf_lin_at_write_bp_other
                         [OF idx_neq idx_2c_lt, symmetric])
             finally show ?thesis .
@@ -781,63 +810,65 @@ proof -
       qed
     next
       case MoveL
-      from adv_plain MoveL have adv_L: "bp_advance bp MoveL = Some bp'" by simp
+      from adv_plain MoveL have adv_L: "bp_advance m bp MoveL = Some bp'" by simp
       \<comment> \<open>Two sub-cases: \<open>c_pred off = Some ofs'\<close> gives
         \<open>bp' = (AE_Right, ofs')\<close>; \<open>c_pred off = None\<close>
-        (\<open>off = c_first\<close>) gives \<open>bp' = (AE_Home, c_last)\<close>.\<close>
+        (\<open>off = 0\<close>) gives \<open>bp' = (AE_Home, c_last)\<close>.\<close>
       show ?thesis
       proof (cases "c_pred off")
         case (Some ofs')
         have bp'_eq: "bp' = (AE_Right, ofs')"
           using bp_eq b_right Some adv_L
           unfolding bp_advance_def by simp
-        have idx_pred: "Suc (c_idx ofs') = c_idx off"
-          by (rule c_pred_idx_some[OF Some])
-        obtain m where nM_eq: "nM = Suc m"
+        have idx_pred: "Suc ofs' = off"
+          by (rule c_pred_Some[OF Some])
+        obtain p where nM_eq: "nM = Suc p"
           using nM_bd by (cases nM) auto
-        have m_eq: "m = c_idx off" using nM_form nM_eq by simp
-        have nM'_eq: "go_move MoveL nM = Suc (c_idx ofs')"
+        have m_eq: "p = off" using nM_form nM_eq by simp
+        have nM'_eq: "go_move MoveL nM = Suc ofs'"
           using nM_eq m_eq idx_pred by simp
         show ?thesis
           unfolding ae_window_invariant_le0_def
         proof (intro conjI)
-          show "fst (snd (write_bp blocks bp a')) = LE_block le"
+          show "snd bp' < m" by (rule bp'_m)
+          show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+          show "fst (snd (write_bp blocks bp a')) = LE_block m le"
             by (rule new_h)
           show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
           show "(case fst bp' of
                   AE_Home  \<Rightarrow> go_move d nM = 0
-                | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+                | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
                 | AE_Left  \<Rightarrow> False)"
             using bp'_eq MoveL nM'_eq by simp
           show "\<forall>i. i < ?c \<longrightarrow>
                     (tM(nM := a')) (Suc i)
-                      = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                      = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
           proof (intro allI impI)
             fix i
             assume i_lt: "i < ?c"
             show "(tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
-            proof (cases "i = c_idx off")
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
+            proof (cases "i = off")
               case True
               have "Suc i = nM" using True nM_form by simp
               hence lhs: "(tM(nM := a')) (Suc i) = a'" by simp
-              have idx_eq: "2 * ?c + i = bp_linear bp"
+              have idx_eq: "2 * ?c + i = bp_linear m bp"
                 using True bp_lin by simp
-              have rhs: "buf_lin_at (write_bp blocks bp a') (2 * ?c + i) = a'"
-                using idx_eq buf_lin_at_write_bp_match[of blocks bp a'] by simp
+              have rhs: "buf_lin_at m (write_bp blocks bp a') (2 * ?c + i) = a'"
+                using idx_eq buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
               show ?thesis using lhs rhs by simp
             next
               case False
-              have idx_neq: "2 * ?c + i \<noteq> bp_linear bp"
+              have idx_neq: "2 * ?c + i \<noteq> bp_linear m bp"
                 using False bp_lin by simp
               have idx_2c_lt: "2 * ?c + i < 3 * ?c" using i_lt by simp
               have Suc_i_neq: "Suc i \<noteq> nM"
                 using False nM_form by simp
               have "(tM(nM := a')) (Suc i) = tM (Suc i)"
                 using Suc_i_neq by simp
-              also have "... = buf_lin_at blocks (2 * ?c + i)"
+              also have "... = buf_lin_at m blocks (2 * ?c + i)"
                 using align i_lt by blast
-              also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+              also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
                 by (rule buf_lin_at_write_bp_other
                           [OF idx_neq idx_2c_lt, symmetric])
               finally show ?thesis .
@@ -846,9 +877,9 @@ proof -
         qed
       next
         case None
-        have idx_zero: "c_idx off = 0"
-          using c_pred_idx_none[OF None] by simp
-        have bp'_eq: "bp' = (AE_Home, c_last)"
+        have idx_zero: "off = 0"
+          using c_pred_None[OF None] by simp
+        have bp'_eq: "bp' = (AE_Home, c_last m)"
           using bp_eq b_right None adv_L
           unfolding bp_advance_def by simp
         have nM_one: "nM = 1" using nM_form idx_zero by simp
@@ -856,43 +887,45 @@ proof -
         show ?thesis
           unfolding ae_window_invariant_le0_def
         proof (intro conjI)
-          show "fst (snd (write_bp blocks bp a')) = LE_block le"
+          show "snd bp' < m" by (rule bp'_m)
+          show "ae_blocks_ext m (write_bp blocks bp a')" by (rule bext')
+          show "fst (snd (write_bp blocks bp a')) = LE_block m le"
             by (rule new_h)
           show "(tM(nM := a')) 0 = le" by (rule tM_0_new)
           show "(case fst bp' of
                   AE_Home  \<Rightarrow> go_move d nM = 0
-                | AE_Right \<Rightarrow> go_move d nM = Suc (c_idx (snd bp'))
+                | AE_Right \<Rightarrow> go_move d nM = Suc (snd bp')
                 | AE_Left  \<Rightarrow> False)"
             using bp'_eq MoveL nM'_eq by simp
           show "\<forall>i. i < ?c \<longrightarrow>
                     (tM(nM := a')) (Suc i)
-                      = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+                      = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
           proof (intro allI impI)
             fix i
             assume i_lt: "i < ?c"
             show "(tM(nM := a')) (Suc i)
-                    = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
-            proof (cases "i = c_idx off")
+                    = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
+            proof (cases "i = off")
               case True
               have "Suc i = nM" using True nM_form by simp
               hence lhs: "(tM(nM := a')) (Suc i) = a'" by simp
-              have idx_eq: "2 * ?c + i = bp_linear bp"
+              have idx_eq: "2 * ?c + i = bp_linear m bp"
                 using True bp_lin by simp
-              have rhs: "buf_lin_at (write_bp blocks bp a') (2 * ?c + i) = a'"
-                using idx_eq buf_lin_at_write_bp_match[of blocks bp a'] by simp
+              have rhs: "buf_lin_at m (write_bp blocks bp a') (2 * ?c + i) = a'"
+                using idx_eq buf_lin_at_write_bp_match[OF bp_m, where blocks=blocks and x=a'] by simp
               show ?thesis using lhs rhs by simp
             next
               case False
-              have idx_neq: "2 * ?c + i \<noteq> bp_linear bp"
+              have idx_neq: "2 * ?c + i \<noteq> bp_linear m bp"
                 using False bp_lin by simp
               have idx_2c_lt: "2 * ?c + i < 3 * ?c" using i_lt by simp
               have Suc_i_neq: "Suc i \<noteq> nM"
                 using False nM_form by simp
               have "(tM(nM := a')) (Suc i) = tM (Suc i)"
                 using Suc_i_neq by simp
-              also have "... = buf_lin_at blocks (2 * ?c + i)"
+              also have "... = buf_lin_at m blocks (2 * ?c + i)"
                 using align i_lt by blast
-              also have "... = buf_lin_at (write_bp blocks bp a') (2 * ?c + i)"
+              also have "... = buf_lin_at m (write_bp blocks bp a') (2 * ?c + i)"
                 by (rule buf_lin_at_write_bp_other
                           [OF idx_neq idx_2c_lt, symmetric])
               finally show ?thesis .

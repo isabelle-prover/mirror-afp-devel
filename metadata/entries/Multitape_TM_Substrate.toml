@@ -69,6 +69,9 @@ that it can be imported beside Multitape_To_Singletape_TM (mttm becomes
 ktm, dir becomes move, the mt_ prefix becomes ktc_).  Removed lemmas that
 duplicated HOL or each other.  Updated abstract.
 """
+2026-11-10 = """
+Removed the theory Multitape_Enum_Type (enum_on_typedef).
+"""
 
 [extra]
 

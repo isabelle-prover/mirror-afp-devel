@@ -68,20 +68,20 @@ qed
 
 text \<open>The pack function that turns @{const wrap_enc} into AE's
   @{const encode_input}: given a list-shaped block of up to @{term c}
-  symbols, build the block function @{typ "'c \<Rightarrow> 'a"} by reading
-  off the block's @{term "c_idx x"}-th entry (or the blank
-  @{term bl} if the block is shorter than @{term "c_idx x + 1"}).
+  symbols, build the block, extensional on @{term "{..<m}"}, whose cell
+  at offset @{term x} is the list's @{term x}-th entry (or the blank
+  @{term bl} if the list is shorter than @{term "x + 1"}).
   This is the per-block packer for the AE-wrap instance of
   @{const wrap_enc}.\<close>
 
 definition ae_pack ::
-  "'a \<Rightarrow> 'a list \<Rightarrow> (('c :: enum) \<Rightarrow> 'a)" where
-  "ae_pack bl block = (\<lambda>x. if c_idx x < length block
-                            then block ! c_idx x
-                            else bl)"
+  "nat \<Rightarrow> 'a \<Rightarrow> 'a list \<Rightarrow> (nat \<Rightarrow> 'a)" where
+  "ae_pack m bl block = restrict (\<lambda>x. if x < length block
+                            then block ! x
+                            else bl) {..<m}"
 
-text \<open>Glue lemma: when the wrap's grouping factor matches AE's
-  @{typ 'c}-cardinality, @{const wrap_enc} with @{const ae_pack}
+text \<open>Glue lemma: when the wrap's grouping factor is AE's block
+  size, @{const wrap_enc} with @{const ae_pack}
   produces exactly AE's @{const encode_input}.  This rewrite lets an
   encoding-wrap correctness lemma compose with the alphabet-enlargement
   results @{thm[source] alphabet_enlarge_language} /
@@ -89,15 +89,15 @@ text \<open>Glue lemma: when the wrap's grouping factor matches AE's
   with the AE-machine's expected input format.\<close>
 
 lemma wrap_enc_eq_encode_input:
-  fixes w :: "'a list" and bl :: "'a"
-  defines c_def: "c \<equiv> card (UNIV :: ('c :: enum) set)"
+  fixes w :: "'a list" and bl :: "'a" and m :: nat
+  defines c_def: "c \<equiv> m"
   assumes c_pos: "0 < c"
-  shows "wrap_enc (ae_pack bl :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)) c w
-          = (encode_input bl w :: ('c \<Rightarrow> 'a) list)"
+  shows "wrap_enc (ae_pack m bl :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)) c w
+          = (encode_input m bl w :: (nat \<Rightarrow> 'a) list)"
 proof (rule nth_equalityI)
   let ?L = "(length w + c - 1) div c"
-  let ?lhs = "wrap_enc (ae_pack bl :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)) c w"
-  let ?rhs = "encode_input bl w :: ('c \<Rightarrow> 'a) list"
+  let ?lhs = "wrap_enc (ae_pack m bl :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)) c w"
+  let ?rhs = "encode_input m bl w :: (nat \<Rightarrow> 'a) list"
 
   \<comment> \<open>Lengths agree.\<close>
   have ceil_id:
@@ -135,9 +135,9 @@ proof (rule nth_equalityI)
     show ?thesis using step2 c_pos by linarith
   qed
 
-  \<comment> \<open>Element equality: the \<open>i\<close>-th block agrees pointwise on \<open>'c\<close>.\<close>
+  \<comment> \<open>Element equality: the \<open>i\<close>-th block agrees pointwise.\<close>
   have nth_lhs:
-    "?lhs ! i = ae_pack bl (take c (drop (i * c) w))"
+    "?lhs ! i = ae_pack m bl (take c (drop (i * c) w))"
   proof (cases "(Suc i) * c \<le> length w")
     case True  \<comment> \<open>full block\<close>
     show ?thesis
@@ -171,7 +171,7 @@ proof (rule nth_equalityI)
       with i_le show ?thesis by simp
     qed
     have nth_partial:
-      "?lhs ! (length w div c) = ae_pack bl (drop ((length w div c) * c) w)"
+      "?lhs ! (length w div c) = ae_pack m bl (drop ((length w div c) * c) w)"
       by (rule wrap_enc_nth_partial[OF c_pos mod_ne])
     have drop_short:
       "length (drop ((length w div c) * c) w) < c"
@@ -194,16 +194,24 @@ proof (rule nth_equalityI)
 
   show "?lhs ! i = ?rhs ! i"
   proof (rule ext)
-    fix x :: "'c"
-    have cx_lt: "c_idx x < c"
-      unfolding c_def by (rule c_idx_lt_card)
+    fix x :: "nat"
+    show "(?lhs ! i) x = (?rhs ! i) x"
+    proof (cases "x < m")
+      case False
+      have rhs_i_lt': "i < length ?rhs" using i_lt len_lhs len_rhs by simp
+      show ?thesis
+        using nth_lhs False encode_input_nth_out[OF rhs_i_lt'] by (simp add: ae_pack_def)
+    next
+      case x_lt: True
+    have cx_lt: "x < c"
+      unfolding c_def using x_lt .
 
     \<comment> \<open>The right-hand entry, point-x form, via @{thm[source] encode_input_nth}.\<close>
     have rhs_i_lt: "i < length ?rhs" using i_lt len_lhs len_rhs by simp
     have nth_rhs_x:
-      "(?rhs ! i) x = (if i * c + c_idx x < length w
-                        then w ! (i * c + c_idx x) else bl)"
-      using encode_input_nth[OF rhs_i_lt, where x = x]
+      "(?rhs ! i) x = (if i * c + x < length w
+                        then w ! (i * c + x) else bl)"
+      using encode_input_nth[OF rhs_i_lt x_lt]
       by (simp add: c_def Let_def)
 
     show "(?lhs ! i) x = (?rhs ! i) x"
@@ -211,19 +219,19 @@ proof (rule nth_equalityI)
       case True  \<comment> \<open>full block\<close>
       have len_eq: "length (take c (drop (i * c) w)) = c"
         using True by simp
-      have j_lt: "i * c + c_idx x < length w"
+      have j_lt: "i * c + x < length w"
       proof -
         from True have "i * c + c \<le> length w" by simp
         with cx_lt show ?thesis by linarith
       qed
-      have "(?lhs ! i) x = (ae_pack bl (take c (drop (i * c) w))) x"
+      have "(?lhs ! i) x = (ae_pack m bl (take c (drop (i * c) w))) x"
         using nth_lhs by simp
-      also have "\<dots> = (if c_idx x < length (take c (drop (i * c) w))
-                        then (take c (drop (i * c) w)) ! c_idx x else bl)"
-        unfolding ae_pack_def by simp
-      also have "\<dots> = (take c (drop (i * c) w)) ! c_idx x"
+      also have "\<dots> = (if x < length (take c (drop (i * c) w))
+                        then (take c (drop (i * c) w)) ! x else bl)"
+        unfolding ae_pack_def using x_lt by simp
+      also have "\<dots> = (take c (drop (i * c) w)) ! x"
         using cx_lt len_eq by simp
-      also have "\<dots> = w ! (i * c + c_idx x)"
+      also have "\<dots> = w ! (i * c + x)"
         using True cx_lt by (simp add: nth_drop)
       also have "\<dots> = (?rhs ! i) x"
         using nth_rhs_x j_lt by simp
@@ -233,44 +241,45 @@ proof (rule nth_equalityI)
       have len_eq: "length (take c (drop (i * c) w)) = length w - i * c"
         using False i_c_lt_lenw by simp
       have cond_iff:
-        "(c_idx x < length w - i * c) = (i * c + c_idx x < length w)"
+        "(x < length w - i * c) = (i * c + x < length w)"
         using i_c_lt_lenw by linarith
       have lhs_x:
-        "(?lhs ! i) x = (if c_idx x < length w - i * c
-                          then (take c (drop (i * c) w)) ! c_idx x
+        "(?lhs ! i) x = (if x < length w - i * c
+                          then (take c (drop (i * c) w)) ! x
                           else bl)"
       proof -
-        have "(?lhs ! i) x = (ae_pack bl (take c (drop (i * c) w))) x"
+        have "(?lhs ! i) x = (ae_pack m bl (take c (drop (i * c) w))) x"
           using nth_lhs by simp
-        also have "\<dots> = (if c_idx x < length (take c (drop (i * c) w))
-                          then (take c (drop (i * c) w)) ! c_idx x else bl)"
-          unfolding ae_pack_def by simp
-        also have "\<dots> = (if c_idx x < length w - i * c
-                          then (take c (drop (i * c) w)) ! c_idx x else bl)"
+        also have "\<dots> = (if x < length (take c (drop (i * c) w))
+                          then (take c (drop (i * c) w)) ! x else bl)"
+          unfolding ae_pack_def using x_lt by simp
+        also have "\<dots> = (if x < length w - i * c
+                          then (take c (drop (i * c) w)) ! x else bl)"
           using len_eq by simp
         finally show ?thesis .
       qed
       show ?thesis
-      proof (cases "c_idx x < length w - i * c")
+      proof (cases "x < length w - i * c")
         case True
-        from True cond_iff have j_lt: "i * c + c_idx x < length w" by simp
-        have nth_take: "(take c (drop (i * c) w)) ! c_idx x
-                          = w ! (i * c + c_idx x)"
+        from True cond_iff have j_lt: "i * c + x < length w" by simp
+        have nth_take: "(take c (drop (i * c) w)) ! x
+                          = w ! (i * c + x)"
           using True cx_lt i_c_lt_lenw by (simp add: nth_drop)
-        have lhs_simp: "(?lhs ! i) x = w ! (i * c + c_idx x)"
+        have lhs_simp: "(?lhs ! i) x = w ! (i * c + x)"
           using lhs_x True nth_take by simp
-        have rhs_simp: "(?rhs ! i) x = w ! (i * c + c_idx x)"
+        have rhs_simp: "(?rhs ! i) x = w ! (i * c + x)"
           using nth_rhs_x j_lt by simp
         show ?thesis using lhs_simp rhs_simp by simp
       next
         case False
-        from False cond_iff have j_ge: "\<not> i * c + c_idx x < length w" by simp
+        from False cond_iff have j_ge: "\<not> i * c + x < length w" by simp
         have lhs_simp: "(?lhs ! i) x = bl"
           using lhs_x False by simp
         have rhs_simp: "(?rhs ! i) x = bl"
           using nth_rhs_x j_ge by simp
         show ?thesis using lhs_simp rhs_simp by simp
       qed
+    qed
     qed
   qed
 qed

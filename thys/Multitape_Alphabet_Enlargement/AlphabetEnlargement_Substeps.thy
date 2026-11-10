@@ -14,7 +14,7 @@ text \<open>\<open>\<delta>'\<close> is decomposed into named per-substep relati
 
   The substrate transition shape is
   \<open>(q, a, q', a', d)\<close> with state \<open>'q \<times> ae_stage\<close>, tape
-  symbol \<open>'c \<Rightarrow> 'a\<close>.  Source-state constraint
+  symbol \<open>nat \<Rightarrow> 'a\<close>.  Source-state constraint
   \<open>q \<in> Q \<and> q \<noteq> t \<and> q \<noteq> r\<close> matches substrate \<open>\<delta>_set\<close>
   for VFwd-source relations (whose \<open>substep_idx\<close> coincides with
   \<open>t', r'\<close>'s); for the other phases the \<open>substep_idx\<close> mismatch
@@ -26,20 +26,20 @@ text \<open>Validation, VFwd, advance: read either \<open>LE_block le_M\<close>
   phase stays \<open>VFwd\<close>.  No write change.\<close>
 
 definition ae_delta_val_fwd_advance ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_fwd_advance M =
+  "ae_delta_val_fwd_advance m M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VFwd), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> (a 0 = LE_block (le_ktm M)
-           \<or> is_pure_block (bl_ktm M) (a 0))
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (a 0 = LE_block m (le_ktm M)
+           \<or> is_pure_block m (bl_ktm M) (a 0))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>k. if k = 0 then MoveR else MoveN)}"
 
 text \<open>Validation, VFwd \<open>\<rightarrow>\<close> VFwdPad: read a trailing-padded
@@ -47,19 +47,19 @@ text \<open>Validation, VFwd \<open>\<rightarrow>\<close> VFwdPad: read a traili
   tapes; phase becomes VFwdPad.  No write change.\<close>
 
 definition ae_delta_val_fwd_to_padded ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_fwd_to_padded M =
+  "ae_delta_val_fwd_to_padded m M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VFwdPad), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> is_padded_block (bl_ktm M) (a 0)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> is_padded_block m (bl_ktm M) (a 0)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>k. if k = 0 then MoveR else MoveN)}"
 
 text \<open>Validation, VFwd reject: read a non-canonical block
@@ -68,21 +68,21 @@ text \<open>Validation, VFwd reject: read a non-canonical block
   \<open>r_M'\<close> (= the canonical reject state of \<open>M'\<close>).\<close>
 
 definition ae_delta_val_fwd_reject ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_fwd_reject M =
+  "ae_delta_val_fwd_reject m M =
     {((q, ofs, buf, dest, VFwd), a,
-       (r_ktm M, init_stage (le_ktm M)), a, d) |
+       (r_ktm M, init_stage m (le_ktm M)), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> a 0 \<noteq> LE_block (le_ktm M)
-       \<and> a 0 \<noteq> bl_block (bl_ktm M)
-       \<and> \<not> is_canonical_block (bl_ktm M) (a 0)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 \<noteq> LE_block m (le_ktm M)
+       \<and> a 0 \<noteq> bl_block m (bl_ktm M)
+       \<and> \<not> is_canonical_block m (bl_ktm M) (a 0)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwd end-of-input: read \<open>bl_block bl_M\<close>
@@ -90,19 +90,19 @@ text \<open>Validation, VFwd end-of-input: read \<open>bl_block bl_M\<close>
   begin the return scan.\<close>
 
 definition ae_delta_val_fwd_to_ret ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_fwd_to_ret M =
+  "ae_delta_val_fwd_to_ret m M =
     {((q, ofs, buf, dest, VFwd), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> a 0 = bl_block (bl_ktm M)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 = bl_block m (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwdPad end-of-input: read \<open>bl_block bl_M\<close>;
@@ -110,19 +110,19 @@ text \<open>Validation, VFwdPad end-of-input: read \<open>bl_block bl_M\<close>;
   except the source phase.\<close>
 
 definition ae_delta_val_pad_to_ret ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_pad_to_ret M =
+  "ae_delta_val_pad_to_ret m M =
     {((q, ofs, buf, dest, VFwdPad), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M
-       \<and> a 0 = bl_block (bl_ktm M)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 = bl_block m (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VFwdPad reject: read anything on tape 0 other
@@ -131,19 +131,19 @@ text \<open>Validation, VFwdPad reject: read anything on tape 0 other
   transition to \<open>r_M'\<close>.\<close>
 
 definition ae_delta_val_pad_reject ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_pad_reject M =
+  "ae_delta_val_pad_reject m M =
     {((q, ofs, buf, dest, VFwdPad), a,
-       (r_ktm M, init_stage (le_ktm M)), a, d) |
+       (r_ktm M, init_stage m (le_ktm M)), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M
-       \<and> a 0 \<noteq> bl_block (bl_ktm M)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 \<noteq> bl_block m (bl_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>Validation, VRet step: read a non-LE block on tape 0
@@ -151,19 +151,19 @@ text \<open>Validation, VRet step: read a non-LE block on tape 0
   tapes; phase stays VRet.\<close>
 
 definition ae_delta_val_ret_step ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_ret_step M =
+  "ae_delta_val_ret_step m M =
     {((q, ofs, buf, dest, VRet), a,
        (q, ofs, buf, dest, VRet), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M
-       \<and> a 0 \<noteq> LE_block (le_ktm M)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 \<noteq> LE_block m (le_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>k. if k = 0 then MoveL else MoveN)}"
 
 text \<open>Validation, VRet \<open>\<rightarrow>\<close> Sim: read \<open>LE_block le_M\<close> on tape 0
@@ -180,19 +180,19 @@ text \<open>Validation, VRet \<open>\<rightarrow>\<close> Sim: read \<open>LE_bl
   of LE.\<close>
 
 definition ae_delta_val_ret_to_sim ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_val_ret_to_sim M =
+  "ae_delta_val_ret_to_sim m M =
     {((q, ofs, buf, dest, VRet), a,
        (q, ofs, buf, dest, SS1), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M
-       \<and> a 0 = LE_block (le_ktm M)
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> a 0 = LE_block m (le_ktm M)
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>_. MoveN)}"
 
 text \<open>SS1 \<open>\<rightarrow>\<close> SS2: read home into buffer; per-tape move L
@@ -200,23 +200,23 @@ text \<open>SS1 \<open>\<rightarrow>\<close> SS2: read home into buffer; per-tap
   (\<open>a' = a\<close>); no \<open>M\<close>-state advance.  Buffer-phase substep 1.\<close>
 
 definition ae_delta_ss1_ss2 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss1_ss2 M =
+  "ae_delta_ss1_ss2 m M =
     {((q, ofs, buf, dest, SS1), a,
        (q, ofs, buf', dest, SS2), a, d) |
      q ofs buf dest a buf' d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> buf' = (\<lambda>k. if k < k_ktm M
                      then (fst (buf k), a k, snd (snd (buf k)))
-                     else init_buffer (le_ktm M) k)
+                     else init_buffer m (le_ktm M) k)
        \<and> d = (\<lambda>k. if k < k_ktm M
-                  then (if a k = LE_block (le_ktm M) then MoveN else MoveL)
+                  then (if a k = LE_block m (le_ktm M) then MoveN else MoveL)
                   else MoveN)}"
 
 text \<open>SS2 \<open>\<rightarrow>\<close> SS3: read left into buffer (or placeholder for
@@ -228,27 +228,27 @@ text \<open>SS2 \<open>\<rightarrow>\<close> SS3: read left into buffer (or plac
   \<open>bl_block bl_M\<close> as a semantic placeholder.\<close>
 
 definition ae_delta_ss2_ss3 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss2_ss3 M =
+  "ae_delta_ss2_ss3 m M =
     {((q, ofs, buf, dest, SS2), a,
        (q, ofs, buf', dest, SS3), a, d) |
      q ofs buf dest a buf' d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> buf' = (\<lambda>k. if k < k_ktm M
                      then (let (l, h, r) = buf k in
-                            (if h = LE_block (le_ktm M)
-                               then bl_block (bl_ktm M)
+                            (if h = LE_block m (le_ktm M)
+                               then bl_block m (bl_ktm M)
                                else a k,
                              h, r))
-                     else init_buffer (le_ktm M) k)
+                     else init_buffer m (le_ktm M) k)
        \<and> d = (\<lambda>k. if k < k_ktm M
-                  then (if (fst (snd (buf k))) = LE_block (le_ktm M)
+                  then (if (fst (snd (buf k))) = LE_block m (le_ktm M)
                          then MoveN else MoveR)
                   else MoveN)}"
 
@@ -259,33 +259,33 @@ text \<open>SS3 \<open>\<rightarrow>\<close> SS4: uniform R move per tape (no bu
   from LE).  Buffer-phase substep 3.\<close>
 
 definition ae_delta_ss3_ss4 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss3_ss4 M =
+  "ae_delta_ss3_ss4 m M =
     {((q, ofs, buf, dest, SS3), a,
        (q, ofs, buf, dest, SS4), a, d) |
      q ofs buf dest a d.
        q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> d = (\<lambda>k. if k < k_ktm M then MoveR else MoveN)}"
 
 text \<open>Buffered head position: which buffer slot
   (\<open>AE_Left\<close> / \<open>AE_Home\<close> / \<open>AE_Right\<close>) and which offset
   within that slot.  Internal to the compute substep; the
   output of \<open>m_steps_buffered\<close> projects this onto
-  \<open>(nat \<Rightarrow> 'c) \<times> (nat \<Rightarrow> ae_dest)\<close>.\<close>
+  \<open>(nat \<Rightarrow> nat) \<times> (nat \<Rightarrow> ae_dest)\<close>.\<close>
 
-type_synonym 'c bp = "ae_dest \<times> 'c"
+type_synonym bp = "ae_dest \<times> nat"
 
 text \<open>Read the symbol at a buffered head position.\<close>
 
 definition read_bp ::
-  "(('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> 'c bp \<Rightarrow> 'a" where
+  "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> bp \<Rightarrow> 'a" where
   "read_bp blocks p =
      (let (b, off) = p; (l, h, r) = blocks in
         case b of AE_Left \<Rightarrow> l off
@@ -295,9 +295,9 @@ definition read_bp ::
 text \<open>Write a symbol at a buffered head position.\<close>
 
 definition write_bp ::
-  "(('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> 'c bp \<Rightarrow> 'a
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))" where
+  "((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> bp \<Rightarrow> 'a
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))" where
   "write_bp blocks p x =
      (let (b, off) = p; (l, h, r) = blocks in
         case b of AE_Left  \<Rightarrow> (l(off := x), h, r)
@@ -313,32 +313,32 @@ text \<open>Advance a buffered head position by a direction.  Returns
   \<open>None\<close> case as a vacuous side condition).\<close>
 
 definition bp_advance ::
-  "('c :: enum) bp \<Rightarrow> move \<Rightarrow> 'c bp option" where
-  "bp_advance p d =
+  "nat \<Rightarrow> bp \<Rightarrow> move \<Rightarrow> bp option" where
+  "bp_advance m p d =
      (let (b, off) = p in
         case d of
           MoveN \<Rightarrow> Some (b, off)
         | MoveR \<Rightarrow>
-            (case c_succ off of
+            (case c_succ m off of
                Some off' \<Rightarrow> Some (b, off')
              | None \<Rightarrow>
                  (case b of
-                    AE_Left  \<Rightarrow> Some (AE_Home,  c_first)
-                  | AE_Home  \<Rightarrow> Some (AE_Right, c_first)
+                    AE_Left  \<Rightarrow> Some (AE_Home,  0)
+                  | AE_Home  \<Rightarrow> Some (AE_Right, 0)
                   | AE_Right \<Rightarrow> None))
         | MoveL \<Rightarrow>
             (case c_pred off of
                Some off' \<Rightarrow> Some (b, off')
              | None \<Rightarrow>
                  (case b of
-                    AE_Right \<Rightarrow> Some (AE_Home, c_last)
-                  | AE_Home  \<Rightarrow> Some (AE_Left, c_last)
+                    AE_Right \<Rightarrow> Some (AE_Home, c_last m)
+                  | AE_Home  \<Rightarrow> Some (AE_Left, c_last m)
                   | AE_Left  \<Rightarrow> None)))"
 
 text \<open>LE-aware buffered head advance.  Wraps \<open>bp_advance\<close>
   with the substrate-induced LE-skip rule: when the read symbol
   is \<open>le\<close> (i.e., the head is positioned within an \<open>LE_M'\<close>
-  block) and the move is R, jump to \<open>(AE_Right, c_first)\<close>
+  block) and the move is R, jump to \<open>(AE_Right, 0)\<close>
   rather than advancing within the home block.  This corresponds
   to \<open>M\<close>'s actual head crossing from position 0 (LE) to
   position 1 (the first input cell), which the simulation
@@ -355,11 +355,11 @@ text \<open>LE-aware buffered head advance.  Wraps \<open>bp_advance\<close>
   the case is unreachable.\<close>
 
 definition bp_advance_le ::
-  "'a \<Rightarrow> 'a \<Rightarrow> ('c :: enum) bp \<Rightarrow> move \<Rightarrow> 'c bp option" where
-  "bp_advance_le le a p d =
+  "nat \<Rightarrow> 'a \<Rightarrow> 'a \<Rightarrow> bp \<Rightarrow> move \<Rightarrow> bp option" where
+  "bp_advance_le m le a p d =
      (if a = le \<and> fst p = AE_Home \<and> d = MoveR
-        then Some (AE_Right, c_first)
-        else bp_advance p d)"
+        then Some (AE_Right, 0)
+        else bp_advance m p d)"
 
 text \<open>Single buffered \<open>M\<close>-step: applies \<open>M\<close>'s \<open>\<delta>\<close> to the
   current per-tape buffered reads, writes the post-symbols
@@ -371,20 +371,20 @@ text \<open>Single buffered \<open>M\<close>-step: applies \<open>M\<close>'s \<
   exit the 3-block buffer on any tape.\<close>
 
 definition m_step_buffered ::
-  "('q, 'a) ktm
+  "nat \<Rightarrow> ('q, 'a) ktm
     \<Rightarrow> (('q
-         \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-         \<times> (nat \<Rightarrow> 'c bp))
+         \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+         \<times> (nat \<Rightarrow> bp))
         \<times> ('q
-           \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-           \<times> (nat \<Rightarrow> 'c bp))) set" where
-  "m_step_buffered M =
+           \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+           \<times> (nat \<Rightarrow> bp))) set" where
+  "m_step_buffered m M =
      {((q, blocks, pos), (q', blocks', pos')) |
         q blocks pos q' blocks' pos' a a' d.
           (q, a, q', a', d) \<in> delta_ktm M
           \<and> (\<forall>k. a k = read_bp (blocks k) (pos k))
           \<and> (\<forall>k. blocks' k = write_bp (blocks k) (pos k) (a' k))
-          \<and> (\<forall>k. bp_advance_le (le_ktm M) (a k) (pos k) (d k)
+          \<and> (\<forall>k. bp_advance_le m (le_ktm M) (a k) (pos k) (d k)
                   = Some (pos' k))}"
 
 text \<open>Introduction rule for \<open>m_step_buffered\<close>: package the
@@ -399,14 +399,14 @@ lemma m_step_bufferedI:
     and a a' :: "nat \<Rightarrow> 'a"
     and d :: "nat \<Rightarrow> move"
     and blocks blocks' ::
-          "nat \<Rightarrow> (('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))"
-    and pos pos' :: "nat \<Rightarrow> 'c bp"
+          "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))"
+    and pos pos' :: "nat \<Rightarrow> bp"
   assumes "(q, a, q', a', d) \<in> delta_ktm M"
       and "\<forall>k. a k = read_bp (blocks k) (pos k)"
       and "\<forall>k. blocks' k = write_bp (blocks k) (pos k) (a' k)"
-      and "\<forall>k. bp_advance_le (le_ktm M) (a k) (pos k) (d k)
+      and "\<forall>k. bp_advance_le m (le_ktm M) (a k) (pos k) (d k)
               = Some (pos' k)"
-  shows "((q, blocks, pos), (q', blocks', pos')) \<in> m_step_buffered M"
+  shows "((q, blocks, pos), (q', blocks', pos')) \<in> m_step_buffered m M"
   using assms unfolding m_step_buffered_def by blast
 
 text \<open>Auxiliary: up-to-\<open>c\<close>-step composition of \<open>M\<close>'s \<open>\<delta>\<close> on
@@ -415,24 +415,24 @@ text \<open>Auxiliary: up-to-\<open>c\<close>-step composition of \<open>M\<clos
   reaches a halting state (\<open>t_M\<close> / \<open>r_M\<close>) earlier.
 
   Defined as the union of \<open>n\<close>-fold relational compositions of
-  \<open>m_step_buffered M\<close> for \<open>n \<le> c = card (UNIV :: 'c set)\<close>,
+  \<open>m_step_buffered M\<close> for \<open>n \<le> m\<close>,
   filtered to enforce the early-stop discipline (the run runs
   the full \<open>c\<close> steps unless \<open>M\<close> halts).  This is the
   semantic core of the compute substep (SS4\<open>\<rightarrow>\<close>SS5).\<close>
 
 definition m_steps_buffered ::
-  "('q, 'a) ktm
+  "nat \<Rightarrow> ('q, 'a) ktm
     \<Rightarrow> (('q
-         \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-         \<times> (nat \<Rightarrow> 'c bp))
+         \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+         \<times> (nat \<Rightarrow> bp))
         \<times> ('q
-           \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-           \<times> (nat \<Rightarrow> 'c bp))) set" where
-  "m_steps_buffered M =
+           \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+           \<times> (nat \<Rightarrow> bp))) set" where
+  "m_steps_buffered m M =
      {(s, s') | s s' n.
-        n \<le> card (UNIV :: 'c set)
-        \<and> (s, s') \<in> (m_step_buffered M) ^^ n
-        \<and> (n = card (UNIV :: 'c set)
+        n \<le> m
+        \<and> (s, s') \<in> (m_step_buffered m M) ^^ n
+        \<and> (n = m
             \<or> fst s' \<in> {t_ktm M, r_ktm M})}"
 
 text \<open>Functionality of \<open>m_step_buffered\<close> under
@@ -447,22 +447,22 @@ text \<open>Functionality of \<open>m_step_buffered\<close> under
 lemma m_step_buffered_functional:
   fixes M :: "('q, 'a) ktm"
   assumes det: "det_ktm M"
-    and h1: "((q, blocks, pos), (q1, blocks1, pos1)) \<in> m_step_buffered M"
-    and h2: "((q, blocks, pos), (q2, blocks2, pos2)) \<in> m_step_buffered M"
+    and h1: "((q, blocks, pos), (q1, blocks1, pos1)) \<in> m_step_buffered m M"
+    and h2: "((q, blocks, pos), (q2, blocks2, pos2)) \<in> m_step_buffered m M"
   shows "(q1, blocks1, pos1) = (q2, blocks2, pos2)"
 proof -
   from h1 obtain a1 a1' d1 where
       t1: "(q, a1, q1, a1', d1) \<in> delta_ktm M"
     and r1: "\<forall>k. a1 k = read_bp (blocks k) (pos k)"
     and w1: "\<forall>k. blocks1 k = write_bp (blocks k) (pos k) (a1' k)"
-    and p1: "\<forall>k. bp_advance_le (le_ktm M) (a1 k) (pos k) (d1 k)
+    and p1: "\<forall>k. bp_advance_le m (le_ktm M) (a1 k) (pos k) (d1 k)
                     = Some (pos1 k)"
     unfolding m_step_buffered_def by blast
   from h2 obtain a2 a2' d2 where
       t2: "(q, a2, q2, a2', d2) \<in> delta_ktm M"
     and r2: "\<forall>k. a2 k = read_bp (blocks k) (pos k)"
     and w2: "\<forall>k. blocks2 k = write_bp (blocks k) (pos k) (a2' k)"
-    and p2: "\<forall>k. bp_advance_le (le_ktm M) (a2 k) (pos k) (d2 k)
+    and p2: "\<forall>k. bp_advance_le m (le_ktm M) (a2 k) (pos k) (d2 k)
                     = Some (pos2 k)"
     unfolding m_step_buffered_def by blast
   have a_eq: "a1 = a2"
@@ -493,8 +493,8 @@ text \<open>Relational-power lift of \<open>m_step_buffered_functional\<close>:
 lemma m_step_buffered_relpow_functional:
   fixes M :: "('q, 'a) ktm"
   assumes det: "det_ktm M"
-      and h1: "(s, s1) \<in> (m_step_buffered M) ^^ n"
-      and h2: "(s, s2) \<in> (m_step_buffered M) ^^ n"
+      and h1: "(s, s1) \<in> (m_step_buffered m M) ^^ n"
+      and h2: "(s, s2) \<in> (m_step_buffered m M) ^^ n"
   shows "s1 = s2"
   using h1 h2
 proof (induction n arbitrary: s s1 s2)
@@ -503,21 +503,21 @@ proof (induction n arbitrary: s s1 s2)
 next
   case (Suc n)
   from Suc.prems(1) obtain s1' where
-      step1: "(s, s1') \<in> m_step_buffered M"
-    and rest1: "(s1', s1) \<in> (m_step_buffered M) ^^ n"
+      step1: "(s, s1') \<in> m_step_buffered m M"
+    and rest1: "(s1', s1) \<in> (m_step_buffered m M) ^^ n"
     by (meson relpow_Suc_D2)
   from Suc.prems(2) obtain s2' where
-      step2: "(s, s2') \<in> m_step_buffered M"
-    and rest2: "(s2', s2) \<in> (m_step_buffered M) ^^ n"
+      step2: "(s, s2') \<in> m_step_buffered m M"
+    and rest2: "(s2', s2) \<in> (m_step_buffered m M) ^^ n"
     by (meson relpow_Suc_D2)
   obtain q b p where s_eq: "s = (q, b, p)" by (cases s)
   obtain q1' b1' p1' where s1'_eq: "s1' = (q1', b1', p1')" by (cases s1')
   obtain q2' b2' p2' where s2'_eq: "s2' = (q2', b2', p2')" by (cases s2')
   from step1 s_eq s1'_eq
-  have st1: "((q, b, p), (q1', b1', p1')) \<in> m_step_buffered M"
+  have st1: "((q, b, p), (q1', b1', p1')) \<in> m_step_buffered m M"
     by simp
   from step2 s_eq s2'_eq
-  have st2: "((q, b, p), (q2', b2', p2')) \<in> m_step_buffered M"
+  have st2: "((q, b, p), (q2', b2', p2')) \<in> m_step_buffered m M"
     by simp
   from m_step_buffered_functional[OF det st1 st2]
   have "(q1', b1', p1') = (q2', b2', p2')" .
@@ -536,9 +536,9 @@ lemma m_step_buffered_no_halt:
   fixes M :: "('q, 'a) ktm"
   assumes vM: "valid_ktm M"
       and halt: "q \<in> {t_ktm M, r_ktm M}"
-  shows "((q, blocks, pos), s') \<notin> m_step_buffered M"
+  shows "((q, blocks, pos), s') \<notin> m_step_buffered m M"
 proof
-  assume "((q, blocks, pos), s') \<in> m_step_buffered M"
+  assume "((q, blocks, pos), s') \<in> m_step_buffered m M"
   then obtain a q' a' d where
       st: "(q, a, q', a', d) \<in> delta_ktm M"
     unfolding m_step_buffered_def by blast
@@ -566,17 +566,17 @@ text \<open>Functionality of \<open>m_steps_buffered\<close> under
 lemma m_steps_buffered_functional:
   fixes M :: "('q, 'a) ktm"
     and s s1 s2 :: "'q
-                      \<times> (nat \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
-                              \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-                      \<times> (nat \<Rightarrow> 'c bp)"
+                      \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a)
+                              \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+                      \<times> (nat \<Rightarrow> bp)"
   assumes vM:  "valid_ktm M"
       and det: "det_ktm M"
-      and h1:  "(s, s1) \<in> m_steps_buffered M"
-      and h2:  "(s, s2) \<in> m_steps_buffered M"
+      and h1:  "(s, s1) \<in> m_steps_buffered m M"
+      and h2:  "(s, s2) \<in> m_steps_buffered m M"
   shows "s1 = s2"
 proof -
-  let ?c = "card (UNIV :: 'c set)"
-  let ?R = "m_step_buffered M"
+  let ?c = "m"
+  let ?R = "m_step_buffered m M"
   from h1 obtain n1 where
       n1_bnd:  "n1 \<le> ?c"
     and n1_run: "(s, s1) \<in> ?R ^^ n1"
@@ -588,31 +588,31 @@ proof -
     and n2_halt: "n2 = ?c \<or> fst s2 \<in> {t_ktm M, r_ktm M}"
     unfolding m_steps_buffered_def by blast
 
-  \<comment> \<open>Sub-lemma: under \<open>m < n\<close>, the run from the m-step
+  \<comment> \<open>Sub-lemma: under \<open>nm < n\<close>, the run from the nm-step
       state cannot extend, contradicting the halt-or-full
-      disjunction at the m-step state.\<close>
+      disjunction at the nm-step state.\<close>
   have no_extend:
-    "\<And>m n s_m s_n.
-        (s, s_m) \<in> ?R ^^ m
+    "\<And>nm n s_m s_n.
+        (s, s_m) \<in> ?R ^^ nm
         \<Longrightarrow> (s, s_n) \<in> ?R ^^ n
-        \<Longrightarrow> m < n
+        \<Longrightarrow> nm < n
         \<Longrightarrow> n \<le> ?c
-        \<Longrightarrow> m = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}
+        \<Longrightarrow> nm = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}
         \<Longrightarrow> False"
   proof -
-    fix m n :: nat and s_m s_n
-    assume rm: "(s, s_m) \<in> ?R ^^ m"
+    fix nm n :: nat and s_m s_n
+    assume rm: "(s, s_m) \<in> ?R ^^ nm"
        and rn: "(s, s_n) \<in> ?R ^^ n"
-       and mn: "m < n"
+       and mn: "nm < n"
        and nc: "n \<le> ?c"
-       and hl: "m = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}"
-    define k where "k = n - m - 1"
-    have k_eq: "n = m + Suc k"
+       and hl: "nm = ?c \<or> fst s_m \<in> {t_ktm M, r_ktm M}"
+    define k where "k = n - nm - 1"
+    have k_eq: "n = nm + Suc k"
       unfolding k_def using mn by simp
-    from rn k_eq have rn': "(s, s_n) \<in> ?R ^^ (m + Suc k)" by simp
+    from rn k_eq have rn': "(s, s_n) \<in> ?R ^^ (nm + Suc k)" by simp
     from rn'[unfolded relpow_add]
     obtain s' where
-        rpre: "(s, s') \<in> ?R ^^ m"
+        rpre: "(s, s') \<in> ?R ^^ nm"
       and rpost: "(s', s_n) \<in> ?R ^^ Suc k"
       by blast
     from m_step_buffered_relpow_functional[OF det rm rpre]
@@ -622,7 +622,7 @@ proof -
     with s_eq have step_sm: "(s_m, s'') \<in> ?R" by simp
     from hl show False
     proof
-      assume "m = ?c"
+      assume "nm = ?c"
       with k_eq nc show False by linarith
     next
       assume halt: "fst s_m \<in> {t_ktm M, r_ktm M}"
@@ -658,24 +658,43 @@ text \<open>Linearisation helpers for the 3-block buffer.  These map
   buffered compute's correctness as a contiguous-tape-window
   match.\<close>
 
-definition bp_linear :: "('c :: enum) bp \<Rightarrow> nat" where
-  "bp_linear p =
+definition bp_linear :: "nat \<Rightarrow> bp \<Rightarrow> nat" where
+  "bp_linear m p =
      (case fst p of
         AE_Left  \<Rightarrow> 0
-      | AE_Home  \<Rightarrow> card (UNIV :: 'c set)
-      | AE_Right \<Rightarrow> 2 * card (UNIV :: 'c set))
-     + c_idx (snd p)"
+      | AE_Home  \<Rightarrow> m
+      | AE_Right \<Rightarrow> 2 * m)
+     + snd p"
 
 definition buf_lin_at ::
-  "(('c :: enum \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
     \<Rightarrow> nat \<Rightarrow> 'a" where
-  "buf_lin_at blocks i =
-     (let c = card (UNIV :: 'c set);
-          enum_c = (enum_class.enum :: 'c list);
+  "buf_lin_at m blocks i =
+     (let c = m;
+          enum_c = [0..<m];
           (l, h, r) = blocks in
         if i < c then l (enum_c ! i)
         else if i < 2 * c then h (enum_c ! (i - c))
         else r (enum_c ! (i - 2 * c)))"
+
+text \<open>A buffer triple's blocks are extensional on the offsets
+  \<open>{..<m}\<close>, as every block of the enlarged machine's alphabet is
+  (\<open>gamma_block\<close>).  The window invariants carry it, so a buffer is
+  determined by the cells it reads.\<close>
+
+definition ae_blocks_ext ::
+  "nat \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)) \<Rightarrow> bool" where
+  "ae_blocks_ext m blocks \<longleftrightarrow>
+     fst blocks \<in> extensional {..<m}
+     \<and> fst (snd blocks) \<in> extensional {..<m}
+     \<and> snd (snd blocks) \<in> extensional {..<m}"
+
+lemma ae_blocks_ext_write_bp:
+  assumes "ae_blocks_ext m blocks" and "snd p < m"
+  shows "ae_blocks_ext m (write_bp blocks p x)"
+  using assms
+  by (cases p; cases "fst p")
+     (auto simp: ae_blocks_ext_def write_bp_def extensional_def split: prod.splits)
 
 text \<open>Window invariant on a 3-block buffer plus buffered head:
   (1) the buffer's linearisation matches an M-tape window of
@@ -688,15 +707,17 @@ text \<open>Window invariant on a 3-block buffer plus buffered head:
   separate lemma at the simulation level.\<close>
 
 definition ae_window_invariant ::
-  "(nat \<Rightarrow> 'a) \<Rightarrow> nat
-    \<Rightarrow> ('c :: enum) bp
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat
+    \<Rightarrow> bp
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
     \<Rightarrow> nat \<Rightarrow> bool" where
-  "ae_window_invariant tM nM bp blocks p_start \<longleftrightarrow>
-     p_start \<ge> 1
-     \<and> nM = p_start + bp_linear bp
-     \<and> (\<forall>i. i < 3 * card (UNIV :: 'c set)
-              \<longrightarrow> tM (p_start + i) = buf_lin_at blocks i)"
+  "ae_window_invariant m tM nM bp blocks p_start \<longleftrightarrow>
+     snd bp < m
+     \<and> ae_blocks_ext m blocks
+     \<and> p_start \<ge> 1
+     \<and> nM = p_start + bp_linear m bp
+     \<and> (\<forall>i. i < 3 * m
+              \<longrightarrow> tM (p_start + i) = buf_lin_at m blocks i)"
 
 text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   \<open>le1\<close> sub-case: \<open>M'\<close>'s head is at block 1 (the first
@@ -714,28 +735,30 @@ text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
 
   The buffered head \<open>bp\<close> decodes to the actual M-tape position
   by a three-way case-split (\<open>AE_Left c_last \<mapsto> 0\<close>,
-  \<open>AE_Home \<mapsto> 1 + c_idx ofs\<close>,
-  \<open>AE_Right \<mapsto> 1 + c + c_idx ofs\<close>) so the predicate serves
+  \<open>AE_Home \<mapsto> 1 + ofs\<close>,
+  \<open>AE_Right \<mapsto> 1 + c + ofs\<close>) so the predicate serves
   as both SS4 entry condition (\<open>bp = (AE_Home, ofs)\<close>) and
   post-compute condition (\<open>bp\<close> anywhere in the three-block
   buffer except \<open>AE_Left\<close> at non-\<open>c_last\<close> offsets, which the
   \<open>\<delta>LE\<close>-respecting buffered trajectory cannot reach).\<close>
 
 definition ae_window_invariant_le1 ::
-  "(nat \<Rightarrow> 'a) \<Rightarrow> nat
-    \<Rightarrow> ('c :: enum) bp
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat
+    \<Rightarrow> bp
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
     \<Rightarrow> 'a \<Rightarrow> bool" where
-  "ae_window_invariant_le1 tM nM bp blocks le \<longleftrightarrow>
-     fst blocks = LE_block le
+  "ae_window_invariant_le1 m tM nM bp blocks le \<longleftrightarrow>
+     snd bp < m
+     \<and> ae_blocks_ext m blocks
+     \<and> fst blocks = LE_block m le
      \<and> tM 0 = le
      \<and> (case fst bp of
-          AE_Left  \<Rightarrow> snd bp = c_last \<and> nM = 0
-        | AE_Home  \<Rightarrow> nM = Suc (c_idx (snd bp))
-        | AE_Right \<Rightarrow> nM = Suc (card (UNIV :: 'c set) + c_idx (snd bp)))
-     \<and> (\<forall>i. i < 2 * card (UNIV :: 'c set)
+          AE_Left  \<Rightarrow> snd bp = c_last m \<and> nM = 0
+        | AE_Home  \<Rightarrow> nM = Suc (snd bp)
+        | AE_Right \<Rightarrow> nM = Suc (m + snd bp))
+     \<and> (\<forall>i. i < 2 * m
               \<longrightarrow> tM (Suc i)
-                    = buf_lin_at blocks (card (UNIV :: 'c set) + i))"
+                    = buf_lin_at m blocks (m + i))"
 
 text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   \<open>le0\<close> sub-case: \<open>M'\<close>'s head is at block 0 (the LE
@@ -748,13 +771,13 @@ text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   block under \<open>\<delta>LE\<close> — M starts at home reading LE,
   can only move N or R, and any R-move from home reading LE
   jumps via \<open>bp_advance_le\<close>'s special case to
-  \<open>(AE_Right, c_first)\<close>, bypassing the rest of home and
+  \<open>(AE_Right, 0)\<close>, bypassing the rest of home and
   never visiting left).
 
   The buffered head \<open>bp\<close> decodes:
   \<open>AE_Home \<mapsto> 0\<close> (M sits at LE regardless of
   \<open>snd bp\<close>, since home is all-LE) and
-  \<open>AE_Right \<mapsto> 1 + c_idx ofs\<close> (M is in block 1's
+  \<open>AE_Right \<mapsto> 1 + ofs\<close> (M is in block 1's
   range).  \<open>AE_Left\<close> is excluded.
 
   Only the right slot's linearisation is asserted: the home
@@ -763,20 +786,22 @@ text \<open>LE-edge analogue of \<open>ae_window_invariant\<close> for the
   linearisation is fake but unread).\<close>
 
 definition ae_window_invariant_le0 ::
-  "(nat \<Rightarrow> 'a) \<Rightarrow> nat
-    \<Rightarrow> ('c :: enum) bp
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat
+    \<Rightarrow> bp
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
     \<Rightarrow> 'a \<Rightarrow> bool" where
-  "ae_window_invariant_le0 tM nM bp blocks le \<longleftrightarrow>
-     fst (snd blocks) = LE_block le
+  "ae_window_invariant_le0 m tM nM bp blocks le \<longleftrightarrow>
+     snd bp < m
+     \<and> ae_blocks_ext m blocks
+     \<and> fst (snd blocks) = LE_block m le
      \<and> tM 0 = le
      \<and> (case fst bp of
           AE_Home  \<Rightarrow> nM = 0
-        | AE_Right \<Rightarrow> nM = Suc (c_idx (snd bp))
+        | AE_Right \<Rightarrow> nM = Suc (snd bp)
         | AE_Left  \<Rightarrow> False)
-     \<and> (\<forall>i. i < card (UNIV :: 'c set)
+     \<and> (\<forall>i. i < m
               \<longrightarrow> tM (Suc i)
-                    = buf_lin_at blocks (2 * card (UNIV :: 'c set) + i))"
+                    = buf_lin_at m blocks (2 * m + i))"
 
 text \<open>Per-tape unified window invariant for the SS4\<open>\<rightarrow>\<close>SS5
   trace toolkit.  Hybrid encapsulation of the three regime-specific
@@ -801,16 +826,16 @@ text \<open>Per-tape unified window invariant for the SS4\<open>\<rightarrow>\<c
   with the induction in \<open>ae_coupled_run_aux_general\<close>.\<close>
 
 definition ae_window_invariant_general ::
-  "(nat \<Rightarrow> 'a) \<Rightarrow> nat
-    \<Rightarrow> ('c :: enum) bp
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<Rightarrow> nat
+    \<Rightarrow> bp
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
     \<Rightarrow> nat \<Rightarrow> 'a \<Rightarrow> bool" where
-  "ae_window_invariant_general tM nM bp blocks pos le \<longleftrightarrow>
-     (pos = 0 \<longrightarrow> ae_window_invariant_le0 tM nM bp blocks le)
-     \<and> (pos = 1 \<longrightarrow> ae_window_invariant_le1 tM nM bp blocks le)
+  "ae_window_invariant_general m tM nM bp blocks pos le \<longleftrightarrow>
+     (pos = 0 \<longrightarrow> ae_window_invariant_le0 m tM nM bp blocks le)
+     \<and> (pos = 1 \<longrightarrow> ae_window_invariant_le1 m tM nM bp blocks le)
      \<and> (pos \<ge> 2
-          \<longrightarrow> ae_window_invariant tM nM bp blocks
-                ((pos - 2) * card (UNIV :: 'c set) + 1))"
+          \<longrightarrow> ae_window_invariant m tM nM bp blocks
+                ((pos - 2) * m + 1))"
 
 text \<open>SS4 \<open>\<rightarrow>\<close> SS5: read right into buffer; apply the compute
   (c-fold composition of \<open>M\<close>'s \<open>\<delta>\<close>) to determine the
@@ -828,29 +853,29 @@ text \<open>SS4 \<open>\<rightarrow>\<close> SS5: read right into buffer; apply 
   projected from \<open>end_pos\<close>.\<close>
 
 definition ae_delta_ss4_ss5 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss4_ss5 M =
+  "ae_delta_ss4_ss5 m M =
      {((q, ofs, buf, dest_old, SS4), a,
         (q', ofs', buf', dest', SS5), a, d) |
         q ofs buf dest_old a q' ofs' buf' dest' d
         buf_full end_pos bufC.
           q \<in> Q_ktm M \<and> q \<noteq> t_ktm M \<and> q \<noteq> r_ktm M
-          \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+          \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
           \<and> buf_full = (\<lambda>k. (fst (buf k),
                               if k < k_ktm M then fst (snd (buf k)) else a k,
                               a k))
           \<and> ((q, buf_full, \<lambda>k. (AE_Home, ofs k)),
-             (q', bufC, end_pos)) \<in> m_steps_buffered M
+             (q', bufC, end_pos)) \<in> m_steps_buffered m M
           \<and> ofs' = (\<lambda>k. if k < k_ktm M then snd (end_pos k) else init_offset k)
-          \<and> buf' = (\<lambda>k. if k < k_ktm M then bufC k else init_buffer (le_ktm M) k)
+          \<and> buf' = (\<lambda>k. if k < k_ktm M then bufC k else init_buffer m (le_ktm M) k)
           \<and> dest' = (\<lambda>k. if k < k_ktm M then fst (end_pos k) else init_dest k)
           \<and> d = (\<lambda>k. if k < k_ktm M
-                       then (if a k = LE_block (le_ktm M)
+                       then (if a k = LE_block m (le_ktm M)
                                then MoveN else MoveL)
                        else MoveN)}"
 
@@ -924,40 +949,40 @@ text \<open>\<^emph>\<open>LE-guard prefix and \<open>\<delta>LE\<close> compati
   0 from being clobbered by a non-LE buffer slot.\<close>
 
 fun ae_ss5_action ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
-  "ae_ss5_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, MoveN)
-      else if h = LE_block le then (a, MoveN)
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> ae_dest \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> move)" where
+  "ae_ss5_action m le a (l, h, r) ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if h = LE_block m le then (a, MoveN)
       else (h, if ds = AE_Left then MoveR else MoveL))"
 
 fun ae_ss6_action ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
-  "ae_ss6_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, MoveR)
-      else if h = LE_block le then (a, MoveR)
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> ae_dest \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> move)" where
+  "ae_ss6_action m le a (l, h, r) ds =
+     (if a = LE_block m le then (a, MoveR)
+      else if h = LE_block m le then (a, MoveR)
       else if ds = AE_Left then (r, MoveL) else (l, MoveR))"
 
 fun ae_ss7_action ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
-  "ae_ss7_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, MoveN)
-      else if h = LE_block le
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> ae_dest \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> move)" where
+  "ae_ss7_action m le a (l, h, r) ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if h = LE_block m le
         then (r, if ds = AE_Right then MoveN else MoveL)
       else (a, if ds = AE_Left then MoveL else MoveR))"
 
 fun ae_ss8_action ::
-  "'a \<Rightarrow> ('c :: enum \<Rightarrow> 'a)
-    \<Rightarrow> (('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a) \<times> ('c \<Rightarrow> 'a))
-    \<Rightarrow> ae_dest \<Rightarrow> (('c \<Rightarrow> 'a) \<times> move)" where
-  "ae_ss8_action le a (l, h, r) ds =
-     (if a = LE_block le then (a, MoveN)
-      else if h = LE_block le
+  "nat \<Rightarrow> 'a \<Rightarrow> (nat \<Rightarrow> 'a)
+    \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+    \<Rightarrow> ae_dest \<Rightarrow> ((nat \<Rightarrow> 'a) \<times> move)" where
+  "ae_ss8_action m le a (l, h, r) ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if h = LE_block m le
         then (if ds = AE_Right then (r, MoveN) else (a, MoveN))
       else (case ds of
               AE_Left  \<Rightarrow> (l, MoveN)
@@ -968,23 +993,23 @@ text \<open>SS5 \<open>\<rightarrow>\<close> SS6: write home block; per-tape mov
   \<open>(stage_kind k, dest k)\<close>.  Write-back substep 5.\<close>
 
 definition ae_delta_ss5_ss6 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss5_ss6 M =
+  "ae_delta_ss5_ss6 m M =
     {((q, ofs, buf, dest, SS5), a,
        (q, ofs, buf, dest, SS6), a', d) |
      q ofs buf dest a a' d.
        q \<in> Q_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> a' = (\<lambda>k. if k < k_ktm M
-                     then fst (ae_ss5_action (le_ktm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_ktm M))
+                     then fst (ae_ss5_action m (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block m (bl_ktm M))
        \<and> d  = (\<lambda>k. if k < k_ktm M
-                     then snd (ae_ss5_action (le_ktm M) (a k) (buf k) (dest k))
+                     then snd (ae_ss5_action m (le_ktm M) (a k) (buf k) (dest k))
                      else MoveN)}"
 
 text \<open>SS6 \<open>\<rightarrow>\<close> SS7: write left (steady-state, \<open>dest \<in> {AE_Home,
@@ -992,23 +1017,23 @@ text \<open>SS6 \<open>\<rightarrow>\<close> SS7: write left (steady-state, \<op
   home (LE-stage); per-tape move per dest.  Write-back substep 6.\<close>
 
 definition ae_delta_ss6_ss7 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss6_ss7 M =
+  "ae_delta_ss6_ss7 m M =
     {((q, ofs, buf, dest, SS6), a,
        (q, ofs, buf, dest, SS7), a', d) |
      q ofs buf dest a a' d.
        q \<in> Q_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> a' = (\<lambda>k. if k < k_ktm M
-                     then fst (ae_ss6_action (le_ktm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_ktm M))
+                     then fst (ae_ss6_action m (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block m (bl_ktm M))
        \<and> d  = (\<lambda>k. if k < k_ktm M
-                     then snd (ae_ss6_action (le_ktm M) (a k) (buf k) (dest k))
+                     then snd (ae_ss6_action m (le_ktm M) (a k) (buf k) (dest k))
                      else MoveN)}"
 
 text \<open>SS7 \<open>\<rightarrow>\<close> SS8: idempotent home re-write (steady-state) or
@@ -1016,23 +1041,23 @@ text \<open>SS7 \<open>\<rightarrow>\<close> SS8: idempotent home re-write (stea
   substep 7.\<close>
 
 definition ae_delta_ss7_ss8 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss7_ss8 M =
+  "ae_delta_ss7_ss8 m M =
     {((q, ofs, buf, dest, SS7), a,
        (q, ofs, buf, dest, SS8), a', d) |
      q ofs buf dest a a' d.
        q \<in> Q_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> a' = (\<lambda>k. if k < k_ktm M
-                     then fst (ae_ss7_action (le_ktm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_ktm M))
+                     then fst (ae_ss7_action m (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block m (bl_ktm M))
        \<and> d  = (\<lambda>k. if k < k_ktm M
-                     then snd (ae_ss7_action (le_ktm M) (a k) (buf k) (dest k))
+                     then snd (ae_ss7_action m (le_ktm M) (a k) (buf k) (dest k))
                      else MoveN)}"
 
 text \<open>SS8 \<open>\<rightarrow>\<close> SS1: write final block at destination; head ends
@@ -1049,26 +1074,26 @@ text \<open>SS8 \<open>\<rightarrow>\<close> SS1: write final block at destinati
   stage; \<open>dest\<close> resets to \<open>AE_Home\<close>.\<close>
 
 definition ae_delta_ss8_ss1 ::
-  "('q, 'a) ktm
-    \<Rightarrow> (('q \<times> ('a, 'c :: enum) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
-        \<times> ('q \<times> ('a, 'c) ae_stage)
-        \<times> (nat \<Rightarrow> ('c \<Rightarrow> 'a))
+  "nat \<Rightarrow> ('q, 'a) ktm
+    \<Rightarrow> (('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
+        \<times> ('q \<times> 'a ae_stage)
+        \<times> (nat \<Rightarrow> (nat \<Rightarrow> 'a))
         \<times> (nat \<Rightarrow> move)) set" where
-  "ae_delta_ss8_ss1 M =
+  "ae_delta_ss8_ss1 m M =
     {((q, ofs, buf, dest, SS8), a,
        (q, stage'), a', d) |
      q ofs buf dest a stage' a' d.
        q \<in> Q_ktm M
-       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block (bl_ktm M))
+       \<and> (\<forall>j\<ge>k_ktm M. a j = bl_block m (bl_ktm M))
        \<and> stage' = (if q \<in> {t_ktm M, r_ktm M}
-                    then init_stage (le_ktm M)
+                    then init_stage m (le_ktm M)
                     else (ofs, buf, init_dest, SS1))
        \<and> a' = (\<lambda>k. if k < k_ktm M
-                     then fst (ae_ss8_action (le_ktm M) (a k) (buf k) (dest k))
-                     else bl_block (bl_ktm M))
+                     then fst (ae_ss8_action m (le_ktm M) (a k) (buf k) (dest k))
+                     else bl_block m (bl_ktm M))
        \<and> d  = (\<lambda>k. if k < k_ktm M
-                     then snd (ae_ss8_action (le_ktm M) (a k) (buf k) (dest k))
+                     then snd (ae_ss8_action m (le_ktm M) (a k) (buf k) (dest k))
                      else MoveN)}"
 
 end

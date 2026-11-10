@@ -24,11 +24,10 @@ text \<open>The classical linear-speedup theorems, over the wrap
   @{text "_dae"} is Theorem 12.4 proper; likewise for Theorem 12.3).
 
   The wrap correctness lemmas carry the side-condition @{term "2 \<le> k_ktm M"},
-  which holds on the source via @{term "k_ktm (alphabet_enlarge M) = k_ktm M"}.
+  which holds on the source via @{term "k_ktm (alphabet_enlarge m M) = k_ktm M"}.
   The Form-1 time bound has a coefficient-@{text 1} linear term
   @{term "length w"} (the encoder pass): the reset rewinds only the
-  storage tape (at most
-  @{term "(length w + card (UNIV :: 'c set) - 1) div card (UNIV :: 'c set)"}
+  storage tape (at most @{term "(length w + m - 1) div m"}
   cells) and never the raw input, so the bound has the @{text "(1+\<epsilon>)n"}
   form HU 12.4 requires.\<close>
 
@@ -42,27 +41,28 @@ text \<open>The encoded input of a legal word is legal for the enlarged machine:
 lemma ae_wrap_enc_in_Sigma:
   fixes M :: "('q, 'a) ktm"
   assumes vM: "valid_ktm M" and w_sub: "set w \<subseteq> Sigma_ktm M"
-  shows "set (wrap_enc (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c :: enum \<Rightarrow> 'a))
-            (card (UNIV :: 'c set)) w)
-         \<subseteq> Sigma_ktm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)"
+      and m_pos: "0 < m"
+  shows "set (wrap_enc (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+            (m) w)
+         \<subseteq> Sigma_ktm (alphabet_enlarge m M :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)"
 proof -
-  have c_pos: "0 < card (UNIV :: 'c set)" by (simp add: card_gt_0_iff)
+  have c_pos: "0 < m" by (rule m_pos)
   have in_gamma:
-    "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)
-      \<subseteq> gamma_block (Sigma_ktm M \<union> {bl_ktm M})"
+    "set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)
+      \<subseteq> gamma_block m (Sigma_ktm M \<union> {bl_ktm M})"
     by (rule encode_input_in_gamma_block[OF w_sub])
   have no_bl:
-    "bl_block (bl_ktm M) \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
+    "bl_block m (bl_ktm M) \<notin> set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)"
     by (rule encode_input_no_bl_block[OF vM w_sub])
   have no_LE:
-    "LE_block (le_ktm M) \<notin> set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
+    "LE_block m (le_ktm M) \<notin> set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)"
     by (rule encode_input_no_LE_block[OF vM w_sub])
   from in_gamma no_bl no_LE
-  have "set (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)
-          \<subseteq> Sigma_ktm (alphabet_enlarge M :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)"
+  have "set (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)
+          \<subseteq> Sigma_ktm (alphabet_enlarge m M :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)"
     unfolding Sigma_ktm_alphabet_enlarge by auto
-  moreover have "wrap_enc (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-      (card (UNIV :: 'c set)) w = encode_input (bl_ktm M) w"
+  moreover have "wrap_enc (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+      (m) w = encode_input m (bl_ktm M) w"
     by (rule wrap_enc_eq_encode_input[OF c_pos])
   ultimately show ?thesis by simp
 qed
@@ -79,55 +79,56 @@ lemma linear_speedup_form_1_raw_nae:
     and T :: "nat \<Rightarrow> nat"
   assumes wf:        "well_formed_ktm M"
       and k2:        "2 \<le> k_ktm M"
+      and m_pos: "0 < m"
   shows "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
     and "\<forall>w. set w \<subseteq> Sigma_ktm M
               \<longrightarrow> accepts_in_time_ktm M w (T (length w))
               \<longrightarrow> accepts_in_time_user_wrap
                     (encoding_wrap
-                       (alphabet_enlarge M
-                          :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                       (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                       (card (UNIV :: 'c set))
+                       (alphabet_enlarge m M
+                          :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                       (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                       (m)
                        (Sigma_ktm M))
                     w
                     (length w
-                     + (length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set)
+                     + (length w + m - 1)
+                              div m
                      + 5
-                     + 2 * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                     + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
+                     + 2 * ((length w + m - 1)
+                              div m)
+                     + 8 * ((T (length w) + m - 1)
+                              div m)
                      + 4)"
 proof -
-  have c_pos: "0 < card (UNIV :: 'c set)" by (simp add: card_gt_0_iff)
+  have c_pos: "0 < m" by (rule m_pos)
   from wf have vM:        "valid_ktm M"
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
 
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   \<comment> \<open>AE preserves validity.\<close>
   have vM': "valid_ktm ?M'"
-    by (rule alphabet_enlarge_wf[OF vM])
+    by (rule alphabet_enlarge_wf[OF vM m_pos])
 
   \<comment> \<open>\<open>Sigma_ktm\<close> M is finite (\<open>Sigma\<close> \<open>\<subseteq>\<close> \<open>Gamma\<close>, \<open>Gamma\<close> finite).\<close>
   have finSigma: "finite (Sigma_ktm M)"
@@ -138,7 +139,7 @@ proof -
   \<comment> \<open>\<open>bl\<close> ?M' \<open>\<noteq>\<close> \<open>le\<close> ?M' (from the AE substrate projections).\<close>
   have bl_ne_le': "bl_ktm ?M' \<noteq> le_ktm ?M'"
     unfolding bl_ktm_alphabet_enlarge le_ktm_alphabet_enlarge
-    using le_neq_bl by (simp add: bl_block_def LE_block_def fun_eq_iff)
+    using LE_block_neq_bl_block[OF m_pos le_neq_bl] by metis
 
   \<comment> \<open>AE preserves the tape count, so \<open>2 \<le> k_ktm\<close> ?M'.\<close>
   have k_eq: "k_ktm ?M' = k_ktm M"
@@ -153,10 +154,10 @@ proof -
     by (rule wrap_wf[OF vM' le_neq_bl' finSigma c_pos k2'])
 
   \<comment> \<open>Glue: \<open>wrap_enc\<close> = \<open>encode_input\<close> (under the \<open>ae_pack\<close> instantiation).\<close>
-  have glue: "\<And>w. wrap_enc ?pack ?c w = encode_input (bl_ktm M) w"
+  have glue: "\<And>w. wrap_enc ?pack ?c w = encode_input m (bl_ktm M) w"
   proof -
     fix w
-    show "wrap_enc ?pack ?c w = encode_input (bl_ktm M) w"
+    show "wrap_enc ?pack ?c w = encode_input m (bl_ktm M) w"
       by (rule wrap_enc_eq_encode_input[OF c_pos])
   qed
 
@@ -165,7 +166,7 @@ proof -
   have enc_in_Sigma_M':
     "\<And>w. set w \<subseteq> Sigma_ktm M
             \<Longrightarrow> set (wrap_enc ?pack ?c w) \<subseteq> Sigma_ktm ?M'"
-    by (rule ae_wrap_enc_in_Sigma[OF vM])
+    by (rule ae_wrap_enc_in_Sigma[OF vM _ m_pos])
 
   \<comment> \<open>Language equivalence.\<close>
   have lang_eq: "Lang_user_wrap ?M'' = Lang_ktm M"
@@ -177,9 +178,9 @@ proof -
       using wrap_language[OF vM' finSigma c_pos bl_ne_le' k2'] .
     have ae_lang:
       "\<forall>w. set w \<subseteq> Sigma_ktm M
-              \<longrightarrow> (encode_input (bl_ktm M) w \<in> Lang_ktm ?M')
+              \<longrightarrow> (encode_input m (bl_ktm M) w \<in> Lang_ktm ?M')
                   = (w \<in> Lang_ktm M)"
-      using alphabet_enlarge_language[OF wf]
+      using alphabet_enlarge_language[OF wf m_pos]
       by simp
     have lang_subset: "Lang_ktm M \<subseteq> {w. set w \<subseteq> Sigma_ktm M}"
       unfolding Lang_ktm_def by auto
@@ -193,7 +194,7 @@ proof -
         fix w assume wL: "w \<in> Lang_ktm M"
         with lang_subset have w_sub: "set w \<subseteq> Sigma_ktm M" by auto
         from wL ae_lang w_sub
-        have "encode_input (bl_ktm M) w \<in> Lang_ktm ?M'" by simp
+        have "encode_input m (bl_ktm M) w \<in> Lang_ktm ?M'" by simp
         hence "wrap_enc ?pack ?c w \<in> Lang_ktm ?M'" using glue by simp
         with w_sub wrap_lang show "w \<in> Lang_user_wrap ?M''" by auto
       qed
@@ -214,11 +215,11 @@ proof -
     "\<forall>w. set w \<subseteq> Sigma_ktm M
             \<longrightarrow> accepts_in_time_ktm M w (T (length w))
             \<longrightarrow> accepts_in_time_ktm ?M'
-                  (encode_input (bl_ktm M) w)
+                  (encode_input m (bl_ktm M) w)
                   (\<alpha> * ((length w + ?c - 1) div ?c)
                    + 8 * ((T (length w) + ?c - 1) div ?c)
                    + f)"
-    unfolding alpha2 f4 using alphabet_enlarge_time_explicit[OF wf, of T] by blast
+    unfolding alpha2 f4 using alphabet_enlarge_time_explicit[OF wf m_pos, of T] by blast
 
   have time_bound:
     "\<forall>w. set w \<subseteq> Sigma_ktm M
@@ -238,7 +239,7 @@ proof -
                   + 8 * ((T (length w) + ?c - 1) div ?c) + f"
     from ae_time w_sub accept_M
     have ae_step:
-      "accepts_in_time_ktm ?M' (encode_input (bl_ktm M) w) ?t_ae"
+      "accepts_in_time_ktm ?M' (encode_input m (bl_ktm M) w) ?t_ae"
       by blast
     have wrap_input: "accepts_in_time_ktm ?M' (wrap_enc ?pack ?c w) ?t_ae"
       using ae_step glue by simp
@@ -251,7 +252,7 @@ proof -
     have len_enc: "length (wrap_enc ?pack ?c w) = (length w + ?c - 1) div ?c"
     proof -
       have "length (wrap_enc ?pack ?c w)
-              = length (encode_input (bl_ktm M) w :: ('c \<Rightarrow> 'a) list)"
+              = length (encode_input m (bl_ktm M) w :: (nat \<Rightarrow> 'a) list)"
         using glue by simp
       also have "\<dots> = (length w + ?c - 1) div ?c"
         by (rule length_encode_input)
@@ -308,56 +309,57 @@ lemma linear_speedup_form_1_raw_dae:
   assumes wf:        "well_formed_ktm M"
       and det:       "det_ktm M"
       and k2:        "2 \<le> k_ktm M"
+      and m_pos: "0 < m"
   shows "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "det_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
     and "\<forall>w. set w \<subseteq> Sigma_ktm M
               \<longrightarrow> accepts_in_time_ktm M w (T (length w))
               \<longrightarrow> accepts_in_time_user_wrap
                     (encoding_wrap
-                       (alphabet_enlarge M
-                          :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                       (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                       (card (UNIV :: 'c set))
+                       (alphabet_enlarge m M
+                          :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                       (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                       (m)
                        (Sigma_ktm M))
                     w
                     (length w
-                     + (length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set)
+                     + (length w + m - 1)
+                              div m
                      + 5
-                     + 2 * ((length w + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
-                     + 8 * ((T (length w) + card (UNIV :: 'c set) - 1)
-                              div card (UNIV :: 'c set))
+                     + 2 * ((length w + m - 1)
+                              div m)
+                     + 8 * ((T (length w) + m - 1)
+                              div m)
                      + 4)"
 proof -
-  have c_pos: "0 < card (UNIV :: 'c set)" by (simp add: card_gt_0_iff)
+  have c_pos: "0 < m" by (rule m_pos)
   from wf have vM: "valid_ktm M"
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   \<comment> \<open>Validity, language, and time come from the det-free base (now with
@@ -373,10 +375,10 @@ proof -
                        + 2 * ((length w + ?c - 1) div ?c)
                        + 8 * ((T (length w) + ?c - 1) div ?c)
                        + 4)"
-    by (rule linear_speedup_form_1_raw_nae[OF wf k2])+
+    by (rule linear_speedup_form_1_raw_nae[OF wf k2 m_pos])+
 
   \<comment> \<open>Determinism is the one extra conjunct; it needs \<open>det_ktm M\<close>.\<close>
-  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM])
+  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM m_pos])
   have detM': "det_ktm ?M'"
     unfolding det_ktm_def delta_ktm_alphabet_enlarge
     using alphabet_enlarge_delta_functional[OF vM det le_neq_bl] by blast
@@ -419,13 +421,12 @@ text \<open>The textbook linear-speedup theorem
   a positive-nat @{text q} (the textbook real-valued @{text \<epsilon>} taken as
   @{text "1/q"}).  The conclusion shape collapses to
   @{text "|w| + |w| div q + (28 + 8 d_0 + 8 b)"}, gated by a single
-  @{text c_large} side condition @{text "q * (3 + 8 * d_0) \<le> c"} on the
-  cardinality of the grouping-factor type @{typ 'c}.
+  @{text c_large} side condition @{text "q * (3 + 8 * d_0) \<le> m"} on the
+  block size @{text m}.
 
-  Statement is parametric in @{typ 'c} (the AE grouping-factor type) and
-  in @{text q}.  Consumers instantiate @{typ 'c} at use sites via a
-  @{text "HOL.Library.Numeral_Type"} of cardinality large enough to
-  satisfy the @{text c_large} side condition on the time-bound conjunct.
+  Statement is parametric in the block size @{text m} and in @{text q}.
+  Consumers choose @{text m} large enough to satisfy the @{text c_large}
+  side condition on the time-bound conjunct.
   With @{text \<alpha>} now literal the constant @{text K} is a closed
   expression in @{text "d_0, b"} (no @{text "obtains"}), and the wf, det,
   and language-equality conjuncts hold unconditionally (they do not
@@ -450,39 +451,40 @@ theorem linear_speedup_HU_12_4_nae:
       and T_linear:  "\<forall>n. T n \<le> d_0 * n + b"
       and q_pos:     "0 < q"
       and k2:        "2 \<le> k_ktm M"
+      and m_pos: "0 < m"
   shows "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
-    and "q * (3 + 8 * d_0) \<le> card (UNIV :: 'c set)
+    and "q * (3 + 8 * d_0) \<le> m
          \<longrightarrow> (\<forall>w. set w \<subseteq> Sigma_ktm M
                    \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                    \<longrightarrow> accepts_in_time_user_wrap
                          (encoding_wrap
-                            (alphabet_enlarge M
-                               :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                            (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                            (card (UNIV :: 'c set))
+                            (alphabet_enlarge m M
+                               :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                            (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                            (m)
                             (Sigma_ktm M))
                          w
                          (length w + length w div q + (28 + 8 * d_0 + 8 * b)))"
 proof -
-  have c_pos: "0 < card (UNIV :: 'c set)" by (simp add: card_gt_0_iff)
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  have c_pos: "0 < m" by (rule m_pos)
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   \<comment> \<open>Materialise form-1's structural conjuncts.  The AE constants are
@@ -502,7 +504,7 @@ proof -
                                + 8 * ((T (length w) + ?c - 1) div ?c)
                                + f)"
     unfolding alpha2 f4
-    by (rule linear_speedup_form_1_raw_nae[OF wf k2])+
+    by (rule linear_speedup_form_1_raw_nae[OF wf k2 m_pos])+
 
   \<comment> \<open>HU 12.4 specialisation constant: pick @{text K} big enough to absorb
      the ceiling-division slack plus the @{text T_linear} additive @{text b}
@@ -746,49 +748,50 @@ theorem linear_speedup_HU_12_4_dae:
       and T_linear:  "\<forall>n. T n \<le> d_0 * n + b"
       and q_pos:     "0 < q"
       and k2:        "2 \<le> k_ktm M"
+      and m_pos: "0 < m"
   shows "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c :: enum) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "det_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
-    and "q * (3 + 8 * d_0) \<le> card (UNIV :: 'c set)
+    and "q * (3 + 8 * d_0) \<le> m
          \<longrightarrow> (\<forall>w. set w \<subseteq> Sigma_ktm M
                    \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                    \<longrightarrow> accepts_in_time_user_wrap
                          (encoding_wrap
-                            (alphabet_enlarge M
-                               :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                            (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                            (card (UNIV :: 'c set))
+                            (alphabet_enlarge m M
+                               :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                            (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                            (m)
                             (Sigma_ktm M))
                          w
                          (length w + length w div q + (28 + 8 * d_0 + 8 * b)))"
 proof -
-  have c_pos: "0 < card (UNIV :: 'c set)" by (simp add: card_gt_0_iff)
+  have c_pos: "0 < m" by (rule m_pos)
   from wf have vM: "valid_ktm M"
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   have v: "valid_ktm ?M''"
@@ -798,9 +801,9 @@ proof -
                         \<longrightarrow> accepts_in_time_ktm M w (T (length w))
                         \<longrightarrow> accepts_in_time_user_wrap ?M'' w
                               (length w + length w div q + (28 + 8 * d_0 + 8 * b)))"
-    by (rule linear_speedup_HU_12_4_nae[OF wf T_linear q_pos k2])+
+    by (rule linear_speedup_HU_12_4_nae[OF wf T_linear q_pos k2 m_pos])+
 
-  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM])
+  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM m_pos])
   have detM': "det_ktm ?M'"
     unfolding det_ktm_def delta_ktm_alphabet_enlarge
     using alphabet_enlarge_delta_functional[OF vM det le_neq_bl] by blast
@@ -848,22 +851,22 @@ theorem linear_speedup_HU_12_3_nae:
   assumes wf:        "well_formed_ktm M"
       and growth:    "\<forall>d. \<exists>N. \<forall>n. N \<le> n \<longrightarrow> d * n \<le> T n"
       and q_pos:     "0 < q"
-      and c_large:   "16 * q \<le> card (UNIV :: ('c :: enum) set)"
+      and c_large:   "16 * q \<le> m"
       and k2:        "2 \<le> k_ktm M"
   obtains K N0 :: nat
   where "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
     and "\<forall>w. set w \<subseteq> Sigma_ktm M
@@ -871,22 +874,23 @@ theorem linear_speedup_HU_12_3_nae:
               \<longrightarrow> accepts_in_time_ktm M w (T (length w))
               \<longrightarrow> accepts_in_time_user_wrap
                     (encoding_wrap
-                       (alphabet_enlarge M
-                          :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                       (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                       (card (UNIV :: 'c set))
+                       (alphabet_enlarge m M
+                          :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                       (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                       (m)
                        (Sigma_ktm M))
                     w
                     (T (length w) div q + K)"
 proof -
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   have c_pos: "0 < ?c"
     using c_large q_pos by linarith
+  have m_pos: "0 < m" by (rule c_pos)
 
   \<comment> \<open>The AE constants are literal (\<open>\<alpha> = 2\<close>, \<open>f = 4\<close>); pinned to named
      locals so the superlinear absorption below reads unchanged.\<close>
@@ -904,7 +908,7 @@ proof -
                                + 8 * ((T (length w) + ?c - 1) div ?c)
                                + f)"
     unfolding alpha2 f4
-    by (rule linear_speedup_form_1_raw_nae[OF wf k2])+
+    by (rule linear_speedup_form_1_raw_nae[OF wf k2 m_pos])+
 
   have user_mono:
     "\<And>w t\<^sub>1 t\<^sub>2. accepts_in_time_user_wrap ?M'' w t\<^sub>1 \<Longrightarrow> t\<^sub>1 \<le> t\<^sub>2
@@ -1080,29 +1084,29 @@ theorem linear_speedup_HU_12_3_dae:
       and det:       "det_ktm M"
       and growth:    "\<forall>d. \<exists>N. \<forall>n. N \<le> n \<longrightarrow> d * n \<le> T n"
       and q_pos:     "0 < q"
-      and c_large:   "16 * q \<le> card (UNIV :: ('c :: enum) set)"
+      and c_large:   "16 * q \<le> m"
       and k2:        "2 \<le> k_ktm M"
   obtains K N0 :: nat
   where "valid_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "det_ktm
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))"
     and "Lang_user_wrap
           (encoding_wrap
-             (alphabet_enlarge M
-                :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-             (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-             (card (UNIV :: 'c set))
+             (alphabet_enlarge m M
+                :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+             (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+             (m)
              (Sigma_ktm M))
          = Lang_ktm M"
     and "\<forall>w. set w \<subseteq> Sigma_ktm M
@@ -1110,10 +1114,10 @@ theorem linear_speedup_HU_12_3_dae:
               \<longrightarrow> accepts_in_time_ktm M w (T (length w))
               \<longrightarrow> accepts_in_time_user_wrap
                     (encoding_wrap
-                       (alphabet_enlarge M
-                          :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm)
-                       (ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a))
-                       (card (UNIV :: 'c set))
+                       (alphabet_enlarge m M
+                          :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm)
+                       (ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a))
+                       (m)
                        (Sigma_ktm M))
                     w
                     (T (length w) div q + K)"
@@ -1121,10 +1125,10 @@ proof -
   from wf have vM: "valid_ktm M"
            and le_neq_bl: "le_ktm M \<noteq> bl_ktm M"
     by auto
-  let ?M' = "alphabet_enlarge M
-              :: ('q \<times> ('a, 'c) ae_stage, 'c \<Rightarrow> 'a) ktm"
-  let ?c = "card (UNIV :: 'c set)"
-  let ?pack = "ae_pack (bl_ktm M) :: 'a list \<Rightarrow> ('c \<Rightarrow> 'a)"
+  let ?M' = "alphabet_enlarge m M
+              :: ('q \<times> 'a ae_stage, nat \<Rightarrow> 'a) ktm"
+  let ?c = "m"
+  let ?pack = "ae_pack m (bl_ktm M) :: 'a list \<Rightarrow> (nat \<Rightarrow> 'a)"
   let ?M'' = "encoding_wrap ?M' ?pack ?c (Sigma_ktm M)"
 
   have c_pos: "0 < ?c"
@@ -1132,6 +1136,7 @@ proof -
     have "0 < 16 * q" using q_pos by simp
     thus ?thesis using c_large by linarith
   qed
+  have m_pos: "0 < m" by (rule c_pos)
 
   obtain K N0 :: nat where
       v: "valid_ktm ?M''"
@@ -1143,7 +1148,7 @@ proof -
                       (T (length w) div q + K)"
     by (rule linear_speedup_HU_12_3_nae[OF wf growth q_pos c_large k2])
 
-  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM])
+  have vM': "valid_ktm ?M'" by (rule alphabet_enlarge_wf[OF vM m_pos])
   have detM': "det_ktm ?M'"
     unfolding det_ktm_def delta_ktm_alphabet_enlarge
     using alphabet_enlarge_delta_functional[OF vM det le_neq_bl] by blast
