@@ -309,17 +309,21 @@ fun fig_content_modes (ctxt, toks) =
                       (toks)
         in (y, (ctxt, toks')) end
 
-fun get_session_dir ctxt path = 
-         Resources.check_session_dir ctxt 
-                                     (SOME (path))  
-                                     (Syntax.read_input ".")
-          handle ERROR s => (if String.isPrefix "Bad session root directory (missing ROOT or ROOTS): " s 
-                             then get_session_dir ctxt (Path.dir path)
-                             else error s)
+fun session_dir_ok path =
+      let
+        val dir = File.check_dir (Path.expand path);
+        val ok =
+          File.is_file (dir + Path.explode("ROOT")) orelse
+          File.is_file (dir + Path.explode("ROOTS"));
+      in ok end;
+
+fun get_session_dir path =
+      if session_dir_ok path then path
+      else get_session_dir (Path.dir path);
 
 fun get_document_dir ctxt =
       let val thy = Proof_Context.theory_of ctxt
-          val sess_dir = get_session_dir ctxt  (Resources.master_directory thy)
+          val sess_dir = get_session_dir (Resources.master_directory thy)
       in  Path.append sess_dir  (Path.explode "document") end;
 
 fun generate_caption ctxt caption = 
