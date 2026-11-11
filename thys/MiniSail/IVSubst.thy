@@ -11,7 +11,7 @@ of the term forms\<close>
 
 section \<open>Class\<close>
 
-class has_subst_v = fs +
+class has_subst_v =
   fixes subst_v :: "'a::fs \<Rightarrow> x \<Rightarrow> v \<Rightarrow> 'a::fs"   (\<open>_[_::=_]\<^sub>v\<close> [1000,50,50] 1000)
   assumes fresh_subst_v_if:  "y \<sharp> (subst_v a x v)  \<longleftrightarrow> (atom x \<sharp> a \<and> y \<sharp> a) \<or> (y \<sharp> v \<and> (y \<sharp> a \<or> y = atom x))" 
     and    forget_subst_v[simp]:  "atom x \<sharp> a \<Longrightarrow> subst_v a  x v = a"
