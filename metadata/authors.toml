@@ -1034,6 +1034,15 @@ name = "Guilherme Borges Brandão"
 
 [brandao.emails]
 
+[brandao.emails.brandao_email]
+user = [
+  "borgesbrandao13",
+]
+host = [
+  "gmail",
+  "com",
+]
+
 [brandao.homepages]
 
 [brandt]
