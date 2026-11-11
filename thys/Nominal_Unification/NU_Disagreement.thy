@@ -117,7 +117,7 @@ fun flatten :: "(string \<times> string)list \<Rightarrow> string list" where
 "flatten (x#xs) = (fst x)#(snd x)#(flatten xs)"
 
 definition ds_list :: "(string \<times> string)list \<Rightarrow> (string \<times> string)list \<Rightarrow> string list" where
-  ds_list_def: "ds_list pi1 pi2 \<equiv> remdups ([x. x <- (flatten (pi1@pi2)), x\<in>ds pi1 pi2])"
+  ds_list_def: "ds_list pi1 pi2 \<equiv> remdups ([x. x <- (flatten (pi1@pi2)), swapas pi1 x \<noteq> swapas pi2 x])"
 
 lemma set_flatten_eq_atms: 
   shows "set (flatten pi) = atms pi"

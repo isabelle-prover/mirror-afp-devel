@@ -35,6 +35,12 @@ ammer = "ammer_email"
 urban = "urban_email"
 
 [history]
+2026-11-11 = """
+Split the main theory NU into NU_Soundness and NU_Completeness.
+Added an executable version of the algorithm (NU_Computable) with soundness
+and completeness proofs (NU_Computable_Soundness, NU_Computable_Completeness),
+from which code can be generated.
+"""
 
 [extra]
 

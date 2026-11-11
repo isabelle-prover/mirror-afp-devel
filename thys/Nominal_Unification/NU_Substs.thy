@@ -97,6 +97,16 @@ lemma subst_comp_id [simp]:
   shows "subst (s \<bullet> []) = subst s"
   using comp_def by simp
 
+text\<open>Lemmas added for addressing completeness.\<close>
+
+lemma subst_id_left[simp]:
+  "[] \<bullet> s = s"
+  unfolding comp_def by (induction s, auto)
+
+lemma subst_id_right[simp]:
+  "s \<bullet> [] = s"
+  unfolding comp_def by (induction s, auto)
+
 lemma id_comp_subst [simp]: 
   shows "subst ([] \<bullet> s) = subst s"
 proof(rule ext)
@@ -131,16 +141,22 @@ proof(induct t)
   qed
 qed (simp_all)
 
+lemma comp_diag:
+  shows "s1 \<bullet> s2 = map (\<lambda>(x, y). (x, subst s1 y)) s2 @ s1"
+  unfolding comp_def by (induct s2) auto
+
+lemma comp_assoc:
+  shows "s1 \<bullet> (s2 \<bullet> s3) = (s1 \<bullet> s2) \<bullet> s3"
+  by (induct s3) (auto simp: comp_diag subst_comp_expand[unfolded comp_diag])
+
 lemma subst_assoc: 
   shows "subst (s1 \<bullet> (s2 \<bullet> s3)) = subst ((s1 \<bullet> s2) \<bullet> s3)"
-proof(rule ext)
-  fix t 
-  show "subst (s1 \<bullet> (s2 \<bullet> s3)) t = subst (s1 \<bullet> s2 \<bullet> s3) t"
-  proof(induct t)
-    case (Susp pi X)
-    then show ?case using subst_comp_expand by simp
-  qed (simp_all)
-qed
+using comp_assoc by simp
+
+lemma comp_cancel_right:
+  assumes "s1 \<bullet> s = s2 \<bullet> s"
+  shows "s1 = s2"
+  using assms unfolding comp_diag by simp
 
 lemma fresh_subst:
   assumes "nabla1 \<turnstile> a \<sharp> t"

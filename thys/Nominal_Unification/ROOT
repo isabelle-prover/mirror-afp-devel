@@ -17,7 +17,11 @@ session Nominal_Unification = HOL +
      "NU_Substs"
      "NU_Mgu"
      "NU_Termination"
-     "NU"
+     "NU_Soundness"
+     "NU_Completeness"
+     "NU_Computable"
+     "NU_Computable_Soundness"
+     "NU_Computable_Completeness"
 
   document_files
     "root.tex"
