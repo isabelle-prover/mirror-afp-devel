@@ -65,8 +65,14 @@ definition
              else if n = 16 then 1
              else if n = 8 then 0
              else undefined"
+
+context len
+begin
+
 definition
-  "len_exp (x::('a::len) itself) \<equiv> bogus_log2lessthree (len_of TYPE('a))"
+  "len_exp (x::'a itself) \<equiv> bogus_log2lessthree LENGTH('a)"
+
+end
 
 lemma lx8' [simp] : "len_exp (x::8 itself) = 0"
 by (simp add: len_exp_def bogus_log2lessthree_def)
@@ -89,11 +95,11 @@ lemma lx_signed' [simp]: "len_exp (x::('a::len) signed itself) = len_exp (TYPE('
 class len8 = len +
   (* this constraint gives us (in the most convoluted way possible) that we're only
      interested in words with a length that is divisible by 8 *)
-  assumes len8_bytes: "len_of TYPE('a::len) = 8 * (2^len_exp TYPE('a))"
+  assumes len8_bytes: "LENGTH('a) = 8 * 2 ^ len_exp TYPE('a)"
   (* len8_len class gives us that the words are \<le> than 128 bits.
      This is a wacky restriction really, but we're really only interested in words
      up to 64 bits, so who cares. *)
-  assumes len8_width: "len_of TYPE('a::len) \<le> 128"
+  assumes len8_width: "LENGTH('a) \<le> 128"
 begin
 
 lemma len8_size:
