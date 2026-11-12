@@ -29,7 +29,7 @@ class Num = Num_syn + plus_cpo + minus_cpo + times_cpo
 
 class Num_strict = Num +
   assumes plus_strict[simp]:
-    "x + \<bottom> = (\<bottom>::'a::Num)"
+    "x + \<bottom> = \<bottom>"
     "\<bottom> + x = \<bottom>"
   assumes minus_strict[simp]:
     "x - \<bottom> = \<bottom>"
@@ -83,7 +83,7 @@ end
 
 class Integral_strict = Integral +
   assumes div_strict[simp]:
-    "div\<cdot>x\<cdot>\<bottom> = (\<bottom>::'a::Integral)"
+    "div\<cdot>x\<cdot>\<bottom> = \<bottom>"
     "div\<cdot>\<bottom>\<cdot>x = \<bottom>"
   assumes mod_strict[simp]:
     "mod\<cdot>x\<cdot>\<bottom> = \<bottom>"

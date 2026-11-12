@@ -85,7 +85,13 @@ subsection \<open>Square Norms\<close>
 
 consts sq_norm :: "'a \<Rightarrow> 'b" (\<open>\<parallel>(_)\<parallel>\<^sup>2\<close>)
 
+context conjugatable_ring
+begin
+
 abbreviation "sq_norm_conjugate x \<equiv> x * conjugate x"
+
+end
+
 adhoc_overloading sq_norm \<rightleftharpoons> sq_norm_conjugate
 
 subsubsection \<open>Square norms for vectors\<close>
@@ -444,23 +450,26 @@ lemma coeff_le_linf_norm:
   by (cases "i \<le> degree f", auto simp: coeff_eq_0)
 
 class conjugatable_ring_1_abs_real_line = conjugatable_ring + ring_1_abs_real_line + power +
-  assumes sq_norm_as_sq_abs [simp]: "\<parallel>a\<parallel>\<^sup>2 = \<bar>a\<bar>\<^sup>2"
+  assumes sq_norm_as_sq_abs [simp]: "sq_norm_conjugate a = \<bar>a\<bar>\<^sup>2"
 begin
-subclass conjugatable_ordered_ring by (unfold_locales, simp)
+
+subclass conjugatable_ordered_ring
+  by standard simp
+
 end
 
 instance int :: conjugatable_ring_1_abs_real_line
-  by (intro_classes, simp add: numeral_2_eq_2)
+  by standard (simp add: numeral_2_eq_2)
 
 instance rat :: conjugatable_ring_1_abs_real_line
-  by (intro_classes, simp add: numeral_2_eq_2)
+  by standard (simp add: numeral_2_eq_2)
 
 instance real :: conjugatable_ring_1_abs_real_line
-  by (intro_classes, simp add: numeral_2_eq_2)
+  by standard (simp add: numeral_2_eq_2)
 
 instance complex :: semiring_1_real_line
-  apply intro_classes
-  by (auto simp: complex_eq_iff mult_le_cancel_left mult_le_cancel_right mult_neg_neg less_complex_def less_eq_complex_def)
+  by standard
+    (auto simp: complex_eq_iff mult_le_cancel_left mult_le_cancel_right mult_neg_neg less_complex_def less_eq_complex_def)
 
 text \<open>
   Due to the assumption @{thm abs_ge_self} from Groups.thy,
