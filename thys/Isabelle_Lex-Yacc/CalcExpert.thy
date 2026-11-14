@@ -257,7 +257,7 @@ ML\<open>
 local val global_calc2_lock = Thread.Mutex.mutex () in
 
 fun calc2 ctxt source =
-  Multithreading.synchronized_body "Calc." global_calc2_lock
+  Multithreading.synchronized_uninterruptible_body "Calc." global_calc2_lock
     (fn run => run (fn () => writeln (Int.toString (Calc.parse_source ctxt source))) ())
 
 val _ = Outer_Syntax.command @{command_keyword "calc2"}

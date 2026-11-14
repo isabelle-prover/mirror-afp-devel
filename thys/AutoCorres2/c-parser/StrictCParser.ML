@@ -46,7 +46,7 @@ in
 end
 
 fun parse ctxt error_lookahead path cpp_output =
-  Multithreading.synchronized_body "cparser" lock (fn run =>
+  Multithreading.synchronized_uninterruptible_body "cparser" lock (fn run =>
     run (fn () => parse_unsynchronized ctxt error_lookahead path cpp_output) ())
 
 end
