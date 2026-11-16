@@ -585,7 +585,7 @@ proof -
     "(mid_buf_extending_config_gen (k_ktm M) M pack c w i (length w - i * c), Z_next) \<in> ?R"
     using step_close unfolding kp_def .
   from wrap_partial_close_step_forces_pack
-        [OF vM c_pos w_alpha bl_ne_le k2 i_lt i_partial i_div step_close_kp]
+        [OF vM c_pos k2 i_lt i_partial i_div step_close_kp]
   have "pack (take c (drop (i * c) w)) \<in> Sigma_ktm M
         \<and> Z_next = post_encoder_config_gen (k_ktm M) M pack c w" .
   thus ?thesis by simp
@@ -733,7 +733,7 @@ proof -
 
   have canon_disp_step:
     "(mid_plant_disp_config M pack c w, post_plant_dispatch_config M pack c w) \<in> ?R"
-    by (rule plant_disp_step[OF vM k2])
+    by (rule plant_disp_step[OF vM])
 
   from wrap_first_W_Run_decomp[OF trace accept_state]
   obtain C_pre C_post where

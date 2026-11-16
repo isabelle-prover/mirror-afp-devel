@@ -73,8 +73,6 @@ lemma ae_simulation_phase_chunked:
       and lu:         "le_unique M"
       and w_sub:      "set w \<subseteq> Sigma_ktm M"
       and le_neq_bl:  "le_ktm M \<noteq> bl_ktm M"
-      and s_neq_t:    "s_ktm M \<noteq> t_ktm M"
-      and s_neq_r:    "s_ktm M \<noteq> r_ktm M"
       and terminal: "q_stop \<in> {t_ktm M, r_ktm M}"
       and reach_M:    "(init_config_ktm M w, cM)
                           \<in> (ktm_step (delta_ktm M))\<^sup>*"
@@ -466,8 +464,6 @@ lemma ae_simulation_phase_step_count:
       and sim:        "ae_simulates m M (init_config_ktm M u) c'"
       and buf_gamma_c': "ae_buffer_in_gamma_block m M c'"
       and le_anchor_c': "\<forall>kk<k_ktm M. ktc_tape c' kk 0 = LE_block m (le_ktm M)"
-      and s_neq_t:    "s_ktm M \<noteq> t_ktm M"
-      and s_neq_r:    "s_ktm M \<noteq> r_ktm M"
       and le_neq_bl:  "le_ktm M \<noteq> bl_ktm M"
   obtains n_steps :: nat and c'' where
       "n_steps \<le> 8 * ((T (length u) + m - 1)
@@ -499,7 +495,7 @@ proof -
                                        div m)"
     and run:   "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n_steps"
     and halt:  "ktc_state c'' = (q_stop, init_stage m (le_ktm M))"
-    using ae_simulation_phase_chunked[OF vM lu u_sub le_neq_bl s_neq_t s_neq_r terminal
+    using ae_simulation_phase_chunked[OF vM lu u_sub le_neq_bl terminal
                                           init_reach n0_run n0_acc sim
                                           buf_gamma_c' le_anchor_c']
     by blast

@@ -111,7 +111,7 @@ proof -
     "(lift_M_config M ?init_M, lift_M_config M cM_n) \<in> ?R_W ^^ n"
     by (rule run_steps_forward_relpow[OF vM k2 val_init_M M_trace])
   have wf_wrap: "valid_ktm ?W"
-    by (rule wrap_wf[OF vM bl_ne_le[THEN not_sym] fin_Sigmau c_pos k2])
+    by (rule wrap_wf[OF vM fin_Sigmau c_pos k2])
   have shift:
     "shift_rel ?d (lift_M_config M ?init_M)
         (post_plant_dispatch_config M pack c w)"

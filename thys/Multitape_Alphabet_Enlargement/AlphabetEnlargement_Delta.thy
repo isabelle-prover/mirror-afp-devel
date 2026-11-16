@@ -220,6 +220,142 @@ proof -
   thus ?thesis by simp
 qed
 
+text \<open>One write-back substep on one simulated tape: the head moves
+  and the home cell is written as the substep's action helper says, on
+  the block under the head.\<close>
+
+lemma ae_ss5_step_tape:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS5)"
+      and kk: "kk < k_ktm M"
+  shows "ktc_pos c' kk = go_move (snd (ae_ss5_action m (le_ktm M)
+            (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk))) (ktc_pos c kk)"
+    and "ktc_tape c' kk = (ktc_tape c kk)(ktc_pos c kk := fst (ae_ss5_action
+            m (le_ktm M) (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk)))"
+  using step st kk by (auto simp: ae_delta_ss5_ss6_def elim!: ktm_step.cases)
+
+lemma ae_ss6_step_tape:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS6)"
+      and kk: "kk < k_ktm M"
+  shows "ktc_pos c' kk = go_move (snd (ae_ss6_action m (le_ktm M)
+            (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk))) (ktc_pos c kk)"
+    and "ktc_tape c' kk = (ktc_tape c kk)(ktc_pos c kk := fst (ae_ss6_action
+            m (le_ktm M) (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk)))"
+  using step st kk by (auto simp: ae_delta_ss6_ss7_def elim!: ktm_step.cases)
+
+lemma ae_ss7_step_tape:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS7)"
+      and kk: "kk < k_ktm M"
+  shows "ktc_pos c' kk = go_move (snd (ae_ss7_action m (le_ktm M)
+            (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk))) (ktc_pos c kk)"
+    and "ktc_tape c' kk = (ktc_tape c kk)(ktc_pos c kk := fst (ae_ss7_action
+            m (le_ktm M) (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk)))"
+  using step st kk by (auto simp: ae_delta_ss7_ss8_def elim!: ktm_step.cases)
+
+lemma ae_ss8_step_tape:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS8)"
+      and kk: "kk < k_ktm M"
+  shows "ktc_pos c' kk = go_move (snd (ae_ss8_action m (le_ktm M)
+            (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk))) (ktc_pos c kk)"
+    and "ktc_tape c' kk = (ktc_tape c kk)(ktc_pos c kk := fst (ae_ss8_action
+            m (le_ktm M) (ktc_tape c kk (ktc_pos c kk)) (buf kk) (dest kk)))"
+  using step st kk by (auto simp: ae_delta_ss8_ss1_def elim!: ktm_step.cases)
+
+text \<open>The same substeps on every tape at once, for statements about the
+  whole configuration: tapes at or above \<open>k_ktm M\<close> are written blank and
+  do not move.\<close>
+
+lemma ae_ss5_step:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss5_ss6 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS5)"
+  shows "ktc_state c' = (q, ofs, buf, dest, SS6)"
+    and "ktc_pos c' = (\<lambda>k. go_move (if k < k_ktm M then snd (ae_ss5_action
+            m (le_ktm M) (ktc_tape c k (ktc_pos c k)) (buf k) (dest k))
+            else MoveN) (ktc_pos c k))"
+    and "ktc_tape c' = (\<lambda>k. (ktc_tape c k)(ktc_pos c k := if k < k_ktm M
+            then fst (ae_ss5_action m (le_ktm M) (ktc_tape c k (ktc_pos c k))
+                        (buf k) (dest k))
+            else bl_block m (bl_ktm M)))"
+  using step st by (auto simp: ae_delta_ss5_ss6_def elim!: ktm_step.cases)
+
+lemma ae_ss6_step:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss6_ss7 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS6)"
+  shows "ktc_state c' = (q, ofs, buf, dest, SS7)"
+    and "ktc_pos c' = (\<lambda>k. go_move (if k < k_ktm M then snd (ae_ss6_action
+            m (le_ktm M) (ktc_tape c k (ktc_pos c k)) (buf k) (dest k))
+            else MoveN) (ktc_pos c k))"
+    and "ktc_tape c' = (\<lambda>k. (ktc_tape c k)(ktc_pos c k := if k < k_ktm M
+            then fst (ae_ss6_action m (le_ktm M) (ktc_tape c k (ktc_pos c k))
+                        (buf k) (dest k))
+            else bl_block m (bl_ktm M)))"
+  using step st by (auto simp: ae_delta_ss6_ss7_def elim!: ktm_step.cases)
+
+lemma ae_ss7_step:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss7_ss8 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS7)"
+  shows "ktc_state c' = (q, ofs, buf, dest, SS8)"
+    and "ktc_pos c' = (\<lambda>k. go_move (if k < k_ktm M then snd (ae_ss7_action
+            m (le_ktm M) (ktc_tape c k (ktc_pos c k)) (buf k) (dest k))
+            else MoveN) (ktc_pos c k))"
+    and "ktc_tape c' = (\<lambda>k. (ktc_tape c k)(ktc_pos c k := if k < k_ktm M
+            then fst (ae_ss7_action m (le_ktm M) (ktc_tape c k (ktc_pos c k))
+                        (buf k) (dest k))
+            else bl_block m (bl_ktm M)))"
+  using step st by (auto simp: ae_delta_ss7_ss8_def elim!: ktm_step.cases)
+
+lemma ae_ss8_step:
+  assumes step: "(c, c') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
+      and st: "ktc_state c = (q, ofs, buf, dest, SS8)"
+  shows "ktc_state c' = (q, if q \<in> {t_ktm M, r_ktm M}
+            then init_stage m (le_ktm M) else (ofs, buf, init_dest, SS1))"
+    and "ktc_pos c' = (\<lambda>k. go_move (if k < k_ktm M then snd (ae_ss8_action
+            m (le_ktm M) (ktc_tape c k (ktc_pos c k)) (buf k) (dest k))
+            else MoveN) (ktc_pos c k))"
+    and "ktc_tape c' = (\<lambda>k. (ktc_tape c k)(ktc_pos c k := if k < k_ktm M
+            then fst (ae_ss8_action m (le_ktm M) (ktc_tape c k (ktc_pos c k))
+                        (buf k) (dest k))
+            else bl_block m (bl_ktm M)))"
+  using step st by (auto simp: ae_delta_ss8_ss1_def elim!: ktm_step.cases)
+
+text \<open>The action helpers on a buffer that is not a literal triple.\<close>
+
+lemma ae_ss5_action_buf:
+  "ae_ss5_action m le a buf ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if fst (snd buf) = LE_block m le then (a, MoveN)
+      else (fst (snd buf), if ds = AE_Left then MoveR else MoveL))"
+  by (cases buf) simp
+
+lemma ae_ss6_action_buf:
+  "ae_ss6_action m le a buf ds =
+     (if a = LE_block m le then (a, MoveR)
+      else if fst (snd buf) = LE_block m le then (a, MoveR)
+      else if ds = AE_Left then (snd (snd buf), MoveL) else (fst buf, MoveR))"
+  by (cases buf) simp
+
+lemma ae_ss7_action_buf:
+  "ae_ss7_action m le a buf ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if fst (snd buf) = LE_block m le
+        then (snd (snd buf), if ds = AE_Right then MoveN else MoveL)
+      else (a, if ds = AE_Left then MoveL else MoveR))"
+  by (cases buf) simp
+
+lemma ae_ss8_action_buf:
+  "ae_ss8_action m le a buf ds =
+     (if a = LE_block m le then (a, MoveN)
+      else if fst (snd buf) = LE_block m le
+        then (if ds = AE_Right then (snd (snd buf), MoveN) else (a, MoveN))
+      else (case ds of
+              AE_Left  \<Rightarrow> (fst buf, MoveN)
+            | AE_Home  \<Rightarrow> (snd (snd buf), MoveL)
+            | AE_Right \<Rightarrow> (snd (snd buf), MoveN)))"
+  by (cases buf; cases ds) simp_all
+
 text \<open>State preservation for a single buffered \<open>M\<close>-step: if the
   source state is in \<open>Q\<close>, so is the destination.  Direct
   consequence of the substrate's \<open>\<delta>_set\<close> range obligation.\<close>
@@ -228,7 +364,6 @@ lemma m_step_buffered_state_preservation:
   fixes M :: "('q, 'a) ktm"
   assumes valM: "valid_ktm M"
     and step: "((q, blocks, pos), (q', blocks', pos')) \<in> m_step_buffered m M"
-    and qQ: "q \<in> Q_ktm M"
   shows "q' \<in> Q_ktm M"
 proof -
   from step obtain a a' d where

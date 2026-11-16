@@ -241,7 +241,7 @@ proof -
                         (write_bp (blocks k) (pos_bp k) (a' k))
                         ((pos_n k - 2) * ?c + 1)"
         by (rule ae_window_invariant_step
-                [OF wi_st adv_k bp_lt_k bp_pos_k no_le_k])
+                [OF wi_st adv_k no_le_k])
       have wi_post_gen:
           "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
@@ -268,8 +268,7 @@ proof -
                         (write_bp (blocks k) (pos_bp k) (a' k))
                         (le_ktm M)"
         by (rule ae_window_invariant_le1_step
-                [OF wi_l1 adv_k bp_lt_k bp_pos_k
-                    a_le_k a_not_le_k no_le_win_k])
+                [OF wi_l1 adv_k a_le_k no_le_win_k])
       have wi_post_gen:
           "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
@@ -296,8 +295,7 @@ proof -
                         (write_bp (blocks k) (pos_bp k) (a' k))
                         (le_ktm M)"
         by (rule ae_window_invariant_le0_step
-                [OF wi_l0 adv_k bp_lt_k bp_pos_k
-                    a_le_k a_not_le_k no_le_win_k])
+                [OF wi_l0 adv_k a_le_k])
       have wi_post_gen:
           "ae_window_invariant_general m
               ((ts_pre k)(n_pre k := a' k))
@@ -352,7 +350,6 @@ lemma m_step_buffered_chain_lift_to_tape:
   assumes vM:    "valid_ktm M"
       and lu:    "le_unique M"
       and cM_valid: "valid_config_ktm M cM"
-      and qM_in: "qM \<in> Q_ktm M"
       and chain: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
                    (qM_n, buf_n, end_pos_n))
                       \<in> (m_step_buffered m M) ^^ n"
@@ -977,7 +974,6 @@ lemma m_steps_buffered_lift_to_tape:
   assumes vM:    "valid_ktm M"
       and lu:    "le_unique M"
       and cM_valid: "valid_config_ktm M cM"
-      and qM_in: "qM \<in> Q_ktm M"
       and steps: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),
                    (qM_end, buf_end, end_pos_bp))
                       \<in> m_steps_buffered m M"
@@ -1037,7 +1033,7 @@ proof -
   \<comment> \<open>Invoke Step 2b-aux to obtain the substrate trace plus
     the threaded invariants at \<open>cM_n\<close>.\<close>
   from m_step_buffered_chain_lift_to_tape
-        [OF vM lu cM_valid qM_in chain_n st_eq window n_bnd no_le
+        [OF vM lu cM_valid chain_n st_eq window n_bnd no_le
             left_not_le_pos0 ofs_lt]
   obtain cM_end where
       trace_n:  "(cM, cM_end) \<in> ktm_step (delta_ktm M) ^^ n"
@@ -1227,10 +1223,7 @@ lemma ae_backward_stage_load_chain:
       and c'_state:    "ktc_state c' = (qM', ofs, buf, dest, SS1)"
       and inv_ss1:     "ae_inv_ss1 M c'"
       and gamma_c':    "ae_tape_in_gamma_block m M c'"
-      and buf_gamma:   "ae_buffer_in_gamma_block m M c'"
       and pos_link_c': "ae_position_link m M c'"
-      and qM'_neq_t:   "qM' \<noteq> t_ktm M"
-      and qM'_neq_r:   "qM' \<noteq> r_ktm M"
       and run:         "(c', c3)
                           \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 3"
   obtains c1 c2 where
@@ -1266,8 +1259,7 @@ proof -
   have gamma_c1: "ae_tape_in_gamma_block m M c1"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c' step1] .
   have buf_gamma_c1: "ae_buffer_in_gamma_block m M c1"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma
-                                                            gamma_c' step1] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step1] .
   have c1_fst_eq: "fst (ktc_state c1) = qM'"
     using step1_sub c'_state
     by (auto simp: ae_delta_ss1_ss2_def elim: ktm_step.cases)
@@ -1297,8 +1289,7 @@ proof -
   have gamma_c2: "ae_tape_in_gamma_block m M c2"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c1 step2] .
   have buf_gamma_c2: "ae_buffer_in_gamma_block m M c2"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c1
-                                                            gamma_c1 step2] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step2] .
   have c2_fst_eq: "fst (ktc_state c2) = qM'"
     using step2_sub c1_fst_eq
     by (cases "ktc_state c1")
@@ -1329,8 +1320,7 @@ proof -
   have gamma_c3: "ae_tape_in_gamma_block m M c3"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c2 step3] .
   have buf_gamma_c3: "ae_buffer_in_gamma_block m M c3"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c2
-                                                            gamma_c2 step3] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step3] .
   have c3_fst_eq: "fst (ktc_state c3) = qM'"
     using step3_sub c2_fst_eq
     by (cases "ktc_state c2")
@@ -1523,7 +1513,7 @@ proof -
               (le_ktm M)"
     using ae_ss4_window_from_correspondence_general[OF sim c'_state
                                                        le_anchor
-                                                       no_le_per_tape ofs_lt] .
+                                                       ofs_lt] .
 
   \<comment> \<open>Destructure the SS4\<open>\<rightarrow>\<close>SS5 step into its
       \<open>m_steps_buffered\<close> chain.  Bind every obtained variable
@@ -1743,7 +1733,7 @@ proof -
         "\<forall>k<k_ktm M. ktc_pos c' k = 0
                 \<longrightarrow> fst (bufC k) \<noteq> LE_block m (le_ktm M)"
     by (rule m_steps_buffered_lift_to_tape
-          [OF vM lu cM_valid qD_in m_steps_src st_eq_cM window_at_cM_src
+          [OF vM lu cM_valid m_steps_src st_eq_cM window_at_cM_src
               no_le_per_tape_reordered left_not_le_pos0_buf_full ofs_lt])
   \<comment> \<open>The SS5 buffer \<open>buf'\<close> agrees with the chain target
       \<open>bufC\<close> on active tapes; transport the per-active-tape
@@ -1856,9 +1846,7 @@ lemma ae_backward_stage_writeback_chain:
   assumes vM:           "valid_ktm M"
       and c4_inv:       "ae_inv_ss5 M c4"
       and c4_q:         "fst (ktc_state c4) = q_out"
-      and q_out_in_Q:   "q_out \<in> Q_ktm M"
       and gamma_c4:     "ae_tape_in_gamma_block m M c4"
-      and buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
       and run:          "(c4, c'')
                            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ 4"
   obtains c5 c6 c7 where
@@ -1897,8 +1885,7 @@ proof -
   have gamma_c5: "ae_tape_in_gamma_block m M c5"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c4 step5] .
   have buf_gamma_c5: "ae_buffer_in_gamma_block m M c5"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c4
-                                                            gamma_c4 step5] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step5] .
   have c5_fst_eq: "fst (ktc_state c5) = q_out"
     using step5_sub c4_q
     by (cases "ktc_state c4")
@@ -1915,8 +1902,7 @@ proof -
   have gamma_c6: "ae_tape_in_gamma_block m M c6"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c5 step6] .
   have buf_gamma_c6: "ae_buffer_in_gamma_block m M c6"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c5
-                                                            gamma_c5 step6] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step6] .
   have c6_fst_eq: "fst (ktc_state c6) = q_out"
     using step6_sub c5_fst_eq
     by (cases "ktc_state c5")
@@ -1933,8 +1919,7 @@ proof -
   have gamma_c7: "ae_tape_in_gamma_block m M c7"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c6 step7] .
   have buf_gamma_c7: "ae_buffer_in_gamma_block m M c7"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c6
-                                                            gamma_c6 step7] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step7] .
   have c7_fst_eq: "fst (ktc_state c7) = q_out"
     using step7_sub c6_fst_eq
     by (cases "ktc_state c6")
@@ -1957,8 +1942,7 @@ proof -
   have gamma_c'': "ae_tape_in_gamma_block m M c''"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c7 step8] .
   have buf_gamma_c'': "ae_buffer_in_gamma_block m M c''"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c7
-                                                            gamma_c7 step8] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step8] .
 
   \<comment> \<open>Halt-aware c'' invariant.  In the non-halt branch,
       \<open>ae_step_ss8_ss1_invariant\<close> gives
@@ -1989,7 +1973,7 @@ proof -
       using c7_fst_eq h by (cases "ktc_state c7") auto
     show "case ktc_state c'' of (qH, _, _, _, idx)
             \<Rightarrow> qH \<in> {t_ktm M, r_ktm M} \<and> idx = VFwd"
-      using ae_step_ss8_ss1_invariant_halt[OF inv_ss8 halt_at_c7 step8_sub] .
+      using ae_step_ss8_ss1_invariant_halt[OF halt_at_c7 step8_sub] .
   qed
 
   show ?thesis
@@ -2694,50 +2678,14 @@ lemma ae_ss5_ss6_cong:
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS6)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS6)"
 proof -
-  obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS5) ts n"
-    using st1 by (cases c1) auto
-  have c2d: "c2 = KConfig (q, ofs2, buf2, dest, SS5) ts n"
-    using st2 tape pos c1d by (cases c2) auto
-  from s1[unfolded c1d] obtain s1' a'1 d1 where
-      c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
-                                 (\<lambda>k. go_move (d1 k) (n k))"
-    and rel1: "((q, ofs1, buf1, dest, SS5), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss5_ss6 m M"
-    by (auto elim: ktm_step.cases)
-  from s2[unfolded c2d] obtain s2' a'2 d2 where
-      c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
-                                 (\<lambda>k. go_move (d2 k) (n k))"
-    and rel2: "((q, ofs2, buf2, dest, SS5), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss5_ss6 m M"
-    by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, ofs1, buf1, dest, SS6)"
-    and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss5_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss5_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else MoveN)"
-    using rel1 unfolding ae_delta_ss5_ss6_def by auto
-  have e2: "s2' = (q, ofs2, buf2, dest, SS6)"
-    and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss5_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss5_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else MoveN)"
-    using rel2 unfolding ae_delta_ss5_ss6_def by auto
-  have act: "\<And>k. ae_ss5_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss5_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss5_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf1 k)
+                    (dest k)
+                  = ae_ss5_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf2 k)
+                    (dest k)"
     by (rule ae_ss5_action_cong[OF blk[rule_format]])
-  have "a'1 = a'2"
-    by (rule ext) (simp add: a1 a2 act)
-  moreover have "d1 = d2"
-    by (rule ext) (simp add: d1 d2 act)
-  ultimately show ?thesis using c1'd c2'd e1 e2 by simp
+  show ?thesis
+    using ae_ss5_step[OF s1 st1, unfolded tape pos] ae_ss5_step[OF s2 st2]
+    by (simp add: act cong: if_cong)
 qed
 
 lemma ae_ss6_ss7_cong:
@@ -2755,50 +2703,14 @@ lemma ae_ss6_ss7_cong:
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS7)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS7)"
 proof -
-  obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS6) ts n"
-    using st1 by (cases c1) auto
-  have c2d: "c2 = KConfig (q, ofs2, buf2, dest, SS6) ts n"
-    using st2 tape pos c1d by (cases c2) auto
-  from s1[unfolded c1d] obtain s1' a'1 d1 where
-      c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
-                                 (\<lambda>k. go_move (d1 k) (n k))"
-    and rel1: "((q, ofs1, buf1, dest, SS6), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss6_ss7 m M"
-    by (auto elim: ktm_step.cases)
-  from s2[unfolded c2d] obtain s2' a'2 d2 where
-      c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
-                                 (\<lambda>k. go_move (d2 k) (n k))"
-    and rel2: "((q, ofs2, buf2, dest, SS6), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss6_ss7 m M"
-    by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, ofs1, buf1, dest, SS7)"
-    and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss6_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss6_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else MoveN)"
-    using rel1 unfolding ae_delta_ss6_ss7_def by auto
-  have e2: "s2' = (q, ofs2, buf2, dest, SS7)"
-    and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss6_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss6_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else MoveN)"
-    using rel2 unfolding ae_delta_ss6_ss7_def by auto
-  have act: "\<And>k. ae_ss6_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss6_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss6_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf1 k)
+                    (dest k)
+                  = ae_ss6_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf2 k)
+                    (dest k)"
     by (rule ae_ss6_action_cong[OF blk[rule_format]])
-  have "a'1 = a'2"
-    by (rule ext) (simp add: a1 a2 act)
-  moreover have "d1 = d2"
-    by (rule ext) (simp add: d1 d2 act)
-  ultimately show ?thesis using c1'd c2'd e1 e2 by simp
+  show ?thesis
+    using ae_ss6_step[OF s1 st1, unfolded tape pos] ae_ss6_step[OF s2 st2]
+    by (simp add: act cong: if_cong)
 qed
 
 lemma ae_ss7_ss8_cong:
@@ -2816,50 +2728,14 @@ lemma ae_ss7_ss8_cong:
          \<and> ktc_state c1' = (q, ofs1, buf1, dest, SS8)
          \<and> ktc_state c2' = (q, ofs2, buf2, dest, SS8)"
 proof -
-  obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS7) ts n"
-    using st1 by (cases c1) auto
-  have c2d: "c2 = KConfig (q, ofs2, buf2, dest, SS7) ts n"
-    using st2 tape pos c1d by (cases c2) auto
-  from s1[unfolded c1d] obtain s1' a'1 d1 where
-      c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
-                                 (\<lambda>k. go_move (d1 k) (n k))"
-    and rel1: "((q, ofs1, buf1, dest, SS7), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss7_ss8 m M"
-    by (auto elim: ktm_step.cases)
-  from s2[unfolded c2d] obtain s2' a'2 d2 where
-      c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
-                                 (\<lambda>k. go_move (d2 k) (n k))"
-    and rel2: "((q, ofs2, buf2, dest, SS7), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss7_ss8 m M"
-    by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, ofs1, buf1, dest, SS8)"
-    and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss7_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss7_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else MoveN)"
-    using rel1 unfolding ae_delta_ss7_ss8_def by auto
-  have e2: "s2' = (q, ofs2, buf2, dest, SS8)"
-    and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss7_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss7_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else MoveN)"
-    using rel2 unfolding ae_delta_ss7_ss8_def by auto
-  have act: "\<And>k. ae_ss7_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss7_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss7_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf1 k)
+                    (dest k)
+                  = ae_ss7_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf2 k)
+                    (dest k)"
     by (rule ae_ss7_action_cong[OF blk[rule_format]])
-  have "a'1 = a'2"
-    by (rule ext) (simp add: a1 a2 act)
-  moreover have "d1 = d2"
-    by (rule ext) (simp add: d1 d2 act)
-  ultimately show ?thesis using c1'd c2'd e1 e2 by simp
+  show ?thesis
+    using ae_ss7_step[OF s1 st1, unfolded tape pos] ae_ss7_step[OF s2 st2]
+    by (simp add: act cong: if_cong)
 qed
 
 text \<open>The closing SS8\<open>\<rightarrow>\<close>SS1 step also resets \<open>dest\<close> to \<open>init_dest\<close>
@@ -2884,50 +2760,14 @@ lemma ae_ss8_ss1_cong:
          \<and> ktc_state c1' = (q, ofs1, buf1, init_dest, SS1)
          \<and> ktc_state c2' = (q, ofs2, buf2, init_dest, SS1)"
 proof -
-  obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS8) ts n"
-    using st1 by (cases c1) auto
-  have c2d: "c2 = KConfig (q, ofs2, buf2, dest, SS8) ts n"
-    using st2 tape pos c1d by (cases c2) auto
-  from s1[unfolded c1d] obtain s1' a'1 d1 where
-      c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
-                                 (\<lambda>k. go_move (d1 k) (n k))"
-    and rel1: "((q, ofs1, buf1, dest, SS8), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss8_ss1 m M"
-    by (auto elim: ktm_step.cases)
-  from s2[unfolded c2d] obtain s2' a'2 d2 where
-      c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
-                                 (\<lambda>k. go_move (d2 k) (n k))"
-    and rel2: "((q, ofs2, buf2, dest, SS8), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss8_ss1 m M"
-    by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, ofs1, buf1, init_dest, SS1)"
-    and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else MoveN)"
-    using rel1 qnh unfolding ae_delta_ss8_ss1_def by auto
-  have e2: "s2' = (q, ofs2, buf2, init_dest, SS1)"
-    and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else MoveN)"
-    using rel2 qnh unfolding ae_delta_ss8_ss1_def by auto
-  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss8_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf1 k)
+                    (dest k)
+                  = ae_ss8_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf2 k)
+                    (dest k)"
     by (rule ae_ss8_action_cong[OF blk[rule_format]])
-  have "a'1 = a'2"
-    by (rule ext) (simp add: a1 a2 act)
-  moreover have "d1 = d2"
-    by (rule ext) (simp add: d1 d2 act)
-  ultimately show ?thesis using c1'd c2'd e1 e2 by simp
+  show ?thesis
+    using ae_ss8_step[OF s1 st1, unfolded tape pos] ae_ss8_step[OF s2 st2] qnh
+    by (simp add: act cong: if_cong)
 qed
 
 text \<open>Chaining the four congruences through the macro-cycle tail
@@ -3145,50 +2985,14 @@ lemma ae_ss8_ss1_cong_halt:
          \<and> ktc_state c1' = (q, init_stage m (le_ktm M))
          \<and> ktc_state c2' = (q, init_stage m (le_ktm M))"
 proof -
-  obtain ts n where c1d: "c1 = KConfig (q, ofs1, buf1, dest, SS8) ts n"
-    using st1 by (cases c1) auto
-  have c2d: "c2 = KConfig (q, ofs2, buf2, dest, SS8) ts n"
-    using st2 tape pos c1d by (cases c2) auto
-  from s1[unfolded c1d] obtain s1' a'1 d1 where
-      c1'd: "c1' = KConfig s1' (\<lambda>k. (ts k)(n k := a'1 k))
-                                 (\<lambda>k. go_move (d1 k) (n k))"
-    and rel1: "((q, ofs1, buf1, dest, SS8), (\<lambda>k. ts k (n k)),
-                s1', a'1, d1) \<in> ae_delta_ss8_ss1 m M"
-    by (auto elim: ktm_step.cases)
-  from s2[unfolded c2d] obtain s2' a'2 d2 where
-      c2'd: "c2' = KConfig s2' (\<lambda>k. (ts k)(n k := a'2 k))
-                                 (\<lambda>k. go_move (d2 k) (n k))"
-    and rel2: "((q, ofs2, buf2, dest, SS8), (\<lambda>k. ts k (n k)),
-                s2', a'2, d2) \<in> ae_delta_ss8_ss1 m M"
-    by (auto elim: ktm_step.cases)
-  have e1: "s1' = (q, init_stage m (le_ktm M))"
-    and a1: "a'1 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d1: "d1 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf1 k) (dest k))
-                          else MoveN)"
-    using rel1 qh unfolding ae_delta_ss8_ss1_def by auto
-  have e2: "s2' = (q, init_stage m (le_ktm M))"
-    and a2: "a'2 = (\<lambda>k. if k < k_ktm M
-                          then fst (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else bl_block m (bl_ktm M))"
-    and d2: "d2 = (\<lambda>k. if k < k_ktm M
-                          then snd (ae_ss8_action m (le_ktm M) (ts k (n k))
-                                      (buf2 k) (dest k))
-                          else MoveN)"
-    using rel2 qh unfolding ae_delta_ss8_ss1_def by auto
-  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ts k (n k)) (buf1 k) (dest k)
-                  = ae_ss8_action m (le_ktm M) (ts k (n k)) (buf2 k) (dest k)"
+  have act: "\<And>k. ae_ss8_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf1 k)
+                    (dest k)
+                  = ae_ss8_action m (le_ktm M) (ktc_tape c2 k (ktc_pos c2 k)) (buf2 k)
+                    (dest k)"
     by (rule ae_ss8_action_cong[OF blk[rule_format]])
-  have "a'1 = a'2"
-    by (rule ext) (simp add: a1 a2 act)
-  moreover have "d1 = d2"
-    by (rule ext) (simp add: d1 d2 act)
-  ultimately show ?thesis using c1'd c2'd e1 e2 by simp
+  show ?thesis
+    using ae_ss8_step[OF s1 st1, unfolded tape pos] ae_ss8_step[OF s2 st2] qh
+    by (simp add: act cong: if_cong)
 qed
 
 text \<open>Halt-agnostic prefix of the macro-cycle tail: chaining the three
@@ -3602,8 +3406,6 @@ lemma ae_backward_stage_decompose:
       and pos_link_c': "ae_position_link m M c'"
       and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block m (le_ktm M)"
       and le_neq_bl:   "le_ktm M \<noteq> bl_ktm M"
-      and qM'_neq_t:   "qM' \<noteq> t_ktm M"
-      and qM'_neq_r:   "qM' \<noteq> r_ktm M"
       and no_le_per_tape:
             "\<forall>k. (ktc_pos c' k \<ge> 2
                     \<longrightarrow> (\<forall>i. i < 3 * m
@@ -3703,8 +3505,8 @@ proof -
     and c3_q_eq: "fst (ktc_state c3) = qM'"
     and pos_link_c3: "ae_position_link m M c3"
     by (rule ae_backward_stage_load_chain
-                [OF vM c'_state inv_ss1 gamma_c' buf_gamma pos_link_c'
-                    qM'_neq_t qM'_neq_r load_run])
+                [OF vM c'_state inv_ss1 gamma_c' pos_link_c'
+                    load_run])
 
   \<comment> \<open>Recover \<open>c3_idx_ss4\<close> for
       \<open>compute_extract\<close>.\<close>
@@ -3803,7 +3605,7 @@ proof -
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c3 step4_full] .
   have buf_gamma_c4: "ae_buffer_in_gamma_block m M c4"
     using ae_step_alphabet_enlarge_buffer_gamma_preserve
-            [OF vM buf_gamma_c3 gamma_c3 step4_full] .
+            [OF step4_full] .
 
   \<comment> \<open>Assemble \<open>ae_inv_ss5 M c4\<close> for
       \<open>writeback_chain\<close>.\<close>
@@ -3835,8 +3637,7 @@ proof -
     and gamma_c'': "ae_tape_in_gamma_block m M c''"
     and buf_gamma_c'': "ae_buffer_in_gamma_block m M c''"
     by (rule ae_backward_stage_writeback_chain
-                [OF vM inv_ss5_c4 c4_q q_in_Q gamma_c4 buf_gamma_c4
-                    writeback_run])
+                [OF vM inv_ss5_c4 c4_q gamma_c4 writeback_run])
 
   \<comment> \<open>Refine \<open>c''_halt\<close>'s tuple-case form to a
       first-order projection on \<open>snd^4 (ktc_state c'')\<close>.\<close>
@@ -4036,8 +3837,7 @@ proof -
     and run_q_in_Q: "ktc_state cM_new \<in> Q_ktm M"
     by (rule ae_backward_stage_decompose
                 [OF vM lu sim val_cM c'_state inv_ss1 gamma_c' buf_gamma
-                    pos_link_c' le_anchor le_neq_bl qM'_neq_t qM'_neq_r
-                    no_le_per_tape run])
+                    pos_link_c' le_anchor le_neq_bl no_le_per_tape run])
 
   \<comment> \<open>The \<open>le_anchor\<close>-at-\<open>c''\<close> conclusion collapses to a
       direct invocation of the substrate-level

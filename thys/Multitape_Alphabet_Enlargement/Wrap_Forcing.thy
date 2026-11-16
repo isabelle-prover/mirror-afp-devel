@@ -567,8 +567,6 @@ lemma wrap_partial_close_step_forces_pack:
     and i :: nat
   assumes vM: "valid_ktm M"
       and c_pos: "0 < c"
-      and w_alpha: "set w \<subseteq> \<Sigma>u"
-      and bl_ne_le: "bl_ktm M \<noteq> le_ktm M"
       and k2: "2 \<le> k_ktm M"
       and i_lt: "i * c < length w"
       and i_partial: "length w < (Suc i) * c"

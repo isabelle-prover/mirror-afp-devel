@@ -81,6 +81,14 @@ c_pred_idx_none, encode_input_map_enum and encode_input_map_take_enum to
 c_succ_Some, c_succ_None, c_pred_Some, c_pred_None, encode_input_map_symbols
 and encode_input_map_take_symbols.  Updated abstract.
 """
+2026-11-16 = """
+Shorter proofs of the forward simulation stage: step lemmas ae_ssN_step,
+ae_ssN_step_tape and ae_ssN_action_buf (N = 5 to 8) for the write substeps,
+and ae_simulates_forward_stage_general put together from four lemmas in the
+new theory AlphabetEnlargement_ForwardArms.  Removed premises their proofs did
+not use from 23 lemmas, among them wrap_wf, wrap_det and
+ae_tape_correspondence_init.
+"""
 
 [extra]
 

@@ -253,8 +253,7 @@ proof -
   have gamma_c1: "ae_tape_in_gamma_block m M c1"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c' step1] .
   have buf_gamma_c1: "ae_buffer_in_gamma_block m M c1"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma
-                                                            gamma_c' step1] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step1] .
   have c1_fst_eq: "fst (ktc_state c1) = qM'"
     using step1_sub c'_state
     by (auto simp: ae_delta_ss1_ss2_def elim: ktm_step.cases)
@@ -290,8 +289,7 @@ proof -
   have gamma_c2: "ae_tape_in_gamma_block m M c2"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c1 step2] .
   have buf_gamma_c2: "ae_buffer_in_gamma_block m M c2"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c1
-                                                            gamma_c1 step2] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step2] .
   have c2_fst_eq: "fst (ktc_state c2) = qM'"
     using step2_sub c1_fst_eq
     by (cases "ktc_state c1")
@@ -328,8 +326,7 @@ proof -
   have gamma_c3: "ae_tape_in_gamma_block m M c3"
     using ae_step_alphabet_enlarge_gamma_preserve[OF gamma_c2 step3] .
   have buf_gamma_c3: "ae_buffer_in_gamma_block m M c3"
-    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF vM buf_gamma_c2
-                                                            gamma_c2 step3] .
+    using ae_step_alphabet_enlarge_buffer_gamma_preserve[OF step3] .
   have c3_fst_eq: "fst (ktc_state c3) = qM'"
     using step3_sub c2_fst_eq
     by (cases "ktc_state c2")

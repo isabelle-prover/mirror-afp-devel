@@ -175,7 +175,7 @@ proof -
           "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
                   (ktc_tape (init_config_ktm M w) k)
                   (ktc_tape (ae_init_config m M ?ew) k)"
-        by (rule ae_tape_correspondence_init[OF vM w_sub])
+        by (rule ae_tape_correspondence_init)
       have subst_pos_zero:
           "\<forall>k. ktc_pos (init_config_ktm M w) k = 0"
         by (cases M) simp
@@ -219,7 +219,7 @@ proof -
         using ae_simulation_phase_step_count
                 [where M = M and T = T and u = w and c' = ?c1,
                  OF vM lu terminal m_acc w_sub sim buf_gamma le_anchor
-                    s_neq_t s_neq_r le_neq_bl]
+                    le_neq_bl]
         by metis
 
       \<comment> \<open>Step 5: compose validation and simulation chains.\<close>

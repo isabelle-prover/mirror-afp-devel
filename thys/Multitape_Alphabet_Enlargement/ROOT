@@ -19,6 +19,7 @@ session Multitape_Alphabet_Enlargement = Multitape_TM_Substrate +
     AlphabetEnlargement_OutputWF
     AlphabetEnlargement_ForwardCells
     AlphabetEnlargement_ForwardStep
+    AlphabetEnlargement_ForwardArms
     AlphabetEnlargement_ForwardStage
     AlphabetEnlargement_Acceptance
     AlphabetEnlargement

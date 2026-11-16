@@ -31,8 +31,6 @@ lemma ae_window_invariant_step:
     and d :: move
   assumes wi:     "ae_window_invariant m tM nM bp blocks p_start"
       and adv:    "bp_advance_le m le (tM nM) bp d = Some bp'"
-      and bp_lt:  "bp_linear m bp < 3 * m - 1"
-      and bp_pos: "0 < bp_linear m bp"
       and no_le:  "tM nM \<noteq> le"
   shows "ae_window_invariant m
             (tM(nM := a')) (go_move d nM)
@@ -265,10 +263,7 @@ lemma ae_window_invariant_le1_step:
     and d :: move
   assumes wi:        "ae_window_invariant_le1 m tM nM bp blocks le"
       and adv:       "bp_advance_le m le (tM nM) bp d = Some bp'"
-      and bp_lt:     "bp_linear m bp < 3 * m - 1"
-      and bp_pos:    "0 < bp_linear m bp"
       and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
-      and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
       and no_le_win: "\<forall>i. 0 < i \<and> i \<le> 2 * m
                               \<longrightarrow> tM i \<noteq> le"
   shows "ae_window_invariant_le1 m
@@ -511,12 +506,7 @@ lemma ae_window_invariant_le0_step:
     and d :: move
   assumes wi:        "ae_window_invariant_le0 m tM nM bp blocks le"
       and adv:       "bp_advance_le m le (tM nM) bp d = Some bp'"
-      and bp_lt:     "bp_linear m bp < 3 * m - 1"
-      and bp_pos:    "0 < bp_linear m bp"
       and a_le:      "tM nM = le \<Longrightarrow> a' = le \<and> d \<in> {MoveN, MoveR}"
-      and a_not_le:  "tM nM \<noteq> le \<Longrightarrow> a' \<noteq> le"
-      and no_le_win: "\<forall>i. 0 < i \<and> i \<le> m
-                              \<longrightarrow> tM i \<noteq> le"
   shows "ae_window_invariant_le0 m
             (tM(nM := a')) (go_move d nM)
             bp' (write_bp blocks bp a') le"

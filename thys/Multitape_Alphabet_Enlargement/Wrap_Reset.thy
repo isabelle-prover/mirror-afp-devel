@@ -305,7 +305,6 @@ text \<open>The dispatch step: one @{const wrap_disp_delta_gen} transition lifts
 
 lemma plant_disp_step:
   assumes vM: "valid_ktm M"
-      and k2: "2 \<le> k_ktm M"
     shows "(mid_plant_disp_config M pack c w, post_plant_dispatch_config M pack c w)
            \<in> ktm_step (wrap_delta M pack c \<Sigma>u)"
 proof -
@@ -395,7 +394,7 @@ proof -
     by (rule plant_done_step[OF vM k2])
   have disp: "(mid_plant_disp_config M pack c w, post_plant_dispatch_config M pack c w)
                 \<in> ?R"
-    by (rule plant_disp_step[OF vM k2])
+    by (rule plant_disp_step[OF vM])
 
   from relpow_Suc_I[OF loop done_step]
   have "(post_encoder_config_gen (k_ktm M) M pack c w, mid_plant_disp_config M pack c w)

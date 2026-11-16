@@ -385,10 +385,7 @@ lemma ae_step_alphabet_enlarge_buffer_gamma_preserve:
   fixes M  :: "('q, 'a) ktm"
     and c' c'' :: "(nat \<Rightarrow> 'a,
                     'q \<times> 'a ae_stage) ktc_config"
-  assumes vM:       "valid_ktm M"
-      and pre_buf:  "ae_buffer_in_gamma_block m M c'"
-      and pre_tape: "ae_tape_in_gamma_block m M c'"
-      and step:     "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
+  assumes step:     "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M)"
     shows "ae_buffer_in_gamma_block m M c''"
 proof -
   obtain s ts n s' a' d where
@@ -422,15 +419,14 @@ lemma ae_gamma_preserve_relpow:
     and c' c'' :: "(nat \<Rightarrow> 'a,
                     'q \<times> 'a ae_stage) ktc_config"
     and n :: nat
-  assumes vM:       "valid_ktm M"
-      and pre_buf:  "ae_buffer_in_gamma_block m M c'"
+  assumes pre_buf:  "ae_buffer_in_gamma_block m M c'"
       and pre_tape: "ae_tape_in_gamma_block m M c'"
       and chain:    "(c', c'') \<in> ktm_step (alphabet_enlarge_delta m M) ^^ n"
     shows "ae_buffer_in_gamma_block m M c'' \<and> ae_tape_in_gamma_block m M c''"
   using relpow_imp_rtrancl [OF chain]
   by (induction rule: rtrancl_induct)
      (auto intro: pre_buf pre_tape ae_step_alphabet_enlarge_gamma_preserve
-                  ae_step_alphabet_enlarge_buffer_gamma_preserve [OF vM])
+                  ae_step_alphabet_enlarge_buffer_gamma_preserve)
 
 subsubsection \<open>Simulation relation and mid-stage invariants\<close>
 

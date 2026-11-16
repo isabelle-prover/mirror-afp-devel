@@ -151,7 +151,7 @@ proof -
      preserves.\<close>
   have le_neq_bl': "le_ktm ?M' \<noteq> bl_ktm ?M'" using bl_ne_le' by simp
   have wf_wrap: "valid_ktm ?M''"
-    by (rule wrap_wf[OF vM' le_neq_bl' finSigma c_pos k2'])
+    by (rule wrap_wf[OF vM' finSigma c_pos k2'])
 
   \<comment> \<open>Glue: \<open>wrap_enc\<close> = \<open>encode_input\<close> (under the \<open>ae_pack\<close> instantiation).\<close>
   have glue: "\<And>w. wrap_enc ?pack ?c w = encode_input m (bl_ktm M) w"
@@ -387,7 +387,7 @@ proof -
           valid_ktm_finite_Gamma[OF vM]
           rev_finite_subset by blast
   have det_wrap: "det_ktm ?M''"
-    by (rule wrap_det[OF vM' detM' finSigma c_pos])
+    by (rule wrap_det[OF detM'])
 
   show "valid_ktm ?M''" by (rule v)
   show "det_ktm ?M''" by (rule det_wrap)
@@ -812,7 +812,7 @@ proof -
           valid_ktm_finite_Gamma[OF vM]
           rev_finite_subset by blast
   have det_wrap: "det_ktm ?M''"
-    by (rule wrap_det[OF vM' detM' finSigma c_pos])
+    by (rule wrap_det[OF detM'])
 
   show "valid_ktm ?M''" by (rule v)
   show "det_ktm ?M''" by (rule det_wrap)
@@ -1157,7 +1157,7 @@ proof -
           valid_ktm_finite_Gamma[OF vM]
           rev_finite_subset by blast
   have det_wrap: "det_ktm ?M''"
-    by (rule wrap_det[OF vM' detM' finSigma c_pos])
+    by (rule wrap_det[OF detM'])
 
   show ?thesis
   proof (rule that)

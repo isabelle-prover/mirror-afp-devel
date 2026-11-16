@@ -144,7 +144,6 @@ text \<open>Validity of the wrap at tape count @{term "k_ktm M"}.  Hypotheses:
 
 lemma wrap_wf:
   assumes valM: "valid_ktm M"
-      and le_ne_bl: "le_ktm M \<noteq> bl_ktm M"
       and finSu: "finite \<Sigma>u"
       and c_pos: "0 < c"
       and k2: "2 \<le> k_ktm M"
@@ -379,10 +378,7 @@ text \<open>Obligation 4 --- determinism preservation, conditional on
   functional in the read.\<close>
 
 lemma wrap_det:
-  assumes valM: "valid_ktm M"
-      and detM: "det_ktm M"
-      and finSu: "finite \<Sigma>u"
-      and c_pos: "0 < c"
+  assumes detM: "det_ktm M"
   shows "det_ktm (encoding_wrap M pack c \<Sigma>u)"
   unfolding det_ktm_def
 proof (intro allI impI)

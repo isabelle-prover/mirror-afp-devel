@@ -9,10 +9,10 @@ subsubsection \<open>Validation sweeps and tape correspondence\<close>
 text \<open>Forward-sweep iteration helper.  Starting from
   \<open>ae_init_config M w\<close>, after \<open>Suc k\<close> validation steps along a
   \<open>k\<close>-pure prefix of \<open>w\<close>, the head on tape 0 is at position
-  \<open>Suc k\<close> and the phase is still \<open>VFwd\<close>.  The chain is built
-  by induction on \<open>k\<close>, applying \<open>ae_step_val_fwd_advance\<close> once
-  per step (the LE block at position 0 takes the first step, then
-  each pure block along positions \<open>1\<dots>k\<close> takes one more).\<close>
+  \<open>Suc k\<close> and the phase is still \<open>VFwd\<close>.  The chain is the one
+  \<open>relpow_fun_conv\<close> asks for, \<open>ae_step_val_fwd_advance\<close> once per
+  cell: the LE block at position 0 takes the first step, then each pure
+  block along positions \<open>1\<dots>k\<close> takes one more.\<close>
 
 lemma ae_validation_fwd_sweep_pure:
   fixes M :: "('q, 'a) ktm"
@@ -30,245 +30,71 @@ lemma ae_validation_fwd_sweep_pure:
                      (ktc_tape (ae_init_config m M w))
                      (\<lambda>i :: nat. if i = 0 then Suc k else 0))
            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc k"
-  using k_bound pure
-proof (induction k)
-  case 0
+proof -
   let ?ts = "ktc_tape (ae_init_config m M w)"
-  let ?n0 = "\<lambda>_ :: nat. 0 :: nat"
-  let ?n1 = "\<lambda>i :: nat. if i = 0 then Suc 0 else 0"
-  have init_eq: "ae_init_config m M w
-                  = KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n0"
+  let ?c = "\<lambda>i. KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts
+                  (\<lambda>j :: nat. if j = 0 then i else 0)"
+  have kpos: "0 < k_ktm M" by (rule valid_ktm_k_pos[OF vM])
+  have bt_all: "\<forall>j\<ge>k_ktm M. \<forall>i. ?ts j i = bl_block m (bl_ktm M)"
+    using ae_init_config_tape_blank_tail by blast
+  have buf_gamma_init:
+      "\<forall>kk :: nat.
+          fst (init_buffer m (le_ktm M) kk
+                  :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
+              \<in> gamma_block m (\<Gamma>_ktm M)
+          \<and> fst (snd (init_buffer m (le_ktm M) kk
+                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
+              \<in> gamma_block m (\<Gamma>_ktm M)
+          \<and> snd (snd (init_buffer m (le_ktm M) kk
+                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
+              \<in> gamma_block m (\<Gamma>_ktm M)"
+    by (rule init_buffer_in_gamma_block_at_M[OF vM])
+  have stage_eq: "init_stage m (le_ktm M)
+                  = (init_offset, init_buffer m (le_ktm M), init_dest, VFwd)"
+    unfolding init_stage_def ..
+  have walk: "(?c 0, ?c (Suc k)) \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc k"
+    unfolding relpow_fun_conv
+  proof (intro exI[where x = ?c] conjI allI impI)
+    fix i assume i: "i < Suc k"
+    let ?n = "\<lambda>j :: nat. if j = 0 then i else 0"
+    have read: "?ts 0 (?n 0) = LE_block m (le_ktm M)
+                \<or> is_pure_block m (bl_ktm M) (?ts 0 (?n 0))"
+    proof (cases i)
+      case 0
+      then show ?thesis using ae_init_config_tape_le[OF kpos] by simp
+    next
+      case (Suc i')
+      have i_le: "i \<le> length w" using i k_bound by linarith
+      have "?ts 0 i = w ! i'"
+        using ae_init_config_tape_input[of i w, OF _ i_le kpos] Suc by simp
+      then show ?thesis using pure Suc i by simp
+    qed
+    have gamma: "\<forall>kk :: nat. ?ts kk (?n kk) \<in> gamma_block m (\<Gamma>_ktm M)"
+      using ae_init_config_in_gamma_block[OF vM w_sub] by simp
+    have moved: "(\<lambda>kk. go_move (if kk = (0 :: nat) then MoveR else MoveN) (?n kk))
+                 = (\<lambda>j :: nat. if j = 0 then Suc i else 0)"
+      by (simp add: fun_eq_iff)
+    show "(?c i, ?c (Suc i)) \<in> ktm_step (alphabet_enlarge_delta m M)"
+      using ae_step_val_fwd_advance[where ts = ?ts and n = ?n,
+                                    OF s_in_Q s_neq_t s_neq_r read bt_all
+                                       init_stage_tail[OF m_pos] gamma
+                                       buf_gamma_init]
+            moved
+      unfolding stage_eq by simp
+  qed simp_all
+  have init_eq: "?c 0 = ae_init_config m M w"
     by (simp add: ae_init_config_def)
-  have kpos: "0 < k_ktm M" by (rule valid_ktm_k_pos[OF vM])
-  have read: "?ts 0 (?n0 0) = LE_block m (le_ktm M)
-              \<or> is_pure_block m (bl_ktm M) (?ts 0 (?n0 0))"
-    using ae_init_config_tape_le[OF kpos] by auto
-  have bt_all: "\<forall>j\<ge>k_ktm M. \<forall>i. ?ts j i = bl_block m (bl_ktm M)"
-    using ae_init_config_tape_blank_tail by blast
-  have gamma: "\<forall>kk :: nat. ?ts kk (?n0 kk) \<in> gamma_block m (\<Gamma>_ktm M)"
-    using ae_init_config_in_gamma_block[OF vM w_sub] by simp
-  have buf_gamma_init:
-      "\<forall>kk :: nat.
-          fst (init_buffer m (le_ktm M) kk
-                  :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
-              \<in> gamma_block m (\<Gamma>_ktm M)
-          \<and> fst (snd (init_buffer m (le_ktm M) kk
-                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
-              \<in> gamma_block m (\<Gamma>_ktm M)
-          \<and> snd (snd (init_buffer m (le_ktm M) kk
-                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
-              \<in> gamma_block m (\<Gamma>_ktm M)"
-    by (rule init_buffer_in_gamma_block_at_M[OF vM])
-  have step1: "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                            init_dest, VFwd) ?ts ?n0,
-                KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                            init_dest, VFwd) ?ts
-                  (\<lambda>kk. go_move (if kk = (0 :: nat) then MoveR else MoveN)
-                                 (?n0 kk)))
-                \<in> ktm_step (alphabet_enlarge_delta m M)"
-    by (rule ae_step_val_fwd_advance[where ts = ?ts and n = ?n0,
-                                     OF s_in_Q s_neq_t s_neq_r read bt_all
-                                        init_stage_tail[OF m_pos] gamma buf_gamma_init])
-  have post_eq:
-    "(\<lambda>kk :: nat. go_move (if kk = 0 then MoveR else MoveN) (?n0 kk)) = ?n1"
-    by (rule ext) simp
-  have step1_n1: "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                              init_dest, VFwd) ?ts ?n0,
-                   KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                              init_dest, VFwd) ?ts ?n1)
-                  \<in> ktm_step (alphabet_enlarge_delta m M)"
-    using step1 post_eq by simp
-  have stage_eq: "init_stage m (le_ktm M)
-                  = (init_offset, init_buffer m (le_ktm M), init_dest, VFwd)"
-    unfolding init_stage_def ..
-  have step1_init: "(KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n0,
-                     KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n1)
-                    \<in> ktm_step (alphabet_enlarge_delta m M)"
-    using step1_n1 unfolding stage_eq by simp
-  have chain1: "(ae_init_config m M w,
-                  KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n1)
-                 \<in> ktm_step (alphabet_enlarge_delta m M)"
-    using step1_init init_eq by simp
-  show ?case using chain1 by (simp add: relpow_1)
-next
-  case (Suc k)
-  let ?ts = "ktc_tape (ae_init_config m M w)"
-  let ?n_k = "\<lambda>i :: nat. if i = 0 then Suc k else 0"
-  let ?n_Sk = "\<lambda>i :: nat. if i = 0 then Suc (Suc k) else 0"
-  have k_le: "k \<le> length w" using Suc.prems(1) by simp
-  have pure_k: "\<forall>i < k. is_pure_block m (bl_ktm M) (w ! i)"
-    using Suc.prems(2) by simp
-  from Suc.IH[OF k_le pure_k]
-  have IH: "(ae_init_config m M w,
-              KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n_k)
-              \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc k" .
-  have read_pure: "is_pure_block m (bl_ktm M) (w ! k)"
-    using Suc.prems(2) by auto
-  have Sk_pos: "1 \<le> Suc k" by simp
-  have Sk_le: "Suc k \<le> length w" using Suc.prems(1) .
-  have kpos: "0 < k_ktm M" by (rule valid_ktm_k_pos[OF vM])
-  have read_eq: "?ts 0 (Suc k) = w ! k"
-    using ae_init_config_tape_input[OF Sk_pos Sk_le kpos] by simp
-  have read: "?ts 0 (?n_k 0) = LE_block m (le_ktm M)
-              \<or> is_pure_block m (bl_ktm M) (?ts 0 (?n_k 0))"
-    using read_pure read_eq by simp
-  have bt_all: "\<forall>j\<ge>k_ktm M. \<forall>i. ?ts j i = bl_block m (bl_ktm M)"
-    using ae_init_config_tape_blank_tail by blast
-  have gamma: "\<forall>kk :: nat. ?ts kk (?n_k kk) \<in> gamma_block m (\<Gamma>_ktm M)"
-    using ae_init_config_in_gamma_block[OF vM w_sub] by simp
-  have buf_gamma_init:
-      "\<forall>kk :: nat.
-          fst (init_buffer m (le_ktm M) kk
-                  :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a))
-              \<in> gamma_block m (\<Gamma>_ktm M)
-          \<and> fst (snd (init_buffer m (le_ktm M) kk
-                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
-              \<in> gamma_block m (\<Gamma>_ktm M)
-          \<and> snd (snd (init_buffer m (le_ktm M) kk
-                        :: (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)))
-              \<in> gamma_block m (\<Gamma>_ktm M)"
-    by (rule init_buffer_in_gamma_block_at_M[OF vM])
-  have step: "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                            init_dest, VFwd) ?ts ?n_k,
-                KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                            init_dest, VFwd) ?ts
-                  (\<lambda>kk. go_move (if kk = (0 :: nat) then MoveR else MoveN)
-                                 (?n_k kk)))
-                \<in> ktm_step (alphabet_enlarge_delta m M)"
-    by (rule ae_step_val_fwd_advance[where ts = ?ts and n = ?n_k,
-                                     OF s_in_Q s_neq_t s_neq_r read bt_all
-                                        init_stage_tail[OF m_pos] gamma buf_gamma_init])
-  have post_eq:
-    "(\<lambda>kk :: nat. go_move (if kk = 0 then MoveR else MoveN) (?n_k kk)) = ?n_Sk"
-    by (rule ext) simp
-  have step_n_Sk: "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                                init_dest, VFwd) ?ts ?n_k,
-                    KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
-                                init_dest, VFwd) ?ts ?n_Sk)
-                   \<in> ktm_step (alphabet_enlarge_delta m M)"
-    using step post_eq by simp
-  have stage_eq: "init_stage m (le_ktm M)
-                  = (init_offset, init_buffer m (le_ktm M), init_dest, VFwd)"
-    unfolding init_stage_def ..
-  have step_init: "(KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n_k,
-                    KConfig (s_ktm M, init_stage m (le_ktm M)) ?ts ?n_Sk)
-                   \<in> ktm_step (alphabet_enlarge_delta m M)"
-    using step_n_Sk unfolding stage_eq by simp
-  show ?case by (rule relpow_Suc_I[OF IH step_init])
-qed
-
-text \<open>Return-sweep iteration helper.  Symmetric counterpart to
-  the forward sweep: starting at \<open>VRet\<close> with the head on tape 0
-  at position \<open>p\<close>, retreat to position 0 in \<open>p\<close> applications of
-  \<open>ae_step_val_ret_step\<close>, then take one more step via
-  \<open>ae_step_val_ret_to_sim\<close> to reach \<open>SS1\<close>.  Total: \<open>Suc p\<close>
-  steps.  The non-LE constraint on positions \<open>1\<dots>p\<close> is hoisted
-  into the goal as a \<open>\<longrightarrow>\<close>-form so the standard induction on
-  \<open>p\<close> exposes the correct restriction at the IH.\<close>
-
-lemma ae_validation_ret_sweep:
-  fixes M :: "('q, 'a) ktm"
-    and ts :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)"
-    and q :: 'q
-    and ofs :: "nat \<Rightarrow> nat"
-    and buf :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
-    and dest :: "nat \<Rightarrow> ae_dest"
-    and p :: nat
-  assumes q_in: "q \<in> Q_ktm M"
-      and tape_le: "ts (0 :: nat) 0 = LE_block m (le_ktm M)"
-      and gamma: "\<forall>k i. ts k i \<in> gamma_block m (\<Gamma>_ktm M)"
-      and buf_gamma: "\<forall>k. fst (buf k) \<in> gamma_block m (\<Gamma>_ktm M)
-                            \<and> fst (snd (buf k)) \<in> gamma_block m (\<Gamma>_ktm M)
-                            \<and> snd (snd (buf k)) \<in> gamma_block m (\<Gamma>_ktm M)"
-      and bt: "\<forall>k\<ge>k_ktm M. \<forall>i. ts k i = bl_block m (bl_ktm M)"
-      and stage_tail: "(\<forall>j\<ge>k_ktm M. ofs j = init_offset j)
-                        \<and> (\<forall>j\<ge>k_ktm M. buf j = init_buffer m (le_ktm M) j)
-                        \<and> (\<forall>j\<ge>k_ktm M. dest j = init_dest j)
-                        \<and> (\<forall>j. ofs j < m)"
-      and m_pos: "0 < m"
-  shows "(\<forall>i. 1 \<le> i \<and> i \<le> p \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M))
-         \<longrightarrow> (KConfig (q, ofs, buf, dest, VRet) ts
-                       (\<lambda>i :: nat. if i = 0 then p else 0),
-              KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
-              \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc p"
-proof (induction p)
-  case 0
-  let ?n0 = "\<lambda>_ :: nat. 0 :: nat"
-  have read: "ts (0 :: nat) (?n0 0) = LE_block m (le_ktm M)"
-    using tape_le by simp
-  have gamma_at: "\<forall>k :: nat. ts k (?n0 k) \<in> gamma_block m (\<Gamma>_ktm M)"
-    using gamma by simp
-  have step1: "(KConfig (q, ofs, buf, dest, VRet) ts ?n0,
-                 KConfig (q, ofs, buf, dest, SS1) ts ?n0)
-                \<in> ktm_step (alphabet_enlarge_delta m M)"
-    by (rule ae_step_val_ret_to_sim[where ts = ts and n = ?n0,
-                                    OF q_in read bt stage_tail gamma_at
-                                       buf_gamma])
-  have shape_eq: "(\<lambda>i :: nat. if i = 0 then (0 :: nat) else 0) = ?n0"
-    by (rule ext) simp
-  show ?case
-  proof
-    assume "(\<forall>i. 1 \<le> i \<and> i \<le> 0 \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M))"
-    have one_step: "(KConfig (q, ofs, buf, dest, VRet) ts
-                       (\<lambda>i :: nat. if i = 0 then 0 else 0),
-                     KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
-                    \<in> ktm_step (alphabet_enlarge_delta m M)"
-      using step1 shape_eq by simp
-    thus "(KConfig (q, ofs, buf, dest, VRet) ts
-              (\<lambda>i :: nat. if i = 0 then 0 else 0),
-            KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
-            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc 0"
-      by (simp add: relpow_1)
-  qed
-next
-  case (Suc p)
-  let ?n_Sp = "\<lambda>i :: nat. if i = 0 then Suc p else 0"
-  let ?n_p = "\<lambda>i :: nat. if i = 0 then p else 0"
-  show ?case
-  proof
-    assume tape_non_le_Sp:
-      "(\<forall>i. 1 \<le> i \<and> i \<le> Suc p \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M))"
-    have read_non_le: "ts (0 :: nat) (?n_Sp 0) \<noteq> LE_block m (le_ktm M)"
-      using tape_non_le_Sp[rule_format, of "Suc p"] by simp
-    have gamma_Sp: "\<forall>k :: nat. ts k (?n_Sp k) \<in> gamma_block m (\<Gamma>_ktm M)"
-      using gamma by simp
-    have step1: "(KConfig (q, ofs, buf, dest, VRet) ts ?n_Sp,
-                   KConfig (q, ofs, buf, dest, VRet) ts
-                     (\<lambda>kk. go_move (if kk = (0 :: nat) then MoveL else MoveN)
-                                   (?n_Sp kk)))
-                  \<in> ktm_step (alphabet_enlarge_delta m M)"
-      by (rule ae_step_val_ret_step[where ts = ts and n = ?n_Sp,
-                                    OF q_in read_non_le bt stage_tail
-                                       gamma_Sp buf_gamma])
-    have post_eq:
-      "(\<lambda>kk :: nat. go_move (if kk = 0 then MoveL else MoveN) (?n_Sp kk))
-       = ?n_p"
-      by (rule ext) simp
-    have step1_p: "(KConfig (q, ofs, buf, dest, VRet) ts ?n_Sp,
-                    KConfig (q, ofs, buf, dest, VRet) ts ?n_p)
-                   \<in> ktm_step (alphabet_enlarge_delta m M)"
-      using step1 post_eq by simp
-    have tape_non_le_p:
-      "\<forall>i. 1 \<le> i \<and> i \<le> p \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M)"
-      using tape_non_le_Sp by auto
-    have IH_chain: "(KConfig (q, ofs, buf, dest, VRet) ts ?n_p,
-                     KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
-                    \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc p"
-      using Suc.IH tape_non_le_p by blast
-    show "(KConfig (q, ofs, buf, dest, VRet) ts ?n_Sp,
-            KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
-            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc (Suc p)"
-      by (rule relpow_Suc_I2[OF step1_p IH_chain])
-  qed
+  show ?thesis using walk by (simp only: init_eq)
 qed
 
 text \<open>Partial return sweep: \<open>r\<close> leftward \<open>VRet\<close> steps from head
   \<open>p\<close> reach head \<open>p - r\<close>, staying in \<open>VRet\<close>, provided every visited
   cell \<open>1 \<dots> p\<close> is non-\<open>LE\<close> (so the return never short-circuits to
-  \<open>SS1\<close>).  This exposes each intermediate validation config as a
-  reachable witness, which the full \<open>ae_validation_ret_sweep\<close> hides
-  behind its composed endpoint.  Used by \<open>ae_validation_prefix_markers\<close>
-  to supply return-phase witnesses for the prefix-uniqueness induction.\<close>
+  \<open>SS1\<close>).  The walk is the chain \<open>relpow_fun_conv\<close> asks for,
+  \<open>ae_step_val_ret_step\<close> once per cell.  Every intermediate validation
+  config is a reachable witness: \<open>ae_validation_prefix_markers\<close> uses
+  them for the prefix-uniqueness induction, and the full sweep
+  \<open>ae_validation_ret_sweep\<close> below is the case \<open>r = p\<close> plus one step.\<close>
 
 lemma ae_validation_ret_partial:
   fixes M :: "('q, 'a) ktm"
@@ -295,53 +121,88 @@ lemma ae_validation_ret_partial:
               KConfig (q, ofs, buf, dest, VRet) ts
                        (\<lambda>i :: nat. if i = 0 then p - r else 0))
               \<in> ktm_step (alphabet_enlarge_delta m M) ^^ r"
-proof (induction r)
-  case 0
-  have eq: "p - 0 = p" by simp
-  show ?case unfolding eq by simp
-next
-  case (Suc r)
-  let ?n_pr = "\<lambda>i :: nat. if i = 0 then p - r else 0"
-  let ?n_pSr = "\<lambda>i :: nat. if i = 0 then p - Suc r else 0"
-  show ?case
-  proof
-    assume Sr_le: "Suc r \<le> p"
-    have r_le: "r \<le> p" using Sr_le by simp
-    have pr_pos: "1 \<le> p - r" using Sr_le by simp
-    have pr_le: "p - r \<le> p" by simp
-    have read_non_le: "ts (0 :: nat) (?n_pr 0) \<noteq> LE_block m (le_ktm M)"
-      using non_le[rule_format, of "p - r"] pr_pos pr_le by simp
-    have gamma_pm: "\<forall>k :: nat. ts k (?n_pr k) \<in> gamma_block m (\<Gamma>_ktm M)"
+proof
+  assume r_le: "r \<le> p"
+  let ?c = "\<lambda>i. KConfig (q, ofs, buf, dest, VRet) ts
+                  (\<lambda>j :: nat. if j = 0 then p - i else 0)"
+  have "(?c 0, ?c r) \<in> ktm_step (alphabet_enlarge_delta m M) ^^ r"
+    unfolding relpow_fun_conv
+  proof (intro exI[where x = ?c] conjI allI impI)
+    fix i assume i: "i < r"
+    let ?n = "\<lambda>j :: nat. if j = 0 then p - i else 0"
+    have read: "ts (0 :: nat) (?n 0) \<noteq> LE_block m (le_ktm M)"
+      using non_le i r_le by simp
+    have gamma_at: "\<forall>k :: nat. ts k (?n k) \<in> gamma_block m (\<Gamma>_ktm M)"
       using gamma by simp
-    have step1: "(KConfig (q, ofs, buf, dest, VRet) ts ?n_pr,
-                   KConfig (q, ofs, buf, dest, VRet) ts
-                     (\<lambda>kk. go_move (if kk = (0 :: nat) then MoveL else MoveN)
-                                   (?n_pr kk)))
-                  \<in> ktm_step (alphabet_enlarge_delta m M)"
-      by (rule ae_step_val_ret_step[where ts = ts and n = ?n_pr,
-                                    OF q_in read_non_le bt stage_tail
-                                       gamma_pm buf_gamma])
-    have post_eq:
-      "(\<lambda>kk :: nat. go_move (if kk = 0 then MoveL else MoveN) (?n_pr kk))
-       = ?n_pSr"
-      using pr_pos by (rule_tac ext) simp
-    have step1_pSm:
-      "(KConfig (q, ofs, buf, dest, VRet) ts ?n_pr,
-         KConfig (q, ofs, buf, dest, VRet) ts ?n_pSr)
-        \<in> ktm_step (alphabet_enlarge_delta m M)"
-      using step1 post_eq by simp
-    have IH_chain:
-      "(KConfig (q, ofs, buf, dest, VRet) ts
-                 (\<lambda>i :: nat. if i = 0 then p else 0),
-        KConfig (q, ofs, buf, dest, VRet) ts ?n_pr)
-        \<in> ktm_step (alphabet_enlarge_delta m M) ^^ r"
-      using Suc.IH r_le by blast
-    show "(KConfig (q, ofs, buf, dest, VRet) ts
-                    (\<lambda>i :: nat. if i = 0 then p else 0),
-           KConfig (q, ofs, buf, dest, VRet) ts ?n_pSr)
-            \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc r"
-      by (rule relpow_Suc_I[OF IH_chain step1_pSm])
-  qed
+    have moved: "(\<lambda>k. go_move (if k = (0 :: nat) then MoveL else MoveN) (?n k))
+                 = (\<lambda>j :: nat. if j = 0 then p - Suc i else 0)"
+      by (simp add: fun_eq_iff)
+    show "(?c i, ?c (Suc i)) \<in> ktm_step (alphabet_enlarge_delta m M)"
+      using ae_step_val_ret_step[where ts = ts and n = ?n,
+                                 OF q_in read bt stage_tail gamma_at buf_gamma]
+            moved
+      by simp
+  qed simp_all
+  then show "(KConfig (q, ofs, buf, dest, VRet) ts
+                (\<lambda>i :: nat. if i = 0 then p else 0),
+              KConfig (q, ofs, buf, dest, VRet) ts
+                (\<lambda>i :: nat. if i = 0 then p - r else 0))
+              \<in> ktm_step (alphabet_enlarge_delta m M) ^^ r"
+    by (simp cong: if_cong)
+qed
+
+text \<open>Return-sweep iteration helper.  Symmetric counterpart to
+  the forward sweep: starting at \<open>VRet\<close> with the head on tape 0
+  at position \<open>p\<close>, retreat to position 0 (\<open>ae_validation_ret_partial\<close>
+  with \<open>r = p\<close>, so the cells \<open>1\<dots>p\<close> must not hold the \<open>LE\<close>
+  block), then take one more step via \<open>ae_step_val_ret_to_sim\<close> to
+  reach \<open>SS1\<close>.  Total: \<open>Suc p\<close> steps.\<close>
+
+lemma ae_validation_ret_sweep:
+  fixes M :: "('q, 'a) ktm"
+    and ts :: "nat \<Rightarrow> nat \<Rightarrow> (nat \<Rightarrow> 'a)"
+    and q :: 'q
+    and ofs :: "nat \<Rightarrow> nat"
+    and buf :: "nat \<Rightarrow> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a) \<times> (nat \<Rightarrow> 'a)"
+    and dest :: "nat \<Rightarrow> ae_dest"
+    and p :: nat
+  assumes q_in: "q \<in> Q_ktm M"
+      and tape_le: "ts (0 :: nat) 0 = LE_block m (le_ktm M)"
+      and gamma: "\<forall>k i. ts k i \<in> gamma_block m (\<Gamma>_ktm M)"
+      and buf_gamma: "\<forall>k. fst (buf k) \<in> gamma_block m (\<Gamma>_ktm M)
+                            \<and> fst (snd (buf k)) \<in> gamma_block m (\<Gamma>_ktm M)
+                            \<and> snd (snd (buf k)) \<in> gamma_block m (\<Gamma>_ktm M)"
+      and bt: "\<forall>k\<ge>k_ktm M. \<forall>i. ts k i = bl_block m (bl_ktm M)"
+      and stage_tail: "(\<forall>j\<ge>k_ktm M. ofs j = init_offset j)
+                        \<and> (\<forall>j\<ge>k_ktm M. buf j = init_buffer m (le_ktm M) j)
+                        \<and> (\<forall>j\<ge>k_ktm M. dest j = init_dest j)
+                        \<and> (\<forall>j. ofs j < m)"
+  shows "(\<forall>i. 1 \<le> i \<and> i \<le> p \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M))
+         \<longrightarrow> (KConfig (q, ofs, buf, dest, VRet) ts
+                       (\<lambda>i :: nat. if i = 0 then p else 0),
+              KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
+              \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc p"
+proof
+  assume non_le: "\<forall>i. 1 \<le> i \<and> i \<le> p \<longrightarrow> ts 0 i \<noteq> LE_block m (le_ktm M)"
+  have walk: "(KConfig (q, ofs, buf, dest, VRet) ts (\<lambda>i :: nat. if i = 0 then p else 0),
+               KConfig (q, ofs, buf, dest, VRet) ts (\<lambda>i :: nat. if i = 0 then p - p else 0))
+                \<in> ktm_step (alphabet_enlarge_delta m M) ^^ p"
+    by (rule mp[OF ae_validation_ret_partial[where r = p,
+                     OF q_in gamma buf_gamma bt stage_tail non_le]]) simp
+  have read0: "ts (0 :: nat) ((\<lambda>_ :: nat. 0 :: nat) 0) = LE_block m (le_ktm M)"
+    using tape_le by simp
+  have gamma0: "\<forall>k :: nat. ts k ((\<lambda>_ :: nat. 0 :: nat) k) \<in> gamma_block m (\<Gamma>_ktm M)"
+    using gamma by simp
+  have exit: "(KConfig (q, ofs, buf, dest, VRet) ts (\<lambda>i :: nat. if i = 0 then p - p else 0),
+               KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
+                \<in> ktm_step (alphabet_enlarge_delta m M)"
+    using ae_step_val_ret_to_sim[where ts = ts and n = "\<lambda>_. 0",
+                                 OF q_in read0 bt stage_tail gamma0 buf_gamma]
+    by (simp cong: if_cong)
+  show "(KConfig (q, ofs, buf, dest, VRet) ts (\<lambda>i :: nat. if i = 0 then p else 0),
+         KConfig (q, ofs, buf, dest, SS1) ts (\<lambda>_. 0))
+          \<in> ktm_step (alphabet_enlarge_delta m M) ^^ Suc p"
+    by (rule relpow_Suc_I[OF walk exit])
 qed
 
 text \<open>Tape correspondence at the initial configuration: the
@@ -359,8 +220,6 @@ text \<open>Tape correspondence at the initial configuration: the
 lemma ae_tape_correspondence_init:
   fixes M :: "('q, 'a) ktm"
     and u :: "'a list"
-  assumes vM: "valid_ktm M"
-      and u_sub: "set u \<subseteq> Sigma_ktm M"
   shows "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
               (ktc_tape (init_config_ktm M u) k)
               (ktc_tape (ae_init_config m M
@@ -683,7 +542,7 @@ proof -
             \<in> ktm_step (alphabet_enlarge_delta m M)
                 ^^ Suc (Suc (length w))"
       by (rule ae_validation_ret_sweep[OF s_in_Q tape_le gamma_all
-                                          buf_gamma_init bt_all init_stage_tail[OF m_pos] m_pos])
+                                          buf_gamma_init bt_all init_stage_tail[OF m_pos]])
     have ret_chain:
       "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
                     init_dest, VRet) ?ts ?n_lwSS,
@@ -819,7 +678,7 @@ proof -
             \<in> ktm_step (alphabet_enlarge_delta m M)
                 ^^ Suc (Suc ?lw)"
       by (rule ae_validation_ret_sweep[OF s_in_Q tape_le gamma_all
-                                          buf_gamma_init bt_all init_stage_tail[OF m_pos] m_pos])
+                                          buf_gamma_init bt_all init_stage_tail[OF m_pos]])
     have ret_chain:
       "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
                     init_dest, VRet) ?ts ?n_lwSS,
@@ -1354,7 +1213,7 @@ proof -
   have tape_corr:
     "\<forall>k<k_ktm M. ae_tape_correspondence m (le_ktm M)
             (ktc_tape ?subst_init k) (ktc_tape ?init k)"
-    by (rule ae_tape_correspondence_init[OF vM u_sub])
+    by (rule ae_tape_correspondence_init)
   \<comment> \<open>Gamma-block invariant on the M'-tape: also shared across
       both cases since the validation chain in the nondegen case
       reuses \<open>ktc_tape ?init\<close> verbatim (no writes).\<close>
@@ -1942,7 +1801,7 @@ proof -
               \<in> ktm_step (alphabet_enlarge_delta m M)
                   ^^ Suc (Suc k)"
         by (rule ae_validation_ret_sweep[OF s_in_Q tape_le gamma_all
-                                          buf_gamma_init bt_all init_stage_tail[OF m_pos] m_pos])
+                                          buf_gamma_init bt_all init_stage_tail[OF m_pos]])
       have ret_chain:
         "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
                       init_dest, VRet) ?ts ?n_Sk,
@@ -2102,7 +1961,7 @@ proof -
                 \<in> ktm_step (alphabet_enlarge_delta m M)
                     ^^ Suc (Suc (Suc k))"
           by (rule ae_validation_ret_sweep[OF s_in_Q tape_le gamma_all
-                                          buf_gamma_init bt_all init_stage_tail[OF m_pos] m_pos])
+                                          buf_gamma_init bt_all init_stage_tail[OF m_pos]])
         have ret_chain:
           "(KConfig (s_ktm M, init_offset, init_buffer m (le_ktm M),
                         init_dest, VRet) ?ts ?n_SSk,

@@ -304,8 +304,7 @@ lemma ae_step_ss8_ss1_invariant_halt:
   fixes M :: "('q, 'a) ktm"
     and c' c'' :: "(nat \<Rightarrow> 'a,
                     'q \<times> 'a ae_stage) ktc_config"
-  assumes inv: "ae_inv_ss8 M c'"
-      and halt: "case ktc_state c' of (qM', _, _, _, _) \<Rightarrow>
+  assumes halt: "case ktc_state c' of (qM', _, _, _, _) \<Rightarrow>
                     qM' \<in> {t_ktm M, r_ktm M}"
       and step: "(c', c'') \<in> ktm_step (ae_delta_ss8_ss1 m M)"
     shows "(case ktc_state c'' of (qM', _, _, _, idx) \<Rightarrow>
@@ -532,7 +531,6 @@ lemma ae_coupled_run_aux_general:
     and cM_n :: "('a, 'q) ktc_config"
   assumes vM:        "valid_ktm M"
       and lu:        "le_unique M"
-      and qM_in:     "qM \<in> Q_ktm M"
       and window:    "\<forall>k<k_ktm M. ae_window_invariant_general m (tsM k) (nM k)
                             (AE_Home, ofs k) (buf_full k) (pos k) (le_ktm M)"
       and pad_home:  "\<forall>k\<ge>k_ktm M. fst (snd (buf_full k)) = bl_block m (bl_ktm M)"
@@ -1185,7 +1183,7 @@ next
               (write_bp (buf_n' k) (end_pos_n' k) (a_step k))
               ((pos k - 2) * m + 1)"
       by (rule ae_window_invariant_step
-                [OF wi_k' adv_k bp_lt_k bp_pos_k no_le_k])
+                [OF wi_k' adv_k no_le_k])
     show "ae_window_invariant m
               (ktc_tape cM_n k) (ktc_pos cM_n k)
               (end_pos_n k) (buf_n k)
@@ -1261,8 +1259,7 @@ next
               (write_bp (buf_n' k) (end_pos_n' k) (a_step k))
               (le_ktm M)"
       by (rule ae_window_invariant_le1_step
-                [OF wi_k' adv_k bp_lt_k bp_pos_k
-                    a_le_k a_not_le_k no_le_win_k])
+                [OF wi_k' adv_k a_le_k no_le_win_k])
     show "ae_window_invariant_le1 m
               (ktc_tape cM_n k) (ktc_pos cM_n k)
               (end_pos_n k) (buf_n k) (le_ktm M)"
@@ -1328,8 +1325,7 @@ next
               (write_bp (buf_n' k) (end_pos_n' k) (a_step k))
               (le_ktm M)"
       by (rule ae_window_invariant_le0_step
-                [OF wi_k' adv_k bp_lt_k bp_pos_k
-                    a_le_k a_not_le_k no_le_win_k])
+                [OF wi_k' adv_k a_le_k])
     show "ae_window_invariant_le0 m
               (ktc_tape cM_n k) (ktc_pos cM_n k)
               (end_pos_n k) (buf_n k) (le_ktm M)"
@@ -1467,7 +1463,6 @@ lemma ae_m_steps_buffered_correct_trace_general:
     and cM_k :: "('a, 'q) ktc_config"
   assumes vM:        "valid_ktm M"
       and lu:        "le_unique M"
-      and qM_in:     "qM \<in> Q_ktm M"
       and window:    "\<forall>k<k_ktm M. ae_window_invariant_general m (tsM k) (nM k)
                             (AE_Home, ofs k) (buf_full k) (pos k) (le_ktm M)"
       and pad_home:  "\<forall>k\<ge>k_ktm M. fst (snd (buf_full k)) = bl_block m (bl_ktm M)"
@@ -1542,7 +1537,7 @@ proof -
                       < 2 * m + kM)
         \<and> (\<forall>k\<ge>k_ktm M. fst (snd (buf' k)) = bl_block m (bl_ktm M)
                 \<and> end_pos k = (AE_Home, ofs k))"
-    by (rule ae_coupled_run_aux_general[OF vM lu qM_in window pad_home trace kM_le
+    by (rule ae_coupled_run_aux_general[OF vM lu window pad_home trace kM_le
                                            no_le left_not_le_pos0 ofs_lt])
   obtain buf' end_pos where
       coupled: "((qM, buf_full, \<lambda>k. (AE_Home, ofs k)),

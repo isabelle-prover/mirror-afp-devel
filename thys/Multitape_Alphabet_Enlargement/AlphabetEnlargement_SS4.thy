@@ -274,7 +274,7 @@ proof -
     and post_left_not_le_pos0:
         "\<forall>k<k_ktm M. pos k = 0
               \<longrightarrow> fst (buf' k) \<noteq> LE_block m (le_ktm M)"
-    by (rule ae_m_steps_buffered_correct_trace_general[OF vM lu q_in window'
+    by (rule ae_m_steps_buffered_correct_trace_general[OF vM lu window'
                                                           pad_home' no_le trace'
                                                           kM_le end_or_halt
                                                           left_not_le_buf_full ofs_lt])
@@ -952,19 +952,6 @@ lemma ae_ss4_window_from_correspondence_general:
   assumes sim:         "ae_simulates m M cM c'"
       and c'_state:    "ktc_state c' = (qM', ofs, buf, dest, SS1)"
       and le_anchor:   "\<forall>k<k_ktm M. ktc_tape c' k 0 = LE_block m (le_ktm M)"
-      and no_le_per_tape:
-            "\<forall>k. (ktc_pos c' k \<ge> 2
-                    \<longrightarrow> (\<forall>i. i < 3 * m
-                              \<longrightarrow> ktc_tape cM k
-                                    ((ktc_pos c' k - 2)
-                                       * m + 1 + i)
-                                  \<noteq> le_ktm M))
-                 \<and> (ktc_pos c' k = 1
-                      \<longrightarrow> (\<forall>i. i < 2 * m
-                                \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))
-                 \<and> (ktc_pos c' k = 0
-                      \<longrightarrow> (\<forall>i. i < m
-                                \<longrightarrow> ktc_tape cM k (Suc i) \<noteq> le_ktm M))"
       and ofs_lt: "\<forall>k. ofs k < m"
   shows "\<forall>k<k_ktm M. ae_window_invariant_general m
                 (ktc_tape cM k) (ktc_pos cM k)
