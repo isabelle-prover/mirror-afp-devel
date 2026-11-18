@@ -307,7 +307,7 @@ fun maybe_trace_tac false _ _ = K all_tac
   | maybe_trace_tac true ctxt msg = SUBGOAL (fn (t, _) => let
     val tr = Pretty.big_list msg [Syntax.pretty_term ctxt t]
   in
-    Basic_Output.tracing (Pretty.string_of tr);
+    Output.tracing (Pretty.string_of tr);
     all_tac
   end)
 
@@ -315,7 +315,7 @@ fun maybe_trace_rule false _ _ rl = rl
   | maybe_trace_rule true ctxt msg rl = let
     val tr = Pretty.big_list msg [Syntax.pretty_term ctxt (Thm.prop_of rl)]
   in
-    Basic_Output.tracing (Pretty.string_of tr);
+    Output.tracing (Pretty.string_of tr);
     rl
   end
 
