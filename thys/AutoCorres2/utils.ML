@@ -1261,7 +1261,8 @@ fun unify_insts ctxt env pat obj =
 
 fun match_or_unify ctxt pat obj =
   match_insts ctxt pat obj 
-  handle Pattern.MATCH => unify_insts ctxt (Envir.init) pat obj
+  handle Pattern.MATCH =>
+    unify_insts ctxt (Envir.empty (Int.max (maxidx_of_term pat, maxidx_of_term obj))) pat obj
 
 
 fun get_index' P = get_index (fn x => if P x then SOME x else NONE)

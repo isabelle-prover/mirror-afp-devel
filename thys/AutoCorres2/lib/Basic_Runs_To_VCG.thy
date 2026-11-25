@@ -201,8 +201,9 @@ fun parse_program1 ctxt g cong_program_thm =
     val (key, _) = case Thm.prems_of cong_program_thm of [prem] =>
           lhs prem |> Term.dest_Var 
       | _ => error "Runs_To_VCG parse_program: wrong format of rule"
+    val maxidx = Int.max (maxidx_of_term pat, maxidx_of_term concl)
   in
-    case Unify.unifiers (Context.Proof ctxt, Envir.init, [(pat, concl)]) |> Seq.pull
+    case Unify.unifiers (Context.Proof ctxt, Envir.empty maxidx, [(pat, concl)]) |> Seq.pull
     of SOME ((env,_), _) =>
       (case Vartab.lookup (Envir.term_env env) key of NONE => NONE
           | SOME (_, t) => SOME t)
