@@ -62,7 +62,7 @@ fun get_tvs t = t
   ||> map TFree
   |> op@;
 
-fun ntv_eq ((TVar (xi, _)), (TVar (xi', _))) = Term.eq_ix (xi, xi')
+fun ntv_eq ((TVar (xi, _)), (TVar (xi', _))) = Var_Name.eq (xi, xi')
   | ntv_eq (TFree (c, _), TFree (c', _)) = c = c'
   | ntv_eq (_, _) = false;
 
@@ -79,7 +79,7 @@ fun get_vs t = t
   ||> map Free
   |> op@;
 
-fun tv_eq ((Var (xi, _)), (Var (xi', _))) = Term.eq_ix (xi, xi')
+fun tv_eq ((Var (xi, _)), (Var (xi', _))) = Var_Name.eq (xi, xi')
   | tv_eq (Free (c, _), Free (c', _)) = c = c'
   | tv_eq (_, _) = false;
 
