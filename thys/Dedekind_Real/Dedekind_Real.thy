@@ -1048,7 +1048,7 @@ proof -
         respects2 realrel"
   by (clarsimp simp: congruent2_def) (metis add.left_commute preal_add_assoc)
   thus ?thesis
-    by (simp add: real_add_def UN_UN_split_split_eq UN_equiv_class2 [OF equiv_realrel equiv_realrel])
+    by (simp add: real_add_def UN_UN_case_prod_case_prod_eq UN_equiv_class2 [OF equiv_realrel equiv_realrel])
 qed
 
 lemma real_minus: "- Abs_Real(realrel``{(x,y)}) = Abs_Real(realrel `` {(y,x)})"
@@ -1094,7 +1094,7 @@ lemma real_mult_congruent2:
 lemma real_mult:
   "Abs_Real((realrel``{(x1,y1)})) * Abs_Real((realrel``{(x2,y2)})) =
    Abs_Real(realrel `` {(x1*x2+y1*y2,x1*y2+y1*x2)})"
-  by (simp add: real_mult_def UN_UN_split_split_eq
+  by (simp add: real_mult_def UN_UN_case_prod_case_prod_eq
       UN_equiv_class2 [OF equiv_realrel equiv_realrel real_mult_congruent2])
 
 lemma real_mult_commute: "(z::real) * w = w * z"
