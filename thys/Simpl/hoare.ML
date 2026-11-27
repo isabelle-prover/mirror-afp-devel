@@ -1236,7 +1236,7 @@ fun procedures_definition locname procs thy =
                      HOLogic.mk_eq (Free (gamma,fastype_of nt --> fastype_of rhs)$nt,rhs)
            val consts = Sign.consts_of thy;
            val eqs =
-             YXML.string_of_body (Term_XML.Encode.term consts (Consts.dummy_types consts eq));
+             YXML.string_of_body (Term_XML.Encode.term (consts, thy) (Consts.dummy_types consts eq));
            val assms = Element.Assumes [((Binding.name (suffix bodyP name'), []),[(eqs,[])])]
          in [assms]
          end
